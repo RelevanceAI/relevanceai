@@ -14,13 +14,13 @@ class VecDBClient(HelperMixin):
     def __init__(
         self,
         project: str=os.getenv("VDB_PROJECT"), 
-        api_key: str=os.getenv("VI_API_KEY"),
+        api_key: str=os.getenv("VDB_API_KEY"),
         base_url: str="https://api-dev-aueast.relevance.ai/v1/"):
         """
         Params:
             local: if local is True, then the base_url switches to the default locally hosted one.
         """
-        print("Welcome to the Alpha unstable version of the VecDB Python SDK.")
+        print("Welcome to the development version of the VecDB Python SDK. Please do not use this SDK to build core systems.")
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
