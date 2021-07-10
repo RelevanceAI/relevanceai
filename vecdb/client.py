@@ -20,6 +20,7 @@ class VecDBClient(HelperMixin):
         Params:
             local: if local is True, then the base_url switches to the default locally hosted one.
         """
+        print("Welcome to the Alpha unstable version of the VecDB Python SDK.")
         self.project = project
         self.api_key = api_key
         self.base_url = base_url

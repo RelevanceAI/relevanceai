@@ -1,6 +1,8 @@
 """All Dataset related functions
 """
 from .base import Base
+from .tasks import Tasks
+from .documents import Documents
 
 class Datasets(Base):
     """All dataset-related functions
@@ -9,12 +11,14 @@ class Datasets(Base):
         self.base_url = base_url
         self.project = project
         self.api_key = api_key
-    
-    def list(self, dataset_id: str):
-        return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/list", method="GET")
+        self.tasks = Tasks(project=project, api_key=api_key, 
+            base_url=base_url)
+        self.documents = Documents(project=project, api_key=api_key,
+            base_url=base_url)
 
-    def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, page_size: int=20, 
-        sort: list=[], select_fields: list=[], include_vector: bool=True):
+    def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, 
+        page_size: int=20, sort: list=[], select_fields: list=[], 
+        include_vector: bool=True):
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/get_where", 
             method="POST", 
@@ -29,18 +33,8 @@ class Datasets(Base):
     def schema(self, dataset_id: str):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/schema", method="GET")
 
-    def list_dataset(self):
+    def list(self):
         return self.make_http_request(endpoint=f"datasets/list", method="GET")
-
-    def create_task(self, dataset_id, task_name, task_parameters):
-        return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
-            method='POST',
-            parameters={
-                "task_name": task_name,
-                **task_parameters
-            }
-        )
     
     def facets(self, dataset_id, fields: list, date_interval: str="monthly", 
         page_size: int=5, page: int=1, asc: bool=False):
