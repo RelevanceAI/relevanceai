@@ -47,3 +47,10 @@ class Datasets(Base):
                 "page": page,
                 "asc": asc
             })
+    
+    def delete(self, dataset_id):
+        return self.make_http_request(endpoint=f"datasets/delete",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id  
+            })
