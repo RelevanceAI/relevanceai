@@ -7,7 +7,7 @@ import os
 
 setup(
     name='vecdb',
-    version='0.01',
+    version='0.1.0',
     author="OnSearch Pty Ltd",
     author_email="dev@vctr.ai",
     description="A Python framework for building vector based applications. Encode, query and analyse data using vectors.",

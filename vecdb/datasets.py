@@ -55,40 +55,26 @@ class Datasets(Base):
             })
 
 
-    def upload_documents(self, dataset_id: str, data: list, insert_date = True, overwrite = True, update_schema = True, include_inserted_ids = False):
+    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
             method="POST",
             parameters={
-                "documents": data,
+                "documents": documents,
                 "insert_date": insert_date,
                 "overwrite": overwrite,
                 "update_schema": update_schema,
                 "include_inserted_ids": include_inserted_ids
             })
 
+    def delete(self, dataset_id: str, confirm = True):
 
-    def create_dataset(self, dataset_id: str, data: list, upload = False):
-        self.make_http_request(
-                endpoint=f"datasets/create",
-                method='POST',
-                parameters={
-                    "id": dataset_id
-                }
-            )
+        if confirm == True:
+            # confirm with the user
+            print(f'You are about to delete {dataset_id}')
+            user_input = input('Confirm? [Y/N] ')
 
-        if upload == False:
-            return
-            
-        else:
-            self.upload_documents(dataset_id, data)
-            return 
-
-
-    def delete_dataset(self, dataset_id: str):
-        # confirm with the user
-
-        print(f'You are about to delete {dataset_id}')
-        user_input = input('Confirm? [Y/N] ')
+        else: 
+            user_input = 'y'
 
         # input validation  
         if user_input.lower() in ('y', 'yes'):
