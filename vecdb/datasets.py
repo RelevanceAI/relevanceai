@@ -1,6 +1,7 @@
 """All Dataset related functions
 """
 from .base import Base
+from tqdm import tqdm
 
 class Datasets(Base):
     """All dataset-related functions
@@ -55,7 +56,7 @@ class Datasets(Base):
             })
 
 
-    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False):
+    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_json: bool = True):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
             method="POST",
             parameters={
@@ -64,7 +65,7 @@ class Datasets(Base):
                 "overwrite": overwrite,
                 "update_schema": update_schema,
                 "include_inserted_ids": include_inserted_ids
-            })
+            }, output_json = output_json)
 
     def delete(self, dataset_id: str, confirm = True):
 
@@ -96,5 +97,39 @@ class Datasets(Base):
            return
         
         
+    def get_where_all(self, dataset_id: str, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True):
+
+        #Initialise values
+        length = 1
+        cursor = None
+        full_data = []
+
+        #While there is still data to fetch, fetch it at the latest cursor
+        while length > 0 :
+            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= 10000, sort = sort, select_fields = select_fields, include_vector = include_vector)
+            length = len(x['documents'])
+            cursor = x['cursor']
+
+            #Append fetched data to the full data
+            if length > 0:
+                [full_data.append(i) for i in x['documents']]
+        
+        return full_data
 
 
+    def chunk(self, docs: list, chunksize: int=15):
+        for i in range(int(len(docs) / chunksize) + 1):
+            yield docs[i*chunksize: chunksize*(i+1)]
+
+
+    def bulk_insert_all(self, dataset_id: str, documents: list, chunksize: int = 15, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_json: bool = True):
+        for i in tqdm(self.chunk(docs = documents, chunksize = chunksize)):
+            self.bulk_insert(dataset_id = dataset_id, 
+                            documents = i, 
+                            insert_date = insert_date, 
+                            overwrite = overwrite, 
+                            update_schema = update_schema, 
+                            include_inserted_ids = include_inserted_ids, 
+                            output_json = output_json)
+
+        return

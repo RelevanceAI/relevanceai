@@ -10,7 +10,7 @@ class Transport:
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
     
-    def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}):
+    def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_json = True):
         """Make the HTTP request
         Args:
             endpoint: The endpoint from the documentation to use
@@ -33,11 +33,17 @@ class Transport:
                 else:
                     raise ValueError(f"You require a GET or a POST method, not {method}.")
                 if response.status_code == 200:
-                    return response.json()
+                    if output_json == True:
+                        return response.json()
+                    else:
+                        return response
                 else:
                     try:
                         print("URL you are trying to access:" + self.base_url + endpoint)
-                        return response.json()
+                        if output_json == True:
+                            return response.json()
+                        else:
+                            return response
                     except JSONDecodeError:
                         return response.content.decode()
             except ConnectionError as error:
