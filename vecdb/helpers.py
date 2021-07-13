@@ -15,3 +15,5 @@ class HelperMixin:
             open(pdf_filename, 'rb').read(),
             first_page=page_number,
             last_page=page_number + 1)[0]
+
+    
