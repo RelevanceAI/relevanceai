@@ -53,7 +53,8 @@ class Datasets(Base):
             })
 
 
-    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_json: bool = True):
+    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, 
+                    overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
             method="POST",
             parameters={
@@ -62,7 +63,7 @@ class Datasets(Base):
                 "overwrite": overwrite,
                 "update_schema": update_schema,
                 "include_inserted_ids": include_inserted_ids
-            }, output_json = output_json)
+            }, output_format = output_format)
 
     def delete(self, dataset_id: str, confirm = True):
 
@@ -119,7 +120,8 @@ class Datasets(Base):
             yield docs[i*chunksize: chunksize*(i+1)]
 
 
-    def bulk_insert_chunk(self, dataset_id: str, documents: list, chunksize: int = 15, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_json: bool = True):
+    def bulk_insert_chunk(self, dataset_id: str, documents: list, chunksize: int = 15, 
+                            insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_format: str = "json"):
         for i in tqdm(self.chunk(docs = documents, chunksize = chunksize)):
             self.bulk_insert(dataset_id = dataset_id, 
                             documents = i, 
@@ -127,6 +129,6 @@ class Datasets(Base):
                             overwrite = overwrite, 
                             update_schema = update_schema, 
                             include_inserted_ids = include_inserted_ids, 
-                            output_json = output_json)
+                            output_format = output_format)
 
         return
