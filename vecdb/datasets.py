@@ -116,7 +116,7 @@ class Datasets(Base):
             yield docs[i*chunksize: chunksize*(i+1)]
 
 
-    def bulk_insert_all(self, dataset_id: str, documents: list, chunksize: int = 15, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_json: bool = True):
+    def bulk_insert_chunk(self, dataset_id: str, documents: list, chunksize: int = 15, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_json: bool = True):
         for i in tqdm(self.chunk(docs = documents, chunksize = chunksize)):
             self.bulk_insert(dataset_id = dataset_id, 
                             documents = i, 
