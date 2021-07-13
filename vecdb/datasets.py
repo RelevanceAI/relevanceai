@@ -47,3 +47,48 @@ class Datasets(Base):
                 "page": page,
                 "asc": asc
             })
+
+
+    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False):
+        return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
+            method="POST",
+            parameters={
+                "documents": documents,
+                "insert_date": insert_date,
+                "overwrite": overwrite,
+                "update_schema": update_schema,
+                "include_inserted_ids": include_inserted_ids
+            })
+
+    def delete(self, dataset_id: str, confirm = True):
+
+        if confirm == True:
+            # confirm with the user
+            print(f'You are about to delete {dataset_id}')
+            user_input = input('Confirm? [Y/N] ')
+
+        else: 
+            user_input = 'y'
+
+        # input validation  
+        if user_input.lower() in ('y', 'yes'):
+            return self.make_http_request(
+            endpoint=f"datasets/delete",
+            method='POST',
+            parameters={
+                "dataset_id": dataset_id
+            }
+        )
+        
+        elif user_input.lower() in ('n', 'no'): 
+            print(f'{dataset_id} not deleted')
+            return 
+
+        else:
+           # ... error handling ...
+           print(f'Error: Input {user_input} unrecognised.')
+           return
+        
+        
+
+
