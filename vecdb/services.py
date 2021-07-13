@@ -2,6 +2,7 @@
 """
 from .base import Base
 from .encoders import Encoders
+from .cluster import Cluster
 
 class Services(Base):
     def __init__(self, project: str, api_key: str, base_url: str):
@@ -10,6 +11,7 @@ class Services(Base):
         self.api_key = api_key
         self.encoders = Encoders(project=project, api_key=api_key, 
             base_url=base_url)
+        self.cluster = Cluster(project=project, api_key=api_key, base_url=base_url)
     
     def search(self, dataset_id: str, multivector_query: list, positive_document_ids: dict={},
         negative_document_ids: dict={}, vector_operation="sum", approximation_depth=0,

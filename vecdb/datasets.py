@@ -3,6 +3,7 @@
 from .base import Base
 from .tasks import Tasks
 from .documents import Documents
+from .monitor import Monitor
 
 class Datasets(Base):
     """All dataset-related functions
@@ -14,6 +15,8 @@ class Datasets(Base):
         self.tasks = Tasks(project=project, api_key=api_key, 
             base_url=base_url)
         self.documents = Documents(project=project, api_key=api_key,
+            base_url=base_url)
+        self.monitor = Monitor(project=project, api_key=api_key,
             base_url=base_url)
 
     def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, 
