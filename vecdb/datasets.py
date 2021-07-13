@@ -97,7 +97,7 @@ class Datasets(Base):
            return
         
         
-    def get_where_all(self, dataset_id: str, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True):
+    def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True):
 
         #Initialise values
         length = 1
@@ -106,7 +106,7 @@ class Datasets(Base):
 
         #While there is still data to fetch, fetch it at the latest cursor
         while length > 0 :
-            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= 10000, sort = sort, select_fields = select_fields, include_vector = include_vector)
+            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector)
             length = len(x['documents'])
             cursor = x['cursor']
 
