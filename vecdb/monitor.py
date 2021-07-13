@@ -7,3 +7,8 @@ class Monitor(Base):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
+    
+    def health(self, dataset_id: str):
+        return self.make_http_request(f"datasets/{dataset_id}/monitor/health",
+            method="GET",
+            parameters={})

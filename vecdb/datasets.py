@@ -3,6 +3,7 @@
 from .base import Base
 from .tasks import Tasks
 from .documents import Documents
+from .monitor import Monitor
 
 class Datasets(Base):
     """All dataset-related functions
@@ -14,6 +15,8 @@ class Datasets(Base):
         self.tasks = Tasks(project=project, api_key=api_key, 
             base_url=base_url)
         self.documents = Documents(project=project, api_key=api_key,
+            base_url=base_url)
+        self.monitor = Monitor(project=project, api_key=api_key,
             base_url=base_url)
 
     def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, 
@@ -47,7 +50,6 @@ class Datasets(Base):
                 "page": page,
                 "asc": asc
             })
-
 
     def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
