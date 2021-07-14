@@ -2,8 +2,9 @@
 """
 from typing import Callable
 from ..api.client import APIClient
+from .chunk import Chunker
 
-class BatchInsert(APIClient):
+class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, bulk_encode: Callable=None, verbose: bool=True):
         for c in self.chunk(docs, chunk_size=20):
             # If you want to encode as you insert
