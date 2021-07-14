@@ -1,5 +1,6 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+from json.decoder import JSONDecodeError
 import requests
 import time
 
@@ -32,20 +33,20 @@ class Transport:
                     )
                 else:
                     raise ValueError(f"You require a GET or a POST method, not {method}.")
+
                 if response.status_code == 200:
                     if output_format == "json":
                         return response.json()
                     else:
                         return response
+
                 else:
-                    try:
-                        print("URL you are trying to access:" + self.base_url + endpoint)
-                        if output_format == "json":
-                            return response.json()
-                        else:
-                            return response
-                    except JSONDecodeError:
-                        return response.content.decode()
+                    print("URL you are trying to access:" + self.base_url + endpoint)
+                    print(response)
+                    print(response.content.decode())     
+                    print('Response failed, but re-trying')
+                    continue
+            
             except ConnectionError as error:
                 # Print the error
                 import traceback
@@ -53,5 +54,9 @@ class Transport:
                 print("Connection error but re-trying.")
                 time.sleep(self.config.seconds_between_retries)
                 continue
+
+            except JSONDecodeError as error:
+                print('No Json available')
+                print(response)
 
 
