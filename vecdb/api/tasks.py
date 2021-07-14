@@ -1,6 +1,6 @@
 """Tasks Module
 """
-from .base import Base
+from ..base import Base
 
 class Tasks(Base):
     def __init__(self, project: str, api_key: str, base_url: str):

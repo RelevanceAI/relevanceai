@@ -1,1 +1,1 @@
-from .client import VecDBClient
+from .http_client import VecDBClient

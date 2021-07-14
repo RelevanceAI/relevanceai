@@ -2,14 +2,17 @@
 """
 import requests
 import time
+import traceback
 
 class Transport:
     """Base class for all VecDB objects
     """
+    project: str 
+    api_key: str
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
-    
+
     def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}):
         """Make the HTTP request
         Args:
@@ -42,10 +45,7 @@ class Transport:
                         return response.content.decode()
             except ConnectionError as error:
                 # Print the error
-                import traceback
                 traceback.print_exc()
                 print("Connection error but re-trying.")
                 time.sleep(self.config.seconds_between_retries)
                 continue
-
-
