@@ -1,5 +1,6 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+from json.decoder import JSONDecodeError
 import requests
 import time
 import traceback
@@ -9,11 +10,12 @@ class Transport:
     """
     project: str 
     api_key: str
+    
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
-
-    def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}):
+    
+    def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json"):
         """Make the HTTP request
         Args:
             endpoint: The endpoint from the documentation to use
@@ -35,17 +37,29 @@ class Transport:
                     )
                 else:
                     raise ValueError(f"You require a GET or a POST method, not {method}.")
+
                 if response.status_code == 200:
-                    return response.json()
-                else:
-                    try:
-                        print("URL you are trying to access:" + self.base_url + endpoint)
+                    if output_format == "json":
                         return response.json()
-                    except JSONDecodeError:
-                        return response.content.decode()
+                    else:
+                        return response
+
+                else:
+                    print("URL you are trying to access:" + self.base_url + endpoint)
+                    print(response)
+                    print(response.content.decode())     
+                    print('Response failed, but re-trying')
+                    continue
+            
             except ConnectionError as error:
                 # Print the error
                 traceback.print_exc()
                 print("Connection error but re-trying.")
                 time.sleep(self.config.seconds_between_retries)
                 continue
+
+            except JSONDecodeError as error:
+                print('No Json available')
+                print(response)
+
+

@@ -2,7 +2,7 @@
 """
 import pandas as pd
 from typing import Callable
-
+from tqdm import tqdm
 from ..base import Base
 from .tasks import Tasks
 from .documents import Documents
@@ -54,8 +54,8 @@ class Datasets(Base):
                 "asc": asc
             })
 
-    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool=True, 
-        overwrite: bool=True, update_schema: bool=True, include_inserted_ids: bool=False):
+    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, 
+                    overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
             method="POST",
             parameters={
@@ -64,7 +64,7 @@ class Datasets(Base):
                 "overwrite": overwrite,
                 "update_schema": update_schema,
                 "include_inserted_ids": include_inserted_ids
-            })
+            }, output_format = output_format)
 
     def delete(self, dataset_id: str, confirm = True):
         if confirm == True:
@@ -90,21 +90,42 @@ class Datasets(Base):
         else:
            # ... error handling ...
            print(f'Error: Input {user_input} unrecognised.')
-           return
-    
-    def insert_df(self, dataset_id: str, df: pd.DataFrame, bulk_encode: Callable=None, 
-        verbose: bool=True):
-        return self.insert_documents(
-            dataset_id=dataset_id, 
-            docs=df.to_dict(orient='records'),
-            bulk_encode=bulk_encode)
-    
-    def insert_documents(self, dataset_id: str, docs: list, bulk_encode: Callable=None, verbose: bool=True):
-        for c in self.chunk(docs):
-            # If you want to encode as you insert
-            if bulk_encode is not None:
-                bulk_encode(c)
-            if verbose:
-                print(self.datasets.bulk_insert(dataset_id, c))
-            else:
-                self.datasets.bulk_insert(dataset_id, c)
+           return        
+        
+    def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True):
+
+        #Initialise values
+        length = 1
+        cursor = None
+        full_data = []
+
+        #While there is still data to fetch, fetch it at the latest cursor
+        while length > 0 :
+            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector)
+            length = len(x['documents'])
+            cursor = x['cursor']
+
+            #Append fetched data to the full data
+            if length > 0:
+                [full_data.append(i) for i in x['documents']]
+        
+        return full_data
+
+
+    def chunk(self, docs: list, chunksize: int=15):
+        for i in range(int(len(docs) / chunksize) + 1):
+            yield docs[i*chunksize: chunksize*(i+1)]
+
+
+    def bulk_insert_chunk(self, dataset_id: str, documents: list, chunksize: int = 15, 
+                            insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_format: str = "json"):
+        for i in tqdm(self.chunk(docs = documents, chunksize = chunksize)):
+            self.bulk_insert(dataset_id = dataset_id, 
+                            documents = i, 
+                            insert_date = insert_date, 
+                            overwrite = overwrite, 
+                            update_schema = update_schema, 
+                            include_inserted_ids = include_inserted_ids, 
+                            output_format = output_format)
+
+        return
