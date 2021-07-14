@@ -1,5 +1,8 @@
 """All Dataset related functions
 """
+import pandas as pd
+from typing import Callable
+
 from .base import Base
 from .tasks import Tasks
 from .documents import Documents
@@ -72,7 +75,7 @@ class Datasets(Base):
         else: 
             user_input = 'y'
 
-        # input validation  
+        # input validation
         if user_input.lower() in ('y', 'yes'):
             return self.make_http_request(
             endpoint=f"datasets/delete",
@@ -90,7 +93,20 @@ class Datasets(Base):
            # ... error handling ...
            print(f'Error: Input {user_input} unrecognised.')
            return
-        
-        
-
-
+    
+    def insert_df(self, dataset_id: str, df: pd.DataFrame, bulk_encode: Callable=None, 
+        verbose: bool=True):
+        return self.insert_documents(
+            dataset_id=dataset_id, 
+            docs=df.to_dict(orient='records'),
+            bulk_encode=bulk_encode)
+    
+    def insert_documents(self, dataset_id: str, docs: list, bulk_encode: Callable=None, verbose: bool=True):
+        for c in self.chunk(docs):
+            # If you want to encode as you insert
+            if bulk_encode is not None:
+                bulk_encode(c)
+            if verbose:
+                print(self.datasets.bulk_insert(dataset_id, c))
+            else:
+                self.datasets.bulk_insert(dataset_id, c)
