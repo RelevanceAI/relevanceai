@@ -59,4 +59,7 @@ class Transport:
                 print('No Json available')
                 print(response)
 
+        print(f"Response failed after {self.config.number_of_retries} tries")
+        return
+
 

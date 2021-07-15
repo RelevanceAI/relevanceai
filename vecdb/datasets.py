@@ -22,7 +22,7 @@ class Datasets(Base):
 
     def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, 
         page_size: int=20, sort: list=[], select_fields: list=[], 
-        include_vector: bool=True):
+        include_vector: bool=True, random_state: int = 0):
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/get_where", 
             method="POST", 
@@ -32,7 +32,8 @@ class Datasets(Base):
                 "page_size": page_size,
                 "sort": sort,
                 "include_vector": include_vector,
-                "filters": filters})
+                "filters": filters,
+                "random_state": random_state})
     
     def schema(self, dataset_id: str):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/schema", method="GET")
@@ -95,7 +96,7 @@ class Datasets(Base):
            return
         
         
-    def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True):
+    def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True, random_state: int = 0):
 
         #Initialise values
         length = 1
@@ -104,7 +105,7 @@ class Datasets(Base):
 
         #While there is still data to fetch, fetch it at the latest cursor
         while length > 0 :
-            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector)
+            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector, random_state = random_state)
             length = len(x['documents'])
             cursor = x['cursor']
 
