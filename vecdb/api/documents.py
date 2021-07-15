@@ -1,4 +1,4 @@
-from .base import Base
+from ..base import Base
 
 class Documents(Base):
     def __init__(self, project, api_key, base_url):
@@ -10,7 +10,7 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/list", 
             method="GET")
-        
+    
     def get(self, dataset_id: str, id: str, select_fields: list=[],
         cursor: str=None, page_size: int=20, sort: list=[],
         include_vector: bool=True):

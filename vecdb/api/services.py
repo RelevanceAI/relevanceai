@@ -1,6 +1,6 @@
 """Services class
 """
-from .base import Base
+from ..base import Base
 from .encoders import Encoders
 from .cluster import Cluster
 
