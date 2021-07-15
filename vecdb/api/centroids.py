@@ -1,4 +1,4 @@
-from .base import Base
+from ..base import Base
 
 class Centroids(Base):
     def __init__(self, project, api_key, base_url):
