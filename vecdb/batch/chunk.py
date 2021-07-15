@@ -20,7 +20,7 @@ class Chunker:
         """
         if isinstance(documents, pd.DataFrame):
             for i in progress_bar(range(0, len(documents), chunk_size)):
-                yield documents.iloc[i : i + chunk_size]
+                yield documents.iloc[i * chunk_size : (i + 1) * chunk_size]
         else:
             for i in progress_bar(range(0, len(documents), chunk_size)):
-                yield documents[i : i + chunk_size]
+                yield documents[i * chunk_size : (i + 1) * chunk_size]
