@@ -137,24 +137,6 @@ class Datasets(Base):
         
         return full_data
 
-    def chunk(self, docs: list, chunksize: int=15):
-        for i in range(int(len(docs) / chunksize) + 1):
-            yield docs[i*chunksize: chunksize*(i+1)]
-
-
-    def bulk_insert_chunk(self, dataset_id: str, documents: list, chunksize: int = 15, 
-                            insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, include_inserted_ids: bool = False, output_format: str = "json"):
-        for i in tqdm(self.chunk(docs = documents, chunksize = chunksize)):
-            self.bulk_insert(dataset_id = dataset_id, 
-                            documents = i, 
-                            insert_date = insert_date, 
-                            overwrite = overwrite, 
-                            update_schema = update_schema, 
-                            include_inserted_ids = include_inserted_ids, 
-                            output_format = output_format)
-
-        return
-
     def copy_collections(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, remove_fields: list = [], filters: list = [], output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{old_dataset}/clone", method="POST",
                                         parameters = {
