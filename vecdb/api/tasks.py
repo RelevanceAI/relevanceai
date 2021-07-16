@@ -1,6 +1,7 @@
 """Tasks Module
 """
 from ..base import Base
+import time
 
 class Tasks(Base):
     def __init__(self, project: str, api_key: str, base_url: str):
@@ -22,17 +23,34 @@ class Tasks(Base):
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
             method="GET")
+
+    def status_looper(self, dataset_id: str, task_id: str, verbose = True, time_between_ping: int = 10):
+
+        status = False
+
+        while status != 'Finished':
+            time.sleep(time_between_ping)
+            status = self.status(dataset_id, task_id)['status']
+
+            if verbose == True:
+                print(status)
+
+        print(f"Your task is {status}!")
+        return 
     
     # Note: The following tasks are instantiated manually to accelerate 
     # creation of certain popular tasks
-    def create_cluster_task(self, vector_field: str, 
+
+    #Make decorator wrat for all task checkers
+
+    def create_cluster_task(self, dataset_id, vector_field: str, 
         n_clusters: int, alias: str="default", refresh: bool=False,
-        n_iter: int=10, n_init: int=5):
-        return self.make_http_request(
+        n_iter: int=10, n_init: int=5, status_checker: bool = True, verbose: bool = True):
+        task = self.make_http_request(
             endpoint=f"datasets/{dataset_id}/tasks/create",
             method='POST',
             parameters={
-                "task_name": task_name,
+                "task_name": "Clusterer",
                 "vector_field": vector_field,
                 "n_clusters": n_clusters,
                 "alias": alias,
@@ -41,6 +59,15 @@ class Tasks(Base):
                 "n_init": n_init
                 }
             )
+        
+        if status_checker == True:
+            print(task)
+            self.status_looper(dataset_id, task['task_id'], verbose = verbose)
+            return 
+
+        else:
+            return task
+
 
     def create_numeric_encoder_task(self, fields: list):
         """
