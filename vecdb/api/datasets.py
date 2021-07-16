@@ -24,12 +24,7 @@ class Datasets(Base):
 
     def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, 
         page_size: int=20, sort: list=[], select_fields: list=[], 
-<<<<<<< Updated upstream:vecdb/api/datasets.py
-        include_vector: bool=True):
-=======
         include_vector: bool=True, random_state: int = 0, is_random: bool = False, output_format: str = "json"):
-
->>>>>>> Stashed changes:vecdb/datasets.py
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/get_where", 
             method="POST", 
@@ -39,14 +34,10 @@ class Datasets(Base):
                 "page_size": page_size,
                 "sort": sort,
                 "include_vector": include_vector,
-<<<<<<< Updated upstream:vecdb/api/datasets.py
-                "filters": filters})
-=======
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random}
             , output_format = output_format)
->>>>>>> Stashed changes:vecdb/datasets.py
     
     def schema(self, dataset_id: str, output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/schema", method="GET", output_format = output_format)
@@ -102,12 +93,7 @@ class Datasets(Base):
                 "include_inserted_ids": include_inserted_ids
             }, output_format = output_format)
 
-<<<<<<< Updated upstream:vecdb/api/datasets.py
-    def delete(self, dataset_id: str, confirm = True):
-=======
     def delete(self, dataset_id: str, confirm = True, output_format: str = "json"):
-
->>>>>>> Stashed changes:vecdb/datasets.py
         if confirm == True:
             # confirm with the user
             print(f'You are about to delete {dataset_id}')
@@ -133,12 +119,7 @@ class Datasets(Base):
            print(f'Error: Input {user_input} unrecognised.')
            return        
         
-<<<<<<< Updated upstream:vecdb/api/datasets.py
-    def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True):
-=======
     def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True, random_state: int = 0, output_format: str = "json"):
->>>>>>> Stashed changes:vecdb/datasets.py
-
         #Initialise values
         length = 1
         cursor = None
@@ -146,11 +127,7 @@ class Datasets(Base):
 
         #While there is still data to fetch, fetch it at the latest cursor
         while length > 0 :
-<<<<<<< Updated upstream:vecdb/api/datasets.py
-            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector)
-=======
             x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector, random_state = random_state, output_format = output_format)
->>>>>>> Stashed changes:vecdb/datasets.py
             length = len(x['documents'])
             cursor = x['cursor']
 
@@ -159,9 +136,6 @@ class Datasets(Base):
                 [full_data.append(i) for i in x['documents']]
         
         return full_data
-<<<<<<< Updated upstream:vecdb/api/datasets.py
-=======
-
 
     def chunk(self, docs: list, chunksize: int=15):
         for i in range(int(len(docs) / chunksize) + 1):
@@ -190,4 +164,4 @@ class Datasets(Base):
                                                 "remove_fields": remove_fields,
                                                 "filters": filters
                                             }, output_format = output_format)
->>>>>>> Stashed changes:vecdb/datasets.py
+
