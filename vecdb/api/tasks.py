@@ -1,11 +1,7 @@
 """Tasks Module
 """
-<<<<<<< Updated upstream:vecdb/api/tasks.py
 from ..base import Base
-=======
-from .base import Base
 import time
->>>>>>> Stashed changes:vecdb/tasks.py
 
 class Tasks(Base):
     def __init__(self, project: str, api_key: str, base_url: str):
@@ -28,12 +24,12 @@ class Tasks(Base):
             endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
             method="GET")
 
-    def status_looper(self, dataset_id: str, task_id: str, verbose = True):
+    def status_looper(self, dataset_id: str, task_id: str, verbose = True, time_between_ping: int = 10):
 
         status = False
 
         while status != 'Finished':
-            time.sleep(self.config.seconds_between_status)
+            time.sleep(time_between_ping)
             status = self.status(dataset_id, task_id)['status']
 
             if verbose == True:
@@ -44,6 +40,9 @@ class Tasks(Base):
     
     # Note: The following tasks are instantiated manually to accelerate 
     # creation of certain popular tasks
+
+    #Make decorator wrat for all task checkers
+
     def create_cluster_task(self, dataset_id, vector_field: str, 
         n_clusters: int, alias: str="default", refresh: bool=False,
         n_iter: int=10, n_init: int=5, status_checker: bool = True, verbose: bool = True):
@@ -68,9 +67,6 @@ class Tasks(Base):
 
         else:
             return task
-
-
-
 
 
     def create_numeric_encoder_task(self, fields: list):
