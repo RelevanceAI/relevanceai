@@ -15,6 +15,8 @@ class BatchInsert(APIClient, Chunker):
         Insert a list of documents with multi-threading automatically
         enabled.
         """
+        print(f"You are currently inserting into {dataset_id}")
+        print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}")
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
