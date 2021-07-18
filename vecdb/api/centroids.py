@@ -7,7 +7,7 @@ class Centroids(Base):
         self.base_url = base_url
 
     def list(self, dataset_id: str, vector_field: str, alias: str="default",
-        page_size: int=5, cursor: str=None, include_vector: bool=False):
+        page_size: int=5, cursor: str=None, include_vector: bool=False, output_format: str = "json"):
         return self.make_http_request(
             "services/cluster/centroids/list",
             method="GET",
@@ -18,11 +18,11 @@ class Centroids(Base):
                 "page_size": page_size,
                 "cursor": cursor,
                 "include_vector": include_vector
-            }
+            }, output_format = output_format
         )
     
     def get(self, dataset_id: str, cluster_ids: list, vector_field: str,
-        alias: str="default", page_size: int=5, cursor: str=None):
+        alias: str="default", page_size: int=5, cursor: str=None, output_format: str = "json"):
         return self.make_http_request(
             "services/cluster/centroids/get",
             method="GET",
@@ -33,5 +33,5 @@ class Centroids(Base):
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor
-            }
+            }, output_format = output_format
         )
