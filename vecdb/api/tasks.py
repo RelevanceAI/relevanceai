@@ -24,19 +24,31 @@ class Tasks(Base):
             endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
             method="GET")
 
-    def status_looper(self, dataset_id: str, task_id: str, verbose = True, time_between_ping: int = 10):
+    def status_looper(self, dataset_id: str, task_id: str, verbose: bool = True, time_between_ping: int = 10):
+            status = False
 
-        status = False
+            while status != 'Finished':
+                time.sleep(time_between_ping)
+                status = self.status(dataset_id, task_id)['status']
 
-        while status != 'Finished':
-            time.sleep(time_between_ping)
-            status = self.status(dataset_id, task_id)['status']
+                if verbose == True:
+                    print(status)
 
-            if verbose == True:
-                print(status)
+            print(f"Your task is {status}!")
+            return 
 
-        print(f"Your task is {status}!")
-        return 
+
+    def status_checker(self, dataset_id: str, task: dict, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
+
+        if status_checker == status_checker:
+            print(task)
+            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
+            return 
+
+        else:
+            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
+            return task
+
     
     # Note: The following tasks are instantiated manually to accelerate 
     # creation of certain popular tasks
@@ -59,16 +71,9 @@ class Tasks(Base):
                 "n_init": n_init
                 }
             )
-        
-        if status_checker == True:
-            print(task)
-            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
-            return 
 
-        else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
-            return task
-
+        z = self.status_checker(dataset_id, task, status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return z
 
     def create_numeric_encoder_task(self, fields: list, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         """
@@ -93,14 +98,8 @@ class Tasks(Base):
             }
         )
 
-        if status_checker == True:
-            print(task)
-            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
-            return 
-
-        else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
-            return task
+        self.status_checker(dataset_id, task, status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return
 
     def create_encode_categories_task(self, fields: list, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         """Within a collection encode the specified array field in every document into vectors.\n
@@ -124,14 +123,8 @@ class Tasks(Base):
             }
         )
 
-        if status_checker == True:
-            print(task)
-            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
-            return 
-
-        else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
-            return task
+        self.status_checker(dataset_id, task, status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return
 
     
     def create_encode_text_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
@@ -147,14 +140,8 @@ class Tasks(Base):
             }
         )
 
-        if status_checker == True:
-            print(task)
-            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
-            return 
-
-        else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
-            return task
+        self.status_checker(dataset_id, task, status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return
     
     def create_encode_textimage_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         task = self.make_http_request(
@@ -169,14 +156,8 @@ class Tasks(Base):
             }
         )
 
-        if status_checker == True:
-            print(task)
-            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
-            return 
-
-        else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
-            return task
+        self.status_checker(dataset_id, task, status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return
     
     def create_encode_imagetext_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         task = self.make_http_request(
@@ -191,11 +172,5 @@ class Tasks(Base):
             }
         )
 
-        if status_checker == True:
-            print(task)
-            self.status_looper(dataset_id, task['task_id'], verbose = verbose, time_between_ping = time_between_ping)
-            return 
-
-        else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
-            return task
+        self.status_checker(dataset_id, task, status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return
