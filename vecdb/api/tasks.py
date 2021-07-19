@@ -24,7 +24,7 @@ class Tasks(Base):
             endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
             method="GET")
 
-    def status_looper(self, dataset_id: str, task_id: str, verbose: bool = True, time_between_ping: int = 10):
+    def loop_status_until_finish(self, dataset_id: str, task_id: str, verbose: bool = True, time_between_ping: int = 10):
             status = False
 
             while status != 'Finished':
@@ -38,11 +38,11 @@ class Tasks(Base):
             return 
 
 
-    def status_checker(self, dataset_id: str, task_id: str, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
+    def check_status_until_finish(self, dataset_id: str, task_id: str, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
 
-        if status_checker == status_checker:
+        if status_checker == True:
             print(f"Task_ID: {task_id}")
-            self.status_looper(dataset_id, task_id, verbose = verbose, time_between_ping = time_between_ping)
+            self.loop_status_until_finish(dataset_id, task_id, verbose = verbose, time_between_ping = time_between_ping)
             return 
 
         else:
@@ -72,7 +72,7 @@ class Tasks(Base):
                 }
             )
 
-        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        output = self.check_status_until_finish(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
         return output
 
     def create_numeric_encoder_task(self, dataset_id: str, fields: list, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
@@ -98,7 +98,7 @@ class Tasks(Base):
             }
         )
 
-        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        output = self.check_status_until_finish(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
         return output
 
     def create_encode_categories_task(self, dataset_id: str, fields: list, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
@@ -123,7 +123,7 @@ class Tasks(Base):
             }
         )
 
-        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        output = self.check_status_until_finish(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
         return output
 
     
@@ -140,7 +140,7 @@ class Tasks(Base):
             }
         )
 
-        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        output = self.check_status_until_finish(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
         return output
     
     def create_encode_textimage_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
@@ -156,7 +156,7 @@ class Tasks(Base):
             }
         )
 
-        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        output = self.check_status_until_finish(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
         return output
     
     def create_encode_imagetext_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
@@ -172,5 +172,5 @@ class Tasks(Base):
             }
         )
 
-        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        output = self.check_status_until_finish(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
         return output
