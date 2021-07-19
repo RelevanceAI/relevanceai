@@ -72,8 +72,8 @@ class Tasks(Base):
                 }
             )
 
-        z = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
-        return z
+        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return output
 
     def create_numeric_encoder_task(self, dataset_id: str, fields: list, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         """
@@ -98,8 +98,8 @@ class Tasks(Base):
             }
         )
 
-        self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
-        return
+        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return output
 
     def create_encode_categories_task(self, dataset_id: str, fields: list, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         """Within a collection encode the specified array field in every document into vectors.\n
@@ -123,8 +123,8 @@ class Tasks(Base):
             }
         )
 
-        self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
-        return
+        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return output
 
     
     def create_encode_text_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
@@ -140,8 +140,8 @@ class Tasks(Base):
             }
         )
 
-        self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
-        return
+        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return output
     
     def create_encode_textimage_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         task = self.make_http_request(
@@ -156,8 +156,8 @@ class Tasks(Base):
             }
         )
 
-        self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
-        return
+        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return output
     
     def create_encode_imagetext_task(self, dataset_id: str, field: str, alias: str="default", refresh: bool=False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
         task = self.make_http_request(
@@ -172,5 +172,5 @@ class Tasks(Base):
             }
         )
 
-        self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
-        return
+        output = self.status_checker(dataset_id, task['task_id'], status_checker = status_checker, verbose = verbose, time_between_ping = time_between_ping)
+        return output
