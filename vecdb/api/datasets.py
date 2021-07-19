@@ -22,23 +22,6 @@ class Datasets(Base):
         self.monitor = Monitor(project=project, api_key=api_key,
             base_url=base_url)
 
-    def get_where(self, dataset_id: str, filters: list=[], cursor: str=None, 
-        page_size: int=20, sort: list=[], select_fields: list=[], 
-        include_vector: bool=True, random_state: int = 0, is_random: bool = False, output_format: str = "json"):
-        return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/get_where", 
-            method="POST", 
-            parameters={
-                "select_fields": select_fields,
-                "cursor": cursor,
-                "page_size": page_size,
-                "sort": sort,
-                "include_vector": include_vector,
-                "filters": filters,
-                "random_state": random_state,
-                "is_random": is_random}
-            , output_format = output_format)
-    
     def schema(self, dataset_id: str, output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/schema", method="GET", output_format = output_format)
 
