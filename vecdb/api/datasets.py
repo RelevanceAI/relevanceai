@@ -101,24 +101,6 @@ class Datasets(Base):
            # ... error handling ...
            print(f'Error: Input {user_input} unrecognised.')
            return        
-        
-    def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], select_fields: list=[], include_vector: bool=True, random_state: int = 0, output_format: str = "json"):
-        #Initialise values
-        length = 1
-        cursor = None
-        full_data = []
-
-        #While there is still data to fetch, fetch it at the latest cursor
-        while length > 0 :
-            x = self.get_where(dataset_id, filters=filters, cursor=cursor, page_size= chunk_size, sort = sort, select_fields = select_fields, include_vector = include_vector, random_state = random_state, output_format = output_format)
-            length = len(x['documents'])
-            cursor = x['cursor']
-
-            #Append fetched data to the full data
-            if length > 0:
-                [full_data.append(i) for i in x['documents']]
-        
-        return full_data
 
     def copy_collections(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, remove_fields: list = [], filters: list = [], output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{old_dataset}/clone", method="POST",
