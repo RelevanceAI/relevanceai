@@ -22,7 +22,6 @@ class Datasets(Base):
         self.monitor = Monitor(project=project, api_key=api_key,
             base_url=base_url)
 
-    
     def schema(self, dataset_id: str, output_format: str = "json"):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/schema", method="GET", output_format = output_format)
 

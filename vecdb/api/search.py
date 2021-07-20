@@ -27,7 +27,7 @@ class Search(Base):
             })
         
     def hybrid(self, dataset_id: str, multivector_query: list, 
-        query: str, fields:list, page_size: int, page=1, 
+        query: str, fields:list, page_size: int=20, page=1,
         similarity_metric="cosine", facets=[], filters=[],
         min_score=0, select_fields=[], include_vector=False, 
         include_count=True, asc=False, keep_search_history=False):
