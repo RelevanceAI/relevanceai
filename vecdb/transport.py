@@ -1,6 +1,7 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
 from json.decoder import JSONDecodeError
+from requests import Request
 import requests
 import time
 import traceback
@@ -15,28 +16,27 @@ class Transport:
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
     
-    def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json"):
+    def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json", 
+        base_url: str=None):
         """Make the HTTP request
         Args:
             endpoint: The endpoint from the documentation to use
             method_type: POST or GET request
         """
+        if base_url is None:
+            base_url = self.base_url
         for i in range(self.config.number_of_retries):
             try:
-                if method == 'POST':
-                    response = requests.post(
-                        url=self.base_url + endpoint,
-                        headers=self.auth_header,
-                        json=parameters
-                    )
-                elif method == "GET":
-                    response = requests.get(
-                        url=self.base_url + endpoint,
-                        headers=self.auth_header,
-                        params=parameters
-                    )
-                else:
-                    raise ValueError(f"You require a GET or a POST method, not {method}.")
+                req = Request(
+                    method=method.upper(),
+                    url=base_url + endpoint,
+                    headers=self.auth_header,
+                    json=parameters if method.upper() == "POST" else {},
+                    params=parameters if method.upper() == "GET" else {},
+                ).prepare()
+
+                with requests.Session() as s:
+                    response = s.send(req)
 
                 if response.status_code == 200:
                     if output_format == "json":
