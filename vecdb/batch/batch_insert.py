@@ -10,7 +10,7 @@ from ..concurrency import multithread, multiprocess
 class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
-        chunksize: int=20, max_workers:int =8, *args, **kwargs):
+        chunksize: int=10000, max_workers:int =8, *args, **kwargs):
         """
         Insert a list of documents with multi-threading automatically
         enabled.
