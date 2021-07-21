@@ -10,7 +10,6 @@ class Cluster(Base):
 
     def aggregate(self, dataset_id: str, vector_field: str, metrics: list,  groupby: list = [], filters: list = [], 
                 page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, output_format: str = "json"):
-
         return self.make_http_request(
             endpoint="services/cluster/aggregate",
             method="POST",
