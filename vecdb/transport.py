@@ -17,7 +17,7 @@ class Transport:
         return {"Authorization": self.project + ":" + self.api_key}
     
     def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json", 
-        base_url: str=None):
+        base_url: str=None, verbose: int = 1):
         """Make the HTTP request
         Args:
             endpoint: The endpoint from the documentation to use
@@ -26,6 +26,7 @@ class Transport:
         if base_url is None:
             base_url = self.base_url
         for i in range(self.config.number_of_retries):
+            print("URL you are trying to access:" + self.base_url + endpoint) if verbose == 1 else None
             try:
                 req = Request(
                     method=method.upper(),
@@ -39,27 +40,30 @@ class Transport:
                     response = s.send(req)
 
                 if response.status_code == 200:
+                    print("Response success!") if verbose == 1 else None
                     if output_format == "json":
                         return response.json()
                     else:
                         return response
 
                 else:
-                    print("URL you are trying to access:" + self.base_url + endpoint)
-                    print(response)
-                    print(response.content.decode())     
-                    print('Response failed, but re-trying')
+                    print(response) if verbose == 1 else None
+                    print(response.content.decode()) if verbose == 1 else None     
+                    print('Response failed, but re-trying') 
                     continue
             
             except ConnectionError as error:
                 # Print the error
                 traceback.print_exc()
-                print("Connection error but re-trying.")
+                print("Connection error but re-trying.") 
                 time.sleep(self.config.seconds_between_retries)
                 continue
 
             except JSONDecodeError as error:
-                print('No Json available')
+                print('No Json available') 
                 print(response)
+
+            print('Response failed, stopped trying') 
+            return 
 
 
