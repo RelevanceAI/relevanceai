@@ -17,7 +17,7 @@ class Transport:
         return {"Authorization": self.project + ":" + self.api_key}
     
     def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json", 
-        base_url: str=None, verbose: int = 1):
+        base_url: str=None, verbose: bool = True):
         """Make the HTTP request
         Args:
             endpoint: The endpoint from the documentation to use
@@ -26,7 +26,7 @@ class Transport:
         if base_url is None:
             base_url = self.base_url
         for i in range(self.config.number_of_retries):
-            print("URL you are trying to access:" + self.base_url + endpoint) if verbose == 1 else None
+            print("URL you are trying to access:" + self.base_url + endpoint) if verbose == True else None
             try:
                 req = Request(
                     method=method.upper(),
@@ -40,15 +40,15 @@ class Transport:
                     response = s.send(req)
 
                 if response.status_code == 200:
-                    print("Response success!") if verbose == 1 else None
+                    print("Response success!") if verbose == True else None
                     if output_format == "json":
                         return response.json()
                     else:
                         return response
 
                 else:
-                    print(response) if verbose == 1 else None
-                    print(response.content.decode()) if verbose == 1 else None     
+                    print(response) if verbose == True else None
+                    print(response.content.decode()) if verbose == True else None     
                     print('Response failed, but re-trying') 
                     continue
             
