@@ -1,8 +1,5 @@
 """All Dataset related functions
 """
-import pandas as pd
-from typing import Callable
-from tqdm import tqdm
 from ..base import Base
 from .tasks import Tasks
 from .documents import Documents
@@ -27,6 +24,12 @@ class Datasets(Base):
 
     def metadata(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/metadata", method="GET", output_format = output_format, verbose = verbose)
+
+    def create(self, dataset_id: str, schema: dict = {}, output_format: str = "json", verbose: bool = True):
+        return self.make_http_request(endpoint=f"datasets/create", method="POST", 
+                                    parameters={"id": dataset_id,
+                                                "schema": schema},
+                                    output_format = output_format, verbose = verbose)
 
     def list(self, output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint="datasets/list", method="GET", output_format = output_format, verbose = verbose)
