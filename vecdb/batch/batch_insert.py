@@ -116,7 +116,7 @@ class BatchInsert(APIClient, Chunker):
                 print('Your updating function does not work: ' + e)
                 traceback.print_exc()
                 return
-            updated_documents = [{'_id': i['_id']} for i in documents]
+            updated_documents = [i['_id'] for i in documents]
 
             #Upload documents   
             if updated_collection is not None: 
@@ -128,7 +128,9 @@ class BatchInsert(APIClient, Chunker):
             check = [failed_documents.extend(i['failed_documents']) for i in z]
             success_documents = list(set(updated_documents) - set(failed_documents))
 
-            self.insert_documents(logging_collection, success_documents, verbose = False, chunksize = 10000, max_workers = max_workers)
+            upload_documents = [{'_id': i} for i in success_documents]
+
+            self.insert_documents(logging_collection, upload_documents, verbose = False, chunksize = 10000, max_workers = max_workers)
             print('Chunk encoded and uploaded!')
 
             if len(failed_documents) > max_error:
