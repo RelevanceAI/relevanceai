@@ -108,7 +108,7 @@ class Datasets(Base):
            print(f'Error: Input {user_input} unrecognised.')
            return        
 
-    def copy_collections(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, 
+    def clone(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, 
                         remove_fields: list = [], filters: list = [], output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint=f"datasets/{old_dataset}/clone", method="POST",
                                         parameters = {
@@ -118,4 +118,12 @@ class Datasets(Base):
                                                 "remove_fields": remove_fields,
                                                 "filters": filters
                                             }, output_format = output_format, verbose = verbose)
+
+    def get_number_of_documents(self, dataset_ids: list):
+        collection_info = self.list_all(include_schema = False, include_stats = False, include_metadata = False,
+                                        include_schema_stats = True, dataset_ids = dataset_ids, verbose = False)
+
+        document_lengths = {i: collection_info['datasets'][i]['stats']['number_of_documents'] for i in dataset_ids}
+
+        return document_lengths
 

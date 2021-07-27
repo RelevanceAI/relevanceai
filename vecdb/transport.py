@@ -26,7 +26,7 @@ class Transport:
         if base_url is None:
             base_url = self.base_url
         for i in range(self.config.number_of_retries):
-            print("URL you are trying to access:" + self.base_url + endpoint) if verbose == True else None
+            if verbose: print("URL you are trying to access:" + self.base_url + endpoint) 
             try:
                 req = Request(
                     method=method.upper(),
@@ -40,15 +40,15 @@ class Transport:
                     response = s.send(req)
 
                 if response.status_code == 200:
-                    print("Response success!") if verbose == True else None
+                    if verbose: print("Response success!") 
                     if output_format == "json":
                         return response.json()
                     else:
                         return response
 
                 else:
-                    print(response) if verbose == True else None
-                    print(response.content.decode()) if verbose == True else None     
+                    if verbose: print(response) 
+                    if verbose: print(response.content.decode()) 
                     print('Response failed, but re-trying') 
                     continue
             

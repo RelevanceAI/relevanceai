@@ -17,8 +17,8 @@ class BatchInsert(APIClient, Chunker):
         Insert a list of documents with multi-threading automatically
         enabled.
         """
-        print(f"You are currently inserting into {dataset_id}") if verbose == True else None
-        print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") if verbose == True else None
+        if verbose: print(f"You are currently inserting into {dataset_id}") 
+        if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
@@ -35,13 +35,38 @@ class BatchInsert(APIClient, Chunker):
         return multithread(bulk_insert_func, docs, 
             max_workers=max_workers, chunksize=chunksize)
 
+    def update_documents(self, dataset_id: str, docs: list, 
+        bulk_fn: Callable=None, verbose: bool=True,
+        chunksize: int=10000, max_workers:int =8,  *args, **kwargs):
+        """
+        Update a list of documents with multi-threading automatically
+        enabled.
+        """
+        if verbose: print(f"You are currently updating {dataset_id}") 
+        if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
+        def bulk_update_func(docs):
+            return self.datasets.documents.bulk_update(
+                dataset_id,
+                docs, verbose = verbose, *args, **kwargs)
+        
+        if bulk_fn is not None:
+            return multiprocess(
+                func=bulk_fn,
+                iterables=docs,
+                post_func_hook=bulk_update_func,
+                max_workers=max_workers,
+                chunksize=chunksize)
+
+        return multithread(bulk_update_func, docs, 
+            max_workers=max_workers, chunksize=chunksize)
+
+
     def pull_update_push(self, original_collection: str, update_function, logging_collection:str = None, updated_collection: str = None, 
                          updating_args: dict = {}, retrieve_chunk_size: int = 100, 
                         upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000):
 
         """
-        Loops through every document in your collection and applies a function (that is specified to you) to the documents.
-        These documents are then uploaded into either an updated collection, or back into the original collection. 
+        Loops through every document in your collection and applies a function (that is specified to you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
 
         Parameters
         ----------
@@ -55,7 +80,7 @@ class BatchInsert(APIClient, Chunker):
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
 
         update_function: function
-            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection.
+            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
 
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
@@ -83,10 +108,10 @@ class BatchInsert(APIClient, Chunker):
         if logging_collection not in collection_list:
             self.datasets.create(logging_collection, output_format = False, verbose = False)
 
-        #Get document lengths
-        collection_info = self.datasets.list_all(include_schema_stats = True, dataset_ids = [original_collection, logging_collection], verbose = False)
-        raw_length = collection_info['datasets'][original_collection]['schema_stats']['insert_date_']['missing'] + collection_info['datasets'][original_collection]['schema_stats']['insert_date_']['exists']
-        completed_length = collection_info['datasets'][logging_collection]['schema_stats']['insert_date_']['missing'] + collection_info['datasets'][logging_collection]['schema_stats']['insert_date_']['exists']
+        #Get document lengths to calculate iterations
+        collection_lengths = self.datasets.get_number_of_documents([original_collection, logging_collection])
+        raw_length = collection_lengths[original_collection]
+        completed_length = collection_lengths[logging_collection]
         remaining_length = raw_length - completed_length
         iterations_required =  int(remaining_length/retrieve_chunk_size) + 1
 
@@ -119,15 +144,14 @@ class BatchInsert(APIClient, Chunker):
             updated_documents = [i['_id'] for i in documents]
 
             #Upload documents   
-            if updated_collection is not None: 
+            if updated_collection: 
                 z = self.insert_documents(dataset_id = updated_collection, docs = updated_data, verbose = False, chunksize = upload_chunk_size, max_workers = max_workers)
             else:
-                z = self.datasets.documents.bulk_update(dataset_id = original_collection, updates = updated_data, verbose = False)
+                z = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = False, chunksize = upload_chunk_size, max_workers = max_workers)
 
             #Check success
             check = [failed_documents.extend(i['failed_documents']) for i in z]
             success_documents = list(set(updated_documents) - set(failed_documents))
-
             upload_documents = [{'_id': i} for i in success_documents]
 
             self.insert_documents(logging_collection, upload_documents, verbose = False, chunksize = 10000, max_workers = max_workers)
