@@ -58,7 +58,8 @@ class Documents(Base):
             method="POST",
             parameters={
                 "updates": updates
-            }, output_format = output_format, verbose = verbose
+            }, output_format = output_format, verbose = verbose,
+            base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
         )
     
 
