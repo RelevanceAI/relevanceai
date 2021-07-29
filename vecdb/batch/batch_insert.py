@@ -61,9 +61,14 @@ class BatchInsert(APIClient, Chunker):
             max_workers=max_workers, chunksize=chunksize)
 
 
-    def pull_update_push(self, original_collection: str, update_function, logging_collection:str = None, updated_collection: str = None, 
-                         updating_args: dict = {}, retrieve_chunk_size: int = 100, 
-                        upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000):
+    def pull_update_push(self, 
+        original_collection: str, update_function, 
+        logging_collection:str = None, 
+        updated_collection: str = None, 
+        updating_args: dict = {}, 
+        retrieve_chunk_size: int = 100, 
+        upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000, 
+        verbose: bool=True):
 
         """
         Loops through every document in your collection and applies a function (that is specified to you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
@@ -107,7 +112,7 @@ class BatchInsert(APIClient, Chunker):
         collection_list = self.datasets.list(verbose = False)
         if logging_collection not in collection_list:
             print("Creating a logging collection for you.")
-            print(self.datasets.create(logging_collection, output_format = 'json', verbose = True))
+            print(self.datasets.create(logging_collection, output_format = 'json', verbose = verbose))
 
         #Get document lengths to calculate iterations
         collection_lengths = self.datasets.get_number_of_documents([original_collection, logging_collection])
@@ -123,15 +128,17 @@ class BatchInsert(APIClient, Chunker):
         for i in progress_bar(range(iterations_required)):
 
             #Get completed documents
-            x = self.datasets.documents.get_where_all(logging_collection, verbose = False)
+            x = self.datasets.documents.get_where_all(logging_collection, verbose = verbose)
             completed_documents_list = [i['_id'] for i in x]
 
             #Get incomplete documents from raw collection
-            y = self.datasets.documents.get_where(original_collection, 
-                                                    filters = [
-                                                    {"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}
-                                                    ],
-                                                    page_size = retrieve_chunk_size, verbose = False)
+            y = self.datasets.documents.get_where(
+                original_collection, 
+                filters = [
+                    {"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}
+                ],
+                page_size = retrieve_chunk_size, 
+                verbose = verbose)
 
             documents = y['documents']
 
@@ -145,17 +152,19 @@ class BatchInsert(APIClient, Chunker):
             updated_documents = [i['_id'] for i in documents]
 
             #Upload documents   
-            if updated_collection: 
-                z = self.insert_documents(dataset_id = updated_collection, docs = updated_data, verbose = False, chunksize = upload_chunk_size, max_workers = max_workers)
+            if updated_collection is None: 
+                z = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = verbose, 
+                    chunksize = upload_chunk_size, max_workers = max_workers)
             else:
-                z = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = False, chunksize = upload_chunk_size, max_workers = max_workers)
+                z = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
+                    verbose = verbose, chunksize = upload_chunk_size, max_workers = max_workers)
 
             #Check success
-            check = [failed_documents.extend(i['failed_documents']) for i in z]
+            check = [failed_documents.extend(i['failed_documents']) for i in z if i is not None]
             success_documents = list(set(updated_documents) - set(failed_documents))
             upload_documents = [{'_id': i} for i in success_documents]
 
-            self.insert_documents(logging_collection, upload_documents, verbose = False, chunksize = 10000, max_workers = max_workers)
+            self.insert_documents(logging_collection, upload_documents, verbose = verbose, chunksize = 10000, max_workers = max_workers)
             print('Chunk encoded and uploaded!')
 
             if len(failed_documents) > max_error:
