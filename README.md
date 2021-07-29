@@ -38,4 +38,4 @@ vdb_client.insert_documents(
 )
 ```
 
-Under the hood, our engineering team uses multiprocessing for processing the `bulk_fn` and then automatically uses multi-threading to send data via network requests. However, if there is no `bulk_fn` supplied, it automatically multi-threads network requests.
+Under the hood, our engineering team uses multiprocessing for processing the `bulk_fn` and then automatically uses multi-threading to send data via network requests. However, if there is no `bulk_fn` supplied, it automatically multi-threads network requests. Furthermore, we use separate endpoints for ingestion.

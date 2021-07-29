@@ -39,8 +39,8 @@ class BatchInsert(APIClient, Chunker):
         bulk_fn: Callable=None, verbose: bool=True,
         chunksize: int=10000, max_workers:int =8,  *args, **kwargs):
         """
-        Update a list of documents with multi-threading automatically
-        enabled.
+        Update a list of documents with multi-threading
+        automatically enabled.
         """
         if verbose: print(f"You are currently updating {dataset_id}") 
         if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
@@ -92,7 +92,7 @@ class BatchInsert(APIClient, Chunker):
             The number of documents that are uploaded with each loop iteration.
 
         max_workers: int
-            ???
+            The number of processors you want to parallelize with
 
         max_error: 
             How many failed uploads before the function breaks
