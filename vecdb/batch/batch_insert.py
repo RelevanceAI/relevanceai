@@ -68,6 +68,7 @@ class BatchInsert(APIClient, Chunker):
         updating_args: dict = {}, 
         retrieve_chunk_size: int = 100, 
         upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000, 
+        select_fields: list=[],
         verbose: bool=True):
 
         """
@@ -138,6 +139,7 @@ class BatchInsert(APIClient, Chunker):
                     {"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}
                 ],
                 page_size = retrieve_chunk_size, 
+                select_fields=select_fields,
                 verbose = verbose)
 
             documents = y['documents']
