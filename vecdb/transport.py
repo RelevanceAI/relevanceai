@@ -40,14 +40,15 @@ class Transport:
                     response = s.send(req)
 
                 if response.status_code == 200:
-                    if verbose: print("Response success!") 
+                    if verbose: 
+                        print("Response success!")
                     if output_format == "json":
                         return response.json()
                     else:
                         return response
 
                 else:
-                    if verbose: print(response) 
+                    if verbose: print(response)
                     if verbose: print(response.content.decode()) 
                     print('Response failed, but re-trying') 
                     continue

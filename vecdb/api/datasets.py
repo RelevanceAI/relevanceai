@@ -26,7 +26,7 @@ class Datasets(Base):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/metadata", method="GET", output_format = output_format, verbose = verbose)
 
     def create(self, dataset_id: str, schema: dict = {}, output_format: str = "json", verbose: bool = True):
-        return self.make_http_request(endpoint=f"datasets/create", method="POST", 
+        return self.make_http_request(endpoint=f"datasets/create", method="POST",
                                     parameters={"id": dataset_id,
                                                 "schema": schema},
                                     output_format = output_format, verbose = verbose)

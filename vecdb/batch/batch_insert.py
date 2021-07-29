@@ -106,7 +106,8 @@ class BatchInsert(APIClient, Chunker):
         #Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose = False)
         if logging_collection not in collection_list:
-            self.datasets.create(logging_collection, output_format = False, verbose = False)
+            print("Creating a logging collection for you.")
+            print(self.datasets.create(logging_collection, output_format = 'json', verbose = True))
 
         #Get document lengths to calculate iterations
         collection_lengths = self.datasets.get_number_of_documents([original_collection, logging_collection])
