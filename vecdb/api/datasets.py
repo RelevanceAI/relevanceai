@@ -126,4 +126,18 @@ class Datasets(Base):
         document_lengths = {i: collection_info['datasets'][i]['stats']['number_of_documents'] for i in dataset_ids}
 
         return document_lengths
+    
+    def search(self, query, sort_by_created_at_date: bool=False, asc: bool=False, 
+        output_format: str="json", verbose: bool=True):
+        return self.make_http_request(
+            endpoint="datasets/search",
+            method="POST",
+            parameters={
+                "query": query,
+                "sort_by_created_at_date": sort_by_created_at_date,
+                "asc": asc
+            },
+            output_format=output_format,
+            verbose=verbose
+        )
 
