@@ -25,6 +25,12 @@ class Datasets(Base):
     def metadata(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/metadata", method="GET", output_format = output_format, verbose = verbose)
 
+    def stats(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
+        return self.make_http_request(endpoint=f"datasets/{dataset_id}/monitor/stats", method="GET", output_format = output_format, verbose = verbose)
+    
+    def health(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
+        return self.make_http_request(endpoint=f"datasets/{dataset_id}/monitor/health", method="GET", output_format = output_format, verbose = verbose)
+
     def create(self, dataset_id: str, schema: dict = {}, output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint=f"datasets/create", method="POST", 
                                     parameters={"id": dataset_id,
