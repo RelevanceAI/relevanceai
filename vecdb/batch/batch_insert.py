@@ -163,7 +163,7 @@ class BatchInsert(APIClient, Chunker):
 
             #Check success
             check = [failed_documents.extend(i['failed_documents']) for i in z if i is not None]
-            success_documents = list(set(updated_documents) - set(failed_documents))
+            success_documents = list(set(updated_documents) - set(check))
             upload_documents = [{'_id': i} for i in success_documents]
 
             self.insert_documents(logging_collection, upload_documents, verbose = verbose, chunksize = 10000, max_workers = max_workers)
