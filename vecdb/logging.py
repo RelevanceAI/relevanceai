@@ -8,7 +8,7 @@ def create_logger(orig_func, log_file, log_console):
     formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
 
     if log_file == True:
-        file_handler = logging.FileHandler('transport_time.log')
+        file_handler = logging.FileHandler('vecdb.log')
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
