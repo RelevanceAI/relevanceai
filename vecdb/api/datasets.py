@@ -32,7 +32,7 @@ class Datasets(Base):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/monitor/health", method="GET", output_format = output_format, verbose = verbose)
 
     def create(self, dataset_id: str, schema: dict = {}, output_format: str = "json", verbose: bool = True):
-        return self.make_http_request(endpoint=f"datasets/create", method="POST", 
+        return self.make_http_request(endpoint=f"datasets/create", method="POST",
                                     parameters={"id": dataset_id,
                                                 "schema": schema},
                                     output_format = output_format, verbose = verbose)
@@ -132,4 +132,18 @@ class Datasets(Base):
         document_lengths = {i: collection_info['datasets'][i]['stats']['number_of_documents'] for i in dataset_ids}
 
         return document_lengths
+    
+    def search(self, query, sort_by_created_at_date: bool=False, asc: bool=False, 
+        output_format: str="json", verbose: bool=True):
+        return self.make_http_request(
+            endpoint="datasets/search",
+            method="POST",
+            parameters={
+                "query": query,
+                "sort_by_created_at_date": sort_by_created_at_date,
+                "asc": asc
+            },
+            output_format=output_format,
+            verbose=verbose
+        )
 

@@ -7,7 +7,8 @@ class Documents(Base):
         self.base_url = base_url
         
     def list(self, dataset_id: str, cursor: str=None, page_size: int=20,
-        sort: list=[], include_vector: bool=True, random_state: int=0, output_format: str = "json", verbose: bool = True):
+        sort: list=[], include_vector: bool=True, random_state: int=0, 
+        output_format: str = "json", verbose: bool = True):
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/list", 
             method="GET",
@@ -58,7 +59,8 @@ class Documents(Base):
             method="POST",
             parameters={
                 "updates": updates
-            }, output_format = output_format, verbose = verbose
+            }, output_format = output_format, verbose = verbose,
+            base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
         )
     
 
