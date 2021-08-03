@@ -14,14 +14,14 @@ This will automatically let you unlock the power of VecDB without having to rely
 
 Instantiating the client.
 
-```{python}
+```python
 from vecdb import VecDBClient
 vdb_client = VecDBClient(project, api_key)
 ```
 
 Get multi-threading and multi-processing out of the box. The VecDB Python package automatically gives you multi-threading and multi-processing out of the box!
 
-```{python}
+```python
 
 def bulk_fn(docs):
     # bulk_fn receives a list of documents
@@ -47,16 +47,20 @@ Update documents within your collection based on a rule customised by you. The P
 
 For example, consider a scenario where you have uploaded a dataset called 'test_dataset' containing integers up to 200. 
 
-```{python}
+```python
 original_collection = 'test_dataset'
-fake_data = [{'_id': i} for i in range(200)]
-vec_client.datasets.bulk_insert(original_collection, fake_data)
+data = [{'_id': i} for i in range(200)]
+vec_client.datasets.bulk_insert(original_collection, data)
 ```
-output: [{'_id': 0}, {'_id': 1}, ... {'_id': 199}]
+
+```json
+Data: [{'_id': 0}, {'_id': 1}, ... {'_id': 199}]
+```
+
 
 Now, you want to create a new field in this dataset to flag whether the number is even or not. This function must input a list of documents (the original collection) and output another list of documents (to be updated).
 
-```{python}
+```python
 def even_function(data):
     for i in data:
         if int(i['_id']) % 2 == 0:
@@ -67,15 +71,20 @@ def even_function(data):
 ```
 This function is then included in the Pull-Update-Push Function to update every document in the uploaded collection.
  
-```{python}
+```python
 vec_client.pull_update_push(original_collection, even_function)
 ```
-output: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
+
+```json
+Updated Data: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
+```
 
 Alternatively, a new collection could be specified to direct where updated documents are uploaded into.
 
-```{python}
+```python
 new_collection = 'updated_test_dataset'
 vec_client.pull_update_push(original_collection, even_function, new_collection)
 ```
-output: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
+```json
+New Data: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
+```
