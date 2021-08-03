@@ -24,6 +24,7 @@ class Transport:
             endpoint: The endpoint from the documentation to use
             method_type: POST or GET request
         """
+        
         with Logger(self.config.log, self.config.logging_level, self.config.log_to_file, self.config.log_to_console, locals()) as log:
             if base_url is None:
                 base_url = self.base_url
@@ -63,6 +64,7 @@ class Transport:
                     traceback.print_exc()
                     print("Connection error but re-trying.") 
                     time.sleep(self.config.seconds_between_retries)
+
                     continue
 
                 except JSONDecodeError as error:

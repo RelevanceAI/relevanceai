@@ -88,3 +88,4 @@ vec_client.pull_update_push(original_collection, even_function, new_collection)
 ```json
 New Data: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
 ```
+
