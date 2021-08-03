@@ -62,12 +62,12 @@ class BatchInsert(APIClient, Chunker):
             max_workers=max_workers, chunksize=chunksize)
 
 
-    def pull_update_push(self, original_collection: str, update_function, logging_collection:str = None, updated_collection: str = None, 
+    def pull_update_push(self, original_collection: str, update_function, updated_collection: str = None, logging_collection:str = None, 
                          updating_args: dict = {}, retrieve_chunk_size: int = 100, 
                         upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000):
 
         """
-        Loops through every document in your collection and applies a function (that is specified to you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
 
         Parameters
         ----------
@@ -103,7 +103,7 @@ class BatchInsert(APIClient, Chunker):
         #Check if a logging_collection has been supplied
         if logging_collection == None:
             now = datetime.now()
-            dt_string = now.strftime(" Log Update Started (%d/%m/%Y, %H:%M:%S)")
+            dt_string = now.strftime("_log_update_started_%d-%m-%Y_%H-%M-%S")
             logging_collection = original_collection + dt_string
 
         #Check collections and create completed list if needed
@@ -141,7 +141,7 @@ class BatchInsert(APIClient, Chunker):
             try:                                          
                 updated_data = update_function(documents, **updating_args)
             except Exception as e:
-                print('Your updating function does not work: ' + e)
+                print('Your updating function does not work: ' + str(e))
                 traceback.print_exc()
                 return
             updated_documents = [i['_id'] for i in documents]
@@ -190,8 +190,7 @@ class BatchInsert(APIClient, Chunker):
             The field of the collection which logs which documents have been updated. If 'None', then one will be created for you based on the date and time. This field can be reused if documents are not fully updated.
 
         update_function: function
-            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
-
+            A function created by you that converts documents in your original collection into the updated documents. The function must input a list of documents (the original collection) and output another list of documents (to be updated).
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
 

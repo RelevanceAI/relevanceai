@@ -16,7 +16,7 @@ Instantiating the client.
 
 ```{python}
 from vecdb import VecDBClient
-client = VecDBClient(project, api_key)
+vdb_client = VecDBClient(project, api_key)
 ```
 
 Get multi-threading and multi-processing out of the box. The VecDB Python package automatically gives you multi-threading and multi-processing out of the box!
@@ -39,3 +39,43 @@ vdb_client.insert_documents(
 ```
 
 Under the hood, our engineering team uses multiprocessing for processing the `bulk_fn` and then automatically uses multi-threading to send data via network requests. However, if there is no `bulk_fn` supplied, it automatically multi-threads network requests.
+
+
+## Pull Update Push
+
+Update documents within your collection based on a rule customised by you. The Pull-Update-Push Function loops through every document in your collection, brings it to your local computer where a function is applied (specified by you) and reuploaded to either an new collection or updated in the same collection. There is a logging functionality to keep track of which documents have been updated.
+
+For example, consider a scenario where you have uploaded a dataset called 'test_dataset' containing integers up to 200. 
+
+```{python}
+original_collection = 'test_dataset'
+fake_data = [{'_id': i} for i in range(200)]
+vec_client.datasets.bulk_insert(original_collection, fake_data)
+```
+output: [{'_id': 0}, {'_id': 1}, ... {'_id': 199}]
+
+Now, you want to create a new field in this dataset to flag whether the number is even or not. This function must input a list of documents (the original collection) and output another list of documents (to be updated).
+
+```{python}
+def even_function(data):
+    for i in data:
+        if int(i['_id']) % 2 == 0:
+            i['even'] = True
+        else:
+            i['even'] = False
+    return data
+```
+This function is then included in the Pull-Update-Push Function to update every document in the uploaded collection.
+ 
+```{python}
+vec_client.pull_update_push(original_collection, even_function)
+```
+output: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
+
+Alternatively, a new collection could be specified to direct where updated documents are uploaded into.
+
+```{python}
+new_collection = 'updated_test_dataset'
+vec_client.pull_update_push(original_collection, even_function, new_collection)
+```
+output: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]

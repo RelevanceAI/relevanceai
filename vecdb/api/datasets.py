@@ -88,7 +88,7 @@ class Datasets(Base):
                 # "include_inserted_ids": include_inserted_ids
             }, output_format=output_format, verbose = verbose)
 
-    def delete(self, dataset_id: str, confirm = True, output_format: str = "json", verbose: bool = True):
+    def delete(self, dataset_id: str, confirm = False, output_format: str = "json", verbose: bool = True):
         if confirm == True:
             # confirm with the user
             print(f'You are about to delete {dataset_id}')

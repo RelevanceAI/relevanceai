@@ -7,6 +7,9 @@ def create_logger(orig_func, log_file, log_console):
 
     formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
 
+    if (logger.hasHandlers()):
+        logger.handlers.clear()
+
     if log_file == True:
         file_handler = logging.FileHandler('vecdb.log')
         file_handler.setLevel(logging.INFO)

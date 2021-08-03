@@ -9,7 +9,7 @@ class TransportConfig(BaseConfig):
     number_of_retries: int = 3
     seconds_between_retries: int = 2
 
-    logging: bool = True
+    logging: bool = False
     log_to_file: bool = True
     log_to_console: bool = True
 
