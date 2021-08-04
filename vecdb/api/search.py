@@ -49,3 +49,27 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history
             })
+    
+    def traditional(self, dataset_id: str, text: str,
+        fields: list=[], edit_distance: int=-1,
+        ignore_spaces: bool=True, page_size: int=29,
+        page: int=1, select_fields: list=[],
+        include_vector: bool=False, include_count: bool=True,
+        asc: bool=False, keep_search_history: bool=False,
+        search_history_id: str=None):
+        return self.make_http_request('services/search/traditional', method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "text": text,
+                "fields": fields,
+                "edit_distance": edit_distance,
+                "ignore_spaces": ignore_spaces,
+                "page_size": page_size,
+                "page": page,
+                "select_fields": select_fields,
+                "include_vector": include_vector,
+                "include_count": include_count,
+                "asc": asc,
+                "keep_search_history": keep_search_history,
+                "search_history_id": search_history_id
+            })
