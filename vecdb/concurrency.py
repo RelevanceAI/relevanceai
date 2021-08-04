@@ -17,7 +17,7 @@ def multithread(func, iterables, max_workers=8, chunksize=20):
             results = []
             for future in as_completed(futures):
                 results.append(future.result())
-                pbar.update(1)
+                if pbar is not None: pbar.update(1)
             return results
 
 
@@ -33,5 +33,5 @@ def multiprocess(func, iterables, max_workers=8, chunksize=20,
                     results.append(post_func_hook(future.result()))
                 else:
                     results.append(future.result())
-                pbar.update(1)
+                if pbar is not None: pbar.update(1)
             return results
