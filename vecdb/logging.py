@@ -2,7 +2,7 @@ import logging
 import time
 
 def create_logger(logging_level, log_to_file, log_to_console):
-    logger = logging.getLogger()
+    logger = logging.getProfiler()
     logger.setLevel(logging_level)
 
     formatter = logging.Formatter('%(asctime)s | %(message)s')
@@ -24,7 +24,9 @@ def create_logger(logging_level, log_to_file, log_to_console):
 
     return logger
 
-class Logger():
+class Profiler:
+    """The profiler is intended to track time in a function
+    """
     def __init__(self, log, logging_level, log_to_file, log_to_console, logging_info):
         self.log = log
         if self.log is True:
@@ -34,7 +36,7 @@ class Logger():
         self.t1 = time.time()
         return self
     def __exit__(self, *args):
-        self.t2 = time.time() - self.t1
+        time_diff = time.time() - self.t1
         if self.log is True:
-            self.logger.info(f'{self.info} ran in {self.t2} seconds')
+            self.logger.info(f'{self.info} ran in {time_diff} seconds')
         return args

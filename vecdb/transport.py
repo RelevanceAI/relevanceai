@@ -4,7 +4,7 @@ from json.decoder import JSONDecodeError
 from requests import Request
 import requests
 import traceback
-from .logging import Logger
+from .logging import Profiler
 
 class Transport:
     """Base class for all VecDB objects
@@ -25,7 +25,7 @@ class Transport:
             method_type: POST or GET request
         """
         
-        with Logger(self.config.log, self.config.logging_level, self.config.log_to_file, self.config.log_to_console, locals()) as log:
+        with Profiler(self.config.log, self.config.logging_level, self.config.log_to_file, self.config.log_to_console, locals()) as log:
             if base_url is None:
                 base_url = self.base_url
             for i in range(self.config.number_of_retries):
