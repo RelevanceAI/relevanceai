@@ -278,3 +278,10 @@ class BatchInsert(APIClient, Chunker):
                 return {"Failed Documents": failed_documents}
 
         return
+    
+    def insert_df(self, dataset_id, dataframe, *args, **kwargs):
+        """Insert a dataframe for eachd doc"""
+        import pandas as pd
+        docs = [{k:v for k, v in doc.items() if not pd.isna(v)} for doc in \
+            dataframe.to_dict(orient='records')]
+        return self.insert_documents(dataset_id, docs, *args, **kwargs)
