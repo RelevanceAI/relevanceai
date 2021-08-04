@@ -25,6 +25,12 @@ class Datasets(Base):
     def metadata(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint=f"datasets/{dataset_id}/metadata", method="GET", output_format = output_format, verbose = verbose)
 
+    def stats(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
+        return self.make_http_request(endpoint=f"datasets/{dataset_id}/monitor/stats", method="GET", output_format = output_format, verbose = verbose)
+    
+    def health(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
+        return self.make_http_request(endpoint=f"datasets/{dataset_id}/monitor/health", method="GET", output_format = output_format, verbose = verbose)
+
     def create(self, dataset_id: str, schema: dict = {}, output_format: str = "json", verbose: bool = True):
         return self.make_http_request(endpoint=f"datasets/create", method="POST",
                                     parameters={"id": dataset_id,
@@ -82,7 +88,7 @@ class Datasets(Base):
                 # "include_inserted_ids": include_inserted_ids
             }, output_format=output_format, verbose = verbose)
 
-    def delete(self, dataset_id: str, confirm = True, output_format: str = "json", verbose: bool = True):
+    def delete(self, dataset_id: str, confirm = False, output_format: str = "json", verbose: bool = True):
         if confirm == True:
             # confirm with the user
             print(f'You are about to delete {dataset_id}')
