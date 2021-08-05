@@ -133,11 +133,11 @@ class BatchInsert(APIClient, Chunker):
         for i in progress_bar(range(iterations_required)):
 
             #Get completed documents
-            x = self.datasets.documents.get_where_all(logging_collection, verbose = verbose)
-            completed_documents_list = [i['_id'] for i in x]
+            log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose)
+            completed_documents_list = [i['_id'] for i in log_json]
 
             #Get incomplete documents from raw collection
-            y = self.datasets.documents.get_where(
+            orig_json = self.datasets.documents.get_where(
                 original_collection, 
                 filters = [
                     {"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}
@@ -146,7 +146,7 @@ class BatchInsert(APIClient, Chunker):
                 select_fields=select_fields,
                 verbose = verbose)
 
-            documents = y['documents']
+            documents = orig_json['documents']
 
             #Update documents
             try:                                          
@@ -159,15 +159,15 @@ class BatchInsert(APIClient, Chunker):
 
             #Upload documents   
             if updated_collection is None: 
-                z = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = verbose, 
+                insert_json = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = verbose, 
                     chunksize = upload_chunk_size, max_workers = max_workers)
             else:
-                z = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
+                insert_json = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
                     verbose = verbose, chunksize = upload_chunk_size, max_workers = max_workers)
 
             #Check success
             chunk_failed = []
-            check = [[chunk_failed.append(i['_id']) for i in a['failed_documents']] for a in z if a is not None]
+            check = [[chunk_failed.append(i['_id']) for i in chunk['failed_documents']] for chunk in insert_json if chunk is not None]
             print(f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!')
             failed_documents.extend(chunk_failed)
 

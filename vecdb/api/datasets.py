@@ -76,7 +76,7 @@ class Datasets(Base):
     def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, 
                     overwrite: bool = True, update_schema: bool = True, verbose: bool = True, chunk_adjust: bool = False):
 
-        z = self.make_http_request(
+        response = self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
             base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
             method="POST",
@@ -88,11 +88,11 @@ class Datasets(Base):
             }, output_format="json", verbose = verbose)
 
         if chunk_adjust is False:
-            return z
+            return response
 
         else:
             docs_failed = []
-            check = [docs_failed.append(i['_id']) for i in z['failed_documents'] if i is not None]
+            check = [docs_failed.append(i['_id']) for i in response['failed_documents'] if i is not None]
             return docs_failed
 
 

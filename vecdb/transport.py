@@ -71,7 +71,7 @@ class Transport:
                     print('No Json available') 
                     print(response)
 
-                print('Response failed, stopped trying') 
-                return response
+            print('Response failed, stopped trying') 
+            return response
 
 
