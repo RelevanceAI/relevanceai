@@ -1,8 +1,6 @@
 """access the client via this class
 """
 import os
-import requests
-import time
 from .config import CONFIG
 from .batch.client import BatchAPIClient
 
