@@ -137,7 +137,7 @@ class Datasets(Base):
         output_format: str="json", verbose: bool=True):
         return self.make_http_request(
             endpoint="datasets/search",
-            method="POST",
+            method="GET",
             parameters={
                 "query": query,
                 "sort_by_created_at_date": sort_by_created_at_date,
