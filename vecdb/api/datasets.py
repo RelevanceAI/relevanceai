@@ -74,26 +74,38 @@ class Datasets(Base):
             }, output_format = output_format, verbose = verbose)
 
     def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, 
-                    overwrite: bool = True, update_schema: bool = True, verbose: bool = True, chunk_adjust: bool = False):
+                    overwrite: bool = True, update_schema: bool = True, output_format: str = "json", verbose: bool = True, detailed: bool = False):
 
-        response = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
-            base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
-            method="POST",
-            parameters={
-                "documents": documents,
-                "insert_date": insert_date,
-                "overwrite": overwrite,
-                "update_schema": update_schema,
-            }, output_format="json", verbose = verbose)
-
-        if chunk_adjust is False:
-            return response
-
+        if detailed is False: 
+            return self.make_http_request(
+                endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
+                base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+                method="POST",
+                parameters={
+                    "documents": documents,
+                    "insert_date": insert_date,
+                    "overwrite": overwrite,
+                    "update_schema": update_schema,
+                }, output_format = output_format, verbose = verbose)
+            
         else:
-            docs_failed = []
-            check = [docs_failed.append(i['_id']) for i in response['failed_documents'] if i is not None]
-            return docs_failed
+            insert_response = self.make_http_request(
+                endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
+                base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+                method="POST",
+                parameters={
+                    "documents": documents,
+                    "insert_date": insert_date,
+                    "overwrite": overwrite,
+                    "update_schema": update_schema,
+                }, output_format = False, verbose = verbose)
+
+            try:
+                response_json = insert_response.json()
+            except:
+                response_json = None
+
+            return {'insert_json': response_json, 'documents': documents, 'insert_response': insert_response.status_code}
 
 
     def delete(self, dataset_id: str, confirm = False, output_format: str = "json", verbose: bool = True):
