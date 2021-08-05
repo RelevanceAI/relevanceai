@@ -4,7 +4,9 @@ from json.decoder import JSONDecodeError
 from requests import Request
 import requests
 import traceback
+import time
 from .logging import Profiler
+from .errors import APIError
 
 class Transport:
     """Base class for all VecDB objects
@@ -51,27 +53,24 @@ class Transport:
 
                     elif response.status_code == 404:
                         if verbose: print(response.content.decode()) 
-                        print(f'Response failed ({response}) but re-trying') 
-                        return response
+                        print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        raise APIError(response.content.decode())
 
                     else:
                         if verbose: print(response.content.decode()) 
-                        print(f'Response failed ({response}) but re-trying') 
-                        continue 
+                        print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        continue
                 
                 except ConnectionError as error:
                     # Print the error
                     traceback.print_exc()
                     print("Connection error but re-trying.") 
                     time.sleep(self.config.seconds_between_retries)
-
                     continue
 
                 except JSONDecodeError as error:
                     print('No Json available') 
                     print(response)
 
-            print('Response failed, stopped trying') 
-            return response
-
-
+                print('Response failed, stopped trying') 
+                raise APIError(response.content.decode())

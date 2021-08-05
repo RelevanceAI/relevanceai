@@ -89,3 +89,28 @@ vec_client.pull_update_push(original_collection, even_function, new_collection)
 New Data: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
 ```
 
+## Integration with VectorHub
+
+VectorHub is RelevanceAI's main encoder repository. For the models used here, we have abstracted away a lot of 
+complexity from installation to encoding and have innate VectorAI support. 
+
+Using VectorHub models is as simple as (actual example): 
+
+```python
+# Inserting a dataframe
+import pandas as pd
+df = pd.read_csv("Grid view.csv")
+df['_id'] = df['sample']
+client.insert_df("sample-cn", df)
+
+from vectorhub.encoders.text.tfhub import USE2Vec
+model = USE2Vec()
+
+# Define an update function
+def encode_documents(docs):
+    # Field and then the docs go here
+    return model.encode_documents(["current", "Longer"], docs)
+
+client.pull_update_push("sample-cn", encode_documents)
+
+```
