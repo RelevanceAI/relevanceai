@@ -167,7 +167,7 @@ class BatchInsert(APIClient, Chunker):
 
             #Check success
             chunk_failed = []
-            check = [chunk_failed.extend(i['failed_documents']['_id']) for i in z if i is not None]
+            check = [[chunk_failed.append(i['_id']) for i in a['failed_documents']] for a in z if a is not None]
             print(f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!')
             failed_documents.extend(chunk_failed)
 

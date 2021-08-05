@@ -52,12 +52,12 @@ class Transport:
                     elif response.status_code == 404:
                         if verbose: print(response.content.decode()) 
                         print(f'Response failed ({response}) but re-trying') 
-                        return
+                        return response
 
                     else:
                         if verbose: print(response.content.decode()) 
                         print(f'Response failed ({response}) but re-trying') 
-                        continue
+                        continue 
                 
                 except ConnectionError as error:
                     # Print the error
@@ -72,6 +72,6 @@ class Transport:
                     print(response)
 
                 print('Response failed, stopped trying') 
-                return 
+                return response
 
 
