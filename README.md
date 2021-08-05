@@ -111,6 +111,6 @@ def encode_documents(docs):
     # Field and then the docs go here
     return model.encode_documents(["current", "Longer"], docs)
 
-client.pull_update_push("hues-new", encode_documents)
+client.pull_update_push("sample-cn", encode_documents)
 
 ```
