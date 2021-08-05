@@ -40,4 +40,7 @@ class ProgressBar:
         return normal_bar
 
 def progress_bar(*args, **kwargs):
-    return ProgressBar()(*args, **kwargs)
+    try:
+        return ProgressBar()(*args, **kwargs)
+    except:
+        return
