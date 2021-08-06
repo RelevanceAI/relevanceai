@@ -53,12 +53,12 @@ class Transport:
 
                     elif response.status_code == 404:
                         if verbose: print(response.content.decode()) 
-                        print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         raise APIError(response.content.decode())
 
                     else:
                         if verbose: print(response.content.decode()) 
-                        print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         continue
                 
                 except ConnectionError as error:
