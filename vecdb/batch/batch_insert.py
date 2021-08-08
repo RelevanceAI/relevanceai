@@ -70,6 +70,7 @@ class BatchInsert(APIClient, Chunker):
         updating_args: dict = {}, 
         retrieve_chunk_size: int = 100, 
         upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000, 
+        filters: list=[],
         select_fields: list=[],
         verbose: bool=True):
 
@@ -133,15 +134,14 @@ class BatchInsert(APIClient, Chunker):
         for i in progress_bar(range(iterations_required)):
 
             #Get completed documents
-            log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose)
+            log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
             completed_documents_list = [i['_id'] for i in log_json]
 
             #Get incomplete documents from raw collection
+            retrieve_filters = filters + [{"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}]
             orig_json = self.datasets.documents.get_where(
                 original_collection, 
-                filters = [
-                    {"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}
-                ],
+                filters=retrieve_filters,
                 page_size = retrieve_chunk_size, 
                 select_fields=select_fields,
                 verbose = verbose)
