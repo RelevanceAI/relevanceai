@@ -73,9 +73,24 @@ class Datasets(Base):
                 "asc": asc
             }, output_format = output_format, verbose = verbose)
 
-    def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, 
-                    overwrite: bool = True, update_schema: bool = True, output_format: str = "json", verbose: bool = True, return_documents: bool = False, 
-                    base_url: str = "https://ingest-api-dev-aueast.relevance.ai/latest/"):
+
+    def bulk_insert(self, 
+        dataset_id: str, documents: list, insert_date: bool = True, 
+        overwrite: bool = True, update_schema: bool = True, verbose: bool = True, chunk_adjust: bool = False,
+        base_url="https://ingest-api-dev-aueast.relevance.ai/latest/"):
+        response = self.make_http_request(
+            endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
+            base_url=base_url,
+            method="POST",
+            parameters={
+                "documents": documents,
+                "insert_date": insert_date,
+                "overwrite": overwrite,
+                "update_schema": update_schema,
+            }, output_format="json", verbose = verbose)
+
+        if chunk_adjust is False:
+            return response
 
         if return_documents is False: 
             return self.make_http_request(

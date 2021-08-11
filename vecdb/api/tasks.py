@@ -50,7 +50,7 @@ class Tasks(Base):
             return 
 
         else:
-            print("To view the progress of your job, visit https://playground.getvectorai.com/collections/dashboard/jobs")
+            print("To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs")
             return {"task_id": task_id}
 
     

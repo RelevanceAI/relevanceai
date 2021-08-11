@@ -9,7 +9,7 @@ class Encoders(Base):
     def textimage(self, text: str):
         return self.make_http_request(
             "services/encoders/textimage", 
-            method="POST",
+            method="GET",
             parameters={
                 "text": text
             })
@@ -17,7 +17,7 @@ class Encoders(Base):
     def text(self, text: str):
         return self.make_http_request(
             "services/encoders/text",
-            method="POST",
+            method="GET",
             parameters={
                 "text": text
             })

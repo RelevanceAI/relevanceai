@@ -19,7 +19,7 @@ class BatchInsert(APIClient, Chunker):
         enabled.
         """
         if verbose: print(f"You are currently inserting into {dataset_id}") 
-        if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
+        if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
@@ -89,7 +89,7 @@ class BatchInsert(APIClient, Chunker):
         automatically enabled.
         """
         if verbose: print(f"You are currently updating {dataset_id}") 
-        if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
+        if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,

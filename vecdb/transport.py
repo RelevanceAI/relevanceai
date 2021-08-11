@@ -31,7 +31,7 @@ class Transport:
             if base_url is None:
                 base_url = self.base_url
             for i in range(self.config.number_of_retries):
-                if verbose: print("URL you are trying to access:" + self.base_url + endpoint) 
+                if verbose: print("URL you are trying to access:" + base_url + endpoint) 
                 try:
                     req = Request(
                         method=method.upper(),
@@ -53,12 +53,12 @@ class Transport:
 
                     elif response.status_code == 404:
                         if verbose: print(response.content.decode()) 
-                        print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         raise APIError(response.content.decode())
 
                     else:
                         if verbose: print(response.content.decode()) 
-                        print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         continue
                 
                 except ConnectionError as error:
