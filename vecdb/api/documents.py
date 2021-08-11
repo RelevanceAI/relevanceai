@@ -53,7 +53,7 @@ class Documents(Base):
                 "is_random": is_random}
             , output_format = output_format, verbose = verbose)
     
-    def bulk_update(self, dataset_id: str, updates: list, output_format: str = "json", verbose: bool = True, return_documents: bool = False):
+    def bulk_update(self, dataset_id: str, updates: list, output_format: str = "json", verbose: bool = True, return_documents: bool = False, retries = None):
 
         if return_documents is False: 
             return self.make_http_request(
@@ -61,7 +61,7 @@ class Documents(Base):
                 method="POST",
                 parameters={
                     "updates": updates
-                }, output_format = output_format, verbose = verbose,
+                }, output_format = output_format, verbose = verbose, retries = retries,
                 base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
             )
         else:
@@ -70,7 +70,7 @@ class Documents(Base):
                 method="POST",
                 parameters={
                     "updates": updates
-                }, output_format = False, verbose = verbose,
+                }, output_format = False, verbose = verbose, retries = retries,
                 base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
             )
 
@@ -79,7 +79,7 @@ class Documents(Base):
             except:
                 response_json = None
 
-            return {'insert_json': response_json, 'documents': updates, 'insert_response': insert_response.status_code}
+            return {'response_json': response_json, 'documents': updates, 'status_code': insert_response.status_code}
     
 
     def get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: list=[], sort: list=[], 

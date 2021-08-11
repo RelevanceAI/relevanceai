@@ -23,62 +23,8 @@ class BatchInsert(APIClient, Chunker):
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
-                docs, verbose = verbose, return_documents = True, *args, **kwargs)
-
-        #Initialise number of inserted documents
-        inserted = []
-
-        #Initialise failed documents
-        failed_ids = [i['_id'] for i in docs]
-
-        #Initialise cancelled documents
-        cancelled_ids = []
-
-        for i in range(self.config.number_of_retries):
-
-            if len(failed_ids) > 0:
-        
-                if bulk_fn is not None:
-                    insert_json = multiprocess(
-                        func=bulk_fn,
-                        iterables=docs,
-                        post_func_hook=bulk_insert_func,
-                        max_workers=max_workers,
-                        chunksize=chunksize)
-                else:
-                    insert_json = multithread(bulk_insert_func, docs, 
-                        max_workers=max_workers, chunksize=chunksize)
-
-                failed_ids = []
-
-                #Update inserted amount
-                add_inserted = [inserted.append(chunk['insert_json']['inserted']) for chunk in insert_json if chunk['insert_response'] == 200]
-
-                for chunk in insert_json:
-
-                    #Track failed in 200
-                    if chunk['insert_response'] == 200:
-                        [failed_ids.append(i['_id']) for i in chunk['insert_json']['failed_documents']]
-
-                    #Cancel documents with 404
-                    elif chunk['insert_response'] == 404:
-                        [cancelled_ids.append(i['_id']) for i in chunk['insert_json']['failed_documents']]
-
-                    #Retry all other errors
-                    else:
-                        [failed_ids.append(i['_id']) for i in chunk['documents']]
-        
-                docs = [i for i in docs if i['_id'] in failed_ids]
-
-                #Adjust chunk
-                chunksize = chunksize*retry_chunk_mult
-
-            else: 
-                break
-
-        failed_ids.extend(cancelled_ids)    
-        output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
-        return output
+                docs, verbose = verbose, return_documents = True, retries = 1, *args, **kwargs)
+        return self._write_documents(bulk_insert_func, docs, bulk_fn, chunksize, max_workers, retry_chunk_mult)
 
 
     def update_documents(self, dataset_id: str, docs: list, 
@@ -93,64 +39,8 @@ class BatchInsert(APIClient, Chunker):
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
-                docs, verbose = verbose, return_documents = True, *args, **kwargs)
-
-        #Initialise number of inserted documents
-        inserted = []
-
-        #Initialise failed documents
-        failed_ids = [i['_id'] for i in docs]
-
-        #Initialise cancelled documents
-        cancelled_ids = []
-
-        for i in range(self.config.number_of_retries):
-
-            if len(failed_ids) > 0:
-
-                if bulk_fn is not None:
-                    insert_json = multiprocess(
-                        func=bulk_fn,
-                        iterables=docs,
-                        post_func_hook=bulk_update_func,
-                        max_workers=max_workers,
-                        chunksize=chunksize)
-
-                else:  
-                    insert_json = multithread(bulk_update_func, docs, 
-                        max_workers=max_workers, chunksize=chunksize)
-
-            
-                failed_ids = []
-
-                #Update inserted amount
-                add_inserted = [inserted.append(chunk['insert_json']['inserted']) for chunk in insert_json if chunk['insert_response'] == 200]
-
-                for chunk in insert_json:
-
-                    #Track failed in 200
-                    if chunk['insert_response'] == 200:
-                        [failed_ids.append(i['_id']) for i in chunk['insert_json']['failed_documents']]
-
-                    #Cancel documents with 404
-                    elif chunk['insert_response'] == 404:
-                        [cancelled_ids.append(i['_id']) for i in chunk['insert_json']['failed_documents']]
-
-                    #Retry all other errors
-                    else:
-                        [failed_ids.append(i['_id']) for i in chunk['documents']]
-        
-                docs = [i for i in docs if i['_id'] in failed_ids]
-
-                #Adjust chunk
-                chunksize = chunksize*retry_chunk_mult
-
-            else: 
-                break
-
-        failed_ids.extend(cancelled_ids)    
-        output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
-        return output
+                docs, verbose = verbose, return_documents = True, retries = 1, *args, **kwargs)
+        return self._write_documents(bulk_update_func, docs, bulk_fn, chunksize, max_workers, retry_chunk_mult)
 
     def pull_update_push(self, 
         original_collection: str, update_function, 
@@ -282,4 +172,63 @@ class BatchInsert(APIClient, Chunker):
         log_collections = [i for i in collection_list if 'log_update_started' in i]
         delete = [self.datasets.delete(i, confirm = True) for i in log_collections]
         return
+
+    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, chunksize: int=10000, max_workers:int =8, retry_chunk_mult: int = 0.5):
+
+        #Initialise number of inserted documents
+        inserted = []
+
+        #Initialise failed documents
+        failed_ids = [i['_id'] for i in docs]
+
+        #Initialise cancelled documents
+        cancelled_ids = []
+
+        for i in range(self.config.number_of_retries):
+
+            if len(failed_ids) > 0:
+        
+                if bulk_fn is not None:
+                    insert_json = multiprocess(
+                        func=bulk_fn,
+                        iterables=docs,
+                        post_func_hook=insert_function,
+                        max_workers=max_workers,
+                        chunksize=chunksize)
+                else:
+                    insert_json = multithread(insert_function, docs, 
+                        max_workers=max_workers, chunksize=chunksize)
+
+                failed_ids = []
+
+                #Update inserted amount
+                [inserted.append(chunk['response_json']['inserted']) for chunk in insert_json if chunk['status_code'] == 200];
+
+                for chunk in insert_json:
+
+                    #Track failed in 200
+                    if chunk['status_code'] == 200:
+                        [failed_ids.append(i['_id']) for i in chunk['response_json']['failed_documents']]
+
+                    #Cancel documents with 404
+                    elif chunk['status_code'] == 404:
+                        [cancelled_ids.append(i['_id']) for i in chunk['documents']]
+
+                    #Half chunksize with 413
+                    elif chunk['status_code'] == 413:
+                        [failed_ids.append(i['_id']) for i in chunk['documents']]
+                        chunksize = chunksize*retry_chunk_mult
+
+                    #Retry all other errors
+                    else:
+                        [failed_ids.append(i['_id']) for i in chunk['documents']]
+        
+                docs = [i for i in docs if i['_id'] in failed_ids]
+
+            else: 
+                break
+
+        failed_ids.extend(cancelled_ids)    
+        output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
+        return output
 
