@@ -19,7 +19,7 @@ class BatchInsert(APIClient, Chunker):
         enabled.
         """
         if verbose: print(f"You are currently inserting into {dataset_id}") 
-        if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
+        if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
@@ -35,9 +35,7 @@ class BatchInsert(APIClient, Chunker):
         cancelled_ids = []
 
         for i in range(self.config.number_of_retries):
-
             if len(failed_ids) > 0:
-        
                 if bulk_fn is not None:
                     insert_json = multiprocess(
                         func=bulk_fn,
@@ -50,32 +48,24 @@ class BatchInsert(APIClient, Chunker):
                         max_workers=max_workers, chunksize=chunksize)
 
                 failed_ids = []
-
                 #Update inserted amount
-                add_inserted = [inserted.append(chunk['insert_json']['inserted']) for chunk in insert_json if chunk['insert_response'] == 200]
-
+                [inserted.append(chunk['insert_json']['inserted']) for chunk in insert_json if chunk['insert_response'] == 200];
                 for chunk in insert_json:
-
                     #Track failed in 200
                     if chunk['insert_response'] == 200:
                         [failed_ids.append(i['_id']) for i in chunk['insert_json']['failed_documents']]
-
                     #Cancel documents with 404
                     elif chunk['insert_response'] == 404:
                         [cancelled_ids.append(i['_id']) for i in chunk['insert_json']['failed_documents']]
-
                     #Retry all other errors
                     else:
                         [failed_ids.append(i['_id']) for i in chunk['documents']]
+                        # Reduce chunksize on failure only
+                        chunksize = chunksize*retry_chunk_mult
         
                 docs = [i for i in docs if i['_id'] in failed_ids]
-
-                #Adjust chunk
-                chunksize = chunksize*retry_chunk_mult
-
             else: 
                 break
-
         failed_ids.extend(cancelled_ids)    
         output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
         return output
@@ -89,7 +79,7 @@ class BatchInsert(APIClient, Chunker):
         automatically enabled.
         """
         if verbose: print(f"You are currently updating {dataset_id}") 
-        if verbose: print(f"You can track your stats and progress via our dashboard at https://playground.getvectorai.com/collections/dashboard/stats/?collection={dataset_id}") 
+        if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
@@ -278,8 +268,9 @@ class BatchInsert(APIClient, Chunker):
         return self.insert_documents(dataset_id, docs, *args, **kwargs)
 
     def delete_all_logs(self):
+        """Delete all the logs created by pull_update_push
+        """
         collection_list = self.datasets.list()['datasets']
         log_collections = [i for i in collection_list if 'log_update_started' in i]
         delete = [self.datasets.delete(i, confirm = True) for i in log_collections]
-        return
-
+        return delete
