@@ -20,7 +20,7 @@ class Transport:
 
     
     def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json", 
-        base_url: str=None, verbose: bool = True):
+        base_url: str=None, verbose: bool = True, retries: bool = None):
         """Make the HTTP request
         Args:
             endpoint: The endpoint from the documentation to use
@@ -30,7 +30,11 @@ class Transport:
         with Profiler(self.config.log, self.config.logging_level, self.config.log_to_file, self.config.log_to_console, locals()) as log:
             if base_url is None:
                 base_url = self.base_url
-            for i in range(self.config.number_of_retries):
+
+            if retries is None:
+                retries = self.config.number_of_retries
+            
+            for i in range(retries):
                 if verbose: print("URL you are trying to access:" + base_url + endpoint) 
                 try:
                     req = Request(
@@ -64,13 +68,14 @@ class Transport:
                 except ConnectionError as error:
                     # Print the error
                     traceback.print_exc()
-                    print("Connection error but re-trying.") 
+                    if verbose: print("Connection error but re-trying.") 
                     time.sleep(self.config.seconds_between_retries)
                     continue
 
                 except JSONDecodeError as error:
-                    print('No Json available') 
+                    if verbose:  print('No Json available') 
                     print(response)
 
-                print('Response failed, stopped trying') 
+                if verbose: print('Response failed, stopped trying') 
                 raise APIError(response.content.decode())
+            return response

@@ -8,7 +8,7 @@ class BaseConfig:
         setattr(self, item, value)
 
 class TransportConfig(BaseConfig):
-    number_of_retries: int = 1
+    number_of_retries: int = 3
     seconds_between_retries: int = 2
 
     #Set Logging Rules

@@ -22,14 +22,18 @@ class Tasks(Base):
     def status(self, dataset_id: str, task_id: str):
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
-            method="GET")
+            method="GET", verbose = False)
 
     def loop_status_until_finish(self, dataset_id: str, task_id: str, verbose: bool = True, time_between_ping: int = 10):
             status = False
 
-            while status != 'Finished':
+            while status not in ['Finished', 'success']:
                 time.sleep(time_between_ping)
-                status = self.status(dataset_id, task_id)['status']
+                try:
+                    status = self.status(dataset_id, task_id)['status']
+                except:
+                    print(f'Status-check timed out: {task_id}')
+                    return task_id
 
                 if verbose == True:
                     print(status)
