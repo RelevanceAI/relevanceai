@@ -23,7 +23,7 @@ class BatchInsert(APIClient, Chunker):
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
-                docs, verbose = verbose, detailed = True, *args, **kwargs)
+                docs, verbose = verbose, return_documents = True, *args, **kwargs)
 
         #Initialise number of inserted documents
         inserted = []
@@ -93,7 +93,7 @@ class BatchInsert(APIClient, Chunker):
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
-                docs, verbose = verbose, detailed = True, *args, **kwargs)
+                docs, verbose = verbose, return_documents = True, *args, **kwargs)
 
         #Initialise number of inserted documents
         inserted = []

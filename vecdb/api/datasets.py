@@ -74,12 +74,13 @@ class Datasets(Base):
             }, output_format = output_format, verbose = verbose)
 
     def bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, 
-                    overwrite: bool = True, update_schema: bool = True, output_format: str = "json", verbose: bool = True, detailed: bool = False):
+                    overwrite: bool = True, update_schema: bool = True, output_format: str = "json", verbose: bool = True, return_documents: bool = False, 
+                    base_url: str = "https://ingest-api-dev-aueast.relevance.ai/latest/"):
 
-        if detailed is False: 
+        if return_documents is False: 
             return self.make_http_request(
                 endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
-                base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+                base_url=base_url,
                 method="POST",
                 parameters={
                     "documents": documents,
@@ -91,7 +92,7 @@ class Datasets(Base):
         else:
             insert_response = self.make_http_request(
                 endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
-                base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+                base_url=base_url,
                 method="POST",
                 parameters={
                     "documents": documents,
