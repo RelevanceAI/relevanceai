@@ -28,7 +28,10 @@ class Search(Base):
             }, output_format=output_format, verbose=verbose)
         
     def hybrid(self, dataset_id: str, multivector_query: list, 
-        query: str, fields:list, page_size: int=20, page=1,
+        query: str, fields:list, 
+        edit_distance: int=-1, ignore_spaces: bool=True,
+        traditional_weight: float=0.075,
+        page_size: int=20, page=1,
         similarity_metric="cosine", facets=[], filters=[],
         min_score=0, select_fields=[], include_vector=False, 
         include_count=True, asc=False, keep_search_history=False,
@@ -49,7 +52,10 @@ class Search(Base):
                 "include_vector": include_vector,
                 "include_count": include_count,
                 "asc": asc,
-                "keep_search_history": keep_search_history
+                "keep_search_history": keep_search_history,
+                "edit_distance": edit_distance,
+                "ignore_spaces": ignore_spaces,
+                "traditional_weight": traditional_weight
             }, output_format=output_format, verbose=verbose)
     
     def traditional(self, dataset_id: str, text: str,
