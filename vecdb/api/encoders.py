@@ -22,9 +22,9 @@ class Encoders(Base):
                 "text": text
             })
         
-    def text_multi(self, text):
+    def multi_text(self, text):
         """Encode Multilingual text"""
-        return self.make_http_request("services/encoders/text_multi",
+        return self.make_http_request("services/encoders/multi_text",
             method="GET",
             parameters={
                 "text": text
