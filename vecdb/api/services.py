@@ -16,4 +16,3 @@ class Services(Base):
         self.cluster = Cluster(project=project, api_key=api_key, base_url=base_url)
         self.search = Search(project=project, api_key=api_key, base_url=base_url)
         self.aggregate = Aggregate(project=project, api_key=api_key, base_url=base_url)
-    

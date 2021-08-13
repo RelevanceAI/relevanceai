@@ -24,7 +24,7 @@ class Encoders(Base):
         
     def text_multi(self, text):
         """Encode Multilingual text"""
-        return self.make_http_request("services/encoders/text",
+        return self.make_http_request("services/encoders/text_multi",
             method="GET",
             parameters={
                 "text": text
