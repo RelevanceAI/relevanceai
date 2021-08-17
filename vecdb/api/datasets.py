@@ -37,8 +37,8 @@ class Datasets(Base):
                                                 "schema": schema},
                                     output_format = output_format, verbose = verbose)
 
-    def list(self, output_format: str = "json", verbose: bool = True):
-        return self.make_http_request(endpoint="datasets/list", method="GET", output_format = output_format, verbose = verbose)
+    def list(self, output_format: str = "json", verbose: bool = True, retries = None):
+        return self.make_http_request(endpoint="datasets/list", method="GET", output_format = output_format, verbose = verbose, retries=retries)
 
     def list_all(self, include_schema: bool = True, include_stats: bool = True, include_metadata: bool = True,
                         include_schema_stats: bool = False, include_vector_health: bool = False, include_active_jobs: bool = False, 
