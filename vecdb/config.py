@@ -17,12 +17,9 @@ class TransportConfig(BaseConfig):
     log_to_console: bool = True
     logging_level: int = logging.INFO
 
-<<<<<<< Updated upstream
-=======
     #Chunk Target
     target_chunk_mb: int = 100
 
->>>>>>> Stashed changes
 class Config(TransportConfig):
     """All the configs - which are to be inhertied
     """

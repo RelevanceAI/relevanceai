@@ -9,19 +9,16 @@ from functools import partial
 from ..concurrency import multithread, multiprocess
 import traceback
 from datetime import datetime
-<<<<<<< Updated upstream
-=======
 import sys
 import json
 
 BYTE_TO_MB = 1024*1024
 LIST_SIZE_MULTIPLIER = 3
->>>>>>> Stashed changes
 
 class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
-        chunksize: int=10000, max_workers:int =8, retry_chunk_mult: int = 0.5, *args, **kwargs):
+         max_workers:int =8, retry_chunk_mult: int = 0.5, *args, **kwargs):
         """
         Insert a list of documents with multi-threading automatically
         enabled.
@@ -32,12 +29,12 @@ class BatchInsert(APIClient, Chunker):
             return self.datasets.bulk_insert(
                 dataset_id,
                 docs, verbose = verbose, return_documents = True, retries = 1, *args, **kwargs)
-        return self._write_documents(bulk_insert_func, docs, bulk_fn, chunksize, max_workers, retry_chunk_mult)
+        return self._write_documents(bulk_insert_func, docs, bulk_fn, max_workers, retry_chunk_mult)
 
 
     def update_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
-        chunksize: int=10000, max_workers:int =8, retry_chunk_mult: int = 0.5,  *args, **kwargs):
+        max_workers:int =8, retry_chunk_mult: int = 0.5,  *args, **kwargs):
         """
         Update a list of documents with multi-threading
         automatically enabled.
@@ -48,7 +45,7 @@ class BatchInsert(APIClient, Chunker):
             return self.datasets.documents.bulk_update(
                 dataset_id,
                 docs, verbose = verbose, return_documents = True, retries = 1, *args, **kwargs)
-        return self._write_documents(bulk_update_func, docs, bulk_fn, chunksize, max_workers, retry_chunk_mult)
+        return self._write_documents(bulk_update_func, docs, bulk_fn, max_workers, retry_chunk_mult)
 
     def pull_update_push(self, 
         original_collection: str, update_function, 
@@ -181,15 +178,11 @@ class BatchInsert(APIClient, Chunker):
         delete = [self.datasets.delete(i, confirm = True) for i in log_collections]
         return
 
-<<<<<<< Updated upstream
-    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, chunksize: int=10000, max_workers:int =8, retry_chunk_mult: int = 0.5):
-=======
     def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, retry_chunk_mult: int = 0.5):
 
         test_doc = json.dumps(docs[0], indent = 4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER/ BYTE_TO_MB
         chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
->>>>>>> Stashed changes
 
         #Initialise number of inserted documents
         inserted = []
@@ -226,15 +219,9 @@ class BatchInsert(APIClient, Chunker):
                     if chunk['status_code'] == 200:
                         [failed_ids.append(i['_id']) for i in chunk['response_json']['failed_documents']];
 
-<<<<<<< Updated upstream
-                    #Cancel documents with 404
-                    elif chunk['status_code'] == 404:
-                        [cancelled_ids.append(i['_id']) for i in chunk['documents']]
-=======
                     #Cancel documents with 400 or 404
                     elif chunk['status_code'] in [400,404]:
                         [cancelled_ids.append(i['_id']) for i in chunk['documents']];
->>>>>>> Stashed changes
 
                     #Half chunksize with 413 or 524
                     elif chunk['status_code'] in [413,524]:
