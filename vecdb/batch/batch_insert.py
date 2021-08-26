@@ -9,6 +9,14 @@ from functools import partial
 from ..concurrency import multithread, multiprocess
 import traceback
 from datetime import datetime
+<<<<<<< Updated upstream
+=======
+import sys
+import json
+
+BYTE_TO_MB = 1024*1024
+LIST_SIZE_MULTIPLIER = 3
+>>>>>>> Stashed changes
 
 class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, 
@@ -48,7 +56,7 @@ class BatchInsert(APIClient, Chunker):
         logging_collection:str = None,
         updating_args: dict = {}, 
         retrieve_chunk_size: int = 1000, 
-        upload_chunk_size: int = 1000, max_workers:int =8, max_error: int = 1000, 
+        max_workers:int =8, max_error: int = 1000, 
         select_fields: list=[],
         verbose: bool=True):
 
@@ -139,10 +147,10 @@ class BatchInsert(APIClient, Chunker):
             #Upload documents   
             if updated_collection is None: 
                 insert_json = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = verbose, 
-                    chunksize = upload_chunk_size, max_workers = max_workers)
+                    max_workers = max_workers)
             else:
                 insert_json = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
-                    verbose = verbose, chunksize = upload_chunk_size, max_workers = max_workers)
+                    verbose = verbose, max_workers = max_workers)
 
             #Check success
             chunk_failed = insert_json['failed_documents']
@@ -151,7 +159,7 @@ class BatchInsert(APIClient, Chunker):
 
             success_documents = list(set(updated_documents) - set(failed_documents))
             upload_documents = [{'_id': i} for i in success_documents]
-            self.insert_documents(logging_collection, upload_documents, verbose = False, chunksize = 10000, max_workers = max_workers)
+            self.insert_documents(logging_collection, upload_documents, verbose = False, max_workers = max_workers)
 
             if len(failed_documents) > max_error:
                 print(f'You have over {max_error} failed documents which failed to upload!')
@@ -173,7 +181,15 @@ class BatchInsert(APIClient, Chunker):
         delete = [self.datasets.delete(i, confirm = True) for i in log_collections]
         return
 
+<<<<<<< Updated upstream
     def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, chunksize: int=10000, max_workers:int =8, retry_chunk_mult: int = 0.5):
+=======
+    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, retry_chunk_mult: int = 0.5):
+
+        test_doc = json.dumps(docs[0], indent = 4)
+        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER/ BYTE_TO_MB
+        chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
+>>>>>>> Stashed changes
 
         #Initialise number of inserted documents
         inserted = []
@@ -208,20 +224,26 @@ class BatchInsert(APIClient, Chunker):
 
                     #Track failed in 200
                     if chunk['status_code'] == 200:
-                        [failed_ids.append(i['_id']) for i in chunk['response_json']['failed_documents']]
+                        [failed_ids.append(i['_id']) for i in chunk['response_json']['failed_documents']];
 
+<<<<<<< Updated upstream
                     #Cancel documents with 404
                     elif chunk['status_code'] == 404:
                         [cancelled_ids.append(i['_id']) for i in chunk['documents']]
+=======
+                    #Cancel documents with 400 or 404
+                    elif chunk['status_code'] in [400,404]:
+                        [cancelled_ids.append(i['_id']) for i in chunk['documents']];
+>>>>>>> Stashed changes
 
-                    #Half chunksize with 413
-                    elif chunk['status_code'] == 413:
-                        [failed_ids.append(i['_id']) for i in chunk['documents']]
+                    #Half chunksize with 413 or 524
+                    elif chunk['status_code'] in [413,524]:
+                        [failed_ids.append(i['_id']) for i in chunk['documents']];
                         chunksize = chunksize*retry_chunk_mult
 
                     #Retry all other errors
                     else:
-                        [failed_ids.append(i['_id']) for i in chunk['documents']]
+                        [failed_ids.append(i['_id']) for i in chunk['documents']];
         
                 docs = [i for i in docs if i['_id'] in failed_ids]
 
