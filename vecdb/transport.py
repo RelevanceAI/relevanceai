@@ -47,7 +47,7 @@ class Transport:
 
                     with requests.Session() as s:
                         response = s.send(req)
-
+                    
                     if response.status_code == 200:
                         if verbose: print("Response success!") 
                         if output_format == "json":
@@ -78,4 +78,6 @@ class Transport:
 
                 if verbose: print('Response failed, stopped trying') 
                 raise APIError(response.content.decode())
+
+             
             return response

@@ -4,8 +4,6 @@ from ..progress_bar import progress_bar
 from typing import Callable
 from ..api.client import APIClient
 from .chunk import Chunker
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from functools import partial
 from ..concurrency import multithread, multiprocess
 import traceback
 from datetime import datetime
@@ -19,6 +17,7 @@ class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
          max_workers:int =8, retry_chunk_mult: int = 0.5, *args, **kwargs):
+
         """
         Insert a list of documents with multi-threading automatically
         enabled.
@@ -175,7 +174,7 @@ class BatchInsert(APIClient, Chunker):
     def delete_all_logs(self):
         collection_list = self.datasets.list()['datasets']
         log_collections = [i for i in collection_list if 'log_update_started' in i]
-        delete = [self.datasets.delete(i, confirm = True) for i in log_collections]
+        [self.datasets.delete(i, confirm = True) for i in log_collections];
         return
 
     def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, retry_chunk_mult: int = 0.5):
@@ -183,6 +182,7 @@ class BatchInsert(APIClient, Chunker):
         test_doc = json.dumps(docs[0], indent = 4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER/ BYTE_TO_MB
         chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
+
 
         #Initialise number of inserted documents
         inserted = []
@@ -222,6 +222,7 @@ class BatchInsert(APIClient, Chunker):
                     #Cancel documents with 400 or 404
                     elif chunk['status_code'] in [400,404]:
                         [cancelled_ids.append(i['_id']) for i in chunk['documents']];
+
 
                     #Half chunksize with 413 or 524
                     elif chunk['status_code'] in [413,524]:
