@@ -7,7 +7,7 @@ from .progress_bar import progress_bar
 from typing import Callable
 
 def chunk(iterables, n=20):
-    return [iterables[i:i + n] for i in range(0, len(iterables), n)]
+    return [iterables[i:i + n] for i in range(0, int(len(iterables)), int(n))]
 
 def multithread(func, iterables, max_workers=8, chunksize=20): 
     with progress_bar(total=int(len(iterables) / chunksize)) as pbar:
