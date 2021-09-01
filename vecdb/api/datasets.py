@@ -133,7 +133,6 @@ class Datasets(Base):
             return 
 
         else:
-           # ... error handling ...
            print(f'Error: Input {user_input} unrecognised.')
            return        
 
@@ -169,4 +168,3 @@ class Datasets(Base):
             output_format=output_format,
             verbose=verbose
         )
-

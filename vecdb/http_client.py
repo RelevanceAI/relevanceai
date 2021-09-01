@@ -3,6 +3,7 @@
 import os
 from .config import CONFIG
 from .batch.client import BatchAPIClient
+from .errors import APIError
 
 class VecDBClient(BatchAPIClient):
     """VecDB Client
@@ -17,12 +18,11 @@ class VecDBClient(BatchAPIClient):
         base_url: str="https://api-dev-aueast.relevance.ai/v1/"):
         super().__init__(project, api_key, base_url)
         
-        try:
-            assert(self.datasets.list(verbose=False, output_format = False, retries=1).status_code == 200)
+        if (self.datasets.list(verbose=False, output_format = False, retries=1).status_code == 200):
             print(self.WELCOME_MESSAGE)
-            
-        except:
-            print(self.FAIL_MESSAGE)
+
+        else:
+            raise APIError(self.FAIL_MESSAGE)
 
     @property
     def auth_header(self):
