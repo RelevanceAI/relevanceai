@@ -1,14 +1,14 @@
 from ..base import Base 
 
 class Search(Base):
-    def vector(self, dataset_id: str, vector, fields, multivec_alias: str = 'default', positive_document_ids: dict={},
+    def vector(self, dataset_id: str, multivector_query: list, positive_document_ids: dict={},
         negative_document_ids: dict={}, vector_operation="sum", approximation_depth=0,
         sum_fields=True, page_size=20, page=1, similarity_metric="cosine", facets=[], filters=[],
         min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, 
         keep_search_history=False, verbose: bool=True, output_format: str='json'):
         return self.make_http_request("services/search/vector", method="POST", parameters=
             {"dataset_id": dataset_id,
-            "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
+            "multivector_query": multivector_query,
             "positive_document_ids": positive_document_ids,
             "negative_document_ids": negative_document_ids,
             "vector_operation": vector_operation,
@@ -27,8 +27,8 @@ class Search(Base):
             "keep_search_history": keep_search_history
             }, output_format=output_format, verbose=verbose)
         
-    def hybrid(self, dataset_id: str, vector, fields, multivec_alias: str = 'default',
-        text: str, fields:list, 
+    def hybrid(self, dataset_id: str, multivector_query: list, 
+        query: str, fields:list, 
         edit_distance: int=-1, ignore_spaces: bool=True,
         traditional_weight: float=0.075,
         page_size: int=20, page=1,
@@ -39,8 +39,8 @@ class Search(Base):
         return self.make_http_request("services/search/hybrid", method="POST",
             parameters={
                 "dataset_id": dataset_id,
-                "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
-                "text": text,
+                "multivector_query": multivector_query,
+                "text": query,
                 "fields": fields,
                 "page_size": page_size,
                 "page": page,
