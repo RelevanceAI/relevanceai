@@ -17,6 +17,9 @@ class TransportConfig(BaseConfig):
     log_to_console: bool = True
     logging_level: int = logging.INFO
 
+    #Chunk Target
+    target_chunk_mb: int = 100
+
 class Config(TransportConfig):
     """All the configs - which are to be inhertied
     """
