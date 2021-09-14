@@ -58,31 +58,35 @@ class Search(Base):
                 "traditional_weight": traditional_weight
             }, output_format=output_format, verbose=verbose)
 
-    def semantic(self, dataset_id: str, vector, fields, multivec_alias: str = 'default',
-        text: str, fields:list, 
-        page_size: int=20, page=1,
-        similarity_metric="cosine", facets=[], filters=[],
-        min_score=0, select_fields=[], include_vector=False, 
-        include_count=True, asc=False, keep_search_history=False,
-        verbose: bool=True, output_format: str='json'):
-        return self.make_http_request("services/search/semantic", method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
-                "text": text,
-                "fields": fields,
-                "page_size": page_size,
-                "page": page,
-                "similarity_metric": similarity_metric,
-                "facets": facets,
-                "filters": filters,
-                "min_score": min_score,
-                "select_fields": select_fields,
-                "include_vector": include_vector,
-                "include_count": include_count,
-                "asc": asc,
-                "keep_search_history": keep_search_history
-            }, output_format=output_format, verbose=verbose)
+    # def semantic(self, 
+    #     dataset_id: str, 
+    #     vector: list, 
+    #     fields: list, 
+    #     text: str, 
+    #     multivec_alias: str = 'default',
+    #     page_size: int=20, page=1,
+    #     similarity_metric="cosine", facets=[], filters=[],
+    #     min_score=0, select_fields=[], include_vector=False, 
+    #     include_count=True, asc=False, keep_search_history=False,
+    #     verbose: bool=True, output_format: str='json'):
+    #     return self.make_http_request("services/search/semantic", method="POST",
+    #         parameters={
+    #             "dataset_id": dataset_id,
+    #             "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
+    #             "text": text,
+    #             "fields": fields,
+    #             "page_size": page_size,
+    #             "page": page,
+    #             "similarity_metric": similarity_metric,
+    #             "facets": facets,
+    #             "filters": filters,
+    #             "min_score": min_score,
+    #             "select_fields": select_fields,
+    #             "include_vector": include_vector,
+    #             "include_count": include_count,
+    #             "asc": asc,
+    #             "keep_search_history": keep_search_history
+    #         }, output_format=output_format, verbose=verbose)
     
     def traditional(self, dataset_id: str, text: str,
         fields: list=[], edit_distance: int=-1,
@@ -171,6 +175,3 @@ class Search(Base):
                         "include_vector": include_vector,
                         "select_fields": select_fields,
                             }, output_format=output_format, verbose=verbose)
-
-
-    
