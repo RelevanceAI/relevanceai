@@ -27,7 +27,7 @@ class Search(Base):
             "keep_search_history": keep_search_history
             }, output_format=output_format, verbose=verbose)
         
-    def hybrid(self, dataset_id: str, vector, fields, multivec_alias: str = 'default',
+    def hybrid(self, dataset_id: str, multivector_query,
         text: str, fields:list, 
         edit_distance: int=-1, ignore_spaces: bool=True,
         traditional_weight: float=0.075,
@@ -39,7 +39,7 @@ class Search(Base):
         return self.make_http_request("services/search/hybrid", method="POST",
             parameters={
                 "dataset_id": dataset_id,
-                "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
+                "multivector_query": multivector_query,
                 "text": text,
                 "fields": fields,
                 "page_size": page_size,
@@ -58,7 +58,7 @@ class Search(Base):
                 "traditional_weight": traditional_weight
             }, output_format=output_format, verbose=verbose)
 
-    def semantic(self, dataset_id: str, vector, fields, multivec_alias: str = 'default',
+    def semantic(self, dataset_id: str, multivector_query,
         text: str, fields:list, 
         page_size: int=20, page=1,
         similarity_metric="cosine", facets=[], filters=[],
@@ -68,7 +68,7 @@ class Search(Base):
         return self.make_http_request("services/search/semantic", method="POST",
             parameters={
                 "dataset_id": dataset_id,
-                "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
+                "multivector_query": multivector_query,
                 "text": text,
                 "fields": fields,
                 "page_size": page_size,
@@ -109,12 +109,12 @@ class Search(Base):
                 "search_history_id": search_history_id
             }, output_format=output_format, verbose=verbose)
 
-    def chunk_search(self, dataset_id, vector, fields, chunk_field, multivec_alias: str = 'default', chunk_scoring = 'max', chunk_page_size:int = 3, chunk_page:int =1, approximation_depth:int = 0, sum_fields:bool = True, page_size:int = 20, page:int = 1, similarity_metric: str = 'cosine', 
-        facets: list = [], filters:list = [], min_score: int = None, include_vector: bool  = False, include_count: bool  = True, asc: bool  = False, keep_search_history: bool = False, verbose: bool=True,
+    def chunk_search(self, dataset_id, multivector_query, chunk_field, chunk_scoring = 'max', chunk_page_size:int = 3, chunk_page:int =1, approximation_depth:int = 0, sum_fields:bool = True, page_size:int = 20, page:int = 1, similarity_metric: str = 'cosine', 
+        facets: list = [], filters:list = [], min_score: int = None, include_vector: bool  = False, include_count: bool  = True, asc: bool  = False, keep_search_history: bool = Falsez, verbose: bool=True,
         output_format: str='json'):
         return self.make_http_request('services/search/chunk', method="POST", 
                             parameters={"dataset_id": dataset_id,
-                        "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
+                        "multivector_query": multivector_query,
                         "chunk_field": chunk_field,
                         "chunk_scoring": chunk_scoring,
                         "chunk_page_size": chunk_page_size,
@@ -133,13 +133,13 @@ class Search(Base):
                         "keep_search_history": keep_search_history
                             }, output_format=output_format, verbose=verbose)
 
-    def multi_step_chunk(self, dataset_id, vector, fields, first_step_vector, first_step_fields, chunk_field, multivec_alias: str = 'default', first_step_multivec_alias: str = 'default', 
+    def multi_step_chunk(self, dataset_id, multivector_query, first_step_multivector_query, chunk_field, 
         chunk_scoring = 'max', chunk_page_size:int = 3, chunk_page:int =1, approximation_depth:int = 0, sum_fields:bool = True, page_size:int = 20, page:int = 1, similarity_metric: str = 'cosine', 
         facets: list = [], filters:list = [], min_score: int = None, include_vector: bool  = False, include_count: bool  = True, asc: bool  = False, keep_search_history: bool = False, first_step_page:int = 1, first_step_page_size: int = 20,
          verbose: bool=True, output_format: str='json'):
         return self.make_http_request('services/search/multistep_chunk', method="POST",
             parameters={"dataset_id": dataset_id,
-                        "multivector_query": [{"vector": vector, "fields": fields, "alias": multivec_alias}],
+                        "multivector_query": multivector_query,
                         "chunk_field": chunk_field,
                         "chunk_scoring": chunk_scoring,
                         "chunk_page_size": chunk_page_size,
@@ -156,7 +156,7 @@ class Search(Base):
                         "include_count": include_count,
                         "asc": asc,
                         "keep_search_history": keep_search_history,
-                        "first_step_multivector_query": [{"vector": first_step_vector, "fields": first_step_fields, "alias": first_step_multivec_alias}],
+                        "first_step_multivector_query": first_step_multivector_query,
                         "first_step_page": first_step_page,
                         "first_step_page_size": first_step_page_size
                             }, output_format=output_format, verbose=verbose)
