@@ -47,15 +47,18 @@ class BatchInsert(APIClient, Chunker):
         return self._write_documents(bulk_update_func, docs, bulk_fn, max_workers, retry_chunk_mult)
 
     def pull_update_push(self, 
-        original_collection: str, update_function, 
-        updated_collection: str = None, 
-        logging_collection:str = None,
-        updating_args: dict = {}, 
-        retrieve_chunk_size: int = 1000, 
-        max_workers:int =8, max_error: int = 1000, 
+        original_collection: str, 
+        update_function,
+        updated_collection: str=None, 
+        logging_collection:str=None,
+        updating_args: dict={},
+        retrieve_chunk_size: int=100,
+        max_workers:int=8, 
+        max_error: int=1000, 
+        filters: list=[],
         select_fields: list=[],
-        verbose: bool=True):
-
+        verbose: bool=True
+        ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
 
@@ -79,7 +82,8 @@ class BatchInsert(APIClient, Chunker):
         retrieve_chunk_size: int
             The number of documents that are received from the original collection with each loop iteration.
 
-        upload_chunk_size: int
+        
+        : int
             The number of documents that are uploaded with each loop iteration.
 
         max_workers: int
@@ -116,15 +120,14 @@ class BatchInsert(APIClient, Chunker):
         for i in progress_bar(range(iterations_required)):
 
             #Get completed documents
-            log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose)
+            log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
             completed_documents_list = [i['_id'] for i in log_json]
 
             #Get incomplete documents from raw collection
+            retrieve_filters = filters + [{"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}]
             orig_json = self.datasets.documents.get_where(
                 original_collection, 
-                filters = [
-                    {"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}
-                ],
+                filters=retrieve_filters,
                 page_size = retrieve_chunk_size, 
                 select_fields=select_fields,
                 verbose = verbose)
