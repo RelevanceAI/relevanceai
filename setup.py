@@ -17,7 +17,7 @@ def get_version(rel_path):
 
 setup(
     name='VecDB',
-    version=get_version("vecdb/_version.py"),
+    version=get_version("vecdb/__init__.py"),
     url='',
     author='Relevance AI',
     author_email='dev@vctr.ai',
