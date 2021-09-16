@@ -114,3 +114,30 @@ def encode_documents(docs):
 client.pull_update_push("sample-cn", encode_documents)
 
 ```
+
+You can now also run TSDAE with VectorHub integration like below: 
+
+```{python}
+from vecdb import VecDBClient
+project = ""
+api_key = ""
+dataset_id = ""
+client = VecDBClient(project, api_key)
+cn = "dump"
+
+all_docs = []
+filters = [{'field' : 'type', 'filter_type' : 'contains', "condition":"==", "condition_value":"blog"}]
+docs = client.datasets.documents.get_where(cn, select_fields=['content'], filters=filters)
+while len(docs['documents']) > 0:
+    all_docs.extend(docs['documents'])
+    docs = client.datasets.documents.get_where(cn, select_fields=['content'], filters=filters, cursor=docs['cursor'])
+
+from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
+enc = SentenceTransformer2Vec('paraphrase-xlm-r-multilingual-v1')
+
+enc.run_tsdae_on_documents(
+    ["content"],
+    all_docs, 
+    model_output_path="drive/MyDrive/kuppingercole")
+```
+
