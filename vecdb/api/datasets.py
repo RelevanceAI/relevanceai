@@ -163,7 +163,7 @@ class Datasets(Base):
         """Certainty around the number of documents excluding chunks (until chunk documents is fixed)
         """
         v = list(self.monitor.health(dataset_id).values())
-        return min([_v['exists'] + _v['missing'] for _v in v])
+        return min([_v['exists'] + _v['missing'] for _v in v]) if len(v) > 0 else 0
     
     def _bulk_get_number_of_documents(self, dataset_ids: list):
         """
