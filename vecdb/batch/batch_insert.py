@@ -174,9 +174,9 @@ class BatchInsert(APIClient, Chunker):
             dataframe.to_dict(orient='records')]
         return self.insert_documents(dataset_id, docs, *args, **kwargs)
 
-    def delete_all_logs(self):
+    def delete_all_logs(self, dataset_id):
         collection_list = self.datasets.list()['datasets']
-        log_collections = [i for i in collection_list if 'log_update_started' in i]
+        log_collections = [i for i in collection_list if ('log_update_started' in i) and (dataset_id in i)]
         [self.datasets.delete(i, confirm = True) for i in log_collections];
         return
 

@@ -89,6 +89,12 @@ vec_client.pull_update_push(original_collection, even_function, new_collection)
 New Data: [{'_id': 0, 'even': True}, {'_id': 1, 'even': False}, ... {'_id': 199, 'even': True}]
 ```
 
+To delete all logs created by pull_update_push, use the delete_all_logs function.
+```python
+vec_client.delete_all_logs(original_collection)
+```
+
+
 ## Integration with VectorHub
 
 VectorHub is RelevanceAI's main encoder repository. For the models used here, we have abstracted away a lot of 
