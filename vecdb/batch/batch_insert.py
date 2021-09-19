@@ -107,7 +107,7 @@ class BatchInsert(APIClient, Chunker):
             print(self.datasets.create(logging_collection, output_format = 'json', verbose = verbose))
 
         #Get document lengths to calculate iterations
-        collection_lengths = self.datasets.get_number_of_documents([original_collection, logging_collection])
+        collection_lengths = self.datasets._bulk_get_number_of_documents([original_collection, logging_collection])
         original_length = collection_lengths[original_collection]
         completed_length = collection_lengths[logging_collection]
         remaining_length = original_length - completed_length

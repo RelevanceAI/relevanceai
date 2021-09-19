@@ -148,12 +148,29 @@ class Datasets(Base):
                                             }, output_format = output_format, verbose = verbose)
 
     def get_number_of_documents(self, dataset_ids: list):
-        collection_info = self.list_all(include_schema = False, include_stats = False, include_metadata = False,
-                                        include_schema_stats = True, dataset_ids = dataset_ids, verbose = False)
-
+        collection_info = self.list_all(
+            include_schema=False, 
+            include_stats=False, 
+            include_metadata=False,
+            include_schema_stats=True, 
+            dataset_ids=dataset_ids, 
+            verbose=False)
+        
         document_lengths = {i: collection_info['datasets'][i]['stats']['number_of_documents'] for i in dataset_ids}
-
         return document_lengths
+    
+    def _get_number_of_documents_in_dataset(self, dataset_id):
+        """Certainty around the number of documents excluding chunks (until chunk documents is fixed)
+        """
+        v = list(self.monitor.health(dataset_id).values())
+        return min([_v['exists'] + _v['missing'] for _v in v])
+    
+    def _bulk_get_number_of_documents(self, dataset_ids: list):
+        """
+        Certainty around the number of documents excluding chunks
+        (until chunk documents is fixed)
+        """
+        return {dataset_id: self._get_number_of_documents_in_dataset(dataset_id) for dataset_id in dataset_ids}
     
     def search(self, query, sort_by_created_at_date: bool=False, asc: bool=False, 
         output_format: str="json", verbose: bool=True):
