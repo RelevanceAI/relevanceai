@@ -17,7 +17,7 @@ class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
         max_workers:int =8, retry_chunk_mult: int = 0.5, 
-        show_progress_bar: bool=False,
+        show_progress_bar: bool=False, chunksize=100, max_retries=1,
         *args, **kwargs):
 
         """
@@ -30,20 +30,22 @@ class BatchInsert(APIClient, Chunker):
             return self.datasets.bulk_insert(
                 dataset_id,
                 docs, verbose = verbose, return_documents = True, 
-                retries=1, show_progress_bar=show_progress_bar, 
-                *args, **kwargs)
-        return self._write_documents(bulk_insert_func, docs, 
-            bulk_fn, max_workers, retry_chunk_mult)
+                retries=max_retries, *args, **kwargs)
+        return self._write_documents(
+            bulk_insert_func, docs, 
+                bulk_fn, max_workers, retry_chunk_mult, 
+                show_progress_bar=show_progress_bar, chunksize=chunksize)
 
     def update_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
-        max_workers:int =8, retry_chunk_mult: int = 0.5,
-        show_progress_bar=False,
+        max_workers: int=8, retry_chunk_mult: int=0.5,
+        chunksize: int=100, show_progress_bar=False,
         *args, **kwargs):
         """
         Update a list of documents with multi-threading
         automatically enabled.
         This is useful especially when pull_update_push bugs out and you need somethin urgently.
+        Set chunksize to `None` for automatic conversion
 
         >>> from vecdb import VecDBClient
         >>>  url = "https://api-aueast.relevance.ai/v1/"
@@ -65,12 +67,12 @@ class BatchInsert(APIClient, Chunker):
             return self.datasets.documents.bulk_update(
                 dataset_id,
                 docs, verbose = verbose, return_documents = True, retries = 1,
-                show_progress_bar=show_progress_bar,
                 *args, **kwargs)
-        return self._write_documents(bulk_update_func, docs, bulk_fn, max_workers, retry_chunk_mult)
+        return self._write_documents(bulk_update_func, docs, bulk_fn, max_workers, retry_chunk_mult, chunksize=chunksize)
 
-    def pull_update_push(self, 
-        original_collection: str, 
+    def pull_update_push(
+        self, 
+        original_collection: str,
         update_function,
         updated_collection: str=None, 
         logging_collection:str=None,
@@ -204,11 +206,13 @@ class BatchInsert(APIClient, Chunker):
         [self.datasets.delete(i, confirm = True) for i in log_collections];
         return
 
-    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, retry_chunk_mult: int = 0.5):
+    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, 
+        retry_chunk_mult: int = 0.5, show_progress_bar: bool=False, chunksize: int=None):
 
         test_doc = json.dumps(docs[0], indent = 4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER/ BYTE_TO_MB
-        chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
+        if chunksize is None:
+            chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
 
         #Initialise number of inserted documents
         inserted = []
@@ -227,10 +231,13 @@ class BatchInsert(APIClient, Chunker):
                         iterables=docs,
                         post_func_hook=insert_function,
                         max_workers=max_workers,
-                        chunksize=chunksize)
+                        chunksize=chunksize,
+                        show_progress_bar=show_progress_bar
+                    )
                 else:
                     insert_json = multithread(insert_function, docs, 
-                        max_workers=max_workers, chunksize=chunksize)
+                        max_workers=max_workers, chunksize=chunksize,
+                        show_progress_bar=show_progress_bar)
 
                 failed_ids = []
 

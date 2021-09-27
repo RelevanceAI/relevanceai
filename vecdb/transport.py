@@ -3,7 +3,6 @@
 import requests
 import traceback
 import time
-import httplib
 from json.decoder import JSONDecodeError
 from requests import Request
 from .logging import Profiler
@@ -66,7 +65,7 @@ class Transport:
                         if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         continue
                 
-                except (ConnectionError, httplib.IncompleteRead) as error:
+                except (ConnectionError) as error:
                     # Print the error
                     traceback.print_exc()
                     if verbose: print("Connection error but re-trying.") 
