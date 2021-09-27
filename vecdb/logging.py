@@ -1,27 +1,8 @@
-import logging
+from loguru import logger
 import time
 
-def create_logger(logging_level, log_to_file, log_to_console):
-    logger = logging.getProfiler()
-    logger.setLevel(logging_level)
-
-    formatter = logging.Formatter('%(asctime)s | %(message)s')
-
-    if (logger.hasHandlers()):
-        logger.handlers.clear()
-
-    if log_to_file == True:
-        file_handler = logging.FileHandler('vecdb.log')
-        file_handler.setLevel(logging_level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-
-    if log_to_console == True:
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging_level)
-        stream_handler.setFormatter(formatter)
-        logger.addHandler(stream_handler)
-
+def create_logger(*args, **kwargs):
+    """Use loguru's default logger for now."""
     return logger
 
 class Profiler:
@@ -38,5 +19,5 @@ class Profiler:
     def __exit__(self, *args):
         time_diff = time.time() - self.t1
         if self.log is True:
-            self.logger.info(f'{self.info} ran in {time_diff} seconds')
+            self.self.logger.info(f'{self.info} ran in {time_diff} seconds')
         return args

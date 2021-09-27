@@ -24,8 +24,8 @@ class BatchInsert(APIClient, Chunker):
         Insert a list of documents with multi-threading automatically
         enabled.
         """
-        if verbose: print(f"You are currently inserting into {dataset_id}") 
-        if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
+        if verbose: self.logger.info(f"You are currently inserting into {dataset_id}") 
+        if verbose: self.logger.info(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
@@ -61,8 +61,8 @@ class BatchInsert(APIClient, Chunker):
         >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 
         """
-        if verbose: print(f"You are currently updating {dataset_id}") 
-        if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
+        if verbose: self.logger.info(f"You are currently updating {dataset_id}") 
+        if verbose: self.logger.info(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
@@ -129,8 +129,8 @@ class BatchInsert(APIClient, Chunker):
         #Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose = False)
         if logging_collection not in collection_list['datasets']:
-            print("Creating a logging collection for you.")
-            print(self.datasets.create(logging_collection, output_format = 'json', verbose = verbose))
+            self.logger.info("Creating a logging collection for you.")
+            self.logger.info(self.datasets.create(logging_collection, output_format = 'json', verbose = verbose))
 
         #Get document lengths to calculate iterations
         collection_lengths = self.datasets._bulk_get_number_of_documents([original_collection, logging_collection])
@@ -163,7 +163,7 @@ class BatchInsert(APIClient, Chunker):
             try:                                          
                 updated_data = update_function(documents, **updating_args)
             except Exception as e:
-                print('Your updating function does not work: ' + str(e))
+                self.logger.info('Your updating function does not work: ' + str(e))
                 traceback.print_exc()
                 return
             updated_documents = [i['_id'] for i in documents]
@@ -179,7 +179,7 @@ class BatchInsert(APIClient, Chunker):
 
             #Check success
             chunk_failed = insert_json['failed_documents']
-            print(f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!')
+            self.logger.info(f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!')
             failed_documents.extend(chunk_failed)
 
             success_documents = list(set(updated_documents) - set(failed_documents))
@@ -187,10 +187,10 @@ class BatchInsert(APIClient, Chunker):
             self.insert_documents(logging_collection, upload_documents, verbose = False, max_workers = max_workers)
 
             if len(failed_documents) > max_error:
-                print(f'You have over {max_error} failed documents which failed to upload!')
+                self.logger.info(f'You have over {max_error} failed documents which failed to upload!')
                 return {"Failed Documents": failed_documents}
 
-        print(f'Pull, Update, Push is complete!')
+        self.logger.info(f'Pull, Update, Push is complete!')
         return
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):

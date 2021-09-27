@@ -35,7 +35,7 @@ class Transport:
                 retries = self.config.number_of_retries
             
             for i in range(retries):
-                if verbose: print("URL you are trying to access:" + base_url + endpoint) 
+                if verbose: self.logger.info("URL you are trying to access:" + base_url + endpoint) 
                 try:
                     req = Request(
                         method=method.upper(),
@@ -49,34 +49,34 @@ class Transport:
                         response = s.send(req)
                     
                     if response.status_code == 200:
-                        if verbose: print("Response success!") 
+                        if verbose: self.logger.info("Response success!") 
                         if output_format == "json":
                             return response.json()
                         else:
                             return response
 
                     elif response.status_code == 404:
-                        if verbose: print(response.content.decode()) 
-                        if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        if verbose: self.logger.info(response.content.decode()) 
+                        if verbose: self.logger.info(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         raise APIError(response.content.decode())
 
                     else:
-                        if verbose: print(response.content.decode()) 
-                        if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
+                        if verbose: self.logger.info(response.content.decode()) 
+                        if verbose: self.logger.info(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         continue
                 
                 except (ConnectionError) as error:
                     # Print the error
                     traceback.print_exc()
-                    if verbose: print("Connection error but re-trying.") 
+                    if verbose: self.logger.info("Connection error but re-trying.") 
                     time.sleep(self.config.seconds_between_retries)
                     continue
 
                 except JSONDecodeError as error:
-                    if verbose:  print('No Json available') 
-                    print(response)
+                    if verbose:  self.logger.info('No Json available') 
+                    self.logger.info(response)
 
-                if verbose: print('Response failed, stopped trying') 
+                if verbose: self.logger.info('Response failed, stopped trying') 
                 raise APIError(response.content.decode())
 
              
