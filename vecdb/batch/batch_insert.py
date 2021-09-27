@@ -134,73 +134,81 @@ class BatchInsert(APIClient, Chunker):
             self.logger.info("Creating a logging collection for you.")
             self.logger.info(self.datasets.create(logging_collection, output_format = 'json', verbose = verbose))
 
-        #Get document lengths to calculate iterations
-        collection_lengths = self.datasets._bulk_get_number_of_documents([original_collection, logging_collection])
-        original_length = collection_lengths[original_collection]
-        completed_length = collection_lengths[logging_collection]
-        remaining_length = original_length - completed_length
-        iterations_required =  int(remaining_length/retrieve_chunk_size) + 1
-
         #Track failed documents
         failed_documents = []
 
         #Trust the process
-        for i in progress_bar(range(iterations_required), show_progress_bar=show_progress_bar):
-            #Get completed documents
-            log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
-            completed_documents_list = [i['_id'] for i in log_json]
 
-            #Get incomplete documents from raw collection
-            retrieve_filters = filters + [{"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}]
-            for retrieve_retry_counter in range(number_of_retrieve_retries):
-                try:
-                    orig_json = self.datasets.documents.get_where(
-                        original_collection, 
-                        filters=retrieve_filters,
-                        page_size = retrieve_chunk_size, 
-                        select_fields=select_fields,
-                        verbose=verbose)
-                    break
-                except:
-                    self.logger.debug("Failed to retrieve chunks. Retrieving half of previous number.")
-                    retrieve_chunk_size = retrieve_chunk_size * retrieve_chunk_size_failure_retry_multiplier
-                    time.sleep(self.config.seconds_between_retries)
+        for _ in range(number_of_retrieve_retries):
 
-            documents = orig_json['documents']
+            #Get document lengths to calculate iterations
+            collection_lengths = self.datasets._bulk_get_number_of_documents([original_collection, logging_collection])
+            original_length = collection_lengths[original_collection]
+            completed_length = collection_lengths[logging_collection]
+            remaining_length = original_length - completed_length
+            iterations_required =  int(remaining_length/retrieve_chunk_size) + 1
 
-            #Update documents
-            try:                                          
-                updated_data = update_function(documents, **updating_args)
-            except Exception as e:
-                self.logger.info('Your updating function does not work: ' + str(e))
-                traceback.print_exc()
-                return
-            updated_documents = [i['_id'] for i in documents]
-
-            #Upload documents   
-            if updated_collection is None: 
-                insert_json = self.update_documents(
-                    dataset_id = original_collection, docs = updated_data, verbose = verbose, 
-                    max_workers = max_workers, show_progress_bar=show_progress_bar)
-            else:
-                insert_json = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
-                    verbose = verbose, max_workers=max_workers, show_progress_bar=show_progress_bar)
-
-            #Check success
-            chunk_failed = insert_json['failed_documents']
-            self.logger.info(f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!')
-            failed_documents.extend(chunk_failed)
-
-            success_documents = list(set(updated_documents) - set(failed_documents))
-            upload_documents = [{'_id': i} for i in success_documents]
-            self.insert_documents(logging_collection, upload_documents, verbose = False, max_workers = max_workers)
-
-            if len(failed_documents) > max_error:
-                self.logger.info(f'You have over {max_error} failed documents which failed to upload!')
+            #Return if no documents to update
+            if remaining_length == 0:
+                self.logger.info(f'Pull, Update, Push is complete!')
                 return {"Failed Documents": failed_documents}
 
+            for _ in progress_bar(range(iterations_required), show_progress_bar=show_progress_bar):
+                #Get completed documents
+                log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
+                completed_documents_list = [i['_id'] for i in log_json]
+
+                #Get incomplete documents from raw collection
+                retrieve_filters = filters + [{"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}]
+
+                orig_json = self.datasets.documents.get_where(
+                    original_collection, 
+                    filters=retrieve_filters,
+                    page_size = retrieve_chunk_size, 
+                    select_fields=select_fields,
+                    verbose=verbose)
+        
+                documents = orig_json['documents']
+
+                #Update documents
+                try:                                          
+                    updated_data = update_function(documents, **updating_args)
+                except Exception as e:
+                    self.logger.info('Your updating function does not work: ' + str(e))
+                    traceback.print_exc()
+                    return
+                updated_documents = [i['_id'] for i in documents]
+
+                #Upload documents   
+                if updated_collection is None: 
+                    insert_json = self.update_documents(
+                        dataset_id = original_collection, docs = updated_data, verbose = verbose, 
+                        max_workers = max_workers, show_progress_bar=show_progress_bar)
+                else:
+                    insert_json = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
+                        verbose = verbose, max_workers=max_workers, show_progress_bar=show_progress_bar)
+
+                #Check success
+                chunk_failed = insert_json['failed_documents']
+                self.logger.info(f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!')
+                failed_documents.extend(chunk_failed)
+                success_documents = list(set(updated_documents) - set(failed_documents))
+                upload_documents = [{'_id': i} for i in success_documents]
+                self.insert_documents(logging_collection, upload_documents, verbose = False, max_workers = max_workers)
+
+                #If fail, try to reduce retrieve chunk
+                if len(chunk_failed) > 0:
+                    self.logger.debug("Failed to upload. Retrieving half of previous number.")
+                    retrieve_chunk_size = retrieve_chunk_size * retrieve_chunk_size_failure_retry_multiplier
+                    time.sleep(self.config.seconds_between_retries)
+                    break
+
+                if len(failed_documents) > max_error:
+                    self.logger.info(f'You have over {max_error} failed documents which failed to upload!')
+                    return {"Failed Documents": failed_documents}
+
         self.logger.info(f'Pull, Update, Push is complete!')
-        return
+        return {"Failed Documents": failed_documents}
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
