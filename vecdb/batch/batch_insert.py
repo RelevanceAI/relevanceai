@@ -86,7 +86,7 @@ class BatchInsert(APIClient, Chunker):
         filters: list=[],
         select_fields: list=[],
         verbose: bool=True,
-        show_progress_bar: bool=False
+        show_progress_bar: bool=False,
         ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
@@ -145,14 +145,14 @@ class BatchInsert(APIClient, Chunker):
         failed_documents = []
 
         #Trust the process
-        for i in progress_bar(range(iterations_required)):
+        for i in progress_bar(range(iterations_required), show_progress_bar=show_progress_bar):
             #Get completed documents
             log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
             completed_documents_list = [i['_id'] for i in log_json]
 
             #Get incomplete documents from raw collection
             retrieve_filters = filters + [{"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}]
-            for retrieve_retry_counter in number_of_retrieve_retries:
+            for retrieve_retry_counter in range(number_of_retrieve_retries):
                 try:
                     orig_json = self.datasets.documents.get_where(
                         original_collection, 
