@@ -1,12 +1,13 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
-from json.decoder import JSONDecodeError
-from requests import Request
 import requests
 import traceback
 import time
+from json.decoder import JSONDecodeError
+from requests import Request
 from .logging import Profiler
 from .errors import APIError
+
 
 class Transport:
     """Base class for all VecDB objects
@@ -18,7 +19,6 @@ class Transport:
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
 
-    
     def make_http_request(self, endpoint: str, method: str='GET', parameters: dict={}, output_format: str = "json", 
         base_url: str=None, verbose: bool = True, retries: bool = None):
         """Make the HTTP request
@@ -65,7 +65,7 @@ class Transport:
                         if verbose: print(f'Response failed (status: {response.status_code} Content: {response.content.decode()})') 
                         continue
                 
-                except ConnectionError as error:
+                except (ConnectionError) as error:
                     # Print the error
                     traceback.print_exc()
                     if verbose: print("Connection error but re-trying.") 

@@ -1,8 +1,9 @@
 """Get a good progress bar
 """
-
+from contextlib import nullcontext
 class ProgressBar:
     def __call__(self, *args, **kwargs):
+        print("WHAT BAR")
         return self.get_bar()(*args, **kwargs)
     
     @staticmethod
@@ -39,8 +40,10 @@ class ProgressBar:
         from tqdm import tqdm as normal_bar
         return normal_bar
 
-def progress_bar(*args, **kwargs):
+def progress_bar(*args, show_progress_bar: bool=False, **kwargs):
     try:
-        return ProgressBar()(*args, **kwargs)
+        if show_progress_bar:
+            return ProgressBar()(*args, **kwargs)
     except:
-        return
+        return nullcontext()
+    return nullcontext()

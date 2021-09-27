@@ -147,3 +147,23 @@ enc.run_tsdae_on_documents(
     model_output_path="drive/MyDrive/kuppingercole")
 ```
 
+### Troubleshooting Pull Update Push
+
+Sometimes Pull Update Push will fail for strange reasons (ping Felix!)
+
+If this is the case, then you are free to use this: 
+
+```{python}
+>>> from vecdb import VecDBClient
+>>>  url = "https://api-aueast.relevance.ai/v1/"
+
+>>> collection = ""
+>>> project = ""
+>>> api_key = ""
+>>> client = VecDBClient(project, api_key)
+>>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
+>>> while len(docs['documents']) > 0:
+>>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
+>>>     client.update_documents(collection, docs['documents'])
+>>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+```

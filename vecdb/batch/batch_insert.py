@@ -16,7 +16,9 @@ LIST_SIZE_MULTIPLIER = 3
 class BatchInsert(APIClient, Chunker):
     def insert_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
-         max_workers:int =8, retry_chunk_mult: int = 0.5, *args, **kwargs):
+        max_workers:int =8, retry_chunk_mult: int = 0.5, 
+        show_progress_bar: bool=False, chunksize=100, max_retries=1,
+        *args, **kwargs):
 
         """
         Insert a list of documents with multi-threading automatically
@@ -27,27 +29,50 @@ class BatchInsert(APIClient, Chunker):
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
-                docs, verbose = verbose, return_documents = True, retries = 1, *args, **kwargs)
-        return self._write_documents(bulk_insert_func, docs, bulk_fn, max_workers, retry_chunk_mult)
-
+                docs, verbose = verbose, return_documents = True, 
+                retries=max_retries, *args, **kwargs)
+        return self._write_documents(
+            bulk_insert_func, docs, 
+                bulk_fn, max_workers, retry_chunk_mult, 
+                show_progress_bar=show_progress_bar, chunksize=chunksize)
 
     def update_documents(self, dataset_id: str, docs: list, 
         bulk_fn: Callable=None, verbose: bool=True,
-        max_workers:int =8, retry_chunk_mult: int = 0.5,  *args, **kwargs):
+        max_workers: int=8, retry_chunk_mult: int=0.5,
+        chunksize: int=100, show_progress_bar=False,
+        *args, **kwargs):
         """
         Update a list of documents with multi-threading
         automatically enabled.
+        This is useful especially when pull_update_push bugs out and you need somethin urgently.
+        Set chunksize to `None` for automatic conversion
+
+        >>> from vecdb import VecDBClient
+        >>>  url = "https://api-aueast.relevance.ai/v1/"
+
+        >>> collection = ""
+        >>> project = ""
+        >>> api_key = ""
+        >>> client = VecDBClient(project, api_key)
+        >>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
+        >>> while len(docs['documents']) > 0:
+        >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
+        >>>     client.update_documents(collection, docs['documents'])
+        >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+
         """
         if verbose: print(f"You are currently updating {dataset_id}") 
         if verbose: print(f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}") 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
-                docs, verbose = verbose, return_documents = True, retries = 1, *args, **kwargs)
-        return self._write_documents(bulk_update_func, docs, bulk_fn, max_workers, retry_chunk_mult)
+                docs, verbose = verbose, return_documents = True, retries = 1,
+                *args, **kwargs)
+        return self._write_documents(bulk_update_func, docs, bulk_fn, max_workers, retry_chunk_mult, chunksize=chunksize)
 
-    def pull_update_push(self, 
-        original_collection: str, 
+    def pull_update_push(
+        self, 
+        original_collection: str,
         update_function,
         updated_collection: str=None, 
         logging_collection:str=None,
@@ -57,7 +82,8 @@ class BatchInsert(APIClient, Chunker):
         max_error: int=1000, 
         filters: list=[],
         select_fields: list=[],
-        verbose: bool=True
+        verbose: bool=True,
+        show_progress_bar: bool=False,
         ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
@@ -118,7 +144,6 @@ class BatchInsert(APIClient, Chunker):
 
         #Trust the process
         for i in progress_bar(range(iterations_required)):
-
             #Get completed documents
             log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
             completed_documents_list = [i['_id'] for i in log_json]
@@ -145,11 +170,12 @@ class BatchInsert(APIClient, Chunker):
 
             #Upload documents   
             if updated_collection is None: 
-                insert_json = self.update_documents(dataset_id = original_collection, docs = updated_data, verbose = verbose, 
-                    max_workers = max_workers)
+                insert_json = self.update_documents(
+                    dataset_id = original_collection, docs = updated_data, verbose = verbose, 
+                    max_workers = max_workers, show_progress_bar=show_progress_bar)
             else:
                 insert_json = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
-                    verbose = verbose, max_workers = max_workers)
+                    verbose = verbose, max_workers=max_workers, show_progress_bar=show_progress_bar)
 
             #Check success
             chunk_failed = insert_json['failed_documents']
@@ -180,12 +206,13 @@ class BatchInsert(APIClient, Chunker):
         [self.datasets.delete(i, confirm = True) for i in log_collections];
         return
 
-    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, retry_chunk_mult: int = 0.5):
+    def _write_documents(self,  insert_function, docs: list, bulk_fn: Callable=None, max_workers:int =8, 
+        retry_chunk_mult: int = 0.5, show_progress_bar: bool=False, chunksize: int=None):
 
         test_doc = json.dumps(docs[0], indent = 4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER/ BYTE_TO_MB
-        chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
-
+        if chunksize is None:
+            chunksize = int(self.config.target_chunk_mb/doc_mb) if int(self.config.target_chunk_mb/doc_mb) < len(docs) else len(docs)
 
         #Initialise number of inserted documents
         inserted = []
@@ -197,25 +224,25 @@ class BatchInsert(APIClient, Chunker):
         cancelled_ids = []
 
         for i in range(self.config.number_of_retries):
-
             if len(failed_ids) > 0:
-        
                 if bulk_fn is not None:
                     insert_json = multiprocess(
                         func=bulk_fn,
                         iterables=docs,
                         post_func_hook=insert_function,
                         max_workers=max_workers,
-                        chunksize=chunksize)
+                        chunksize=chunksize,
+                        show_progress_bar=show_progress_bar
+                    )
                 else:
                     insert_json = multithread(insert_function, docs, 
-                        max_workers=max_workers, chunksize=chunksize)
+                        max_workers=max_workers, chunksize=chunksize,
+                        show_progress_bar=show_progress_bar)
 
                 failed_ids = []
 
                 #Update inserted amount
                 [inserted.append(chunk['response_json']['inserted']) for chunk in insert_json if chunk['status_code'] == 200];
-
                 for chunk in insert_json:
 
                     #Track failed in 200
@@ -240,7 +267,6 @@ class BatchInsert(APIClient, Chunker):
 
             else: 
                 break
-
         failed_ids.extend(cancelled_ids)    
         output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
         return output

@@ -53,8 +53,8 @@ class Documents(Base):
                 "is_random": is_random}
             , output_format = output_format, verbose = verbose)
     
-    def bulk_update(self, dataset_id: str, updates: list, output_format: str = "json", verbose: bool = True, return_documents: bool = False, retries = None):
-
+    def bulk_update(self, dataset_id: str, updates: list, output_format: str = "json", verbose: bool = True, 
+        return_documents: bool = False, retries = None):
         if return_documents is False: 
             return self.make_http_request(
                 endpoint=f"datasets/{dataset_id}/documents/bulk_update",
