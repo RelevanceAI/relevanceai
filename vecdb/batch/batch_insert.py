@@ -9,6 +9,7 @@ import traceback
 from datetime import datetime
 import sys
 import json
+import time
 
 BYTE_TO_MB = 1024*1024
 LIST_SIZE_MULTIPLIER = 3
@@ -78,12 +79,14 @@ class BatchInsert(APIClient, Chunker):
         logging_collection:str=None,
         updating_args: dict={},
         retrieve_chunk_size: int=100,
+        retrieve_chunk_size_failure_retry_multiplier: float=0.5,
+        number_of_retrieve_retries: int = 3,
         max_workers:int=8, 
         max_error: int=1000, 
         filters: list=[],
         select_fields: list=[],
         verbose: bool=True,
-        show_progress_bar: bool=False,
+        show_progress_bar: bool=False
         ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
@@ -108,9 +111,8 @@ class BatchInsert(APIClient, Chunker):
         retrieve_chunk_size: int
             The number of documents that are received from the original collection with each loop iteration.
 
-        
-        : int
-            The number of documents that are uploaded with each loop iteration.
+        retrieve_chunk_size_failure_retry_multiplier: int
+            If fails, retry on each chunk
 
         max_workers: int
             The number of processors you want to parallelize with
@@ -150,12 +152,19 @@ class BatchInsert(APIClient, Chunker):
 
             #Get incomplete documents from raw collection
             retrieve_filters = filters + [{"field": "ids", "filter_type": "ids", "condition": "!=", "condition_value": completed_documents_list}]
-            orig_json = self.datasets.documents.get_where(
-                original_collection, 
-                filters=retrieve_filters,
-                page_size = retrieve_chunk_size, 
-                select_fields=select_fields,
-                verbose = verbose)
+            for retrieve_retry_counter in number_of_retrieve_retries:
+                try:
+                    orig_json = self.datasets.documents.get_where(
+                        original_collection, 
+                        filters=retrieve_filters,
+                        page_size = retrieve_chunk_size, 
+                        select_fields=select_fields,
+                        verbose=verbose)
+                    break
+                except:
+                    self.logger.debug("Failed to retrieve chunks. Retrieving half of previous number.")
+                    retrieve_chunk_size = retrieve_chunk_size * retrieve_chunk_size_failure_retry_multiplier
+                    time.sleep(self.config.seconds_between_retries)
 
             documents = orig_json['documents']
 
@@ -270,4 +279,3 @@ class BatchInsert(APIClient, Chunker):
         failed_ids.extend(cancelled_ids)    
         output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
         return output
-
