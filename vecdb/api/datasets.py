@@ -116,7 +116,7 @@ class Datasets(Base):
     def delete(self, dataset_id: str, confirm: bool=False, output_format: str="json", verbose: bool=True):
         if confirm == True:
             # confirm with the user
-            print(f'You are about to delete {dataset_id}')
+            self.logger.info(f'You are about to delete {dataset_id}')
             user_input = input('Confirm? [Y/N] ')
         else: 
             user_input = 'y'
@@ -131,11 +131,11 @@ class Datasets(Base):
         )
         
         elif user_input.lower() in ('n', 'no'): 
-            print(f'{dataset_id} not deleted')
+            self.logger.info(f'{dataset_id} not deleted')
             return 
 
         else:
-           print(f'Error: Input {user_input} unrecognised.')
+           self.logger.info(f'Error: Input {user_input} unrecognised.')
            return        
 
     def clone(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, 

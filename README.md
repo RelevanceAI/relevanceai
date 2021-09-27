@@ -167,3 +167,13 @@ If this is the case, then you are free to use this:
 >>>     client.update_documents(collection, docs['documents'])
 >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 ```
+
+## Stop logging 
+
+In order to stop all logging, you can just run this: 
+
+```
+client.logger.stop()
+```
+
+This can be helpful during client demos when you do not need to show the API endpoint being hit.

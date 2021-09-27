@@ -1,6 +1,7 @@
 """access the client via this class
 """
 import os
+from loguru import logger
 from .config import CONFIG
 from .batch.client import BatchAPIClient
 from .errors import APIError
@@ -17,10 +18,9 @@ class VecDBClient(BatchAPIClient):
         api_key: str=os.getenv("VDB_API_KEY"),
         base_url: str="https://api-dev-aueast.relevance.ai/v1/"):
         super().__init__(project, api_key, base_url)
-        
+        self.logger = logger
         if (self.datasets.list(verbose=False, output_format = False, retries=1).status_code == 200):
-            print(self.WELCOME_MESSAGE)
-
+            self.logger.info(self.WELCOME_MESSAGE)
         else:
             raise APIError(self.FAIL_MESSAGE)
 

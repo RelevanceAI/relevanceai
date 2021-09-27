@@ -32,25 +32,25 @@ class Tasks(Base):
                 try:
                     status = self.status(dataset_id, task_id)['status']
                 except:
-                    print(f'Status-check timed out: {task_id}')
+                    self.logger.info(f'Status-check timed out: {task_id}')
                     return task_id
 
                 if verbose == True:
-                    print(status)
+                    self.logger.info(status)
 
-            print(f"Your task is {status}!")
+            self.logger.info(f"Your task is {status}!")
             return 
 
 
     def check_status_until_finish(self, dataset_id: str, task_id: str, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10):
 
         if status_checker == True:
-            print(f"Task_ID: {task_id}")
+            self.logger.info(f"Task_ID: {task_id}")
             self.loop_status_until_finish(dataset_id, task_id, verbose = verbose, time_between_ping = time_between_ping)
             return 
 
         else:
-            print("To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs")
+            self.logger.info("To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs")
             return {"task_id": task_id}
 
     

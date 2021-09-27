@@ -3,7 +3,7 @@
 from contextlib import nullcontext
 class ProgressBar:
     def __call__(self, *args, **kwargs):
-        print("WHAT BAR")
+        self.logger.info("WHAT BAR")
         return self.get_bar()(*args, **kwargs)
     
     @staticmethod
