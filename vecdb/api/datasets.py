@@ -76,7 +76,9 @@ class Datasets(Base):
 
     def bulk_insert(self, 
         dataset_id: str, documents: list, insert_date: bool = True, 
-        overwrite: bool = True, update_schema: bool = True, verbose: bool = True, return_documents: bool = False, retries = None, output_format: str = "json",
+        overwrite: bool = True, update_schema: bool = True, verbose: bool = True, 
+        return_documents: bool=False, retries: int=None, 
+        output_format: str="json",
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest/"):
 
         if return_documents is False: 
@@ -111,7 +113,7 @@ class Datasets(Base):
             return {'response_json': response_json, 'documents': documents, 'status_code': insert_response.status_code}
 
 
-    def delete(self, dataset_id: str, confirm = False, output_format: str = "json", verbose: bool = True):
+    def delete(self, dataset_id: str, confirm: bool=False, output_format: str="json", verbose: bool=True):
         if confirm == True:
             # confirm with the user
             print(f'You are about to delete {dataset_id}')

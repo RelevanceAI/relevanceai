@@ -39,8 +39,9 @@ class ProgressBar:
         from tqdm import tqdm as normal_bar
         return normal_bar
 
-def progress_bar(*args, **kwargs):
+def progress_bar(*args, show_progress_bar: bool=False, **kwargs):
     try:
-        return ProgressBar()(*args, **kwargs)
-    except:
+        if show_progress_bar:
+            return ProgressBar()(*args, **kwargs)
+    finally:
         return
