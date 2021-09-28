@@ -5,8 +5,9 @@ from loguru import logger
 from .config import CONFIG
 from .batch.client import BatchAPIClient
 from .errors import APIError
+from doc_utils import DocUtils
 
-class VecDBClient(BatchAPIClient):
+class VecDBClient(BatchAPIClient, DocUtils):
     """VecDB Client
     """
     WELCOME_MESSAGE = """Welcome to the development version of the VecDB Python SDK. Please do not use this SDK to build core systems yet until we have a stable version."""
