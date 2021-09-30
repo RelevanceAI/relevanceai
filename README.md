@@ -177,3 +177,10 @@ client.logger.stop()
 ```
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
+
+```
+Copyright (C) Relevance AI - All Rights Reserved
+Unauthorized copying of this repository, via any medium is strictly prohibited
+Proprietary and confidential
+Relevance AI <dev@relevance.ai> 2021 
+```
