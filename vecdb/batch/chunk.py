@@ -20,7 +20,7 @@ class Chunker:
             >>> ViClient.chunk(documents)
         """
         if isinstance(documents, pd.DataFrame):
-            for i in progress_bar(range(0, len(documents) / chunksize)):
+            for i in progress_bar(range(0, int(len(documents) / chunksize))):
                 yield documents.iloc[i * chunksize : (i + 1) * chunksize]
         else:
             for i in progress_bar(range(0, int(len(documents) / chunksize))):

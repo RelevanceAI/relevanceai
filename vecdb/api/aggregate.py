@@ -20,6 +20,6 @@ class Aggregate(Base):
                 "page": page,
                 "asc": asc,
                 "flatten": flatten,
-                "alias": alias
+                "alias": alias  
             }
         )
