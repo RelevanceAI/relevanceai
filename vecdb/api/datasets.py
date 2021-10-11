@@ -77,7 +77,7 @@ class Datasets(Base):
     def bulk_insert(self, 
         dataset_id: str, documents: list, insert_date: bool = True, 
         overwrite: bool = True, update_schema: bool = True,
-        field_transformers=[{}], verbose: bool = True, 
+        field_transformers=[], verbose: bool = True, 
         return_documents: bool=False, retries: int=None, 
         output_format: str="json",
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest/"):
