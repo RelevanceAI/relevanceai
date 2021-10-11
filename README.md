@@ -24,7 +24,7 @@ Get multi-threading and multi-processing out of the box. The VecDB Python packag
 ```python
 
 def bulk_fn(docs):
-    # bulk_fn receives a list of documents
+    # bulk_fn receives a list of documents (python dictionaries)
     for d in docs:
         d["value_update"] = d["value"] + 2
     return docs
