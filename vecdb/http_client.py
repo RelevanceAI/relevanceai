@@ -17,7 +17,7 @@ class VecDBClient(BatchAPIClient, DocUtils):
         self,
         project: str=os.getenv("VDB_PROJECT"), 
         api_key: str=os.getenv("VDB_API_KEY"),
-        base_url: str="https://api-dev-aueast.relevance.ai/v1/"):
+        base_url: str="https://api-aueast.relevance.ai/v1/"):
         super().__init__(project, api_key, base_url)
         self.logger = logger
         if (self.datasets.list(verbose=False, output_format = False, retries=1).status_code == 200):
