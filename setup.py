@@ -15,6 +15,9 @@ def get_version(rel_path):
             return line.split(delim)[1]
     raise RuntimeError(f"Unable to find a valid __version__ string in {rel_path}.")
 
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 setup(
     name='VecDB',
     version=get_version("vecdb/__init__.py"),
@@ -23,6 +26,6 @@ setup(
     author_email='dev@vctr.ai',
     description='No description',
     packages=find_packages(),    
-    install_requires=[],
+    install_requires=required,
 )
 

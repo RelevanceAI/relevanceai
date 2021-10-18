@@ -24,7 +24,7 @@ Get multi-threading and multi-processing out of the box. The VecDB Python packag
 ```python
 
 def bulk_fn(docs):
-    # bulk_fn receives a list of documents
+    # bulk_fn receives a list of documents (python dictionaries)
     for d in docs:
         d["value_update"] = d["value"] + 2
     return docs
@@ -177,3 +177,10 @@ client.logger.stop()
 ```
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
+
+```
+Copyright (C) Relevance AI - All Rights Reserved
+Unauthorized copying of this repository, via any medium is strictly prohibited
+Proprietary and confidential
+Relevance AI <dev@relevance.ai> 2021 
+```

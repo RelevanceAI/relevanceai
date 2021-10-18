@@ -1,2 +1,4 @@
 tqdm==4.49.0
 pandas
+loguru
+document-utils

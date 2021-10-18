@@ -5,8 +5,9 @@ from loguru import logger
 from .config import CONFIG
 from .batch.client import BatchAPIClient
 from .errors import APIError
+from doc_utils import DocUtils
 
-class VecDBClient(BatchAPIClient):
+class VecDBClient(BatchAPIClient, DocUtils):
     """VecDB Client
     """
     WELCOME_MESSAGE = """Welcome to the development version of the VecDB Python SDK. Please do not use this SDK to build core systems yet until we have a stable version."""
@@ -16,7 +17,7 @@ class VecDBClient(BatchAPIClient):
         self,
         project: str=os.getenv("VDB_PROJECT"), 
         api_key: str=os.getenv("VDB_API_KEY"),
-        base_url: str="https://api-dev-aueast.relevance.ai/v1/"):
+        base_url: str="https://api-aueast.relevance.ai/v1/"):
         super().__init__(project, api_key, base_url)
         self.logger = logger
         if (self.datasets.list(verbose=False, output_format = False, retries=1).status_code == 200):

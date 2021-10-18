@@ -76,11 +76,21 @@ class Datasets(Base):
 
     def bulk_insert(self, 
         dataset_id: str, documents: list, insert_date: bool = True, 
-        overwrite: bool = True, update_schema: bool = True, verbose: bool = True, 
+        overwrite: bool = True, update_schema: bool = True,
+        field_transformers=[], verbose: bool = True, 
         return_documents: bool=False, retries: int=None, 
         output_format: str="json",
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest/"):
-
+        """
+        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        An example field_transformers object:
+        {
+            "field": "string",
+            "output_field": "string",
+            "remove_html": true,
+            "split_sentences": true
+        }
+        """
         if return_documents is False: 
             return self.make_http_request(
                 endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
@@ -91,6 +101,7 @@ class Datasets(Base):
                     "insert_date": insert_date,
                     "overwrite": overwrite,
                     "update_schema": update_schema,
+                    "field_transformers": field_transformers,
                 }, output_format = output_format, retries = retries, verbose = verbose)
             
         else:
@@ -103,6 +114,7 @@ class Datasets(Base):
                     "insert_date": insert_date,
                     "overwrite": overwrite,
                     "update_schema": update_schema,
+                    "field_transformers": field_transformers,
                 }, output_format = False, retries = retries, verbose = verbose)
 
             try:

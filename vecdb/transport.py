@@ -79,5 +79,4 @@ class Transport:
                 if verbose: self.logger.info('Response failed, stopped trying') 
                 raise APIError(response.content.decode())
 
-             
             return response

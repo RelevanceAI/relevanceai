@@ -16,8 +16,9 @@ class Profiler:
     def __enter__(self):
         self.t1 = time.time()
         return self
+    
     def __exit__(self, *args):
         time_diff = time.time() - self.t1
         if self.log is True:
-            self.self.logger.info(f'{self.info} ran in {time_diff} seconds')
+            self.logger.info(f'{self.info} ran in {time_diff} seconds')
         return args
