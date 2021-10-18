@@ -57,7 +57,7 @@ class Tasks(Base):
     # Note: The following tasks are instantiated manually to accelerate 
     # creation of certain popular tasks
 
-    #Make decorator wrat for all task checkers
+    # Make decorator wrap for all task checkers
 
     def create_cluster_task(self, dataset_id, vector_field: str, 
         n_clusters: int, alias: str="default", refresh: bool=False,
