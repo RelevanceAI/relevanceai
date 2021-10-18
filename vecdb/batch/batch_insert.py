@@ -10,6 +10,7 @@ from datetime import datetime
 import sys
 import json
 import time
+import math
 
 BYTE_TO_MB = 1024*1024
 LIST_SIZE_MULTIPLIER = 3
@@ -86,7 +87,7 @@ class BatchInsert(APIClient, Chunker):
         filters: list=[],
         select_fields: list=[],
         verbose: bool=True,
-        show_progress_bar: bool=False,
+        show_progress_bar: bool=True,
         ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection. 
@@ -142,20 +143,25 @@ class BatchInsert(APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
 
             #Get document lengths to calculate iterations
-            collection_lengths = self.datasets._bulk_get_number_of_documents([original_collection, logging_collection])
-            original_length = collection_lengths[original_collection]
-            completed_length = collection_lengths[logging_collection]
+            original_length = self.datasets.documents.get_where(original_collection, page_size=1, filters = filters)['count']
+            completed_length = self.datasets.documents.get_where(logging_collection, page_size=1)['count']
             remaining_length = original_length - completed_length
-            iterations_required =  int(remaining_length/retrieve_chunk_size) + 1
+            iterations_required =  math.ceil(remaining_length/retrieve_chunk_size)
+
+            self.logger.info(f"{original_length=}")
+            self.logger.info(f"{completed_length=}")
+            self.logger.info(f"{iterations_required=}")
 
             #Return if no documents to update
             if remaining_length == 0:
                 self.logger.info(f'Pull, Update, Push is complete!')
-                return {"Failed Documents": failed_documents}
+                return {"Failed Documents": failed_documents, "Logging Collection": logging_collection}
+
 
             for _ in progress_bar(range(iterations_required), show_progress_bar=show_progress_bar):
+                
                 #Get completed documents
-                log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose, filters=filters)
+                log_json = self.datasets.documents.get_where_all(logging_collection, verbose = verbose)
                 completed_documents_list = [i['_id'] for i in log_json]
 
                 #Get incomplete documents from raw collection
@@ -169,6 +175,7 @@ class BatchInsert(APIClient, Chunker):
                     verbose=verbose)
         
                 documents = orig_json['documents']
+                self.logger.info(f"{len(documents)=}")
 
                 #Update documents
                 try:                                          
@@ -178,6 +185,7 @@ class BatchInsert(APIClient, Chunker):
                     traceback.print_exc()
                     return
                 updated_documents = [i['_id'] for i in documents]
+                self.logger.info(f"{len(updated_data)=}")
 
                 #Upload documents   
                 if updated_collection is None: 
@@ -205,10 +213,10 @@ class BatchInsert(APIClient, Chunker):
 
                 if len(failed_documents) > max_error:
                     self.logger.info(f'You have over {max_error} failed documents which failed to upload!')
-                    return {"Failed Documents": failed_documents}
+                    return {"Failed Documents": failed_documents, "Logging Collection": logging_collection}
 
         self.logger.info(f'Pull, Update, Push is complete!')
-        return {"Failed Documents": failed_documents}
+        return {"Failed Documents": failed_documents, "Logging Collection": logging_collection}
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""

@@ -3,10 +3,11 @@
 # from contextlib import nullcontext
 from contextlib import AbstractContextManager
 
+
 class ProgressBar:
-    def __call__(self, *args, **kwargs):
+    def __call__(self, iterable):
         self.logger.info("WHAT BAR")
-        return self.get_bar()(*args, **kwargs)
+        return self.get_bar()(iterable)
     
     @staticmethod
     def is_in_ipython():
@@ -53,25 +54,35 @@ class NullProgressBar(AbstractContextManager):
         # Perform operation, using optional_cm if condition is True
     """
 
-    def __init__(self, enter_result: int=None):
-        self.enter_result = enter_result
+    def __init__(self, iterable: int=None):
+        self.iterable = iterable
 
     def __enter__(self):
-        return self.enter_result
+        return self.iterable
 
     def __exit__(self, *excinfo):
         pass
 
     def __iter__(self):
-        if self.enter_result is None:
-            self.enter_result = 999999999999999
-        for i in range(self.enter_result):
+        if self.iterable is None:
+            self.iterable = range(0)
+        for i in self.iterable:
             yield i
 
-def progress_bar(*args, show_progress_bar: bool=False, **kwargs):
+def progress_bar(iterable, show_progress_bar: bool=False):
     try:
         if show_progress_bar:
-            return ProgressBar()(*args, **kwargs)
+            return ProgressBar()(iterable)
     except:
-        return NullProgressBar()
-    return NullProgressBar()
+        return NullProgressBar(iterable)
+    return NullProgressBar(iterable)
+
+
+if __name__ == "__main__":
+
+    x = 0 
+    for i in progress_bar(range(5), show_progress_bar=False): 
+        x+=1
+        print(i)
+        if x > 10:
+            break

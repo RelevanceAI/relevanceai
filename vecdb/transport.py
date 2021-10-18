@@ -5,7 +5,7 @@ import traceback
 import time
 from json.decoder import JSONDecodeError
 from requests import Request
-from .logging import Profiler
+from .vecdb_logging import Profiler
 from .errors import APIError
 
 
