@@ -143,8 +143,8 @@ class BatchInsert(APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
 
             #Get document lengths to calculate iterations
-            original_length = self.datasets.documents.get_where(original_collection, page_size=1, filters = filters)['count']
-            completed_length = self.datasets.documents.get_where(logging_collection, page_size=1)['count']
+            original_length = self.datasets.documents._get_number_of_documents(original_collection, filters)
+            completed_length = self.datasets.documents._get_number_of_documents(logging_collection)
             remaining_length = original_length - completed_length
             iterations_required =  math.ceil(remaining_length/retrieve_chunk_size)
 

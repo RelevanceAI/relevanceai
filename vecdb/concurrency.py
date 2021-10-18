@@ -13,7 +13,7 @@ def multithread(func, iterables, max_workers=8, chunksize=20, show_progress_bar:
     #with progress_bar(total=int(len(iterables) / chunksize), show_progress_bar=show_progress_bar) as pbar:
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         #Create trackers
-        progress_tracker = progress_bar(range(int(len(iterables) / chunksize)), show_progress_bar=show_progress_bar)
+        progress_tracker = progress_bar(range(int(len(iterables) / chunksize)+1), show_progress_bar=show_progress_bar)
         progress_iterator = iter(progress_tracker)
 
         futures = [executor.submit(func, it) \
@@ -32,7 +32,7 @@ def multiprocess(func, iterables, max_workers=8, chunksize=20,
     #     show_progress_bar=show_progress_bar) as pbar:
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         #Create trackers
-        progress_tracker = progress_bar(range(int(len(iterables) / chunksize)), show_progress_bar=show_progress_bar)
+        progress_tracker = progress_bar(range(int(len(iterables) / chunksize)+1), show_progress_bar=show_progress_bar)
         progress_iterator = iter(progress_tracker)
         
         futures = [executor.submit(func, it) \
