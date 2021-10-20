@@ -63,7 +63,7 @@ client.datasets.bulk_insert(original_collection, data)
 
 An example of sample data looks like this:
 
-```json
+```
 [{"_id": "0"}, {"_id": "1"}, ... {"_id": "199"}]
 ```
 
@@ -85,7 +85,7 @@ This function is then included in the Pull-Update-Push Function to update every 
 client.pull_update_push(original_collection, even_function)
 ```
 
-```json
+```
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
@@ -95,7 +95,7 @@ Alternatively, a new collection could be specified to direct where updated docum
 new_collection = 'updated_test_dataset'
 vec_client.pull_update_push(original_collection, even_function, new_collection)
 ```
-```json
+```
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
