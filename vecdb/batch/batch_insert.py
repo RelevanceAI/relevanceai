@@ -175,7 +175,7 @@ class BatchInsert(APIClient, Chunker):
                     verbose=verbose)
         
                 documents = orig_json['documents']
-                self.logger.info(f"{len(documents)=}")
+                self.logger.info(f"{len(documents)}")
 
                 #Update documents
                 try:                                          
