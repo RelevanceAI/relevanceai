@@ -64,7 +64,7 @@ client.datasets.bulk_insert(original_collection, data)
 An example of sample data looks like this:
 
 ```json
-[{'_id': "0"}, {'_id': "1"}, ... {'_id': "199"}]
+[{"_id": "0"}, {"_id": "1"}, ... {"_id": "199"}]
 ```
 
 
@@ -86,7 +86,7 @@ client.pull_update_push(original_collection, even_function)
 ```
 
 ```json
-[{"_id": "0", "even": True}, {"_id": "1", "even": False}, ... {"_id": "199", "even": True}]
+[{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
 Alternatively, a new collection could be specified to direct where updated documents are uploaded into.
@@ -96,7 +96,7 @@ new_collection = 'updated_test_dataset'
 vec_client.pull_update_push(original_collection, even_function, new_collection)
 ```
 ```json
-[{"_id": 0, "even": True}, {"_id": 1, "even": False}, ... {"_id": 199, "even": True}]
+[{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
 To delete all logs created by pull_update_push, use the delete_all_logs function.
