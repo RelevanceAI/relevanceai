@@ -7,6 +7,39 @@ Built mainly for users looking to experiment with vectors/embeddings without hav
 
 The easiest way is to install this package is to run `pip install vecdb`.
 
+## How to use the VecDB client 
+
+For the VecDB client, we want to ensure the SDK mirrors the API client.
+
+For example:
+
+To use the following endpoint: 
+
+"/datasets/bulk_insert"
+
+You can run: 
+
+```{python}
+from vecdb import VecDBClient
+
+project = ""
+api_key = ""
+
+client = VecDBClient(project, api_key)
+documents = []
+dataset_id = ""
+client.datasets.bulk_insert(dataset_id, documents)
+```
+
+Or similarly, when you are trying to run 
+
+`/services/search/vector`
+
+You then write: 
+```{python}
+client.services.search.vector(...)
+```
+
 ## How to use this package 
 
 Instantiating the client.
