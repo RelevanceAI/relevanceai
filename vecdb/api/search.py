@@ -192,7 +192,7 @@ class Search(Base):
                         "keep_search_history": keep_search_history
                             }, output_format=output_format, verbose=verbose)
 
-    def multi_step_chunk(self, dataset_id, multivector_query, first_step_multivector_query, chunk_field, 
+    def multistep_chunk(self, dataset_id, multivector_query, first_step_multivector_query, chunk_field, 
         chunk_scoring = 'max', chunk_page_size:int = 3, chunk_page:int =1, approximation_depth:int = 0, sum_fields:bool = True, page_size:int = 20, page:int = 1, similarity_metric: str = 'cosine', 
         facets: list = [], filters:list = [], min_score: int = None, include_vector: bool  = False, include_count: bool  = True, asc: bool  = False, keep_search_history: bool = False, first_step_page:int = 1, first_step_page_size: int = 20,
          verbose: bool=True, output_format: str='json'):
