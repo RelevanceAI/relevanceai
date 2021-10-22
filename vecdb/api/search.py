@@ -168,7 +168,7 @@ class Search(Base):
                 "search_history_id": search_history_id
             }, output_format=output_format, verbose=verbose)
 
-    def chunk_search(self, dataset_id, multivector_query, chunk_field, chunk_scoring = 'max', chunk_page_size:int = 3, chunk_page:int =1, approximation_depth:int = 0, sum_fields:bool = True, page_size:int = 20, page:int = 1, similarity_metric: str = 'cosine', 
+    def chunk(self, dataset_id, multivector_query, chunk_field, chunk_scoring = 'max', chunk_page_size:int = 3, chunk_page:int =1, approximation_depth:int = 0, sum_fields:bool = True, page_size:int = 20, page:int = 1, similarity_metric: str = 'cosine', 
         facets: list = [], filters:list = [], min_score: int = None, include_vector: bool  = False, include_count: bool  = True, asc: bool  = False, keep_search_history: bool = False, 
         verbose: bool=True, output_format: str='json'):
         return self.make_http_request('services/search/chunk', method="POST", 
