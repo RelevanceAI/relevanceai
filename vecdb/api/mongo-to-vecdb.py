@@ -1,8 +1,8 @@
 """
 Migrate from mongo database to vecdb:
-    1- Create an object of the class
+    1- Create an object of Mongo2Vecbd class
     2- Get a summary of the mondo db using "mongo_summary"
-    3- Set the desigered sorce mongo collection using "set_mongo_collection"
+    3- Set the desigered source mongo collection using "set_mongo_collection"
     4- Get total number of entries in the mongo collection using "mongo_doc_count"
     5- Migrate data from mongo to vecdb using "migrate_mongo2vecdb"
 """
