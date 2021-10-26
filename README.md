@@ -1,33 +1,38 @@
 # VecDB Python SDK 
 
+For documentation about how to use this package, visit: https://docs.relevance.ai/docs
+
+
 This is the Python SDK of VecDB and is the main Pythonic interface for the VecDB.
+
 Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
 
 ## Installation 
 
-The easiest way is to install this package is to run `pip install vecdb`.
+The easiest way is to install this package is to run `pip install --upgrade vecdb`.
 
-## How to use the VecDB client 
+## How to use the VecDB client
 
 For the VecDB client, we want to ensure the SDK mirrors the API client.
 
 For example:
 
+```
+# To instantiate the client 
+from vecdb import VecDBClient
+project = input("Your project goes here")
+api_key = input("Your API key goes here")
+client = VecDBClient(project, api_key)
+```
+
 To use the following endpoint: 
 
-"/datasets/bulk_insert"
+`/datasets/bulk_insert`
 
 You can run: 
 
 ```{python}
-from vecdb import VecDBClient
-
-project = ""
-api_key = ""
-
-client = VecDBClient(project, api_key)
-documents = []
-dataset_id = ""
+# Bulk insert documents
 client.datasets.bulk_insert(dataset_id, documents)
 ```
 
@@ -37,17 +42,8 @@ Or similarly, when you are trying to run
 
 You then write: 
 ```{python}
+# Vector search in a dataset
 client.services.search.vector(...)
-```
-
-## How to use this package 
-
-Instantiating the client.
-
-```python
-from vecdb import VecDBClient
-# If you do not have a project or API key, visit www.cloud.relevance.ai
-vdb_client = VecDBClient(project, api_key)
 ```
 
 ## Features
