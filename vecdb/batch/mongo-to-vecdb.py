@@ -1,29 +1,42 @@
 """
 Migrate from mongo database to vecdb:
-    1- Create an object of Mongo2Vecbd class
-    2- Get a summary of the mondo db using "mongo_summary"
-    3- Set the desigered source mongo collection using "set_mongo_collection"
-    4- Get total number of entries in the mongo collection using "mongo_doc_count"
-    5- Migrate data from mongo to vecdb using "migrate_mongo2vecdb"
+    #Create an object of Mongo2Vecbd class
+    connection_string= "..."
+    project= "..."
+    api_key= "..."
+    mongo2vec = Mongo2Vecbd(connection_string, project, api_key)
+
+    #Get a summary of the mondo db using "mongo_summary"
+    mongo2vec.mongo_summary()
+
+    #Set the desired source mongo collection using "set_mongo_collection"
+    db_name = '...'
+    collection_name = '...'
+    mongo2vec.set_mongo_collection(db_name, collection_name)
+
+    #Get total number of entries in the mongo collection using "mongo_doc_count"
+    doc_cnt = mongo2vec.mongo_doc_count()
+
+    #Migrate data from mongo to vecdb using "migrate_mongo2vecdb"
+    stp = 5000             # migrate batches of 5000 (default 2000)
+    start_idx= 12000       # loads from mongo starting at index 12000 (default 0)
+    vecdb_collection_name = "..."
+    mongo2vec.migrate_mongo2vecdb(vecdb_collection_name, doc_cnt, stp = stp, start_idx= start_idx)
 """
 
-from ..base import Base 
-
-import pymongo
-from pymongo import MongoClient
+from ..api.client import APIClient
 from vecdb import VecDBClient
-
+from pymongo import MongoClient
 import pandas as pd
 import numpy as np
 import json
 from bson import json_util
 import math
-from tqdm.notebook import tqdm
-import time
+from tqdm import tqdm
 import copy
 
-class Mongo2Vecbd(Base):
-    def __init__(self, connection_string, project, api_key, base_url = "https://api-aueast.relevance.ai/v1/"):
+class Mongo2Vecbd(APIClient):
+    def __init__(self, connection_string:str, project:str, api_key:str, base_url = "https://api-aueast.relevance.ai/v1/"):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
@@ -106,7 +119,7 @@ class Mongo2Vecbd(Base):
           return list(self.mongo_collection.find()[s:e])
         return list(self.mongo_collection.find())
 
-    def migrate_mongo2vecdb(self, vecdb_collection, doc_cnt, stp = 200, start_idx = 0, create_new = True):
+    def migrate_mongo2vecdb(self, vecdb_collection, doc_cnt, stp = 2000, start_idx = 0, create_new = True):
         # todo: check if it doesn't exist, should we remove an existing one?
         self.create_vcdb_collection(vecdb_collection)
 

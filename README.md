@@ -1,54 +1,62 @@
 # VecDB Python SDK 
 
-This is the Python SDK of VecDB and is the main Pythonic interface for the VecDB.
+VecDB-Python-SDK is the Python SDK of VecDB and is the main Pythonic interface for the VecDB.
 Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
+
+Side note:
+VecDB (Vector databases) allows for a unified interface from which data scientists and developers can 
+* quickly build and productionise recommendation engines
+* build search or similarity matching apps
+* perform clustering while obtaining state-of-the-art results across all functions
 
 ## Installation 
 
 The easiest way is to install this package is to run `pip install vecdb`.
 
+## How to use VecDB Python SDK 
+
+You need an API key and a project name to instantiate a VecDB client. If you do not have a project or API key, please visit www.cloud.relevance.ai
+
+```{python}
+from vecdb import VecDBClient
+client = VecDBClient(project, api_key)```
+
 ## How to use the VecDB client 
 
-For the VecDB client, we want to ensure the SDK mirrors the API client.
+We have ensured the SDK mirrors the API client.
 
 For example:
 
-To use the following endpoint: 
+The bulk_insert API endpoint: 
 
 "/datasets/bulk_insert"
 
-You can run: 
+maps into 
+```{python}
+client.datasets.bulk_insert(...)```
+
+Complete sample: 
 
 ```{python}
 from vecdb import VecDBClient
 
-project = ""
-api_key = ""
+project = <PROJECT>
+api_key = <API_KEY>
 
 client = VecDBClient(project, api_key)
 documents = []
-dataset_id = ""
+dataset_id = <DATASET_ID>
 client.datasets.bulk_insert(dataset_id, documents)
 ```
 
-Or similarly, when you are trying to run 
+Or similarly, the vector search API endpoint: 
 
 `/services/search/vector`
 
-You then write: 
+maps into 
 ```{python}
-client.services.search.vector(...)
-```
+client.services.search.vector(...)```
 
-## How to use this package 
-
-Instantiating the client.
-
-```python
-from vecdb import VecDBClient
-# If you do not have a project or API key, visit www.cloud.relevance.ai
-vdb_client = VecDBClient(project, api_key)
-```
 
 ## Features
 
@@ -84,7 +92,7 @@ Under the hood, we use multiprocessing for processing the `bulk_fn` and multi-th
 
 ### Pull Update Push
 
-Update documents within your collection based on a rule customised by you. The Pull-Update-Push Function loops through every document in your collection, brings it to your local computer where a function is applied (specified by you) and reuploaded to either an new collection or updated in the same collection. There is a logging functionality to keep track of which documents have been updated to save on network requests.
+Update documents within your collection based on a rule customised by you. The Pull-Update-Push function loops through every document in your collection, brings it to your local computer where a function is applied (specified by you) and reuploaded to either an new collection or updated in the same collection. There is a logging functionality to keep track of which documents have been updated to save on network requests.
 
 For example, consider a scenario where you have uploaded a dataset called 'test_dataset' containing integers up to 200. 
 
@@ -100,6 +108,7 @@ An example of sample data looks like this:
 [{"_id": "0"}, {"_id": "1"}, ... {"_id": "199"}]
 ```
 
+Side note: each data entry must have a unique field called "_id".
 
 Now, you want to create a new field in this dataset to flag whether the number is even or not. This function must input a list of documents (the original collection) and output another list of documents (to be updated).
 
@@ -143,8 +152,8 @@ vec_client.delete_all_logs(original_collection)
 
 ## Integration with VectorHub
 
-VectorHub is RelevanceAI's main encoder repository. For the models used here, we have abstracted away a lot of 
-complexity from installation to encoding and have innate VectorAI support. 
+VectorHub is RelevanceAI's main vectoriser/encoder repository. For the models used here, we have abstracted away a lot of 
+complexity from installation to encoding and have innate RelevanceAI support. 
 
 Using VectorHub models is as simple as (actual example): 
 
