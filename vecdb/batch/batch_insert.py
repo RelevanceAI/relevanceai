@@ -148,9 +148,9 @@ class BatchInsert(APIClient, Chunker):
             remaining_length = original_length - completed_length
             iterations_required =  math.ceil(remaining_length/retrieve_chunk_size)
 
-            self.logger.info(f"{original_length=}")
-            self.logger.info(f"{completed_length=}")
-            self.logger.info(f"{iterations_required=}")
+            self.logger.info(f"{original_length}")
+            self.logger.info(f"{completed_length}")
+            self.logger.info(f"{iterations_required}")
 
             #Return if no documents to update
             if remaining_length == 0:
@@ -175,7 +175,7 @@ class BatchInsert(APIClient, Chunker):
                     verbose=verbose)
         
                 documents = orig_json['documents']
-                self.logger.info(f"{len(documents)=}")
+                self.logger.info(f"{len(documents)}")
 
                 #Update documents
                 try:                                          
@@ -185,7 +185,7 @@ class BatchInsert(APIClient, Chunker):
                     traceback.print_exc()
                     return
                 updated_documents = [i['_id'] for i in documents]
-                self.logger.info(f"{len(updated_data)=}")
+                self.logger.info(f"{len(updated_data)}")
 
                 #Upload documents   
                 if updated_collection is None: 
