@@ -191,10 +191,10 @@ class BatchInsert(APIClient, Chunker):
                 if updated_collection is None: 
                     insert_json = self.update_documents(
                         dataset_id = original_collection, docs = updated_data, verbose = verbose, 
-                        max_workers = max_workers, show_progress_bar=show_progress_bar)
+                        max_workers = max_workers, show_progress_bar=False)
                 else:
                     insert_json = self.insert_documents(dataset_id = updated_collection, docs = updated_data, 
-                        verbose = verbose, max_workers=max_workers, show_progress_bar=show_progress_bar)
+                        verbose = verbose, max_workers=max_workers, show_progress_bar=False)
 
                 #Check success
                 chunk_failed = insert_json['failed_documents']
