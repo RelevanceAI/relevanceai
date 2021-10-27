@@ -196,6 +196,18 @@ client.logger.stop()
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
 
 ```
+
+## Sample Datasets 
+
+If you require a sample dataset, you can run the following to help:
+
+```{python}
+from vecdb.datasets import get_games_dataset
+docs = get_games_dataset()
+```
+
+
+
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential

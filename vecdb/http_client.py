@@ -8,7 +8,7 @@ from .errors import APIError
 from doc_utils import DocUtils
 
 class VecDBClient(BatchAPIClient, DocUtils):
-    """VecDB Client
+    """Python Client for Relevance AI's VecDB
     """
     WELCOME_MESSAGE = """Welcome to the development version of the VecDB Python SDK. Please do not use this SDK to build core systems yet until we have a stable version."""
     FAIL_MESSAGE = """Your Api-Key is invalid. Please login again"""
@@ -20,6 +20,11 @@ class VecDBClient(BatchAPIClient, DocUtils):
         base_url: str="https://gateway-api-aueast.relevance.ai/v1/"):
         super().__init__(project, api_key, base_url)
         self.logger = logger
+        if project is None or api_key is None:
+            print("It seems you are missing an API key, " + \
+                    "you can sign up for an API key following the instructions here: " + \
+                    "https://discovery.relevance.ai/reference/usage")
+        
         if (self.datasets.list(verbose=False, output_format = False, retries=1).status_code == 200):
             self.logger.info(self.WELCOME_MESSAGE)
         else:
