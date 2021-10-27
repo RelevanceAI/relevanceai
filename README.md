@@ -1,6 +1,8 @@
 # VecDB Python SDK 
 
 VecDB-Python-SDK is the Python SDK of VecDB and is the main Pythonic interface for the VecDB.
+For documentation about how to use this package, visit: https://docs.relevance.ai/docs
+
 Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
 
 Side note:
@@ -11,7 +13,7 @@ VecDB (Vector databases) allows for a unified interface from which data scientis
 
 ## Installation 
 
-The easiest way is to install this package is to run `pip install vecdb`.
+The easiest way is to install this package is to run `pip install --upgrade vecdb`.
 
 ## How to use VecDB Python SDK 
 
@@ -29,7 +31,7 @@ For example:
 
 The bulk_insert API endpoint: 
 
-"/datasets/bulk_insert"
+`/datasets/bulk_insert`
 
 maps into 
 ```{python}
@@ -209,6 +211,18 @@ client.logger.stop()
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
 
 ```
+
+## Sample Datasets 
+
+If you require a sample dataset, you can run the following to help:
+
+```{python}
+from vecdb.datasets import get_games_dataset
+docs = get_games_dataset()
+```
+
+
+
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential
