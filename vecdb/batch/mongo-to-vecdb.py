@@ -39,10 +39,7 @@ from ..api.client import APIClient
 
 class Mongo2VecDB(APIClient):
     def __init__(self, connection_string:str, project:str, api_key:str, base_url = "https://api-aueast.relevance.ai/v1/"):
-        self.project = project
-        self.api_key = api_key
-        self.base_url = base_url
-        self.vecdb_client = VecDBClient(project, api_key, base_url = self.base_url)
+        super().__init__(project, api_key, base_url)
         self.mongo_client = MongoClient(connection_string)
     
     def mongo_summary(self):
@@ -74,7 +71,7 @@ class Mongo2VecDB(APIClient):
       return self.mongo_collection.count()
 
     def create_vcdb_collection(self, collection_name:str):
-        response = self.vecdb_client.datasets.create(collection_name)
+        response = self.datasets.create(collection_name)
         return response
 
     def update_id(self, docs:List[dict]):
@@ -126,7 +123,7 @@ class Mongo2VecDB(APIClient):
     def migrate_mongo2vecdb(self, vecdb_collection:str, doc_cnt:int, chunk_size:int = 2000, start_idx:int = 0, overwite:bool = True):
         response = self.create_vcdb_collection(vecdb_collection)
         if "already exists" in response['message'] and not overwite:
-            self.logger.info(response['message'])
+            self.logger.error(response['message'])
             return response['message']
 
         total_ingest_cnt = 0
