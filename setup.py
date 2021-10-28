@@ -28,7 +28,8 @@ setup(
     packages=find_packages(),    
     install_requires=required,
     extras_require={
-        "tests": ["pytest"]
+        "tests": ["pytest"],
+        "pymongo": ["pymongo"]
     }
 )
 

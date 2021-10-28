@@ -151,6 +151,34 @@ To delete all logs created by pull_update_push, use the delete_all_logs function
 vec_client.delete_all_logs(original_collection)
 ```
 
+## Migrate from mongo database to vecdb
+
+This SDK provides you with an already built-in class for migrating data from mongo to vecdb.
+Here is a full python sample:
+```python
+#Create an object of Mongo2Vecbd class
+connection_string= "..."
+project= "..."
+api_key= "..."
+mongo2vec = Mongo2VecDB(connection_string, project, api_key)
+
+#Get a summary of the mondo database using "mongo_summary"
+mongo2vec.mongo_summary()
+
+#Set the desired source mongo collection using "set_mongo_collection"
+db_name = '...'
+collection_name = '...'
+mongo2vec.set_mongo_collection(db_name, collection_name)
+
+#Get total number of entries in the mongo collection using "mongo_doc_count"
+doc_cnt = mongo2vec.mongo_doc_count()
+
+#Migrate data from mongo to vecdb using "migrate_mongo2vecdb"
+chunk_size = 5000      # migrate batches of 5000 (default 2000)
+start_idx= 12000       # loads from mongo starting at index 12000 (default 0)
+vecdb_collection_name = "..."
+mongo2vec.migrate_mongo2vecdb(vecdb_collection_name, doc_cnt, chunk_size = chunk_size, start_idx= start_idx)
+```
 
 ## Integration with VectorHub
 

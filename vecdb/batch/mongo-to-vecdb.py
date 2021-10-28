@@ -1,12 +1,12 @@
 """
 Migrate from mongo database to vecdb:
-    #Create an object of Mongo2Vecbd class
+    #Create an object of Mongo2VecDB class
     connection_string= "..."
     project= "..."
     api_key= "..."
-    mongo2vec = Mongo2Vecbd(connection_string, project, api_key)
+    mongo2vec = Mongo2VecDB(connection_string, project, api_key)
 
-    #Get a summary of the mondo db using "mongo_summary"
+    #Get a summary of the mondo database using "mongo_summary"
     mongo2vec.mongo_summary()
 
     #Set the desired source mongo collection using "set_mongo_collection"
@@ -18,30 +18,31 @@ Migrate from mongo database to vecdb:
     doc_cnt = mongo2vec.mongo_doc_count()
 
     #Migrate data from mongo to vecdb using "migrate_mongo2vecdb"
-    stp = 5000             # migrate batches of 5000 (default 2000)
+    chunk_size = 5000      # migrate batches of 5000 (default 2000)
     start_idx= 12000       # loads from mongo starting at index 12000 (default 0)
     vecdb_collection_name = "..."
-    mongo2vec.migrate_mongo2vecdb(vecdb_collection_name, doc_cnt, stp = stp, start_idx= start_idx)
+    mongo2vec.migrate_mongo2vecdb(vecdb_collection_name, doc_cnt, chunk_size = chunk_size, start_idx= start_idx)
 """
 
-from ..api.client import APIClient
-from vecdb import VecDBClient
-from pymongo import MongoClient
-import pandas as pd
-import numpy as np
-import json
-from bson import json_util
-import math
-from tqdm import tqdm
 import copy
+import json
+import math
+import numpy as np
+import pandas as pd
+import uuid
+from bson import json_util
+from pymongo import MongoClient
+from tqdm.auto import tqdm
+from typing import List
+from vecdb import VecDBClient
+from ..api.client import APIClient
 
-class Mongo2Vecbd(APIClient):
+class Mongo2VecDB(APIClient):
     def __init__(self, connection_string:str, project:str, api_key:str, base_url = "https://api-aueast.relevance.ai/v1/"):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
         self.vecdb_client = VecDBClient(project, api_key, base_url = self.base_url)
-        self.vecdb_credential = project + ":" + api_key
         self.mongo_client = MongoClient(connection_string)
     
     def mongo_summary(self):
@@ -57,37 +58,41 @@ class Mongo2Vecbd(APIClient):
               summary[db].append(collection)
         return summary
     
-    def get_mongo_db(self, db_name):
+    def get_mongo_db(self, db_name:str):
         return self.mongo_client[db_name]
 
-    def get_mongo_collection(self, db_name, collection_name):
+    def get_mongo_collection(self, db_name:str, collection_name:str):
         return self.mongo_client[db_name][collection_name]
 
-    def set_mongo_db(self, db_name):
+    def set_mongo_db(self, db_name:str):
         self.mongodb = self.mongo_client[db_name]
 
-    def set_mongo_collection(self, db_name, collection_name):
+    def set_mongo_collection(self, db_name:str, collection_name:str):
         self.mongo_collection = self.mongo_client[db_name][collection_name]
 
     def mongo_doc_count(self):
       return self.mongo_collection.count()
 
-    def create_vcdb_collection(self, collection_name):
-        self.vecdb_client.datasets.create(collection_name)
+    def create_vcdb_collection(self, collection_name:str):
+        response = self.vecdb_client.datasets.create(collection_name)
+        return response
+
+    def update_id(self, docs:List[dict]):
+        # makes bson id format json campatible
+        for doc in docs:
+            try:
+                doc['_id'] = doc['_id']['$oid']
+            except Exception as e:
+                self.logger.info('Could not use the original id: ' + str(e))
+                doc['_id'] = uuid.uuid4().__str__()
+        return docs
 
     @staticmethod
     def parse_json(data):
         return json.loads(json_util.dumps(data))
 
     @staticmethod
-    def update_id(docs):
-        # makes bson id format json campatible
-        for doc in docs:
-            doc['_id'] = doc['_id']['$oid']
-        return docs
-
-    @staticmethod
-    def flatten_innder_indxs(docs):
+    def flatten_inner_indxs(docs:List[dict]):
         # {f1:{f2:v}} => {f1-f2:v}
         expanded = copy.deepcopy(docs)
         for i,doc in enumerate(docs):
@@ -99,7 +104,7 @@ class Mongo2Vecbd(APIClient):
         return expanded
 
     @staticmethod
-    def remove_nan(docs, replace_with = ""):
+    def remove_nan(docs:List[dict], replace_with:str = ""):
         for doc in docs:
             for f,v in doc.items():
                 if isinstance(v, float) and math.isnan(v) or v == np.NaN:
@@ -107,24 +112,30 @@ class Mongo2Vecbd(APIClient):
         return docs
 
     @staticmethod
-    def build_range(doc_cnt, stp, start = 0):
-        rng = [(s, s+stp) if s+stp < doc_cnt 
+    def build_range(doc_cnt:int, chunk_size:int = 2000, start_idx:int = 0):
+        rng = [(s, s+chunk_size) if s+chunk_size < doc_cnt 
                else (s, doc_cnt) 
-               for s in list(range(start, doc_cnt, stp))]
+               for s in list(range(start_idx, doc_cnt, chunk_size))]
         return rng
 
-    def fetch_mongo_collection_data(self, rng = None):
-        if rng:
-          s,e = rng
-          return list(self.mongo_collection.find()[s:e])
+    def fetch_mongo_collection_data(self, start_idx:int = None, end_idx:int = None):
+        if start_idx and end_idx:
+          return list(self.mongo_collection.find()[start_idx:end_idx])
         return list(self.mongo_collection.find())
 
-    def migrate_mongo2vecdb(self, vecdb_collection, doc_cnt, stp = 2000, start_idx = 0, create_new = True):
-        # todo: check if it doesn't exist, should we remove an existing one?
-        self.create_vcdb_collection(vecdb_collection)
+    def migrate_mongo2vecdb(self, vecdb_collection:str, doc_cnt:int, chunk_size:int = 2000, start_idx:int = 0, overwite:bool = True):
+        response = self.create_vcdb_collection(vecdb_collection)
+        if "already exists" in response['message'] and not overwite:
+            self.logger.info(response['message'])
+            return response['message']
 
-        for rng in tqdm(Mongo2Vecbd.build_range(doc_cnt, stp, start_idx)): 
-            df = pd.DataFrame(self.fetch_mongo_collection_data(rng))
-            docs = Mongo2Vecbd.update_id(Mongo2Vecbd.parse_json(df.to_dict('records')))
-            docs = Mongo2Vecbd.remove_nan(Mongo2Vecbd.flatten_innder_indxs(docs))
-            self.vecdb_client.datasets.bulk_insert(vecdb_collection, docs)
+        total_ingest_cnt = 0
+        for s_idx, e_idx in tqdm(Mongo2VecDB.build_range(doc_cnt, chunk_size, start_idx)):
+            df = pd.DataFrame(self.fetch_mongo_collection_data(s_idx, e_idx))
+            docs = self.update_id(Mongo2VecDB.parse_json(df.to_dict('records')))
+            docs = Mongo2VecDB.remove_nan(Mongo2VecDB.flatten_innder_indxs(docs))
+            self.insert_documents(vecdb_collection, docs)
+            total_ingest_cnt += len(docs)
+
+        self.logger.info(f"Successfully ingested {total_ingest_cnt} entities to {vecdb_collection}.")
+        return f"Successfully ingested {total_ingest_cnt} entities to {vecdb_collection}."
