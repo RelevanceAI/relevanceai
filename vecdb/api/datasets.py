@@ -73,6 +73,21 @@ class Datasets(Base):
                 "asc": asc
             }, output_format = output_format, verbose = verbose)
 
+    def check_missing_ids(self, dataset_id, ids, output_format: str = "json", verbose: bool = True):
+
+        #Check if dataset_id exists
+        dataset_exists = dataset_id in self.list()
+
+        if dataset_exists:
+            return self.make_http_request(
+                endpoint=f"datasets/{dataset_id}/documents/get_missing",
+                method="GET",
+                parameters={"ids": ids}, output_format=output_format, verbose=verbose)
+
+        else:
+            print('Dataset does not exist')
+            return
+
 
     def bulk_insert(self, 
         dataset_id: str, documents: list, insert_date: bool = True, 
@@ -177,4 +192,5 @@ class Datasets(Base):
             verbose=verbose
         )
 
+    
 
