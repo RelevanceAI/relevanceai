@@ -27,5 +27,8 @@ setup(
     description='No description',
     packages=find_packages(),    
     install_requires=required,
+    extras_require={
+        "tests": ["pytest"]
+    }
 )
 
