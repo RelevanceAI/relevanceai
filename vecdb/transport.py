@@ -26,6 +26,8 @@ class Transport:
             endpoint: The endpoint from the documentation to use
             method_type: POST or GET request
         """
+
+        t1 = time.time()
         
         #with Profiler(self.config.log, self.config.logging_level, self.config.log_to_file, self.config.log_to_console, locals()) as log:
         if base_url is None:
@@ -34,7 +36,7 @@ class Transport:
         if retries is None:
             retries = self.config.number_of_retries
         
-        for i in range(retries):
+        for _ in range(retries):
             if verbose: self.logger.info("URL you are trying to access:" + base_url + endpoint) 
             try:
                 req = Request(
@@ -50,6 +52,9 @@ class Transport:
                 
                 if response.status_code == 200:
                     if verbose: self.logger.success(f"Response success! ({base_url + endpoint})") 
+                    time_diff = time.time() - t1
+                    self.logger.debug(f'Request ran in {time_diff} seconds ({base_url + endpoint})') 
+
                     if output_format == "json":
                         return response.json()
                     else:
