@@ -1,13 +1,21 @@
 import time
 from .transport import Transport
-from .config import Config
+from .config import CONFIG
 from loguru import logger
+import sys
 
 class Base(Transport):
     """Base class for all VecDB utilities
     """
-    config: Config = Config()
+    config = CONFIG
+
+    #Add Logging
     logger = logger
+    logger.remove()
+    logger.add(sys.stdout, level= CONFIG.logging_level)
+    if CONFIG.log_to_file:
+        logger.add("vecdb_{time}.log", level=CONFIG.logging_level, rotation="100 MB")
+
     def __init__(self, 
         project: str, api_key: str, 
         base_url: str):

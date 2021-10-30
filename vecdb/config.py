@@ -12,10 +12,8 @@ class TransportConfig(BaseConfig):
     seconds_between_retries: int = 2
 
     #Set Logging Rules
-    log: bool = False
-    log_to_file: bool = True
-    log_to_console: bool = True
-    logging_level: int = logging.INFO
+    log_to_file = False
+    logging_level = 'SUCCESS'
 
     #Chunk Target
     target_chunk_mb: int = 100
