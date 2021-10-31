@@ -11,6 +11,16 @@ def get_games_dataset() -> list:
 
 def get_online_retail_dataset(number_of_documents: int=1000) -> list:
     """Online retail dataset from UCI machine learning
+    Sample document: 
+    {'Country': 'United Kingdom',
+     'CustomerID': 17850.0,
+     'Description': 'WHITE HANGING HEART T-LIGHT HOLDER',
+     'InvoiceDate': Timestamp('2010-12-01 08:26:00'),
+     'InvoiceNo': 536365,
+     'Quantity': 6,
+     'StockCode': '85123A',
+     'UnitPrice': 2.55}
+    
     """
     df = pd.read_excel("https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx")
     if number_of_documents is None:
