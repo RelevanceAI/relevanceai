@@ -67,7 +67,8 @@ def get_news_dataset(sample=True) -> List:
     
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset
-    Dataset from https://data.world/crowdflower/ecommerce-search-relevance
+    Dataset from https://data.world/crowdflower/ecommerce-search-relevance 
+    Total Len: 15528
     Sample document:
     {'_unit_id': 711158459,
     'product_description': 'The PlayStation 4 system opens the door to an '
@@ -89,4 +90,6 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """
     return pd.read_csv(
         'https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft', encoding='ISO-8859-1'
-    ).dropna().iloc[number_of_documents, :].to_dict('records')
+    ).dropna().iloc[:number_of_documents, :].to_dict('records')
+
+
