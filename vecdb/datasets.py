@@ -3,7 +3,7 @@ Datasets to mock
 """
 import requests
 import pandas as pd
-from typing import Union
+from typing import Union, List
 
 
 def get_games_dataset() -> list:
@@ -17,7 +17,7 @@ def get_games_dataset() -> list:
 
 
 
-def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> list:
+def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Online retail dataset from UCI machine learning
     Sample document: 
     {'Country': 'United Kingdom',
@@ -38,7 +38,7 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> l
 
 
 
-def get_news_dataset(sample=True) -> list:
+def get_news_dataset(sample=True) -> List:
     """News dataset
     Sample document:
     {'Unnamed: 0': 0,
@@ -65,7 +65,7 @@ def get_news_dataset(sample=True) -> list:
 
 
     
-def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> list:
+def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset
     Dataset from https://data.world/crowdflower/ecommerce-search-relevance
     Sample document:
