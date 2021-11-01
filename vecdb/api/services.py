@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Services class
 """
-from base import Base
-from api.aggregate import Aggregate
-from api.cluster import Cluster
-from api.encoders import Encoders
-from api.recommend import Recommend
-from api.search import Search
+from vecdb.base import Base
+from vecdb.api.aggregate import Aggregate
+from vecdb.api.cluster import Cluster
+from vecdb.api.encoders import Encoders
+from vecdb.api.recommend import Recommend
+from vecdb.api.search import Search
 
 
 class Services(Base):

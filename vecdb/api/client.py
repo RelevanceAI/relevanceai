@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """API Client
 """
-from config import CONFIG, Config
-from api.datasets import Datasets
-from api.services import Services
+from vecdb.config import CONFIG, Config
+from vecdb.api.datasets import Datasets
+from vecdb.api.services import Services
 
 
 class APIClient:

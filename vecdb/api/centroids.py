@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from base import Base
+from vecdb.base import Base
 
 
 class Centroids(Base):

@@ -5,7 +5,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from progress_bar import progress_bar
+from vecdb.progress_bar import progress_bar
 
 
 class Chunker:

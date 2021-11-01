@@ -3,8 +3,8 @@
 """
 from typing import Callable
 
-from batch.batch_insert import BatchInsert
-from batch.chunk import Chunker
+from vecdb.batch.batch_insert import BatchInsert
+from vecdb.batch.chunk import Chunker
 
 
 class BatchAPIClient(BatchInsert):

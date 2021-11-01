@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """All Dataset related functions
 """
-from base import Base
-from api.documents import Documents
-from api.monitor import Monitor
-from api.tasks import Tasks
+from vecdb.base import Base
+from vecdb.api.documents import Documents
+from vecdb.api.monitor import Monitor
+from vecdb.api.tasks import Tasks
 
 
 class Datasets(Base):

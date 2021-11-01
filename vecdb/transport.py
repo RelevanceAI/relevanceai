@@ -9,7 +9,7 @@ import requests
 from requests import Request
 
 # from .vecdb_logging import Profiler
-from errors import APIError
+from vecdb.errors import APIError
 
 
 class Transport:

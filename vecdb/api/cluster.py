@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from base import Base
-from api.centroids import Centroids
+from vecdb.base import Base
+from vecdb.api.centroids import Centroids
 
 
 class Cluster(Base):
