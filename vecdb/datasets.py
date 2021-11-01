@@ -2,11 +2,8 @@
 Datasets to mock
 """
 from typing import List, Union
-
 import pandas as pd
 import requests
-
-import vecdb_logging
 
 
 def get_games_dataset() -> list:
@@ -25,8 +22,8 @@ def get_dummy_ecommerce_dataset(db_name: str = 'ecommerce-5', count: int = 1000,
     client = VecDBClient(project, api_key, base_url = base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
-        logger = vecdb_logging.create_logger()
-        logger.error(response["message"])
+        import warnings
+        warnings.warn(response["message"])
     return response
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
