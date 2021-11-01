@@ -17,8 +17,8 @@ For the VecDB client, we want to ensure the SDK mirrors the API client.
 
 For example:
 
-```
-# To instantiate the client 
+```python
+## To instantiate the client 
 from vecdb import VecDBClient
 project = input("Your project goes here")
 api_key = input("Your API key goes here")
@@ -31,7 +31,7 @@ To use the following endpoint:
 
 You can run: 
 
-```{python}
+```python
 # Bulk insert documents
 client.datasets.bulk_insert(dataset_id, documents)
 ```
@@ -41,7 +41,7 @@ Or similarly, when you are trying to run
 `/services/search/vector`
 
 You then write: 
-```{python}
+```python
 # Vector search in a dataset
 client.services.search.vector(...)
 ```
@@ -201,14 +201,33 @@ If you require a sample dataset, you can run the following to help:
 
 
 ```python
-from vecdb.datasets import get_games_dataset
-docs = get_games_dataset()
+from vecdb.datasets import get_ecommerce_dataset
+docs = get_ecommerce_dataset()
 ```
 
 
 
+## Development
+
+### Getting Started
+
+Setup your virtualenv, install requirements and package
+
+```python
+❯ python -m venv .venv
+❯ source .venv/bin/activate
+❯ pip install -r requirements.txt  
 ```
 
+Run your local tests in [`tests`](./tests)
+
+```zsh
+❯ pytest --cov=src -vv
+❯ pytest <file_path> --cov=src -vv
+```
+
+
+```
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential
