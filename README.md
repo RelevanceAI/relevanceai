@@ -201,12 +201,29 @@ If you require a sample dataset, you can run the following to help:
 
 
 ```python
-from vecdb.datasets import get_games_dataset
-docs = get_games_dataset()
+from vecdb.datasets import get_ecommerce_dataset
+docs = get_ecommerce_dataset()
 ```
 
 
 
+## Development
+
+### Getting Started
+
+Setup your virtualenv, install requirements and package
+
+```python
+❯ python -m venv .venv
+❯ source .venv/bin/activate
+❯ pip install -r requirements.txt
+❯ python setup.py develop      
+```
+
+Run your local tests in [`tests`](./tests)
+
+```
+pytest
 ```
 
 Copyright (C) Relevance AI - All Rights Reserved
