@@ -6,7 +6,7 @@ import pandas as pd
 import requests
 
 
-def get_games_dataset() -> list:
+def get_games_dataset(number_of_documents: Union[None, int] = 365) -> List:
     """Function to download a sample games dataset.
     Dataset from https://www.freetogame.com/
     Total Len: 365
@@ -24,12 +24,14 @@ def get_games_dataset() -> list:
     'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
     }
     """
-    return requests.get(
+    data = requests.get(
         "https://www.freetogame.com/api/games"
     ).json()
+    if number_of_documents: data = data[:number_of_documents]
+    return data
 
 def get_dummy_ecommerce_dataset(db_name: str = 'ecommerce-5', count: int = 1000, base_url = "https://api-aueast.relevance.ai/v1/"):
-    from http_client import VecDBClient
+    from .http_client import VecDBClient
     project = "dummy-collections"
     api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"   # read access
     client = VecDBClient(project, api_key, base_url = base_url)
@@ -58,7 +60,7 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> L
     ).dropna().iloc[:number_of_documents, :].to_dict(orient='records')
 
 
-def get_news_dataset(sample=True) -> List:
+def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
     """News dataset
     Total Len: 250
     Sample document:
@@ -81,7 +83,7 @@ def get_news_dataset(sample=True) -> List:
     """
     return pd.read_csv(
         "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv"
-    ).to_dict(orient='records')
+    ).iloc[:number_of_documents, :].to_dict(orient='records')
 
     
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
@@ -114,4 +116,3 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     df['product_link'] = df['product_link'].str.replace('http://', 'https://')
     df['url'] = df['url'].str.replace('http://', 'https://')
     return df.to_dict('records')
-

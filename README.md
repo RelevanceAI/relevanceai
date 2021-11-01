@@ -221,8 +221,9 @@ Setup your virtualenv, install requirements and package
 
 Run your local tests in [`tests`](./tests)
 
-```
-pytest
+```zsh
+❯ pytest --cov=src -vv
+❯ pytest <file_path> --cov=src -vv
 ```
 
 

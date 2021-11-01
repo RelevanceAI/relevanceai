@@ -37,6 +37,7 @@ dev_requirements = [
     "pytest",
     "pytest-dotenv",
     "pytest-cov",
+    "pytest-mock",
 ]
 
 
