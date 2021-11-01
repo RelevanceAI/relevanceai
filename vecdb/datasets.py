@@ -88,8 +88,10 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     'source': 'eBay',
     'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'}
     """
-    return pd.read_csv(
+    df = pd.read_csv(
         'https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft', encoding='ISO-8859-1'
-    ).dropna().iloc[:number_of_documents, :].to_dict('records')
-
-
+    ).dropna()
+    df['product_image'] = df['product_image'].str.replace('http://', 'https://')
+    df['product_link'] = df['product_link'].str.replace('http://', 'https://')
+    df['url'] = df['url'].str.replace('http://', 'https://')
+    return df.iloc[:number_of_documents, :].to_dict('records')
