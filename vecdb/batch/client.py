@@ -7,12 +7,11 @@ from .chunk import Chunker
 
 
 class BatchAPIClient(BatchInsert):
-    """Batch API client
-    """
+    """Batch API client"""
+
     def batch_insert(self):
         raise NotImplemented
-    
+
     def batch_get_and_edit(self, dataset_id: str, chunk_size: int, bulk_edit: Callable):
-        """Batch get the documents and return the documents
-        """
+        """Batch get the documents and return the documents"""
         raise NotImplemented

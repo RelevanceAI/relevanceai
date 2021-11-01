@@ -10,7 +10,7 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365) -> List:
     """Function to download a sample games dataset.
     Dataset from https://www.freetogame.com/
     Total Len: 365
-    Sample document: 
+    Sample document:
     {'id': 1,
     'title': 'Dauntless',
     'thumbnail': 'https://www.freetogame.com/g/1/thumbnail.jpg',
@@ -24,27 +24,36 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365) -> List:
     'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
     }
     """
-    data = requests.get(
-        "https://www.freetogame.com/api/games"
-    ).json()
-    if number_of_documents: data = data[:number_of_documents]
+    data = requests.get("https://www.freetogame.com/api/games").json()
+    if number_of_documents:
+        data = data[:number_of_documents]
     return data
 
-def get_dummy_ecommerce_dataset(db_name: str = 'ecommerce-5', count: int = 1000, base_url = "https://api-aueast.relevance.ai/v1/"):
+
+def get_dummy_ecommerce_dataset(
+    db_name: str = "ecommerce-5",
+    count: int = 1000,
+    base_url="https://api-aueast.relevance.ai/v1/",
+):
     from .http_client import VecDBClient
+
     project = "dummy-collections"
-    api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"   # read access
-    client = VecDBClient(project, api_key, base_url = base_url)
+    api_key = (
+        "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
+    )
+    client = VecDBClient(project, api_key, base_url=base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
         import warnings
+
         warnings.warn(response["message"])
     return response
+
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Online retail dataset from UCI machine learning
     Total Len: 406829
-    Sample document: 
+    Sample document:
     {'Country': 'United Kingdom',
      'CustomerID': 17850.0,
      'Description': 'WHITE HANGING HEART T-LIGHT HOLDER',
@@ -53,11 +62,16 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> L
      'Quantity': 6,
      'StockCode': '85123A',
      'UnitPrice': 2.55}
-    
+
     """
-    return pd.read_excel(
-        "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
-    ).dropna().iloc[:number_of_documents, :].to_dict(orient='records')
+    return (
+        pd.read_excel(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
+        )
+        .dropna()
+        .iloc[:number_of_documents, :]
+        .to_dict(orient="records")
+    )
 
 
 def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
@@ -81,14 +95,18 @@ def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
      'updated_at': '2018-02-02 01:19:41.756664',
      'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'}
     """
-    return pd.read_csv(
-        "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv"
-    ).iloc[:number_of_documents, :].to_dict(orient='records')
+    return (
+        pd.read_csv(
+            "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv"
+        )
+        .iloc[:number_of_documents, :]
+        .to_dict(orient="records")
+    )
 
-    
+
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset
-    Dataset from https://data.world/crowdflower/ecommerce-search-relevance 
+    Dataset from https://data.world/crowdflower/ecommerce-search-relevance
     Total Len: 15528
     Sample document:
     {'_unit_id': 711158459,
@@ -109,10 +127,15 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     'source': 'eBay',
     'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'}
     """
-    df = pd.read_csv(
-        'https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft', encoding='ISO-8859-1'
-    ).dropna().iloc[:number_of_documents, :]
-    df['product_image'] = df['product_image'].str.replace('http://', 'https://')
-    df['product_link'] = df['product_link'].str.replace('http://', 'https://')
-    df['url'] = df['url'].str.replace('http://', 'https://')
-    return df.to_dict('records')
+    df = (
+        pd.read_csv(
+            "https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft",
+            encoding="ISO-8859-1",
+        )
+        .dropna()
+        .iloc[:number_of_documents, :]
+    )
+    df["product_image"] = df["product_image"].str.replace("http://", "https://")
+    df["product_link"] = df["product_link"].str.replace("http://", "https://")
+    df["url"] = df["url"].str.replace("http://", "https://")
+    return df.to_dict("records")

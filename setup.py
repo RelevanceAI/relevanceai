@@ -1,15 +1,17 @@
 import os
 
-import setuptools 
+import setuptools
 
 with open("README.md") as fp:
     long_description = fp.read()
+
 
 def read(rel_path):
     """Read lines from given file"""
     here = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(here, rel_path), "r") as fp:
         return fp.read()
+
 
 def get_version(rel_path):
     """Read __version__ from given file"""
@@ -28,7 +30,7 @@ requirements = [
     "requests==2.26.0",
     "fsspec==2021.10.1",
     "openpyxl==3.0.9",
-    "doc_utils==0.0.2"
+    "doc_utils==0.0.2",
 ]
 
 dev_requirements = [
@@ -42,16 +44,14 @@ dev_requirements = [
 
 
 setuptools.setup(
-    name='VecDB',
+    name="VecDB",
     version=get_version("vecdb/__init__.py"),
-    url='',
-    author='Relevance AI',
-    author_email='dev@vctr.ai',
+    url="",
+    author="Relevance AI",
+    author_email="dev@vctr.ai",
     long_description=long_description,
-
     package_dir={"": "vecdb"},
     packages=setuptools.find_packages(where="vecdb"),
-
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
@@ -60,14 +60,9 @@ setuptools.setup(
     python_requires=">=3.7",
     classifiers=[
         "Development Status :: Development",
-
         "Intended Audience :: Developers",
-
         "Programming Language :: Python :: 3.7",
-
         "Topic :: Utilities",
-
         "Typing :: Typed",
     ],
 )
-
