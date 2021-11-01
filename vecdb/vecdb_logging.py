@@ -1,5 +1,7 @@
-from loguru import logger
 import time
+
+from loguru import logger
+
 
 def create_logger(*args, **kwargs):
     """Use loguru's default logger for now."""

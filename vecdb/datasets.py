@@ -1,10 +1,12 @@
 """
 Datasets to mock
 """
-import requests
-import .vecdb_logging
+from typing import List, Union
+
 import pandas as pd
-from typing import Union, List
+import requests
+
+import .vecdb_logging
 
 
 def get_games_dataset() -> list:

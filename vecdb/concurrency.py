@@ -1,10 +1,11 @@
 """Multithreading Module
 """
-from concurrent.futures import (
-    ThreadPoolExecutor, as_completed, ProcessPoolExecutor
-)
-from .progress_bar import progress_bar
+from concurrent.futures import (ProcessPoolExecutor, ThreadPoolExecutor,
+                                as_completed)
 from typing import Callable
+
+from .progress_bar import progress_bar
+
 
 def chunk(iterables, n=20):
     return [iterables[i:i + n] for i in range(0, int(len(iterables)), int(n))]

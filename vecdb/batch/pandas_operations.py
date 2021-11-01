@@ -1,5 +1,7 @@
-import pandas as pd
 from typing import Callable
+
+import pandas as pd
+
 
 class PandasOperations:
     def insert_df(self, dataset_id: str, df: pd.DataFrame, bulk_encode: Callable=None, 

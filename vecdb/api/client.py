@@ -1,8 +1,9 @@
 """API Client
 """
+from ..config import CONFIG, Config
 from .datasets import Datasets
 from .services import Services
-from ..config import Config, CONFIG
+
 
 class APIClient:
     """API Client

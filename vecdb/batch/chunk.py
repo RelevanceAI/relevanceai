@@ -1,8 +1,11 @@
 """Chunk Helper functions
 """
+from typing import List, Union
+
 import pandas as pd
-from typing import Union, List
+
 from ..progress_bar import progress_bar
+
 
 class Chunker:
     """Update the chunk mixins
