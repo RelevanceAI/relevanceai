@@ -1,7 +1,2 @@
-tqdm==4.49.0
-pandas
-loguru
-document-utils
-requests
-fsspec
-openpyxl
+# installs dependencies from ./setup.py, and the package itself
+.

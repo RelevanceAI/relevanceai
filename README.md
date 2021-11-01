@@ -216,8 +216,7 @@ Setup your virtualenv, install requirements and package
 ```python
 ❯ python -m venv .venv
 ❯ source .venv/bin/activate
-❯ pip install -r requirements.txt
-❯ python setup.py develop      
+❯ pip install -r requirements.txt  
 ```
 
 Run your local tests in [`tests`](./tests)
@@ -226,6 +225,8 @@ Run your local tests in [`tests`](./tests)
 pytest
 ```
 
+
+```
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential
