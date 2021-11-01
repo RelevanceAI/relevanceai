@@ -6,3 +6,7 @@ def test_smoke_installation():
     # Import the client
     from vecdb import VecDBClient
     assert True
+
+def test_datasets_smoke():
+    from vecdb.datasets import get_ecommerce_dataset
+    assert True
