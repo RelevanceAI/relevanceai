@@ -339,7 +339,7 @@ class BatchInsert(APIClient, Chunker):
             for i in collection_list
             if ("log_update_started" in i) and (dataset_id in i)
         ]
-        [self.datasets.delete(i, confirm=True) for i in log_collections]
+        [self.datasets.delete(i, confirm=False) for i in log_collections]
         return
 
     def _write_documents(

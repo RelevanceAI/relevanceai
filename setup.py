@@ -44,7 +44,7 @@ setuptools.setup(
     url="",
     author="Relevance AI",
     author_email="dev@vctr.ai",
-    long_description=open("README.md", "r", encoding="utf-8").read(),
+    long_description="",
     package_dir={"": "vecdb"},
     packages=setuptools.find_packages(where="vecdb"),
     install_requires=requirements,

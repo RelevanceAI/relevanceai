@@ -236,7 +236,7 @@ class Datasets(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
-        if confirm == True:
+        if confirm:
             # confirm with the user
             self.logger.critical(f"You are about to delete {dataset_id}")
             user_input = input("Confirm? [Y/N] ")
