@@ -1,4 +1,2 @@
-tqdm==4.49.0
-pandas
-loguru
-document-utils
+# installs dependencies from ./setup.py, and the package itself
+.

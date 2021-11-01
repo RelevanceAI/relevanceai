@@ -1,11 +1,13 @@
 import os
-from setuptools import setup, find_packages
+
+import setuptools
 
 def read(rel_path):
     """Read lines from given file"""
     here = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(here, rel_path), "r") as fp:
         return fp.read()
+
 
 def get_version(rel_path):
     """Read __version__ from given file"""
@@ -15,20 +17,41 @@ def get_version(rel_path):
             return line.split(delim)[1]
     raise RuntimeError(f"Unable to find a valid __version__ string in {rel_path}.")
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
 
-setup(
-    name='VecDB',
+requirements = [
+    "tqdm==4.49.0",
+    "pandas==1.3.4",
+    "loguru==0.5.3",
+    "document-utils==1.3.0",
+    "requests==2.26.0",
+    "fsspec==2021.10.1",
+    "openpyxl==3.0.9",
+    "doc_utils==0.0.2",
+]
+
+dev_requirements = [
+    "autopep8",
+    "pylint",
+    "pytest",
+    "pytest-dotenv",
+    "pytest-cov",
+    "pytest-mock",
+]
+
+setuptools.setup(
+    name="VecDB",
     version=get_version("vecdb/__init__.py"),
-    url='',
-    author='Relevance AI',
-    author_email='dev@vctr.ai',
-    description='No description',
-    packages=find_packages(),    
-    install_requires=required,
+    url="",
+    author="Relevance AI",
+    author_email="dev@vctr.ai",
+    long_description="",
+    package_dir={"": "vecdb"},
+    packages=setuptools.find_packages(where="vecdb"),
+    install_requires=requirements,
     extras_require={
-        "tests": ["pytest"]
-    }
+        "dev": dev_requirements,
+        "tests": ["pytest"],
+    },
+    python_requires=">=3.7",
+    classifiers=[],
 )
-

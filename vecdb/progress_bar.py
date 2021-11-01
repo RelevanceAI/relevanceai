@@ -8,7 +8,7 @@ class ProgressBar:
     def __call__(self, iterable):
         self.logger.info("WHAT BAR")
         return self.get_bar()(iterable)
-    
+
     @staticmethod
     def is_in_ipython():
         """
@@ -18,6 +18,7 @@ class ProgressBar:
         # Check if the runtime is within an interactive environment, i.e., ipython.
         try:
             from IPython import get_ipython  # pylint: disable=import-error
+
             if get_ipython():
                 is_in_ipython = True
         except ImportError:
@@ -32,16 +33,20 @@ class ProgressBar:
         if self.is_in_ipython():
             # The import and usage must be valid under the execution path.
             from IPython import get_ipython
-            if 'IPKernelApp' in get_ipython().config:
+
+            if "IPKernelApp" in get_ipython().config:
                 is_in_notebook = True
         return is_in_notebook
-    
+
     def get_bar(self):
         if self.is_in_notebook():
             from tqdm.notebook import tqdm as notebook_bar
+
             return notebook_bar
         from tqdm import tqdm as normal_bar
+
         return normal_bar
+
 
 class NullProgressBar(AbstractContextManager):
     """Context manager that does no additional processing.
@@ -54,7 +59,7 @@ class NullProgressBar(AbstractContextManager):
         # Perform operation, using optional_cm if condition is True
     """
 
-    def __init__(self, iterable: int=None):
+    def __init__(self, iterable: int = None):
         self.iterable = iterable
 
     def __enter__(self):
@@ -69,7 +74,8 @@ class NullProgressBar(AbstractContextManager):
         for i in self.iterable:
             yield i
 
-def progress_bar(iterable, show_progress_bar: bool=False):
+
+def progress_bar(iterable, show_progress_bar: bool = False):
     try:
         if show_progress_bar:
             return ProgressBar()(iterable)
@@ -80,9 +86,9 @@ def progress_bar(iterable, show_progress_bar: bool=False):
 
 if __name__ == "__main__":
 
-    x = 0 
-    for i in progress_bar(range(5), show_progress_bar=False): 
-        x+=1
+    x = 0
+    for i in progress_bar(range(5), show_progress_bar=False):
+        x += 1
         print(i)
         if x > 10:
             break

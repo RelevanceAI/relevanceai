@@ -17,8 +17,8 @@ For the VecDB client, we want to ensure the SDK mirrors the API client.
 
 For example:
 
-```
-# To instantiate the client 
+```python
+## To instantiate the client 
 from vecdb import VecDBClient
 project = input("Your project goes here")
 api_key = input("Your API key goes here")
@@ -31,7 +31,7 @@ To use the following endpoint:
 
 You can run: 
 
-```{python}
+```python
 # Bulk insert documents
 client.datasets.bulk_insert(dataset_id, documents)
 ```
@@ -41,7 +41,7 @@ Or similarly, when you are trying to run
 `/services/search/vector`
 
 You then write: 
-```{python}
+```python
 # Vector search in a dataset
 client.services.search.vector(...)
 ```
@@ -131,7 +131,7 @@ An example of the data now:
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
-To delete all logs created by pull_update_push, use the delete_all_logs function.
+To delete all logs created by pull_update_push, use the `delete_all_logs` function.
 ```python
 vec_client.delete_all_logs(original_collection)
 ```
@@ -170,19 +170,19 @@ Sometimes Pull Update Push will fail for strange reasons (create a Github Issue!
 
 If this is the case, then you are free to use this: 
 
-```{python}
->>> from vecdb import VecDBClient
->>>  url = "https://api-aueast.relevance.ai/v1/"
+```python
+from vecdb import VecDBClient
+url = "https://api-aueast.relevance.ai/v1/"
 
->>> collection = ""
->>> project = ""
->>> api_key = ""
->>> client = VecDBClient(project, api_key)
->>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
->>> while len(docs['documents']) > 0:
->>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
->>>     client.update_documents(collection, docs['documents'])
->>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+collection = ""
+project = ""
+api_key = ""
+client = VecDBClient(project, api_key)
+docs = client.datasets.documents.get_where(collection, select_fields=['title'])
+while len(docs['documents']) > 0:
+    docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
+    client.update_documents(collection, docs['documents'])
+    docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 ```
 
 ## Stop logging 
@@ -195,19 +195,39 @@ client.logger.stop()
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
 
-```
-
 ## Sample Datasets 
 
 If you require a sample dataset, you can run the following to help:
 
-```{python}
-from vecdb.datasets import get_games_dataset
-docs = get_games_dataset()
+
+```python
+from vecdb.datasets import get_ecommerce_dataset
+docs = get_ecommerce_dataset()
 ```
 
 
 
+## Development
+
+### Getting Started
+
+Setup your virtualenv, install requirements and package
+
+```python
+❯ python -m venv .venv
+❯ source .venv/bin/activate
+❯ pip install -r requirements-dev.txt  
+```
+
+Run your local tests in [`tests`](./tests)
+
+```zsh
+❯ pytest --cov=src -vv
+❯ pytest <file_path> --cov=src -vv
+```
+
+
+```
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential
