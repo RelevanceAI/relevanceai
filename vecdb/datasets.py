@@ -6,31 +6,44 @@ from typing import List, Union
 import pandas as pd
 import requests
 
-import .vecdb_logging
+from vecdb_logging import create_logger
 
-
-def get_games_dataset() -> list:
+def get_games_dataset() -> List:
     """Function to download a sample games dataset.
-
     Dataset from https://www.freetogame.com/
+    Total Len: 365
+    Sample document: 
+    {'id': 1,
+    'title': 'Dauntless',
+    'thumbnail': 'https://www.freetogame.com/g/1/thumbnail.jpg',
+    'short_description': 'A free-to-play, co-op action RPG with gameplay similar to Monster Hunter.',
+    'game_url': 'https://www.freetogame.com/open/dauntless',
+    'genre': 'MMORPG',
+    'platform': 'PC (Windows)',
+    'publisher': 'Phoenix Labs',
+    'developer': 'Phoenix Labs, Iron Galaxy',
+    'release_date': '2019-05-21',
+    'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
+    }
     """
     return requests.get(
         "https://www.freetogame.com/api/games"
     ).json()
 
 def get_dummy_ecommerce_dataset(db_name: str = 'ecommerce-5', count: int = 1000, base_url = "https://api-aueast.relevance.ai/v1/"):
-    from .http_client import VecDBClient
+    from http_client import VecDBClient
     project = "dummy-collections"
     api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"   # read access
     client = VecDBClient(project, api_key, base_url = base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
-        logger = vecdb_logging.create_logger()
+        logger = create_logger()
         logger.error(response["message"])
     return response
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Online retail dataset from UCI machine learning
+    Total Len: 406829
     Sample document: 
     {'Country': 'United Kingdom',
      'CustomerID': 17850.0,
@@ -42,13 +55,14 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> L
      'UnitPrice': 2.55}
     
     """
-    df = pd.read_excel("https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx")
-    if number_of_documents is None:
-        return df.to_dict(orient='records')
-    return df.to_dict(orient='records')[:number_of_documents]
+    return pd.read_excel(
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
+    ).iloc[:number_of_documents, :].dropna().to_dict(orient='records')
+
 
 def get_news_dataset(sample=True) -> List:
     """News dataset
+    Total Len: 250
     Sample document:
     {'Unnamed: 0': 0,
      'authors': 'Ruth Harris',
@@ -70,6 +84,7 @@ def get_news_dataset(sample=True) -> List:
     return pd.read_csv(
         "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv"
     ).to_dict(orient='records')
+
     
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset
