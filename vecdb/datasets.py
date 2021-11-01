@@ -90,8 +90,8 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """
     df = pd.read_csv(
         'https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft', encoding='ISO-8859-1'
-    ).dropna()
+    ).iloc[:number_of_documents, :].dropna()
     df['product_image'] = df['product_image'].str.replace('http://', 'https://')
     df['product_link'] = df['product_link'].str.replace('http://', 'https://')
     df['url'] = df['url'].str.replace('http://', 'https://')
-    return df.iloc[:number_of_documents, :].to_dict('records')
+    return df.to_dict('records')
