@@ -81,7 +81,7 @@ class Transport:
                         self.logger.error(response.content.decode())
                     if verbose:
                         self.logger.error(
-                            f"Response failed (status: {response.status_code} Content: {response.content.decode()})"
+                            f"Response failed ({base_url + endpoint}) (status: {response.status_code} Content: {response.content.decode()})"
                         )
                     raise APIError(response.content.decode())
 
@@ -90,7 +90,7 @@ class Transport:
                         self.logger.error(response.content.decode())
                     if verbose:
                         self.logger.error(
-                            f"Response failed (status: {response.status_code} Content: {response.content.decode()})"
+                            f"Response failed ({base_url + endpoint}) (status: {response.status_code} Content: {response.content.decode()})"
                         )
                     continue
 
@@ -98,17 +98,17 @@ class Transport:
                 # Print the error
                 traceback.print_exc()
                 if verbose:
-                    self.logger.error("Connection error but re-trying.")
+                    self.logger.error(f"Connection error but re-trying. ({base_url + endpoint})")
                 time.sleep(self.config.seconds_between_retries)
                 continue
 
             except JSONDecodeError as error:
                 if verbose:
-                    self.logger.error("No Json available")
+                    self.logger.error(f"No Json available ({base_url + endpoint})")
                 self.logger.error(response)
 
             if verbose:
-                self.logger.error("Response failed, stopped trying")
+                self.logger.error(f"Response failed, stopped trying ({base_url + endpoint})")
             raise APIError(response.content.decode())
 
         return response
