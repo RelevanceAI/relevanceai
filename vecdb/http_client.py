@@ -4,7 +4,7 @@
 import os
 import sys
 
-from doc_utils import DocUtils
+# from doc_utils import DocUtils
 from loguru import logger
 
 from batch.client import BatchAPIClient
@@ -12,7 +12,8 @@ from config import CONFIG
 from errors import APIError
 
 
-class VecDBClient(BatchAPIClient, DocUtils):
+# class VecDBClient(BatchAPIClient, DocUtils):
+class VecDBClient(BatchAPIClient):
     """Python Client for Relevance AI's VecDB"""
 
     WELCOME_MESSAGE = """Welcome to the development version of the VecDB Python SDK. Please do not use this SDK to build core systems yet until we have a stable version."""
