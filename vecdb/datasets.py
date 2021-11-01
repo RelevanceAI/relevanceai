@@ -2,13 +2,11 @@
 Datasets to mock
 """
 from typing import List, Union
-
 import pandas as pd
 import requests
 
-from vecdb_logging import create_logger
 
-def get_games_dataset() -> List:
+def get_games_dataset() -> list:
     """Function to download a sample games dataset.
     Dataset from https://www.freetogame.com/
     Total Len: 365
@@ -37,8 +35,8 @@ def get_dummy_ecommerce_dataset(db_name: str = 'ecommerce-5', count: int = 1000,
     client = VecDBClient(project, api_key, base_url = base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
-        logger = create_logger()
-        logger.error(response["message"])
+        import warnings
+        warnings.warn(response["message"])
     return response
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
@@ -57,7 +55,7 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> L
     """
     return pd.read_excel(
         "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
-    ).iloc[:number_of_documents, :].dropna().to_dict(orient='records')
+    ).dropna().iloc[:number_of_documents, :].to_dict(orient='records')
 
 
 def get_news_dataset(sample=True) -> List:
@@ -111,8 +109,9 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """
     df = pd.read_csv(
         'https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft', encoding='ISO-8859-1'
-    ).iloc[:number_of_documents, :].dropna()
+    ).dropna().iloc[:number_of_documents, :]
     df['product_image'] = df['product_image'].str.replace('http://', 'https://')
     df['product_link'] = df['product_link'].str.replace('http://', 'https://')
     df['url'] = df['url'].str.replace('http://', 'https://')
     return df.to_dict('records')
+
