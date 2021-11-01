@@ -2,6 +2,7 @@
 """
 from ..base import Base
 
+
 class Recommend(Base):
     def __init__(self, project, api_key, base_url):
         self.project = project

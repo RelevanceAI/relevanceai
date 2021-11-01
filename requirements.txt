@@ -4,3 +4,4 @@ loguru
 document-utils
 requests
 fsspec
+openpyxl

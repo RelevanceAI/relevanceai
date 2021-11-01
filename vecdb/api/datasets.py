@@ -1,9 +1,10 @@
 """All Dataset related functions
 """
 from ..base import Base
-from .tasks import Tasks
 from .documents import Documents
 from .monitor import Monitor
+from .tasks import Tasks
+
 
 class Datasets(Base):
     """All dataset-related functions

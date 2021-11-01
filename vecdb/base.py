@@ -1,8 +1,11 @@
-import time
-from .transport import Transport
-from .config import CONFIG
-from loguru import logger
 import sys
+import time
+
+from loguru import logger
+
+from .config import CONFIG
+from .transport import Transport
+
 
 class Base(Transport):
     """Base class for all VecDB utilities
