@@ -1,0 +1,29 @@
+repos:
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.0.1
+  hooks:
+  # Formatting
+  - id: trailing-whitespace
+  - id: mixed-line-ending
+  - id: check-builtin-literals
+  - id: check-merge-conflict
+  - id: check-case-conflict
+  - id: check-executables-have-shebangs
+  - id: check-json
+  - id: end-of-file-fixer
+  # Python
+  - id: check-ast
+  - id: check-docstring-first
+  - id: debug-statements
+  - id: fix-encoding-pragma
+  - id: double-quote-string-fixer
+  # Security
+  # - id: detect-aws-credentials
+  - id: detect-private-key
+  # Check large files
+  - id: check-added-large-files
+    args: [--maxkb, '500']
+  # Check no commit to master
+  - id: no-commit-to-branch
+    args: [--branch, main]

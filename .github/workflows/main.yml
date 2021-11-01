@@ -32,6 +32,5 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          python -m pip install -e .[tests]
-          python -m pytest
-          
+          python -m pip install -e .[dev]
+          python -m pytest --cov=vecdb -vv

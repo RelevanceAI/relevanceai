@@ -1,4 +1,4 @@
-# VecDB Python SDK 
+# VecDB Python SDK
 
 For documentation about how to use this package, visit: https://docs.relevance.ai/docs
 
@@ -7,7 +7,7 @@ This is the Python SDK of VecDB and is the main Pythonic interface for the VecDB
 
 Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
 
-## Installation 
+## Installation
 
 The easiest way is to install this package is to run `pip install --upgrade vecdb`.
 
@@ -18,29 +18,29 @@ For the VecDB client, we want to ensure the SDK mirrors the API client.
 For example:
 
 ```python
-## To instantiate the client 
+## To instantiate the client
 from vecdb import VecDBClient
 project = input("Your project goes here")
 api_key = input("Your API key goes here")
 client = VecDBClient(project, api_key)
 ```
 
-To use the following endpoint: 
+To use the following endpoint:
 
 `/datasets/bulk_insert`
 
-You can run: 
+You can run:
 
 ```python
 # Bulk insert documents
 client.datasets.bulk_insert(dataset_id, documents)
 ```
 
-Or similarly, when you are trying to run 
+Or similarly, when you are trying to run
 
 `/services/search/vector`
 
-You then write: 
+You then write:
 ```python
 # Vector search in a dataset
 client.services.search.vector(...)
@@ -82,7 +82,7 @@ Under the hood, we use multiprocessing for processing the `bulk_fn` and multi-th
 
 Update documents within your collection based on a rule customised by you. The Pull-Update-Push Function loops through every document in your collection, brings it to your local computer where a function is applied (specified by you) and reuploaded to either an new collection or updated in the same collection. There is a logging functionality to keep track of which documents have been updated to save on network requests.
 
-For example, consider a scenario where you have uploaded a dataset called 'test_dataset' containing integers up to 200. 
+For example, consider a scenario where you have uploaded a dataset called 'test_dataset' containing integers up to 200.
 
 ```python
 original_collection = 'test_dataset'
@@ -109,12 +109,12 @@ def even_function(data):
     return data
 ```
 This function is then included in the Pull-Update-Push Function to update every document in the uploaded collection.
- 
+
 ```python
 client.pull_update_push(original_collection, even_function)
 ```
 
-An example of the data now: 
+An example of the data now:
 ```
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
@@ -126,7 +126,7 @@ new_collection = 'updated_test_dataset'
 vec_client.pull_update_push(original_collection, even_function, new_collection)
 ```
 
-An example of the data now: 
+An example of the data now:
 ```
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
@@ -139,10 +139,10 @@ vec_client.delete_all_logs(original_collection)
 
 ## Integration with VectorHub
 
-VectorHub is RelevanceAI's main encoder repository. For the models used here, we have abstracted away a lot of 
-complexity from installation to encoding and have innate VectorAI support. 
+VectorHub is RelevanceAI's main encoder repository. For the models used here, we have abstracted away a lot of
+complexity from installation to encoding and have innate VectorAI support.
 
-Using VectorHub models is as simple as (actual example): 
+Using VectorHub models is as simple as (actual example):
 
 ```python
 # Inserting a dataframe
@@ -168,7 +168,7 @@ client.pull_update_push("sample-cn", encode_documents)
 
 Sometimes Pull Update Push will fail for strange reasons (create a Github Issue!)
 
-If this is the case, then you are free to use this: 
+If this is the case, then you are free to use this:
 
 ```python
 from vecdb import VecDBClient
@@ -185,9 +185,9 @@ while len(docs['documents']) > 0:
     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 ```
 
-## Stop logging 
+## Stop logging
 
-In order to stop all logging, you can just run this: 
+In order to stop all logging, you can just run this:
 
 ```
 client.logger.stop()
@@ -195,7 +195,7 @@ client.logger.stop()
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
 
-## Sample Datasets 
+## Sample Datasets
 
 If you require a sample dataset, you can run the following to help:
 
@@ -214,16 +214,14 @@ docs = get_ecommerce_dataset()
 Setup your virtualenv, install requirements and package
 
 ```python
-❯ python -m venv .venv
-❯ source .venv/bin/activate
-❯ pip install -r requirements-dev.txt  
+❯ make install
 ```
 
 Run your local tests in [`tests`](./tests)
 
 ```zsh
-❯ pytest --cov=src -vv
-❯ pytest <file_path> --cov=src -vv
+❯ pytest --cov=vecdb -vv
+❯ pytest <file_path> --cov=vecdb -vv
 ```
 
 
@@ -231,5 +229,5 @@ Run your local tests in [`tests`](./tests)
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential
-Relevance AI <dev@relevance.ai> 2021 
+Relevance AI <dev@relevance.ai> 2021
 ```
