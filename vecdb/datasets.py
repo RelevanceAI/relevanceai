@@ -2,13 +2,18 @@
 """
 Datasets to mock
 """
-from typing import List, Union, Dict, Any, Literal
+from typing import List, Union, Dict, Any, Literal, Callable
+import collections.abc
+
 
 import pandas as pd
 import requests
 from vecdb_logging import logger
 
 JSONDict = Dict[str, Any]
+
+
+
 
 def get_games_dataset(
     number_of_documents: Union[None, int] = 365
@@ -125,6 +130,41 @@ def get_dummy_ecommerce_dataset(
         ]
     },
     """
+    # def _apply_recursive(obj, func, keys=Union[None, List[str]]):
+    #     '''
+    #     Applies a function in-place to a nested dict or list recursively to a select group of keys
+    #     '''
+    #     if isinstance(obj, dict):
+    #         for k, v in obj.iteritems():
+    #             if isinstance(v, dict):
+    #                 if keys is None: obj.keys()
+    #                 if k in keys:
+    #                     _apply_recursive(v, func, keys)
+    #     elif isinstance(v, list):
+    #         obj[k] = map(func, v)
+    #     else:
+    #         obj[k] = func(v)
+
+    # def _apply_recursive(obj, func, keys=Union[None, List[str]]):
+    #     if isinstance(obj, dict):  # if dict, apply to each key
+    #         if keys is None: obj.keys()
+    #         return {k: _apply_recursive(func, v) for k, v in obj.items() if k in keys}
+    #     elif isinstance(obj, list):  # if list, apply to each element
+    #         return [_apply_recursive(func, elem) for elem in obj]
+    #     else:
+    #         return func(obj)
+    def _apply_fn_dict_value(
+        doc: JSONDict,
+        func: Callable,
+        keys: Union[None, List[str]] = None
+    ) -> JSONDict:
+        if keys is None: keys = doc.keys()
+        for k, v in doc.items():
+            if k in keys:
+                doc[k] = func(v)
+        return doc
+
+
     from http_client import VecDBClient
 
     project = 'dummy-collections'
@@ -137,8 +177,12 @@ def get_dummy_ecommerce_dataset(
     '''
     Paginating the dataset
     '''
+    data = resp['documents']
+    data = [_apply_fn_dict_value(doc=doc,
+                            func=lambda x: x.replace('http://', 'https://'),
+                            keys=['product_url', 'image', 'image_first'])
+            for doc in data]
     _cursor = resp['cursor']
-    data = []
     while _cursor:
         resp = vi.datasets.documents.list(db_name, page_size=page_size, cursor=_cursor)
         if 'message' in resp:
@@ -147,8 +191,11 @@ def get_dummy_ecommerce_dataset(
         _data = resp['documents']
         _cursor = resp['cursor']
         if (_data == []) or (_cursor is []): break
+        _data = [_apply_fn_dict_value(doc=doc,
+                            func=lambda x: x.replace('http://', 'https://'),
+                            keys=['product_url', 'image', 'image_first'])
+                for doc in _data]
         data += _data
-        print(len(_data), len(data))
         if (number_of_documents and (len(data) >= int(number_of_documents))): break
     return data
 
@@ -171,7 +218,7 @@ def get_online_retail_dataset(
     """
     return (
         pd.read_excel(
-            'https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx'
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx',
         )
         .dropna()
         .iloc[:number_of_documents, :]
@@ -253,5 +300,6 @@ def get_ecommerce_dataset(
 
 from pprint import pprint
 
-data = get_dummy_ecommerce_dataset(number_of_documents=None)
+data = get_dummy_ecommerce_dataset(number_of_documents=10)
+pprint(data[0]['image'])
 print(len(data))
