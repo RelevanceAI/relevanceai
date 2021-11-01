@@ -58,11 +58,5 @@ setuptools.setup(
         "tests": ["pytest"],
     },
     python_requires=">=3.7",
-    classifiers=[
-        "Development Status :: Development",
-        "Intended Audience :: Developers",
-        "Programming Language :: Python :: 3.7",
-        "Topic :: Utilities",
-        "Typing :: Typed",
-    ],
+    classifiers=[],
 )
