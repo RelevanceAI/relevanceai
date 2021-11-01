@@ -79,6 +79,7 @@ class Search(Base):
             "services/search/hybrid",
             method="POST",
             parameters={
+                "dataset_id": "ecommerce-experiments",
                 "dataset_id": dataset_id,
                 "multivector_query": multivector_query,
                 "text": text,
