@@ -1,5 +1,3 @@
-import logging
-
 class BaseConfig:
     def __getitem__(self, item):
         return getattr(self, item)
