@@ -2,7 +2,6 @@ import os
 
 import setuptools
 
-
 def read(rel_path):
     """Read lines from given file"""
     here = os.path.abspath(os.path.dirname(__file__))
@@ -39,7 +38,6 @@ dev_requirements = [
     "pytest-mock",
 ]
 
-print(long_description)
 setuptools.setup(
     name="VecDB",
     version=get_version("vecdb/__init__.py"),
