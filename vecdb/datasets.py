@@ -2,7 +2,7 @@
 Datasets to mock
 """
 import requests
-import vecdb_logging
+import .vecdb_logging
 import pandas as pd
 from typing import Union, List
 
