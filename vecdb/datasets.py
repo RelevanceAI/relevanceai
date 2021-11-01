@@ -6,7 +6,7 @@ from typing import List, Union
 import pandas as pd
 import requests
 
-import .vecdb_logging
+import vecdb_logging
 
 
 def get_games_dataset() -> list:
