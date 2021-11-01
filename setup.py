@@ -2,9 +2,6 @@ import os
 
 import setuptools
 
-with open("README.md") as fp:
-    long_description = fp.read()
-
 
 def read(rel_path):
     """Read lines from given file"""
@@ -42,14 +39,14 @@ dev_requirements = [
     "pytest-mock",
 ]
 
-
+print(long_description)
 setuptools.setup(
     name="VecDB",
     version=get_version("vecdb/__init__.py"),
     url="",
     author="Relevance AI",
     author_email="dev@vctr.ai",
-    long_description=long_description,
+    long_description=open("README.md", "r", encoding="utf-8").read(),
     package_dir={"": "vecdb"},
     packages=setuptools.find_packages(where="vecdb"),
     install_requires=requirements,
