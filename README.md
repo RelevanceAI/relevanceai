@@ -131,7 +131,7 @@ An example of the data now:
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
-To delete all logs created by pull_update_push, use the delete_all_logs function.
+To delete all logs created by pull_update_push, use the `delete_all_logs` function.
 ```python
 vec_client.delete_all_logs(original_collection)
 ```
@@ -170,19 +170,19 @@ Sometimes Pull Update Push will fail for strange reasons (create a Github Issue!
 
 If this is the case, then you are free to use this: 
 
-```{python}
->>> from vecdb import VecDBClient
->>>  url = "https://api-aueast.relevance.ai/v1/"
+```python
+from vecdb import VecDBClient
+url = "https://api-aueast.relevance.ai/v1/"
 
->>> collection = ""
->>> project = ""
->>> api_key = ""
->>> client = VecDBClient(project, api_key)
->>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
->>> while len(docs['documents']) > 0:
->>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
->>>     client.update_documents(collection, docs['documents'])
->>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+collection = ""
+project = ""
+api_key = ""
+client = VecDBClient(project, api_key)
+docs = client.datasets.documents.get_where(collection, select_fields=['title'])
+while len(docs['documents']) > 0:
+    docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
+    client.update_documents(collection, docs['documents'])
+    docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 ```
 
 ## Stop logging 
@@ -195,18 +195,19 @@ client.logger.stop()
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
 
-```
-
 ## Sample Datasets 
 
 If you require a sample dataset, you can run the following to help:
 
-```{python}
+
+```python
 from vecdb.datasets import get_games_dataset
 docs = get_games_dataset()
 ```
 
 
+
+```
 
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited

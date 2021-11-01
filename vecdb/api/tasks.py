@@ -32,13 +32,13 @@ class Tasks(Base):
                 try:
                     status = self.status(dataset_id, task_id)['status']
                 except:
-                    self.logger.info(f'Status-check timed out: {task_id}')
+                    self.logger.error(f'Status-check timed out: {task_id}')
                     return task_id
 
                 if verbose == True:
                     self.logger.info(status)
 
-            self.logger.info(f"Your task is {status}!")
+            self.logger.success(f"Your task is {status}!")
             return 
 
 

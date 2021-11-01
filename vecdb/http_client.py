@@ -2,10 +2,12 @@
 """
 import os
 from loguru import logger
+import sys
 from .config import CONFIG
 from .batch.client import BatchAPIClient
 from .errors import APIError
 from doc_utils import DocUtils
+
 
 class VecDBClient(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's VecDB
@@ -19,7 +21,14 @@ class VecDBClient(BatchAPIClient, DocUtils):
         api_key: str=os.getenv("VDB_API_KEY"),
         base_url: str="https://gateway-api-aueast.relevance.ai/v1/"):
         super().__init__(project, api_key, base_url)
+
+        #Add Logging
         self.logger = logger
+        self.logger.remove()
+        self.logger.add(sys.stdout, level=CONFIG.logging_level)
+        if CONFIG.log_to_file:
+            logger.add("vecdb_{time}.log", level=CONFIG.logging_level, rotation="100 MB")
+            
         if project is None or api_key is None:
             print("It seems you are missing an API key, " + \
                     "you can sign up for an API key following the instructions here: " + \

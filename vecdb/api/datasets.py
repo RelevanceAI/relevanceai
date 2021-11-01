@@ -73,6 +73,21 @@ class Datasets(Base):
                 "asc": asc
             }, output_format = output_format, verbose = verbose)
 
+    def check_missing_ids(self, dataset_id, ids, output_format: str = "json", verbose: bool = True):
+
+        #Check if dataset_id exists
+        dataset_exists = dataset_id in self.list()['datasets']
+
+        if dataset_exists:
+            return self.make_http_request(
+                endpoint=f"datasets/{dataset_id}/documents/get_missing",
+                method="GET",
+                parameters={"ids": ids}, output_format=output_format, verbose=verbose)
+
+        else:
+            print('Dataset does not exist')
+            return
+
 
     def bulk_insert(self, 
         dataset_id: str, documents: list, insert_date: bool = True, 
@@ -128,7 +143,7 @@ class Datasets(Base):
     def delete(self, dataset_id: str, confirm: bool=False, output_format: str="json", verbose: bool=True):
         if confirm == True:
             # confirm with the user
-            self.logger.info(f'You are about to delete {dataset_id}')
+            self.logger.critical(f'You are about to delete {dataset_id}')
             user_input = input('Confirm? [Y/N] ')
         else: 
             user_input = 'y'
@@ -143,11 +158,11 @@ class Datasets(Base):
         )
         
         elif user_input.lower() in ('n', 'no'): 
-            self.logger.info(f'{dataset_id} not deleted')
+            self.logger.critical(f'{dataset_id} not deleted')
             return 
 
         else:
-           self.logger.info(f'Error: Input {user_input} unrecognised.')
+           self.logger.critical(f'Error: Input {user_input} unrecognised.')
            return        
 
     def clone(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, 
@@ -177,4 +192,5 @@ class Datasets(Base):
             verbose=verbose
         )
 
+    
 
