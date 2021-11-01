@@ -1,11 +1,12 @@
 """Services class
 """
 from ..base import Base
-from .encoders import Encoders
-from .cluster import Cluster
-from .search import Search
 from .aggregate import Aggregate
+from .cluster import Cluster
+from .encoders import Encoders
 from .recommend import Recommend
+from .search import Search
+
 
 class Services(Base):
     def __init__(self, project: str, api_key: str, base_url: str):

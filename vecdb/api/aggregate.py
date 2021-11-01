@@ -1,5 +1,6 @@
 from ..base import Base
 
+
 class Aggregate(Base):
     """Aggregate service
     """

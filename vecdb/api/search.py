@@ -1,4 +1,5 @@
-from ..base import Base 
+from ..base import Base
+
 
 class Search(Base):
     def vector(self, dataset_id: str, multivector_query: list, positive_document_ids: dict={},
