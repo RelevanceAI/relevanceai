@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 """Chunk Helper functions
 """
 from typing import List, Union
 
 import pandas as pd
 
-from ..progress_bar import progress_bar
+from progress_bar import progress_bar
 
 
 class Chunker:

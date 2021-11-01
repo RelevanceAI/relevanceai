@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Batch operations
 """
 import json
@@ -8,10 +9,10 @@ import traceback
 from datetime import datetime
 from typing import Callable
 
-from ..api.client import APIClient
-from ..concurrency import multiprocess, multithread
-from ..progress_bar import progress_bar
-from .chunk import Chunker
+from api.client import APIClient
+from concurrency import multiprocess, multithread
+from progress_bar import progress_bar
+from batch.chunk import Chunker
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -38,10 +39,10 @@ class BatchInsert(APIClient, Chunker):
         enabled.
         """
         if verbose:
-            self.logger.info(f"You are currently inserting into {dataset_id}")
+            self.logger.info(f'You are currently inserting into {dataset_id}')
         if verbose:
             self.logger.info(
-                f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
+                f'You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}'
             )
 
         def bulk_insert_func(docs):
@@ -99,10 +100,10 @@ class BatchInsert(APIClient, Chunker):
 
         """
         if verbose:
-            self.logger.info(f"You are currently updating {dataset_id}")
+            self.logger.info(f'You are currently updating {dataset_id}')
         if verbose:
             self.logger.info(
-                f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
+                f'You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}'
             )
 
         def bulk_update_func(docs):
@@ -179,16 +180,16 @@ class BatchInsert(APIClient, Chunker):
         # Check if a logging_collection has been supplied
         if logging_collection == None:
             now = datetime.now()
-            dt_string = now.strftime("_log_update_started_%d-%m-%Y_%H-%M-%S")
+            dt_string = now.strftime('_log_update_started_%d-%m-%Y_%H-%M-%S')
             logging_collection = original_collection + dt_string
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose=False)
-        if logging_collection not in collection_list["datasets"]:
-            self.logger.info("Creating a logging collection for you.")
+        if logging_collection not in collection_list['datasets']:
+            self.logger.info('Creating a logging collection for you.')
             self.logger.info(
                 self.datasets.create(
-                    logging_collection, output_format="json", verbose=verbose
+                    logging_collection, output_format='json', verbose=verbose
                 )
             )
 
@@ -209,16 +210,16 @@ class BatchInsert(APIClient, Chunker):
             remaining_length = original_length - completed_length
             iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
-            self.logger.debug(f"{original_length}")
-            self.logger.debug(f"{completed_length}")
-            self.logger.debug(f"{iterations_required}")
+            self.logger.debug(f'{original_length}')
+            self.logger.debug(f'{completed_length}')
+            self.logger.debug(f'{iterations_required}')
 
             # Return if no documents to update
             if remaining_length == 0:
-                self.logger.success(f"Pull, Update, Push is complete!")
+                self.logger.success(f'Pull, Update, Push is complete!')
                 return {
-                    "Failed Documents": failed_documents,
-                    "Logging Collection": logging_collection,
+                    'Failed Documents': failed_documents,
+                    'Logging Collection': logging_collection,
                 }
 
             for _ in progress_bar(
@@ -229,15 +230,15 @@ class BatchInsert(APIClient, Chunker):
                 log_json = self.datasets.documents.get_where_all(
                     logging_collection, verbose=verbose
                 )
-                completed_documents_list = [i["_id"] for i in log_json]
+                completed_documents_list = [i['_id'] for i in log_json]
 
                 # Get incomplete documents from raw collection
                 retrieve_filters = filters + [
                     {
-                        "field": "ids",
-                        "filter_type": "ids",
-                        "condition": "!=",
-                        "condition_value": completed_documents_list,
+                        'field': 'ids',
+                        'filter_type': 'ids',
+                        'condition': '!=',
+                        'condition_value': completed_documents_list,
                     }
                 ]
 
@@ -249,18 +250,18 @@ class BatchInsert(APIClient, Chunker):
                     verbose=verbose,
                 )
 
-                documents = orig_json["documents"]
-                self.logger.debug(f"{len(documents)}")
+                documents = orig_json['documents']
+                self.logger.debug(f'{len(documents)}')
 
                 # Update documents
                 try:
                     updated_data = update_function(documents, **updating_args)
                 except Exception as e:
-                    self.logger.error("Your updating function does not work: " + str(e))
+                    self.logger.error('Your updating function does not work: ' + str(e))
                     traceback.print_exc()
                     return
-                updated_documents = [i["_id"] for i in documents]
-                self.logger.debug(f"{len(updated_data)}")
+                updated_documents = [i['_id'] for i in documents]
+                self.logger.debug(f'{len(updated_data)}')
 
                 # Upload documents
                 if updated_collection is None:
@@ -281,13 +282,13 @@ class BatchInsert(APIClient, Chunker):
                     )
 
                 # Check success
-                chunk_failed = insert_json["failed_documents"]
+                chunk_failed = insert_json['failed_documents']
                 self.logger.success(
-                    f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
+                    f'Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!'
                 )
                 failed_documents.extend(chunk_failed)
                 success_documents = list(set(updated_documents) - set(failed_documents))
-                upload_documents = [{"_id": i} for i in success_documents]
+                upload_documents = [{'_id': i} for i in success_documents]
                 self.insert_documents(
                     logging_collection,
                     upload_documents,
@@ -298,7 +299,7 @@ class BatchInsert(APIClient, Chunker):
                 # If fail, try to reduce retrieve chunk
                 if len(chunk_failed) > 0:
                     self.logger.warning(
-                        "Failed to upload. Retrieving half of previous number."
+                        'Failed to upload. Retrieving half of previous number.'
                     )
                     retrieve_chunk_size = (
                         retrieve_chunk_size
@@ -309,17 +310,17 @@ class BatchInsert(APIClient, Chunker):
 
                 if len(failed_documents) > max_error:
                     self.logger.error(
-                        f"You have over {max_error} failed documents which failed to upload!"
+                        f'You have over {max_error} failed documents which failed to upload!'
                     )
                     return {
-                        "Failed Documents": failed_documents,
-                        "Logging Collection": logging_collection,
+                        'Failed Documents': failed_documents,
+                        'Logging Collection': logging_collection,
                     }
 
-        self.logger.success(f"Pull, Update, Push is complete!")
+        self.logger.success(f'Pull, Update, Push is complete!')
         return {
-            "Failed Documents": failed_documents,
-            "Logging Collection": logging_collection,
+            'Failed Documents': failed_documents,
+            'Logging Collection': logging_collection,
         }
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
@@ -328,16 +329,16 @@ class BatchInsert(APIClient, Chunker):
 
         docs = [
             {k: v for k, v in doc.items() if not pd.isna(v)}
-            for doc in dataframe.to_dict(orient="records")
+            for doc in dataframe.to_dict(orient='records')
         ]
         return self.insert_documents(dataset_id, docs, *args, **kwargs)
 
     def delete_all_logs(self, dataset_id):
-        collection_list = self.datasets.list()["datasets"]
+        collection_list = self.datasets.list()['datasets']
         log_collections = [
             i
             for i in collection_list
-            if ("log_update_started" in i) and (dataset_id in i)
+            if ('log_update_started' in i) and (dataset_id in i)
         ]
         [self.datasets.delete(i, confirm=False) for i in log_collections]
         return
@@ -366,7 +367,7 @@ class BatchInsert(APIClient, Chunker):
         inserted = []
 
         # Initialise failed documents
-        failed_ids = [i["_id"] for i in docs]
+        failed_ids = [i['_id'] for i in docs]
 
         # Initialise cancelled documents
         cancelled_ids = []
@@ -395,36 +396,36 @@ class BatchInsert(APIClient, Chunker):
 
                 # Update inserted amount
                 [
-                    inserted.append(chunk["response_json"]["inserted"])
+                    inserted.append(chunk['response_json']['inserted'])
                     for chunk in insert_json
-                    if chunk["status_code"] == 200
+                    if chunk['status_code'] == 200
                 ]
                 for chunk in insert_json:
 
                     # Track failed in 200
-                    if chunk["status_code"] == 200:
+                    if chunk['status_code'] == 200:
                         [
-                            failed_ids.append(i["_id"])
-                            for i in chunk["response_json"]["failed_documents"]
+                            failed_ids.append(i['_id'])
+                            for i in chunk['response_json']['failed_documents']
                         ]
 
                     # Cancel documents with 400 or 404
-                    elif chunk["status_code"] in [400, 404]:
-                        [cancelled_ids.append(i["_id"]) for i in chunk["documents"]]
+                    elif chunk['status_code'] in [400, 404]:
+                        [cancelled_ids.append(i['_id']) for i in chunk['documents']]
 
                     # Half chunksize with 413 or 524
-                    elif chunk["status_code"] in [413, 524]:
-                        [failed_ids.append(i["_id"]) for i in chunk["documents"]]
+                    elif chunk['status_code'] in [413, 524]:
+                        [failed_ids.append(i['_id']) for i in chunk['documents']]
                         chunksize = chunksize * retry_chunk_mult
 
                     # Retry all other errors
                     else:
-                        [failed_ids.append(i["_id"]) for i in chunk["documents"]]
+                        [failed_ids.append(i['_id']) for i in chunk['documents']]
 
-                docs = [i for i in docs if i["_id"] in failed_ids]
+                docs = [i for i in docs if i['_id'] in failed_ids]
 
             else:
                 break
         failed_ids.extend(cancelled_ids)
-        output = {"inserted": sum(inserted), "failed_documents": failed_ids}
+        output = {'inserted': sum(inserted), 'failed_documents': failed_ids}
         return output

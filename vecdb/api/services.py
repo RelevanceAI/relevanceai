@@ -1,11 +1,12 @@
+# -*- coding: utf-8 -*-
 """Services class
 """
-from ..base import Base
-from .aggregate import Aggregate
-from .cluster import Cluster
-from .encoders import Encoders
-from .recommend import Recommend
-from .search import Search
+from base import Base
+from api.aggregate import Aggregate
+from api.cluster import Cluster
+from api.encoders import Encoders
+from api.recommend import Recommend
+from api.search import Search
 
 
 class Services(Base):

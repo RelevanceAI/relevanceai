@@ -1,5 +1,6 @@
-from ..base import Base
-from .centroids import Centroids
+# -*- coding: utf-8 -*-
+from base import Base
+from api.centroids import Centroids
 
 
 class Cluster(Base):
@@ -20,22 +21,22 @@ class Cluster(Base):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        alias: str = "default",
-        output_format: str = "json",
+        alias: str = 'default',
+        output_format: str = 'json',
     ):
         return self.make_http_request(
-            endpoint="services/cluster/aggregate",
-            method="POST",
+            endpoint='services/cluster/aggregate',
+            method='POST',
             parameters={
-                "dataset_id": dataset_id,
-                "aggregation_query": {"groupby": groupby, "metrics": metrics},
-                "filters": filters,
-                "page_size": page_size,
-                "page": page,
-                "asc": asc,
-                "flatten": flatten,
-                "vector_field": vector_field,
-                "alias": alias,
+                'dataset_id': dataset_id,
+                'aggregation_query': {'groupby': groupby, 'metrics': metrics},
+                'filters': filters,
+                'page_size': page_size,
+                'page': page,
+                'asc': asc,
+                'flatten': flatten,
+                'vector_field': vector_field,
+                'alias': alias,
             },
             output_format=output_format,
         )

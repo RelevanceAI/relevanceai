@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """access the client via this class
 """
 import os
@@ -6,9 +7,9 @@ import sys
 from doc_utils import DocUtils
 from loguru import logger
 
-from .batch.client import BatchAPIClient
-from .config import CONFIG
-from .errors import APIError
+from batch.client import BatchAPIClient
+from config import CONFIG
+from errors import APIError
 
 
 class VecDBClient(BatchAPIClient, DocUtils):
@@ -20,9 +21,9 @@ class VecDBClient(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: str = os.getenv("VDB_PROJECT"),
-        api_key: str = os.getenv("VDB_API_KEY"),
-        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
+        project: str = os.getenv('VDB_PROJECT'),
+        api_key: str = os.getenv('VDB_API_KEY'),
+        base_url: str = 'https://gateway-api-aueast.relevance.ai/v1/',
     ):
         super().__init__(project, api_key, base_url)
 
@@ -32,14 +33,14 @@ class VecDBClient(BatchAPIClient, DocUtils):
         self.logger.add(sys.stdout, level=CONFIG.logging_level)
         if CONFIG.log_to_file:
             logger.add(
-                "vecdb_{time}.log", level=CONFIG.logging_level, rotation="100 MB"
+                'vecdb_{time}.log', level=CONFIG.logging_level, rotation='100 MB'
             )
 
         if project is None or api_key is None:
             print(
-                "It seems you are missing an API key, "
-                + "you can sign up for an API key following the instructions here: "
-                + "https://discovery.relevance.ai/reference/usage"
+                'It seems you are missing an API key, '
+                + 'you can sign up for an API key following the instructions here: '
+                + 'https://discovery.relevance.ai/reference/usage'
             )
 
         if (
@@ -54,4 +55,4 @@ class VecDBClient(BatchAPIClient, DocUtils):
 
     @property
     def auth_header(self):
-        return {"Authorization": self.project + ":" + self.api_key}
+        return {'Authorization': self.project + ':' + self.api_key}

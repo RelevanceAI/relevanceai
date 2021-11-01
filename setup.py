@@ -25,6 +25,7 @@ requirements = [
     'numpy==1.21.3',
     'loguru==0.5.3',
     'document-utils==1.3.0',
+    'ipython==7.29.0',
     'requests==2.26.0',
     'fsspec==2021.10.1',
     'openpyxl==3.0.9',
