@@ -1,6 +1,7 @@
 from ..base import Base
 from .centroids import Centroids
 
+
 class Cluster(Base):
     def __init__(self, project, api_key, base_url):
         self.project = project

@@ -1,4 +1,5 @@
 from requests.models import stream_decode_response_unicode
+
 from ..base import Base
 
 

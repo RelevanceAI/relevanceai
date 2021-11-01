@@ -1,12 +1,14 @@
 """access the client via this class
 """
 import os
-from loguru import logger
 import sys
-from .config import CONFIG
-from .batch.client import BatchAPIClient
-from .errors import APIError
+
 from doc_utils import DocUtils
+from loguru import logger
+
+from .batch.client import BatchAPIClient
+from .config import CONFIG
+from .errors import APIError
 
 
 class VecDBClient(BatchAPIClient, DocUtils):

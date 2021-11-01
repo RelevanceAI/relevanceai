@@ -1,10 +1,12 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
-import requests
-import traceback
 import time
+import traceback
 from json.decoder import JSONDecodeError
+
+import requests
 from requests import Request
+
 #from .vecdb_logging import Profiler
 from .errors import APIError
 

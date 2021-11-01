@@ -1,8 +1,10 @@
 """Batch client to allow for batch insertions/retrieval and encoding
 """
 from typing import Callable
-from .chunk import Chunker
+
 from .batch_insert import BatchInsert
+from .chunk import Chunker
+
 
 class BatchAPIClient(BatchInsert):
     """Batch API client
