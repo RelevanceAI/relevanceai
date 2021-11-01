@@ -211,6 +211,7 @@ docs = get_ecommerce_dataset()
 
 ### Getting Started
 
+Setup has been simplified in [`Makefile`](./Makefile)
 Setup your virtualenv, install requirements and package
 
 ```python
@@ -220,8 +221,7 @@ Setup your virtualenv, install requirements and package
 Run your local tests in [`tests`](./tests)
 
 ```zsh
-❯ pytest --cov=vecdb -vv
-❯ pytest <file_path> --cov=vecdb -vv
+❯ make test
 ```
 
 
