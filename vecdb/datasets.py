@@ -1,15 +1,23 @@
-"""Datasets to mock
+"""
+Datasets to mock
 """
 import requests
+import pandas as pd
+from typing import Union, List
+
 
 def get_games_dataset() -> list:
     """Function to download a sample games dataset.
+
+    Dataset from https://www.freetogame.com/
     """
     return requests.get(
         "https://www.freetogame.com/api/games"
     ).json()
 
-def get_online_retail_dataset(number_of_documents: int=1000) -> list:
+
+
+def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Online retail dataset from UCI machine learning
     Sample document: 
     {'Country': 'United Kingdom',
@@ -27,7 +35,10 @@ def get_online_retail_dataset(number_of_documents: int=1000) -> list:
         return df.to_dict(orient='records')
     return df.to_dict(orient='records')[:number_of_documents]
 
-def get_news_dataset(sample=True) -> list:
+
+
+
+def get_news_dataset(sample=True) -> List:
     """News dataset
     Sample document:
     {'Unnamed: 0': 0,
@@ -51,8 +62,36 @@ def get_news_dataset(sample=True) -> list:
         "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv"
     ).to_dict(orient='records')
 
+
+
     
-def get_ecommerce_dataset():
-    """Ecommerce dataset
+def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
+    """Function to download a sample ecommerce dataset
+    Dataset from https://data.world/crowdflower/ecommerce-search-relevance 
+    Total Len: 15528
+    Sample document:
+    {'_unit_id': 711158459,
+    'product_description': 'The PlayStation 4 system opens the door to an '
+                        'incredible journey through immersive new gaming '
+                        'worlds and a deeply connected gaming community. Step '
+                        'into living, breathing worlds where you are hero of '
+                        '...',
+    'product_image': 'http://thumbs2.ebaystatic.com/d/l225/m/mzvzEUIknaQclZ801YCY1ew.jpg',
+    'product_link': 'http://www.ebay.com/itm/Sony-PlayStation-4-PS4-Latest-Model-500-GB-Jet-Black-Console-/321459436277?pt=LH_DefaultDomain_0&hash=item4ad879baf5',
+    'product_price': '$329.98 ',
+    'product_title': 'Sony PlayStation 4 (PS4) (Latest Model)- 500 GB Jet Black '
+                    'Console',
+    'query': 'playstation 4',
+    'rank': 1,
+    'relevance': 3.67,
+    'relevance:variance': 0.471,
+    'source': 'eBay',
+    'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'}
     """
-    raise NotImplementedError
+    df = pd.read_csv(
+        'https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft', encoding='ISO-8859-1'
+    ).iloc[:number_of_documents, :].dropna()
+    df['product_image'] = df['product_image'].str.replace('http://', 'https://')
+    df['product_link'] = df['product_link'].str.replace('http://', 'https://')
+    df['url'] = df['url'].str.replace('http://', 'https://')
+    return df.to_dict('records')
