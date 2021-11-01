@@ -6,6 +6,7 @@ from typing import List, Union, Dict, Any, Literal
 
 import pandas as pd
 import requests
+from vecdb_logging import logger
 
 JSONDict = Dict[str, Any]
 
@@ -36,7 +37,7 @@ def get_games_dataset(
 
 
 def get_dummy_ecommerce_dataset(
-    number_of_documents: Union[None, int] = 1000,
+    number_of_documents: Union[None, int] = 100,
     db_name: Literal['ecommerce-5', 'ecommerce-6'] = 'ecommerce-5',
     base_url='https://api-aueast.relevance.ai/v1/',
 ) -> List[JSONDict]:
@@ -128,18 +129,32 @@ def get_dummy_ecommerce_dataset(
 
     project = 'dummy-collections'
     api_key = (
-        'UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw'  # read access
+        'UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw'    # Read access
     )
-    client = VecDBClient(project, api_key, base_url=base_url)
-    response = client.datasets.documents.list(db_name, page_size=number_of_documents)
-    if 'message' in response:
-        import warnings
-        warnings.warn(response['message'])
-    return response['documents']
+    vi = VecDBClient(project, api_key, base_url=base_url)
+    page_size = number_of_documents if (number_of_documents and number_of_documents <=1000) else 1000
+    resp = vi.datasets.documents.list(db_name, page_size=page_size)     # Initial test
+    '''
+    Paginating the dataset
+    '''
+    _cursor = resp['cursor']
+    data = []
+    while _cursor:
+        resp = vi.datasets.documents.list(db_name, page_size=page_size, cursor=_cursor)
+        if 'message' in resp:
+            import warnings
+            warnings.warn(resp['message'])
+        _data = resp['documents']
+        _cursor = resp['cursor']
+        if (_data == []) or (_cursor is []): break
+        data += _data
+        print(len(_data), len(data))
+        if (number_of_documents and (len(data) >= int(number_of_documents))): break
+    return data
 
 
 def get_online_retail_dataset(
-    number_of_documents: Union[None, int] = 1000
+    number_of_documents: Union[None, int] = 100
 ) -> List[JSONDict]:
     """Online retail dataset from UCI machine learning
     Total Len: 406829
@@ -238,4 +253,5 @@ def get_ecommerce_dataset(
 
 from pprint import pprint
 
-pprint(get_dummy_ecommerce_dataset())
+data = get_dummy_ecommerce_dataset(number_of_documents=None)
+print(len(data))
