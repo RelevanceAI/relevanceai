@@ -1,3 +1,3 @@
 from .http_client import VecDBClient
 
-__version__ = "0.12.6"
+__version__ = "0.12.8"
