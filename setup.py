@@ -1,6 +1,6 @@
 import os
 
-import setuptools
+from setuptools import setup, find_packages
 
 def read(rel_path):
     """Read lines from given file"""
@@ -35,15 +35,14 @@ dev_requirements = [
     "pytest-mock",
 ]
 
-setuptools.setup(
+setup(
     name="VecDB",
     version=get_version("vecdb/__init__.py"),
     url="",
     author="Relevance AI",
     author_email="dev@vctr.ai",
     long_description="",
-    package_dir={"": "vecdb"},
-    packages=setuptools.find_packages(where="vecdb"),
+    packages=find_packages(),
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
