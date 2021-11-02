@@ -1,6 +1,6 @@
 import os
 
-import setuptools
+from setuptools import setup, find_packages
 
 def read(rel_path):
     """Read lines from given file"""
@@ -19,14 +19,11 @@ def get_version(rel_path):
 
 
 requirements = [
-    "tqdm==4.49.0",
-    "pandas==1.3.4",
-    "loguru==0.5.3",
-    "document-utils==1.3.0",
-    "requests==2.26.0",
-    "fsspec==2021.10.1",
-    "openpyxl==3.0.9",
-    "doc_utils==0.0.2",
+    "tqdm>=4.49.0",
+    "pandas>=1.0.0",
+    "loguru>=0.5.3",
+    "document-utils>=1.3.0",
+    "requests>=2.0.0",
 ]
 
 dev_requirements = [
@@ -38,20 +35,23 @@ dev_requirements = [
     "pytest-mock",
 ]
 
-setuptools.setup(
+setup(
     name="VecDB",
     version=get_version("vecdb/__init__.py"),
     url="",
     author="Relevance AI",
     author_email="dev@vctr.ai",
     long_description="",
-    package_dir={"": "vecdb"},
-    packages=setuptools.find_packages(where="vecdb"),
+    packages=find_packages(),
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
         "tests": ["pytest"],
+        "excel": [
+            "fsspec==2021.10.1",
+            "openpyxl==3.0.9"
+        ]
     },
-    python_requires=">=3.7",
+    # python_requires=">=3.7",
     classifiers=[],
 )
