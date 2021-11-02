@@ -20,10 +20,10 @@ def get_version(rel_path):
 
 requirements = [
     "tqdm>=4.49.0",
-    "pandas>=1.3.4",
+    "pandas>=1.0.0",
     "loguru>=0.5.3",
     "document-utils>=1.3.0",
-    "requests>=2.26.0",
+    "requests>=2.0.0",
 ]
 
 dev_requirements = [
