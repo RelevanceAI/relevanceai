@@ -223,7 +223,70 @@ Run your local tests in [`tests`](./tests)
 ```zsh
 ❯ make test
 ```
+You should see similar to below -
 
+```
+❯ make test
+pytest . --cov=vecdb -vv
+========================================= test session starts =========================================
+platform linux -- Python 3.8.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/vecdb/.venv/bin/python3.8
+cachedir: .pytest_cache
+rootdir: /home/charlene/code/vecdb
+plugins: cov-3.0.0, mock-3.6.1, dotenv-0.5.2
+collected 12 items
+
+tests/test_datasets.py::test_get_games_dataset_subset PASSED                                    [  8%]
+tests/test_datasets.py::test_get_games_dataset_full SKIPPED (Skipping full data load to min...) [ 16%]
+tests/test_datasets.py::test_get_online_retail_dataset_subset PASSED                            [ 25%]
+tests/test_datasets.py::test_get_online_retail_dataset_full SKIPPED (Skipping full data loa...) [ 33%]
+tests/test_datasets.py::test_get_get_news_dataset_subset PASSED                                 [ 41%]
+tests/test_datasets.py::test_get_get_news_dataset_full SKIPPED (Skipping full data load to ...) [ 50%]
+tests/test_datasets.py::test_get_ecommerce_dataset_subset PASSED                                [ 58%]
+tests/test_datasets.py::test_get_ecommerce_dataset_full SKIPPED (Skipping full data load to...) [ 66%]
+tests/test_datasets.py::test_get_dummy_ecommerce_dataset_subset PASSED                          [ 75%]
+tests/test_datasets.py::test_get_dummy_ecommerce_dataset_full SKIPPED (Skipping full data l...) [ 83%]
+tests/test_smoke.py::test_smoke_installation PASSED                                             [ 91%]
+tests/test_smoke.py::test_datasets_smoke PASSED                                                 [100%]
+
+----------- coverage: platform linux, python 3.8.0-final-0 -----------
+Name                           Stmts   Miss  Cover
+--------------------------------------------------
+vecdb/__init__.py                  2      0   100%
+vecdb/api/__init__.py              0      0   100%
+vecdb/api/admin.py                 4      4     0%
+vecdb/api/aggregate.py             4      1    75%
+vecdb/api/centroids.py            10      2    80%
+vecdb/api/client.py               12      0   100%
+vecdb/api/cluster.py              10      1    90%
+vecdb/api/datasets.py             60     33    45%
+vecdb/api/documents.py            39     24    38%
+vecdb/api/encoders.py             12      3    75%
+vecdb/api/monitor.py              11      2    82%
+vecdb/api/recommend.py             9      1    89%
+vecdb/api/requests_config.py       0      0   100%
+vecdb/api/search.py               20      9    55%
+vecdb/api/services.py             17      0   100%
+vecdb/api/tasks.py                56     38    32%
+vecdb/base.py                     16      1    94%
+vecdb/batch/__init__.py            0      0   100%
+vecdb/batch/batch_insert.py      127    106    17%
+vecdb/batch/chunk.py              11      5    55%
+vecdb/batch/client.py              9      2    78%
+vecdb/concurrency.py              34     27    21%
+vecdb/config.py                   14      2    86%
+vecdb/datasets.py                 66     16    76%
+vecdb/errors.py                    2      0   100%
+vecdb/http_client.py              26      4    85%
+vecdb/progress_bar.py             54     40    26%
+vecdb/transport.py                59     25    58%
+vecdb/vecdb_logging.py            18     18     0%
+--------------------------------------------------
+TOTAL                            702    364    48%
+
+
+==================================== 7 passed, 5 skipped in 13.52s ====================================
+
+```
 
 ```
 Copyright (C) Relevance AI - All Rights Reserved
