@@ -17,7 +17,7 @@ repos:
   - id: check-docstring-first
   - id: debug-statements
   - id: fix-encoding-pragma
-  - id: double-quote-string-fixer
+  # - id: double-quote-string-fixer
   # Security
   # - id: detect-aws-credentials
   - id: detect-private-key
@@ -27,3 +27,8 @@ repos:
   # Check no commit to master
   - id: no-commit-to-branch
     args: [--branch, main]
+
+-   repo: https://github.com/psf/black
+    rev: 21.10b0
+    hooks:
+    -   id: black

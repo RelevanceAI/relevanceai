@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 
 
@@ -22,7 +23,7 @@ class TransportConfig(BaseConfig):
 
 
 class Config(TransportConfig):
-    """All the configs - which are to be inhertied"""
+    """All the configs - which are to be inherited"""
 
 
 CONFIG = Config()
