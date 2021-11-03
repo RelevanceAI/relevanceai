@@ -42,7 +42,6 @@ dev_requirements = [
     "flake8",
     "pylint",
     "pre-commit",
-    "cython>=0.29.24",
 ] + test_requirements
 
 
@@ -62,6 +61,6 @@ setup(
         "tests": test_requirements,
         "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
     },
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     classifiers=[],
 )
