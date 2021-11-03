@@ -23,19 +23,18 @@ def get_version(rel_path):
 requirements = [
     "tqdm>=4.49.0",
     "pandas>=1.0.0",
-    "numpy>=1.21.3",
     "loguru>=0.5.3",
     "document-utils>=1.3.0",
     "requests>=2.0.0",
 ]
 
+excel_requirements = ["openpyxl==3.0.9", "fsspec==2021.10.1"]
+
 test_requirements = [
     "pytest",
     "pytest-dotenv",
     "pytest-cov",
-    "openpyxl==3.0.9",
-    "fsspec==2021.10.1",
-]
+] + excel_requirements
 
 dev_requirements = [
     "autopep8",
@@ -59,7 +58,7 @@ setup(
     extras_require={
         "dev": dev_requirements,
         "tests": test_requirements,
-        "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
+        "excel": excel_requirements,
     },
     python_requires=">=3.6",
     classifiers=[],

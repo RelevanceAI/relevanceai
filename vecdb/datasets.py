@@ -270,6 +270,7 @@ def get_dummy_ecommerce_dataset(
     api_key = (
         'UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw'    # Read access
     )
+
     vi = VecDBClient(project, api_key, base_url=base_url)
     if (number_of_documents and number_of_documents <=1000):
         data = vi.datasets.documents.list(db_name, page_size=number_of_documents)['documents']
@@ -294,3 +295,4 @@ def get_dummy_ecommerce_dataset(
             data += _data
             if (number_of_documents and (len(data) >= int(number_of_documents))): break
     return data
+

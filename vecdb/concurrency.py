@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Multithreading Module
 """
-from concurrent.futures import (ProcessPoolExecutor, ThreadPoolExecutor,
-                                as_completed)
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from typing import Callable
 
 from vecdb.progress_bar import progress_bar
