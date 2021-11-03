@@ -5,6 +5,7 @@ import time
 import numpy as np
 
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 from ivis import Ivis
 
 from dataclasses import dataclass
@@ -18,7 +19,7 @@ from api.datasets import Datasets
 from typing import List, Union, Dict, Any, Literal, Callable
 
 JSONDict = Dict[str, Any]
-DR_METHODS = Literal["pca", "tsne", "umap", "umap_fast", "pacamp", "ivis"]
+DR = Literal["pca", "tsne", "umap", "umap_fast", "pacamp", "ivis"]
 
 LOG = create_logger()
 
@@ -39,11 +40,10 @@ class Projection(Base):
 
     def _retrieve_documents(
         self, dataset_id: str, number_of_documents: int = 100, page_size: int = 1000
-    ):
+    ) -> List[JSONDict]:
         """
         Retrieve all documents from dataset
         """
-
         dataset = Datasets(self.project, self.api_key, self.base_url)
         resp = dataset.documents.list(
             dataset_id=dataset_id, page_size=page_size
@@ -68,7 +68,9 @@ class Projection(Base):
         return data
 
     @staticmethod
-    def _prepare_vector_labels(data: List[JSONDict], label: str, vector: str):
+    def _prepare_vector_labels(
+        data: List[JSONDict], label: str, vector: str
+    ) -> Tuple[np.ndarray, np.ndarray, set]:
         """
         Prepare vector and labels
         """
@@ -88,7 +90,8 @@ class Projection(Base):
 
     @staticmethod
     def _dim_reduce(
-        dr_method: DR_METHODS,
+        dr: DR,
+        dr_args: Union[None, JSONDict],
         vectors: np.ndarray,
         dims: Literal[2, 3] = 3,
         k: int = 15,
@@ -96,10 +99,23 @@ class Projection(Base):
         """
         Dimensionality reduction
         """
-        if dr_method == "pca":
+        if dr == "pca":
             pca = PCA(n_components=dims)
             vectors_dr = pca.fit_transform(vectors)
-        elif dr_method == "ivis":
+        elif dr == "tsne":
+            pca = PCA(n_components=min(vectors.shape[1], 10))
+            data_pca = pca.fit_transform(vectors)
+
+            if dr_args is None:
+                dr_args = {
+                    "n_iter": 500,
+                    "learning_rate": 100,
+                    "perplexity": 30,
+                    "random_state": 42,
+                }
+            tsne = TSNE(init="pca", n_components=3, **dr_args)
+            vectors_dr = tsne.fit_transform(data_pca)
+        elif dr == "ivis":
             vectors_dr = Ivis(embedding_dims=dims, k=k)
         return vectors_dr
 
@@ -108,8 +124,12 @@ class Projection(Base):
         dataset_id: str,
         label: str,
         vector_field: str,
-        dr_method: DR_METHODS = "ivis",
+        dr: DR = "ivis",
+        dr_args: Union[None, JSONDict] = None,
     ):
+        """
+        Projection handler
+        """
         self.dataset_id = dataset_id
         self.documents = self._retrieve_documents(dataset_id)
 
@@ -117,7 +137,9 @@ class Projection(Base):
             data=self.documents, label=label, vector=vector_field
         )
 
-        self.vectors_dr = self._dim_reduce(dr_method="pca", vectors=vectors)
+        self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
+
+        print(self.vectors_dr.shape)
 
     # def dr(
     #     self,
@@ -125,7 +147,7 @@ class Projection(Base):
     #     point_label: List[str],
     #     hover_label: List[str],
     #     colour_label: str,
-    #     dr_method: Literal['ivis'] = 'ivis',
+    #     dr: Literal['ivis'] = 'ivis',
     #     sample: List = None,
     # ):
     #     """

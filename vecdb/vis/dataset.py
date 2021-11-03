@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import json
+import numpy as np
 
 from pathlib import Path
+from vecdb import VecDBClient
+from vecdb_logging import create_logger
 from dataclasses import dataclass, field
+from typing import Union, Tuple, List
+
+
+LOG = create_logger()
 
 
 @dataclass(unsafe_hash=True)  # override base `__hash__`
@@ -17,13 +25,8 @@ class Dataset:
     schema: dict = field(default_factory=dict)
 
     def __post_init__(self):
-        self.dataset_dir = self.data_path / self.dataset_name
-        self.schema_path = (
-            self.data_path / self.dataset_name / f"_{self.dataset_name}.schema.json"
-        )
         LOG.debug(f"Init VecDB client, {self.user.api_user, self.user.api_key}")
         self.vi = VecDBClient(self.user.api_user, self.user.api_key, base_url=URL)
-        Path(self.dataset_dir).mkdir(parents=True, exist_ok=True)
 
         if not self.schema:
             LOG.debug(f"Loading schema")
