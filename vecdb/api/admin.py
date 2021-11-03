@@ -11,3 +11,23 @@ class Admin(Base):
                 "read_username": read_username
             }
         )
+
+    def copy_foreign_dataset(self, dataset_id: str, 
+        source_dataset_id: str, source_project: str, 
+        source_api_key: str, project: str=None, 
+        api_key: str=None):
+        """Copy a foreign dataset.
+        Documentation can be found at: https://docs.relevance.ai/reference/copy_foreign_dataset_admin_copy_foreign_dataset_post
+        """
+        return self.make_http_request(
+            "admin/copy_foreign_dataset",
+            method="POST",
+            parameters={
+                "project": self.project if project is None else project,
+                "api_key": self.api_key if api_key is None else api_key,
+                "dataset_id": dataset_id,
+                "source_dataset_id": source_dataset_id,
+                "source_project": source_project,
+                "source_api_key": source_api_key,
+            }
+        )
