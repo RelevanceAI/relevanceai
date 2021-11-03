@@ -1,4 +1,4 @@
-.PHONY: all install update clean lint
+.PHONY: all install update test clean lint
 #################################################################################
 # GLOBALS                                                                       #
 #################################################################################
@@ -18,14 +18,10 @@ install:
 	. .venv/bin/activate
 	pip install -r requirements-dev.txt
 	pre-commit install
-# 	./scripts/setup_env.sh
 
 ## Update dependencies
 update:
 	pip install -U -r requirements-dev.txt
-#	poetry lock --no-update
-# 	poetry export -f requirements.txt --output requirements.txt
-# 	peodd -o requirements-dev.txt
 
 test:
 	pytest $(TEST_PATH) --cov=vecdb -vv

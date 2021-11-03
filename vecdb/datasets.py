@@ -264,7 +264,7 @@ def get_dummy_ecommerce_dataset(
                                 keys=['product_url', 'image', 'image_first'])
                 for doc in data]
 
-    from http_client import VecDBClient
+    from vecdb.http_client import VecDBClient
 
     project = 'dummy-collections'
     api_key = (
