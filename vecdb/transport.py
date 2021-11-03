@@ -98,7 +98,9 @@ class Transport:
                 # Print the error
                 traceback.print_exc()
                 if verbose:
-                    self.logger.error(f"Connection error but re-trying. ({base_url + endpoint})")
+                    self.logger.error(
+                        f"Connection error but re-trying. ({base_url + endpoint})"
+                    )
                 time.sleep(self.config.seconds_between_retries)
                 continue
 
@@ -108,7 +110,9 @@ class Transport:
                 self.logger.error(response)
 
             if verbose:
-                self.logger.error(f"Response failed, stopped trying ({base_url + endpoint})")
+                self.logger.error(
+                    f"Response failed, stopped trying ({base_url + endpoint})"
+                )
             raise APIError(response.content.decode())
 
         return response

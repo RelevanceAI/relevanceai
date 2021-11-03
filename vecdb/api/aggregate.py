@@ -16,6 +16,7 @@ class Aggregate(Base):
         flatten: bool = True,
         alias: str = "default",
     ):
+        """Aggregate means that you are"""
         return self.make_http_request(
             "services/aggregate/aggregate",
             method="POST",
