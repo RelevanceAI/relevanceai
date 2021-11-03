@@ -23,25 +23,22 @@ class Projection(Base):
         project: str,
         api_key: str,
         base_url: str,
-        dataset_id: str,
     ):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
-        self.dataset_id = dataset_id
-        self.documents = self._retrieve_documents()
 
-    def _retrieve_documents(self, number_of_documents=1000):
+    def _retrieve_documents(self, dataset_id: str, number_of_documents=1000):
         dataset = Datasets(self.project, self.api_key, self.base_url)
         page_size = 1000
         resp = dataset.documents.list(
-            self.dataset_id, page_size=page_size
+            dataset_id=dataset_id, page_size=page_size
         )  # Initial call
         _cursor = resp["cursor"]
         data = []
         while _cursor:
             resp = dataset.documents.list(
-                self.dataset_id,
+                dataset_id=dataset_id,
                 page_size=page_size,
                 cursor=_cursor,
                 include_vector=True,
@@ -55,6 +52,15 @@ class Projection(Base):
             if number_of_documents and (len(data) >= int(number_of_documents)):
                 break
         return data
+
+    def projection(
+        self,
+        dataset_id: str,
+        vector_field: str,
+    ):
+        self.dataset_id = dataset_id
+        self.documents = self._retrieve_documents(dataset_id)
+        print(self.documents)
 
     # def dr(
     #     self,

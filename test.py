@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from vecdb.vis.projection import Projection
+from vecdb.http_client import VecDBClient
+
 
 dataset_id = "ecommerce-6"
 project = "dummy-collections"
 api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # Read access
-base_url = "https://ingest-api-dev-aueast.relevance.ai/latest/"
+base_url = "https://api-aueast.relevance.ai/v1/"
 
-Projection(dataset_id=dataset_id, project=project, api_key=api_key, base_url=base_url)
+
+vi = VecDBClient(project, api_key, base_url=base_url)
+
+vi.services.visualise.projection(dataset_id=dataset_id, vector_field="product_name")
