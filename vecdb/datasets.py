@@ -139,5 +139,5 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     df["product_image"] = df["product_image"].str.replace("http://", "https://")
     df["product_link"] = df["product_link"].str.replace("http://", "https://")
     df["url"] = df["url"].str.replace("http://", "https://")
-    df['_id'] = df['_unit_id'].astype(str)
+    df["_id"] = df["_unit_id"].astype(str)
     return df.to_dict("records")

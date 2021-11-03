@@ -43,6 +43,8 @@ class BatchInsert(APIClient, Chunker):
             self.logger.info(
                 f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
             )
+        # Check if the collection exists
+        self.datasets.create(dataset_id, output_format=None, verbose=False)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
