@@ -4,7 +4,7 @@ from vecdb.api.centroids import Centroids
 
 
 class Cluster(Base):
-    def __init__(self, project, api_key, base_url):
+    def __init__(self, project: str, api_key: str, base_url: str):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
@@ -21,22 +21,22 @@ class Cluster(Base):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        alias: str = 'default',
-        output_format: str = 'json',
+        alias: str = "default",
+        output_format: str = "json",
     ):
         return self.make_http_request(
-            endpoint='services/cluster/aggregate',
-            method='POST',
+            endpoint="services/cluster/aggregate",
+            method="POST",
             parameters={
-                'dataset_id': dataset_id,
-                'aggregation_query': {'groupby': groupby, 'metrics': metrics},
-                'filters': filters,
-                'page_size': page_size,
-                'page': page,
-                'asc': asc,
-                'flatten': flatten,
-                'vector_field': vector_field,
-                'alias': alias,
+                "dataset_id": dataset_id,
+                "aggregation_query": {"groupby": groupby, "metrics": metrics},
+                "filters": filters,
+                "page_size": page_size,
+                "page": page,
+                "asc": asc,
+                "flatten": flatten,
+                "vector_field": vector_field,
+                "alias": alias,
             },
             output_format=output_format,
         )

@@ -12,10 +12,12 @@ class Monitor(Base):
 
     def health(self, dataset_id: str):
         return self.make_http_request(
-            f'datasets/{dataset_id}/monitor/health', method='GET', parameters={}
+            endpoint=f"datasets/{dataset_id}/monitor/health",
+            method="GET",
+            parameters={},
         )
 
     def stats(self, dataset_id: str):
         return self.make_http_request(
-            f'datasets/{dataset_id}/monitor/stats', method='GET', parameters={}
+            endpoint=f"datasets/{dataset_id}/monitor/stats", method="GET", parameters={}
         )

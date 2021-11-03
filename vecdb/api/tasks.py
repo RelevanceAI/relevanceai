@@ -12,17 +12,17 @@ class Tasks(Base):
         self.api_key = api_key
         self.base_url = base_url
 
-    def create(self, dataset_id, task_name, task_parameters):
+    def create(self, dataset_id: str, task_name: str, task_parameters: dict):
         return self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
-            parameters={'task_name': task_name, **task_parameters},
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
+            parameters={"task_name": task_name, **task_parameters},
         )
 
     def status(self, dataset_id: str, task_id: str):
         return self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/{task_id}/status',
-            method='GET',
+            endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
+            method="GET",
             verbose=False,
         )
 
@@ -35,18 +35,18 @@ class Tasks(Base):
     ):
         status = False
 
-        while status not in ['Finished', 'success']:
+        while status not in ["Finished", "success"]:
             time.sleep(time_between_ping)
             try:
-                status = self.status(dataset_id, task_id)['status']
+                status = self.status(dataset_id, task_id)["status"]
             except:
-                self.logger.error(f'Status-check timed out: {task_id}')
+                self.logger.error(f"Status-check timed out: {task_id}")
                 return task_id
 
             if verbose == True:
                 self.logger.info(status)
 
-        self.logger.success(f'Your task is {status}!')
+        self.logger.success(f"Your task is {status}!")
         return
 
     def check_status_until_finish(
@@ -59,7 +59,7 @@ class Tasks(Base):
     ):
 
         if status_checker == True:
-            self.logger.info(f'Task_ID: {task_id}')
+            self.logger.info(f"Task_ID: {task_id}")
             self.loop_status_until_finish(
                 dataset_id,
                 task_id,
@@ -70,9 +70,9 @@ class Tasks(Base):
 
         else:
             self.logger.info(
-                'To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs'
+                "To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs"
             )
-            return {'task_id': task_id}
+            return {"task_id": task_id}
 
     # Note: The following tasks are instantiated manually to accelerate
     # creation of certain popular tasks
@@ -84,7 +84,7 @@ class Tasks(Base):
         dataset_id,
         vector_field: str,
         n_clusters: int,
-        alias: str = 'default',
+        alias: str = "default",
         refresh: bool = False,
         n_iter: int = 10,
         n_init: int = 5,
@@ -93,22 +93,22 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
             parameters={
-                'task_name': 'Clusterer',
-                'vector_field': vector_field,
-                'n_clusters': n_clusters,
-                'alias': alias,
-                'refresh': refresh,
-                'n_iter': n_iter,
-                'n_init': n_init,
+                "task_name": "Clusterer",
+                "vector_field": vector_field,
+                "n_clusters": n_clusters,
+                "alias": alias,
+                "refresh": refresh,
+                "n_iter": n_iter,
+                "n_init": n_init,
             },
         )
 
         output = self.check_status_until_finish(
             dataset_id,
-            task['task_id'],
+            task["task_id"],
             status_checker=status_checker,
             verbose=verbose,
             time_between_ping=time_between_ping,
@@ -137,14 +137,14 @@ class Tasks(Base):
             document 2 dictionary vector: {"person_characteristics_vector_": [0, 32, 0, 10, 24]}
         """
         task = self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
-            parameters={'task_name': 'NumericEncoder', 'fields': fields},
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
+            parameters={"task_name": "NumericEncoder", "fields": fields},
         )
 
         output = self.check_status_until_finish(
             dataset_id,
-            task['task_id'],
+            task["task_id"],
             status_checker=status_checker,
             verbose=verbose,
             time_between_ping=time_between_ping,
@@ -172,14 +172,14 @@ class Tasks(Base):
             document 2 array vector: {"movie_categories_vector_": [1, 0, 0, 1, 1]}
         """
         task = self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
-            parameters={'task_name': 'CategoriesEncoder', 'fields': fields},
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
+            parameters={"task_name": "CategoriesEncoder", "fields": fields},
         )
 
         output = self.check_status_until_finish(
             dataset_id,
-            task['task_id'],
+            task["task_id"],
             status_checker=status_checker,
             verbose=verbose,
             time_between_ping=time_between_ping,
@@ -190,27 +190,27 @@ class Tasks(Base):
         self,
         dataset_id: str,
         field: str,
-        alias: str = 'default',
+        alias: str = "default",
         refresh: bool = False,
         status_checker: bool = True,
         verbose: bool = True,
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
             parameters={
-                'task_name': 'TextEncoder',
-                'dataset_id': dataset_id,
-                'field': field,
-                'alias': alias,
-                'refresh': refresh,
+                "task_name": "TextEncoder",
+                "dataset_id": dataset_id,
+                "field": field,
+                "alias": alias,
+                "refresh": refresh,
             },
         )
 
         output = self.check_status_until_finish(
             dataset_id,
-            task['task_id'],
+            task["task_id"],
             status_checker=status_checker,
             verbose=verbose,
             time_between_ping=time_between_ping,
@@ -221,27 +221,27 @@ class Tasks(Base):
         self,
         dataset_id: str,
         field: str,
-        alias: str = 'default',
+        alias: str = "default",
         refresh: bool = False,
         status_checker: bool = True,
         verbose: bool = True,
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
             parameters={
-                'task_name': 'TextImageEncoder',
-                'dataset_id': dataset_id,
-                'field': field,
-                'alias': alias,
-                'refresh': refresh,
+                "task_name": "TextImageEncoder",
+                "dataset_id": dataset_id,
+                "field": field,
+                "alias": alias,
+                "refresh": refresh,
             },
         )
 
         output = self.check_status_until_finish(
             dataset_id,
-            task['task_id'],
+            task["task_id"],
             status_checker=status_checker,
             verbose=verbose,
             time_between_ping=time_between_ping,
@@ -252,27 +252,27 @@ class Tasks(Base):
         self,
         dataset_id: str,
         field: str,
-        alias: str = 'default',
+        alias: str = "default",
         refresh: bool = False,
         status_checker: bool = True,
         verbose: bool = True,
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f'datasets/{dataset_id}/tasks/create',
-            method='POST',
+            endpoint=f"datasets/{dataset_id}/tasks/create",
+            method="POST",
             parameters={
-                'task_name': 'ImageTextEncoder',
-                'dataset_id': dataset_id,
-                'field': field,
-                'alias': alias,
-                'refresh': refresh,
+                "task_name": "ImageTextEncoder",
+                "dataset_id": dataset_id,
+                "field": field,
+                "alias": alias,
+                "refresh": refresh,
             },
         )
 
         output = self.check_status_until_finish(
             dataset_id,
-            task['task_id'],
+            task["task_id"],
             status_checker=status_checker,
             verbose=verbose,
             time_between_ping=time_between_ping,
