@@ -128,4 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-test.py
+test_projection.py
