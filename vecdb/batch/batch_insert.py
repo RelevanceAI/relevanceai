@@ -355,6 +355,7 @@ class BatchInsert(APIClient, Chunker):
         chunksize: int = None,
     ):
 
+        # Get one document to test the size
         test_doc = json.dumps(docs[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize is None:
@@ -370,8 +371,12 @@ class BatchInsert(APIClient, Chunker):
         # Initialise failed documents
         failed_ids = [i["_id"] for i in docs]
 
+        #Initialise failed documents detailed
+        failed_ids_detailed = []
+
         # Initialise cancelled documents
         cancelled_ids = []
+
 
         for i in range(self.config.number_of_retries):
             if len(failed_ids) > 0:
@@ -394,6 +399,8 @@ class BatchInsert(APIClient, Chunker):
                     )
 
                 failed_ids = []
+                failed_ids_detailed = []
+
 
                 # Update inserted amount
                 [
@@ -410,6 +417,11 @@ class BatchInsert(APIClient, Chunker):
                             for i in chunk["response_json"]["failed_documents"]
                         ]
 
+                        [
+                            failed_ids_detailed.append(i)
+                            for i in chunk["response_json"]["failed_documents"]
+                        ]
+
                     # Cancel documents with 400 or 404
                     elif chunk["status_code"] in [400, 404]:
                         [cancelled_ids.append(i["_id"]) for i in chunk["documents"]]
@@ -423,10 +435,14 @@ class BatchInsert(APIClient, Chunker):
                     else:
                         [failed_ids.append(i["_id"]) for i in chunk["documents"]]
 
+                # Update docs to retry which have failed
                 docs = [i for i in docs if i["_id"] in failed_ids]
 
             else:
                 break
+
+        # When returning, add in the cancelled ids
         failed_ids.extend(cancelled_ids)
-        output = {"inserted": sum(inserted), "failed_documents": failed_ids}
+
+        output = {"inserted": sum(inserted), "failed_documents": failed_ids, "failed_documents_detailed": failed_ids_detailed}
         return output

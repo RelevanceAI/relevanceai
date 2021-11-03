@@ -47,8 +47,12 @@ setup(
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
-        "tests": ["pytest"],
         "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
+        "tests": [
+            "pytest", 
+            "fsspec==2021.10.1",
+            "openpyxl==3.0.9"
+        ],
     },
     # python_requires=">=3.7",
     classifiers=[],
