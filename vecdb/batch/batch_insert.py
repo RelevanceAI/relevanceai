@@ -358,8 +358,8 @@ class BatchInsert(APIClient, Chunker):
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize is None:
             chunksize = (
-                int(self.config.target_chunk_mb / doc_mb)
-                if int(self.config.target_chunk_mb / doc_mb) < len(docs)
+                int(self.config.get_option('upload.target_chunk_mb') / doc_mb)
+                if int(self.config.get_option('upload.target_chunk_mb') / doc_mb) < len(docs)
                 else len(docs)
             )
 
@@ -376,7 +376,7 @@ class BatchInsert(APIClient, Chunker):
         cancelled_ids = []
 
 
-        for i in range(self.config.number_of_retries):
+        for i in range(int(self.config.get_option('retries.number_of_retries'))):
             if len(failed_ids) > 0:
                 if bulk_fn is not None:
                     insert_json = multiprocess(
