@@ -2,6 +2,7 @@ import os
 
 from setuptools import setup, find_packages
 
+
 def read(rel_path):
     """Read lines from given file"""
     here = os.path.abspath(os.path.dirname(__file__))
@@ -46,11 +47,12 @@ setup(
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
-        "tests": ["pytest"],
-        "excel": [
+        "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
+        "tests": [
+            "pytest", 
             "fsspec==2021.10.1",
             "openpyxl==3.0.9"
-        ]
+        ],
     },
     # python_requires=">=3.7",
     classifiers=[],

@@ -105,7 +105,9 @@ class Transport:
                 self.logger.error(response)
 
             if verbose:
-                self.logger.error(f"Response failed, stopped trying ({base_url + endpoint})")
+                self.logger.error(
+                    f"Response failed, stopped trying ({base_url + endpoint})"
+                )
             raise APIError(response.content.decode())
 
         return response
