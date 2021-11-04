@@ -3,12 +3,15 @@ import sys
 import time
 
 import numpy as np
+import pandas as pd
 
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from umap import UMAP
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from ivis import Ivis
+
+import plotly.graph_objs as go
 
 from dataclasses import dataclass
 
@@ -19,8 +22,8 @@ from api.datasets import Datasets
 from typing import List, Union, Dict, Any, Literal, Callable, Tuple
 
 JSONDict = Dict[str, Any]
-DR = Literal["pca", "tsne", "umap", "umap_fast", "pacmap", "ivis"]
-CLUSTER = Literal["kmeans", None]
+DR = Literal["pca", "tsne", "umap", "ivis"]
+CLUSTER = Literal["kmeans", "kmodes", None]
 
 LOG = create_logger()
 
@@ -127,33 +130,24 @@ class Projection(Base):
             vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
             if dr_args is None:
-                dr_args = {"k": 15, "model": "maaten", "n_epochs_without_progress": 5}
+                dr_args = {"k": 15, 
+                    "model": "maaten", 
+                    "n_epochs_without_progress": 2
+                    }
             ivis = Ivis(embedding_dims=dims, **dr_args).fit(vectors)
             vectors_dr = ivis.transform(vectors)
         return vectors_dr
 
-    def projection(
-        self,
-        dataset_id: str,
-        label: str,
-        vector_field: str,
-        dr: DR = "ivis",
-        dr_args: Union[None, JSONDict] = None,
-        cluster: CLUSTER = "kmeans",
+    @staticmethod
+    def _cluster(
+        vectors: np.ndarray,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict] = None
-    ):
+    ) -> Tuple[List[str], List[int]]:
         """
-        Projection handler
+        Cluster method
         """
-        self.dataset_id = dataset_id
-        self.documents = self._retrieve_documents(dataset_id)
-
-        vectors, labels, _labels = self._prepare_vector_labels(
-            data=self.documents, label=label, vector=vector_field
-        )
-        self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
-
-        if (cluster and cluster == 'kmeans'):
+        if cluster == 'kmeans':
             if cluster_args is None:
                 cluster_args = {
                     "n_clusters": 20, 
@@ -166,7 +160,51 @@ class Projection(Base):
             cluster_centroids = cluster.cluster_centers_
             c_labels = [ f'c_{c}' for c in c_labels ]
         
+            return c_labels, cluster_centroids
+
+    # def _plot(
+    #     dataset_name: str,
+
+    # ):
+
+
+    def generate(
+        self,
+        dataset_id: str,
+        label: str,
+        vector_field: str,
+        dr: DR = "ivis",
+        dr_args: Union[None, JSONDict] = None,
+        cluster: CLUSTER = None,
+        cluster_args: Union[None, JSONDict] = None,
+    ):
+        """
+        Projection handler
+        """
+        self.dataset_id = dataset_id
+        self.documents = self._retrieve_documents(dataset_id)
+
+        self.documents_df = pd.DataFrame(self.documents)
+        metadata_cols = [ c for c in self.documents_df.columns if '_vector_' not in c if c not in ['_id', 'insert_date_'] ]
+        self.metadata_df =  self.documents_df[metadata_cols]
+
+        vectors, labels, _labels = self._prepare_vector_labels(
+            data=self.documents, label=label, vector=vector_field
+        )
+        self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
+
+        self.embedding_df = pd.DataFrame([ labels, self.vectors_dr] )
+
+        if cluster:
+            self.c_labels, self.c_centroids = self._cluster(
+                    vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
+                    )
+            self.embedding_df = pd.concat( [self.embedding_df, self.c_labels ], axis=1)
+    
+        print(self.embedding_df)
         
+        # groups = embedding_df.groupby('c_label')
+        # figure = generate_figure_image(groups, layout)
 
 
     # def dr(
