@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from umap import UMAP
+from sklearn.cluster import KMeans
 from ivis import Ivis
 
 from dataclasses import dataclass
@@ -18,7 +19,8 @@ from api.datasets import Datasets
 from typing import List, Union, Dict, Any, Literal, Callable, Tuple
 
 JSONDict = Dict[str, Any]
-DR = Literal["pca", "tsne", "umap", "umap_fast", "pacamp", "ivis"]
+DR = Literal["pca", "tsne", "umap", "umap_fast", "pacmap", "ivis"]
+CLUSTER = Literal["kmeans", None]
 
 LOG = create_logger()
 
@@ -104,7 +106,6 @@ class Projection(Base):
         elif dr == "tsne":
             pca = PCA(n_components=min(vectors.shape[1], 10))
             data_pca = pca.fit_transform(vectors)
-
             if dr_args is None:
                 dr_args = {
                     "n_iter": 500,
@@ -112,7 +113,7 @@ class Projection(Base):
                     "perplexity": 30,
                     "random_state": 42,
                 }
-            tsne = TSNE(init="pca", n_components=3, **dr_args)
+            tsne = TSNE(init="pca", n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
         elif dr == "umap":
             if dr_args is None:
@@ -138,6 +139,8 @@ class Projection(Base):
         vector_field: str,
         dr: DR = "ivis",
         dr_args: Union[None, JSONDict] = None,
+        cluster: CLUSTER = "kmeans",
+        cluster_args: Union[None, JSONDict] = None
     ):
         """
         Projection handler
@@ -150,7 +153,21 @@ class Projection(Base):
         )
         self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
 
-        print(self.vectors_dr.shape)
+        if (cluster and cluster == 'kmeans'):
+            if cluster_args is None:
+                cluster_args = {
+                    "n_clusters": 20, 
+                    "init": "k-means++", 
+                    "verbose": 1, 
+                    "algorithm": "auto"
+                }
+            cluster = KMeans(**cluster_args).fit(vectors)
+            c_labels = cluster.labels_
+            cluster_centroids = cluster.cluster_centers_
+            c_labels = [ f'c_{c}' for c in c_labels ]
+        
+        
+
 
     # def dr(
     #     self,
