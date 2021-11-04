@@ -175,7 +175,7 @@ class Projection(Base):
         legend: str
     ) -> go.Figure:
         '''
-        Generates the scatter plot for image datasets
+        Generates the scatter plot 
         '''
         data = []
         groups = embedding_df.groupby(legend)
@@ -221,7 +221,10 @@ class Projection(Base):
         self.documents = self._retrieve_documents(dataset_id)
 
         self.documents_df = pd.DataFrame(self.documents)
-        metadata_cols = [ c for c in self.documents_df.columns if '_vector_' not in c if c not in ['_id', 'insert_date_'] ]
+        metadata_cols = [ c for c in self.documents_df.columns 
+                        if '_vector_' not in c 
+                        if c not in ['_id', 'insert_date_'] 
+                        ]
         self.metadata_df =  self.documents_df[metadata_cols]
 
         vectors, labels, _labels = self._prepare_vector_labels(
@@ -239,6 +242,8 @@ class Projection(Base):
                     vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
                     )
             self.embedding_df['c_labels'] = self.c_labels
+        
+        print(self.embedding_df)
 
         return self._plot(embedding_df=self.embedding_df, legend=legend)
         
