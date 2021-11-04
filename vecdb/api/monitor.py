@@ -1,6 +1,6 @@
 """All Dataset related functions
 """
-from ..base import Base
+from vecdb.base import Base
 
 
 class Monitor(Base):

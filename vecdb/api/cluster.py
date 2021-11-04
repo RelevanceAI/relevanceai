@@ -1,5 +1,5 @@
-from ..base import Base
-from .centroids import Centroids
+from vecdb.base import Base
+from vecdb.api.centroids import Centroids
 
 
 class Cluster(Base):

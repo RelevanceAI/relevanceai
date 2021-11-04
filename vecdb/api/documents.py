@@ -1,6 +1,6 @@
 from requests.models import stream_decode_response_unicode
 
-from ..base import Base
+from vecdb.base import Base
 
 
 class Documents(Base):

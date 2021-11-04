@@ -3,8 +3,8 @@ import time
 
 from loguru import logger
 
-from .config import CONFIG
-from .transport import Transport
+from vecdb.config import CONFIG
+from vecdb.transport import Transport
 
 
 class Base(Transport):

@@ -1,4 +1,4 @@
-from ..base import Base
+from vecdb.base import Base
 
 
 class Encoders(Base):

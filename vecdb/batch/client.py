@@ -2,8 +2,8 @@
 """
 from typing import Callable
 
-from .batch_insert import BatchInsert
-from .chunk import Chunker
+from vecdb.batch.batch_insert import BatchInsert
+from vecdb.batch.chunk import Chunker
 
 
 class BatchAPIClient(BatchInsert):

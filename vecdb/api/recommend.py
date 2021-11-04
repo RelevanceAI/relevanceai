@@ -1,6 +1,6 @@
 """Recommmend services.
 """
-from ..base import Base
+from vecdb.base import Base
 
 
 class Recommend(Base):

@@ -6,9 +6,9 @@ import sys
 from doc_utils import DocUtils
 from loguru import logger
 
-from .batch.client import BatchAPIClient
-from .config import CONFIG
-from .errors import APIError
+from vecdb.batch.client import BatchAPIClient
+from vecdb.config import CONFIG
+from vecdb.errors import APIError
 
 
 class VecDBClient(BatchAPIClient, DocUtils):

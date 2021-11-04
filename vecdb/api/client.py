@@ -1,9 +1,9 @@
 """API Client
 """
-from ..config import CONFIG, Config
-from .admin import Admin
-from .datasets import Datasets
-from .services import Services
+from vecdb.config import CONFIG, Config
+from vecdb.api.admin import Admin
+from vecdb.api.datasets import Datasets
+from vecdb.api.services import Services
 
 
 class APIClient:

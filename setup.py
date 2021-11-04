@@ -61,11 +61,15 @@ setup(
     name="VecDB",
     version=get_version("vecdb/__init__.py"),
     url="",
+    
     author="Relevance AI",
     author_email="dev@vctr.ai",
     long_description="",
+
+    package_dir={"": "vecdb"},
+    packages=find_packages(where="vecdb"),
+
     setup_requires=["wheel"],
-    packages=find_packages(),
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,

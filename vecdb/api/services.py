@@ -1,11 +1,11 @@
 """Services class
 """
-from ..base import Base
-from .aggregate import Aggregate
-from .cluster import Cluster
-from .encoders import Encoders
-from .recommend import Recommend
-from .search import Search
+from vecdb.base import Base
+from vecdb.api.aggregate import Aggregate
+from vecdb.api.cluster import Cluster
+from vecdb.api.encoders import Encoders
+from vecdb.api.recommend import Recommend
+from vecdb.api.search import Search
 
 
 class Services(Base):

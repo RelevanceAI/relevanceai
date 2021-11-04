@@ -2,7 +2,7 @@
 """
 import time
 
-from ..base import Base
+from vecdb.base import Base
 
 
 class Tasks(Base):
