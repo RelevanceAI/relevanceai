@@ -51,10 +51,6 @@ test_requirements =[
 dev_requirements = [
     "autopep8",
     "pylint",
-    "pytest",
-    "pytest-dotenv",
-    "pytest-cov",
-    "pytest-mock",
 ] + test_requirements
 
 setup(
