@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-# from umap import UMAP
+from umap import UMAP
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from ivis import Ivis
 
@@ -125,16 +125,16 @@ class Projection(Base):
                 }
             tsne = TSNE(init="pca", n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
-        # elif dr == "umap":
-        #     if dr_args is None:
-        #         dr_args = {
-        #             "n_neighbors": 15,
-        #             "min_dist": 0.1,
-        #             "random_state": 42,
-        #             "transform_seed": 42,
-        #         }
-        #     umap = UMAP(n_components=dims, **dr_args)
-        #     vectors_dr = umap.fit_transform(vectors)
+        elif dr == "umap":
+            if dr_args is None:
+                dr_args = {
+                    "n_neighbors": 15,
+                    "min_dist": 0.1,
+                    "random_state": 42,
+                    "transform_seed": 42,
+                }
+            umap = UMAP(n_components=dims, **dr_args)
+            vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
             if dr_args is None:
                 dr_args = {"k": 15, 
@@ -242,8 +242,6 @@ class Projection(Base):
                     vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
                     )
             self.embedding_df['c_labels'] = self.c_labels
-        
-        print(self.embedding_df)
 
         return self._plot(embedding_df=self.embedding_df, legend=legend)
         
