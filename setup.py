@@ -39,15 +39,12 @@ vis_requirements = [
     "plotly>=5.3.1"
 ]
 
-test_requirements = (
-    [
+test_requirements =[
         "pytest",
         "pytest-dotenv",
         "pytest-cov",
-    ]
-    + excel_requirements
-    + vis_requirements
-)
+] + excel_requirements \
+  + vis_requirements
 
 dev_requirements = [
     "autopep8",

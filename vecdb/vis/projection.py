@@ -5,9 +5,10 @@ import time
 import numpy as np
 import pandas as pd
 
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from umap import UMAP
+# from umap import UMAP
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from ivis import Ivis
 
@@ -118,24 +119,23 @@ class Projection(Base):
                 }
             tsne = TSNE(init="pca", n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
-        elif dr == "umap":
-            if dr_args is None:
-                dr_args = {
-                    "n_neighbors": 15,
-                    "min_dist": 0.1,
-                    "random_state": 42,
-                    "transform_seed": 42,
-                }
-            umap = UMAP(n_components=dims, **dr_args)
-            vectors_dr = umap.fit_transform(vectors)
+        # elif dr == "umap":
+        #     if dr_args is None:
+        #         dr_args = {
+        #             "n_neighbors": 15,
+        #             "min_dist": 0.1,
+        #             "random_state": 42,
+        #             "transform_seed": 42,
+        #         }
+        #     umap = UMAP(n_components=dims, **dr_args)
+        #     vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
             if dr_args is None:
                 dr_args = {"k": 15, 
                     "model": "maaten", 
                     "n_epochs_without_progress": 2
                     }
-            ivis = Ivis(embedding_dims=dims, **dr_args).fit(vectors)
-            vectors_dr = ivis.transform(vectors)
+            vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
         return vectors_dr
 
     @staticmethod
@@ -162,11 +162,37 @@ class Projection(Base):
         
             return c_labels, cluster_centroids
 
-    # def _plot(
-    #     dataset_name: str,
+    def _plot(
+        embedding_df: pd.DataFrame,
+        vis_label: str
+    ):
+        '''
+        Generates the scatter plot for image datasets
+        '''
+        data = []
+        groups = embedding_df.groupby('label')
+        for idx, val in groups:
+            scatter = go.Scatter3d(
+                name=idx,
+                x=val['x'],
+                y=val['y'],
+                z=val['z'],
+                text=[idx for _ in range(val['x'].shape[0])],
+                textposition='top center',
+                mode='markers',
+                marker=dict(size=3, symbol='circle'),
+            )
+            data.append(scatter)
+            
+        # Plot layout
+        axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
+        layout = go.Layout(
+            margin=dict(l=0, r=0, b=0, t=0),
+            scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
+        )
+        figure = go.Figure(data=data, layout=layout)
 
-    # ):
-
+        
 
     def generate(
         self,
@@ -177,6 +203,7 @@ class Projection(Base):
         dr_args: Union[None, JSONDict] = None,
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = None,
+        vis_label: Literal['c_label', 'label'] = 'label',
     ):
         """
         Projection handler
@@ -191,17 +218,25 @@ class Projection(Base):
         vectors, labels, _labels = self._prepare_vector_labels(
             data=self.documents, label=label, vector=vector_field
         )
+        vectors = MinMaxScaler().fit_transform(vectors) 
         self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
+        
+        data = { 'x': self.vectors_dr[:,0], 'y': self.vectors_dr[:,1], 'z': self.vectors_dr[:,2], 'labels': labels }
 
-        self.embedding_df = pd.DataFrame([ labels, self.vectors_dr] )
+        self.embedding_df = pd.DataFrame(data)
+        self.embedding_df['labels'] = labels
 
         if cluster:
             self.c_labels, self.c_centroids = self._cluster(
                     vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
                     )
-            self.embedding_df = pd.concat( [self.embedding_df, self.c_labels ], axis=1)
-    
+            self.embedding_df['c_labels'] = self.c_labels
+
         print(self.embedding_df)
+
+
+
+        
         
         # groups = embedding_df.groupby('c_label')
         # figure = generate_figure_image(groups, layout)
