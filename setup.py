@@ -27,6 +27,27 @@ requirements = [
     "requests>=2.0.0",
 ]
 
+excel_requirements = [
+    "openpyxl>=3.0.9", 
+    "fsspec>=2021.10.1"
+]
+
+vis_requirements = [
+    "scikit-learn>=1.0.1", 
+    "umap>=0.1.1", 
+    "ivis>=2.0.6"
+]
+
+test_requirements = (
+    [
+        "pytest",
+        "pytest-dotenv",
+        "pytest-cov",
+    ]
+    + excel_requirements
+    + vis_requirements
+)
+
 dev_requirements = [
     "autopep8",
     "pylint",
@@ -34,7 +55,7 @@ dev_requirements = [
     "pytest-dotenv",
     "pytest-cov",
     "pytest-mock",
-]
+] + test_requirements
 
 setup(
     name="VecDB",
@@ -43,17 +64,15 @@ setup(
     author="Relevance AI",
     author_email="dev@vctr.ai",
     long_description="",
+    setup_requires=["wheel"],
     packages=find_packages(),
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,
-        "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
-        "tests": [
-            "pytest", 
-            "fsspec==2021.10.1",
-            "openpyxl==3.0.9"
-        ],
+        "excel": excel_requirements,
+        "vis": vis_requirements,
+        "tests": test_requirements,
     },
-    # python_requires=">=3.7",
+    python_requires=">=3.6",
     classifiers=[],
 )
