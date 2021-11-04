@@ -49,13 +49,16 @@ class Projection(Base):
         """
         Retrieve all documents from dataset
         """
+        LOG.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
         dataset = Datasets(self.project, self.api_key, self.base_url)
         resp = dataset.documents.list(
             dataset_id=dataset_id, page_size=page_size
         )  # Initial call
         _cursor = resp["cursor"]
+        _page = 0
         data = []
         while _cursor:
+            LOG.debug(f'Paginating {_page} page size {page_size} ...')
             resp = dataset.documents.list(
                 dataset_id=dataset_id,
                 page_size=page_size,
@@ -70,6 +73,7 @@ class Projection(Base):
             data += _data
             if number_of_documents and (len(data) >= int(number_of_documents)):
                 break
+            _page += 1
         return data
 
     @staticmethod
@@ -79,6 +83,7 @@ class Projection(Base):
         """
         Prepare vector and labels
         """
+        LOG.info(f'Preparing {label}, {vector} ...')
         vectors = np.array(
             [data[i][vector] for i in range(len(data)) if data[i].get(vector)]
         )
@@ -104,6 +109,7 @@ class Projection(Base):
         """
         Dimensionality reduction
         """
+        LOG.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
         if dr == "pca":
             pca = PCA(n_components=dims)
             vectors_dr = pca.fit_transform(vectors)
@@ -147,6 +153,7 @@ class Projection(Base):
         """
         Cluster method
         """
+        LOG.info(f'Performing {cluster} Args: {cluster_args} ...')
         if cluster == 'kmeans':
             if cluster_args is None:
                 cluster_args = {
@@ -162,15 +169,16 @@ class Projection(Base):
         
             return c_labels, cluster_centroids
 
+    @staticmethod
     def _plot(
         embedding_df: pd.DataFrame,
-        vis_label: str
-    ):
+        legend: str
+    ) -> go.Figure:
         '''
         Generates the scatter plot for image datasets
         '''
         data = []
-        groups = embedding_df.groupby('label')
+        groups = embedding_df.groupby(legend)
         for idx, val in groups:
             scatter = go.Scatter3d(
                 name=idx,
@@ -184,13 +192,12 @@ class Projection(Base):
             )
             data.append(scatter)
             
-        # Plot layout
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
-        figure = go.Figure(data=data, layout=layout)
+        return go.Figure(data=data, layout=layout)
 
         
 
@@ -203,7 +210,9 @@ class Projection(Base):
         dr_args: Union[None, JSONDict] = None,
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = None,
-        vis_label: Literal['c_label', 'label'] = 'label',
+        legend: Literal['c_labels', 'labels'] = 'labels',
+        #     point_label: List[str],
+        #     hover_label: List[str],
     ):
         """
         Projection handler
@@ -222,7 +231,6 @@ class Projection(Base):
         self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
         
         data = { 'x': self.vectors_dr[:,0], 'y': self.vectors_dr[:,1], 'z': self.vectors_dr[:,2], 'labels': labels }
-
         self.embedding_df = pd.DataFrame(data)
         self.embedding_df['labels'] = labels
 
@@ -232,26 +240,6 @@ class Projection(Base):
                     )
             self.embedding_df['c_labels'] = self.c_labels
 
-        print(self.embedding_df)
-
-
-
+        return self._plot(embedding_df=self.embedding_df, legend=legend)
         
-        
-        # groups = embedding_df.groupby('c_label')
-        # figure = generate_figure_image(groups, layout)
-
-
-    # def dr(
-    #     self,
-    #     vector_field: str,
-    #     point_label: List[str],
-    #     hover_label: List[str],
-    #     colour_label: str,
-    #     dr: Literal['ivis'] = 'ivis',
-    #     sample: List = None,
-    # ):
-    #     """
-    #     Dim reduction method
-    #     """
-    #     pass
+    
