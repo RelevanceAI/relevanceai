@@ -25,6 +25,7 @@ requirements = [
     "loguru>=0.5.3",
     "document-utils>=1.3.0",
     "requests>=2.0.0",
+    "typing-extensions"
 ]
 
 excel_requirements = [

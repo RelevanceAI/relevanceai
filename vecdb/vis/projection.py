@@ -20,7 +20,8 @@ from vecdb.base import Base
 from vecdb.vecdb_logging import create_logger
 from api.datasets import Datasets
 
-from typing import List, Union, Dict, Any, Literal, Callable, Tuple
+from typing import List, Union, Dict, Any, Callable, Tuple
+from typing_extensions import Literal
 
 JSONDict = Dict[str, Any]
 DR = Literal["pca", "tsne", "umap", "ivis"]
