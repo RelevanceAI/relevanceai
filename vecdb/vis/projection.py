@@ -127,8 +127,8 @@ class Projection(Base):
         elif dr == "ivis":
             if dr_args is None:
                 dr_args = {"k": 15, "model": "maaten", "n_epochs_without_progress": 5}
-            ivis = Ivis(embedding_dims=dims, **dr_args)
-            vectors_dr = ivis.fit(vectors)
+            ivis = Ivis(embedding_dims=dims, **dr_args).fit(vectors)
+            vectors_dr = ivis.transform(vectors)
         return vectors_dr
 
     def projection(
