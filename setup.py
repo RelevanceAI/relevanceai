@@ -36,7 +36,8 @@ vis_requirements = [
     "scikit-learn>=1.0.1", 
     "umap-learn>=0.5.2",
     "ivis[cpu]>=2.0.6",
-    "plotly>=5.3.1"
+    "plotly>=5.3.1",
+    "kmodes>=0.11.1"
 ]
 
 test_requirements =[

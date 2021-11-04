@@ -33,10 +33,12 @@ jobs:
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-        run: |
+
+      - name: Run tests
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pytest --cov=vecdb -vv
