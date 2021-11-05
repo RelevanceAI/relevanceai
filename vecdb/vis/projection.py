@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 import pandas as pd
+import json 
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
@@ -19,7 +20,6 @@ import plotly.graph_objs as go
 from dataclasses import dataclass
 
 from vecdb.base import Base
-from vecdb.vecdb_logging import create_logger
 from api.datasets import Datasets
 
 from typing import List, Union, Dict, Any, Tuple
@@ -28,8 +28,6 @@ from typing_extensions import Literal
 JSONDict = Dict[str, Any]
 DR = Literal["pca", "tsne", "umap", "ivis"]
 CLUSTER = Literal["kmeans", "kmodes", None]
-
-LOG = create_logger()
 
 
 @dataclass
@@ -45,6 +43,7 @@ class Projection(Base):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
+        super().__init__(project, api_key, base_url)
 
     def _retrieve_documents(
         self, dataset_id: str, number_of_documents: int = 1000, page_size: int = 1000
@@ -52,7 +51,7 @@ class Projection(Base):
         """
         Retrieve all documents from dataset
         """
-        LOG.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
+        self.logger.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
         dataset = Datasets(self.project, self.api_key, self.base_url)
         if page_size > number_of_documents: page_size=number_of_documents
         resp = dataset.documents.list(
@@ -62,7 +61,7 @@ class Projection(Base):
         _page = 0
         data = []
         while _cursor:
-            LOG.debug(f'Paginating {_page} page size {page_size} ...')
+            self.logger.debug(f'Paginating {_page} page size {page_size} ...')
             resp = dataset.documents.list(
                 dataset_id=dataset_id,
                 page_size=page_size,
@@ -85,17 +84,19 @@ class Projection(Base):
                                 if c not in ['_id', 'insert_date_'] 
                                 ]
         self.metadata_df =  self.documents_df[metadata_cols]
-        print(self.metadat_df)
         return data
 
-    @staticmethod
+
     def _prepare_vector_labels(
-        data: List[JSONDict], label: str, vector: str
+        self,
+        data: List[JSONDict], 
+        label: str, 
+        vector: str
     ) -> Tuple[np.ndarray, np.ndarray, set]:
         """
         Prepare vector and labels
         """
-        LOG.info(f'Preparing {label}, {vector} ...')
+        self.logger.info(f'Preparing {label}, {vector} ...')
         vectors = np.array(
             [data[i][vector] for i, d in enumerate(data) if data[i].get(vector)]
         )
@@ -110,8 +111,8 @@ class Projection(Base):
         return vectors, labels, _labels
 
     ## TODO: Separate DR into own class with default arg lut
-    @staticmethod
     def _dim_reduce(
+        self,
         dr: DR,
         dr_args: Union[None, JSONDict],
         vectors: np.ndarray,
@@ -120,7 +121,7 @@ class Projection(Base):
         """
         Dimensionality reduction
         """
-        LOG.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
+        self.logger.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
         if dr == "pca":
             pca = PCA(n_components=dims)
             vectors_dr = pca.fit_transform(vectors)
@@ -165,8 +166,8 @@ class Projection(Base):
         # """
     # )
     
-    @staticmethod
     def _cluster(
+        self,
         vectors: np.ndarray,
         cluster: CLUSTER,
         cluster_args: Union[None, JSONDict] = None
@@ -174,7 +175,7 @@ class Projection(Base):
         """
         Cluster method
         """
-        LOG.info(f'Performing {cluster} Args: {cluster_args} ...')
+        self.logger.info(f'Performing {cluster} ... ')
         if cluster == 'kmeans':
             if cluster_args is None:
                 cluster_args = {
@@ -183,6 +184,7 @@ class Projection(Base):
                     "verbose": 1, 
                     "algorithm": "auto"
                 }
+            self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = KMeans(**cluster_args).fit(vectors)
             c_labels = km.labels_
             cluster_centroids = cluster.cluster_centers_
@@ -195,8 +197,8 @@ class Projection(Base):
                     "verbose": 1,
                     "random_state": 42,
                 }
-            km = KModes(**cluster_args)
-            km.fit_predict(vectors)
+            self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
+            km = KModes(**cluster_args).fit(vectors)
             c_labels = km.labels_
             cluster_centroids = km.cluster_centroids_
         
@@ -281,17 +283,17 @@ class Projection(Base):
 
         if hover_label==None: hover_label==[label]
 
-        if point_label:
-            fig = self._plot_words(embedding_df=self.embedding_df, 
+        # if point_label:
+        #     fig = self._plot_words(embedding_df=self.embeddinsg_df, 
+        #                         legend=legend, 
+        #                         point_label=point_label, 
+        #                         hover_label=hover_label
+        #                         )
+        # else:
+        return self._plot_labels(embedding_df=self.embedding_df, 
                                 legend=legend, 
                                 point_label=point_label, 
                                 hover_label=hover_label
                                 )
-        else:
-            fig = self._plot_labels(embedding_df=self.embedding_df, 
-                    legend=legend, 
-                    point_label=point_label, 
-                    hover_label=hover_label
-                    )
 
     
