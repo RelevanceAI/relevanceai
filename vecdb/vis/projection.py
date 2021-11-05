@@ -200,8 +200,8 @@ class Projection(Base):
     def _plot(
         embedding_df: pd.DataFrame,
         legend: str,
-        point_label: List[str],
-        hover_label: List[str]
+        point_label: Union[None, List[str]],
+        hover_label: Union[None, List[str]],
     ) -> go.Figure:
         '''
         Generates the 3D scatter plot 
@@ -227,24 +227,25 @@ class Projection(Base):
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
         fig = go.Figure(data=data, layout=layout)
-        fig.update_traces(customdata=embedding_df[hover_label])
-        fig.update_traces(hovertemplate='%{customdata}')
-        fig.update_traces(
-            hovertemplate="<br>".join([
-                "X: %{x}",
-                "Y: %{y}",
-                "Label: %{customdata}",
-            ])
-        )
-        
+        if hover_label:
+            fig.update_traces(customdata=embedding_df[hover_label])
+            fig.update_traces(hovertemplate='%{customdata}')
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "X: %{x}",
+                    "Y: %{y}",
+                    "Label: %{customdata}",
+                ])
+            )
+        return fig
 
     def generate(
         self,
         dataset_id: str,
         label: str,
         vector_field: str,
-        point_label: List[str],
-        hover_label: List[str],
+        point_label: Union[None, List[str]] = None,
+        hover_label: Union[None, List[str]] = None,
         dr: DR = "ivis",
         dr_args: Union[None, JSONDict] = None,
         cluster: CLUSTER = None,
