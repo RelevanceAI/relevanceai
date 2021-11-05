@@ -45,8 +45,12 @@ class Projection(Base):
         self.base_url = base_url
         super().__init__(project, api_key, base_url)
 
+
     def _retrieve_documents(
-        self, dataset_id: str, number_of_documents: int = 1000, page_size: int = 1000
+        self, 
+        dataset_id: str, 
+        number_of_documents: Union[None, int] = 1000, 
+        page_size: int = 1000
     ) -> List[JSONDict]:
         """
         Retrieve all documents from dataset
@@ -80,9 +84,9 @@ class Projection(Base):
         
         self.documents_df = pd.DataFrame(data)
         metadata_cols = [ c for c in self.documents_df.columns 
-                                if '_vector_' not in c 
-                                if c not in ['_id', 'insert_date_'] 
-                                ]
+                        if '_vector_' not in c 
+                        if c not in ['_id', 'insert_date_'] 
+                        ]
         self.metadata_df =  self.documents_df[metadata_cols]
         return data
 
@@ -110,6 +114,7 @@ class Projection(Base):
         _labels = set(labels)
         return vectors, labels, _labels
 
+
     ## TODO: Separate DR into own class with default arg lut
     def _dim_reduce(
         self,
@@ -135,6 +140,7 @@ class Projection(Base):
                     "perplexity": 30,
                     "random_state": 42,
                 }
+            self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             tsne = TSNE(init="pca", n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
         # elif dr == "umap":
@@ -154,6 +160,7 @@ class Projection(Base):
                     "model": "maaten", 
                     "n_epochs_without_progress": 2
                     }
+            self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
         return vectors_dr
     
@@ -187,7 +194,7 @@ class Projection(Base):
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = KMeans(**cluster_args).fit(vectors)
             c_labels = km.labels_
-            cluster_centroids = cluster.cluster_centers_
+            cluster_centroids = km.cluster_centers_
         elif cluster == "kmodes":
             if cluster_args is None:
                 cluster_args = {
@@ -201,42 +208,84 @@ class Projection(Base):
             km = KModes(**cluster_args).fit(vectors)
             c_labels = km.labels_
             cluster_centroids = km.cluster_centroids_
-        
         c_labels = [ f'c_{c}' for c in c_labels ]
         return c_labels, cluster_centroids
 
-    @staticmethod
+
     def _plot_labels(
+        self,
         embedding_df: pd.DataFrame,
         legend: str,
+        point_label: bool,
         hover_label: Union[None, List[str]],
     ) -> go.Figure:
         '''
         Generates the 3D scatter plot 
         '''
-        data = []
-        groups = embedding_df.groupby(legend)
-        for idx, val in groups:
-            scatter = go.Scatter3d(
-                name=idx,
-                x=val['x'],
-                y=val['y'],
-                z=val['z'],
-                text=[idx for _ in range(val['x'].shape[0])],
-                textposition='top center',
-                mode='markers',
-                marker=dict(size=3, symbol='circle'),
-            )
-            data.append(scatter)
-            
+        ### Layout
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
+
+        # wordemb_display_mode = 'regular'
+        if point_label:
+        #      # Regular displays the full scatter plot with only circles
+        #     if wordemb_display_mode == 'regular':
+        #         plot_mode = 'markers'
+        #     # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
+        #     elif wordemb_display_mode == 'neighbors':
+        #         if not selected_word:
+        #             return go.Figure()
+
+        #         plot_mode = 'text'
+        #         # Get the nearest neighbors indices
+        #         dataset = data_dict[dataset_name].set_index('0')
+        #         selected_vec = dataset.loc[selected_word]
+
+        #         nearest_neighbours = get_nearest_neighbours(
+        #                                 dataset=dataset, 
+        #                                 selected_vec=selected_vec,
+        #                                 distance_measure_mode=distance_measure_mode,  
+        #                                 )
+
+        #         neighbors_idx = nearest_neighbours[:100].index
+        #         embedding_df =  embedding_df.loc[neighbors_idx]
+                
+            scatter = go.Scatter3d(
+                name=str(embedding_df.index),
+                x=embedding_df['x'],
+                y=embedding_df['y'],
+                z=embedding_df['z'],
+                text=embedding_df.index,
+                textposition='middle center',
+                showlegend=False,
+                mode='text',
+                marker=dict(size=3, color='#1854FF', symbol='circle'),
+            )
+            data=[scatter]
+        
+        else:
+            data = []
+            groups = embedding_df.groupby(legend)
+            for idx, val in groups:
+                scatter = go.Scatter3d(
+                    name=idx,
+                    x=val['x'],
+                    y=val['y'],
+                    z=val['z'],
+                    text=[ idx for _ in range(val['x'].shape[0]) ],
+                    textposition='top center',
+                    mode='markers',
+                    marker=dict(size=3, symbol='circle'),
+                )
+                data.append(scatter)
+
         fig = go.Figure(data=data, layout=layout)
+
         if hover_label:
-            fig.update_traces(customdata=embedding_df[hover_label])
+            fig.update_traces(customdata=self.metadata_df[hover_label])
             fig.update_traces(hovertemplate='%{customdata}')
             fig.update_traces(
                 hovertemplate="<br>".join([
@@ -246,6 +295,7 @@ class Projection(Base):
                 ])
             )
         return fig
+
 
     def generate(
         self,
@@ -272,8 +322,11 @@ class Projection(Base):
         vectors = MinMaxScaler().fit_transform(vectors) 
         self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
         
-        data = { 'x': self.vectors_dr[:,0], 'y': self.vectors_dr[:,1], 'z': self.vectors_dr[:,2], 'labels': labels }
+        data = { 'x': self.vectors_dr[:,0], 
+                'y': self.vectors_dr[:,1], 
+                'z': self.vectors_dr[:,2], 'labels': labels }
         self.embedding_df = pd.DataFrame(data)
+        self.embedding_df.index = labels
 
         if cluster:
             self.c_labels, self.c_centroids = self._cluster(
@@ -283,15 +336,8 @@ class Projection(Base):
 
         if hover_label==None: hover_label==[label]
 
-        # if point_label:
-        #     fig = self._plot_words(embedding_df=self.embeddinsg_df, 
-        #                         legend=legend, 
-        #                         point_label=point_label, 
-        #                         hover_label=hover_label
-        #                         )
-        # else:
         return self._plot_labels(embedding_df=self.embedding_df, 
-                                legend=legend, 
+                                legend=legend,
                                 point_label=point_label, 
                                 hover_label=hover_label
                                 )
