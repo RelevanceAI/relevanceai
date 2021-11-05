@@ -2,6 +2,12 @@ from vecdb.base import Base
 
 
 class Search(Base):
+    def __init__(self, project, api_key, base_url):
+        self.project = project
+        self.api_key = api_key
+        self.base_url = base_url
+        super().__init__(project, api_key, base_url)
+
     def vector(
         self,
         dataset_id: str,
@@ -383,51 +389,50 @@ class Search(Base):
             verbose=verbose,
         )
 
-
-def advanced_multistep_chunk(
-    self,
-    dataset_ids: list,
-    first_step_query: list,
-    first_step_text: str,
-    first_step_fields: list,
-    chunk_search_query: list,
-    first_step_edit_distance: int = -1,
-    first_step_ignore_space: bool = True,
-    first_step_traditional_weight: float = 0.075,
-    first_step_approximation_depth: int = 0,
-    first_step_sum_fields: bool = True,
-    first_step_filters: list = [],
-    first_step_page_size: int = 50,
-    include_count: bool = True,
-    min_score: int = 0,
-    page_size: int = 20,
-    include_vector: bool = False,
-    select_fields: list = [],
-    verbose: bool = True,
-    output_format: str = "json",
-):
-    return self.make_http_request(
-        "services/search/advanced_multistep_chunk",
-        method="POST",
-        parameters={
-            "dataset_ids": dataset_ids,
-            "first_step_query": first_step_query,
-            "first_step_text": first_step_text,
-            "first_step_fields": first_step_fields,
-            "chunk_search_query": chunk_search_query,
-            "first_step_edit_distance": first_step_edit_distance,
-            "first_step_ignore_space": first_step_ignore_space,
-            "first_step_traditional_weight": first_step_traditional_weight,
-            "first_step_approximation_depth": first_step_approximation_depth,
-            "first_step_sum_fields": first_step_sum_fields,
-            "first_step_filters": first_step_filters,
-            "first_step_page_size": first_step_page_size,
-            "include_count": include_count,
-            "min_score": min_score,
-            "page_size": page_size,
-            "include_vector": include_vector,
-            "select_fields": select_fields,
-        },
-        output_format=output_format,
-        verbose=verbose,
-    )
+    def advanced_multistep_chunk(
+        self,
+        dataset_ids: list,
+        first_step_query: list,
+        first_step_text: str,
+        first_step_fields: list,
+        chunk_search_query: list,
+        first_step_edit_distance: int = -1,
+        first_step_ignore_space: bool = True,
+        first_step_traditional_weight: float = 0.075,
+        first_step_approximation_depth: int = 0,
+        first_step_sum_fields: bool = True,
+        first_step_filters: list = [],
+        first_step_page_size: int = 50,
+        include_count: bool = True,
+        min_score: int = 0,
+        page_size: int = 20,
+        include_vector: bool = False,
+        select_fields: list = [],
+        verbose: bool = True,
+        output_format: str = "json",
+    ):
+        return self.make_http_request(
+            "services/search/advanced_multistep_chunk",
+            method="POST",
+            parameters={
+                "dataset_ids": dataset_ids,
+                "first_step_query": first_step_query,
+                "first_step_text": first_step_text,
+                "first_step_fields": first_step_fields,
+                "chunk_search_query": chunk_search_query,
+                "first_step_edit_distance": first_step_edit_distance,
+                "first_step_ignore_space": first_step_ignore_space,
+                "first_step_traditional_weight": first_step_traditional_weight,
+                "first_step_approximation_depth": first_step_approximation_depth,
+                "first_step_sum_fields": first_step_sum_fields,
+                "first_step_filters": first_step_filters,
+                "first_step_page_size": first_step_page_size,
+                "include_count": include_count,
+                "min_score": min_score,
+                "page_size": page_size,
+                "include_vector": include_vector,
+                "select_fields": select_fields,
+            },
+            output_format=output_format,
+            verbose=verbose,
+        )

@@ -3,11 +3,13 @@ from requests.models import stream_decode_response_unicode
 from vecdb.base import Base
 
 
+
 class Documents(Base):
     def __init__(self, project, api_key, base_url):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
+        super().__init__(project, api_key, base_url)
 
     def list(
         self,

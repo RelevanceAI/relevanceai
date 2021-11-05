@@ -20,3 +20,4 @@ class Services(Base):
         self.aggregate = Aggregate(project=project, api_key=api_key, base_url=base_url)
         self.recommend = Recommend(project=project, api_key=api_key, base_url=base_url)
         self.projection = Projection(project=project, api_key=api_key, base_url=base_url)
+        super().__init__(project, api_key, base_url)

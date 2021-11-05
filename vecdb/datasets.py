@@ -36,6 +36,8 @@ def get_dummy_ecommerce_dataset(
     count: int = 1000,
     base_url="https://api-aueast.relevance.ai/v1/",
 ):
+    """Here, we get the e-commerce dataset.
+    """
     from .http_client import VecDBClient
 
     project = "dummy-collections"

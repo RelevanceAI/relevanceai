@@ -5,23 +5,11 @@ import time
 import numpy as np
 import pandas as pd
 
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-# from umap import UMAP
-from ivis import Ivis
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from kmodes.kmodes import KModes
 from kmodes.kprototypes import KPrototypes
 
-import plotly.graph_objs as go
-
-from dataclasses import dataclass
-
 from vecdb.base import Base
-from vecdb.vecdb_logging import create_logger
-from api.datasets import Datasets
-
 from typing import List, Union, Dict, Any, Tuple
 from typing_extensions import Literal
 
@@ -29,11 +17,9 @@ JSONDict = Dict[str, Any]
 DR = Literal["pca", "tsne", "umap", "ivis"]
 CLUSTER = Literal["kmeans", "kmodes", None]
 
-LOG = create_logger()
-
 
 @dataclass
-class Projection(Base):
+class Cluster(Base):
     """Projection Class"""
 
     def __init__(
