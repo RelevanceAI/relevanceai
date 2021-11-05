@@ -5,8 +5,9 @@ from doc_utils import DocUtils
 from .batch.client import BatchAPIClient
 from .errors import APIError
 
+
 def str2bool(v):
-  return v.lower() in ("yes", "true", "t", "1")
+    return v.lower() in ("yes", "true", "t", "1")
 
 
 class VecDBClient(BatchAPIClient, DocUtils):
@@ -19,7 +20,7 @@ class VecDBClient(BatchAPIClient, DocUtils):
         self,
         project: str = os.getenv("VDB_PROJECT"),
         api_key: str = os.getenv("VDB_API_KEY"),
-        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/"
+        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
     ):
         super().__init__(project, api_key, base_url)
 
@@ -40,8 +41,6 @@ class VecDBClient(BatchAPIClient, DocUtils):
         else:
             raise APIError(self.FAIL_MESSAGE)
 
-
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
-

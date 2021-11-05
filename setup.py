@@ -48,12 +48,8 @@ setup(
     extras_require={
         "dev": dev_requirements,
         "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
-        "tests": [
-            "pytest", 
-            "fsspec==2021.10.1",
-            "openpyxl==3.0.9"
-        ],
-        "notebook": ["jsonshower"]
+        "tests": ["pytest", "fsspec==2021.10.1", "openpyxl==3.0.9"],
+        "notebook": ["jsonshower"],
     },
     # python_requires=">=3.7",
     classifiers=[],

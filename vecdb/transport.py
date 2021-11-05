@@ -41,7 +41,7 @@ class Transport:
             base_url = self.base_url
 
         if retries is None:
-            retries = int(self.config.get_option('retries.number_of_retries'))
+            retries = int(self.config.get_option("retries.number_of_retries"))
 
         for _ in range(retries):
             if verbose:
@@ -95,8 +95,12 @@ class Transport:
                 # Print the error
                 traceback.print_exc()
                 if verbose:
-                    self.logger.error(f"Connection error but re-trying. ({base_url + endpoint})")
-                time.sleep(int(self.config.get_option('retries.seconds_between_retries')))
+                    self.logger.error(
+                        f"Connection error but re-trying. ({base_url + endpoint})"
+                    )
+                time.sleep(
+                    int(self.config.get_option("retries.seconds_between_retries"))
+                )
                 continue
 
             except JSONDecodeError as error:

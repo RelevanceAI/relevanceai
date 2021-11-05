@@ -6,8 +6,10 @@ from .services import Services
 from ..base import Base
 from loguru import logger as loguru_logger
 
+
 def str2bool(v):
-  return v.lower() in ("yes", "true", "t", "1")
+    return v.lower() in ("yes", "true", "t", "1")
+
 
 class APIClient(Base):
     """API Client"""
