@@ -52,6 +52,7 @@ class Projection(Base):
         """
         LOG.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
         dataset = Datasets(self.project, self.api_key, self.base_url)
+        if page_size > number_of_documents: page_size=number_of_documents
         resp = dataset.documents.list(
             dataset_id=dataset_id, page_size=page_size
         )  # Initial call
@@ -75,7 +76,15 @@ class Projection(Base):
             if number_of_documents and (len(data) >= int(number_of_documents)):
                 break
             _page += 1
-        return data
+        
+        self.documents_df = pd.DataFrame(self.documents)
+        metadata_cols = [ c for c in self.documents_df.columns 
+                                if '_vector_' not in c 
+                                if c not in ['_id', 'insert_date_'] 
+                                ]
+        self.metadata_df =  self.documents_df[metadata_cols]
+
+        return self.documents_df, self.metadata_df 
 
     @staticmethod
     def _prepare_vector_labels(
@@ -86,12 +95,12 @@ class Projection(Base):
         """
         LOG.info(f'Preparing {label}, {vector} ...')
         vectors = np.array(
-            [data[i][vector] for i in range(len(data)) if data[i].get(vector)]
+            [data[i][vector] for i, d in enumerate(data) if data[i].get(vector)]
         )
         labels = np.array(
             [
                 data[i][label].replace(",", "")
-                for i in range(len(data))
+                for i, d in enumerate(data)
                 if data[i].get(vector)
             ]
         )
@@ -218,14 +227,7 @@ class Projection(Base):
         Projection handler
         """
         self.dataset_id = dataset_id
-        self.documents = self._retrieve_documents(dataset_id)
-
-        self.documents_df = pd.DataFrame(self.documents)
-        metadata_cols = [ c for c in self.documents_df.columns 
-                        if '_vector_' not in c 
-                        if c not in ['_id', 'insert_date_'] 
-                        ]
-        self.metadata_df =  self.documents_df[metadata_cols]
+        self.documents_df, self.metadata_df = self._retrieve_documents(dataset_id)
 
         vectors, labels, _labels = self._prepare_vector_labels(
             data=self.documents, label=label, vector=vector_field
@@ -235,7 +237,6 @@ class Projection(Base):
         
         data = { 'x': self.vectors_dr[:,0], 'y': self.vectors_dr[:,1], 'z': self.vectors_dr[:,2], 'labels': labels }
         self.embedding_df = pd.DataFrame(data)
-        self.embedding_df['labels'] = labels
 
         if cluster:
             self.c_labels, self.c_centroids = self._cluster(
