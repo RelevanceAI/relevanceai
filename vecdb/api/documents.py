@@ -131,6 +131,22 @@ class Documents(Base):
                 "status_code": insert_response.status_code,
             }
 
+    def bulk_delete(
+        self,
+        dataset_id: str,
+        ids: list = [],
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+        """Bulk delete."""
+        return self.make_http_request(
+            endpoint=f"datasets/{dataset_id}/documents/get_where",
+            method="POST",
+            parameters={"ids": ids},
+            output_format=output_format,
+            verbose=verbose,
+        )
+
     def get_where_all(
         self,
         dataset_id: str,

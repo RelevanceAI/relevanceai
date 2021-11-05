@@ -1,5 +1,10 @@
 import pytest
 
+def test_get_sample_ecommerce_dataset():
+    from vecdb.datasets import get_sample_ecommerce_dataset
+
+    assert len(get_sample_ecommerce_dataset(number_of_documents=100)) == 100
+
 
 def test_get_games_dataset_subset():
     from vecdb.datasets import get_games_dataset

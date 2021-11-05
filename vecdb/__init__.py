@@ -1,3 +1,9 @@
 from .http_client import VecDBClient
 
-__version__ = "0.12.15"
+# Import useful utility if possible as well
+try:
+    from jsonshower import show_json
+except ModuleNotFoundError:
+    pass
+
+__version__ = "0.12.17"

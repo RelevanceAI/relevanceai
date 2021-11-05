@@ -52,7 +52,7 @@ def get_dummy_ecommerce_dataset(
 
 
 def get_sample_ecommerce_dataset(
-    count: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
+    number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
 ):
     """Here, we get the e-commerce dataset."""
     from .http_client import VecDBClient
@@ -68,17 +68,20 @@ def get_sample_ecommerce_dataset(
     db_name = "quickstart_data_sample"
     response = client.datasets.documents.get_where(
         db_name,
-        select_fields=["product_image", "product_title", "product_description"] + vector_fields,
-        page_size=count,
+        select_fields=["product_image", "product_title", "product_description"]
+        + vector_fields,
+        page_size=number_of_documents,
     )
     if "message" in response:
         import warnings
+
         warnings.warn(response["message"])
-    docs = response['documents']
+    docs = response["documents"]
     for d in docs:
-        if 'image_first' in d:
-            d['image'] = d.pop('image_first')
+        if "image_first" in d:
+            d["image"] = d.pop("image_first")
     return docs
+
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Online retail dataset from UCI machine learning
