@@ -9,8 +9,10 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 # from umap import UMAP
-from sklearn.cluster import KMeans, MiniBatchKMeans
 from ivis import Ivis
+from sklearn.cluster import KMeans, MiniBatchKMeans
+from kmodes.kmodes import KModes
+from kmodes.kprototypes import KPrototypes
 
 import plotly.graph_objs as go
 
@@ -152,6 +154,12 @@ class Projection(Base):
                     }
             vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
         return vectors_dr
+    
+    # @staticmethod
+    # def _choose_k(
+
+
+    # )
 
     @staticmethod
     def _cluster(
@@ -166,25 +174,37 @@ class Projection(Base):
         if cluster == 'kmeans':
             if cluster_args is None:
                 cluster_args = {
-                    "n_clusters": 20, 
+                    "n_clusters": 10, 
                     "init": "k-means++", 
                     "verbose": 1, 
                     "algorithm": "auto"
                 }
-            cluster = KMeans(**cluster_args).fit(vectors)
-            c_labels = cluster.labels_
+            km = KMeans(**cluster_args).fit(vectors)
+            c_labels = km.labels_
             cluster_centroids = cluster.cluster_centers_
             c_labels = [ f'c_{c}' for c in c_labels ]
-        
+        elif cluster == "kmodes":
+            if cluster_args is None:
+                cluster_args = {
+                    "n_clusters": 10, 
+                    "init": "Huang", 
+                    "n_init": 5, 
+                    "verbose": 1
+                }
+            km = KModes(**cluster_args).fit_predict(vectors)
+            c_labels = km.labels_
+            cluster_centroids = cluster.cluster_centroids_
         return c_labels, cluster_centroids
 
     @staticmethod
     def _plot(
         embedding_df: pd.DataFrame,
-        legend: str
+        legend: str,
+        point_label: List[str],
+        hover_label: List[str]
     ) -> go.Figure:
         '''
-        Generates the scatter plot 
+        Generates the 3D scatter plot 
         '''
         data = []
         groups = embedding_df.groupby(legend)
@@ -206,8 +226,16 @@ class Projection(Base):
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
-        return go.Figure(data=data, layout=layout)
-
+        fig = go.Figure(data=data, layout=layout)
+        fig.update_traces(customdata=embedding_df[hover_label])
+        fig.update_traces(hovertemplate='%{customdata}')
+        fig.update_traces(
+            hovertemplate="<br>".join([
+                "X: %{x}",
+                "Y: %{y}",
+                "Label: %{customdata}",
+            ])
+        )
         
 
     def generate(
@@ -244,6 +272,10 @@ class Projection(Base):
                     )
             self.embedding_df['c_labels'] = self.c_labels
 
-        return self._plot(embedding_df=self.embedding_df, legend=legend)
+        return self._plot(embedding_df=self.embedding_df, 
+                        legend=legend, 
+                        point_label=point_label, 
+                        hover_label=hover_label
+                        )
         
     
