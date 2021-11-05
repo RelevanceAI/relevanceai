@@ -45,6 +45,7 @@ setup(
     long_description="",
     packages=find_packages(),
     install_requires=requirements,
+    package_data={'': ['*.ini',]},
     extras_require={
         "dev": dev_requirements,
         "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
