@@ -52,7 +52,7 @@ def get_dummy_ecommerce_dataset(
 
 
 def get_sample_ecommerce_dataset(
-    count: int = 1000, vector_fields: list = ["product_name_default_vector_"]
+    count: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
 ):
     """Here, we get the e-commerce dataset."""
     from .http_client import VecDBClient
@@ -65,10 +65,10 @@ def get_sample_ecommerce_dataset(
         project,
         api_key,
     )
-    db_name = "ecommerce-5"
+    db_name = "quickstart_data_sample"
     response = client.datasets.documents.get_where(
         db_name,
-        select_fields=["_id", "product_name", "description", "image_first"] + vector_fields,
+        select_fields=["product_image", "product_title", "product_description"] + vector_fields,
         page_size=count,
     )
     if "message" in response:
