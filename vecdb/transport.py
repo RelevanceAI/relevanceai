@@ -7,7 +7,6 @@ from json.decoder import JSONDecodeError
 import requests
 from requests import Request
 
-# from .vecdb_logging import Profiler
 from .errors import APIError
 
 
@@ -38,13 +37,11 @@ class Transport:
         """
 
         t1 = time.time()
-
-        # with Profiler(self.config.log, self.config.logging_level, self.config.log_to_file, self.config.log_to_console, locals()) as log:
         if base_url is None:
             base_url = self.base_url
 
         if retries is None:
-            retries = self.config.number_of_retries
+            retries = int(self.config.get_option('retries.number_of_retries'))
 
         for _ in range(retries):
             if verbose:
@@ -98,10 +95,8 @@ class Transport:
                 # Print the error
                 traceback.print_exc()
                 if verbose:
-                    self.logger.error(
-                        f"Connection error but re-trying. ({base_url + endpoint})"
-                    )
-                time.sleep(self.config.seconds_between_retries)
+                    self.logger.error(f"Connection error but re-trying. ({base_url + endpoint})")
+                time.sleep(int(self.config.get_option('retries.seconds_between_retries')))
                 continue
 
             except JSONDecodeError as error:

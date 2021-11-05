@@ -16,6 +16,12 @@ class Datasets(Base):
         self.tasks = Tasks(project=project, api_key=api_key, base_url=base_url)
         self.documents = Documents(project=project, api_key=api_key, base_url=base_url)
         self.monitor = Monitor(project=project, api_key=api_key, base_url=base_url)
+        
+        super().__init__(project, api_key, base_url)
+
+
+    def test(self):
+        return self.wtf
 
     def schema(
         self, dataset_id: str, output_format: str = "json", verbose: bool = True

@@ -2,6 +2,11 @@ from ..base import Base
 
 
 class Search(Base):
+    def __init__(self, project, api_key, base_url):
+        self.project = project
+        self.api_key = api_key
+        self.base_url = base_url
+        super().__init__(project, api_key, base_url)
     def vector(
         self,
         dataset_id: str,

@@ -10,6 +10,7 @@ class Tasks(Base):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
+        super().__init__(project, api_key, base_url)
 
     def create(self, dataset_id, task_name, task_parameters):
         return self.make_http_request(
