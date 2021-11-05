@@ -27,7 +27,7 @@ class VecDBClient(BatchAPIClient, DocUtils):
         super().__init__(project, api_key, base_url)
 
         if project is None or api_key is None:
-            print(
+            raise ValueError(
                 "It seems you are missing an API key, "
                 + "you can sign up for an API key following the instructions here: "
                 + "https://discovery.relevance.ai/reference/usage"
