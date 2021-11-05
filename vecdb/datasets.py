@@ -1,6 +1,7 @@
 """
 Datasets to mock
 """
+import warnings
 from typing import List, Union
 
 import pandas as pd
@@ -36,8 +37,7 @@ def get_dummy_ecommerce_dataset(
     count: int = 1000,
     base_url="https://api-aueast.relevance.ai/v1/",
 ):
-    """Here, we get the e-commerce dataset.
-    """
+    """Here, we get the e-commerce dataset."""
     from .http_client import VecDBClient
 
     project = "dummy-collections"
@@ -47,11 +47,38 @@ def get_dummy_ecommerce_dataset(
     client = VecDBClient(project, api_key, base_url=base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
-        import warnings
-
         warnings.warn(response["message"])
     return response
 
+
+def get_sample_ecommerce_dataset(
+    count: int = 1000, vector_fields: list = ["product_name_default_vector_"]
+):
+    """Here, we get the e-commerce dataset."""
+    from .http_client import VecDBClient
+
+    project = "dummy-collections"
+    api_key = (
+        "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
+    )
+    client = VecDBClient(
+        project,
+        api_key,
+    )
+    db_name = "ecommerce-5"
+    response = client.datasets.documents.get_where(
+        db_name,
+        select_fields=["_id", "product_name", "description", "image_first"] + vector_fields,
+        page_size=count,
+    )
+    if "message" in response:
+        import warnings
+        warnings.warn(response["message"])
+    docs = response['documents']
+    for d in docs:
+        if 'image_first' in d:
+            d['image'] = d.pop('image_first')
+    return docs
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Online retail dataset from UCI machine learning

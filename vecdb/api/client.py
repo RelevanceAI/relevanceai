@@ -1,10 +1,10 @@
 """API Client
 """
-
+from vecdb.base import Base
 from vecdb.api.admin import Admin
 from vecdb.api.datasets import Datasets
 from vecdb.api.services import Services
-from vecdb.base import Base
+
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
