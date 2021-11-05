@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from umap import UMAP
+# from umap import UMAP
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from ivis import Ivis
 
@@ -20,7 +20,7 @@ from vecdb.base import Base
 from vecdb.vecdb_logging import create_logger
 from api.datasets import Datasets
 
-from typing import List, Union, Dict, Any, Callable, Tuple
+from typing import List, Union, Dict, Any, Tuple
 from typing_extensions import Literal
 
 JSONDict = Dict[str, Any]
@@ -96,7 +96,6 @@ class Projection(Base):
             ]
         )
         _labels = set(labels)
-
         return vectors, labels, _labels
 
     ## TODO: Separate DR into own class with default arg lut
@@ -126,16 +125,16 @@ class Projection(Base):
                 }
             tsne = TSNE(init="pca", n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
-        elif dr == "umap":
-            if dr_args is None:
-                dr_args = {
-                    "n_neighbors": 15,
-                    "min_dist": 0.1,
-                    "random_state": 42,
-                    "transform_seed": 42,
-                }
-            umap = UMAP(n_components=dims, **dr_args)
-            vectors_dr = umap.fit_transform(vectors)
+        # elif dr == "umap":
+        #     if dr_args is None:
+        #         dr_args = {
+        #             "n_neighbors": 15,
+        #             "min_dist": 0.1,
+        #             "random_state": 42,
+        #             "transform_seed": 42,
+        #         }
+        #     umap = UMAP(n_components=dims, **dr_args)
+        #     vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
             if dr_args is None:
                 dr_args = {"k": 15, 
@@ -168,7 +167,7 @@ class Projection(Base):
             cluster_centroids = cluster.cluster_centers_
             c_labels = [ f'c_{c}' for c in c_labels ]
         
-            return c_labels, cluster_centroids
+        return c_labels, cluster_centroids
 
     @staticmethod
     def _plot(
@@ -207,13 +206,13 @@ class Projection(Base):
         dataset_id: str,
         label: str,
         vector_field: str,
+        point_label: List[str],
+        hover_label: List[str],
         dr: DR = "ivis",
         dr_args: Union[None, JSONDict] = None,
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = None,
         legend: Literal['c_labels', 'labels'] = 'labels',
-        #     point_label: List[str],
-        #     hover_label: List[str],
     ):
         """
         Projection handler
