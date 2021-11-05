@@ -17,13 +17,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, ] # windows-latest - removing now as throwing strange erroe
-        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # os: [ ubuntu-latest, macos-latest, windows-latest ] 
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
           - os: ubuntu-latest
             path: ~/.cache/pip
-          - os: macos-latest
-            path: ~/Library/Caches/pip
+        #   - os: macos-latest
+        #     path: ~/Library/Caches/pip
           # - os: windows-latest
           #   path: ~\AppData\Local\pip\Cache
     steps:

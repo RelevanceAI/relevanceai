@@ -79,14 +79,14 @@ class Projection(Base):
                 break
             _page += 1
         
-        self.documents_df = pd.DataFrame(self.documents)
+        self.documents_df = pd.DataFrame(data)
         metadata_cols = [ c for c in self.documents_df.columns 
                                 if '_vector_' not in c 
                                 if c not in ['_id', 'insert_date_'] 
                                 ]
         self.metadata_df =  self.documents_df[metadata_cols]
 
-        return self.documents_df, self.metadata_df 
+        return data
 
     @staticmethod
     def _prepare_vector_labels(
@@ -148,7 +148,8 @@ class Projection(Base):
         #     vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
             if dr_args is None:
-                dr_args = {"k": 15, 
+                dr_args = {
+                    "k": 15, 
                     "model": "maaten", 
                     "n_epochs_without_progress": 2
                     }
@@ -182,7 +183,6 @@ class Projection(Base):
             km = KMeans(**cluster_args).fit(vectors)
             c_labels = km.labels_
             cluster_centroids = cluster.cluster_centers_
-            c_labels = [ f'c_{c}' for c in c_labels ]
         elif cluster == "kmodes":
             if cluster_args is None:
                 cluster_args = {
@@ -191,9 +191,10 @@ class Projection(Base):
                     "n_init": 5, 
                     "verbose": 1
                 }
-            km = KModes(**cluster_args).fit_predict(vectors)
-            c_labels = km.labels_
+            c_labels = KModes(**cluster_args).fit_predict(vectors)
             cluster_centroids = cluster.cluster_centroids_
+        
+        c_labels = [ f'c_{c}' for c in c_labels ]
         return c_labels, cluster_centroids
 
     @staticmethod
@@ -256,7 +257,7 @@ class Projection(Base):
         Projection handler
         """
         self.dataset_id = dataset_id
-        self.documents_df, self.metadata_df = self._retrieve_documents(dataset_id)
+        self.documents = self._retrieve_documents(dataset_id)
 
         vectors, labels, _labels = self._prepare_vector_labels(
             data=self.documents, label=label, vector=vector_field
@@ -273,6 +274,7 @@ class Projection(Base):
                     )
             self.embedding_df['c_labels'] = self.c_labels
 
+        if hover_label==None: hover_label==[label]
         return self._plot(embedding_df=self.embedding_df, 
                         legend=legend, 
                         point_label=point_label, 
