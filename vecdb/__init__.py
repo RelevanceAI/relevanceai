@@ -5,4 +5,4 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "0.12.16"
+__version__ = "0.12.17"
