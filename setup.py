@@ -53,6 +53,7 @@ setup(
             "fsspec==2021.10.1",
             "openpyxl==3.0.9"
         ],
+        "notebook": ["jsonshower"]
     },
     # python_requires=">=3.7",
     classifiers=[],
