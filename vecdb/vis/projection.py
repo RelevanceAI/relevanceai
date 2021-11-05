@@ -45,7 +45,7 @@ class Projection(Base):
         self.base_url = base_url
 
     def _retrieve_documents(
-        self, dataset_id: str, number_of_documents: int = 100, page_size: int = 1000
+        self, dataset_id: str, number_of_documents: int = 1000, page_size: int = 1000
     ) -> List[JSONDict]:
         """
         Retrieve all documents from dataset

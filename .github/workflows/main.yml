@@ -24,8 +24,8 @@ jobs:
             path: ~/.cache/pip
           - os: macos-latest
             path: ~/Library/Caches/pip
-          # - os: windows-latest
-          #   path: ~\AppData\Local\pip\Cache
+          - os: windows-latest
+            path: ~\AppData\Local\pip\Cache
     steps:
       - uses: actions/checkout@v2
 
