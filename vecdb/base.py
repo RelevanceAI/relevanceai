@@ -1,6 +1,8 @@
-import sys
 import os
+import sys
+
 from loguru import logger as loguru_logger
+
 from .config import CONFIG
 from .transport import Transport
 

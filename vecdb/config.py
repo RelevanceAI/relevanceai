@@ -1,5 +1,6 @@
 import configparser
 import os
+
 from doc_utils.doc_utils import DocUtils
 
 PATH = os.path.dirname(os.path.abspath(__file__))

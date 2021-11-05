@@ -1,10 +1,11 @@
 """API Client
 """
+from loguru import logger as loguru_logger
+
+from ..base import Base
 from .admin import Admin
 from .datasets import Datasets
 from .services import Services
-from ..base import Base
-from loguru import logger as loguru_logger
 
 
 def str2bool(v):

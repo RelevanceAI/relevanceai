@@ -1,7 +1,9 @@
 """access the client via this class
 """
 import os
+
 from doc_utils import DocUtils
+
 from .batch.client import BatchAPIClient
 from .errors import APIError
 
@@ -13,8 +15,8 @@ def str2bool(v):
 class VecDBClient(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's VecDB"""
 
-    WELCOME_MESSAGE = """Welcome to the development version of the VecDB Python SDK. Please do not use this SDK to build core systems yet until we have a stable version."""
-    FAIL_MESSAGE = """Your Api-Key is invalid. Please login again"""
+    WELCOME_MESSAGE = """Welcome to the development version of the VecDB Python SDK"""
+    FAIL_MESSAGE = """Your API key is invalid. Please login again"""
 
     def __init__(
         self,

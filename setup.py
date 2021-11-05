@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 def read(rel_path):
@@ -25,6 +25,7 @@ requirements = [
     "loguru>=0.5.3",
     "document-utils>=1.3.0",
     "requests>=2.0.0",
+    "numpy>=1.19.0",
 ]
 
 dev_requirements = [
@@ -45,7 +46,11 @@ setup(
     long_description="",
     packages=find_packages(),
     install_requires=requirements,
-    package_data={'': ['*.ini',]},
+    package_data={
+        "": [
+            "*.ini",
+        ]
+    },
     extras_require={
         "dev": dev_requirements,
         "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
