@@ -52,7 +52,7 @@ def get_dummy_ecommerce_dataset(
 
 
 def get_sample_ecommerce_dataset(
-    count: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
+    number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
 ):
     """Here, we get the e-commerce dataset."""
     from .http_client import VecDBClient
@@ -70,7 +70,7 @@ def get_sample_ecommerce_dataset(
         db_name,
         select_fields=["product_image", "product_title", "product_description"]
         + vector_fields,
-        page_size=count,
+        page_size=number_of_documents,
     )
     if "message" in response:
         import warnings
