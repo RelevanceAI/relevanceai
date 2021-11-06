@@ -75,11 +75,9 @@ class Projection(Base):
             )
             _data = resp["documents"]
             _cursor = resp["cursor"]
-            if (_data is []) or (_cursor is []):
-                break
-            data += _data
-            if number_of_documents and (len(data) >= int(number_of_documents)):
-                break
+            if (_data is []) or (_cursor is []): break
+            data += _data 
+            if number_of_documents and (len(data) >= int(number_of_documents)): break
             _page += 1
         
         self.documents_df = pd.DataFrame(data)
@@ -87,7 +85,7 @@ class Projection(Base):
                         if '_vector_' not in c 
                         if c not in ['_id', 'insert_date_'] 
                         ]
-        self.metadata_df =  self.documents_df[metadata_cols]
+        self.metadata_df = self.documents_df[metadata_cols]
         return data
 
 
@@ -102,12 +100,12 @@ class Projection(Base):
         """
         self.logger.info(f'Preparing {label}, {vector} ...')
         vectors = np.array(
-            [data[i][vector] for i, d in enumerate(data) if data[i].get(vector)]
+            [data[i][vector] for i, _ in enumerate(data) if data[i].get(vector)]
         )
         labels = np.array(
             [
                 data[i][label].replace(",", "")
-                for i, d in enumerate(data)
+                for i, _ in enumerate(data)
                 if data[i].get(vector)
             ]
         )
@@ -177,7 +175,8 @@ class Projection(Base):
         self,
         vectors: np.ndarray,
         cluster: CLUSTER,
-        cluster_args: Union[None, JSONDict] = None
+        cluster_args: Union[None, JSONDict] = None,
+        k: int = 10
     ) -> Tuple[List[str], List[int]]:
         """
         Cluster method
@@ -186,7 +185,7 @@ class Projection(Base):
         if cluster == 'kmeans':
             if cluster_args is None:
                 cluster_args = {
-                    "n_clusters": 10, 
+                    "n_clusters": k, 
                     "init": "k-means++", 
                     "verbose": 1, 
                     "algorithm": "auto"
@@ -198,7 +197,7 @@ class Projection(Base):
         elif cluster == "kmodes":
             if cluster_args is None:
                 cluster_args = {
-                    "n_clusters": 10, 
+                    "n_clusters": k, 
                     "init": "Huang", 
                     "n_init": 5, 
                     "verbose": 1,
@@ -229,29 +228,29 @@ class Projection(Base):
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
 
-        # wordemb_display_mode = 'regular'
+        wordemb_display_mode = 'regular'
         if point_label:
-        #      # Regular displays the full scatter plot with only circles
-        #     if wordemb_display_mode == 'regular':
-        #         plot_mode = 'markers'
-        #     # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
-        #     elif wordemb_display_mode == 'neighbors':
-        #         if not selected_word:
-        #             return go.Figure()
+            #  # Regular displays the full scatter plot with only circles
+            # if wordemb_display_mode == 'regular':
+            #     plot_mode = 'markers'
+            # # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
+            # elif wordemb_display_mode == 'neighbors':
+            #     if not selected_word:
+            #         return go.Figure()
 
-        #         plot_mode = 'text'
-        #         # Get the nearest neighbors indices
-        #         dataset = data_dict[dataset_name].set_index('0')
-        #         selected_vec = dataset.loc[selected_word]
+            #     plot_mode = 'text'
+            #     # Get the nearest neighbors indices
+            #     dataset = data_dict[dataset_name].set_index('0')
+            #     selected_vec = dataset.loc[selected_word]
 
-        #         nearest_neighbours = get_nearest_neighbours(
-        #                                 dataset=dataset, 
-        #                                 selected_vec=selected_vec,
-        #                                 distance_measure_mode=distance_measure_mode,  
-        #                                 )
+            #     nearest_neighbours = get_nearest_neighbours(
+            #                             dataset=dataset, 
+            #                             selected_vec=selected_vec,
+            #                             distance_measure_mode=distance_measure_mode,  
+            #                             )
 
-        #         neighbors_idx = nearest_neighbours[:100].index
-        #         embedding_df =  embedding_df.loc[neighbors_idx]
+            #     neighbors_idx = nearest_neighbours[:100].index
+            #     embedding_df =  embedding_df.loc[neighbors_idx]
                 
             scatter = go.Scatter3d(
                 name=str(embedding_df.index),
@@ -297,7 +296,7 @@ class Projection(Base):
         return fig
 
 
-    def generate(
+    def plot(
         self,
         dataset_id: str,
         label: str,
