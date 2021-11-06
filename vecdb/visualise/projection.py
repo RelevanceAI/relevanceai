@@ -283,16 +283,18 @@ class Projection(Base):
 
         fig = go.Figure(data=data, layout=layout)
 
-        if hover_label:
-            fig.update_traces(customdata=self.metadata_df[hover_label])
-            fig.update_traces(hovertemplate='%{customdata}')
-            fig.update_traces(
-                hovertemplate="<br>".join([
-                    "X: %{x}",
-                    "Y: %{y}",
-                    "Label: %{customdata}",
-                ])
+        if not hover_label: hover_label = [self.label]
+        fig.update_traces(customdata=self.metadata_df[hover_label])
+        fig.update_traces(hovertemplate='%{customdata}')
+
+        custom_data_hover =  [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)]
+        fig.update_traces(
+            hovertemplate="<br>".join([
+                "X: %{x}",
+                "Y: %{y}",
+            ] + custom_data_hover
             )
+        )
         return fig
 
 
@@ -313,6 +315,7 @@ class Projection(Base):
         Projection handler
         """
         self.dataset_id = dataset_id
+        self.label = label
         self.documents = self._retrieve_documents(dataset_id)
         
         vectors, labels, _labels = self._prepare_vector_labels(
