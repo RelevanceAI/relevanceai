@@ -40,7 +40,7 @@ vis_requirements = [
     "scikit-learn-extra",
     "umap-learn>=0.5.2",
     "ivis[cpu]>=2.0.6",
-    "kmodes>=0.11.1"
+    "kmodes>=0.11.1",
     "plotly>=5.3.1",
 ]
 
