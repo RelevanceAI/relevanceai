@@ -38,8 +38,8 @@ dev_requirements = [
 ]
 
 setup(
-    name="VecDB",
-    version=get_version("vecdb/__init__.py"),
+    name="RelevanceAI",
+    version=get_version("relevanceai/__init__.py"),
     url="",
     author="Relevance AI",
     author_email="dev@vctr.ai",

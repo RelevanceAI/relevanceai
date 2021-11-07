@@ -12,7 +12,7 @@ def str2bool(v):
 
 
 class Base(Transport):
-    """Base class for all VecDB utilities"""
+    """Base class for all relevanceai utilities"""
 
     def __init__(self, project: str, api_key: str, base_url: str):
         self.project = project
@@ -29,5 +29,5 @@ class Base(Transport):
         logger.remove()
         logger.add(sys.stdout, level=logging_level)
         if log_to_file:
-            logger.add(f"vecdb.log", level=logging_level, rotation="100 MB")
+            logger.add(f"relevanceai.log", level=logging_level, rotation="100 MB")
         return logger

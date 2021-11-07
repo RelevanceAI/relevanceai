@@ -1,4 +1,4 @@
-from .http_client import VecDBClient
+from .http_client import Client
 
 # Import useful utility if possible as well
 try:

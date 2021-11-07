@@ -4,7 +4,7 @@ import os
 from doc_utils.doc_utils import DocUtils
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.path.join(PATH, "vecdb_config.ini")
+CONFIG_PATH = os.path.join(PATH, "config.ini")
 
 
 class Config(DocUtils):
