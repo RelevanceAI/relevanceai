@@ -38,30 +38,29 @@ def get_dummy_ecommerce_dataset(
     base_url="https://api-aueast.relevance.ai/v1/",
 ):
     """Here, we get the e-commerce dataset."""
-    from .http_client import VecDBClient
+    from .http_client import Client
 
     project = "dummy-collections"
     api_key = (
         "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
     )
-    client = VecDBClient(project, api_key, base_url=base_url)
+    client = Client(project, api_key, base_url=base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
         warnings.warn(response["message"])
     return response
 
-
 def get_sample_ecommerce_dataset(
     number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
 ):
     """Here, we get the e-commerce dataset."""
-    from .http_client import VecDBClient
+    from .http_client import Client
 
     project = "dummy-collections"
     api_key = (
         "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
     )
-    client = VecDBClient(
+    client = Client(
         project,
         api_key,
     )

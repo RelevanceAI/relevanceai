@@ -1,4 +1,4 @@
-from vecdb.http_client import VecDBClient
+from relevanceai.http_client import Client
 
 # Import useful utility if possible as well
 try:
