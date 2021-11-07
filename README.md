@@ -2,7 +2,6 @@
 
 For documentation about how to use this package, visit: https://docs.relevance.ai/docs
 
-
 This is the Python SDK of relevanceai and is the main Pythonic interface for the relevanceai.
 
 Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
