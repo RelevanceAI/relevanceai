@@ -62,7 +62,11 @@ class Cluster(Base):
         """
         # Partitioning methods
         if isinstance(self.cluster, CLUSTER_NUMERIC):
-            ### TODO: Implement scaled inertia algo to find best k
+            """
+            Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
+            where a is penalty factor of num_clusters
+            """
+            
             return 10
 
 

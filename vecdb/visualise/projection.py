@@ -30,12 +30,19 @@ class Projection(Base):
     def __init__(
         self,
         dataset: Dataset
-    ):
+    ):  
+        
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
         self.vector_fields = dataset.vector_fields
         self.data = dataset.data
-        super().__init__(dataset.project, dataset.api_key, dataset.base_url)
+
+        self.base_args = {
+            "project": self.dataset.project, 
+            "api_key": self.dataset.api_key, 
+            "base_url": self.dataset.base_url,
+        }
+        super().__init__(**self.base_args)
 
     
     def _prepare_vector_labels(
@@ -110,55 +117,6 @@ class Projection(Base):
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
         return vectors_dr
-    
-
-    # ## TODO: Separate cluster into own class w/ choose k method
-    # # @staticmethod
-    # # def _choose_k(
-    #     # """"
-    #     # Choose k clusters
-    #     # """
-    # # )
-    
-    # def _cluster(
-    #     self,
-    #     vectors: np.ndarray,
-    #     cluster: CLUSTER,
-    #     cluster_args: Union[None, JSONDict] = None,
-    #     k: int = 10
-    # ) -> Tuple[List[str], List[int]]:
-    #     """
-    #     Cluster method
-    #     """
-    #     self.logger.info(f'Performing {cluster} ... ')
-    #     if cluster == 'kmeans':
-    #         if cluster_args is None:
-    #             cluster_args = {
-    #                 "n_clusters": k, 
-    #                 "init": "k-means++", 
-    #                 "verbose": 1,
-    #                 "compute_labels": True,
-    #                 "max_no_improvement": 2
-    #             }
-    #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-    #         km = MiniBatchKMeans(**cluster_args).fit(vectors)
-    #         c_labels = km.labels_
-    #         cluster_centroids = km.cluster_centers_
-    #     elif cluster == "kmodes":
-    #         if cluster_args is None:
-    #             cluster_args = {
-    #                 "n_clusters": k, 
-    #                 "init": "Huang", 
-    #                 "n_init": 5, 
-    #                 "verbose": 1,
-    #                 "random_state": 42,
-    #             }
-    #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-    #         km = KModes(**cluster_args).fit(vectors)
-    #         c_labels = km.labels_
-    #         cluster_centroids = km.cluster_centroids_
-    #     c_labels = [ f'c_{c}' for c in c_labels ]
-    #     return c_labels, cluster_centroids
 
 
     def _generate_fig(
@@ -269,6 +227,8 @@ class Projection(Base):
         """
         self.vector_label = vector_label
         self.vector_field = vector_field
+
+        ## TODO: Implement intelligent selection of which points to show - randomly sample subselect of each cluster?
         self.data = self.dataset.data[:max_points]
         
         vectors, labels, _labels = self._prepare_vector_labels(
@@ -284,11 +244,7 @@ class Projection(Base):
         self.embedding_df.index = labels
 
         if cluster:
-            # self.c_labels, self.c_centroids = self._cluster(
-            #         vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
-            #         )
-            cluster = Cluster(
-                project=self.dataset.project, api_key=self.dataset.api_key, base_url=self.dataset.base_url,
+            cluster = Cluster(**self.base_args,
                 vectors=vectors, cluster=cluster, cluster_args=cluster_args, k=10)
             self.c_labels = cluster.c_labels
             
