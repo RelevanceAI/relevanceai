@@ -3,7 +3,34 @@ from typing import List, Union, Dict, Any, Tuple
 from typing_extensions import Literal
 
 JSONDict = Dict[str, Any]
-DR = Literal["pca", "tsne", "umap", "ivis"]
+
+DIM_REDUCTION = Literal["pca", "tsne", "umap", "ivis"]
+DIM_REDUCTION_DEFAULT_ARGS = {
+    'pca': {
+        "svd_solver": "auto",
+        "random_state": 42
+    },
+    'tsne': {
+        "init": "pca",
+        "n_iter": 500,
+        "learning_rate": 100,
+        "perplexity": 30,
+        "random_state": 42,
+    },
+    'umap': {
+        "n_neighbors": 15,
+        "min_dist": 0.1,
+        "random_state": 42,
+        "transform_seed": 42,
+    },
+    'ivis': {
+        "k": 15, 
+        "model": "maaten", 
+        "n_epochs_without_progress": 2
+    }
+}
+
+
 CLUSTER_NUMERIC = Literal["kmeans", "kmedoids",  None]
 CLUSTER_CATEGORICAL = Literal["kmodes",  None]
 CLUSTER_MIXED = Literal["kprotoypes", None]

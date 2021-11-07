@@ -5,8 +5,6 @@ import numpy as np
 import json
 
 from dataclasses import dataclass
-from pandas.core.arrays import categorical
-
 
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn_extra.cluster import KMedoids
@@ -16,9 +14,13 @@ from sklearn_extra.cluster import KMedoids
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
+from typeguard import check_type
 
 from relevanceai.base import Base
-from relevanceai.visualise.constants import *
+from relevanceai.visualise.constants import (
+    CLUSTER, CLUSTER_NUMERIC, CLUSTER_CATEGORICAL, CLUSTER_MIXED, CLUSTER_DEFAULT_ARGS
+    )
+from relevanceai.visualise.dataset import JSONDict
 
 
 @dataclass
@@ -45,12 +47,18 @@ class Cluster(Base):
         self.cluster = cluster
         self.cluster_args = cluster_args
         self.k = k
-        if k is None:
+        if k is None and cluster_args is None:
             self.k = self._choose_k(vectors)
         if cluster_args is None:
             self.cluster_args = {'n_clusters': self.k, **CLUSTER_DEFAULT_ARGS[cluster]}
-        
-        self.c_labels, self.c_centroids = self._cluster_vectors(vectors, cluster, cluster_args)
+        else:
+            if k is None and 'n_clusters' not in cluster_args.keys():
+                self.k = self._choose_k(vectors)
+                self.cluster_args = {'n_clusters': self.k, **cluster_args}
+     
+        self.c_labels, self.c_centroids = self._cluster_vectors(
+                            vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args
+                            )
     
 
     def _choose_k(
@@ -61,7 +69,7 @@ class Cluster(Base):
         Choose k clusters
         """
         # Partitioning methods
-        if isinstance(self.cluster, CLUSTER_NUMERIC):
+        if check_type(self.cluster, CLUSTER_NUMERIC):
             """
             Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
             where a is penalty factor of num_clusters

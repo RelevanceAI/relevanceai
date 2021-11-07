@@ -1,18 +1,8 @@
 # -*- coding: utf-8 -*-
-import sys
-import time
 
 import numpy as np
 import pandas as pd
-import json 
-
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-from umap import UMAP
-from ivis import Ivis
-from sklearn.cluster import KMeans, MiniBatchKMeans
-from kmodes.kmodes import KModes
+import json
 
 import plotly.graph_objs as go
 
@@ -20,8 +10,10 @@ from dataclasses import dataclass
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
+from relevanceai.visualise.constants import DIM_REDUCTION
 from relevanceai.visualise.dataset import Dataset
 from relevanceai.visualise.cluster import Cluster
+from relevanceai.visualise.dim_reduction import DimReduction 
 
 @dataclass
 class Projection(Base):
@@ -45,78 +37,78 @@ class Projection(Base):
         super().__init__(**self.base_args)
 
     
-    def _prepare_vector_labels(
-        self,
-        data: List[JSONDict], 
-        vector_label: str, 
-        vector_field: str
-    ) -> Tuple[np.ndarray, np.ndarray, set]:
-        """
-        Prepare vector and labels
-        """
-        self.logger.info(f'Preparing {vector_label}, {vector_field} ...')
-        vectors = np.array(
-            [data[i][vector_field] for i, _ in enumerate(data) if data[i].get(vector_field)]
-        )
-        labels = np.array(
-            [
-                data[i][vector_label].replace(",", "")
-                for i, _ in enumerate(data)
-                if data[i].get(vector_field)
-            ]
-        )
-        _labels = set(labels)
-        return vectors, labels, _labels
+    # def _prepare_vector_labels(
+    #     self,
+    #     data: List[JSONDict], 
+    #     vector_label: str, 
+    #     vector_field: str
+    # ) -> Tuple[np.ndarray, np.ndarray, set]:
+    #     """
+    #     Prepare vector and labels
+    #     """
+    #     self.logger.info(f'Preparing {vector_label}, {vector_field} ...')
+    #     vectors = np.array(
+    #         [data[i][vector_field] for i, _ in enumerate(data) if data[i].get(vector_field)]
+    #     )
+    #     labels = np.array(
+    #         [
+    #             data[i][vector_label].replace(",", "")
+    #             for i, _ in enumerate(data)
+    #             if data[i].get(vector_field)
+    #         ]
+    #     )
+    #     _labels = set(labels)
+    #     return vectors, labels, _labels
 
 
-    ## TODO: Separate DR into own class with default arg lut
-    def _dim_reduce(
-        self,
-        dr: DR,
-        dr_args: Union[None, JSONDict],
-        vectors: np.ndarray,
-        dims: Literal[2, 3] = 3,
-    ) -> np.ndarray:
-        """
-        Dimensionality reduction
-        """
-        self.logger.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
-        if dr == "pca":
-            pca = PCA(n_components=dims)
-            vectors_dr = pca.fit_transform(vectors)
-        elif dr == "tsne":
-            pca = PCA(n_components=min(vectors.shape[1], 10))
-            data_pca = pca.fit_transform(vectors)
-            if dr_args is None:
-                dr_args = {
-                    "n_iter": 500,
-                    "learning_rate": 100,
-                    "perplexity": 30,
-                    "random_state": 42,
-                }
-            self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-            tsne = TSNE(init="pca", n_components=dims, **dr_args)
-            vectors_dr = tsne.fit_transform(data_pca)
-        elif dr == "umap":
-            if dr_args is None:
-                dr_args = {
-                    "n_neighbors": 15,
-                    "min_dist": 0.1,
-                    "random_state": 42,
-                    "transform_seed": 42,
-                }
-            umap = UMAP(n_components=dims, **dr_args)
-            vectors_dr = umap.fit_transform(vectors)
-        elif dr == "ivis":
-            if dr_args is None:
-                dr_args = {
-                    "k": 15, 
-                    "model": "maaten", 
-                    "n_epochs_without_progress": 2
-                    }
-            self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-            vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
-        return vectors_dr
+    # ## TODO: Separate DR into own class with default arg lut
+    # def _dim_reduce(
+    #     self,
+    #     dr: DR,
+    #     dr_args: Union[None, JSONDict],
+    #     vectors: np.ndarray,
+    #     dims: Literal[2, 3] = 3,
+    # ) -> np.ndarray:
+    #     """
+    #     Dimensionality reduction
+    #     """
+    #     self.logger.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
+    #     if dr == "pca":
+    #         pca = PCA(n_components=dims)
+    #         vectors_dr = pca.fit_transform(vectors)
+    #     elif dr == "tsne":
+    #         pca = PCA(n_components=min(vectors.shape[1], 10))
+    #         data_pca = pca.fit_transform(vectors)
+    #         if dr_args is None:
+    #             dr_args = {
+    #                 "n_iter": 500,
+    #                 "learning_rate": 100,
+    #                 "perplexity": 30,
+    #                 "random_state": 42,
+    #             }
+    #         self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
+    #         tsne = TSNE(init="pca", n_components=dims, **dr_args)
+    #         vectors_dr = tsne.fit_transform(data_pca)
+    #     elif dr == "umap":
+    #         if dr_args is None:
+    #             dr_args = {
+    #                 "n_neighbors": 15,
+    #                 "min_dist": 0.1,
+    #                 "random_state": 42,
+    #                 "transform_seed": 42,
+    #             }
+    #         umap = UMAP(n_components=dims, **dr_args)
+    #         vectors_dr = umap.fit_transform(vectors)
+    #     elif dr == "ivis":
+    #         if dr_args is None:
+    #             dr_args = {
+    #                 "k": 15, 
+    #                 "model": "maaten", 
+    #                 "n_epochs_without_progress": 2
+    #                 }
+    #         self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
+    #         vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
+    #     return vectors_dr
 
 
     def _generate_fig(
@@ -176,7 +168,6 @@ class Projection(Base):
             data=[scatter]
         
         else:
-            
             data = []
             groups = embedding_df.groupby(legend)
             for idx, val in groups:
@@ -198,7 +189,7 @@ class Projection(Base):
         fig.update_traces(customdata=self.dataset.metadata[hover_label])
         fig.update_traces(hovertemplate='%{customdata}')
 
-        custom_data_hover =  [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)]
+        custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)]
         fig.update_traces(
             hovertemplate="<br>".join([
                 "X: %{x}",
@@ -215,8 +206,9 @@ class Projection(Base):
         vector_field: str,
         point_label: bool = False,
         hover_label: Union[None, List[str]] = None,
-        dr: DR = "ivis",
+        dr: DIM_REDUCTION = "ivis",
         dr_args: Union[None, JSONDict] = None,
+        dims: Literal[2, 3] = 3,
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = None,
         legend: Literal['c_labels', 'labels'] = 'labels',
@@ -231,23 +223,24 @@ class Projection(Base):
         if self.dataset.valid_vector_name(vector_field) and self.dataset.valid_label_name(vector_label):
 
             ## TODO: Implement intelligent selection of which points to show - randomly sample subselect of each cluster
-            self.data = self.dataset.data[:max_points]
+            self.docs = self.dataset.data[:max_points]
             
-            vectors, labels, _labels = self._prepare_vector_labels(
-                data=self.data, vector_label=vector_label, vector_field=vector_field
-            )
-            vectors = MinMaxScaler().fit_transform(vectors) 
-            self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
-            
-            data = { 'x': self.vectors_dr[:,0], 
-                    'y': self.vectors_dr[:,1], 
-                    'z': self.vectors_dr[:,2], 'labels': labels }
-            self.embedding_df = pd.DataFrame(data)
-            self.embedding_df.index = labels
+            dr = DimReduction(**self.base_args, data=self.docs, 
+                                vector_label=vector_label, vector_field=vector_field, 
+                                dr=dr, dr_args=dr_args, dims=dims
+                                )
+            self.vectors = dr.vectors
+            self.labels = dr.labels
+            self.vectors_dr = dr.vectors_dr
+            points = { 'x': self.vectors_dr[:,0], 
+                        'y': self.vectors_dr[:,1], 
+                        'z': self.vectors_dr[:,2], 'labels': self.labels }
+            self.embedding_df = pd.DataFrame(points)
+            self.embedding_df.index = self.labels
 
             if cluster:
                 cluster = Cluster(**self.base_args,
-                    vectors=vectors, cluster=cluster, cluster_args=cluster_args, k=10)
+                    vectors=self.vectors, cluster=cluster, cluster_args=cluster_args)
                 self.c_labels = cluster.c_labels
                 self.embedding_df['c_labels'] = self.c_labels
 
