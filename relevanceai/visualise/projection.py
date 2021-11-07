@@ -10,7 +10,6 @@ from dataclasses import dataclass
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
-from relevanceai.visualise.constants import DIM_REDUCTION
 from relevanceai.visualise.dataset import Dataset
 from relevanceai.visualise.cluster import Cluster
 from relevanceai.visualise.dim_reduction import DimReduction 
@@ -35,80 +34,6 @@ class Projection(Base):
             "base_url": self.dataset.base_url,
         }
         super().__init__(**self.base_args)
-
-    
-    # def _prepare_vector_labels(
-    #     self,
-    #     data: List[JSONDict], 
-    #     vector_label: str, 
-    #     vector_field: str
-    # ) -> Tuple[np.ndarray, np.ndarray, set]:
-    #     """
-    #     Prepare vector and labels
-    #     """
-    #     self.logger.info(f'Preparing {vector_label}, {vector_field} ...')
-    #     vectors = np.array(
-    #         [data[i][vector_field] for i, _ in enumerate(data) if data[i].get(vector_field)]
-    #     )
-    #     labels = np.array(
-    #         [
-    #             data[i][vector_label].replace(",", "")
-    #             for i, _ in enumerate(data)
-    #             if data[i].get(vector_field)
-    #         ]
-    #     )
-    #     _labels = set(labels)
-    #     return vectors, labels, _labels
-
-
-    # ## TODO: Separate DR into own class with default arg lut
-    # def _dim_reduce(
-    #     self,
-    #     dr: DR,
-    #     dr_args: Union[None, JSONDict],
-    #     vectors: np.ndarray,
-    #     dims: Literal[2, 3] = 3,
-    # ) -> np.ndarray:
-    #     """
-    #     Dimensionality reduction
-    #     """
-    #     self.logger.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
-    #     if dr == "pca":
-    #         pca = PCA(n_components=dims)
-    #         vectors_dr = pca.fit_transform(vectors)
-    #     elif dr == "tsne":
-    #         pca = PCA(n_components=min(vectors.shape[1], 10))
-    #         data_pca = pca.fit_transform(vectors)
-    #         if dr_args is None:
-    #             dr_args = {
-    #                 "n_iter": 500,
-    #                 "learning_rate": 100,
-    #                 "perplexity": 30,
-    #                 "random_state": 42,
-    #             }
-    #         self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-    #         tsne = TSNE(init="pca", n_components=dims, **dr_args)
-    #         vectors_dr = tsne.fit_transform(data_pca)
-    #     elif dr == "umap":
-    #         if dr_args is None:
-    #             dr_args = {
-    #                 "n_neighbors": 15,
-    #                 "min_dist": 0.1,
-    #                 "random_state": 42,
-    #                 "transform_seed": 42,
-    #             }
-    #         umap = UMAP(n_components=dims, **dr_args)
-    #         vectors_dr = umap.fit_transform(vectors)
-    #     elif dr == "ivis":
-    #         if dr_args is None:
-    #             dr_args = {
-    #                 "k": 15, 
-    #                 "model": "maaten", 
-    #                 "n_epochs_without_progress": 2
-    #                 }
-    #         self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-    #         vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
-    #     return vectors_dr
 
 
     def _generate_fig(
@@ -162,7 +87,7 @@ class Projection(Base):
                 text=embedding_df.index,
                 textposition='middle center',
                 showlegend=False,
-                mode='text markers',
+                mode='text+markers',
                 marker=dict(size=3, color='#1854FF', symbol='circle'),
             )
             data=[scatter]
@@ -204,7 +129,7 @@ class Projection(Base):
         self,
         vector_label: str,
         vector_field: str,
-        point_label: bool = False,
+        point_label: bool,      ## TODO: We can change this later to show top 100 neighbours of a selected word
         hover_label: Union[None, List[str]] = None,
         dr: DIM_REDUCTION = "ivis",
         dr_args: Union[None, JSONDict] = None,

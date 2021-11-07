@@ -69,13 +69,13 @@ class Cluster(Base):
         Choose k clusters
         """
         # Partitioning methods
-        if check_type(self.cluster, CLUSTER_NUMERIC):
-            """
-            Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
-            where a is penalty factor of num_clusters
-            """
-            
-            return 10
+        # if check_type(self.cluster, CLUSTER_NUMERIC):
+        """
+        Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
+        where a is penalty factor of num_clusters
+        """
+        ## ELbow method
+        return 10
 
 
     def _cluster_vectors(
