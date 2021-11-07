@@ -47,5 +47,5 @@ jobs:
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
-          python -m pytest --cov=vecdb -vv
+          python -m pytest --cov=relevanceai -vv
           

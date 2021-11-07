@@ -1,9 +1,9 @@
 """API Client
 """
-from vecdb.base import Base
-from vecdb.api.admin import Admin
-from vecdb.api.datasets import Datasets
-from vecdb.api.services import Services
+from relevanceai.base import Base
+from relevanceai.api.admin import Admin
+from relevanceai.api.datasets import Datasets
+from relevanceai.api.services import Services
 
 
 def str2bool(v):

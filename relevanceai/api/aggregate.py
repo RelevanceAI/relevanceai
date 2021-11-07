@@ -1,4 +1,4 @@
-from vecdb.base import Base
+from relevanceai.base import Base
 
 
 class Aggregate(Base):

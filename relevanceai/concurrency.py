@@ -3,7 +3,7 @@
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from typing import Callable
 
-from vecdb.progress_bar import progress_bar
+from relevanceai.progress_bar import progress_bar
 
 
 def chunk(iterables, n=20):

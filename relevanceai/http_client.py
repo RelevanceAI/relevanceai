@@ -4,9 +4,9 @@ import os
 
 from doc_utils import DocUtils
 
-from vecdb.batch.client import BatchAPIClient
-from vecdb.config import CONFIG
-from vecdb.errors import APIError
+from relevanceai.batch.client import BatchAPIClient
+from relevanceai.config import CONFIG
+from relevanceai.errors import APIError
 
 
 def str2bool(v):

@@ -1,6 +1,6 @@
 """All Dataset related functions
 """
-from vecdb.base import Base
+from relevanceai.base import Base
 
 
 class Monitor(Base):

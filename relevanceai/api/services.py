@@ -1,12 +1,12 @@
 """Services class
 """
-from vecdb.base import Base
+from relevanceai.base import Base
 
-from vecdb.api.encoders import Encoders
-from vecdb.api.cluster import Cluster
-from vecdb.api.search import Search
-from vecdb.api.aggregate import Aggregate
-from vecdb.api.recommend import Recommend
+from relevanceai.api.encoders import Encoders
+from relevanceai.api.cluster import Cluster
+from relevanceai.api.search import Search
+from relevanceai.api.aggregate import Aggregate
+from relevanceai.api.recommend import Recommend
 
 class Services(Base):
     def __init__(self, project: str, api_key: str, base_url: str):

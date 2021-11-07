@@ -4,8 +4,8 @@ import time
 
 from loguru import logger as loguru_logger
 
-from vecdb.config import CONFIG
-from vecdb.transport import Transport
+from relevanceai.config import CONFIG
+from relevanceai.transport import Transport
 
 
 def str2bool(v):

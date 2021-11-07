@@ -1,5 +1,5 @@
-from vecdb.base import Base
-from vecdb.api.centroids import Centroids
+from relevanceai.base import Base
+from relevanceai.api.centroids import Centroids
 
 
 class Cluster(Base):

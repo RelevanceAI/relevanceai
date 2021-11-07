@@ -242,7 +242,7 @@ To add new targets, add new command and intended script, add descriptive comment
 ...
 ## Test dependencies
 test
-	pytest $(TEST_PATH) --cov=vecdb -vv
+	pytest $(TEST_PATH) --cov=relevanceai -vv
 ...
 ```
 
@@ -257,11 +257,11 @@ You should see similar to below -
 
 ```
 ❯ make test
-pytest . --cov=vecdb -vv
+pytest . --cov=relevanceai -vv
 ========================================= test session starts =========================================
-platform linux -- Python 3.8.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/vecdb/.venv/bin/python3.8
+platform linux -- Python 3.8.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/relevanceai/.venv/bin/python3.8
 cachedir: .pytest_cache
-rootdir: /home/charlene/code/vecdb
+rootdir: /home/charlene/code/relevanceai
 plugins: cov-3.0.0, mock-3.6.1, dotenv-0.5.2
 collected 12 items
 
@@ -281,35 +281,35 @@ tests/test_smoke.py::test_datasets_smoke PASSED                                 
 ----------- coverage: platform linux, python 3.8.0-final-0 -----------
 Name                           Stmts   Miss  Cover
 --------------------------------------------------
-vecdb/__init__.py                  2      0   100%
-vecdb/api/__init__.py              0      0   100%
-vecdb/api/admin.py                 4      4     0%
-vecdb/api/aggregate.py             4      1    75%
-vecdb/api/centroids.py            10      2    80%
-vecdb/api/client.py               12      0   100%
-vecdb/api/cluster.py              10      1    90%
-vecdb/api/datasets.py             60     33    45%
-vecdb/api/documents.py            39     24    38%
-vecdb/api/encoders.py             12      3    75%
-vecdb/api/monitor.py              11      2    82%
-vecdb/api/recommend.py             9      1    89%
-vecdb/api/requests_config.py       0      0   100%
-vecdb/api/search.py               20      9    55%
-vecdb/api/services.py             17      0   100%
-vecdb/api/tasks.py                56     38    32%
-vecdb/base.py                     16      1    94%
-vecdb/batch/__init__.py            0      0   100%
-vecdb/batch/batch_insert.py      127    106    17%
-vecdb/batch/chunk.py              11      5    55%
-vecdb/batch/client.py              9      2    78%
-vecdb/concurrency.py              34     27    21%
-vecdb/config.py                   14      2    86%
-vecdb/datasets.py                 66     16    76%
-vecdb/errors.py                    2      0   100%
-vecdb/http_client.py              26      4    85%
-vecdb/progress_bar.py             54     40    26%
-vecdb/transport.py                59     25    58%
-vecdb/vecdb_logging.py            18     18     0%
+relevanceai/__init__.py                  2      0   100%
+relevanceai/api/__init__.py              0      0   100%
+relevanceai/api/admin.py                 4      4     0%
+relevanceai/api/aggregate.py             4      1    75%
+relevanceai/api/centroids.py            10      2    80%
+relevanceai/api/client.py               12      0   100%
+relevanceai/api/cluster.py              10      1    90%
+relevanceai/api/datasets.py             60     33    45%
+relevanceai/api/documents.py            39     24    38%
+relevanceai/api/encoders.py             12      3    75%
+relevanceai/api/monitor.py              11      2    82%
+relevanceai/api/recommend.py             9      1    89%
+relevanceai/api/requests_config.py       0      0   100%
+relevanceai/api/search.py               20      9    55%
+relevanceai/api/services.py             17      0   100%
+relevanceai/api/tasks.py                56     38    32%
+relevanceai/base.py                     16      1    94%
+relevanceai/batch/__init__.py            0      0   100%
+relevanceai/batch/batch_insert.py      127    106    17%
+relevanceai/batch/chunk.py              11      5    55%
+relevanceai/batch/client.py              9      2    78%
+relevanceai/concurrency.py              34     27    21%
+relevanceai/config.py                   14      2    86%
+relevanceai/datasets.py                 66     16    76%
+relevanceai/errors.py                    2      0   100%
+relevanceai/http_client.py              26      4    85%
+relevanceai/progress_bar.py             54     40    26%
+relevanceai/transport.py                59     25    58%
+relevanceai/vecdb_logging.py            18     18     0%
 --------------------------------------------------
 TOTAL                            702    364    48%
 

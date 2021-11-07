@@ -25,7 +25,7 @@ update:
 
 ## Test dependencies
 test:
-	pytest $(TEST_PATH) --cov=vecdb -vv
+	pytest $(TEST_PATH) --cov=relevanceai -vv
 
 ## Delete all compiled Python files
 clean:
@@ -35,7 +35,7 @@ clean:
 
 ## Lint using flake8
 lint:
-	flake8 vecdb
+	flake8 relevanceai
 
 
 #################################################################################

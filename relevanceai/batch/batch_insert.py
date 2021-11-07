@@ -8,10 +8,10 @@ import traceback
 from datetime import datetime
 from typing import Callable
 
-from vecdb.api.client import APIClient
-from vecdb.concurrency import multiprocess, multithread
-from vecdb.progress_bar import progress_bar
-from vecdb.batch.chunk import Chunker
+from relevanceai.api.client import APIClient
+from relevanceai.concurrency import multiprocess, multithread
+from relevanceai.progress_bar import progress_bar
+from relevanceai.batch.chunk import Chunker
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3

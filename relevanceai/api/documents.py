@@ -1,6 +1,6 @@
 from requests.models import stream_decode_response_unicode
 
-from vecdb.base import Base
+from relevanceai.base import Base
 
 
 

@@ -1,9 +1,9 @@
 """All Dataset related functions
 """
-from vecdb.base import Base
-from vecdb.api.documents import Documents
-from vecdb.api.monitor import Monitor
-from vecdb.api.tasks import Tasks
+from relevanceai.base import Base
+from relevanceai.api.documents import Documents
+from relevanceai.api.monitor import Monitor
+from relevanceai.api.tasks import Tasks
 
 
 class Datasets(Base):

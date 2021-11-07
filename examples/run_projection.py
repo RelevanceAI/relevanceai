@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from vecdb.http_client import VecDBClient
+from relevanceai.http_client import VecDBClient
 
 # dataset_id = "ecommerce-6"
 # project = "dummy-collections"
@@ -22,7 +22,7 @@ from vecdb.http_client import VecDBClient
 import sys
 sys.path.append('..')
 
-from vecdb.visualise.dataset import Dataset
+from relevanceai.visualise.dataset import Dataset
 
 dataset_id = "ecommerce-demo"
 # project = "dummy-collections"
