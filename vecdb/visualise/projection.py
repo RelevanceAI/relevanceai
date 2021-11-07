@@ -19,15 +19,9 @@ import plotly.graph_objs as go
 from dataclasses import dataclass
 
 from vecdb.base import Base
+from vecdb.visualise.constants import *
 from vecdb.visualise.dataset import Dataset
-
-from typing import List, Union, Dict, Any, Tuple
-from typing_extensions import Literal
-
-JSONDict = Dict[str, Any]
-DR = Literal["pca", "tsne", "umap", "ivis"]
-CLUSTER = Literal["kmeans", "kmodes", None]
-
+from vecdb.visualise.cluster import Cluster
 
 @dataclass
 class Projection(Base):
@@ -118,53 +112,53 @@ class Projection(Base):
         return vectors_dr
     
 
-    ## TODO: Separate cluster into own class w/ choose k method
-    # @staticmethod
-    # def _choose_k(
-        # """"
-        # Choose k clusters
-        # """
-    # )
+    # ## TODO: Separate cluster into own class w/ choose k method
+    # # @staticmethod
+    # # def _choose_k(
+    #     # """"
+    #     # Choose k clusters
+    #     # """
+    # # )
     
-    def _cluster(
-        self,
-        vectors: np.ndarray,
-        cluster: CLUSTER,
-        cluster_args: Union[None, JSONDict] = None,
-        k: int = 10
-    ) -> Tuple[List[str], List[int]]:
-        """
-        Cluster method
-        """
-        self.logger.info(f'Performing {cluster} ... ')
-        if cluster == 'kmeans':
-            if cluster_args is None:
-                cluster_args = {
-                    "n_clusters": k, 
-                    "init": "k-means++", 
-                    "verbose": 1,
-                    "compute_labels": True,
-                    "max_no_improvement": 2
-                }
-            self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-            km = MiniBatchKMeans(**cluster_args).fit(vectors)
-            c_labels = km.labels_
-            cluster_centroids = km.cluster_centers_
-        elif cluster == "kmodes":
-            if cluster_args is None:
-                cluster_args = {
-                    "n_clusters": k, 
-                    "init": "Huang", 
-                    "n_init": 5, 
-                    "verbose": 1,
-                    "random_state": 42,
-                }
-            self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-            km = KModes(**cluster_args).fit(vectors)
-            c_labels = km.labels_
-            cluster_centroids = km.cluster_centroids_
-        c_labels = [ f'c_{c}' for c in c_labels ]
-        return c_labels, cluster_centroids
+    # def _cluster(
+    #     self,
+    #     vectors: np.ndarray,
+    #     cluster: CLUSTER,
+    #     cluster_args: Union[None, JSONDict] = None,
+    #     k: int = 10
+    # ) -> Tuple[List[str], List[int]]:
+    #     """
+    #     Cluster method
+    #     """
+    #     self.logger.info(f'Performing {cluster} ... ')
+    #     if cluster == 'kmeans':
+    #         if cluster_args is None:
+    #             cluster_args = {
+    #                 "n_clusters": k, 
+    #                 "init": "k-means++", 
+    #                 "verbose": 1,
+    #                 "compute_labels": True,
+    #                 "max_no_improvement": 2
+    #             }
+    #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
+    #         km = MiniBatchKMeans(**cluster_args).fit(vectors)
+    #         c_labels = km.labels_
+    #         cluster_centroids = km.cluster_centers_
+    #     elif cluster == "kmodes":
+    #         if cluster_args is None:
+    #             cluster_args = {
+    #                 "n_clusters": k, 
+    #                 "init": "Huang", 
+    #                 "n_init": 5, 
+    #                 "verbose": 1,
+    #                 "random_state": 42,
+    #             }
+    #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
+    #         km = KModes(**cluster_args).fit(vectors)
+    #         c_labels = km.labels_
+    #         cluster_centroids = km.cluster_centroids_
+    #     c_labels = [ f'c_{c}' for c in c_labels ]
+    #     return c_labels, cluster_centroids
 
 
     def _generate_fig(
@@ -179,13 +173,13 @@ class Projection(Base):
         '''
         ### Layout
         # plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>{self.vector_label}: {self.vector_field}"
-        
+
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
-
+        
         wordemb_display_mode = 'regular'
         if point_label:
             #  # Regular displays the full scatter plot with only circles
@@ -195,7 +189,6 @@ class Projection(Base):
             # elif wordemb_display_mode == 'neighbors':
             #     if not selected_word:
             #         return go.Figure()
-
             #     plot_mode = 'text'
             #     # Get the nearest neighbors indices
             #     dataset = data_dict[dataset_name].set_index('0')
@@ -219,12 +212,13 @@ class Projection(Base):
                 text=embedding_df.index,
                 textposition='middle center',
                 showlegend=False,
-                mode='text',
+                mode='text markers',
                 marker=dict(size=3, color='#1854FF', symbol='circle'),
             )
             data=[scatter]
         
         else:
+            
             data = []
             groups = embedding_df.groupby(legend)
             for idx, val in groups:
@@ -268,13 +262,14 @@ class Projection(Base):
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = None,
         legend: Literal['c_labels', 'labels'] = 'labels',
+        max_points: int = -1
     ):
         """
         Projection handler
         """
         self.vector_label = vector_label
         self.vector_field = vector_field
-        self.data = self.dataset.data
+        self.data = self.dataset.data[:max_points]
         
         vectors, labels, _labels = self._prepare_vector_labels(
             data=self.data, vector_label=vector_label, vector_field=vector_field
@@ -289,9 +284,14 @@ class Projection(Base):
         self.embedding_df.index = labels
 
         if cluster:
-            self.c_labels, self.c_centroids = self._cluster(
-                    vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
-                    )
+            # self.c_labels, self.c_centroids = self._cluster(
+            #         vectors=self.vectors_dr, cluster=cluster, cluster_args=cluster_args
+            #         )
+            cluster = Cluster(
+                project=self.dataset.project, api_key=self.dataset.api_key, base_url=self.dataset.base_url,
+                vectors=vectors, cluster=cluster, cluster_args=cluster_args, k=10)
+            self.c_labels = cluster.c_labels
+            
             self.embedding_df['c_labels'] = self.c_labels
 
         if hover_label==None: hover_label==[vector_label]

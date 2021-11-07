@@ -22,7 +22,7 @@ class Aggregate(Base):
         flatten: bool = True,
         alias: str = "default",
     ):
-        """Aggregate means that you are"""
+        """Aggregation/Groupby of a collection using an aggregation query"""
         return self.make_http_request(
             "services/aggregate/aggregate",
             method="POST",
