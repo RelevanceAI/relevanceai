@@ -228,34 +228,35 @@ class Projection(Base):
         self.vector_label = vector_label
         self.vector_field = vector_field
 
-        ## TODO: Implement intelligent selection of which points to show - randomly sample subselect of each cluster?
-        self.data = self.dataset.data[:max_points]
-        
-        vectors, labels, _labels = self._prepare_vector_labels(
-            data=self.data, vector_label=vector_label, vector_field=vector_field
-        )
-        vectors = MinMaxScaler().fit_transform(vectors) 
-        self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
-        
-        data = { 'x': self.vectors_dr[:,0], 
-                'y': self.vectors_dr[:,1], 
-                'z': self.vectors_dr[:,2], 'labels': labels }
-        self.embedding_df = pd.DataFrame(data)
-        self.embedding_df.index = labels
+        if self.dataset.valid_vector_name(vector_field) and self.dataset.valid_label_name(vector_label):
 
-        if cluster:
-            cluster = Cluster(**self.base_args,
-                vectors=vectors, cluster=cluster, cluster_args=cluster_args, k=10)
-            self.c_labels = cluster.c_labels
+            ## TODO: Implement intelligent selection of which points to show - randomly sample subselect of each cluster
+            self.data = self.dataset.data[:max_points]
             
-            self.embedding_df['c_labels'] = self.c_labels
+            vectors, labels, _labels = self._prepare_vector_labels(
+                data=self.data, vector_label=vector_label, vector_field=vector_field
+            )
+            vectors = MinMaxScaler().fit_transform(vectors) 
+            self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
+            
+            data = { 'x': self.vectors_dr[:,0], 
+                    'y': self.vectors_dr[:,1], 
+                    'z': self.vectors_dr[:,2], 'labels': labels }
+            self.embedding_df = pd.DataFrame(data)
+            self.embedding_df.index = labels
 
-        if hover_label==None: hover_label==[vector_label]
+            if cluster:
+                cluster = Cluster(**self.base_args,
+                    vectors=vectors, cluster=cluster, cluster_args=cluster_args, k=10)
+                self.c_labels = cluster.c_labels
+                self.embedding_df['c_labels'] = self.c_labels
 
-        return self._generate_fig(embedding_df=self.embedding_df, 
-                                legend=legend,
-                                point_label=point_label, 
-                                hover_label=hover_label
-                                )
+            if hover_label==None: hover_label==[vector_label]
+
+            return self._generate_fig(embedding_df=self.embedding_df, 
+                                    legend=legend,
+                                    point_label=point_label, 
+                                    hover_label=hover_label
+                                    )
 
     

@@ -89,8 +89,26 @@ class Dataset(Base):
         """
         Returns list of valid vector fields from datset schema
         """
-        schema =  self.dataset.schema(dataset_id=self.dataset_id)
-        return [k for k, v in schema.items()
+        self.schema = self.dataset.schema(dataset_id=self.dataset_id)
+        return [k for k, v in self.schema.items()
                 if isinstance(v, dict) 
                 if 'vector' in v.keys()]
     
+
+    def valid_vector_name(self, vector_name: str) -> bool:
+        if vector_name in self.schema.keys():
+            if (type(self.schema[vector_name]) == dict) and self.schema[vector_name].get('vector'):
+                return True
+            else:
+                raise ValueError(f"{vector_name} is not a valid vector name")
+        else:
+            raise ValueError(f"{vector_name} is not in the {self.dataset_name} schema")
+
+    def valid_label_name(self, label_name: str) -> bool:
+        if label_name in self.schema.keys():
+            if self.schema[label_name] in ['numeric', 'text']:
+                return True
+            else:
+                raise ValueError(f"{label_name} is not a valid label name")
+        else:
+            raise ValueError(f"{label_name} is not in the {self.dataset_name} schema")
