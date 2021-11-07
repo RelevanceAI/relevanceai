@@ -86,13 +86,13 @@ class BatchInsert(APIClient, Chunker):
         This is useful especially when pull_update_push bugs out and you need somethin urgently.
         Set chunksize to `None` for automatic conversion
 
-        >>> from vecdb import VecDBClient
+        >>> from relevanceai import Client
         >>>  url = "https://api-aueast.relevance.ai/v1/"
 
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
-        >>> client = VecDBClient(project, api_key)
+        >>> client = Client(project, api_key)
         >>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
         >>> while len(docs['documents']) > 0:
         >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
