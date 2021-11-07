@@ -9,18 +9,17 @@ import json
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-# from umap import UMAP
+from umap import UMAP
 from ivis import Ivis
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from kmodes.kmodes import KModes
-from kmodes.kprototypes import KPrototypes
 
 import plotly.graph_objs as go
 
 from dataclasses import dataclass
 
 from vecdb.base import Base
-from api.datasets import Datasets
+from vecdb.visualise.dataset import Dataset
 
 from typing import List, Union, Dict, Any, Tuple
 from typing_extensions import Literal
@@ -36,77 +35,33 @@ class Projection(Base):
 
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        base_url: str,
+        dataset: Dataset
     ):
-        self.project = project
-        self.api_key = api_key
-        self.base_url = base_url
-        super().__init__(project, api_key, base_url)
+        self.dataset = dataset
+        self.dataset_id = dataset.dataset_id
+        self.vector_fields = dataset.vector_fields
+        self.data = dataset.data
+        super().__init__(dataset.project, dataset.api_key, dataset.base_url)
 
-
-    def _retrieve_documents(
-        self, 
-        dataset_id: str, 
-        number_of_documents: Union[None, int] = 1000, 
-        page_size: int = 1000
-    ) -> List[JSONDict]:
-        """
-        Retrieve all documents from dataset
-        """
-        self.logger.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
-        dataset = Datasets(self.project, self.api_key, self.base_url)
-        if page_size > number_of_documents: page_size=number_of_documents
-        resp = dataset.documents.list(
-            dataset_id=dataset_id, page_size=page_size
-        )  # Initial call
-        _cursor = resp["cursor"]
-        _page = 0
-        data = []
-        while _cursor:
-            self.logger.debug(f'Paginating {_page} page size {page_size} ...')
-            resp = dataset.documents.list(
-                dataset_id=dataset_id,
-                page_size=page_size,
-                cursor=_cursor,
-                include_vector=True,
-                verbose=True,
-            )
-            _data = resp["documents"]
-            _cursor = resp["cursor"]
-            if (_data is []) or (_cursor is []): break
-            data += _data 
-            if number_of_documents and (len(data) >= int(number_of_documents)): break
-            _page += 1
-        
-        self.documents_df = pd.DataFrame(data)
-        metadata_cols = [ c for c in self.documents_df.columns 
-                        if '_vector_' not in c 
-                        if c not in ['_id', 'insert_date_'] 
-                        ]
-        self.metadata_df = self.documents_df[metadata_cols]
-        return data
-
-
+    
     def _prepare_vector_labels(
         self,
         data: List[JSONDict], 
-        label: str, 
-        vector: str
+        vector_label: str, 
+        vector_field: str
     ) -> Tuple[np.ndarray, np.ndarray, set]:
         """
         Prepare vector and labels
         """
-        self.logger.info(f'Preparing {label}, {vector} ...')
+        self.logger.info(f'Preparing {vector_label}, {vector_field} ...')
         vectors = np.array(
-            [data[i][vector] for i, _ in enumerate(data) if data[i].get(vector)]
+            [data[i][vector_field] for i, _ in enumerate(data) if data[i].get(vector_field)]
         )
         labels = np.array(
             [
-                data[i][label].replace(",", "")
+                data[i][vector_label].replace(",", "")
                 for i, _ in enumerate(data)
-                if data[i].get(vector)
+                if data[i].get(vector_field)
             ]
         )
         _labels = set(labels)
@@ -141,16 +96,16 @@ class Projection(Base):
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             tsne = TSNE(init="pca", n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
-        # elif dr == "umap":
-        #     if dr_args is None:
-        #         dr_args = {
-        #             "n_neighbors": 15,
-        #             "min_dist": 0.1,
-        #             "random_state": 42,
-        #             "transform_seed": 42,
-        #         }
-        #     umap = UMAP(n_components=dims, **dr_args)
-        #     vectors_dr = umap.fit_transform(vectors)
+        elif dr == "umap":
+            if dr_args is None:
+                dr_args = {
+                    "n_neighbors": 15,
+                    "min_dist": 0.1,
+                    "random_state": 42,
+                    "transform_seed": 42,
+                }
+            umap = UMAP(n_components=dims, **dr_args)
+            vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
             if dr_args is None:
                 dr_args = {
@@ -187,11 +142,12 @@ class Projection(Base):
                 cluster_args = {
                     "n_clusters": k, 
                     "init": "k-means++", 
-                    "verbose": 1, 
-                    "algorithm": "auto"
+                    "verbose": 1,
+                    "compute_labels": True,
+                    "max_no_improvement": 2
                 }
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-            km = KMeans(**cluster_args).fit(vectors)
+            km = MiniBatchKMeans(**cluster_args).fit(vectors)
             c_labels = km.labels_
             cluster_centroids = km.cluster_centers_
         elif cluster == "kmodes":
@@ -211,7 +167,7 @@ class Projection(Base):
         return c_labels, cluster_centroids
 
 
-    def _plot_labels(
+    def _generate_fig(
         self,
         embedding_df: pd.DataFrame,
         legend: str,
@@ -222,6 +178,8 @@ class Projection(Base):
         Generates the 3D scatter plot 
         '''
         ### Layout
+        # plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>{self.vector_label}: {self.vector_field}"
+        
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
@@ -251,7 +209,8 @@ class Projection(Base):
 
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
-                
+            embedding_df = embedding_df[:100]
+
             scatter = go.Scatter3d(
                 name=str(embedding_df.index),
                 x=embedding_df['x'],
@@ -283,8 +242,8 @@ class Projection(Base):
 
         fig = go.Figure(data=data, layout=layout)
 
-        if not hover_label: hover_label = [self.label]
-        fig.update_traces(customdata=self.metadata_df[hover_label])
+        if not hover_label: hover_label = [self.vector_label]
+        fig.update_traces(customdata=self.dataset.metadata[hover_label])
         fig.update_traces(hovertemplate='%{customdata}')
 
         custom_data_hover =  [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)]
@@ -300,8 +259,7 @@ class Projection(Base):
 
     def plot(
         self,
-        dataset_id: str,
-        label: str,
+        vector_label: str,
         vector_field: str,
         point_label: bool = False,
         hover_label: Union[None, List[str]] = None,
@@ -314,12 +272,12 @@ class Projection(Base):
         """
         Projection handler
         """
-        self.dataset_id = dataset_id
-        self.label = label
-        self.documents = self._retrieve_documents(dataset_id)
+        self.vector_label = vector_label
+        self.vector_field = vector_field
+        self.data = self.dataset.data
         
         vectors, labels, _labels = self._prepare_vector_labels(
-            data=self.documents, label=label, vector=vector_field
+            data=self.data, vector_label=vector_label, vector_field=vector_field
         )
         vectors = MinMaxScaler().fit_transform(vectors) 
         self.vectors_dr = self._dim_reduce(dr=dr, dr_args=dr_args, vectors=vectors)
@@ -336,9 +294,9 @@ class Projection(Base):
                     )
             self.embedding_df['c_labels'] = self.c_labels
 
-        if hover_label==None: hover_label==[label]
+        if hover_label==None: hover_label==[vector_label]
 
-        return self._plot_labels(embedding_df=self.embedding_df, 
+        return self._generate_fig(embedding_df=self.embedding_df, 
                                 legend=legend,
                                 point_label=point_label, 
                                 hover_label=hover_label
