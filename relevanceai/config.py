@@ -35,5 +35,4 @@ if __name__ == "__main__":
     config["upload"] = {"target_chunk_mb": 100}
     with open(CONFIG_PATH, "w") as configfile:
         config.write(configfile)
-
     print(CONFIG_PATH)

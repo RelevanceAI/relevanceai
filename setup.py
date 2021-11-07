@@ -42,7 +42,7 @@ setup(
     version=get_version("relevanceai/__init__.py"),
     url="",
     author="Relevance AI",
-    author_email="dev@vctr.ai",
+    author_email="dev@relevance.ai",
     long_description="",
     packages=find_packages(),
     install_requires=requirements,
