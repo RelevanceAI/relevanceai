@@ -232,7 +232,8 @@ class Projector(Base):
         number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
         self.docs = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, number_of_documents=number_of_documents, 
-                                random_state=random_state
+                                ## TODO: Fix bug where `cursor` is not returned if `random_state`` is set
+                                # random_state=random_state 
                                 )
 
         self.vector_fields = self.docs.vector_fields

@@ -39,7 +39,7 @@ class Dataset(Base):
         self.dataset = Datasets(self.project, self.api_key, self.base_url)
         self.random_state = random_state
 
-        self.data = self._retrieve_documents(dataset_id, number_of_documents, page_size)
+        self.docs = self._retrieve_documents(dataset_id, number_of_documents, page_size)
         self.vector_fields = self._vector_fields()
 
     
@@ -55,7 +55,9 @@ class Dataset(Base):
         if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
 
         resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size, 
-                                            random_state=self.random_state) 
+                ## TODO: Fix bug where `cursor` is not returned if `random_state`` is set
+                # random_state=self.random_state
+                                            ) 
         _cursor = resp["cursor"]
         _page = 0
         data = []
@@ -79,8 +81,8 @@ class Dataset(Base):
         detail_cols = [c for c in self.df.columns 
                             if not any(s in c for s in ['_vector_', '_id', 'insert_date_'])]
         self.detail = self.df[detail_cols]
-        self.data = data
-        return self.data
+        self.docs = data
+        return self.docs
 
 
     def _vector_fields(
