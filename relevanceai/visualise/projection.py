@@ -158,8 +158,9 @@ class Projector(Base):
             'y':0.1,
             'x':0,
             'xanchor': 'left',
-            'yanchor': 'bottom'}
+            'yanchor': 'bottom'},
         )
+        fig.update_layout(title_font_size=10)
 
         '''
         Updating hover label
