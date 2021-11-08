@@ -62,15 +62,15 @@ class DimReduction(Base):
         self,
         data: List[JSONDict], 
         vector_field: str
-    ) -> Tuple[np.ndarray, np.ndarray, set]:
+    ) -> np.ndarray:
         """
         Prepare vectors
         """
         self.logger.info(f'Preparing {vector_field} ...')
-        vectors = np.array(
-            [data[i][vector_field] 
-            for i, _ in enumerate(data) 
-            if data[i].get(vector_field)]
+        vectors = np.array([
+            data[i][vector_field] 
+            for i, _ in enumerate(data)
+            ]
         )
         vectors = MinMaxScaler().fit_transform(vectors) 
         return vectors

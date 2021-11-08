@@ -8,6 +8,7 @@ import warnings
 import plotly.graph_objs as go
 
 from dataclasses import dataclass
+from typeguard import typechecked
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
@@ -28,11 +29,12 @@ class Projector(Base):
             >>> api_key = input()
             >>> client = Client(project, api_key)
             >>> client.projector.plot(
-                    dataset_id, vector_field, number_of_points_to_render
+                    dataset_id, vector_field, number_of_points_to_render, random_state, 
                     dr, dr_args, dims,
-                    cluster, cluster_args,
                     vector_label, vector_label_char_length,
-                    color_label, hover_label
+                    color_label, colour_label_char_length, 
+                    hover_label,
+                    cluster, cluster_args,
                     )
     """
 
@@ -58,21 +60,36 @@ class Projector(Base):
         self,
         data: List[JSONDict],
         vector_label: str,
-        vector_field: str,
-    ):
+    ) -> Tuple[np.ndarray, set]:
         """
         Prepare labels
         """
         self.logger.info(f'Preparing {vector_label} ...')
-        labels = np.array(
-            [
+        labels = np.array([
                 data[i][vector_label].replace(",", "")
                 for i, _ in enumerate(data)
-                if data[i].get(vector_field)
             ]
         )
         _labels = set(labels)
         return labels, _labels
+
+    def _generate_hover_template(
+        self
+    ) -> Tuple[pd.DataFrame, List]:
+        """
+        Generating hover template
+        """
+        if self.hover_label:
+            custom_data=self.dataset.detail[self.hover_label]
+            custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
+                            if self.dataset.valid_label_name(c)]
+            hovertemplate="<br>".join([
+                "X: %{x}   Y: %{y}   Z: %{z}",
+            ] + custom_data_hover
+            )
+        else:
+            custom_data = hovertemplate = None
+        return custom_data, hovertemplate
 
 
     def _generate_fig(
@@ -83,12 +100,15 @@ class Projector(Base):
         '''
         Generates the 3D scatter plot 
         '''
-        plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}"
-
+        
         if self.colour_label:
+            if self.colour_label_char_length:
+                colour_labels = embedding_df['labels'].apply(lambda x: x[:self.colour_label_char_length]+'...')
+                embedding_df['labels'] = colour_labels
             data = []
             groups = embedding_df.groupby(legend)
             for idx, val in groups:
+                custom_data, hovertemplate = self._generate_hover_template()
                 scatter = go.Scatter3d(
                     name=idx,
                     x=val['x'],
@@ -98,12 +118,18 @@ class Projector(Base):
                     textposition='top center',
                     mode='markers',
                     marker=dict(size=3, symbol='circle'),
+                    customdata=custom_data,
+                    hovertemplate=hovertemplate
                 )
                 data.append(scatter)
+
         else:
             if self.vector_label:
                 plot_mode ='text+markers'
-                text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
+                text_labels = embedding_df['labels']
+                if self.vector_label_char_length:
+                    text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
+              
             else:
                 plot_mode = 'markers'
                 text_labels = None
@@ -130,6 +156,7 @@ class Projector(Base):
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
 
+            custom_data, hovertemplate = self._generate_hover_template()
             scatter = go.Scatter3d(
                 name=str(embedding_df.index),
                 x=embedding_df['x'],
@@ -140,19 +167,22 @@ class Projector(Base):
                 showlegend=False,
                 mode=plot_mode,
                 marker=dict(size=3, color=RELEVANCEAI_BLUE, symbol='circle'),
+                customdata=custom_data,
+                hovertemplate=hovertemplate
             )
             data=[scatter]
+            
 
         '''
         Generating figure
         '''
-        
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
-        
+
+        plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}"
         fig = go.Figure(data=data, layout=layout)
         fig.update_layout(title={
             'text': plot_title,
@@ -164,29 +194,25 @@ class Projector(Base):
                 'size': 10
             }},
         )
-
         if legend and self.colour_label:
-            fig.update_layout(legend_title_text=self.colour_label)
-
-        '''
-        Updating hover label
-        '''
-        if not self.hover_label and self.vector_label: self.hover_label = [self.vector_label]
-        if self.hover_label:
-            fig.update_traces(customdata=self.dataset.detail[self.hover_label])
-            fig.update_traces(hovertemplate='%{customdata}')
-            custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
-                                if self.dataset.valid_label_name(c)]
-            fig.update_traces(
-                hovertemplate="<br>".join([
-                    "X: %{x}",
-                    "Y: %{y}",
-                ] + custom_data_hover
-                )
-            )
+            fig.update_layout(legend={
+                'title': {
+                'text' : self.colour_label,
+                    'font': {
+                        'size': 10
+                    }
+                },
+                'font': {
+                    'size': 10
+                },
+                'itemwidth': 30,
+                'tracegroupgap': 1
+            }
+        )
+            
         return fig
 
-
+    @typechecked
     def plot(
         self,
         dataset_id: str,
@@ -203,6 +229,7 @@ class Projector(Base):
         vector_label: Union[None, str] = None,
         vector_label_char_length: Union[None, int] = 12,
         colour_label: Union[None, str] = None,  
+        colour_label_char_length: Union[None, int] = 20,
         hover_label: Union[None, List[str]] = None,
 
         ### Cluster args
@@ -218,11 +245,12 @@ class Projector(Base):
             >>> api_key = input()
             >>> client = Client(project, api_key)
             >>> client.projector.plot(
-                    dataset_id, vector_field, random_seed, number_of_points_to_render
+                    dataset_id, vector_field, number_of_points_to_render, random_state, 
                     dr, dr_args, dims,
-                    cluster, cluster_args,
                     vector_label, vector_label_char_length,
-                    color_label, hover_label
+                    color_label, colour_label_char_length, 
+                    hover_label,
+                    cluster, cluster_args,
                     )
         """                 
         self.dataset_id = dataset_id
@@ -231,10 +259,11 @@ class Projector(Base):
         self.random_state = random_state
         self.vector_label_char_length = vector_label_char_length
         self.colour_label = colour_label
+        self.colour_label_char_length = colour_label_char_length
         self.hover_label = hover_label
 
-        if vector_label is None:
-            warnings.warn(f'A vector label has not been specified.')
+        if (vector_label is None) and (colour_label is None):
+            warnings.warn(f'A vector_label or colour_label has not been specified.')
         
         if number_of_points_to_render > 1000:
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
@@ -242,12 +271,11 @@ class Projector(Base):
         number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
         self.dataset = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, number_of_documents=number_of_documents, 
-                                ## TODO: Fix bug where `cursor` is not returned if `random_state`` is set
-                                # random_state=random_state 
+                                # random_state=random_state
                                 )
 
         self.vector_fields = self.dataset.vector_fields
-        self.docs = self.dataset.docs
+        self.docs = self.dataset.remove_empty_vector_fields(self.vector_field)
 
         if self.dataset.valid_vector_name(vector_field):
             dr = DimReduction(**self.base_args, data=self.docs, 
@@ -262,15 +290,13 @@ class Projector(Base):
             self.embedding_df = pd.DataFrame(points)
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
-                self.labels, self._labels = self._prepare_labels(data=self.docs, 
-                                vector_field=self.vector_field, vector_label=self.vector_label)
+                self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.vector_label)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
             
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
-                self.labels, self._labels = self._prepare_labels(data=self.docs, 
-                                vector_field=self.vector_field, vector_label=self.colour_label)
+                self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.colour_label)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
                 self.legend = 'labels'

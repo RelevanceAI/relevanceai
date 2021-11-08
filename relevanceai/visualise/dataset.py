@@ -54,9 +54,10 @@ class Dataset(Base):
         """
         if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
 
-        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size )
-                ## TODO: Fix bug where `cursor` is not returned if `random_state`` is set
-                # random_state=self.random_state ) 
+        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size
+                                        #  random_state=self.random_state
+        )
+                
         _cursor = resp["cursor"]
         _page = 0
         data = []
@@ -76,12 +77,17 @@ class Dataset(Base):
             if number_of_documents and (len(data) >= int(number_of_documents)): break
             _page += 1
         
-        self.df = pd.DataFrame(data)
-        detail_cols = [c for c in self.df.columns 
-                            if not any(s in c for s in ['_vector_', '_id', 'insert_date_'])]
-        self.detail = self.df[detail_cols]
+        self.df, self.detail = self._build_df(data)
         self.docs = data
         return self.docs
+
+    @staticmethod
+    def _build_df(data: List[JSONDict]):
+        df = pd.DataFrame(data)
+        detail_cols = [c for c in df.columns 
+                            if not any(s in c for s in ['_vector_', '_id', 'insert_date_'])]
+        detail = df[detail_cols]
+        return df, detail
 
 
     def _vector_fields(
@@ -118,3 +124,11 @@ class Dataset(Base):
                 raise ValueError(f"{label_name} is not a valid label name")
         else:
             raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
+
+    def remove_empty_vector_fields(self, vector_field: str) -> List[JSONDict]:
+        self.docs = [ d for d in self.docs
+                    if d.get(vector_field)
+                    ]
+        self.df, self.detail = self._build_df(self.docs)
+
+        return self.docs
