@@ -35,6 +35,7 @@ dev_requirements = [
     "pytest-dotenv",
     "pytest-cov",
     "pytest-mock",
+    "sphinx-rtd-theme>=0.5.0"
 ]
 
 setup(
