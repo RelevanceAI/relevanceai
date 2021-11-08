@@ -124,20 +124,17 @@ class Projector(Base):
                         'y': self.vectors_dr[:,1], 
                         'z': self.vectors_dr[:,2]}
             self.embedding_df = pd.DataFrame(points)
+
             if self.hover_label and all(self.dataset.valid_label_name(l) for l in self.hover_label):
-                self.embedding_df = self.embedding_df + self.detail[self.hover_label]
-                
-                print(self.embedding_df.columns)
+                self.embedding_df = pd.concat([self.embedding_df, self.detail[self.hover_label]], axis=1)
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
-                # self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.vector_label)
                 self.labels = self.detail[self.vector_label].to_numpy()
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
             
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
-                # self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.colour_label)
                 self.labels = self.detail[self.colour_label].to_numpy()
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
@@ -151,24 +148,6 @@ class Projector(Base):
                 self.legend = 'cluster_labels'
 
             return self._generate_fig(embedding_df=self.embedding_df, legend=self.legend)
-
-
-    def _prepare_labels(
-        self,
-        data: List[JSONDict],
-        vector_label: str,
-    ) -> Tuple[np.ndarray, set]:
-        """
-        Prepare labels
-        """
-        self.logger.info(f'Preparing {vector_label} ...')
-        labels = np.array([
-                data[i][vector_label].replace(",", "")
-                for i, _ in enumerate(data)
-            ]
-        )
-        _labels = set(labels)
-        return labels, _labels
 
 
     def _generate_fig(
