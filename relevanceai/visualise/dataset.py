@@ -26,6 +26,7 @@ class Dataset(Base):
         dataset_id: str,
         number_of_documents: Union[None, int] = 1000,
         page_size: int = 1000,
+        random_state: int = 42,
     ):
         self.project = project
         self.api_key = api_key
@@ -36,6 +37,7 @@ class Dataset(Base):
         self.logger.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
 
         self.dataset = Datasets(self.project, self.api_key, self.base_url)
+        self.random_state = random_state
 
         self.data = self._retrieve_documents(dataset_id, number_of_documents, page_size)
         self.vector_fields = self._vector_fields()
@@ -51,8 +53,9 @@ class Dataset(Base):
         Retrieve all documents from dataset
         """
         if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
-        
-        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size) 
+
+        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size, 
+                                            random_state=self.random_state) 
         _cursor = resp["cursor"]
         _page = 0
         data = []

@@ -41,7 +41,7 @@ class Projector(Base):
         self.api_key = api_key
         self.base_url = base_url
 
-        # self.dataset = dataset
+        # self.docs = dataset
         # self.dataset_id = dataset.dataset_id
         # self.vector_fields = dataset.vector_fields
         # self.data = dataset.data
@@ -163,10 +163,10 @@ class Projector(Base):
         '''
         if not self.hover_label and self.vector_label: self.hover_label = [self.vector_label]
         if self.hover_label:
-            fig.update_traces(customdata=self.dataset.detail[self.hover_label])
+            fig.update_traces(customdata=self.docs.detail[self.hover_label])
             fig.update_traces(hovertemplate='%{customdata}')
             custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
-                                if self.dataset.valid_label_name(c)]
+                                if self.docs.valid_label_name(c)]
             fig.update_traces(
                 hovertemplate="<br>".join([
                     "X: %{x}",
@@ -182,10 +182,11 @@ class Projector(Base):
         dataset_id: str,
         vector_field: str,
         number_of_points_to_render: int = 1000,
+        random_state: int = 42,
 
         ### Dimensionality reduction args
-        dr: DIM_REDUCTION = "pca",
-        dr_args: Union[None, JSONDict] = DIM_REDUCTION_DEFAULT_ARGS['pca'],
+        dr: DIM_REDUCTION = "umap",
+        dr_args: Union[None, JSONDict] = DIM_REDUCTION_DEFAULT_ARGS['umap'],
         dims: Literal[2, 3] = 3,
 
         ### Cluster args
@@ -207,7 +208,7 @@ class Projector(Base):
             >>> api_key = input()
             >>> client = Client(project, api_key)
             >>> client.projector.plot(
-                    dataset_id, vector_field, number_of_points_to_render
+                    dataset_id, vector_field, random_seed, number_of_points_to_render
                     dr, dr_args, dims,
                     cluster, cluster_args,
                     vector_label, vector_label_char_length,
@@ -217,6 +218,7 @@ class Projector(Base):
         self.dataset_id = dataset_id
         self.vector_label = vector_label
         self.vector_field = vector_field
+        self.random_state = random_state
         self.vector_label_char_length = vector_label_char_length
         self.colour_label = colour_label
         self.hover_label = hover_label
@@ -228,14 +230,15 @@ class Projector(Base):
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
         
         number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
-        self.dataset = Dataset(**self.base_args, 
-                                dataset_id=dataset_id, number_of_documents=number_of_documents)
-        self.vector_fields = self.dataset.vector_fields
-        self.data = self.dataset.data
+        self.docs = Dataset(**self.base_args, 
+                                dataset_id=dataset_id, number_of_documents=number_of_documents, 
+                                random_state=random_state
+                                )
 
-        if self.dataset.valid_vector_name(vector_field):
+        self.vector_fields = self.docs.vector_fields
+        self.data = self.docs.data
 
-            ## TODO: Implement representative selection of which points to show 
+        if self.docs.valid_vector_name(vector_field):
             dr = DimReduction(**self.base_args, data=self.data, 
                                 vector_label=self.vector_label, vector_field=self.vector_field, 
                                 dr=dr, dr_args=dr_args, dims=dims
@@ -247,14 +250,14 @@ class Projector(Base):
                         'z': self.vectors_dr[:,2]}
             self.embedding_df = pd.DataFrame(points)
 
-            if self.vector_label and self.dataset.valid_label_name(self.vector_label):
+            if self.vector_label and self.docs.valid_label_name(self.vector_label):
                 self.labels, self._labels = self._prepare_labels(data=self.data, 
                                 vector_field=self.vector_field, vector_label=self.vector_label)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
             
             self.legend = None
-            if self.colour_label and self.dataset.valid_label_name(self.colour_label):
+            if self.colour_label and self.docs.valid_label_name(self.colour_label):
                 self.labels, self._labels = self._prepare_labels(data=self.data, 
                                 vector_field=self.vector_field, vector_label=self.colour_label)
                 self.embedding_df.index = self.labels

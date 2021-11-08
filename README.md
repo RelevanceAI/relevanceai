@@ -135,8 +135,18 @@ To delete all logs created by pull_update_push, use the `delete_all_logs` functi
 vec_client.delete_all_logs(original_collection)
 ```
 
+### Sample Datasets 
 
-## Integration with VectorHub
+If you require a sample dataset, you can run the following to help:
+
+
+```python
+from relevanceai.datasets import get_ecommerce_dataset
+docs = get_ecommerce_dataset()
+```
+
+
+### Integration with VectorHub
 
 VectorHub is RelevanceAI's main encoder repository. For the models used here, we have abstracted away a lot of 
 complexity from installation to encoding and have innate VectorAI support. 
@@ -157,13 +167,46 @@ model = SentenceTransformer2Vec()
 # Define an update function
 def encode_documents(docs):
     # Field and then the docs go here
-    return model.encode_documents(["current", "Longer"], docs)
+    return model.encode_documents(
+        ["current", "Longer"], docs)
 
 client.pull_update_push("sample-cn", encode_documents)
 
 ```
+### Visualisation
 
-### Troubleshooting Pull Update Push
+To use the Embedding projector - 
+
+See [`relevanceai/visualise/constants.py`]('./relevanceai/visualise/constants.py') for default args . avaialble
+
+
+```python
+from relevanceai import Client
+
+
+client = Client(project=project, api_key=api_key, base_url=base_url)
+
+'''
+Retrieve docs in dataset  set `number_of_points_to_render = None` to retrieve all docs
+'''
+
+vector_label = "product_name"
+vector_field = "product_name_imagetext_vector_"
+
+dr = 'pca'
+cluster = 'kmeans'
+
+client.projector.plot(
+    dataset_id="ecommerce-6", 
+    vector_field=vector_field,
+    number_of_points_to_render=1000,
+)  
+```
+
+## Troubleshooting 
+
+
+### Pull Update Push
 
 Sometimes Pull Update Push will fail for strange reasons (create a Github Issue!)
 
@@ -184,7 +227,7 @@ while len(docs['documents']) > 0:
     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 ```
 
-## Stop logging 
+### Stop logging 
 
 In order to stop all logging, you can just run this: 
 
@@ -193,21 +236,6 @@ client.logger.stop()
 ```
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
-
-## Sample Datasets 
-
-If you require a sample dataset, you can run the following to help:
-
-
-```python
-from relevanceai.datasets import get_ecommerce_dataset
-docs = get_ecommerce_dataset()
-```
-
-
-
-## Development
-
 
 ## Development
 
