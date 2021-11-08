@@ -11,7 +11,7 @@ try:
     from relevanceai.visualise.dataset import Dataset
     from relevanceai.visualise.dim_reduction import DimReduction
     from relevanceai.visualise.cluster import Cluster
-    from relevanceai.visualise.projection import Projector
+    from relevanceai.visualise.projector import Projector
     vis_requirements = True
 except ModuleNotFoundError as e:
     raise ModuleNotFoundError(e)

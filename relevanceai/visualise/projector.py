@@ -187,7 +187,7 @@ class Projector(Base):
         fig.update_layout(title={
             'text': plot_title,
             'y':0.1,
-            'x':0,
+            'x':0.1,
             'xanchor': 'left',
             'yanchor': 'bottom',
             'font': {

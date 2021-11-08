@@ -57,26 +57,27 @@ class Dataset(Base):
         resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size
                                         #  random_state=self.random_state
         )
-                
-        _cursor = resp["cursor"]
-        _page = 0
-        data = []
-        while resp:
-            self.logger.debug(f'Paginating {_page} page size {page_size} ...')
-            resp = self.dataset.documents.list(
-                dataset_id=dataset_id,
-                page_size=page_size,
-                cursor=_cursor,
-                include_vector=True,
-                verbose=True,
-            )
-            _data = resp["documents"]
+        data = resp["documents"]
+        if number_of_documents>page_size:
             _cursor = resp["cursor"]
-            if (_data == []) or (_cursor == []): break
-            data += _data 
-            if number_of_documents and (len(data) >= int(number_of_documents)): break
-            _page += 1
-        
+            _page = 0
+            while resp:
+                self.logger.debug(f'Paginating {_page} page size {page_size} ...')
+                resp = self.dataset.documents.list(
+                    dataset_id=dataset_id,
+                    page_size=page_size,
+                    cursor=_cursor,
+                    include_vector=True,
+                    verbose=True,
+                )
+                _data = resp["documents"]
+                _cursor = resp["cursor"]
+                if (_data == []) or (_cursor == []): break
+                data += _data 
+                if number_of_documents and (len(data) >= int(number_of_documents)): break
+                _page += 1
+            data = data[:number_of_documents]
+
         self.df, self.detail = self._build_df(data)
         self.docs = data
         return self.docs
