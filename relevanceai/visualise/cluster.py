@@ -49,12 +49,11 @@ class Cluster(Base):
         if k is None and cluster_args is None:
             self.k = self._choose_k(vectors)
         if cluster_args is None:
-            self.cluster_args = {'n_clusters': self.k, **CLUSTER_DEFAULT_ARGS[cluster]}
+            self.cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
         else:
             if k is None and 'n_clusters' not in cluster_args.keys():
                 self.k = self._choose_k(vectors)
-                self.cluster_args = {'n_clusters': self.k, **cluster_args}
-     
+
         self.cluster_labels, self.c_centroids = self._cluster_vectors(
                             vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args
                             )
@@ -89,15 +88,15 @@ class Cluster(Base):
         self.logger.info(f'Performing {cluster} clustering with {self.k} clusters ... ')
         if cluster == 'kmeans':
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-            km = MiniBatchKMeans(**cluster_args).fit(vectors)
+            km = MiniBatchKMeans(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
         elif cluster == 'kmedoids':
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-            km = KMedoids(**cluster_args).fit(vectors)
+            km = KMedoids(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
-        cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         return cluster_labels, cluster_centroids
     
 

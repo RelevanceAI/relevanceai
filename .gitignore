@@ -131,4 +131,4 @@ dmypy.json
 
 .vscode/
 
-# test_projection/*
+test_projection/*

@@ -71,6 +71,7 @@ class Projector(Base):
         ### Cluster args
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = {"n_init" : 20},
+        num_clusters: Union[None, int] = 10,
     ):
         """
         Plot function for Embedding Projector class
@@ -88,7 +89,8 @@ class Projector(Base):
                     hover_label,
                     cluster, cluster_args,
                     )
-        """                 
+        """          
+        ## Class args for generating figure       
         self.dataset_id = dataset_id
         self.vector_label = vector_label
         self.vector_field = vector_field
@@ -97,6 +99,8 @@ class Projector(Base):
         self.colour_label = colour_label
         self.colour_label_char_length = colour_label_char_length
         self.hover_label = hover_label
+        self.cluster = cluster
+        self.num_clusters = num_clusters
 
         if (vector_label is None) and (colour_label is None):
             warnings.warn(f'A vector_label or colour_label has not been specified.')
@@ -142,7 +146,7 @@ class Projector(Base):
 
             if cluster:
                 cluster = Cluster(**self.base_args,
-                    vectors=self.vectors, cluster=cluster, cluster_args=cluster_args)
+                    vectors=self.vectors, cluster=cluster, cluster_args=cluster_args, k=self.num_clusters)
                 self.cluster_labels = cluster.cluster_labels
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
@@ -158,12 +162,14 @@ class Projector(Base):
         '''
         Generates the 3D scatter plot 
         '''
-        
+        plot_title = f"<b>{self.dataset_id}: {len(embedding_df)} points<br></b>"
         if self.colour_label:
             '''
             Generates data for colour plot
             '''
+            plot_title = plot_title.replace('</b>', f"Colour Label: {self.colour_label}<br></b>")
             if self.colour_label_char_length:
+                plot_title = plot_title.replace('<br></b>', f"  Char Length: {self.colour_label_char_length}<br></b>")
                 colour_labels = embedding_df['labels'].apply(lambda x: x[:self.colour_label_char_length]+'...')
                 embedding_df['labels'] = colour_labels
 
@@ -191,9 +197,11 @@ class Projector(Base):
             If vector_label set, generates text_labels, otherwise shows points only
             '''
             if self.vector_label:
+                plot_title = plot_title.replace('</b>', f"Vector Label: {self.vector_label}<br></b>")
                 plot_mode ='text+markers'
                 text_labels = embedding_df['labels']
                 if self.vector_label_char_length:
+                    plot_title = plot_title.replace('<br></b>', f"  Char Length:  {self.vector_label_char_length}<br></b>")
                     text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
             else:
                 plot_mode = 'markers'
@@ -247,7 +255,9 @@ class Projector(Base):
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
 
-        plot_title = f"<b>{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}</b>"
+
+        if self.cluster:
+            plot_title = plot_title.replace('</b>', f"<b>Cluster Method: {self.cluster}<br>Num Clusters: {self.num_clusters}</b>")
         fig = go.Figure(data=data, layout=layout)
         fig.update_layout(title={
             'text': plot_title,
@@ -264,7 +274,7 @@ class Projector(Base):
                 'title': {
                 'text' : self.colour_label,
                     'font': {
-                        'size': 10
+                        'size': 12
                     }
                 },
                 'font': {
