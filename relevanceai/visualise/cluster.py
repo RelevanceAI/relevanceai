@@ -56,7 +56,7 @@ class Cluster(Base):
                 self.k = self._choose_k(vectors)
                 self.cluster_args = {'n_clusters': self.k, **cluster_args}
      
-        self.c_labels, self.c_centroids = self._cluster_vectors(
+        self.cluster_labels, self.c_centroids = self._cluster_vectors(
                             vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args
                             )
     
@@ -91,15 +91,15 @@ class Cluster(Base):
         if cluster == 'kmeans':
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = MiniBatchKMeans(**cluster_args).fit(vectors)
-            c_labels = km.labels_
+            cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
         elif cluster == 'kmedoids':
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = KMedoids(**cluster_args).fit(vectors)
-            c_labels = km.labels_
+            cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
-        c_labels = [ f'c_{c}' for c in c_labels ]
-        return c_labels, cluster_centroids
+        cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+        return cluster_labels, cluster_centroids
     
 
 
@@ -119,10 +119,10 @@ class Cluster(Base):
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
         #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
         #         km = KModes(**cluster_args).fit_predict(df.to_numpy(), categorical=categorical_idx))
-        #         c_labels = km.labels_
+        #         cluster_labels = km.labels_
         #         cluster_centroids = km.cluster_centroids_
-        # c_labels = [ f'c_{c}' for c in c_labels ]
-        # return c_labels, cluster_centroids
+        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+        # return cluster_labels, cluster_centroids
         return NotImplementedError
     
         
@@ -142,8 +142,8 @@ class Cluster(Base):
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
         #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
         #         kp = KPrototypes(**cluster_args).fit_predict(df.to_numpy(), categorical=categorical_idx)
-        #         c_labels = kp.labels_
+        #         cluster_labels = kp.labels_
         #         cluster_centroids = kp.cluster_centroids_
-        # c_labels = [ f'c_{c}' for c in c_labels ]
-        # return c_labels, cluster_centroids
+        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+        # return cluster_labels, cluster_centroids
         return NotImplementedError

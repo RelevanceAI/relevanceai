@@ -53,40 +53,28 @@ class DimReduction(Base):
         if dr_args is None:
             self.dr_args = {**DIM_REDUCTION_DEFAULT_ARGS[dr]}
 
-        self.vectors, self.labels, _labels = self._prepare_vector_labels(
-                data=self.data, vector_label=self.vector_label, vector_field=self.vector_field
-            )
-        
+        self.vectors  = self._prepare_vectors(data=self.data, vector_field=self.vector_field)
         self.vectors_dr = self._dim_reduce(vectors=self.vectors, 
                                             dr=self.dr, dr_args=self.dr_args, 
                                             dims=self.dims)
     
     
-    def _prepare_vector_labels(
+    def _prepare_vectors(
         self,
         data: List[JSONDict], 
-        vector_label: str, 
         vector_field: str
     ) -> Tuple[np.ndarray, np.ndarray, set]:
         """
-        Prepare vector and labels
+        Prepare vectors
         """
-        self.logger.info(f'Preparing {vector_label}, {vector_field} ...')
+        self.logger.info(f'Preparing {vector_field} ...')
         vectors = np.array(
             [data[i][vector_field] 
             for i, _ in enumerate(data) 
             if data[i].get(vector_field)]
         )
         vectors = MinMaxScaler().fit_transform(vectors) 
-        labels = np.array(
-            [
-                data[i][vector_label].replace(",", "")
-                for i, _ in enumerate(data)
-                if data[i].get(vector_field)
-            ]
-        )
-        _labels = set(labels)
-        return vectors, labels, _labels
+        return vectors
 
 
     def _dim_reduce(

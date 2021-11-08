@@ -4,6 +4,8 @@ from typing_extensions import Literal
 
 JSONDict = Dict[str, Any]
 
+RELEVANCEAI_BLUE = '#1854FF'
+
 DIM_REDUCTION = Literal["pca", "tsne", "umap", "ivis"]
 DIM_REDUCTION_DEFAULT_ARGS = {
     'pca': {

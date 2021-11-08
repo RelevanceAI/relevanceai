@@ -50,7 +50,6 @@ class Dataset(Base):
         """
         Retrieve all documents from dataset
         """
-        
         if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
         resp = self.dataset.documents.list(
             dataset_id=dataset_id, page_size=page_size
@@ -87,7 +86,7 @@ class Dataset(Base):
         self
     ) -> List[str]:
         """
-        Returns list of valid vector fields from datset schema
+        Returns list of valid vector fields from dataset schema
         """
         self.schema = self.dataset.schema(dataset_id=self.dataset_id)
         return [k for k, v in self.schema.items()
@@ -96,19 +95,25 @@ class Dataset(Base):
     
 
     def valid_vector_name(self, vector_name: str) -> bool:
+        """
+        Check vector field name is valid
+        """
         if vector_name in self.schema.keys():
             if (type(self.schema[vector_name]) == dict) and self.schema[vector_name].get('vector'):
                 return True
             else:
                 raise ValueError(f"{vector_name} is not a valid vector name")
         else:
-            raise ValueError(f"{vector_name} is not in the {self.dataset_name} schema")
+            raise ValueError(f"{vector_name} is not in the {self.dataset_id} schema")
 
     def valid_label_name(self, label_name: str) -> bool:
+        """
+        Check vector label name is valid
+        """
         if label_name in self.schema.keys():
             if self.schema[label_name] in ['numeric', 'text']:
                 return True
             else:
                 raise ValueError(f"{label_name} is not a valid label name")
         else:
-            raise ValueError(f"{label_name} is not in the {self.dataset_name} schema")
+            raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
