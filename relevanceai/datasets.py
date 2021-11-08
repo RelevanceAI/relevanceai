@@ -172,3 +172,18 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     df["url"] = df["url"].str.replace("http://", "https://")
     df["_id"] = df["_unit_id"].astype(str)
     return df.to_dict("records")
+
+
+def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
+    """Function to download a sample games dataset.
+    Dataset from https://www.freetogame.com/
+    Total Len: 20000
+    Sample document:
+    {'Unnamed: 0': 0,
+    '_id': 0,
+    'product_name': "Alisha Solid Women's Cycling Shorts",
+    'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
+    'retail_price': 999.0}
+    """
+    df = pd.read_csv("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv").drop('Unnamed: 0', axis=1)
+    return df.to_dict(orient='records')
