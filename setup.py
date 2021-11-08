@@ -40,7 +40,8 @@ vis_requirements = [
     "scikit-learn-extra",
     # "kmodes>=0.11.1",
     "plotly>=5.3.1",
-    "typing-extensions"
+    "typing-extensions",
+    "typeguard"
 ]
 
 test_requirements =[
