@@ -15,24 +15,41 @@ from relevanceai.visualise.dataset import Dataset
 from relevanceai.visualise.cluster import Cluster
 from relevanceai.visualise.dim_reduction import DimReduction 
 
-@dataclass
-class Projection(Base):
-    """Projection Class"""
 
-    def __init__(
-        self,
-        dataset: Dataset
-    ):  
-        
-        self.dataset = dataset
-        self.dataset_id = dataset.dataset_id
-        self.vector_fields = dataset.vector_fields
-        self.data = dataset.data
+
+@dataclass
+class Projector(Base):
+    """
+        Projector class.
+
+        Example: 
+            >>> from relevanceai import Client
+            >>> project = input()
+            >>> api_key = input()
+            >>> client = Client(project, api_key)
+            >>> client.projector.plot(
+                    dataset_id, vector_field, number_of_points_to_render
+                    dr, dr_args, dims,
+                    cluster, cluster_args,
+                    vector_label, vector_label_char_length,
+                    color_label, hover_label
+                    )
+    """
+
+    def __init__(self, project, api_key, base_url):
+        self.project = project
+        self.api_key = api_key
+        self.base_url = base_url
+
+        # self.dataset = dataset
+        # self.dataset_id = dataset.dataset_id
+        # self.vector_fields = dataset.vector_fields
+        # self.data = dataset.data
 
         self.base_args = {
-            "project": self.dataset.project, 
-            "api_key": self.dataset.api_key, 
-            "base_url": self.dataset.base_url,
+            "project": self.project, 
+            "api_key": self.api_key, 
+            "base_url": self.base_url,
         }
         super().__init__(**self.base_args)
 
@@ -62,16 +79,12 @@ class Projection(Base):
         self,
         embedding_df: pd.DataFrame,
         legend: Union[None, str],
-        vector_label: Union[None, str], 
-        vector_label_char_length: int,
-        colour_label: str,
-        hover_label: Union[None, List[str]],
     ) -> go.Figure:
         '''
         Generates the 3D scatter plot 
         '''
 
-        if colour_label:
+        if self.colour_label:
             data = []
             groups = embedding_df.groupby(legend)
             for idx, val in groups:
@@ -87,9 +100,9 @@ class Projection(Base):
                 )
                 data.append(scatter)
         else:
-            if vector_label:
+            if self.vector_label:
                 plot_mode ='text+markers'
-                text_labels = embedding_df['labels'].apply(lambda x: x[:vector_label_char_length]+'...')
+                text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
             else:
                 plot_mode = 'markers'
                 text_labels = None
@@ -116,7 +129,7 @@ class Projection(Base):
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
 
-            
+    
             
             scatter = go.Scatter3d(
                 name=str(embedding_df.index),
@@ -137,64 +150,94 @@ class Projection(Base):
         plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}"
 
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
-        title_axis = dict(title=plot_title, showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
         
         fig = go.Figure(data=data, layout=layout)
-
         fig.update_layout(title=plot_title)
 
         '''
         Updating hover label
         '''
-        # if not hover_label: hover_label = [self.vector_label]
-        # fig.update_traces(customdata=self.dataset.metadata[hover_label])
-        # fig.update_traces(hovertemplate='%{customdata}')
-        # custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label) 
-        #                       if self.dataset.valid_label_name(c)]
-        # fig.update_traces(
-        #     hovertemplate="<br>".join([
-        #         "X: %{x}",
-        #         "Y: %{y}",
-        #     ] + custom_data_hover
-        #     )
-        )
+        if not self.hover_label and self.vector_label: self.hover_label = [self.vector_label]
+        if self.hover_label:
+            fig.update_traces(customdata=self.dataset.detail[self.hover_label])
+            fig.update_traces(hovertemplate='%{customdata}')
+            custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
+                                if self.dataset.valid_label_name(c)]
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "X: %{x}",
+                    "Y: %{y}",
+                ] + custom_data_hover
+                )
+            )
         return fig
 
 
     def plot(
         self,
-        vector_label: Union[None, str],
+        dataset_id: str,
         vector_field: str,
-        colour_label: Union[None, str] = None,  
-        hover_label: Union[None, List[str]] = None,
-        dr: DIM_REDUCTION = "ivis",
-        dr_args: Union[None, JSONDict] = None,
+        number_of_points_to_render: int = 1000,
+
+        ### Dimensionality reduction args
+        dr: DIM_REDUCTION = "pca",
+        dr_args: Union[None, JSONDict] = DIM_REDUCTION_DEFAULT_ARGS['pca'],
         dims: Literal[2, 3] = 3,
+
+        ### Cluster args
         cluster: CLUSTER = None,
         cluster_args: Union[None, JSONDict] = {"n_init" : 20},
-        number_of_points_to_render: int = -1,
-        vector_label_char_length: int = 10
+
+        ### Plot rendering args
+        vector_label: Union[None, str] = None,
+        vector_label_char_length: Union[None, int] = 10,
+        colour_label: Union[None, str] = None,  
+        hover_label: Union[None, List[str]] = None,
     ):
         """
-        Projection handler
-        """
+        Plot function for Embedding Projector class
+
+        Example: 
+            >>> from relevanceai import Client
+            >>> project = input()
+            >>> api_key = input()
+            >>> client = Client(project, api_key)
+            >>> client.projector.plot(
+                    dataset_id, vector_field, number_of_points_to_render
+                    dr, dr_args, dims,
+                    cluster, cluster_args,
+                    vector_label, vector_label_char_length,
+                    color_label, hover_label
+                    )
+        """                 
+        self.dataset_id = dataset_id
         self.vector_label = vector_label
         self.vector_field = vector_field
+        self.vector_label_char_length = vector_label_char_length
+        self.colour_label = colour_label
+        self.hover_label = hover_label
 
         if vector_label is None:
             warnings.warn(f'A vector label has not been specified.')
+        
+        if number_of_points_to_render > 1000:
+            warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
+        
+        number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
+        self.dataset = Dataset(**self.base_args, 
+                                dataset_id=dataset_id, number_of_documents=number_of_documents)
+        self.vector_fields = self.dataset.vector_fields
+        self.data = self.dataset.data
 
         if self.dataset.valid_vector_name(vector_field):
 
-            ## TODO: Implement representative selection of which points to show - eg. randomly sample subselect of each cluster
-            self.data = self.dataset.data[:number_of_points_to_render]
-            
+            ## TODO: Implement representative selection of which points to show 
             dr = DimReduction(**self.base_args, data=self.data, 
-                                vector_label=vector_label, vector_field=vector_field, 
+                                vector_label=self.vector_label, vector_field=self.vector_field, 
                                 dr=dr, dr_args=dr_args, dims=dims
                                 )
             self.vectors = dr.vectors
@@ -204,15 +247,16 @@ class Projection(Base):
                         'z': self.vectors_dr[:,2]}
             self.embedding_df = pd.DataFrame(points)
 
-            if vector_label and self.dataset.valid_label_name(vector_label):
+            if self.vector_label and self.dataset.valid_label_name(self.vector_label):
                 self.labels, self._labels = self._prepare_labels(data=self.data, 
-                                vector_field=vector_field, vector_label=vector_label)
+                                vector_field=self.vector_field, vector_label=self.vector_label)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
-
-            if colour_label and self.dataset.valid_label_name(colour_label):
+            
+            self.legend = None
+            if self.colour_label and self.dataset.valid_label_name(self.colour_label):
                 self.labels, self._labels = self._prepare_labels(data=self.data, 
-                                vector_field=vector_field, vector_label=colour_label)
+                                vector_field=self.vector_field, vector_label=self.colour_label)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
                 self.legend = 'labels'
@@ -224,12 +268,6 @@ class Projection(Base):
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
 
-            return self._generate_fig(embedding_df=self.embedding_df, 
-                                    legend=self.legend,
-                                    vector_label=vector_label, 
-                                    vector_label_char_length=vector_label_char_length,
-                                    colour_label= colour_label,
-                                    hover_label=hover_label,
-                                    )
+            return self._generate_fig(embedding_df=self.embedding_df, legend=self.legend)
 
     

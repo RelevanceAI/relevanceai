@@ -6,7 +6,6 @@ import json
 
 from dataclasses import dataclass
 
-
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE

@@ -14,7 +14,7 @@ from sklearn_extra.cluster import KMedoids
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
-from typeguard import check_type
+# from typeguard import check_type
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import (
@@ -37,7 +37,6 @@ class Cluster(Base):
         cluster_args: Union[None, JSONDict] = None,
         k: Union[None, int] = None
     ):  
-
         self.project = project
         self.api_key = api_key
         self.base_url = base_url

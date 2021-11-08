@@ -26,8 +26,6 @@ requirements = [
     "document-utils>=1.3.0",
     "requests>=2.0.0",
     "numpy>=1.19.0",
-    "typing-extensions",
-    "typeguard"
 ]
 
 excel_requirements = [
@@ -36,12 +34,13 @@ excel_requirements = [
 ]
 
 vis_requirements = [
-    "scikit-learn", 
-    "scikit-learn-extra",
     "umap-learn>=0.5.2",
     "ivis[cpu]>=2.0.6",
-    "kmodes>=0.11.1",
+    "scikit-learn", 
+    "scikit-learn-extra",
+    # "kmodes>=0.11.1",
     "plotly>=5.3.1",
+    "typing-extensions"
 ]
 
 test_requirements =[

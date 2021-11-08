@@ -51,9 +51,8 @@ class Dataset(Base):
         Retrieve all documents from dataset
         """
         if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
-        resp = self.dataset.documents.list(
-            dataset_id=dataset_id, page_size=page_size
-        )  # Initial call
+        
+        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size) 
         _cursor = resp["cursor"]
         _page = 0
         data = []
@@ -74,10 +73,9 @@ class Dataset(Base):
             _page += 1
         
         self.df = pd.DataFrame(data)
-        metadata_cols = [c for c in self.df.columns 
+        detail_cols = [c for c in self.df.columns 
                             if not any(s in c for s in ['_vector_', '_id', 'insert_date_'])]
-        self.metadata = self.df[metadata_cols]
-
+        self.detail = self.df[detail_cols]
         self.data = data
         return self.data
 
@@ -93,13 +91,12 @@ class Dataset(Base):
                 if isinstance(v, dict) 
                 if 'vector' in v.keys()]
     
-
     def valid_vector_name(self, vector_name: str) -> bool:
         """
         Check vector field name is valid
         """
         if vector_name in self.schema.keys():
-            if (type(self.schema[vector_name]) == dict) and self.schema[vector_name].get('vector'):
+            if vector_name in self.vector_fields:
                 return True
             else:
                 raise ValueError(f"{vector_name} is not a valid vector name")
