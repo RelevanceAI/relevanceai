@@ -129,5 +129,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+.vscode/
 
-test_projection/*
+# test_projection/*
