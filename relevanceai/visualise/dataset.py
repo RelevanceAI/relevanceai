@@ -54,10 +54,9 @@ class Dataset(Base):
         """
         if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
 
-        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size, 
+        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size )
                 ## TODO: Fix bug where `cursor` is not returned if `random_state`` is set
-                # random_state=self.random_state
-                                            ) 
+                # random_state=self.random_state ) 
         _cursor = resp["cursor"]
         _page = 0
         data = []
