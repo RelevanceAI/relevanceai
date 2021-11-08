@@ -83,6 +83,8 @@ class Projector(Base):
         '''
         Generates the 3D scatter plot 
         '''
+        plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}"
+
         if self.colour_label:
             data = []
             groups = embedding_df.groupby(legend)
@@ -144,8 +146,7 @@ class Projector(Base):
         '''
         Generating figure
         '''
-        plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}"
-
+        
         axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
         layout = go.Layout(
             margin=dict(l=0, r=0, b=0, t=0),
@@ -158,9 +159,14 @@ class Projector(Base):
             'y':0.1,
             'x':0,
             'xanchor': 'left',
-            'yanchor': 'bottom'},
+            'yanchor': 'bottom',
+            'font': {
+                'size': 10
+            }},
         )
-        fig.update_layout(title_font_size=10)
+
+        if legend and self.colour_label:
+            fig.update_layout(legend_title_text=self.colour_label)
 
         '''
         Updating hover label
@@ -193,15 +199,15 @@ class Projector(Base):
         dr_args: Union[None, JSONDict] = DIM_REDUCTION_DEFAULT_ARGS['pca'],
         dims: Literal[2, 3] = 3,
 
-        ### Cluster args
-        cluster: CLUSTER = None,
-        cluster_args: Union[None, JSONDict] = {"n_init" : 20},
-
         ### Plot rendering args
         vector_label: Union[None, str] = None,
         vector_label_char_length: Union[None, int] = 12,
         colour_label: Union[None, str] = None,  
         hover_label: Union[None, List[str]] = None,
+
+        ### Cluster args
+        cluster: CLUSTER = None,
+        cluster_args: Union[None, JSONDict] = {"n_init" : 20},
     ):
         """
         Plot function for Embedding Projector class

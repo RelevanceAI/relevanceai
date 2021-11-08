@@ -20,7 +20,7 @@ DIM_REDUCTION_DEFAULT_ARGS = {
         "random_state": 42,
     },
     'umap': {
-        "n_neighbors": 15,
+        "n_neighbors": 10,
         "min_dist": 0.1,
         "random_state": 42,
         "transform_seed": 42,
