@@ -175,10 +175,8 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
 
 
 def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
-    """Function to download a sample games dataset.
-    Dataset from https://www.freetogame.com/
-    Total Len: 20000
-    Sample document:
+    """Function to download the flipkat ecommerce dataset
+    Sample document in this dataset:
     {'Unnamed: 0': 0,
     '_id': 0,
     'product_name': "Alisha Solid Women's Cycling Shorts",
@@ -186,4 +184,4 @@ def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
     'retail_price': 999.0}
     """
     df = pd.read_csv("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv").drop('Unnamed: 0', axis=1)
-    return df.to_dict(orient='records')
+    return df.to_dict(orient='records')[:number_of_documents]
