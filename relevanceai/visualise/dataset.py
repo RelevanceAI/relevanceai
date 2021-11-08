@@ -26,7 +26,7 @@ class Dataset(Base):
         dataset_id: str,
         number_of_documents: Union[None, int] = 1000,
         page_size: int = 1000,
-        random_state: int = 42,
+        random_state: int = 0,
     ):
         self.project = project
         self.api_key = api_key
@@ -52,13 +52,13 @@ class Dataset(Base):
         """
         Retrieve all documents from dataset
         """
-        if (number_of_documents and page_size > number_of_documents): page_size=number_of_documents
+        if (number_of_documents and page_size > number_of_documents) or (self.random_state != 0): 
+            page_size=number_of_documents
 
-        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size
-                                        #  random_state=self.random_state
-        )
+        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size, random_state=self.random_state)
         data = resp["documents"]
-        if number_of_documents>page_size:
+        
+        if (number_of_documents>page_size) and (self.random_state==0):
             _cursor = resp["cursor"]
             _page = 0
             while resp:
@@ -132,4 +132,4 @@ class Dataset(Base):
                     ]
         self.df, self.detail = self._build_df(self.docs)
 
-        return self.docs
+        return self.docs, self.df, self.detail

@@ -81,7 +81,7 @@ class DimReduction(Base):
         dr: DIM_REDUCTION,
         dr_args: Union[None, JSONDict],
         vectors: np.ndarray,
-        dims: Literal[2, 3] ,
+        dims: Literal[2, 3],
     ) -> np.ndarray:
         """
         Dimensionality reduction

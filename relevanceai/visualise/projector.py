@@ -39,178 +39,14 @@ class Projector(Base):
     """
 
     def __init__(self, project, api_key, base_url):
-        self.project = project
-        self.api_key = api_key
-        self.base_url = base_url
-
-        # self.docs = dataset
-        # self.dataset_id = dataset.dataset_id
-        # self.vector_fields = dataset.vector_fields
-        # self.data = dataset.data
 
         self.base_args = {
-            "project": self.project, 
-            "api_key": self.api_key, 
-            "base_url": self.base_url,
+            "project": project, 
+            "api_key": api_key, 
+            "base_url": base_url,
         }
         super().__init__(**self.base_args)
 
-
-    def _prepare_labels(
-        self,
-        data: List[JSONDict],
-        vector_label: str,
-    ) -> Tuple[np.ndarray, set]:
-        """
-        Prepare labels
-        """
-        self.logger.info(f'Preparing {vector_label} ...')
-        labels = np.array([
-                data[i][vector_label].replace(",", "")
-                for i, _ in enumerate(data)
-            ]
-        )
-        _labels = set(labels)
-        return labels, _labels
-
-    def _generate_hover_template(
-        self
-    ) -> Tuple[pd.DataFrame, List]:
-        """
-        Generating hover template
-        """
-        if self.hover_label:
-            custom_data=self.dataset.detail[self.hover_label]
-            custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
-                            if self.dataset.valid_label_name(c)]
-            hovertemplate="<br>".join([
-                "X: %{x}   Y: %{y}   Z: %{z}",
-            ] + custom_data_hover
-            )
-        else:
-            custom_data = hovertemplate = None
-        return custom_data, hovertemplate
-
-
-    def _generate_fig(
-        self,
-        embedding_df: pd.DataFrame,
-        legend: Union[None, str],
-    ) -> go.Figure:
-        '''
-        Generates the 3D scatter plot 
-        '''
-        
-        if self.colour_label:
-            if self.colour_label_char_length:
-                colour_labels = embedding_df['labels'].apply(lambda x: x[:self.colour_label_char_length]+'...')
-                embedding_df['labels'] = colour_labels
-            data = []
-            groups = embedding_df.groupby(legend)
-            for idx, val in groups:
-                custom_data, hovertemplate = self._generate_hover_template()
-                scatter = go.Scatter3d(
-                    name=idx,
-                    x=val['x'],
-                    y=val['y'],
-                    z=val['z'],
-                    text=[ idx for _ in range(val['x'].shape[0]) ],
-                    textposition='top center',
-                    mode='markers',
-                    marker=dict(size=3, symbol='circle'),
-                    customdata=custom_data,
-                    hovertemplate=hovertemplate
-                )
-                data.append(scatter)
-
-        else:
-            if self.vector_label:
-                plot_mode ='text+markers'
-                text_labels = embedding_df['labels']
-                if self.vector_label_char_length:
-                    text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
-              
-            else:
-                plot_mode = 'markers'
-                text_labels = None
-
-            ## TODO: We can change this later to show top 100 neighbours of a selected word
-            #  # Regular displays the full scatter plot with only circles
-            # if wordemb_display_mode == 'regular':
-            #     plot_mode = 'markers'
-            # # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
-            # elif wordemb_display_mode == 'neighbors':
-            #     if not selected_word:
-            #         return go.Figure()
-            #     plot_mode = 'text'
-            #     # Get the nearest neighbors indices
-            #     dataset = data_dict[dataset_name].set_index('0')
-            #     selected_vec = dataset.loc[selected_word]
-
-            #     nearest_neighbours = get_nearest_neighbours(
-            #                             dataset=dataset, 
-            #                             selected_vec=selected_vec,
-            #                             distance_measure_mode=distance_measure_mode,  
-            #                             )
-
-            #     neighbors_idx = nearest_neighbours[:100].index
-            #     embedding_df =  embedding_df.loc[neighbors_idx]
-
-            custom_data, hovertemplate = self._generate_hover_template()
-            scatter = go.Scatter3d(
-                name=str(embedding_df.index),
-                x=embedding_df['x'],
-                y=embedding_df['y'],
-                z=embedding_df['z'],
-                text=text_labels,
-                textposition='middle center',
-                showlegend=False,
-                mode=plot_mode,
-                marker=dict(size=3, color=RELEVANCEAI_BLUE, symbol='circle'),
-                customdata=custom_data,
-                hovertemplate=hovertemplate
-            )
-            data=[scatter]
-            
-
-        '''
-        Generating figure
-        '''
-        axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
-        layout = go.Layout(
-            margin=dict(l=0, r=0, b=0, t=0),
-            scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
-        )
-
-        plot_title = f"{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}"
-        fig = go.Figure(data=data, layout=layout)
-        fig.update_layout(title={
-            'text': plot_title,
-            'y':0.1,
-            'x':0.1,
-            'xanchor': 'left',
-            'yanchor': 'bottom',
-            'font': {
-                'size': 10
-            }},
-        )
-        if legend and self.colour_label:
-            fig.update_layout(legend={
-                'title': {
-                'text' : self.colour_label,
-                    'font': {
-                        'size': 10
-                    }
-                },
-                'font': {
-                    'size': 10
-                },
-                'itemwidth': 30,
-                'tracegroupgap': 1
-            }
-        )
-            
-        return fig
 
     @typechecked
     def plot(
@@ -218,7 +54,7 @@ class Projector(Base):
         dataset_id: str,
         vector_field: str,
         number_of_points_to_render: int = 1000,
-        random_state: int = 42,
+        random_state: int = 0,
 
         ### Dimensionality reduction args
         dr: DIM_REDUCTION = "pca",
@@ -271,11 +107,11 @@ class Projector(Base):
         number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
         self.dataset = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, number_of_documents=number_of_documents, 
-                                # random_state=random_state
+                                random_state=random_state
                                 )
 
         self.vector_fields = self.dataset.vector_fields
-        self.docs = self.dataset.remove_empty_vector_fields(self.vector_field)
+        self.docs, self.df, self.detail = self.dataset.remove_empty_vector_fields(self.vector_field)
 
         if self.dataset.valid_vector_name(vector_field):
             dr = DimReduction(**self.base_args, data=self.docs, 
@@ -288,19 +124,25 @@ class Projector(Base):
                         'y': self.vectors_dr[:,1], 
                         'z': self.vectors_dr[:,2]}
             self.embedding_df = pd.DataFrame(points)
+            if self.hover_label and all(self.dataset.valid_label_name(l) for l in self.hover_label):
+                self.embedding_df = self.embedding_df + self.detail[self.hover_label]
+                
+                print(self.embedding_df.columns)
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
-                self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.vector_label)
+                # self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.vector_label)
+                self.labels = self.detail[self.vector_label].to_numpy()
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
             
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
-                self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.colour_label)
+                # self.labels, self._labels = self._prepare_labels(data=self.docs, vector_label=self.colour_label)
+                self.labels = self.detail[self.colour_label].to_numpy()
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
                 self.legend = 'labels'
-        
+
             if cluster:
                 cluster = Cluster(**self.base_args,
                     vectors=self.vectors, cluster=cluster, cluster_args=cluster_args)
@@ -310,4 +152,168 @@ class Projector(Base):
 
             return self._generate_fig(embedding_df=self.embedding_df, legend=self.legend)
 
-    
+
+    def _prepare_labels(
+        self,
+        data: List[JSONDict],
+        vector_label: str,
+    ) -> Tuple[np.ndarray, set]:
+        """
+        Prepare labels
+        """
+        self.logger.info(f'Preparing {vector_label} ...')
+        labels = np.array([
+                data[i][vector_label].replace(",", "")
+                for i, _ in enumerate(data)
+            ]
+        )
+        _labels = set(labels)
+        return labels, _labels
+
+
+    def _generate_fig(
+        self,
+        embedding_df: pd.DataFrame,
+        legend: Union[None, str],
+    ) -> go.Figure:
+        '''
+        Generates the 3D scatter plot 
+        '''
+        
+        if self.colour_label:
+            '''
+            Generates data for colour plot
+            '''
+            if self.colour_label_char_length:
+                colour_labels = embedding_df['labels'].apply(lambda x: x[:self.colour_label_char_length]+'...')
+                embedding_df['labels'] = colour_labels
+
+            data = []
+            groups = embedding_df.groupby(legend)
+            for idx, val in groups:
+                custom_data, hovertemplate = self._generate_hover_template(df=val)
+                scatter = go.Scatter3d(
+                    name=idx,
+                    x=val['x'],
+                    y=val['y'],
+                    z=val['z'],
+                    text=[ idx for _ in range(val['x'].shape[0]) ],
+                    textposition='top center',
+                    mode='markers',
+                    marker=dict(size=3, symbol='circle'),
+                    customdata=custom_data,
+                    hovertemplate=hovertemplate
+                )
+                data.append(scatter)
+
+        else:
+            '''
+            Generates data for word plot
+            If vector_label set, generates text_labels, otherwise shows points only
+            '''
+            if self.vector_label:
+                plot_mode ='text+markers'
+                text_labels = embedding_df['labels']
+                if self.vector_label_char_length:
+                    text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
+            else:
+                plot_mode = 'markers'
+                text_labels = None
+
+            ## TODO: We can change this later to show top 100 neighbours of a selected word
+            #  # Regular displays the full scatter plot with only circles
+            # if wordemb_display_mode == 'regular':
+            #     plot_mode = 'markers'
+            # # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
+            # elif wordemb_display_mode == 'neighbors':
+            #     if not selected_word:
+            #         return go.Figure()
+            #     plot_mode = 'text'
+            #     # Get the nearest neighbors indices
+            #     dataset = data_dict[dataset_name].set_index('0')
+            #     selected_vec = dataset.loc[selected_word]
+
+            #     nearest_neighbours = get_nearest_neighbours(
+            #                             dataset=dataset, 
+            #                             selected_vec=selected_vec,
+            #                             distance_measure_mode=distance_measure_mode,  
+            #                             )
+
+            #     neighbors_idx = nearest_neighbours[:100].index
+            #     embedding_df =  embedding_df.loc[neighbors_idx]
+            
+            custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
+            scatter = go.Scatter3d(
+                name=str(embedding_df.index),
+                x=embedding_df['x'],
+                y=embedding_df['y'],
+                z=embedding_df['z'],
+                text=text_labels,
+                textposition='middle center',
+                showlegend=False,
+                mode=plot_mode,
+                marker=dict(size=3, color=RELEVANCEAI_BLUE, symbol='circle'),
+                customdata=custom_data,
+                hovertemplate=hovertemplate
+            )
+            data=[scatter]
+            
+
+        '''
+        Generating figure
+        '''
+        axes = dict(title='', showgrid=True, zeroline=False, showticklabels=False)
+        layout = go.Layout(
+            margin=dict(l=0, r=0, b=0, t=0),
+            scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
+        )
+
+        plot_title = f"<b>{self.dataset_id}: {len(embedding_df)} points<br>Vector Label: {self.vector_label}<br>Vector Field: {self.vector_field}</b>"
+        fig = go.Figure(data=data, layout=layout)
+        fig.update_layout(title={
+            'text': plot_title,
+            'y':0.1,
+            'x':0.1,
+            'xanchor': 'left',
+            'yanchor': 'bottom',
+            'font': {
+                'size': 10
+            }},
+        )
+        if legend and self.colour_label:
+            fig.update_layout(legend={
+                'title': {
+                'text' : self.colour_label,
+                    'font': {
+                        'size': 10
+                    }
+                },
+                'font': {
+                    'size': 10
+                },
+                'itemwidth': 30,
+                'tracegroupgap': 1
+            }
+        )
+            
+        return fig
+
+
+    def _generate_hover_template(
+        self,
+        df: pd.DataFrame
+    ) -> Tuple[pd.DataFrame, List]:
+        """
+        Generating hover template
+        """
+        if self.hover_label:
+            custom_data = df[self.hover_label]
+            custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
+                            if self.dataset.valid_label_name(c)]
+            hovertemplate="<br>".join([
+                "X: %{x}   Y: %{y}   Z: %{z}",
+            ] + custom_data_hover
+            )
+        else:
+            custom_data = hovertemplate = None
+        return custom_data, hovertemplate
