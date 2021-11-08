@@ -194,7 +194,7 @@ class Projector(Base):
 
         ### Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 10,
+        vector_label_char_length: Union[None, int] = 12,
         colour_label: Union[None, str] = None,  
         hover_label: Union[None, List[str]] = None,
     ):
