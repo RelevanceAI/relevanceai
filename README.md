@@ -1,7 +1,9 @@
-# VecDB Python SDK 
+# relevanceai Python SDK 
 
 VecDB-Python-SDK is the Python SDK of VecDB and is the main Pythonic interface for the VecDB.
 For documentation about how to use this package, visit: https://docs.relevance.ai/docs
+
+This is the Python SDK of relevanceai and is the main Pythonic interface for the relevanceai.
 
 Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
 
@@ -13,21 +15,21 @@ VecDB (Vector databases) allows for a unified interface from which data scientis
 
 ## Installation 
 
-The easiest way is to install this package is to run `pip install --upgrade vecdb`.
+The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
 
-## How to use VecDB Python SDK 
+## How to use the relevanceai client
 
-You need an API key and a project name to instantiate a VecDB client. If you do not have a project or API key, please visit www.cloud.relevance.ai
-
-```{python}
-from vecdb import VecDBClient
-client = VecDBClient(project, api_key)```
-
-## How to use the VecDB client 
-
-We have ensured the SDK mirrors the API client.
+For the relevanceai client, we want to ensure the SDK mirrors the API client.
 
 For example:
+
+```python
+## To instantiate the client 
+from relevanceai import Client
+project = input("Your project goes here")
+api_key = input("Your API key goes here")
+client = Client(project, api_key)
+```
 
 The bulk_insert API endpoint: 
 
@@ -39,15 +41,8 @@ client.datasets.bulk_insert(...)```
 
 Complete sample: 
 
-```{python}
-from vecdb import VecDBClient
-
-project = <PROJECT>
-api_key = <API_KEY>
-
-client = VecDBClient(project, api_key)
-documents = []
-dataset_id = <DATASET_ID>
+```python
+# Bulk insert documents
 client.datasets.bulk_insert(dataset_id, documents)
 ```
 
@@ -55,16 +50,17 @@ Or similarly, the vector search API endpoint:
 
 `/services/search/vector`
 
-maps into 
-```{python}
-client.services.search.vector(...)```
-
+You then write: 
+```python
+# Vector search in a dataset
+client.services.search.vector(...)
+```
 
 ## Features
 
 ### Out of the box multi-threading/multi-processing
 
-Get multi-threading and multi-processing out of the box. The VecDB Python package automatically gives you multi-threading and multi-processing out of the box!
+Get multi-threading and multi-processing out of the box. The relevanceai Python package automatically gives you multi-threading and multi-processing out of the box!
 
 ```python
 
@@ -146,7 +142,7 @@ An example of the data now:
 [{"_id": "0", "even": true}, {"_id": "1", "even": false}, ... {"_id": "199", "even": true}]
 ```
 
-To delete all logs created by pull_update_push, use the delete_all_logs function.
+To delete all logs created by pull_update_push, use the `delete_all_logs` function.
 ```python
 vec_client.delete_all_logs(original_collection)
 ```
@@ -213,19 +209,19 @@ Sometimes Pull Update Push will fail for strange reasons (create a Github Issue!
 
 If this is the case, then you are free to use this: 
 
-```{python}
->>> from vecdb import VecDBClient
->>>  url = "https://api-aueast.relevance.ai/v1/"
+```python
+from relevanceai import Client
+url = "https://api-aueast.relevance.ai/v1/"
 
->>> collection = ""
->>> project = ""
->>> api_key = ""
->>> client = VecDBClient(project, api_key)
->>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
->>> while len(docs['documents']) > 0:
->>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
->>>     client.update_documents(collection, docs['documents'])
->>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+collection = ""
+project = ""
+api_key = ""
+client = Client(project, api_key)
+docs = client.datasets.documents.get_where(collection, select_fields=['title'])
+while len(docs['documents']) > 0:
+    docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
+    client.update_documents(collection, docs['documents'])
+    docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
 ```
 
 ## Stop logging 
@@ -238,19 +234,39 @@ client.logger.stop()
 
 This can be helpful during client demos when you do not need to show the API endpoint being hit.
 
-```
-
 ## Sample Datasets 
 
 If you require a sample dataset, you can run the following to help:
 
-```{python}
-from vecdb.datasets import get_games_dataset
-docs = get_games_dataset()
+
+```python
+from relevanceai.datasets import get_ecommerce_dataset
+docs = get_ecommerce_dataset()
 ```
 
 
 
+## Development
+
+### Getting Started
+
+Setup your virtualenv, install requirements and package
+
+```python
+❯ python -m venv .venv
+❯ source .venv/bin/activate
+❯ pip install -r requirements-dev.txt  
+```
+
+Run your local tests in [`tests`](./tests)
+
+```zsh
+❯ pytest --cov=src -vv
+❯ pytest <file_path> --cov=src -vv
+```
+
+
+```
 Copyright (C) Relevance AI - All Rights Reserved
 Unauthorized copying of this repository, via any medium is strictly prohibited
 Proprietary and confidential
