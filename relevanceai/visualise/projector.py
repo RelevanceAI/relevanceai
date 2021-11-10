@@ -168,17 +168,17 @@ class Projector(Base, DocUtils):
         '''
         Generates the 3D scatter plot 
         '''
-        plot_title = f"<b>3D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></br>"
+        plot_title = f"<b>3D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
         if self.colour_label:
             '''
             Generates data for colour plot
             '''
             plot_title = plot_title.replace('</b>', f"Colour Label: {self.colour_label}<br></b>")
-            if self.colour_label_char_length:
+            if self.colour_label_char_length  and not self.cluster:
                 plot_title = plot_title.replace('<br></b>', f"  Char Length: {self.colour_label_char_length}<br></b>")
                 colour_labels = embedding_df['labels'].apply(lambda x: x[:self.colour_label_char_length]+'...')
                 embedding_df['labels'] = colour_labels
-                if self.hover_label is None: self.hover_label = [self.colour_label]
+            if self.hover_label is None: self.hover_label = [ self.colour_label ] 
 
             data = []
             groups = embedding_df.groupby(legend)
@@ -202,14 +202,15 @@ class Projector(Base, DocUtils):
             Generates data for word plot
             If vector_label set, generates text_labels, otherwise shows points only
             '''
+            custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             if self.vector_label:
                 plot_title = plot_title.replace('</b>', f"Vector Label: {self.vector_label}<br></b>")
                 plot_mode ='text+markers'
                 text_labels = embedding_df['labels']
-                if self.vector_label_char_length:
+                if self.vector_label_char_length and not self.cluster:
                     plot_title = plot_title.replace('<br></b>', f"  Char Length: {self.vector_label_char_length}<br></b>")
                     text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
-                    if self.hover_label is None: self.hover_label = [self.vector_label]
+                if self.hover_label is None: self.hover_label = [ self.vector_label ]
              
             else:
                 plot_mode = 'markers'
@@ -237,7 +238,6 @@ class Projector(Base, DocUtils):
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
             
-            custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             scatter = go.Scatter3d(
                 name=str(embedding_df.index),
                 x=embedding_df['x'],
@@ -262,7 +262,6 @@ class Projector(Base, DocUtils):
             margin=dict(l=0, r=0, b=0, t=0),
             scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
-
 
         if self.cluster:
             plot_title = plot_title.replace('</b>', 
@@ -293,8 +292,19 @@ class Projector(Base, DocUtils):
                 'tracegroupgap': 1
             }
         )
-            
+        # if self.vector_label and self.colour_label is None:
+        #     print(embedding_df[self.vector_label])
+        #     fig.update_traces(customdata=embedding_df[self.vector_label])
+        #     fig.update_traces(hovertemplate='%{customdata}')
+        #     fig.update_traces(
+        #         hovertemplate="<br>".join([
+        #             "X: %{x}",
+        #             "Y: %{y}",
+        #             "Label: %{customdata}",
+        #         ])
+        #     )
         return fig
+    
 
 
     def _generate_hover_template(
@@ -306,12 +316,13 @@ class Projector(Base, DocUtils):
         """
         if self.hover_label:
             custom_data = df[self.hover_label]
-            custom_data_hover = [f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
-                            if self.dataset.valid_label_name(c)]
+            custom_data_hover = [ f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
+                                    if self.dataset.valid_label_name(c) ]
             hovertemplate="<br>".join([
                 "X: %{x}   Y: %{y}   Z: %{z}",
             ] + custom_data_hover
             )
+    
         else:
             custom_data = hovertemplate = None
         return custom_data, hovertemplate

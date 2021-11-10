@@ -93,7 +93,7 @@ class Cluster(Base):
             km = KMedoids(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
-        cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         return cluster_labels, cluster_centroids
     
 
@@ -117,7 +117,8 @@ class Cluster(Base):
         #         cluster_labels = km.labels_
         #         cluster_centroids = km.cluster_centroids_
         # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
-        # return cluster_labels, cluster_centroids
+        # return cluster_labels, cluster_centroids'
+        
         return NotImplementedError
     
         

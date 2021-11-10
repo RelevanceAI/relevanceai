@@ -64,7 +64,6 @@ class DimReduction(Base, DocUtils):
         """
         self.logger.info(f'Preparing {vector_field} ...')
         vectors = self.get_field_across_documents(field=vector_field, docs=data)
-
         from sklearn.preprocessing import MinMaxScaler
         vectors = MinMaxScaler().fit_transform(vectors) 
         return vectors
