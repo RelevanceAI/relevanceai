@@ -81,7 +81,6 @@ setup(
         "vis": vis_requirements,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,
-        "ivis": ["ivis[cpu]>=2.0.6",]
     },
     python_requires=">=3.6",
     classifiers=[],
