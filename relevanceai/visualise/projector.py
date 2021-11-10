@@ -166,7 +166,7 @@ class Projector(Base, DocUtils):
         '''
         Generates the 3D scatter plot 
         '''
-        plot_title = f"<b>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
+        plot_title = f"<b>3D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></br>"
         if self.colour_label:
             '''
             Generates data for colour plot
