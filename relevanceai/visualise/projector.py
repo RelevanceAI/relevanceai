@@ -147,6 +147,7 @@ class Projector(Base, DocUtils):
                 self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
+                self.embedding_df[self.colour_label] = self.labels
                 self.legend = 'labels'
 
             if cluster:
@@ -177,6 +178,7 @@ class Projector(Base, DocUtils):
                 plot_title = plot_title.replace('<br></b>', f"  Char Length: {self.colour_label_char_length}<br></b>")
                 colour_labels = embedding_df['labels'].apply(lambda x: x[:self.colour_label_char_length]+'...')
                 embedding_df['labels'] = colour_labels
+                if self.hover_label is None: self.hover_label = [self.colour_label]
 
             data = []
             groups = embedding_df.groupby(legend)
@@ -263,7 +265,8 @@ class Projector(Base, DocUtils):
 
 
         if self.cluster:
-            plot_title = plot_title.replace('</b>', f"<b>Cluster Method: {self.cluster}<br>Num Clusters: {self.num_clusters}</b>")
+            plot_title = plot_title.replace('</b>', 
+                f"<b>Cluster Method: {self.cluster}<br>Num Clusters: {self.num_clusters}</b>")
         fig = go.Figure(data=data, layout=layout)
         fig.update_layout(title={
             'text': plot_title,
