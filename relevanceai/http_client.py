@@ -2,7 +2,7 @@
 """
 import os
 
-from doc_utils import DocUtils
+from doc_utils.doc_utils import DocUtils
 
 from relevanceai.batch.client import BatchAPIClient
 from relevanceai.config import CONFIG

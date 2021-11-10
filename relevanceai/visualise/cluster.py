@@ -6,8 +6,8 @@ import json
 
 from dataclasses import dataclass
 
-from sklearn.cluster import KMeans, MiniBatchKMeans
-from sklearn_extra.cluster import KMedoids
+# from sklearn.cluster import MiniBatchKMeans
+# from sklearn_extra.cluster import KMedoids
 # from kmodes.kmodes import KModes
 # from kmodes.kprototypes import KPrototypes
 
@@ -72,7 +72,9 @@ class Cluster(Base):
         Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
         where a is penalty factor of num_clusters
         """
-        ## ELbow method
+        import warnings
+        warnings.warn('This method is not implemented yet k=10')
+
         return 10
 
 
@@ -87,16 +89,18 @@ class Cluster(Base):
         """
         self.logger.info(f'Performing {cluster} clustering with {self.k} clusters ... ')
         if cluster == 'kmeans':
+            from sklearn.cluster import MiniBatchKMeans
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = MiniBatchKMeans(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
         elif cluster == 'kmedoids':
+            from sklearn_extra.cluster import KMedoids
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = KMedoids(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
-        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+        cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         return cluster_labels, cluster_centroids
     
 

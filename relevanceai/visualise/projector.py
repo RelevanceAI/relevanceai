@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 import json
-import warnings
+
 
 import plotly.graph_objs as go
 
@@ -16,10 +16,10 @@ from relevanceai.visualise.dataset import Dataset
 from relevanceai.visualise.cluster import Cluster
 from relevanceai.visualise.dim_reduction import DimReduction 
 
-
+from doc_utils import DocUtils
 
 @dataclass
-class Projector(Base):
+class Projector(Base, DocUtils):
     """
         Projector class.
 
@@ -103,19 +103,23 @@ class Projector(Base):
         self.num_clusters = num_clusters
 
         if (vector_label is None) and (colour_label is None):
+            import warnings
             warnings.warn(f'A vector_label or colour_label has not been specified.')
         
         if number_of_points_to_render > 1000:
+            import warnings
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
         
         number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
+        
         self.dataset = Dataset(**self.base_args, 
-                                dataset_id=dataset_id, number_of_documents=number_of_documents, 
-                                random_state=random_state
+                                dataset_id=dataset_id, vector_field=vector_field, 
+                                vector_label=vector_label, colour_label=colour_label, hover_label=hover_label,
+                                number_of_documents=number_of_documents, random_state=random_state
                                 )
 
-        self.vector_fields = self.dataset.vector_fields
-        self.docs, self.df, self.detail = self.dataset.remove_empty_vector_fields(self.vector_field)
+        self.docs = self.dataset.docs
+        self.detail = self.dataset.detail
 
         if self.dataset.valid_vector_name(vector_field):
             dr = DimReduction(**self.base_args, data=self.docs, 
@@ -133,13 +137,13 @@ class Projector(Base):
                 self.embedding_df = pd.concat([self.embedding_df, self.detail[self.hover_label]], axis=1)
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
-                self.labels = self.detail[self.vector_label].to_numpy()
+                self.labels = self.get_field_across_documents(field=self.vector_label, docs=self.docs)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
             
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
-                self.labels = self.detail[self.colour_label].to_numpy()
+                self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
                 self.embedding_df.index = self.labels
                 self.embedding_df['labels'] = self.labels
                 self.legend = 'labels'
@@ -162,7 +166,7 @@ class Projector(Base):
         '''
         Generates the 3D scatter plot 
         '''
-        plot_title = f"<b>{self.dataset_id}: {len(embedding_df)} points<br></b>"
+        plot_title = f"<b>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
         if self.colour_label:
             '''
             Generates data for colour plot
@@ -190,7 +194,6 @@ class Projector(Base):
                     hovertemplate=hovertemplate
                 )
                 data.append(scatter)
-
         else:
             '''
             Generates data for word plot
@@ -201,7 +204,7 @@ class Projector(Base):
                 plot_mode ='text+markers'
                 text_labels = embedding_df['labels']
                 if self.vector_label_char_length:
-                    plot_title = plot_title.replace('<br></b>', f"  Char Length:  {self.vector_label_char_length}<br></b>")
+                    plot_title = plot_title.replace('<br></b>', f"  Char Length: {self.vector_label_char_length}<br></b>")
                     text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
             else:
                 plot_mode = 'markers'

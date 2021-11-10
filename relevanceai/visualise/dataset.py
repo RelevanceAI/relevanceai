@@ -6,16 +6,17 @@ import numpy as np
 from dataclasses import dataclass
 
 from relevanceai.base import Base
-from api.datasets import Datasets
+from relevanceai.api.datasets import Datasets
 
 from typing import List, Union, Dict, Any, Tuple
 from typing_extensions import Literal
 
+from doc_utils import DocUtils
+
 JSONDict = Dict[str, Any]
 
-
 @dataclass
-class Dataset(Base):
+class Dataset(Base, DocUtils):
     """Dataset Class"""
 
     def __init__(
@@ -24,6 +25,10 @@ class Dataset(Base):
         api_key: str,
         base_url: str,
         dataset_id: str,
+        vector_field: str,
+        vector_label: Union[None, str],
+        colour_label: Union[None, str],
+        hover_label: Union[None, List[str]],
         number_of_documents: Union[None, int] = 1000,
         page_size: int = 1000,
         random_state: int = 0,
@@ -34,20 +39,25 @@ class Dataset(Base):
         super().__init__(project, api_key, base_url)
 
         self.dataset_id = dataset_id
+        self.vector_field = vector_field
         self.logger.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
 
         self.dataset = Datasets(self.project, self.api_key, self.base_url)
         self.random_state = random_state
-
-        self.docs = self._retrieve_documents(dataset_id, number_of_documents, page_size)
+        
+        if hover_label is None: hover_label=[]
+        fields = [label for label in [vector_field, vector_label, colour_label]+hover_label if label]
+        self.docs = self._retrieve_documents(dataset_id, fields, number_of_documents, page_size)
         self.vector_fields = self._vector_fields()
+        self.docs = self.remove_empty_vector_fields(vector_field)
 
     
     def _retrieve_documents(
         self, 
         dataset_id: str, 
+        fields: str,
         number_of_documents: Union[None, int] = 1000, 
-        page_size: int = 1000
+        page_size: int = 1000,
     ) -> List[JSONDict]:
         """
         Retrieve all documents from dataset
@@ -55,10 +65,12 @@ class Dataset(Base):
         if (number_of_documents and page_size > number_of_documents) or (self.random_state != 0): 
             page_size=number_of_documents
 
-        resp = self.dataset.documents.list(dataset_id=dataset_id, page_size=page_size, random_state=self.random_state)
+        is_random = True if self.random_state != 0 else False
+        resp = self.dataset.documents.get_where(dataset_id=dataset_id, select_fields=fields, include_vector=True,
+                                                page_size=page_size, is_random=is_random, random_state=self.random_state)
         data = resp["documents"]
         
-        if (number_of_documents>page_size) and (self.random_state==0):
+        if (number_of_documents>page_size) and (is_random==False) and (self.random_state==0):
             _cursor = resp["cursor"]
             _page = 0
             while resp:
@@ -85,8 +97,8 @@ class Dataset(Base):
     @staticmethod
     def _build_df(data: List[JSONDict]):
         df = pd.DataFrame(data)
-        detail_cols = [c for c in df.columns 
-                            if not any(s in c for s in ['_vector_', '_id', 'insert_date_'])]
+        # detail_cols = self.get_fields_across_documents_except(fields=['_vector_', '_id', 'insert_date_'], data=data)
+        detail_cols = [c for c in df.columns if not any(f in c for f in ['_vector_', '_id', 'insert_date_'])]
         detail = df[detail_cols]
         return df, detail
 
@@ -127,9 +139,9 @@ class Dataset(Base):
             raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
 
     def remove_empty_vector_fields(self, vector_field: str) -> List[JSONDict]:
-        self.docs = [ d for d in self.docs
-                    if d.get(vector_field)
-                    ]
+        """
+        Remove documents with empty vector fields
+        """
+        self.docs = [ d for d in self.docs if d.get(vector_field) ]
         self.df, self.detail = self._build_df(self.docs)
-
-        return self.docs, self.df, self.detail
+        return self.docs

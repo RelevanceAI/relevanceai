@@ -34,15 +34,17 @@ excel_requirements = [
 ]
 
 vis_requirements = [
-    "umap-learn>=0.5.2",
+    "umap-learn>=0.5.2",  
     "ivis[cpu]>=2.0.6",
     "scikit-learn", 
     "scikit-learn-extra",
-    # "kmodes>=0.11.1",
+    "kmodes>=0.11.1",
     "plotly>=5.3.1",
     "typing-extensions",
     "typeguard"
 ]
+
+
 
 test_requirements =[
     "pytest",

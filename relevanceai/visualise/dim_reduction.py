@@ -6,11 +6,13 @@ import json
 
 from dataclasses import dataclass
 
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-from umap import UMAP
-from ivis import Ivis
+# from sklearn.preprocessing import MinMaxScaler
+# from sklearn.decomposition import PCA
+# from sklearn.manifold import TSNE
+# from umap import UMAP
+# from ivis import Ivis
+
+from doc_utils.doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
@@ -20,7 +22,7 @@ from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT
 from relevanceai.visualise.dataset import JSONDict
 
 @dataclass
-class DimReduction(Base):
+class DimReduction(Base, DocUtils):
     """Dim Reduction Class"""
 
     def __init__(
@@ -67,11 +69,9 @@ class DimReduction(Base):
         Prepare vectors
         """
         self.logger.info(f'Preparing {vector_field} ...')
-        vectors = np.array([
-            data[i][vector_field] 
-            for i, _ in enumerate(data)
-            ]
-        )
+        vectors = self.get_field_across_documents(field=vector_field, docs=data)
+
+        from sklearn.preprocessing import MinMaxScaler
         vectors = MinMaxScaler().fit_transform(vectors) 
         return vectors
 
@@ -88,20 +88,25 @@ class DimReduction(Base):
         """
         self.logger.info(f'Executing {dr} from {vectors.shape[1]} to {dims} dims ...')
         if dr == "pca":
+            from sklearn.decomposition import PCA
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             pca = PCA(n_components=min(vectors.shape[1], dims), **dr_args)
             vectors_dr = pca.fit_transform(vectors)
         elif dr == "tsne":
+            from sklearn.decomposition import PCA
+            from sklearn.manifold import TSNE
             pca = PCA(n_components=min(vectors.shape[1], 10))
             data_pca = pca.fit_transform(vectors)
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             tsne = TSNE(n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
         elif dr == "umap":
+            from umap import UMAP
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             umap = UMAP(n_components=dims, **dr_args)
             vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
+            from ivis import Ivis
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
         return vectors_dr
