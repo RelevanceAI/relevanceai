@@ -243,7 +243,7 @@ class Projector(Base, DocUtils):
             #     embedding_df =  embedding_df.loc[neighbors_idx]
             custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             scatter = go.Scatter3d(
-                name=str(embedding_df.index),
+                # name=str(embedding_df.index),
                 x=embedding_df['x'],
                 y=embedding_df['y'],
                 z=embedding_df['z'],
@@ -309,18 +309,16 @@ class Projector(Base, DocUtils):
         Generating hover template
         """
         if self.hover_label:
-            hover_label  = ['_id']+ self.hover_label
-            print(hover_label)
+            hover_label  = ['_id'] + self.hover_label
             custom_data = df[ hover_label ]
-            
             custom_data_hover = [ f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label) 
                                    if self.dataset.valid_label_name(c) ]
             hovertemplate="<br>".join([
                 "X: %{x}   Y: %{y}   Z: %{z}", 
             ] + custom_data_hover
-            )
+            )+'<extra></extra>'
     
         else:
             custom_data = hovertemplate = None
-        print(custom_data, hovertemplate)
+        # print(custom_data, hovertemplate)
         return custom_data, hovertemplate
