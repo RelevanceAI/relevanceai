@@ -1,13 +1,12 @@
 """Services class
 """
-from ..base import Base
-from .aggregate import Aggregate
-from .cluster import Cluster
-from .encoders import Encoders
-from .recommend import Recommend
-from .search import Search
+from relevanceai.base import Base
 
-
+from relevanceai.api.encoders import Encoders
+from relevanceai.api.cluster import Cluster
+from relevanceai.api.search import Search
+from relevanceai.api.aggregate import Aggregate
+from relevanceai.api.recommend import Recommend
 class Services(Base):
     def __init__(self, project: str, api_key: str, base_url: str):
         self.base_url = base_url

@@ -1,4 +1,4 @@
-from .http_client import Client
+from relevanceai.http_client import Client
 
 # Import useful utility if possible as well
 try:

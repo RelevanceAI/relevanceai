@@ -7,7 +7,7 @@ from json.decoder import JSONDecodeError
 import requests
 from requests import Request
 
-from .errors import APIError
+from relevanceai.errors import APIError
 
 
 class Transport:

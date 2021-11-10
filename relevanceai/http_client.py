@@ -2,10 +2,11 @@
 """
 import os
 
-from doc_utils import DocUtils
+from doc_utils.doc_utils import DocUtils
 
-from .batch.client import BatchAPIClient
-from .errors import APIError
+from relevanceai.batch.client import BatchAPIClient
+from relevanceai.config import CONFIG
+from relevanceai.errors import APIError
 
 
 def str2bool(v):

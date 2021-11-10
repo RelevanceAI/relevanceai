@@ -1,6 +1,6 @@
 """Recommmend services.
 """
-from ..base import Base
+from relevanceai.base import Base
 
 
 class Recommend(Base):

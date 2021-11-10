@@ -1,9 +1,9 @@
 """All Dataset related functions
 """
-from ..base import Base
-from .documents import Documents
-from .monitor import Monitor
-from .tasks import Tasks
+from relevanceai.base import Base
+from relevanceai.api.documents import Documents
+from relevanceai.api.monitor import Monitor
+from relevanceai.api.tasks import Tasks
 
 
 class Datasets(Base):

@@ -1,10 +1,11 @@
-import os
+
 import sys
+import time
 
 from loguru import logger as loguru_logger
 
-from .config import CONFIG
-from .transport import Transport
+from relevanceai.config import CONFIG
+from relevanceai.transport import Transport
 
 
 def str2bool(v):

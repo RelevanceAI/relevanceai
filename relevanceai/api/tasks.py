@@ -2,7 +2,7 @@
 """
 import time
 
-from ..base import Base
+from relevanceai.base import Base
 
 
 class Tasks(Base):

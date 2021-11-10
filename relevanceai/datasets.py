@@ -1,7 +1,7 @@
 """
 Datasets to mock
 """
-import warnings
+
 from typing import List, Union
 
 import pandas as pd
@@ -47,6 +47,7 @@ def get_dummy_ecommerce_dataset(
     client = Client(project, api_key, base_url=base_url)
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
+        import warnings
         warnings.warn(response["message"])
     return response
 
@@ -73,7 +74,6 @@ def get_sample_ecommerce_dataset(
     )
     if "message" in response:
         import warnings
-
         warnings.warn(response["message"])
     docs = response["documents"]
     for d in docs:

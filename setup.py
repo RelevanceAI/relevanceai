@@ -28,24 +28,47 @@ requirements = [
     "numpy>=1.19.0",
 ]
 
-dev_requirements = [
-    "autopep8",
-    "pylint",
+excel_requirements = [
+    "openpyxl>=3.0.9", 
+    "fsspec>=2021.10.1"
+]
+
+vis_requirements = [
+    "scikit-learn==0.22",
+    "plotly>=5.3.1",
+    "typing-extensions",
+    "typeguard"
+]
+
+test_requirements =[
     "pytest",
     "pytest-dotenv",
     "pytest-cov",
     "pytest-mock",
+] + excel_requirements \
+  + vis_requirements
+
+dev_requirements = [
+    "autopep8",
+    "pylint",
+    "jupyter",
     "sphinx-rtd-theme>=0.5.0"
-]
+] + test_requirements
+
 
 setup(
     name="RelevanceAI",
     version=get_version("relevanceai/__init__.py"),
     url="",
+    
     author="Relevance AI",
     author_email="dev@relevance.ai",
     long_description="",
-    packages=find_packages(),
+
+    package_dir={"": "relevanceai"},
+    packages=find_packages(where="relevanceai"),
+
+    setup_requires=["wheel"],
     install_requires=requirements,
     package_data={
         "": [
@@ -54,10 +77,12 @@ setup(
     },
     extras_require={
         "dev": dev_requirements,
-        "excel": ["fsspec==2021.10.1", "openpyxl==3.0.9"],
-        "tests": ["pytest", "fsspec==2021.10.1", "openpyxl==3.0.9"],
+        "excel": excel_requirements,
+        "vis": vis_requirements,
+        "tests": test_requirements,
         "notebook": ["jsonshower"],
+        "ivis": ["ivis[cpu]>=2.0.6",]
     },
-    # python_requires=">=3.7",
+    python_requires=">=3.6",
     classifiers=[],
 )

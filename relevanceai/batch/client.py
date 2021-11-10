@@ -2,8 +2,8 @@
 """
 from typing import Callable
 
-from .batch_insert import BatchInsert
-from .chunk import Chunker
+from relevanceai.batch.batch_insert import BatchInsert
+from relevanceai.batch.chunk import Chunker
 
 
 class BatchAPIClient(BatchInsert):

@@ -1,4 +1,7 @@
-from ..base import Base
+from requests.models import stream_decode_response_unicode
+
+from relevanceai.base import Base
+
 
 
 class Documents(Base):
