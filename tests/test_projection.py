@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 10th 2021,1:23:42 am
+# Last Modified: Wednesday, November 10th 2021,1:46:24 am
 #####
 import pytest
 
@@ -24,7 +24,8 @@ def fixture_base_args():
 def fixture_dataset_args():
     dataset_args = { 
         "dataset_id" : "ecommerce-6",
-        "number_of_documents" : 10,
+        "vector_field": "product_name_imagetext_vector_",
+        "number_of_points_to_render" : 10,
         "random_state" : 0
     }
     return dataset_args
@@ -33,24 +34,25 @@ def fixture_dataset_args():
 @pytest.fixture(name='test_args')
 def fixture_test_args(base_args, dataset_args):
     test_args = {
-    "number_of_points_to_render":100,
     "dr" : 'pca',
     "dr_args" :  {
         "svd_solver": "auto",
         "random_state": 42
     },
+
     "vector_label" : "product_name",
     "vector_label_char_length"  : 12,
-    "vector_field" : 'product_name_imagetext_vector_',
+
     "colour_label"  : None,  
     "colour_label_char_length" : 20,
     "hover_label": ["category"],
+    
     "cluster": "kmeans",
     "cluster_args": {
-        "init": "Huang", 
+        "init": "k-means++", 
         "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
+        "compute_labels": True,
+        "max_no_improvement": 2
     },
     "num_clusters": 10
     }
