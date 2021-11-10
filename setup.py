@@ -80,7 +80,7 @@ setup(
         "excel": excel_requirements,
         "vis": vis_requirements,
         "tests": test_requirements,
-        "notebook": ["jsonshower"],
+        "notebook": ["jsonshower"] + vis_requirements,
         "ivis": ["ivis[cpu]>=2.0.6",]
     },
     python_requires=">=3.6",
