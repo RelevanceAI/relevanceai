@@ -46,7 +46,7 @@ class Dataset(Base, DocUtils):
         self.random_state = random_state
         
         if hover_label is None: hover_label=[]
-        fields = [label for label in [vector_field, vector_label, colour_label]+hover_label if label]
+        fields = [label for label in ['_id', vector_field, vector_label, colour_label]+hover_label if label]
         self.docs = self._retrieve_documents(dataset_id, fields, number_of_documents, page_size)
         self.vector_fields = self._vector_fields()
         self.docs = self.remove_empty_vector_fields(vector_field)
@@ -130,8 +130,9 @@ class Dataset(Base, DocUtils):
         """
         Check vector label name is valid
         """
-        if label_name in self.schema.keys():
-            if self.schema[label_name] in ['numeric', 'text']:
+        if label_name == '_id': return True
+        if label_name in list(self.schema.keys()):
+            if  (self.schema[label_name] in ['numeric', 'text']):
                 return True
             else:
                 raise ValueError(f"{label_name} is not a valid label name")

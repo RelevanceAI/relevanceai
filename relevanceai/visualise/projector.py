@@ -18,6 +18,8 @@ from relevanceai.visualise.dim_reduction import DimReduction
 
 from doc_utils import DocUtils
 
+RELEVANCEAI_BLUE = '#1854FF'
+
 @dataclass
 class Projector(Base, DocUtils):
     """
@@ -130,7 +132,8 @@ class Projector(Base, DocUtils):
             self.vectors_dr = dr.vectors_dr
             points = { 'x': self.vectors_dr[:,0], 
                         'y': self.vectors_dr[:,1], 
-                        'z': self.vectors_dr[:,2]}
+                        'z': self.vectors_dr[:,2], 
+                        '_id': self.get_field_across_documents('_id', self.docs)}
             self.embedding_df = pd.DataFrame(points)
 
             if self.hover_label and all(self.dataset.valid_label_name(l) for l in self.hover_label):
@@ -138,14 +141,14 @@ class Projector(Base, DocUtils):
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(field=self.vector_label, docs=self.docs)
-                self.embedding_df.index = self.labels
+                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df[self.vector_label] = self.labels
                 self.embedding_df['labels'] = self.labels
 
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
-                self.embedding_df.index = self.labels
+                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df['labels'] = self.labels
                 self.embedding_df[self.colour_label] = self.labels
                 self.legend = 'labels'
@@ -154,6 +157,7 @@ class Projector(Base, DocUtils):
                 cluster = Cluster(**self.base_args,
                     vectors=self.vectors, cluster=cluster, cluster_args=cluster_args, k=self.num_clusters)
                 self.cluster_labels = cluster.cluster_labels
+                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
 
@@ -202,7 +206,7 @@ class Projector(Base, DocUtils):
             Generates data for word plot
             If vector_label set, generates text_labels, otherwise shows points only
             '''
-            custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
+            
             if self.vector_label:
                 plot_title = plot_title.replace('</b>', f"Vector Label: {self.vector_label}<br></b>")
                 plot_mode ='text+markers'
@@ -237,7 +241,7 @@ class Projector(Base, DocUtils):
 
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
-            
+            custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             scatter = go.Scatter3d(
                 name=str(embedding_df.index),
                 x=embedding_df['x'],
@@ -292,17 +296,7 @@ class Projector(Base, DocUtils):
                 'tracegroupgap': 1
             }
         )
-        # if self.vector_label and self.colour_label is None:
-        #     print(embedding_df[self.vector_label])
-        #     fig.update_traces(customdata=embedding_df[self.vector_label])
-        #     fig.update_traces(hovertemplate='%{customdata}')
-        #     fig.update_traces(
-        #         hovertemplate="<br>".join([
-        #             "X: %{x}",
-        #             "Y: %{y}",
-        #             "Label: %{customdata}",
-        #         ])
-        #     )
+
         return fig
     
 
@@ -315,14 +309,18 @@ class Projector(Base, DocUtils):
         Generating hover template
         """
         if self.hover_label:
-            custom_data = df[self.hover_label]
-            custom_data_hover = [ f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(self.hover_label) 
-                                    if self.dataset.valid_label_name(c) ]
+            hover_label  = ['_id']+ self.hover_label
+            print(hover_label)
+            custom_data = df[ hover_label ]
+            
+            custom_data_hover = [ f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label) 
+                                   if self.dataset.valid_label_name(c) ]
             hovertemplate="<br>".join([
-                "X: %{x}   Y: %{y}   Z: %{z}",
+                "X: %{x}   Y: %{y}   Z: %{z}", 
             ] + custom_data_hover
             )
     
         else:
             custom_data = hovertemplate = None
+        print(custom_data, hovertemplate)
         return custom_data, hovertemplate
