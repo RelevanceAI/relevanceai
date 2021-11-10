@@ -34,11 +34,7 @@ excel_requirements = [
 ]
 
 vis_requirements = [
-    "umap-learn>=0.5.2",  
-    "ivis[cpu]>=2.0.6",
-    "scikit-learn", 
-    "scikit-learn-extra",
-    "kmodes>=0.11.1",
+    "scikit-learn==0.22",
     "plotly>=5.3.1",
     "typing-extensions",
     "typeguard"
@@ -85,6 +81,7 @@ setup(
         "vis": vis_requirements,
         "tests": test_requirements,
         "notebook": ["jsonshower"],
+        "ivis": ["ivis[cpu]>=2.0.6",]
     },
     python_requires=">=3.6",
     classifiers=[],
