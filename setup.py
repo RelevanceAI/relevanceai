@@ -50,14 +50,9 @@ test_requirements =[
     "pytest",
     "pytest-dotenv",
     "pytest-cov",
-] + excel_requirements \
-  + vis_requirements
-
-dev_requirements = [
-    "autopep8",
-    "pylint",
-    "jupyter"
-] + test_requirements
+    "pytest-mock",
+    "sphinx-rtd-theme>=0.5.0"
+]
 
 setup(
     name="RelevanceAI",

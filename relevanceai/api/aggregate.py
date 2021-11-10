@@ -22,7 +22,7 @@ class Aggregate(Base):
         flatten: bool = True,
         alias: str = "default",
     ):
-        """Aggregation/Groupby of a collection using an aggregation query"""
+        """You can read about aggregate documentation here: https://docs.relevance.ai/reference/aggregate_v2_api_services_aggregate_aggregate_post"""
         return self.make_http_request(
             "services/aggregate/aggregate",
             method="POST",
