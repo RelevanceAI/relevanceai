@@ -44,8 +44,6 @@ vis_requirements = [
     "typeguard"
 ]
 
-
-
 test_requirements =[
     "pytest",
     "pytest-dotenv",

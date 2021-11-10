@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 10th 2021,1:46:24 am
+# Last Modified: Wednesday, November 10th 2021,1:53:47 am
 #####
 import pytest
 
@@ -59,26 +59,8 @@ def fixture_test_args(base_args, dataset_args):
     return test_args
     
 
-
-# def test_retrieve_datasets(base_args, dataset_args, test_args):
-#     from relevanceai.visualise.dataset import Dataset
-    
-#     dataset = Dataset(**base_args, **dataset_args)
-    
-    # assert dataset.dataset_id == dataset_args["dataset_id"]
-    # assert dataset.number_of_documents == dataset_args["number_of_documents"]
-    # assert dataset.random_state == dataset_args["random_state"]
-
-    # assert dataset.vector_fields == dataset_args["vector_fields"]
-
-    # dataset = Dataset(base_args, 
-    #                     dataset_id=dataset_id, number_of_documents=number_of_documents, 
-    #                     random_state=random_state
-    #                     )
-
-
-
 def test_plot(base_args, dataset_args, test_args):
+    """Testing colour plot with cluster"""
     from relevanceai.http_client import Client
 
     client = Client(**base_args)

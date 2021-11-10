@@ -6,15 +6,8 @@ import json
 
 from dataclasses import dataclass
 
-# from sklearn.cluster import MiniBatchKMeans
-# from sklearn_extra.cluster import KMedoids
-# from kmodes.kmodes import KModes
-# from kmodes.kprototypes import KPrototypes
-
-
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
-# from typeguard import check_type
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import (

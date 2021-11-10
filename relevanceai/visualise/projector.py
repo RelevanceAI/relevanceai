@@ -139,8 +139,9 @@ class Projector(Base, DocUtils):
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(field=self.vector_label, docs=self.docs)
                 self.embedding_df.index = self.labels
+                self.embedding_df[self.vector_label] = self.labels
                 self.embedding_df['labels'] = self.labels
-            
+
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
@@ -206,6 +207,8 @@ class Projector(Base, DocUtils):
                 if self.vector_label_char_length:
                     plot_title = plot_title.replace('<br></b>', f"  Char Length: {self.vector_label_char_length}<br></b>")
                     text_labels = embedding_df['labels'].apply(lambda x: x[:self.vector_label_char_length]+'...')
+                    if self.hover_label is None: self.hover_label = [self.vector_label]
+             
             else:
                 plot_mode = 'markers'
                 text_labels = None

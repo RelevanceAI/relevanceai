@@ -6,12 +6,6 @@ import json
 
 from dataclasses import dataclass
 
-# from sklearn.preprocessing import MinMaxScaler
-# from sklearn.decomposition import PCA
-# from sklearn.manifold import TSNE
-# from umap import UMAP
-# from ivis import Ivis
-
 from doc_utils.doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
