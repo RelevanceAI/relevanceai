@@ -34,7 +34,8 @@ DIM_REDUCTION_DEFAULT_ARGS = {
 CLUSTER_NUMERIC = Literal["kmeans", "kmedoids",  None]
 CLUSTER_CATEGORICAL = Literal["kmodes",  None]
 CLUSTER_MIXED = Literal["kprotoypes", None]
-CLUSTER = Union[CLUSTER_NUMERIC, CLUSTER_CATEGORICAL, CLUSTER_MIXED]
+# CLUSTER = Union[CLUSTER_NUMERIC, CLUSTER_CATEGORICAL, CLUSTER_MIXED]
+CLUSTER = CLUSTER_NUMERIC
 
 CLUSTER_DEFAULT_ARGS = {
     'kmeans': {
@@ -49,16 +50,16 @@ CLUSTER_DEFAULT_ARGS = {
         "random_state": 42,
         "method": "pam"
     },
-    'kmodes': {
-        "init": "Huang", 
-        "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
-    },
-    'kprototypes': {
-        "init": "Huang", 
-        "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
-    }
+    # 'kmodes': {
+    #     "init": "Huang", 
+    #     "verbose": 1,
+    #     "random_state": 42,
+    #     "n_jobs": -1
+    # },
+    # 'kprototypes': {
+    #     "init": "Huang", 
+    #     "verbose": 1,
+    #     "random_state": 42,
+    #     "n_jobs": -1
+    # }
 }

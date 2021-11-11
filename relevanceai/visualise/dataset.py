@@ -62,7 +62,7 @@ class Dataset(Base, DocUtils):
         """
         Retrieve all documents from dataset
         """
-        if (number_of_documents and page_size > number_of_documents) or (self.random_state != 0): 
+        if number_of_documents and ((number_of_documents and page_size > number_of_documents) or (self.random_state != 0)): 
             page_size=number_of_documents
 
         is_random = True if self.random_state != 0 else False
@@ -70,7 +70,7 @@ class Dataset(Base, DocUtils):
                                                 page_size=page_size, is_random=is_random, random_state=self.random_state)
         data = resp["documents"]
         
-        if (number_of_documents>page_size) and (is_random==False) and (self.random_state==0):
+        if number_of_documents and ((is_random==False) and (self.random_state==0)):
             _cursor = resp["cursor"]
             _page = 0
             while resp:

@@ -55,7 +55,7 @@ class Projector(Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        number_of_points_to_render: int = 1000,
+        number_of_points_to_render: Union[None, int] = 1000,
         random_state: int = 0,
 
         ### Dimensionality reduction args
@@ -108,12 +108,11 @@ class Projector(Base, DocUtils):
             import warnings
             warnings.warn(f'A vector_label or colour_label has not been specified.')
         
-        if number_of_points_to_render > 1000:
+        if number_of_points_to_render and number_of_points_to_render > 1000:
             import warnings
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
         
         number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
-        
         self.dataset = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, vector_field=vector_field, 
                                 vector_label=vector_label, colour_label=colour_label, hover_label=hover_label,
@@ -135,7 +134,6 @@ class Projector(Base, DocUtils):
                         'z': self.vectors_dr[:,2], 
                         '_id': self.get_field_across_documents('_id', self.docs)}
             self.embedding_df = pd.DataFrame(points)
-            self.embedding_df.index = self.embedding_df['_id']
 
             if self.hover_label and all(self.dataset.valid_label_name(l) for l in self.hover_label):
                 self.embedding_df = pd.concat([self.embedding_df, self.detail[self.hover_label]], axis=1)
@@ -144,7 +142,7 @@ class Projector(Base, DocUtils):
                 self.labels = self.get_field_across_documents(field=self.vector_label, docs=self.docs)
                 self.embedding_df[self.vector_label] = self.labels
                 self.embedding_df['labels'] = self.labels
-
+                
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
@@ -159,6 +157,7 @@ class Projector(Base, DocUtils):
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
 
+            self.embedding_df.index = self.embedding_df['_id']
             return self._generate_fig(embedding_df=self.embedding_df, legend=self.legend)
 
 

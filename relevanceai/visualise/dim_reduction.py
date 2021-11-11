@@ -106,5 +106,7 @@ class DimReduction(Base, DocUtils):
                     CPU: pip install -U relevanceai[ivis-cpu]\n \
                     GPU: pip install -U relevanceai[ivis-gpu]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-            vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
+            ivis = Ivis(embedding_dims=dims, **dr_args)
+            if ivis.batch_size > vectors.shape[0]: ivis.batch_size = vectors.shape[0]
+            vectors_dr = ivis.fit(vectors).transform(vectors)
         return vectors_dr

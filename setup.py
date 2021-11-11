@@ -47,7 +47,6 @@ test_requirements =[
     "pytest-dotenv",
     "pytest-cov",
     "pytest-mock",
-    "parameterized",
 ] + excel_requirements \
   + vis_requirements
 

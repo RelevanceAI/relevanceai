@@ -3,25 +3,17 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Thursday, November 11th 2021,3:54:35 am
+# Last Modified: Thursday, November 11th 2021,6:13:59 am
 #####
 import pytest
-from parameterized import parameterized
+import json
+from pprint import pprint
+import typing
+from typing_extensions import Literal, get_args
 
-DATASET_ARGS =[ 
-    { 
-    "dataset_id" : "ecommerce-6",
-    "vector_field": "product_name_imagetext_vector_",
-    "number_of_points_to_render" : 10,
-    "random_state" : 0
-    },
-    { 
-    "dataset_id" : "unsplash-images",
-    "vector_field": "image_url_vector_",
-    "number_of_points_to_render" : 10,
-    "random_state" : 42
-    },
-]
+from relevanceai.http_client import Client
+from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
+from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 @pytest.fixture(name='base_args',
 params=[{
     "project": "dummy-collections", 
@@ -32,6 +24,7 @@ params=[{
 def fixture_base_args(request):
     return request.param
 
+
 @pytest.fixture(name='dataset_args', 
 params =[ 
         { 
@@ -40,12 +33,25 @@ params =[
         "number_of_points_to_render" : 100,
         "random_state" : 0,
         "vector_label" : "product_name",
+        "vector_label_char_length"  : 12,
         "hover_label": ["category"],
         },
         { 
         "dataset_id" : "unsplash-images",
         "vector_field": "image_url_vector_",
+        "colour_label": "dictionary_label_2",
+        "colour_label_char_length" : 20,
+        
         "number_of_points_to_render" : 100,
+        "random_state" : 42
+        },
+        { 
+        "dataset_id" : "medium_topics",
+        "vector_field": "topics_use_multi_vector_",
+        "colour_label": "topics",
+        "colour_label_char_length" : 20,
+        
+        "number_of_points_to_render" : None,
         "random_state" : 42
         },
     ])
@@ -53,41 +59,40 @@ def fixture_dataset_args(request):
     return request.param
 
 
-@pytest.fixture(name='test_args',
-params=[{
-    "dr" : 'pca',
-    "dr_args" :  {
-        "svd_solver": "auto",
-        "random_state": 42
-    },
-    "vector_label_char_length"  : 12,
 
-    "colour_label"  : None,
-    "colour_label_char_length" : 20,
-    "cluster": "kmeans",
-    "cluster_args": {
-        "init": "k-means++", 
-        "verbose": 1,
-        "compute_labels": True,
-        "max_no_improvement": 2
-    },
-    "num_clusters": 10
+@pytest.fixture(name='cluster_args',
+params= [
+    {"cluster": c,
+     "cluster_args": {
+        **CLUSTER_DEFAULT_ARGS[c]   
     }
+    } for c in get_args(CLUSTER)
+        if type(c)==typing._GenericAlias
+        for c in get_args(c)
+        if c is not None
 ])
-def fixture_test_args(request):
+def fixture_cluster_args(request):
     return request.param
     
-
-
-def test_plot(base_args, dataset_args, test_args):
-    """Testing colour plot with cluster"""
-    from relevanceai.http_client import Client
     
-    client = Client(**base_args)
-    client.projector.plot(**dataset_args, **test_args)
+@pytest.fixture(name='dr_args',
+params= [
+    {"dr": dr,
+     "dr_args": {
+        **DIM_REDUCTION_DEFAULT_ARGS[dr]   
+    }
+    } for dr in get_args(DIM_REDUCTION)
+])
+def fixture_dr_args(request):
+    return request.param
 
-    import json
-    from pprint import pprint
-    pprint(json.dumps({**dataset_args, **test_args}, indent=4))
+    
+def test_plot(base_args, dataset_args, dr_args, cluster_args):
+    """Testing colour plot with cluster"""
+    
+    pprint(json.dumps({**dataset_args, **dr_args}, indent=4))
+
+    client = Client(**base_args)
+    client.projector.plot(**dataset_args, **dr_args, **cluster_args)
 
     assert True
