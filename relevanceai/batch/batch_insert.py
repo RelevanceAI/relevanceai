@@ -127,6 +127,13 @@ class BatchInsert(APIClient, Chunker):
             chunksize=chunksize,
         )
 
+    # def _log_to_logging_collection(self, data, dt_string=None):
+    #     if dt_string is None:
+    #         now = datetime.now()
+    #         dt_string = now.strftime("_log_update_started_%d-%m-%Y_%H-%M-%S")
+    #     data['dt'] = dt_string
+        
+
     def pull_update_push(
         self,
         original_collection: str,
@@ -145,6 +152,7 @@ class BatchInsert(APIClient, Chunker):
         show_progress_bar: bool = True,
     ):
         """
+
         Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection.
 
         Parameters
@@ -179,10 +187,8 @@ class BatchInsert(APIClient, Chunker):
         """
 
         # Check if a logging_collection has been supplied
-        if logging_collection == None:
-            now = datetime.now()
-            dt_string = now.strftime("_log_update_started_%d-%m-%Y_%H-%M-%S")
-            logging_collection = original_collection + dt_string
+        if logging_collection is None:
+            logging_collection = original_collection + "_logs"
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose=False)
@@ -219,8 +225,8 @@ class BatchInsert(APIClient, Chunker):
             if remaining_length == 0:
                 self.logger.success(f"Pull, Update, Push is complete!")
                 return {
-                    "Failed Documents": failed_documents,
-                    "Logging Collection": logging_collection,
+                    "failed_documents": failed_documents,
+                    "logging_collection": logging_collection,
                 }
 
             for _ in progress_bar(
@@ -290,6 +296,7 @@ class BatchInsert(APIClient, Chunker):
                 failed_documents.extend(chunk_failed)
                 success_documents = list(set(updated_documents) - set(failed_documents))
                 upload_documents = [{"_id": i} for i in success_documents]
+                
                 self.insert_documents(
                     logging_collection,
                     upload_documents,
@@ -314,14 +321,14 @@ class BatchInsert(APIClient, Chunker):
                         f"You have over {max_error} failed documents which failed to upload!"
                     )
                     return {
-                        "Failed Documents": failed_documents,
-                        "Logging Collection": logging_collection,
+                        "failed_documents": failed_documents,
+                        "logging_collection": logging_collection,
                     }
 
         self.logger.success(f"Pull, Update, Push is complete!")
         return {
-            "Failed Documents": failed_documents,
-            "Logging Collection": logging_collection,
+            "failed_documents": failed_documents,
+            "logging_collection": logging_collection,
         }
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
