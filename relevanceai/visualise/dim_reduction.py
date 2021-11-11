@@ -46,7 +46,7 @@ class DimReduction(Base, DocUtils):
         self.dims = dims
 
         if dr_args is None:
-            self.dr_args = {**DIM_REDUCTION_DEFAULT_ARGS[dr]}
+            self.dr_args = DIM_REDUCTION_DEFAULT_ARGS[dr]
 
         self.vectors  = self._prepare_vectors(data=self.data, vector_field=self.vector_field)
         self.vectors_dr = self._dim_reduce(vectors=self.vectors, 
@@ -99,7 +99,12 @@ class DimReduction(Base, DocUtils):
             umap = UMAP(n_components=dims, **dr_args)
             vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
-            from ivis import Ivis
+            try:
+                from ivis import Ivis
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall ivis\n \
+                    CPU: pip install -U relevanceai[ivis-cpu]\n \
+                    GPU: pip install -U relevanceai[ivis-gpu]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
         return vectors_dr

@@ -34,7 +34,9 @@ excel_requirements = [
 ]
 
 vis_requirements = [
-    "scikit-learn==0.22",
+    "scikit-learn==1.0.1",
+    "scikit-learn-extra==0.2.0",
+    "umap-learn>=0.5.2",
     "plotly>=5.3.1",
     "typing-extensions",
     "typeguard"
@@ -45,15 +47,22 @@ test_requirements =[
     "pytest-dotenv",
     "pytest-cov",
     "pytest-mock",
+    "parameterized",
 ] + excel_requirements \
   + vis_requirements
+
+
+ivis_cpu = ["ivis[cpu]>=2.0.6"]
+ivis_gpu = ["ivis[gpu]>=2.0.6"]
 
 dev_requirements = [
     "autopep8",
     "pylint",
     "jupyter",
     "sphinx-rtd-theme>=0.5.0"
-] + test_requirements
+] + test_requirements \
+    + ivis_cpu \
+    + ivis_gpu
 
 
 setup(
@@ -64,7 +73,9 @@ setup(
     author="Relevance AI",
     author_email="dev@relevance.ai",
     long_description="",
+
     packages=find_packages(),
+
     setup_requires=["wheel"],
     install_requires=requirements,
     package_data={
@@ -78,7 +89,9 @@ setup(
         "vis": vis_requirements,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,
-        "ivis": ["ivis[gpu]>=2.0.6"]
+        "ivis-cpu": ivis_cpu,
+        "ivis-gpu": ivis_gpu
+        
     },
     python_requires=">=3.6",
     classifiers=[],

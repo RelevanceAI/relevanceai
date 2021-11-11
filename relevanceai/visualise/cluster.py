@@ -109,6 +109,7 @@ class Cluster(Base):
         Clustering categorical data types
         """
         # if cluster == "kmodes":
+        # from kmodes.kmodes import KModes
         #     if categorical_idx is None:
         #         categorical_columns = list(df.select_dtypes('object').columns)
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
@@ -132,7 +133,9 @@ class Cluster(Base):
         """
         Clustering mixed data types
         """
+
         # if cluster == "kprototypes":
+        # from kmodes.kprototypes import KPrototypes
         #     if categorical_idx is None:
         #         categorical_columns = list(df.select_dtypes('object').columns)
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]

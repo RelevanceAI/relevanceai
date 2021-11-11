@@ -10,11 +10,15 @@ from relevanceai.errors import APIError
 
 vis_requirements = False
 try:
+    from relevanceai.visualise.constants import *
+    from relevanceai.visualise.dataset import Dataset
+    from relevanceai.visualise.dim_reduction import DimReduction
+    from relevanceai.visualise.cluster import Cluster
     from relevanceai.visualise.projector import Projector
     vis_requirements = True
 except ModuleNotFoundError as e:
     raise ModuleNotFoundError(e)
-
+    
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 

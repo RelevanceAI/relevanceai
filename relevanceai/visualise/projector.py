@@ -135,20 +135,19 @@ class Projector(Base, DocUtils):
                         'z': self.vectors_dr[:,2], 
                         '_id': self.get_field_across_documents('_id', self.docs)}
             self.embedding_df = pd.DataFrame(points)
+            self.embedding_df.index = self.embedding_df['_id']
 
             if self.hover_label and all(self.dataset.valid_label_name(l) for l in self.hover_label):
                 self.embedding_df = pd.concat([self.embedding_df, self.detail[self.hover_label]], axis=1)
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(field=self.vector_label, docs=self.docs)
-                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df[self.vector_label] = self.labels
                 self.embedding_df['labels'] = self.labels
 
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
-                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df['labels'] = self.labels
                 self.embedding_df[self.colour_label] = self.labels
                 self.legend = 'labels'
@@ -157,7 +156,6 @@ class Projector(Base, DocUtils):
                 cluster = Cluster(**self.base_args,
                     vectors=self.vectors, cluster=cluster, cluster_args=cluster_args, k=self.num_clusters)
                 self.cluster_labels = cluster.cluster_labels
-                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
 
@@ -241,9 +239,9 @@ class Projector(Base, DocUtils):
 
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
+
             custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             scatter = go.Scatter3d(
-                # name=str(embedding_df.index),
                 x=embedding_df['x'],
                 y=embedding_df['y'],
                 z=embedding_df['z'],
@@ -320,5 +318,4 @@ class Projector(Base, DocUtils):
     
         else:
             custom_data = hovertemplate = None
-        # print(custom_data, hovertemplate)
         return custom_data, hovertemplate
