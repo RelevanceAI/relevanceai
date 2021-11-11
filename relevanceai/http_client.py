@@ -8,6 +8,12 @@ from relevanceai.batch.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
 
+vis_requirements = False
+try:
+    from relevanceai.visualise.projector import Projector
+    vis_requirements = True
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(e)
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -43,6 +49,8 @@ class Client(BatchAPIClient, DocUtils):
             self.logger.success(self.WELCOME_MESSAGE)
         else:
             raise APIError(self.FAIL_MESSAGE)
+        if vis_requirements:
+            self.projector = Projector(project, api_key, base_url)
 
     @property
     def auth_header(self):
