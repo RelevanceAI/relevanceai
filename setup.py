@@ -64,10 +64,7 @@ setup(
     author="Relevance AI",
     author_email="dev@relevance.ai",
     long_description="",
-
-    package_dir={"": "relevanceai"},
-    packages=find_packages(where="relevanceai"),
-
+    packages=find_packages(),
     setup_requires=["wheel"],
     install_requires=requirements,
     package_data={
