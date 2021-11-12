@@ -254,7 +254,11 @@ class BatchInsert(APIClient, Chunker):
             chunk_failed = insert_json["failed_documents"]
             failed_documents.extend(chunk_failed)
             success_documents = list(set(updated_documents) - set(failed_documents))
-            
+            if verbose:
+                self.logger.success(
+                    f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
+                )
+
             # If fail, try to reduce retrieve chunk
             # if len(chunk_failed) > 0:
             #     # self.logger.warning(
