@@ -182,9 +182,8 @@ class BatchInsert(APIClient, Chunker):
 
         # Check if a logging_collection has been supplied
         if log_file is None:
-            
             log_file = original_collection + ".log"
-            self.logger.info(f"Logging to {log_file}")
+            # self.logger.info(f"Logging to {log_file}")
 
         # Track failed documents
         failed_documents = []
@@ -193,7 +192,7 @@ class BatchInsert(APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
             # Get document lengths to calculate iterations
             original_length = self.datasets.documents._get_number_of_documents(
-                original_collection, filters
+                original_collection, filters, verbose=verbose
             )
             
             iterations_required = math.ceil(original_length / retrieve_chunk_size)
@@ -258,9 +257,9 @@ class BatchInsert(APIClient, Chunker):
                 
                 # If fail, try to reduce retrieve chunk
                 if len(chunk_failed) > 0:
-                    self.logger.warning(
-                        "Failed to upload. Retrieving half of previous number."
-                    )
+                    # self.logger.warning(
+                    #     "Failed to upload. Retrieving half of previous number."
+                    # )
                     retrieve_chunk_size = (
                         retrieve_chunk_size
                         * retrieve_chunk_size_failure_retry_multiplier
@@ -268,7 +267,7 @@ class BatchInsert(APIClient, Chunker):
                     time.sleep(self.config.seconds_between_retries)
                     break
 
-        self.logger.success(f"Pull, Update, Push is complete!")
+        # self.logger.success(f"Pull, Update, Push is complete!")
         return {
             "failed_documents": failed_documents,
         }

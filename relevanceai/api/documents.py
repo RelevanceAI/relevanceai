@@ -204,6 +204,6 @@ class Documents(Base):
             for dataset_id, filters in zip(dataset_ids, list_of_filters)
         }
 
-    def _get_number_of_documents(self, dataset_id, filters=[]):
+    def _get_number_of_documents(self, dataset_id, filters=[], verbose: bool=False):
         """Certainty around the number of documents excluding chunks (until chunk documents is fixed)"""
-        return self.get_where(dataset_id, page_size=1, filters=filters)["count"]
+        return self.get_where(dataset_id, page_size=1, filters=filters, verbose=verbose)["count"]
