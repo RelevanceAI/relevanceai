@@ -1,6 +1,7 @@
 import sys
 from loguru import logger as loguru_logger
 from abc import abstractmethod
+from relevanceai.config import CONFIG
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -23,6 +24,7 @@ class LoguruLogger(AbstractLogger):
         return self._logger
 
     def _init_logger(self):
+        self.config = CONFIG
         logging_level = self.config.get_option("logging.logging_level")
         log_to_file = str2bool(self.config.get_option("logging.log_to_file"))
         logger = loguru_logger

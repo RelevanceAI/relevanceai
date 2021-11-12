@@ -21,7 +21,7 @@ def str2bool(v):
 class Client(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's relevanceai"""
 
-    WELCOME_MESSAGE = """Welcome to the development version of the relevanceai Python SDK"""
+    WELCOME_MESSAGE = """Welcome to the RelevanceAI Python SDK"""
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
 
     def __init__(
