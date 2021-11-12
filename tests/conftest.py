@@ -5,7 +5,7 @@ from relevanceai import Client
 @pytest.fixture
 def test_project():
     # test projects
-    return os.getenv("TEST_USERNAME")
+    return os.getenv("TEST_PROJECT")
 
 @pytest.fixture
 def test_api_key():
