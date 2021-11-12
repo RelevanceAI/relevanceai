@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Callable
 
 from relevanceai.api.client import APIClient
+from relevanceai.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
 from relevanceai.batch.chunk import Chunker
@@ -178,40 +179,42 @@ class BatchInsert(APIClient, Chunker):
             How many failed uploads before the function breaks
 
         """
-        # TODO: Allow for continuation
-
         # Check if a logging_collection has been supplied
         if log_file is None:
             log_file = original_collection + ".log"
-            # self.logger.info(f"Logging to {log_file}")
+        
+        # Instantiate the logger to document the successful IDs
+        PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
 
         # Track failed documents
         failed_documents = []
 
         # Trust the process
-        # for _ in range(number_of_retrieve_retries):
-            # Get document lengths to calculate iterations
+        # Get document lengths to calculate iterations
         original_length = self.datasets.documents._get_number_of_documents(
             original_collection, filters, verbose=verbose
         )
+
+        # get the remaining number in case things break
+        remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
         
-        iterations_required = math.ceil(original_length / retrieve_chunk_size)
+        iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
+
+        completed_documents_list = []
+
+        # Get incomplete documents from raw collection
+        retrieve_filters = filters + [
+            {
+                "field": "ids",
+                "filter_type": "ids",
+                "condition": "!=",
+                "condition_value": completed_documents_list,
+            }
+        ]
 
         for _ in progress_bar(
             range(iterations_required), show_progress_bar=show_progress_bar
         ):
-
-            completed_documents_list = []
-
-            # Get incomplete documents from raw collection
-            retrieve_filters = filters + [
-                {
-                    "field": "ids",
-                    "filter_type": "ids",
-                    "condition": "!=",
-                    "condition_value": completed_documents_list,
-                }
-            ]
 
             orig_json = self.datasets.documents.get_where(
                 original_collection,
@@ -223,13 +226,13 @@ class BatchInsert(APIClient, Chunker):
 
             documents = orig_json["documents"]
 
-            # Update documents
             try:
                 updated_data = update_function(documents, **updating_args)
             except Exception as e:
                 self.logger.error("Your updating function does not work: " + str(e))
                 traceback.print_exc()
                 return
+            
             updated_documents = [i["_id"] for i in documents]
 
             # Upload documents
@@ -254,24 +257,13 @@ class BatchInsert(APIClient, Chunker):
             chunk_failed = insert_json["failed_documents"]
             failed_documents.extend(chunk_failed)
             success_documents = list(set(updated_documents) - set(failed_documents))
+            PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
             if verbose:
                 self.logger.success(
                     f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
                 )
 
-            # If fail, try to reduce retrieve chunk
-            # if len(chunk_failed) > 0:
-            #     # self.logger.warning(
-            #     #     "Failed to upload. Retrieving half of previous number."
-            #     # )
-            #     retrieve_chunk_size = (
-            #         retrieve_chunk_size
-            #         * retrieve_chunk_size_failure_retry_multiplier
-            #     )
-            #     time.sleep(self.config.seconds_between_retries)
-            #     break
-
-        # self.logger.success(f"Pull, Update, Push is complete!")
+        self.logger.success(f"Pull, Update, Push is complete!")
         return {
             "failed_documents": failed_documents,
         }
@@ -328,7 +320,6 @@ class BatchInsert(APIClient, Chunker):
             How many failed uploads before the function breaks
 
         """
-
         # Check if a logging_collection has been supplied
         if logging_collection is None:
             logging_collection = original_collection + "_logs"
@@ -347,7 +338,6 @@ class BatchInsert(APIClient, Chunker):
         failed_documents = []
 
         # Trust the process
-
         for _ in range(number_of_retrieve_retries):
 
             # Get document lengths to calculate iterations
@@ -514,6 +504,7 @@ class BatchInsert(APIClient, Chunker):
                 "failed_documents_detailed": [],
             }
 
+        # Insert documents
         test_doc = json.dumps(docs[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize is None:

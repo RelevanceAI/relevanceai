@@ -1,8 +1,6 @@
 
 import sys
 import time
-
-from relevanceai.config import CONFIG
 from relevanceai.transport import Transport
 from relevanceai.logger import LoguruLogger
 
@@ -17,6 +15,5 @@ class Base(Transport, LoguruLogger):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
-        self.config = CONFIG
         # Initialize logger
         super().__init__()
