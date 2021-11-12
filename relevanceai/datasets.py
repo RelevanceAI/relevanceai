@@ -185,3 +185,22 @@ def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
     """
     df = pd.read_csv("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv").drop('Unnamed: 0', axis=1)
     return df.to_dict(orient='records')[:number_of_documents]
+
+
+def get_mission_statements_dataset(number_of_documents: Union[None, int] = 1433) -> List:
+    """Function to download a sample games dataset.
+    Dataset from https://www.freetogame.com/
+    Total Len: 1433
+    Sample document:
+    {'_id': 0,
+    'company': 'Starbucks',
+    'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'},
+    """
+    df = pd.read_csv('https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv').drop(['Unnamed: 0'], axis=1)
+    df = df.reset_index(drop=False)
+    df.columns = ['_id', 'company', 'text']
+    df
+    if number_of_documents:
+        df = df[:number_of_documents]
+    df = df.to_dict(orient='records')
+    return df
