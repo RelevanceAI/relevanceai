@@ -189,83 +189,83 @@ class BatchInsert(APIClient, Chunker):
         failed_documents = []
 
         # Trust the process
-        for _ in range(number_of_retrieve_retries):
+        # for _ in range(number_of_retrieve_retries):
             # Get document lengths to calculate iterations
-            original_length = self.datasets.documents._get_number_of_documents(
-                original_collection, filters, verbose=verbose
+        original_length = self.datasets.documents._get_number_of_documents(
+            original_collection, filters, verbose=verbose
+        )
+        
+        iterations_required = math.ceil(original_length / retrieve_chunk_size)
+
+        for _ in progress_bar(
+            range(iterations_required), show_progress_bar=show_progress_bar
+        ):
+
+            completed_documents_list = []
+
+            # Get incomplete documents from raw collection
+            retrieve_filters = filters + [
+                {
+                    "field": "ids",
+                    "filter_type": "ids",
+                    "condition": "!=",
+                    "condition_value": completed_documents_list,
+                }
+            ]
+
+            orig_json = self.datasets.documents.get_where(
+                original_collection,
+                filters=retrieve_filters,
+                page_size=retrieve_chunk_size,
+                select_fields=select_fields,
+                verbose=verbose,
             )
-            
-            iterations_required = math.ceil(original_length / retrieve_chunk_size)
 
-            for _ in progress_bar(
-                range(iterations_required), show_progress_bar=show_progress_bar
-            ):
+            documents = orig_json["documents"]
 
-                completed_documents_list = []
+            # Update documents
+            try:
+                updated_data = update_function(documents, **updating_args)
+            except Exception as e:
+                self.logger.error("Your updating function does not work: " + str(e))
+                traceback.print_exc()
+                return
+            updated_documents = [i["_id"] for i in documents]
 
-                # Get incomplete documents from raw collection
-                retrieve_filters = filters + [
-                    {
-                        "field": "ids",
-                        "filter_type": "ids",
-                        "condition": "!=",
-                        "condition_value": completed_documents_list,
-                    }
-                ]
-
-                orig_json = self.datasets.documents.get_where(
-                    original_collection,
-                    filters=retrieve_filters,
-                    page_size=retrieve_chunk_size,
-                    select_fields=select_fields,
+            # Upload documents
+            if updated_collection is None:
+                insert_json = self.update_documents(
+                    dataset_id=original_collection,
+                    docs=updated_data,
                     verbose=verbose,
+                    max_workers=max_workers,
+                    show_progress_bar=False,
+                )
+            else:
+                insert_json = self.insert_documents(
+                    dataset_id=updated_collection,
+                    docs=updated_data,
+                    verbose=verbose,
+                    max_workers=max_workers,
+                    show_progress_bar=False,
                 )
 
-                documents = orig_json["documents"]
-
-                # Update documents
-                try:
-                    updated_data = update_function(documents, **updating_args)
-                except Exception as e:
-                    self.logger.error("Your updating function does not work: " + str(e))
-                    traceback.print_exc()
-                    return
-                updated_documents = [i["_id"] for i in documents]
-
-                # Upload documents
-                if updated_collection is None:
-                    insert_json = self.update_documents(
-                        dataset_id=original_collection,
-                        docs=updated_data,
-                        verbose=verbose,
-                        max_workers=max_workers,
-                        show_progress_bar=False,
-                    )
-                else:
-                    insert_json = self.insert_documents(
-                        dataset_id=updated_collection,
-                        docs=updated_data,
-                        verbose=verbose,
-                        max_workers=max_workers,
-                        show_progress_bar=False,
-                    )
-
-                # Check success
-                chunk_failed = insert_json["failed_documents"]
-                failed_documents.extend(chunk_failed)
-                success_documents = list(set(updated_documents) - set(failed_documents))
-                
-                # If fail, try to reduce retrieve chunk
-                if len(chunk_failed) > 0:
-                    # self.logger.warning(
-                    #     "Failed to upload. Retrieving half of previous number."
-                    # )
-                    retrieve_chunk_size = (
-                        retrieve_chunk_size
-                        * retrieve_chunk_size_failure_retry_multiplier
-                    )
-                    time.sleep(self.config.seconds_between_retries)
-                    break
+            # Check success
+            chunk_failed = insert_json["failed_documents"]
+            failed_documents.extend(chunk_failed)
+            success_documents = list(set(updated_documents) - set(failed_documents))
+            
+            # If fail, try to reduce retrieve chunk
+            # if len(chunk_failed) > 0:
+            #     # self.logger.warning(
+            #     #     "Failed to upload. Retrieving half of previous number."
+            #     # )
+            #     retrieve_chunk_size = (
+            #         retrieve_chunk_size
+            #         * retrieve_chunk_size_failure_retry_multiplier
+            #     )
+            #     time.sleep(self.config.seconds_between_retries)
+            #     break
 
         # self.logger.success(f"Pull, Update, Push is complete!")
         return {
