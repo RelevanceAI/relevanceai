@@ -35,11 +35,12 @@ class Client(BatchAPIClient, DocUtils):
     ):
 
         if project is None or api_key is None:
-            raise ValueError(
-                "It seems you are missing an API key, "
-                + "you can sign up for an API key following the instructions here: "
-                + "https://discovery.relevance.ai/reference/usage"
-            )
+            project, api_key = Client.token_to_auth()
+            # raise ValueError(
+            #     "It seems you are missing an API key, "
+            #     + "you can sign up for an API key following the instructions here: "
+            #     + "https://discovery.relevance.ai/reference/usage"
+            # )
 
         # if (
         #     self.datasets.list(
@@ -57,17 +58,22 @@ class Client(BatchAPIClient, DocUtils):
             self.projector = Projector(project, api_key, base_url)
 
     @staticmethod
+    def token_to_auth():
+        token = getpass.getpass(
+            "Paste your project and API key in the format: of `project:api_key` here:"
+        )
+        project = token.split(":")[0]
+        api_key = token.split(":")[1]
+        return project, api_key
+
+    @staticmethod
     def login(
         self,
         base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
         verbose: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
-        token = getpass.getpass(
-            "Paste your project and API key in the format: of `project:api_key` here:"
-        )
-        project = token.split(":")[0]
-        api_key = token.split(":")[1]
+        project, api_key = Client.token_to_auth()
         return Client(
             project=project, api_key=api_key, base_url=base_url, verbose=verbose
         )
