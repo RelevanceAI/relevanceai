@@ -27,9 +27,8 @@ jobs:
     steps:
     - uses: jpetrucciani/mypy-check@master
       with:
-        path: 'relevanceai'
+        path: '.'
     - name: Mypy Check
-      # or specify additional mypy flags!
       uses: jpetrucciani/mypy-check@master
       with:
-        mypy_flags: '--config-file .mypy.ini'
+        mypy_flags: 'relevanceai --config-file .mypy.ini'
