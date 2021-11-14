@@ -1,0 +1,68 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # os: [ ubuntu-latest, macos-latest, windows-latest ] 
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+        #   - os: macos-latest
+        #     path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # os: [ ubuntu-latest, macos-latest, windows-latest ] 
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+        #   - os: macos-latest
+        #     path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+    - name: Mypy Check
+
+      # or specify additional mypy flags!
+      uses: jpetrucciani/mypy-check@master
+      with:
+        mypy_flags: '--config-file .mypy.ini'
