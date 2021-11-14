@@ -26,6 +26,7 @@ update:
 ## Test dependencies
 test:
 	pytest $(TEST_PATH) --cov=relevanceai -vv -rs
+	mypy relevanceai
 
 ## Delete all compiled Python files
 clean:

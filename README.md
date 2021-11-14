@@ -286,15 +286,56 @@ typehinting and testing.
 ```
 python -m pip install pytest mypy
 ```
-
 Then run testing using:
+
 
 ```
 python -m pytest
 mypy relevanceai
 ```
 
-❯ make test
+Otherwise, you can also setup your dev env using the [`Makefile`](./Makefile)
+
+Setup your virtualenv, install requirements and package
+
+```python
+❯ make install
+```
+
+For all available targets
+
+```python
+❯ make help
+Available rules:
+clean               Delete all compiled Python files 
+install             Install dependencies 
+lint                Lint using flake8 
+test                Test dependencies 
+update              Update dependencies 
+```
+
+To add new targets, add new command and intended script, add descriptive comment above the command block as description to the rule.`
+
+```make
+#################################################################################
+# COMMANDS                                                                      #
+#################################################################################
+...
+## Test dependencies
+test
+	pytest $(TEST_PATH) --cov=relevanceai -vv
+...
+```
+Then run testing using:
+
+You can limit your testing on a single file/folder by specifying a test path to folder or file.
+
+
+```zsh
+
+❯ make test TEST_PATH=tests/integration    
+
+
 pytest . --cov=relevanceai -vv
 ========================================= test session starts =========================================
 platform linux -- Python 3.7.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/relevanceai/.venv/bin/python3.8
