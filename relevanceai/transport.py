@@ -2,6 +2,7 @@
 """
 import time
 import traceback
+from typing import Union
 from relevanceai.config import Config
 from json.decoder import JSONDecodeError
 from logger import AbstractLogger
@@ -30,7 +31,7 @@ class Transport:
         endpoint: str,
         method: str = "GET",
         parameters: dict = {},
-        output_format: str = "json",
+        output_format: Union[str, bool] = "json",
         base_url: str = None,
         verbose: bool = True,
         retries: int = None,

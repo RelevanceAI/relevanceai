@@ -1,8 +1,6 @@
 from requests.models import stream_decode_response_unicode
-from typing import Union
+from typing import List
 from relevanceai.base import Base
-
-
 
 class Documents(Base):
     def __init__(self, project, api_key, base_url):
@@ -189,7 +187,7 @@ class Documents(Base):
                 full_data += x['documents']
         return full_data
 
-    def get_number_of_documents(self, dataset_ids: list, list_of_filters=None):
+    def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
         """
         dataset_ids: list of dataset_ids
         list_of_filters: list of list of filters corresponding to the same order of the dataset_ids

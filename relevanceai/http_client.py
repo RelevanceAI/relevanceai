@@ -2,6 +2,7 @@
 """
 import getpass
 import os
+from typing import Optional
 
 from doc_utils.doc_utils import DocUtils
 
@@ -27,12 +28,11 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: str=os.getenv("VDB_PROJECT"),
-        api_key: str=os.getenv("VDB_API_KEY"),
-        base_url: str="https://gateway-api-aueast.relevance.ai/v1/",
+        project: Optional[str]=os.getenv("VDB_PROJECT", None),
+        api_key: Optional[str]=os.getenv("VDB_API_KEY", None),
+        base_url: Optional[str]="https://gateway-api-aueast.relevance.ai/v1/",
         verbose: bool=True
     ):
-        super().__init__(project, api_key, base_url)
 
         if project is None or api_key is None:
             raise ValueError(
@@ -50,8 +50,11 @@ class Client(BatchAPIClient, DocUtils):
             if verbose: self.logger.success(self.WELCOME_MESSAGE)
         else:
             raise APIError(self.FAIL_MESSAGE)
+
+        super().__init__(project, api_key, base_url) # type: ignore
         if vis_requirements:
             self.projector = Projector(project, api_key, base_url)
+
     @staticmethod
     def login(
         self,
