@@ -24,12 +24,17 @@ class AbstractLogger:
     #     raise NotImplementedError
 
 class LoguruLogger(AbstractLogger):
+    """Using verbose loguru as base logger for now
+    """
     # Add Logging
     def __init__(self):
         self._init_logger()
 
     @property
     def logger(self):
+        if hasattr("_logger"):
+            return self._logger
+        self._init_logger()
         return self._logger
 
     def _init_logger(self):
