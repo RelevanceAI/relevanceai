@@ -41,13 +41,13 @@ class Client(BatchAPIClient, DocUtils):
                 + "https://discovery.relevance.ai/reference/usage"
             )
 
-        if (
-            self.datasets.list(
-                verbose=False, output_format=None, retries=1
-            ).status_code
-            == 200
-        ):
-            if verbose: self.logger.success(self.WELCOME_MESSAGE)
+        # if (
+        #     self.datasets.list(
+        #         verbose=False, output_format=None, retries=1
+        #     ).status_code
+        #     == 200
+        # ):
+        #     if verbose: self.logger.success(self.WELCOME_MESSAGE)
         else:
             raise APIError(self.FAIL_MESSAGE)
 
