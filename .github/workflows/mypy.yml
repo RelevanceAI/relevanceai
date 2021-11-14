@@ -30,4 +30,4 @@ jobs:
         pip install mypy
     - name: mypy
       run: |
-        mypy relevanceai
+        mypy relevanceai/
