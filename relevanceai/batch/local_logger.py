@@ -1,6 +1,8 @@
 """Local logger for pull_update_push.
 """
 import os
+from os import PathLike
+from typing import Union
 from relevanceai.config import CONFIG
 from relevanceai.logger import LoguruLogger
 
@@ -8,7 +10,7 @@ class PullUpdatePushLocalLogger(LoguruLogger):
     """This logger class is specifically for pull_update_push to log
     failures locally as opposed to on the cloud.
     """
-    def __init__(self, filename: str=None):
+    def __init__(self, filename: Union[str, bytes, PathLike[str], PathLike[bytes]]):
         """Filename for failed IDs
         """
         self.filename = filename

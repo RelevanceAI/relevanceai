@@ -1,5 +1,5 @@
 from requests.models import stream_decode_response_unicode
-
+from typing import Union
 from relevanceai.base import Base
 
 
@@ -43,7 +43,7 @@ class Documents(Base):
         select_fields: list = [],
         cursor: str = None,
         page_size: int = 20,
-        sort: list = [],
+        sort: list = [], # type: ignore
         include_vector: bool = True,
         output_format: str = "json",
         verbose: bool = True,
@@ -117,7 +117,7 @@ class Documents(Base):
                 endpoint=f"datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={"updates": updates},
-                output_format=False,
+                output_format="",
                 verbose=verbose,
                 retries=retries,
                 base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",

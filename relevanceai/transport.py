@@ -2,7 +2,9 @@
 """
 import time
 import traceback
+from relevanceai.config import Config
 from json.decoder import JSONDecodeError
+from logger import AbstractLogger
 
 import requests
 from requests import Request
@@ -16,8 +18,8 @@ class Transport:
     project: str
     api_key: str
     base_url: str
-    config: dict
-    logger = None
+    config: Config
+    logger: AbstractLogger
 
     @property
     def auth_header(self):
