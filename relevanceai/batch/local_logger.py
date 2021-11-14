@@ -10,7 +10,7 @@ class PullUpdatePushLocalLogger(LoguruLogger):
     """This logger class is specifically for pull_update_push to log
     failures locally as opposed to on the cloud.
     """
-    def __init__(self, filename: Union[str, bytes, PathLike[str], PathLike[bytes]]):
+    def __init__(self, filename: Union[str, bytes]):
         """Filename for failed IDs
         """
         self.filename = filename

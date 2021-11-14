@@ -1,4 +1,6 @@
+from os import error
 import sys
+from typing import Callable
 from loguru import logger as loguru_logger
 from abc import abstractmethod
 from relevanceai.config import CONFIG
@@ -9,6 +11,13 @@ def str2bool(v):
 class AbstractLogger:
     """Base Logging Instance
     """
+    info: Callable
+    error: Callable
+    success: Callable
+    debug: Callable
+    warning: Callable
+    critical: Callable
+    warn: Callable
     # @property
     # @abstractmethod
     # def logger(self):
