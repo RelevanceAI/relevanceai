@@ -49,7 +49,7 @@ class Dataset(Base, DocUtils):
         fields = [label for label in ['_id', vector_field, vector_label, colour_label]+hover_label if label] # type: ignore
         self.docs = self._retrieve_documents(dataset_id, fields, number_of_documents, page_size)
         self.vector_fields = self._vector_fields()
-        self.docs = self.remove_empty_vector_fields(vector_field)
+        self.docs = self._remove_empty_vector_fields(vector_field)
 
     
     def _retrieve_documents(
@@ -83,8 +83,9 @@ class Dataset(Base, DocUtils):
             _page = 0
             while resp:
                 self.logger.debug(f'Paginating {_page} page size {page_size} ...')
-                resp = self.dataset.documents.list(
+                resp = self.dataset.documents.get_where(
                     dataset_id=dataset_id,
+                    select_fields=fields,
                     page_size=page_size,
                     cursor=_cursor,
                     include_vector=True,
@@ -106,7 +107,7 @@ class Dataset(Base, DocUtils):
     def _build_df(data: List[JSONDict]):
         df = pd.DataFrame(data)
         # detail_cols = self.get_fields_across_documents_except(fields=['_vector_', '_id', 'insert_date_'], data=data)
-        detail_cols = [c for c in df.columns if not any(f in c for f in ['_vector_', '_id', 'insert_date_'])]
+        detail_cols = [ c for c in df.columns if not any(f in c for f in ['_vector_', '_id', 'insert_date_']) ]
         detail = df[detail_cols]
         return df, detail
 
@@ -147,7 +148,7 @@ class Dataset(Base, DocUtils):
         else:
             raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
 
-    def remove_empty_vector_fields(self, vector_field: str) -> List[JSONDict]:
+    def _remove_empty_vector_fields(self, vector_field: str) -> List[JSONDict]:
         """
         Remove documents with empty vector fields
         """

@@ -50,16 +50,16 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
         "random_state": 42,
         "method": "pam"
     },
-    'kmodes': {
-        "init": "Huang", 
-        "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
-    },
-    'kprototypes': {
-        "init": "Huang", 
-        "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
-    }
+    # 'kmodes': {
+    #     "init": "Huang", 
+    #     "verbose": 1,
+    #     "random_state": 42,
+    #     "n_jobs": -1
+    # },
+    # 'kprototypes': {
+    #     "init": "Huang", 
+    #     "verbose": 1,
+    #     "random_state": 42,
+    #     "n_jobs": -1
+    # }
 }

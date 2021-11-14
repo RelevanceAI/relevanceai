@@ -88,7 +88,11 @@ class Cluster(Base):
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
         elif cluster == 'kmedoids':
-            from sklearn_extra.cluster import KMedoids
+            try:
+                from sklearn_extra.cluster import KMedoids
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall umap\n \
+                    pip install -U relevanceai[kmedoids]')
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = KMedoids(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
@@ -108,7 +112,10 @@ class Cluster(Base):
         """
         Clustering categorical data types
         """
+        import warnings
+        warnings.warn(f'This method is still not yet implemented')
         # if cluster == "kmodes":
+        # from kmodes.kmodes import KModes
         #     if categorical_idx is None:
         #         categorical_columns = list(df.select_dtypes('object').columns)
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
@@ -132,7 +139,11 @@ class Cluster(Base):
         """
         Clustering mixed data types
         """
+        import warnings
+        warnings.warn(f'This method is still not yet implemented')
+
         # if cluster == "kprototypes":
+        # from kmodes.kprototypes import KPrototypes
         #     if categorical_idx is None:
         #         categorical_columns = list(df.select_dtypes('object').columns)
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]

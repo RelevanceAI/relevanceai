@@ -94,12 +94,23 @@ class DimReduction(Base, DocUtils):
             tsne = TSNE(n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
         elif dr == "umap":
-            from umap import UMAP
+            try:
+                from umap import UMAP
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall umap\n \
+                    pip install -U relevanceai[umap]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             umap = UMAP(n_components=dims, **dr_args)
             vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
-            from ivis import Ivis
+            try:
+                from ivis import Ivis
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall ivis\n \
+                    CPU: pip install -U relevanceai[ivis-cpu]\n \
+                    GPU: pip install -U relevanceai[ivis-gpu]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-            vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
+            ivis = Ivis(embedding_dims=dims, **dr_args)
+            if ivis.batch_size > vectors.shape[0]: ivis.batch_size = vectors.shape[0]
+            vectors_dr = ivis.fit(vectors).transform(vectors)
         return vectors_dr

@@ -55,7 +55,7 @@ class Projector(Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        number_of_points_to_render: int = 1000,
+        number_of_points_to_render: Optional[int] = 1000,
         random_state: int = 0,
 
         ### Dimensionality reduction args
@@ -108,12 +108,11 @@ class Projector(Base, DocUtils):
             import warnings
             warnings.warn(f'A vector_label or colour_label has not been specified.')
         
-        if number_of_points_to_render > 1000:
+        if number_of_points_to_render and number_of_points_to_render > 1000:
             import warnings
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
         
-        number_of_documents = None if number_of_points_to_render == -1 else number_of_points_to_render
-        
+        number_of_documents = number_of_points_to_render
         self.dataset = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, vector_field=vector_field, 
                                 vector_label=vector_label, colour_label=colour_label, hover_label=hover_label,
@@ -141,14 +140,12 @@ class Projector(Base, DocUtils):
 
             if self.vector_label and self.dataset.valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(field=self.vector_label, docs=self.docs)
-                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df[self.vector_label] = self.labels
                 self.embedding_df['labels'] = self.labels
-
+                
             self.legend = None
             if self.colour_label and self.dataset.valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(field=self.colour_label, docs=self.docs)
-                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df['labels'] = self.labels
                 self.embedding_df[self.colour_label] = self.labels
                 self.legend = 'labels'
@@ -157,10 +154,10 @@ class Projector(Base, DocUtils):
                 cluster = Cluster(**self.base_args,
                     vectors=self.vectors, cluster=cluster, cluster_args=cluster_args, k=self.num_clusters)
                 self.cluster_labels = cluster.cluster_labels
-                self.embedding_df.index = self.embedding_df['_id']
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
 
+            self.embedding_df.index = self.embedding_df['_id']
             return self._generate_fig(embedding_df=self.embedding_df, legend=self.legend)
 
 
@@ -218,7 +215,7 @@ class Projector(Base, DocUtils):
              
             else:
                 plot_mode = 'markers'
-                text_labels = None
+                text_labels = None 
 
             ## TODO: We can change this later to show top 100 neighbours of a selected word
             #  # Regular displays the full scatter plot with only circles
@@ -241,9 +238,9 @@ class Projector(Base, DocUtils):
 
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
+
             custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             scatter = go.Scatter3d(
-                # name=str(embedding_df.index),
                 x=embedding_df['x'],
                 y=embedding_df['y'],
                 z=embedding_df['z'],

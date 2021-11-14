@@ -25,13 +25,16 @@ update:
 
 ## Test dependencies
 test:
-	pytest $(TEST_PATH) --cov=relevanceai -vv
+	pytest $(TEST_PATH) --cov=relevanceai -vv -rs
 
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name ".coverage" -exec rm -rf {} +
+	find . -type d -name "*.pytest_cache" -exec rm -rf {} +
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
+	find . -type d -name "*.eggs" -exec rm -rf {} +
 
 ## Lint using flake8
 lint:
