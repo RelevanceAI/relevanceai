@@ -94,7 +94,11 @@ class DimReduction(Base, DocUtils):
             tsne = TSNE(n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
         elif dr == "umap":
-            from umap import UMAP
+            try:
+                from umap import UMAP
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall umap\n \
+                    pip install -U relevanceai[umap]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             umap = UMAP(n_components=dims, **dr_args)
             vectors_dr = umap.fit_transform(vectors)

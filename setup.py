@@ -34,13 +34,16 @@ excel_requirements = [
 ]
 
 vis_requirements = [
-    "scikit-learn==1.0.1",
-    "scikit-learn-extra==0.2.0",
-    "umap-learn>=0.5.2",
+    "scikit-learn",
     "plotly>=5.3.1",
     "typing-extensions",
     "typeguard"
 ]
+
+kmedoids = ["scikit-learn-extra"]
+umap = ["umap-learn>=0.5.2"]
+ivis_cpu = ["ivis[cpu]>=2.0.6"]
+ivis_gpu = ["ivis[gpu]>=2.0.6"]
 
 test_requirements =[
     "pytest",
@@ -48,20 +51,19 @@ test_requirements =[
     "pytest-cov",
     "pytest-mock",
 ] + excel_requirements \
-  + vis_requirements
-
-
-ivis_cpu = ["ivis[cpu]>=2.0.6"]
-ivis_gpu = ["ivis[gpu]>=2.0.6"]
+  + vis_requirements \
+  + kmedoids \
+  + umap \
+  + ivis_cpu \
+  + ivis_gpu
 
 dev_requirements = [
     "autopep8",
     "pylint",
     "jupyter",
     "sphinx-rtd-theme>=0.5.0"
-] + test_requirements \
-    + ivis_cpu \
-    + ivis_gpu
+] + test_requirements
+
 
 
 setup(
@@ -88,9 +90,10 @@ setup(
         "vis": vis_requirements,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,
+        "kmedoids": kmedoids,
+        "umap": umap,
         "ivis-cpu": ivis_cpu,
-        "ivis-gpu": ivis_gpu
-        
+        "ivis-gpu": ivis_gpu,
     },
     python_requires=">=3.6",
     classifiers=[],

@@ -1,5 +1,5 @@
 
-from typing import List, Union, Dict, Any, Tuple
+from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
 JSONDict = Dict[str, Any]

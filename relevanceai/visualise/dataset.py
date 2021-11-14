@@ -99,7 +99,7 @@ class Dataset(Base, DocUtils):
     def _build_df(data: List[JSONDict]):
         df = pd.DataFrame(data)
         # detail_cols = self.get_fields_across_documents_except(fields=['_vector_', '_id', 'insert_date_'], data=data)
-        detail_cols = [c for c in df.columns if not any(f in c for f in ['_vector_', '_id', 'insert_date_'])]
+        detail_cols = [ c for c in df.columns if not any(f in c for f in ['_vector_', '_id', 'insert_date_']) ]
         detail = df[detail_cols]
         return df, detail
 
