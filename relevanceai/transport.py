@@ -31,7 +31,7 @@ class Transport:
         endpoint: str,
         method: str = "GET",
         parameters: dict = {},
-        output_format: Union[str, bool] = "json",
+        output_format: Union[str, bool, None] = "json",
         base_url: str = None,
         verbose: bool = True,
         retries: int = None,

@@ -6,7 +6,7 @@ import sys
 import time
 import traceback
 from datetime import datetime
-from typing import Callable
+from typing import Callable, List, Dict, Union, Any
 
 from relevanceai.api.client import APIClient
 from relevanceai.batch.local_logger import PullUpdatePushLocalLogger
@@ -26,7 +26,7 @@ class BatchInsert(APIClient, Chunker):
         bulk_fn: Callable = None,
         verbose: bool = True,
         max_workers: int = 8,
-        retry_chunk_mult: int = 0.5,
+        retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize=100,
         max_retries=1,
@@ -45,7 +45,7 @@ class BatchInsert(APIClient, Chunker):
                 f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
             )
         # Check if the collection exists
-        self.datasets.create(dataset_id, output_format=None, verbose=False)
+        self.datasets.create(dataset_id, output_format=False, verbose=False)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
@@ -75,7 +75,7 @@ class BatchInsert(APIClient, Chunker):
         bulk_fn: Callable = None,
         verbose: bool = True,
         max_workers: int = 8,
-        retry_chunk_mult: int = 0.5,
+        retry_chunk_mult: float = 0.5,
         chunksize: int = 100,
         show_progress_bar=False,
         *args,
@@ -174,7 +174,7 @@ class BatchInsert(APIClient, Chunker):
         PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
 
         # Track failed documents
-        failed_documents = []
+        failed_documents: List[Dict] = []
 
         # Trust the process
         # Get document lengths to calculate iterations
@@ -187,7 +187,7 @@ class BatchInsert(APIClient, Chunker):
         
         iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
-        completed_documents_list = []
+        completed_documents_list : list = []
 
         # Get incomplete documents from raw collection
         retrieve_filters = filters + [
@@ -312,7 +312,7 @@ class BatchInsert(APIClient, Chunker):
             )
 
         # Track failed documents
-        failed_documents = []
+        failed_documents: List[Dict]= []
 
         # Trust the process
         for _ in range(number_of_retrieve_retries):
@@ -419,7 +419,7 @@ class BatchInsert(APIClient, Chunker):
                     self.logger.warning(
                         "Failed to upload. Retrieving half of previous number."
                     )
-                    retrieve_chunk_size = (
+                    retrieve_chunk_size = int(
                         retrieve_chunk_size
                         * retrieve_chunk_size_failure_retry_multiplier
                     )
@@ -467,7 +467,7 @@ class BatchInsert(APIClient, Chunker):
         docs: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
-        retry_chunk_mult: int = 0.5,
+        retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = None,
     ):
@@ -493,13 +493,13 @@ class BatchInsert(APIClient, Chunker):
             )
 
         # Initialise number of inserted documents
-        inserted = []
+        inserted: List[str] = []
 
         # Initialise failed documents
         failed_ids = [i["_id"] for i in docs]
 
         # Initialise failed documents detailed
-        failed_ids_detailed = []
+        failed_ids_detailed: List[str] = []
 
         # Initialise cancelled documents
         cancelled_ids = []
@@ -528,37 +528,31 @@ class BatchInsert(APIClient, Chunker):
                 failed_ids_detailed = []
 
                 # Update inserted amount
-                [
-                    inserted.append(chunk["response_json"]["inserted"])
-                    for chunk in insert_json
-                    if chunk["status_code"] == 200
-                ]
+                def is_successfully_inserted(chunk: Union[Dict, Any]) -> bool:
+                    return chunk['status_code'] == 200 
+
+                inserted += filter(is_successfully_inserted, insert_json)
+
                 for chunk in insert_json:
 
                     # Track failed in 200
                     if chunk["status_code"] == 200:
-                        [
-                            failed_ids.append(i["_id"])
-                            for i in chunk["response_json"]["failed_documents"]
-                        ]
+                        failed_ids += [i["_id"] for i in chunk['response_json']['failed_documents']]
 
-                        [
-                            failed_ids_detailed.append(i)
-                            for i in chunk["response_json"]["failed_documents"]
-                        ]
+                        failed_ids_detailed += [i for i in chunk["response_json"]["failed_documents"]]
 
                     # Cancel documents with 400 or 404
                     elif chunk["status_code"] in [400, 404]:
-                        [cancelled_ids.append(i["_id"]) for i in chunk["documents"]]
+                        cancelled_ids += [i['_id'] for i in chunk['documents']]
 
                     # Half chunksize with 413 or 524
                     elif chunk["status_code"] in [413, 524]:
-                        [failed_ids.append(i["_id"]) for i in chunk["documents"]]
-                        chunksize = chunksize * retry_chunk_mult
+                        failed_ids += [i["_id"] for i in chunk['documents']]
+                        chunksize = int(chunksize * retry_chunk_mult)
 
                     # Retry all other errors
                     else:
-                        [failed_ids.append(i["_id"]) for i in chunk["documents"]]
+                        failed_ids += [i["_id"] for i in chunk['documents']]
 
                 # Update docs to retry which have failed
                 docs = [i for i in docs if i["_id"] in failed_ids]

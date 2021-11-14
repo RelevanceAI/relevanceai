@@ -43,7 +43,7 @@ class Client(BatchAPIClient, DocUtils):
 
         if (
             self.datasets.list(
-                verbose=False, output_format=False, retries=1
+                verbose=False, output_format=None, retries=1
             ).status_code
             == 200
         ):
