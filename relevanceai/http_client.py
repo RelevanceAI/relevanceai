@@ -26,9 +26,10 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: str = os.getenv("VDB_PROJECT"),
-        api_key: str = os.getenv("VDB_API_KEY"),
-        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
+        project: str=os.getenv("VDB_PROJECT"),
+        api_key: str=os.getenv("VDB_API_KEY"),
+        base_url: str="https://gateway-api-aueast.relevance.ai/v1/",
+        verbose: bool=True
     ):
         super().__init__(project, api_key, base_url)
 
@@ -45,7 +46,7 @@ class Client(BatchAPIClient, DocUtils):
             ).status_code
             == 200
         ):
-            self.logger.success(self.WELCOME_MESSAGE)
+            if verbose: self.logger.success(self.WELCOME_MESSAGE)
         else:
             raise APIError(self.FAIL_MESSAGE)
         if vis_requirements:

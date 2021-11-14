@@ -59,7 +59,7 @@ dev_requirements = [
 setup(
     name="RelevanceAI",
     version=get_version("relevanceai/__init__.py"),
-    url="",
+    url="https://relevance.ai/",
     
     author="Relevance AI",
     author_email="dev@relevance.ai",
