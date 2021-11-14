@@ -71,7 +71,7 @@ class Projector(Base, DocUtils):
         hover_label: Union[None, List[str]] = None,
 
         ### Cluster args
-        cluster: CLUSTER = None,
+        cluster: Union[None, CLUSTER] = None,
         cluster_args: Union[None, JSONDict] = {"n_init" : 20},
         num_clusters: Union[None, int] = 10,
     ):
@@ -150,10 +150,10 @@ class Projector(Base, DocUtils):
                 self.embedding_df[self.colour_label] = self.labels
                 self.legend = 'labels'
 
-            if cluster:
-                cluster = Cluster(**self.base_args,
+            if self.cluster:
+                _cluster = Cluster(**self.base_args,
                     vectors=self.vectors, cluster=cluster, cluster_args=cluster_args, k=self.num_clusters)
-                self.cluster_labels = cluster.cluster_labels
+                self.cluster_labels = _cluster.cluster_labels
                 self.embedding_df['cluster_labels'] = self.cluster_labels
                 self.legend = 'cluster_labels'
 

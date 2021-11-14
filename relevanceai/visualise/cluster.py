@@ -10,9 +10,7 @@ from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
 from relevanceai.base import Base
-from relevanceai.visualise.constants import (
-    CLUSTER, CLUSTER_NUMERIC, CLUSTER_CATEGORICAL, CLUSTER_MIXED, CLUSTER_DEFAULT_ARGS
-    )
+from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.visualise.dataset import JSONDict
 
 
@@ -74,7 +72,7 @@ class Cluster(Base):
     def _cluster_vectors(
         self,
         vectors: np.ndarray,
-        cluster: CLUSTER_NUMERIC,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict],
     ) -> Tuple[List[str], List[int]]:
         """
@@ -105,7 +103,7 @@ class Cluster(Base):
     def _cluster_categorical(
         self,
         df: pd.DataFrame,
-        cluster: CLUSTER_CATEGORICAL,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict],
         categorical_idx: Union[None, List[int]] = None
     ):
@@ -132,7 +130,7 @@ class Cluster(Base):
     def _cluster_mixed(
         self,
         df: pd.DataFrame,
-        cluster: CLUSTER_MIXED,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict],
         categorical_idx: Union[None, List[int]] = None
     ):

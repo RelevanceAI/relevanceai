@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Sunday, November 14th 2021,10:43:36 am
+# Last Modified: Sunday, November 14th 2021,12:00:52 pm
 #####
 
 import pytest
@@ -12,9 +12,8 @@ from pprint import pprint
 import typing
 from typing_extensions import get_args
 
-from relevanceai.http_client import Client
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+# from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
 # for cluster_type in get_args(CLUSTER)

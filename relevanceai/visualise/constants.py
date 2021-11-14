@@ -31,10 +31,7 @@ DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
 }
 
 
-CLUSTER_NUMERIC = Literal["kmeans", "kmedoids"]
-CLUSTER_CATEGORICAL = Literal["kmodes"]
-CLUSTER_MIXED = Literal["kprotoypes"]
-CLUSTER: List = [c for c in (list(get_args(CLUSTER_NUMERIC))+ list(get_args(CLUSTER_CATEGORICAL))+ list(get_args(CLUSTER_MIXED)))]
+CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprotoypes", None]
 
 
 CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
