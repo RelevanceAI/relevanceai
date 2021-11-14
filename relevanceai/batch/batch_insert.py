@@ -531,7 +531,12 @@ class BatchInsert(APIClient, Chunker):
                 def is_successfully_inserted(chunk: Union[Dict, Any]) -> bool:
                     return chunk['status_code'] == 200 
 
-                inserted += filter(is_successfully_inserted, insert_json)
+                inserted += list(
+                    map(
+                        lambda x: x['response_json']['inserted'],
+                        filter(is_successfully_inserted, insert_json)
+                    )
+                )
 
                 for chunk in insert_json:
 
