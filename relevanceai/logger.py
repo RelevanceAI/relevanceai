@@ -32,7 +32,7 @@ class LoguruLogger(AbstractLogger):
 
     @property
     def logger(self):
-        if hasattr("_logger"):
+        if hasattr(self, "_logger"):
             return self._logger
         self._init_logger()
         return self._logger
