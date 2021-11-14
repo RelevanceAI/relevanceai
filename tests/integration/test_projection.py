@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Sunday, November 14th 2021,12:00:52 pm
+# Last Modified: Sunday, November 14th 2021,1:01:00 pm
 #####
 
 import pytest
@@ -12,15 +12,24 @@ from pprint import pprint
 import typing
 from typing_extensions import get_args
 
+from relevanceai.http_client import Client
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-# from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
-# for cluster_type in get_args(CLUSTER)
-# #         if type(cluster_type)==typing._GenericAlias
-# #         for c in get_args(cluster_type)
-# #         if c is not None
+@pytest.fixture(name='base_args')
+def fixture_base_args():
+    project = "dummy-collections"
+    api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # Read access
+    base_url = "https://api-aueast.relevance.ai/v1/"
+    base_args = {
+                "project": project, 
+                "api_key": api_key, 
+                "base_url": base_url,
+            }
+    return base_args
 
+    
 @pytest.fixture(name='dataset_args', 
 params =[ 
         { 
@@ -66,25 +75,27 @@ def fixture_dr_args(request):
 
 
 
-# @pytest.fixture(name='cluster_args',
-# params= [
-#     {"cluster": c,
-#      "cluster_args": {
-#         **CLUSTER_DEFAULT_ARGS[c]   
-#     }
-#     } for cluster_type in get_args(CLUSTER)
-#         if type(cluster_type)==typing._GenericAlias
-#         for c in get_args(cluster_type)
-#         if c is not None
-# ])
-# def fixture_cluster_args(request):
-#     return request.param
+@pytest.fixture(name='cluster_args',
+params= [
+    {"cluster": c,
+     "cluster_args": {
+        **CLUSTER_DEFAULT_ARGS[c]   
+    }
+    } for c in get_args(CLUSTER)
+    if c
+])
+def fixture_cluster_args(request):
+    return request.param
 
     
-def test_plot(test_client, dataset_args, dr_args):
+def test_plot(test_client, base_args, dataset_args, dr_args, **cluster_args):
     """Testing colour plot with cluster"""
     
     pprint(json.dumps({**dataset_args, **dr_args,}, indent=4))
-    test_client.projector.plot(**dataset_args, **dr_args, )
+
+    ## Test client not using dummy-collections creds
+    test_client = Client(**base_args)
+    
+    test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
 
     assert True
