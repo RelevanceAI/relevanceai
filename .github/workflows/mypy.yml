@@ -25,6 +25,9 @@ jobs:
           # - os: windows-latest
           #   path: ~\AppData\Local\pip\Cache
     steps:
+    - uses: jpetrucciani/mypy-check@master
+      with:
+        path: '.'
     - name: Mypy Check
       # or specify additional mypy flags!
       uses: jpetrucciani/mypy-check@master
