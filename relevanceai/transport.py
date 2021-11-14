@@ -5,7 +5,7 @@ import traceback
 from typing import Union
 from relevanceai.config import Config
 from json.decoder import JSONDecodeError
-from logger import AbstractLogger
+from relevanceai.logger import AbstractLogger
 
 import requests
 from requests import Request
