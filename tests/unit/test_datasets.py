@@ -5,12 +5,10 @@ def test_get_sample_ecommerce_dataset():
 
     assert len(get_sample_ecommerce_dataset(number_of_documents=100)) == 100
 
-
 def test_get_games_dataset_subset():
     from relevanceai.datasets import get_games_dataset
 
     assert len(get_games_dataset(number_of_documents=100)) == 100
-
 
 @pytest.mark.skip(reason="Min time to insight")
 def test_get_games_dataset_full():
@@ -36,7 +34,6 @@ def test_get_news_dataset_subset():
     from relevanceai.datasets import get_news_dataset
 
     assert len(get_news_dataset(number_of_documents=100)) == 100
-
 
 @pytest.mark.skip(reason="Min time to insight")
 def test_get_news_dataset_full():
