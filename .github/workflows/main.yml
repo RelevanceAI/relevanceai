@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ main, feature/add_login]
   pull_request:
-    branches: [ main ]
+    branches: [ main, feature/add_login]
 
   workflow_dispatch:
 
@@ -51,4 +51,3 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pytest --cov=relevanceai -vv
-          
