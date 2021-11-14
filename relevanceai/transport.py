@@ -15,6 +15,9 @@ class Transport:
 
     project: str
     api_key: str
+    base_url: str
+    config: dict
+    logger = None
 
     @property
     def auth_header(self):
@@ -28,7 +31,7 @@ class Transport:
         output_format: str = "json",
         base_url: str = None,
         verbose: bool = True,
-        retries: bool = None,
+        retries: int = None,
     ):
         """Make the HTTP request
         Args:
