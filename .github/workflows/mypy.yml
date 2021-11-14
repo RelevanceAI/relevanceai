@@ -25,10 +25,9 @@ jobs:
           # - os: windows-latest
           #   path: ~\AppData\Local\pip\Cache
     steps:
-    - uses: jpetrucciani/mypy-check@master
-      with:
-        path: '.'
-    - name: Mypy Check
-      uses: jpetrucciani/mypy-check@master
-      with:
-        mypy_flags: 'relevanceai --config-file .mypy.ini'
+    - name: Install mypy
+      run: |
+        pip install mypy
+    - name: mypy
+    run: |
+      mypy relevanceai
