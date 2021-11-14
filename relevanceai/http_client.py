@@ -1,5 +1,6 @@
 """access the client via this class
 """
+import getpass
 import os
 
 from doc_utils.doc_utils import DocUtils
@@ -51,6 +52,21 @@ class Client(BatchAPIClient, DocUtils):
             raise APIError(self.FAIL_MESSAGE)
         if vis_requirements:
             self.projector = Projector(project, api_key, base_url)
+    @staticmethod
+    def login(
+        self,
+        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
+        verbose: bool = True,
+    ):
+        """Preferred login method for demos and interactive usage."""
+        token = getpass.getpass(
+            "Paste your project and API key in the format: of `project:api_key` here:"
+        )
+        project = token.split(":")[0]
+        api_key = token.split(":")[1]
+        return Client(
+            project=project, api_key=api_key, base_url=base_url, verbose=verbose
+        )
 
     @property
     def auth_header(self):
