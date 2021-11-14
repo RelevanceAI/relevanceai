@@ -48,8 +48,9 @@ class Client(BatchAPIClient, DocUtils):
         #     == 200
         # ):
         #     if verbose: self.logger.success(self.WELCOME_MESSAGE)
-        else:
-            raise APIError(self.FAIL_MESSAGE)
+        # else:
+        # raise APIError(self.FAIL_MESSAGE)
+        if verbose: self.logger.success(self.WELCOME_MESSAGE)
 
         super().__init__(project, api_key, base_url) # type: ignore
         if vis_requirements:
