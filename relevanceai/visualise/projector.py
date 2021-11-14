@@ -124,12 +124,12 @@ class Projector(Base, DocUtils):
         self.detail = self.dataset.detail
 
         if self.dataset.valid_vector_name(vector_field):
-            dr = DimReduction(**self.base_args, data=self.docs, 
+            self.dr = DimReduction(**self.base_args, data=self.docs, 
                                 vector_label=self.vector_label, vector_field=self.vector_field, 
                                 dr=dr, dr_args=dr_args, dims=dims
                                 )
-            self.vectors = dr.vectors
-            self.vectors_dr = dr.vectors_dr
+            self.vectors = self.dr.vectors
+            self.vectors_dr = self.dr.vectors_dr
             points = { 'x': self.vectors_dr[:,0], 
                         'y': self.vectors_dr[:,1], 
                         'z': self.vectors_dr[:,2], 
@@ -304,7 +304,7 @@ class Projector(Base, DocUtils):
     def _generate_hover_template(
         self,
         df: pd.DataFrame
-    ) -> Tuple[pd.DataFrame, List]:
+    ) -> Tuple[Union[pd.DataFrame, str], Union[List, str]]:
         """
         Generating hover template
         """
@@ -319,6 +319,5 @@ class Projector(Base, DocUtils):
             )+'<extra></extra>'
     
         else:
-            custom_data = hovertemplate = None
-        # print(custom_data, hovertemplate)
+            custom_data = hovertemplate = ''
         return custom_data, hovertemplate

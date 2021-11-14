@@ -25,10 +25,10 @@ class DimReduction(Base, DocUtils):
         api_key: str,
         base_url: str,
         data: List[JSONDict],
-        vector_label: str,
+        vector_label: Union[None, str],
         vector_field: str,
         dr: DIM_REDUCTION,
-        dr_args: Union[None, JSONDict] = None,
+        dr_args: Optional[Dict[Any, Any]] = None,
         dims: Literal[2, 3] = 3,
     ):  
 
@@ -46,7 +46,7 @@ class DimReduction(Base, DocUtils):
         self.dims = dims
 
         if dr_args is None:
-            self.dr_args = {**DIM_REDUCTION_DEFAULT_ARGS[dr]}
+            self.dr_args = DIM_REDUCTION_DEFAULT_ARGS[dr]
 
         self.vectors  = self._prepare_vectors(data=self.data, vector_field=self.vector_field)
         self.vectors_dr = self._dim_reduce(vectors=self.vectors, 
