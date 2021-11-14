@@ -186,8 +186,7 @@ class Documents(Base):
 
             # Append fetched data to the full data
             if length > 0:
-                [full_data.append(i) for i in x["documents"]]
-
+                full_data += x['documents']
         return full_data
 
     def get_number_of_documents(self, dataset_ids: list, list_of_filters=None):
