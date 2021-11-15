@@ -1,8 +1,6 @@
 from requests.models import stream_decode_response_unicode
-
+from typing import List
 from relevanceai.base import Base
-
-
 
 class Documents(Base):
     def __init__(self, project, api_key, base_url):
@@ -43,7 +41,7 @@ class Documents(Base):
         select_fields: list = [],
         cursor: str = None,
         page_size: int = 20,
-        sort: list = [],
+        sort: list = [], # type: ignore
         include_vector: bool = True,
         output_format: str = "json",
         verbose: bool = True,
@@ -117,7 +115,7 @@ class Documents(Base):
                 endpoint=f"datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={"updates": updates},
-                output_format=False,
+                output_format="",
                 verbose=verbose,
                 retries=retries,
                 base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
@@ -186,11 +184,10 @@ class Documents(Base):
 
             # Append fetched data to the full data
             if length > 0:
-                [full_data.append(i) for i in x["documents"]]
-
+                full_data += x['documents']
         return full_data
 
-    def get_number_of_documents(self, dataset_ids: list, list_of_filters=None):
+    def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
         """
         dataset_ids: list of dataset_ids
         list_of_filters: list of list of filters corresponding to the same order of the dataset_ids

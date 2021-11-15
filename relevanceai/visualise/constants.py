@@ -1,11 +1,11 @@
 
-from typing import List, Union, Dict, Any, Tuple
-from typing_extensions import Literal
+from typing import List, Sequence, Union, Dict, Any, Tuple, Optional
+from typing_extensions import Literal, get_args
 
 JSONDict = Dict[str, Any]
 
 DIM_REDUCTION = Literal["pca", "tsne", "umap", "ivis"]
-DIM_REDUCTION_DEFAULT_ARGS = {
+DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
     'pca': {
         "svd_solver": "auto",
         "random_state": 42
@@ -31,12 +31,10 @@ DIM_REDUCTION_DEFAULT_ARGS = {
 }
 
 
-CLUSTER_NUMERIC = Literal["kmeans", "kmedoids",  None]
-CLUSTER_CATEGORICAL = Literal["kmodes",  None]
-CLUSTER_MIXED = Literal["kprotoypes", None]
-CLUSTER = Union[CLUSTER_NUMERIC, CLUSTER_CATEGORICAL, CLUSTER_MIXED]
+CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprototypes", None]
 
-CLUSTER_DEFAULT_ARGS = {
+
+CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     'kmeans': {
         "init": "k-means++", 
         "verbose": 1,

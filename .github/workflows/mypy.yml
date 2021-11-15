@@ -1,0 +1,33 @@
+name: MyPy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # os: [ ubuntu-latest, macos-latest, windows-latest ] 
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+        #   - os: macos-latest
+        #     path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+    - name: Install mypy
+      run: |
+        pip install mypy
+    - name: mypy
+      run: |
+        mypy relevanceai/

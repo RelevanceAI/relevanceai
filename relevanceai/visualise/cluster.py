@@ -10,9 +10,7 @@ from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
 from relevanceai.base import Base
-from relevanceai.visualise.constants import (
-    CLUSTER, CLUSTER_NUMERIC, CLUSTER_CATEGORICAL, CLUSTER_MIXED, CLUSTER_DEFAULT_ARGS
-    )
+from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.visualise.dataset import JSONDict
 
 
@@ -74,7 +72,7 @@ class Cluster(Base):
     def _cluster_vectors(
         self,
         vectors: np.ndarray,
-        cluster: CLUSTER_NUMERIC,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict],
     ) -> Tuple[List[str], List[int]]:
         """
@@ -88,7 +86,11 @@ class Cluster(Base):
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
         elif cluster == 'kmedoids':
-            from sklearn_extra.cluster import KMedoids
+            try:
+                from sklearn_extra.cluster import KMedoids
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall umap\n \
+                    pip install -U relevanceai[kmedoids]')
             self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
             km = KMedoids(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
@@ -101,14 +103,18 @@ class Cluster(Base):
     def _cluster_categorical(
         self,
         df: pd.DataFrame,
-        cluster: CLUSTER_CATEGORICAL,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict],
         categorical_idx: Union[None, List[int]] = None
     ):
         """
         Clustering categorical data types
         """
+        import warnings
+        warnings.warn(f'This method is still not yet implemented')
+        
         # if cluster == "kmodes":
+        # from kmodes.kmodes import KModes
         #     if categorical_idx is None:
         #         categorical_columns = list(df.select_dtypes('object').columns)
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
@@ -118,21 +124,24 @@ class Cluster(Base):
         #         cluster_centroids = km.cluster_centroids_
         # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         # return cluster_labels, cluster_centroids'
-        
         return NotImplementedError
     
         
     def _cluster_mixed(
         self,
         df: pd.DataFrame,
-        cluster: CLUSTER_MIXED,
+        cluster: CLUSTER,
         cluster_args: Union[None, JSONDict],
         categorical_idx: Union[None, List[int]] = None
     ):
         """
         Clustering mixed data types
         """
+        import warnings
+        warnings.warn(f'This method is still not yet implemented')
+
         # if cluster == "kprototypes":
+        # from kmodes.kprototypes import KPrototypes
         #     if categorical_idx is None:
         #         categorical_columns = list(df.select_dtypes('object').columns)
         #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
