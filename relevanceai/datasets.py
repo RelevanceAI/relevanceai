@@ -7,6 +7,57 @@ from typing import List, Union
 import pandas as pd
 import requests
 
+DATASETS = ['games', 'dummy_ecommerce', 'sample_ecommerce', 'online_retail', 'news', 'ecommerce', 'flipkart', 'realestate']
+
+class Sample_Datasets:
+    def __init__(self):
+        self.datasets = DATASETS
+        
+    def get_dataset(self, name, *args, **kwargs):
+        if name in self.datasets:
+            return globals()[f'get_{name}_dataset'](*args, **kwargs)
+        else:
+            raise ValueError('Not a valid dataset')
+
+    @staticmethod
+    def _get_dummy_dataset(db_name, number_of_documents, select_fields = []):
+        from .http_client import Client
+        project = "dummy-collections"
+        api_key = (
+            "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
+        )
+        client = Client(
+            project,
+            api_key,
+        )
+        response = client.datasets.documents.get_where(
+            db_name,
+            page_size=number_of_documents,
+            select_fields = select_fields
+        )
+        if "message" in response:
+            import warnings
+            warnings.warn(response["message"])
+        docs = response["documents"]
+        return docs
+
+    @staticmethod
+    def _get_online_dataset(url, number_of_documents, drop_columns = [], encoding = None, csv = True):
+        if csv:
+            data = pd.read_csv(url, encoding=encoding).drop(columns = drop_columns).dropna().to_dict(orient="records")
+        else:
+            data = pd.read_excel(url).drop(columns = drop_columns).dropna().to_dict(orient="records")
+        if number_of_documents:
+            data = data[:number_of_documents]
+        return data
+
+    @staticmethod
+    def _get_api_dataset(url, number_of_documents):
+        data = requests.get(url).json()
+        if number_of_documents:
+            data = data[:number_of_documents]
+        return data
+
 
 def get_games_dataset(number_of_documents: Union[None, int] = 365) -> List:
     """Function to download a sample games dataset.
@@ -26,57 +77,21 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365) -> List:
     'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
     }
     """
-    data = requests.get("https://www.freetogame.com/api/games").json()
-    if number_of_documents:
-        data = data[:number_of_documents]
-    return data
+    return Sample_Datasets._get_api_dataset("https://www.freetogame.com/api/games", number_of_documents)
 
 
 def get_dummy_ecommerce_dataset(
     db_name: str = "ecommerce-5",
-    count: int = 1000,
-    base_url="https://api-aueast.relevance.ai/v1/",
+    count: int = 1000
 ):
     """Here, we get the e-commerce dataset."""
-    from .http_client import Client
-
-    project = "dummy-collections"
-    api_key = (
-        "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
-    )
-    client = Client(project, api_key, base_url=base_url)
-    response = client.datasets.documents.list(db_name, page_size=count)
-    if "message" in response:
-        import warnings
-        warnings.warn(response["message"])
-    return response
+    return Sample_Datasets._get_dummy_dataset(db_name, count)
 
 
 def get_sample_ecommerce_dataset(
-    number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
+    number_of_documents: int = 1000, select_fields: list = ["product_image", "product_title", "product_description", "product_image_clip_vector_"]
 ):
-    """Here, we get the e-commerce dataset."""
-    from .http_client import Client
-
-    project = "dummy-collections"
-    api_key = (
-        "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
-    )
-    client = Client(
-        project,
-        api_key,
-    )
-    db_name = "quickstart_data_sample"
-    response = client.datasets.documents.get_where(
-        db_name,
-        select_fields=["product_image", "product_title", "product_description"]
-        + vector_fields,
-        page_size=number_of_documents,
-    )
-    if "message" in response:
-        import warnings
-        warnings.warn(response["message"])
-    docs = response["documents"]
+    docs = Sample_Datasets._get_dummy_dataset("quickstart_data_sample", number_of_documents, select_fields)
     for d in docs:
         if "image_first" in d:
             d["image"] = d.pop("image_first")
@@ -97,15 +112,7 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> L
     'UnitPrice': 2.55}
 
     """
-    return (
-        pd.read_excel(
-            "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
-        )
-        .dropna()
-        .iloc[:number_of_documents, :]
-        .to_dict(orient="records")
-    )
-
+    return Sample_Datasets._get_online_dataset("https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx", number_of_documents, csv = False)
 
 def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
     """News dataset
@@ -128,13 +135,7 @@ def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
     'updated_at': '2018-02-02 01:19:41.756664',
     'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'}
     """
-    return (
-        pd.read_csv(
-            "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv"
-        )
-        .iloc[:number_of_documents, :]
-        .to_dict(orient="records")
-    )
+    return Sample_Datasets._get_online_dataset("https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv", number_of_documents)
 
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset
@@ -159,14 +160,9 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     'source': 'eBay',
     'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'}
     """
-    df = (
-        pd.read_csv(
-            "https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft",
-            encoding="ISO-8859-1",
-        )
-        .dropna()
-        .iloc[:number_of_documents, :]
-    )
+
+    df = Sample_Datasets._get_online_dataset("https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft", number_of_documents, encoding = "ISO-8859-1")
+    df = pd.DataFrame(df)
     df["product_image"] = df["product_image"].str.replace("http://", "https://")
     df["product_link"] = df["product_link"].str.replace("http://", "https://")
     df["url"] = df["url"].str.replace("http://", "https://")
@@ -183,33 +179,11 @@ def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
     'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
     'retail_price': 999.0}
     """
-    df = pd.read_csv("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv").drop('Unnamed: 0', axis=1)
-    return df.to_dict(orient='records')[:number_of_documents]
+    return Sample_Datasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv", number_of_documents, drop_columns=['Unnamed: 0'])
 
-def get_sample_realestate_dataset(
-    number_of_documents: int = 50
+def get_realestate_dataset(
+    number_of_documents: int = 50,
+    filters = []
 ):
-    """Here, we get the e-commerce dataset."""
-    from .http_client import Client
-
-    project = "dummy-collections"
-    api_key = (
-        "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
-    )
-    client = Client(
-        project,
-        api_key,
-    )
-    db_name = "realestate"
-    response = client.datasets.documents.get_where(
-        db_name,
-        page_size=number_of_documents,
-    )
-    if "message" in response:
-        import warnings
-        warnings.warn(response["message"])
-    docs = response["documents"]
-    return docs
-
-
+    return Sample_Datasets._get_dummy_dataset('realestate', number_of_documents, filters)
 
