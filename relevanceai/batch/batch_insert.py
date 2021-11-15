@@ -172,7 +172,7 @@ class BatchInsert(APIClient, Chunker):
         
         # Check if a logging_collection has been supplied
         if log_file is None:
-            log_file = original_collection + ".log"
+            log_file = original_collection + '___' + str(datetime.now().__str__()) + ".log"
         
         # Instantiate the logger to document the successful IDs
         PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
