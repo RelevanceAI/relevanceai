@@ -52,7 +52,8 @@ def get_dummy_ecommerce_dataset(
     return response
 
 def get_sample_ecommerce_dataset(
-    number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_"]
+    number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_",
+    "product_title_use_vector_"]
 ):
     """Here, we get the e-commerce dataset."""
     from .http_client import Client
