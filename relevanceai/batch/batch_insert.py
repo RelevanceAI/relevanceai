@@ -2,6 +2,7 @@
 """
 import json
 import math
+import os
 import sys
 import time
 import traceback
@@ -166,6 +167,9 @@ class BatchInsert(APIClient, Chunker):
         max_error:
             How many failed uploads before the function breaks
         """
+        if not callable(update_function):
+            raise TypeError("Your update function needs to be a function! Please read the documentation if it is not.")
+        
         # Check if a logging_collection has been supplied
         if log_file is None:
             log_file = original_collection + ".log"
@@ -184,7 +188,6 @@ class BatchInsert(APIClient, Chunker):
 
         # get the remaining number in case things break
         remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
-        
         iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
         completed_documents_list : list = []
@@ -250,7 +253,10 @@ class BatchInsert(APIClient, Chunker):
                     f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
                 )
 
-        self.logger.success(f"Pull, Update, Push is complete!")
+        self.logger.success(f"Pull, Update, Push is complete!") 
+        
+        if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:
+            os.remove(log_file)
         return {
             "failed_documents": failed_documents,
         }
@@ -507,7 +513,7 @@ class BatchInsert(APIClient, Chunker):
         for i in range(int(self.config.get_option("retries.number_of_retries"))):
             if len(failed_ids) > 0:
                 if bulk_fn is not None:
-                    insert_json = multiprocess(
+                    insert_response = multiprocess(
                         func=bulk_fn,
                         iterables=docs,
                         post_func_hook=insert_function,
@@ -516,7 +522,7 @@ class BatchInsert(APIClient, Chunker):
                         show_progress_bar=show_progress_bar,
                     )
                 else:
-                    insert_json = multithread(
+                    insert_response = multithread(
                         insert_function,
                         docs,
                         max_workers=max_workers,
