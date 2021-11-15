@@ -29,8 +29,7 @@ def cause_some_error(docs):
     MAX_ERRORS = 5
     ERROR_COUNT = 0
     for d in docs:
-        chance = random.choice([0, 1])
-        if chance == 0 and ERROR_COUNT < MAX_ERRORS:
+        if ERROR_COUNT < MAX_ERRORS:
             d['value'] = np.nan
             ERROR_COUNT += 1
     return docs
@@ -54,7 +53,8 @@ class TestPullUpdatePush:
     def test_with_some_errors(self, test_client, test_sample_dataset):
         """Test with some errors
         """
-        with pytest.raises(Exception) as execinfo:   
+        import requests
+        with pytest.raises(requests.exceptions.InvalidJSONError) as execinfo:
             results = test_client.pull_update_push(test_sample_dataset, cause_some_error)
  
     @pytest.mark.slow
