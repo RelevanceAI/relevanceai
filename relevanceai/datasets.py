@@ -9,9 +9,12 @@ import requests
 
 DATASETS = ['games', 'dummy_ecommerce', 'sample_ecommerce', 'online_retail', 'news', 'ecommerce', 'flipkart', 'realestate']
 
-class Sample_Datasets:
+class SampleDatasets:
     def __init__(self):
         self.datasets = DATASETS
+
+    def list_datasets(self):
+        return self.datasets
         
     def get_dataset(self, name, *args, **kwargs):
         if name in self.datasets:
@@ -77,7 +80,7 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365) -> List:
     'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
     }
     """
-    return Sample_Datasets._get_api_dataset("https://www.freetogame.com/api/games", number_of_documents)
+    return SampleDatasets._get_api_dataset("https://www.freetogame.com/api/games", number_of_documents)
 
 
 def get_dummy_ecommerce_dataset(
@@ -85,13 +88,13 @@ def get_dummy_ecommerce_dataset(
     count: int = 1000
 ):
     """Here, we get the e-commerce dataset."""
-    return Sample_Datasets._get_dummy_dataset(db_name, count)
+    return SampleDatasets._get_dummy_dataset(db_name, count)
 
 
 def get_sample_ecommerce_dataset(
     number_of_documents: int = 1000, select_fields: list = ["product_image", "product_title", "product_description", "product_image_clip_vector_"]
 ):
-    docs = Sample_Datasets._get_dummy_dataset("quickstart_data_sample", number_of_documents, select_fields)
+    docs = SampleDatasets._get_dummy_dataset("quickstart_data_sample", number_of_documents, select_fields)
     for d in docs:
         if "image_first" in d:
             d["image"] = d.pop("image_first")
@@ -112,7 +115,7 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000) -> L
     'UnitPrice': 2.55}
 
     """
-    return Sample_Datasets._get_online_dataset("https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx", number_of_documents, csv = False)
+    return SampleDatasets._get_online_dataset("https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx", number_of_documents, csv = False)
 
 def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
     """News dataset
@@ -135,7 +138,7 @@ def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
     'updated_at': '2018-02-02 01:19:41.756664',
     'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'}
     """
-    return Sample_Datasets._get_online_dataset("https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv", number_of_documents)
+    return SampleDatasets._get_online_dataset("https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv", number_of_documents)
 
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset
@@ -161,7 +164,7 @@ def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'}
     """
 
-    df = Sample_Datasets._get_online_dataset("https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft", number_of_documents, encoding = "ISO-8859-1")
+    df = SampleDatasets._get_online_dataset("https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft", number_of_documents, encoding = "ISO-8859-1")
     df = pd.DataFrame(df)
     df["product_image"] = df["product_image"].str.replace("http://", "https://")
     df["product_link"] = df["product_link"].str.replace("http://", "https://")
@@ -179,11 +182,11 @@ def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
     'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
     'retail_price': 999.0}
     """
-    return Sample_Datasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv", number_of_documents, drop_columns=['Unnamed: 0'])
+    return SampleDatasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv", number_of_documents, drop_columns=['Unnamed: 0'])
 
 def get_realestate_dataset(
     number_of_documents: int = 50,
     filters = []
 ):
-    return Sample_Datasets._get_dummy_dataset('realestate', number_of_documents, filters)
+    return SampleDatasets._get_dummy_dataset('realestate', number_of_documents, filters)
 
