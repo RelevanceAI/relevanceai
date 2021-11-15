@@ -513,7 +513,7 @@ class BatchInsert(APIClient, Chunker):
         for i in range(int(self.config.get_option("retries.number_of_retries"))):
             if len(failed_ids) > 0:
                 if bulk_fn is not None:
-                    insert_response = multiprocess(
+                    insert_json = multiprocess(
                         func=bulk_fn,
                         iterables=docs,
                         post_func_hook=insert_function,
@@ -522,7 +522,7 @@ class BatchInsert(APIClient, Chunker):
                         show_progress_bar=show_progress_bar,
                     )
                 else:
-                    insert_response = multithread(
+                    insert_json= multithread(
                         insert_function,
                         docs,
                         max_workers=max_workers,
