@@ -26,9 +26,18 @@ jobs:
           # - os: windows-latest
           #   path: ~\AppData\Local\pip\Cache
     steps:
+    - uses: actions/checkout@v2
     - name: Install mypy
       run: |
         pip install mypy
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ${{ matrix.path }}
+        key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.pythonLocation }}-pip-
+          ${{ runner.os }}-${{ env.pythonLocation }}-
     - name: mypy
       run: |
         mypy relevanceai
