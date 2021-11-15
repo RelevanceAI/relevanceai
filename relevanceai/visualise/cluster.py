@@ -112,6 +112,7 @@ class Cluster(Base):
         """
         import warnings
         warnings.warn(f'This method is still not yet implemented')
+        
         # if cluster == "kmodes":
         # from kmodes.kmodes import KModes
         #     if categorical_idx is None:
@@ -123,7 +124,6 @@ class Cluster(Base):
         #         cluster_centroids = km.cluster_centroids_
         # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         # return cluster_labels, cluster_centroids'
-        
         return NotImplementedError
     
         
