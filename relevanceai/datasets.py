@@ -1,5 +1,5 @@
 """
-Datasets to mock
+Datasets.
 """
 
 from typing import List, Union
@@ -205,3 +205,8 @@ def get_mission_statements_dataset(number_of_documents: Union[None, int] = 1433)
         df = df[:number_of_documents]
     df = df.to_dict(orient='records')
     return df
+
+def get_machine_learning_research_dataset():
+    """Here we get our Machine Learning research dataset.
+    """
+    raise NotImplementedError
