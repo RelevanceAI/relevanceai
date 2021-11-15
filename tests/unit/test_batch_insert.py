@@ -40,7 +40,6 @@ class TestPullUpdatePush:
     def test_pull_update_push_simple(self, test_client, test_sample_dataset):
         """Simple test for pull update push
         """
-        
         results = test_client.pull_update_push(test_sample_dataset, do_nothing)
         assert len(results['failed_documents']) == 0
 
@@ -61,7 +60,6 @@ class TestPullUpdatePush:
     def test_pull_update_push_loaded(self, test_sample_dataset, test_client):
         """Stress testing pull update push.
         """
-
         def do_nothing(docs):
             return docs
 

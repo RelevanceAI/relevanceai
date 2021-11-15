@@ -3,16 +3,17 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Sunday, November 14th 2021,1:01:00 pm
+# Last Modified: Monday, November 15th 2021,3:02:28 am
 #####
 
 import pytest
 import json
+import uuid
+import random
 from pprint import pprint
 import typing
 from typing_extensions import get_args
 
-from relevanceai.http_client import Client
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
@@ -29,11 +30,23 @@ def fixture_base_args():
             }
     return base_args
 
+# @pytest.fixture
+# def sample_doc():
+#     return [{
+#         "_id": uuid.uuid4().__str__(),
+#         "value": random.randint(0, 1000),
+#     }]
+
+
+# @pytest.fixture(name='test-dataset-1')
+# def fixture_test_dataset_1():
+#     test_dataset_1 = json.load(open("../tests/data/_ecommerce-6.json"))
     
+
 @pytest.fixture(name='dataset_args', 
 params =[ 
         { 
-        "dataset_id" : "ecommerce-6",
+        "dataset_id" : "test-dataset",
         "vector_field": "product_name_imagetext_vector_",
         "number_of_points_to_render" : 100,
         "random_state" : 0,
@@ -42,7 +55,7 @@ params =[
         "hover_label": ["category"],
         },
         { 
-        "dataset_id" : "unsplash-images",
+        "dataset_id" : "test-dataset-1",
         "vector_field": "image_url_vector_",
         "colour_label": "dictionary_label_2",
         "colour_label_char_length" : 20,
@@ -50,7 +63,7 @@ params =[
         "random_state" : 42
         },
         { 
-        "dataset_id" : "medium_topics",
+        "dataset_id" : "test-dataset-2",
         "vector_field": "topics_use_multi_vector_",
         "colour_label": "topics",
         "colour_label_char_length" : 20,
@@ -82,20 +95,21 @@ params= [
         **CLUSTER_DEFAULT_ARGS[c]   
     }
     } for c in get_args(CLUSTER)
-    if c
+        if c
 ])
 def fixture_cluster_args(request):
     return request.param
 
-    
-def test_plot(test_client, base_args, dataset_args, dr_args, **cluster_args):
-    """Testing colour plot with cluster"""
-    
-    pprint(json.dumps({**dataset_args, **dr_args,}, indent=4))
 
-    ## Test client not using dummy-collections creds
-    test_client = Client(**base_args)
-    
-    test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
+@pytest.mark.skip(f'Implementation still in progress')
+class TestProjectorPlot:
+    """Test the ProjectorPlot class
+    """
 
-    assert True
+    def test_plot(self, test_client, base_args, dataset_args, dr_args, cluster_args):
+        """Testing colour plot with cluster"""
+        pprint(json.dumps({**dataset_args, **dr_args, **cluster_args}, indent=4))
+        test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
+        assert True
+
+    
