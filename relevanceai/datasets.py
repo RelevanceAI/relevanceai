@@ -3,10 +3,11 @@ Datasets to mock
 """
 
 from typing import List, Union
-
+import sys
 import pandas as pd
 import requests
 
+THIS_MODULE = sys.modules[__name__]
 DATASETS = ['games', 'dummy_ecommerce', 'sample_ecommerce', 'online_retail', 'news', 'ecommerce', 'flipkart', 'realestate']
 
 class SampleDatasets:
@@ -18,7 +19,7 @@ class SampleDatasets:
         
     def get_dataset(self, name, *args, **kwargs):
         if name in self.datasets:
-            return globals()[f'get_{name}_dataset'](*args, **kwargs)
+            return getattr(THIS_MODULE,f'get_{name}_dataset')(*args, **kwargs)
         else:
             raise ValueError('Not a valid dataset')
 
