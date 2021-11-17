@@ -332,7 +332,7 @@ You can limit your testing on a single file/folder by specifying a test path to 
 
 ```zsh
 
-❯ make test TEST_PATH=tests/integration    
+❯ make test 
 
 
 pytest . --cov=relevanceai -vv -rs
