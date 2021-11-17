@@ -45,10 +45,11 @@ class Cluster(Base):
             if k is None and 'n_clusters' not in cluster_args.keys():
                 self.k = self._choose_k(vectors)
 
-        self.cluster_labels, self.c_centroids = self._cluster_vectors(
-                            vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args
-                            )
-    
+        if self.cluster in ["kmeans", "kmedoids"]:
+            self.cluster_labels, self.c_centroids = self._cluster_vectors(
+                                vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args
+                                )
+
 
     def _choose_k(
         self,

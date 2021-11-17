@@ -31,7 +31,8 @@ DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
 }
 
 
-CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprototypes", None]
+# CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprototypes", None]
+CLUSTER = Literal["kmeans", "kmedoids", None]
 CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     'kmeans': {
         "init": "k-means++", 
@@ -45,16 +46,16 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
         "random_state": 42,
         "method": "pam"
     },
-    'kmodes': {
-        "init": "Huang", 
-        "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
-    },
-    'kprototypes': {
-        "init": "Huang", 
-        "verbose": 1,
-        "random_state": 42,
-        "n_jobs": -1
-    }
+    # 'kmodes': {
+    #     "init": "Huang", 
+    #     "verbose": 1,
+    #     "random_state": 42,
+    #     "n_jobs": -1
+    # },
+    # 'kprototypes': {
+    #     "init": "Huang", 
+    #     "verbose": 1,
+    #     "random_state": 42,
+    #     "n_jobs": -1
+    # }
 }

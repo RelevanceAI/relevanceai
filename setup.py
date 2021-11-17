@@ -45,6 +45,7 @@ umap = ["umap-learn>=0.5.2"]
 ivis_cpu = ["ivis[cpu]>=2.0.6"]
 ivis_gpu = ["ivis[gpu]>=2.0.6"]
 
+
 test_requirements =[
     "pytest",
     "pytest-dotenv",
@@ -59,12 +60,26 @@ test_requirements =[
   + ivis_cpu \
   + ivis_gpu
 
+
 dev_requirements = [
     "autopep8",
     "pylint",
     "jupyter",
     "sphinx-rtd-theme>=0.5.0"
 ] + test_requirements
+
+
+dev_vis_requirements = [
+    "autopep8",
+    "pylint",
+    "jupyter",
+    "sphinx-rtd-theme>=0.5.0"
+] + test_requirements \
+  + vis_requirements \
+  + kmedoids \
+  + umap \
+  + ivis_cpu \
+  + ivis_gpu
 
 
 
@@ -88,6 +103,7 @@ setup(
     },
     extras_require={
         "dev": dev_requirements,
+        "dev-vis": dev_vis_requirements,
         "excel": excel_requirements,
         "vis": vis_requirements,
         "tests": test_requirements,
