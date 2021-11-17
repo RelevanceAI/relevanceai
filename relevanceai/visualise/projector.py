@@ -41,7 +41,6 @@ class Projector(Base, DocUtils):
     """
 
     def __init__(self, project, api_key, base_url):
-
         self.base_args = {
             "project": project, 
             "api_key": api_key, 

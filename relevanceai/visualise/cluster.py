@@ -45,7 +45,7 @@ class Cluster(Base):
             if k is None and 'n_clusters' not in cluster_args.keys():
                 self.k = self._choose_k(vectors)
 
-        if self.cluster in ["kmeans", "kmedoids"]:
+        if self.cluster in ["kmeans", "kmedoids", "hdbscan"]:
             self.cluster_labels, self.c_centroids = self._cluster_vectors(
                                 vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args
                                 )
@@ -96,60 +96,71 @@ class Cluster(Base):
             km = KMedoids(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
             cluster_centroids = km.cluster_centers_
+        elif cluster == 'hdbscan':
+            try:
+                from hdbscan import HDBSCAN
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall hdbscan\n \
+                    pip install -U relevanceai[hdbscan]')
+            self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
+            hdbscan = HDBSCAN(n_clusters=self.k, **cluster_args).fit(vectors)
+            cluster_labels = hdbscan.labels_
+            cluster_centroids = []  ## HDBSCAN does not provide centroids
+            
         # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         return cluster_labels, cluster_centroids
     
 
 
-    def _cluster_categorical(
-        self,
-        df: pd.DataFrame,
-        cluster: CLUSTER,
-        cluster_args: Union[None, JSONDict],
-        categorical_idx: Union[None, List[int]] = None
-    ):
-        """
-        Clustering categorical data types
-        """
-        import warnings
-        warnings.warn(f'This method is still not yet implemented')
+    # def _cluster_categorical(
+    #     self,
+    #     df: pd.DataFrame,
+    #     cluster: CLUSTER,
+    #     cluster_args: Union[None, JSONDict],
+    #     categorical_idx: Union[None, List[int]] = None
+    # ):
+    #     """
+    #     Clustering categorical data types
+    #     """
+    #     import warnings
+    #     warnings.warn(f'This method is still not yet implemented')
         
-        # if cluster == "kmodes":
-        # from kmodes.kmodes import KModes
-        #     if categorical_idx is None:
-        #         categorical_columns = list(df.select_dtypes('object').columns)
-        #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
-        #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-        #         km = KModes(**cluster_args).fit_predict(df.to_numpy(), categorical=categorical_idx))
-        #         cluster_labels = km.labels_
-        #         cluster_centroids = km.cluster_centroids_
-        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
-        # return cluster_labels, cluster_centroids'
-        return NotImplementedError
+    #     # if cluster == "kmodes":
+    #     # from kmodes.kmodes import KModes
+    #     #     if categorical_idx is None:
+    #     #         categorical_columns = list(df.select_dtypes('object').columns)
+    #     #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
+    #     #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
+    #     #         km = KModes(**cluster_args).fit_predict(df.to_numpy(), categorical=categorical_idx))
+    #     #         cluster_labels = km.labels_
+    #     #         cluster_centroids = km.cluster_centroids_
+    #     # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+    #     # return cluster_labels, cluster_centroids'
+    #     return NotImplementedError
     
         
-    def _cluster_mixed(
-        self,
-        df: pd.DataFrame,
-        cluster: CLUSTER,
-        cluster_args: Union[None, JSONDict],
-        categorical_idx: Union[None, List[int]] = None
-    ):
-        """
-        Clustering mixed data types
-        """
-        import warnings
-        warnings.warn(f'This method is still not yet implemented')
+    # def _cluster_mixed(
+    #     self,
+    #     df: pd.DataFrame,
+    #     cluster: CLUSTER,
+    #     cluster_args: Union[None, JSONDict],
+    #     categorical_idx: Union[None, List[int]] = None
+    # ):
+    #     """
+    #     Clustering mixed data types
+    #     """
+    #     import warnings
+    #     warnings.warn(f'This method is still not yet implemented')
 
-        # if cluster == "kprototypes":
-        # from kmodes.kprototypes import KPrototypes
-        #     if categorical_idx is None:
-        #         categorical_columns = list(df.select_dtypes('object').columns)
-        #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
-        #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
-        #         kp = KPrototypes(**cluster_args).fit_predict(df.to_numpy(), categorical=categorical_idx)
-        #         cluster_labels = kp.labels_
-        #         cluster_centroids = kp.cluster_centroids_
-        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
-        # return cluster_labels, cluster_centroids
-        return NotImplementedError
+    #     # if cluster == "kprototypes":
+    #     # from kmodes.kprototypes import KPrototypes
+    #     #     if categorical_idx is None:
+    #     #         categorical_columns = list(df.select_dtypes('object').columns)
+    #     #         categorical_idx = [df.columns.get_loc(col) for col in categorical_columns]
+    #     #         self.logger.debug(f'{json.dumps(cluster_args, indent=4)}')
+    #     #         kp = KPrototypes(**cluster_args).fit_predict(df.to_numpy(), categorical=categorical_idx)
+    #     #         cluster_labels = kp.labels_
+    #     #         cluster_centroids = kp.cluster_centroids_
+    #     # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
+    #     # return cluster_labels, cluster_centroids
+    #     return NotImplementedError

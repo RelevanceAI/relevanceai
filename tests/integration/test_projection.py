@@ -3,10 +3,11 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 17th 2021,8:37:15 am
+# Last Modified: Wednesday, November 17th 2021,8:53:50 am
 #####
 
 from pathlib import Path
+import ivis
 import pytest
 import json
 import uuid
@@ -79,3 +80,4 @@ def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
     """Testing vector label with cluster"""
     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
     assert True
+

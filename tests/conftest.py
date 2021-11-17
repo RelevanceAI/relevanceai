@@ -63,24 +63,24 @@ def error_doc():
 
 
 @pytest.fixture(autouse=True)
-def sample_vector_doc():
-    return [{
-        "_id":              uuid.uuid4().__str__(),
-        "sample_1_label":   generate_random_string(),
-        "sample_2_label":   generate_random_string(),
-        "sample_3_label":   generate_random_string(),
-        "sample_1_vector_": generate_random_vector(N=100),
-        "sample_2_vector_": generate_random_vector(N=100),
-        "sample_3_vector_": generate_random_vector(N=100)
-    }]
-
+def sample_vector_docs():
+    def _sample_vector_doc(doc_id: str):
+        return {
+            "_id":              doc_id,
+            "sample_1_label":   generate_random_string(),
+            "sample_2_label":   generate_random_string(),
+            "sample_3_label":   generate_random_string(),
+            "sample_1_vector_": generate_random_vector(N=100),
+            "sample_2_vector_": generate_random_vector(N=100),
+            "sample_3_vector_": generate_random_vector(N=100)
+        }
+    N=100
+    return [ _sample_vector_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N) ]
 
 @pytest.fixture(autouse=True)
-def test_sample_vector_dataset(test_client, sample_vector_doc, test_dataset_id):
+def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample vector dataset"""
-    sample_vector_docs = sample_vector_doc * 100
     response = test_client.insert_documents(
         test_dataset_id, sample_vector_docs
     )
-    if response['inserted'] == 100:
-        yield test_dataset_id
+    yield test_dataset_id

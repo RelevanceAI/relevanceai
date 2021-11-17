@@ -2,6 +2,8 @@
 from typing import List, Sequence, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal, get_args
 
+from joblib.memory import Memory
+
 JSONDict = Dict[str, Any]
 
 DIM_REDUCTION = Literal["pca", "tsne", "umap", "ivis"]
@@ -57,5 +59,17 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     #     "verbose": 1,
     #     "random_state": 42,
     #     "n_jobs": -1
-    # }
+    # },
+    'hdbscan': {
+        "algorithm": 'best',
+        "alpha": 1.0, 
+        "approx_min_span_tree": True,
+        "gen_min_span_tree": False, 
+        "leaf_size": 40, 
+        "memory": Memory(cachedir=None),
+        "metric": 'euclidean', 
+        "min_cluster_size": 5, 
+        "min_samples": None, 
+        "p": None
+    }
 }

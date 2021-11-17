@@ -83,12 +83,12 @@ class DimReduction(Base, DocUtils):
         if dr == "pca":
             from sklearn.decomposition import PCA
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-            pca = PCA(n_components=min(vectors.shape[1], dims), **dr_args)
+            pca = PCA(n_components=min(dims, vectors.shape[1]), **dr_args)
             vectors_dr = pca.fit_transform(vectors)
         elif dr == "tsne":
             from sklearn.decomposition import PCA
             from sklearn.manifold import TSNE
-            pca = PCA(n_components=min(vectors.shape[1], 10))
+            pca = PCA(n_components=min(10, vectors.shape[1]))
             data_pca = pca.fit_transform(vectors)
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             tsne = TSNE(n_components=dims, **dr_args)
