@@ -113,7 +113,6 @@ class Projector(Base, DocUtils):
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
         
         number_of_documents = number_of_points_to_render
-        
         self.dataset = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, vector_field=vector_field, 
                                 vector_label=vector_label, colour_label=colour_label, hover_label=hover_label,
@@ -300,7 +299,7 @@ class Projector(Base, DocUtils):
     def _generate_hover_template(
         self,
         df: pd.DataFrame
-    ) -> Tuple[Union[pd.DataFrame, str], Union[List, str]]:
+    ) -> Tuple[Union[pd.DataFrame, None], Union[List, None]]:
         """
         Generating hover template
         """
@@ -315,5 +314,5 @@ class Projector(Base, DocUtils):
             )+'<extra></extra>'
     
         else:
-            custom_data = hovertemplate = ''
+            custom_data = hovertemplate = None
         return custom_data, hovertemplate

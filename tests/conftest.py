@@ -65,10 +65,10 @@ def error_doc():
 @pytest.fixture
 def sample_vector_doc():
     return [{
-        "_id": uuid.uuid4().__str__(),
-        "sample_1_label": generate_random_string(),
-        "sample_2_label": generate_random_string(),
-        "sample_3_label": generate_random_string(),
+        "_id":              uuid.uuid4().__str__(),
+        "sample_1_label":   generate_random_string(),
+        "sample_2_label":   generate_random_string(),
+        "sample_3_label":   generate_random_string(),
         "sample_1_vector_": generate_random_vector(),
         "sample_2_vector_": generate_random_vector(),
         "sample_3_vector_": generate_random_vector()
@@ -76,7 +76,7 @@ def sample_vector_doc():
 
 
 @pytest.fixture
-def test_sample_vector_dataset(test_client, test_dataset_id, sample_vector_doc):
+def test_sample_vector_dataset(test_client, sample_vector_doc, test_dataset_id):
     """Sample vector dataset"""
     sample_vector_docs = sample_vector_doc * 100
     response = test_client.insert_documents(
@@ -84,7 +84,7 @@ def test_sample_vector_dataset(test_client, test_dataset_id, sample_vector_doc):
     )
     yield test_dataset_id
 
-    test_client.datasets.delete(test_dataset_id)
+    # test_client.datasets.delete(test_dataset_id)
 
 
     

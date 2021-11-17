@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 17th 2021,12:48:18 am
+# Last Modified: Wednesday, November 17th 2021,4:11:46 am
 #####
 
 from pathlib import Path
@@ -36,7 +36,6 @@ from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 @pytest.fixture(name="dataset_args", 
 params =[ 
         { ## Testing vector label and empty hover label
-        "dataset_id" : "_sample_test_dataset",
         "vector_field": "sample_1_vector_",
         "vector_label" : "sample_1_label",
         "vector_label_char_length"  : 12,
@@ -44,16 +43,14 @@ params =[
         "random_state" : 0,
         },
         { ## Testing colour label
-        "dataset_id" : "_sample_test_dataset",
         "vector_field": "sample_2_vector_",
         "colour_label": "sample_2_label",
         "colour_label_char_length" : 20,
         "number_of_points_to_render" : 100,
         "random_state" : 42
         },
-        {  ## Testing vector label, colour label and hover label
-        "dataset_id" : "_sample_test_dataset",
-        "vector_field": "sample_2_vector_",
+        { ## Testing vector label, colour label and hover label
+        "vector_field": "sample_3_vector_",
         "colour_label": "sample_3_label",
         "colour_label_char_length" : 20,
         "hover_label":  ["sample_1_label", "sample_2_label", "sample_3_label"],
@@ -61,34 +58,21 @@ params =[
         "random_state" : 42
         }
     ])
-def fixture_dataset_args(request):
-    return request.param
+def fixture_dataset_args(test_sample_vector_dataset, request):
+    return {"dataset_id": test_sample_vector_dataset, **request.param}
 
 
-@pytest.fixture(name="dataset_args_single") 
-def fixture_dataset_args_single(test_sample_vector_dataset):
-    return { 
-        "dataset_id" : test_sample_vector_dataset,
-        "vector_field": "sample_2_vector_",
-        "colour_label": "sample_3_vector_",
-        "colour_label_char_length" : 20,
-        "hover_label": ["sample_1_label", "sample_2_label", "sample_3_label"],
-        "number_of_points_to_render" : None,
-        "random_state" : 42
-        }
-
-
-    
-# @pytest.fixture(name='dr_args_single',
-# def fixture_dr_args():
-#     return   {  
-#         'dr': 'pca',
-#         'dr_args': {
-#         "svd_solver": "auto",
-#         "random_state": 42
-#     }
-#     }
-
+# @pytest.fixture(name="dataset_args_single") 
+# def fixture_dataset_args(test_sample_vector_dataset):
+#     return { 
+#         "dataset_id" : test_sample_vector_dataset,
+#         "vector_field": "sample_2_vector_",
+#         "colour_label": "sample_1_label",
+#         "colour_label_char_length" : 20,
+#         "hover_label": ["sample_1_label", "sample_2_label", "sample_3_label"],
+#         "number_of_points_to_render" : None,
+#         "random_state" : 42
+#         }
 
     
 @pytest.fixture(name='dr_args',
@@ -109,7 +93,7 @@ params= [
     {"cluster": c,
      "cluster_args": {
         **CLUSTER_DEFAULT_ARGS[c]   
-    }
+        }
     } for c in get_args(CLUSTER)
         if c
 ])
@@ -123,9 +107,9 @@ class TestProjectorPlot:
     """Test the ProjectorPlot class
     """
 
-    def test_plot_no_cluster(self, test_client, test_sample_vector_dataset, dataset_args_single):
+    def test_plot_no_cluster(self, test_client, dataset_args, dr_args):
         """Testing colour plot no cluster"""
-        test_client.projector.plot(**dataset_args_single)
+        test_client.projector.plot(**dataset_args, **dr_args)
         assert True
 
     # def test_plot_with_cluster(self, test_client, dataset_args, dr_args, cluster_args):

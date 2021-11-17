@@ -74,7 +74,8 @@ class Dataset(Base, DocUtils):
             dataset_id=dataset_id, select_fields=fields, 
             include_vector=True,
             page_size=page_size, is_random=is_random, 
-            random_state=self.random_state)
+            random_state=self.random_state
+            )
 
         data = resp["documents"]
         
