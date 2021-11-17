@@ -78,9 +78,9 @@ def sample_vector_doc():
 @pytest.fixture(autouse=True)
 def test_sample_vector_dataset(test_client, sample_vector_doc, test_dataset_id):
     """Sample vector dataset"""
-    sample_vector_docs = sample_vector_doc * 200
+    sample_vector_docs = sample_vector_doc * 100
     response = test_client.insert_documents(
         test_dataset_id, sample_vector_docs
     )
-    yield test_dataset_id
-    # test_client.datasets.delete(test_dataset_id)
+    if response['inserted'] == 100:
+        yield test_dataset_id
