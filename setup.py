@@ -40,11 +40,13 @@ vis_requirements = [
     "typeguard"
 ]
 
-kmedoids = ["scikit-learn-extra"]
 umap = ["umap-learn>=0.5.2"]
 ivis_cpu = ["ivis[cpu]>=2.0.6"]
 ivis_gpu = ["ivis[gpu]>=2.0.6"]
+kmedoids = ["scikit-learn-extra>=0.2.0"]
+hdbscan = ["hdbscan>=0.8.27"]
 
+vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
 test_requirements =[
     "pytest",
@@ -55,10 +57,7 @@ test_requirements =[
     "types-requests"
 ] + excel_requirements \
   + vis_requirements \
-  + kmedoids \
-  + umap \
-  + ivis_cpu \
-  + ivis_gpu
+  + vis_extras
 
 
 dev_requirements = [
@@ -76,12 +75,7 @@ dev_vis_requirements = [
     "sphinx-rtd-theme>=0.5.0"
 ] + test_requirements \
   + vis_requirements \
-  + kmedoids \
-  + umap \
-  + ivis_cpu \
-  + ivis_gpu
-
-
+  + vis_extras
 
 setup(
     name="RelevanceAI",
@@ -106,12 +100,14 @@ setup(
         "dev-vis": dev_vis_requirements,
         "excel": excel_requirements,
         "vis": vis_requirements,
+        "vis-all": vis_requirements + vis_extras,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,
-        "kmedoids": kmedoids,
         "umap": umap,
         "ivis-cpu": ivis_cpu,
         "ivis-gpu": ivis_gpu,
+        "kmedoids": kmedoids,
+        "hdbscan": hdbscan
     },
     python_requires=">=3.6",
     classifiers=[],
