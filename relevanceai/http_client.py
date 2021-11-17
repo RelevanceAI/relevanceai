@@ -35,7 +35,7 @@ class Client(BatchAPIClient, DocUtils):
     ):
 
         if project is None or api_key is None:
-            project, api_key = Client.token_to_auth()
+            project, api_key = Client.token_to_auth(verbose=verbose)
             # raise ValueError(
             #     "It seems you are missing an API key, "
             #     + "you can sign up for an API key following the instructions here: "
@@ -58,7 +58,9 @@ class Client(BatchAPIClient, DocUtils):
             self.projector = Projector(project, api_key, base_url)
 
     @staticmethod
-    def token_to_auth():
+    def token_to_auth(verbose=True):
+        if verbose:
+            print("To find your API credentials, sign up at our login page and head to https://cloud.relevance.ai/settings.")
         token = getpass.getpass(
             "Paste your project and API key in the format: of `project:api_key` here:"
         )
