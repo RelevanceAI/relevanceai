@@ -62,7 +62,7 @@ class Dataset(Base, DocUtils):
         """
         Retrieve all documents from dataset
         """
-        # TODO: add support for when number of documents is None
+
         if number_of_documents:
             if page_size > number_of_documents or self.random_state != 0:
                 page_size = number_of_documents # type: ignore
