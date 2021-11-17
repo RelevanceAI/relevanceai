@@ -299,7 +299,7 @@ class Projector(Base, DocUtils):
     def _generate_hover_template(
         self,
         df: pd.DataFrame
-    ) -> Tuple[Union[pd.DataFrame, None], Union[List, None]]:
+    ) -> Tuple[Optional[pd.DataFrame], Optional[str]]:
         """
         Generating hover template
         """
@@ -314,5 +314,6 @@ class Projector(Base, DocUtils):
             )+'<extra></extra>'
     
         else:
-            custom_data = hovertemplate = None
+            custom_data = None
+            hovertemplate = ''
         return custom_data, hovertemplate

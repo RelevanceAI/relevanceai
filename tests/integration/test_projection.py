@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 17th 2021,4:13:31 am
+# Last Modified: Wednesday, November 17th 2021,4:23:18 am
 #####
 
 from pathlib import Path
@@ -106,11 +106,6 @@ def fixture_cluster_args(request):
 class TestProjectorPlot:
     """Test the ProjectorPlot class
     """
-
-    def test_plot_no_cluster(self, test_client, dataset_args, dr_args):
-        """Testing colour plot no cluster"""
-        test_client.projector.plot(**dataset_args, **dr_args)
-        assert True
 
     def test_plot_with_cluster(self, test_client, dataset_args, dr_args, cluster_args):
         """Testing colour plot with cluster"""
