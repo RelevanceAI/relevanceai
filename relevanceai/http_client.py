@@ -60,14 +60,15 @@ class Client(BatchAPIClient, DocUtils):
     @staticmethod
     def token_to_auth(verbose=True):
         if verbose:
-            print("To find your API credentials, sign up at our login page and head to https://cloud.relevance.ai/settings.")
-        project = getpass.getpass("Project:")
-        api_key = getpass.getpass("API key:")
+            print("You can sign up/login and find your credentials here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
+        token = getpass.getpass("Auth token:")
+        # project = getpass.getpass("Project:")
+        # api_key = getpass.getpass("API key:")
         # token = getpass.getpass(
         #     "Paste your project and API key in the format: of `project:api_key` here:"
         # )
-        # project = token.split(":")[0]
-        # api_key = token.split(":")[1]
+        project = token.split(":")[0]
+        api_key = token.split(":")[1]
         return project, api_key
 
     @staticmethod
