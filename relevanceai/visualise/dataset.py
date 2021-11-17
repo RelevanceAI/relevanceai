@@ -50,7 +50,9 @@ class Dataset(Base, DocUtils):
         self.docs = self._retrieve_documents(dataset_id, fields, number_of_documents, page_size)
         self.vector_fields = self._vector_fields()
         self.docs = self._remove_empty_vector_fields(vector_field)
+        self.vector_dim = self.schema[vector_field]['vector']
 
+        
     
     def _retrieve_documents(
         self, 
@@ -120,6 +122,7 @@ class Dataset(Base, DocUtils):
         Returns list of valid vector fields from dataset schema
         """
         self.schema = self.dataset.schema(dataset_id=self.dataset_id)
+
         return [k for k, v in self.schema.items()
                 if isinstance(v, dict) 
                 if 'vector' in v.keys()]

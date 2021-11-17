@@ -118,6 +118,7 @@ class Projector(Base, DocUtils):
                                 vector_label=vector_label, colour_label=colour_label, hover_label=hover_label,
                                 number_of_documents=number_of_documents, random_state=random_state
                                 )
+
         self.docs = self.dataset.docs
         self.detail = self.dataset.detail
 

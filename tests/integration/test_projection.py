@@ -3,7 +3,7 @@
 #####
 # Author: Charlene Leong charleneleong84@gmail.com
 # Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 17th 2021,4:34:47 am
+# Last Modified: Wednesday, November 17th 2021,6:20:10 am
 #####
 
 from pathlib import Path
@@ -16,7 +16,6 @@ from typing_extensions import get_args
 
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
-
 
 
 @pytest.fixture(name="dataset_args", 
@@ -48,7 +47,7 @@ def fixture_dataset_args(test_sample_vector_dataset, request):
     return {"dataset_id": test_sample_vector_dataset, **request.param}
 
 
-    
+
 @pytest.fixture(name='dr_args',
 params= [
     {"dr": dr,
@@ -76,14 +75,8 @@ def fixture_cluster_args(request):
 
 
 
-class TestProjectorPlot:
-    """Test the ProjectorPlot class
-    """
 
-    def test_plot_with_cluster(self, test_client, dataset_args, dr_args, cluster_args):
-        """Testing colour plot with cluster"""
-        test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
-        assert True
-
-
-    
+def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
+    """Testing vector label with cluster"""
+    test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
+    assert True
