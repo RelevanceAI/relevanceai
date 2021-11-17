@@ -7,6 +7,9 @@ import random
 import numpy as np
 from relevanceai import Client
 
+from utils import generate_random_string, generate_random_vector
+
+
 @pytest.fixture
 def test_project():
     # test projects
@@ -57,3 +60,31 @@ def error_doc():
         "_id": 3,
         "value": np.nan
     }]
+
+
+@pytest.fixture
+def sample_vector_doc():
+    return [{
+        "_id": uuid.uuid4().__str__(),
+        "sample_1_label": generate_random_string(),
+        "sample_2_label": generate_random_string(),
+        "sample_3_label": generate_random_string(),
+        "sample_1_vector_": generate_random_vector(),
+        "sample_2_vector_": generate_random_vector(),
+        "sample_3_vector_": generate_random_vector()
+    }]
+
+
+@pytest.fixture
+def test_sample_vector_dataset(test_client, test_dataset_id, sample_vector_doc):
+    """Sample vector dataset"""
+    sample_vector_docs = sample_vector_doc * 100
+    response = test_client.insert_documents(
+        test_dataset_id, sample_vector_docs
+    )
+    yield test_dataset_id
+
+    test_client.datasets.delete(test_dataset_id)
+
+
+    

@@ -73,7 +73,7 @@ class Projector(Base, DocUtils):
         ### Cluster args
         cluster: Union[None, CLUSTER] = None,
         cluster_args: Union[None, JSONDict] = {"n_init" : 20},
-        num_clusters: Union[None, int] = 10,
+        num_clusters: Union[None, int] = 10
     ):
         """
         Plot function for Embedding Projector class
@@ -113,12 +113,12 @@ class Projector(Base, DocUtils):
             warnings.warn(f'You are rendering over 1000 points, this may take some time ...')
         
         number_of_documents = number_of_points_to_render
+        
         self.dataset = Dataset(**self.base_args, 
                                 dataset_id=dataset_id, vector_field=vector_field, 
                                 vector_label=vector_label, colour_label=colour_label, hover_label=hover_label,
                                 number_of_documents=number_of_documents, random_state=random_state
                                 )
-
         self.docs = self.dataset.docs
         self.detail = self.dataset.detail
 
@@ -203,7 +203,6 @@ class Projector(Base, DocUtils):
             Generates data for word plot
             If vector_label set, generates text_labels, otherwise shows points only
             '''
-            
             if self.vector_label:
                 plot_title = plot_title.replace('</b>', f"Vector Label: {self.vector_label}<br></b>")
                 plot_mode ='text+markers'
