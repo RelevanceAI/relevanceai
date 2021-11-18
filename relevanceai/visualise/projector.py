@@ -6,6 +6,7 @@ import json
 import warnings
 
 import plotly.graph_objs as go
+import inspect
 
 from dataclasses import dataclass
 from typeguard import typechecked
@@ -60,7 +61,7 @@ class Projector(APIClient, Base, DocUtils):
         random_state: int = 0,
         ### Dimensionality reduction args
         dr: Union[str, DimReductionBase]= "pca",
-        dr_args: Union[None, dict] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
+        dr_args: Union[None, Dict] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
         # TODO: Add support for 2
         dims: Literal[3] = 3,
         ### Plot rendering args
@@ -71,7 +72,7 @@ class Projector(APIClient, Base, DocUtils):
         hover_label: Union[None, List[str]] = [],
         ### Cluster args
         cluster: Union[None, CLUSTER] = None,
-        cluster_args: Union[None, dict] = {"n_init": 20},
+        cluster_args: Union[None, Dict] = {"n_init": 20},
         num_clusters: Union[None, int] = 10,
     ):
         """
@@ -130,15 +131,17 @@ class Projector(APIClient, Base, DocUtils):
 
         fields = [label for label in ["_id", vector_field, vector_label, colour_label] + hover_label if label]  # type: ignore
         self.docs = self._retrieve_documents(
+            # TO CHECK: page size is batch size?
             dataset_id, fields, number_of_documents, page_size=20
         )
-        self.vector_fields = self._vector_fields()
-        self.docs = self._remove_empty_vector_fields(vector_field)
+        self.vector_fields = self._get_vector_fields()
+        self._remove_empty_vector_fields(vector_field)
         return self.plot_from_docs(self.docs)
-    
-    def _dim_reduce(self, vectors, dr_args):
+   
+    def _dim_reduce(self, vectors, dr_args={}):
         """Instantiate the DR class if it is a string input
         """
+        vectors = np.array(vectors)
         if isinstance(self.dr, str):
             # TO DO: Add the other DR algorithms
             if self.dr == "pca":
@@ -155,15 +158,15 @@ class Projector(APIClient, Base, DocUtils):
             vectors_dr = self.dr.fit_transform(vectors)
         return vectors_dr
 
-
     def plot_from_docs(self, docs: List[Dict[str, Any]], *args, **kw):
         """Here we plot from docs"""
-        self.docs = docs
+        self.vectors = self.get_field_across_documents(self.vector_field, self.docs)
         self.vector_dim = self.schema[self.vector_field]["vector"]
+        self.vectors_dr = self._dim_reduce(self.vectors)
 
         if self.is_valid_vector_name(self.vector_field):
-            self.vectors = self.dr.vectors
-            self.vectors_dr = self.dr.fit_transform(self.vectors)
+            # self.vectors = self.dr.vectors
+            self.vectors_dr = self._dim_reduce(self.vectors)
             points = {
                 "x": self.vectors_dr[:, 0],
                 "y": self.vectors_dr[:, 1],
@@ -176,9 +179,7 @@ class Projector(APIClient, Base, DocUtils):
             if self.hover_label and all(
                 self.is_valid_label_name(l) for l in self.hover_label
             ):
-                self.embedding_df = pd.concat(
-                    [self.embedding_df, self.detail[self.hover_label]], axis=1
-                )
+                self.embedding_df = pd.DataFrame(self.docs)
 
             if self.vector_label and self.is_valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(
@@ -210,11 +211,12 @@ class Projector(APIClient, Base, DocUtils):
                 self.legend = "cluster_labels"
 
             self.embedding_df.index = self.embedding_df["_id"]
+            print(self.embedding_df)
             return self._generate_fig(
                 embedding_df=self.embedding_df, legend=self.legend
             )
 
-    def _vector_fields(self) -> List[str]:
+    def _get_vector_fields(self) -> List[str]:
         """
         Returns list of valid vector fields from dataset schema
         """
@@ -247,7 +249,7 @@ class Projector(APIClient, Base, DocUtils):
         else:
             raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
 
-    def _remove_empty_vector_fields(self, vector_field: str) -> List[dict]:
+    def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
         """
         Remove documents with empty vector fields
         """
@@ -260,7 +262,7 @@ class Projector(APIClient, Base, DocUtils):
         number_of_documents: Optional[int] = 1000,
         page_size: int = 1000,
         filters=[],
-    ) -> List[dict]:
+    ) -> List[Dict]:
         """
         Retrieve all documents from dataset
         """
@@ -355,7 +357,10 @@ class Projector(APIClient, Base, DocUtils):
                     text=[idx for _ in range(val["x"].shape[0])],
                     textposition="top center",
                     mode="markers",
-                    marker=dict(size=3, symbol="circle"),
+                    marker={
+                        "size": 3, "symbol": "circle"
+                    },
+                    # dict(size=3, symbol="circle"),
                     customdata=custom_data,
                     hovertemplate=hovertemplate,
                 )
@@ -417,7 +422,12 @@ class Projector(APIClient, Base, DocUtils):
                 textposition="middle center",
                 showlegend=False,
                 mode=plot_mode,
-                marker=dict(size=3, color=RELEVANCEAI_BLUE, symbol="circle"),
+                marker = {
+                    "size": 3,
+                    "color": RELEVANCEAI_BLUE,
+                    "symbol": "circle"
+                },
+                # marker=dict(size=3, color=RELEVANCEAI_BLUE, symbol="circle"),
                 customdata=custom_data,
                 hovertemplate=hovertemplate,
             )
@@ -426,10 +436,27 @@ class Projector(APIClient, Base, DocUtils):
         """
         Generating figure
         """
-        axes = dict(title="", showgrid=True, zeroline=False, showticklabels=False)
+        # axes = dict(title="", showgrid=True, zeroline=False, showticklabels=False)
+        axes = {
+            "title": "",
+            "showgrid": True,
+            "zeroline": False,
+            "showticklabels": False
+        }
         layout = go.Layout(
-            margin=dict(l=0, r=0, b=0, t=0),
-            scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
+            margin={
+                "l": 0,
+                "r": 0,
+                "b": 0,
+                "t": 0
+            },
+            # dict(l=0, r=0, b=0, t=0),
+            scene={
+                "xaxis": axes,
+                "yaxis": axes,
+                "zaxis": axes
+            }
+            # scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
 
         if self.cluster:

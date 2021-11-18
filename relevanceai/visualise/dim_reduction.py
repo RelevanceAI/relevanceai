@@ -13,6 +13,7 @@ from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
 from relevanceai.base import Base
+from relevanceai.logger import LoguruLogger
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 
 @dataclass
@@ -119,12 +120,9 @@ class DimReduction(Base, DocUtils):
             vectors_dr = ivis.fit(vectors).transform(vectors)
         return vectors_dr
 
-class DimReductionBase:
+class DimReductionBase(LoguruLogger):
     def __call__(self, *args, **kw):
         return self.fit_transform(*args, **kw)
-
-    def __init__(self):
-        self._import()
 
     @abstractmethod
     def fit_transform(self):
