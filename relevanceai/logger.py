@@ -5,8 +5,10 @@ from loguru import logger as loguru_logger
 from abc import abstractmethod
 from relevanceai.config import CONFIG
 
+
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
+
 
 class AbstractLogger:
     """Base Logging Instance
@@ -23,10 +25,12 @@ class AbstractLogger:
     # def logger(self):
     #     raise NotImplementedError
 
+
 class LoguruLogger(AbstractLogger):
     """Using verbose loguru as base logger for now
     """
     # Add Logging
+
     def __init__(self):
         self._init_logger()
 
@@ -39,13 +43,15 @@ class LoguruLogger(AbstractLogger):
         self.config = CONFIG
         logging_level = self.config.get_option("logging.logging_level")
         log_to_file = str2bool(self.config.get_option("logging.log_to_file"))
-        log_file_name = str2bool(self.config.get_option("logging.log_file_name"))
-        disable_logging = str2bool(self.config.get_option("logging.disable_logging"))
+        log_file_name = self.config.get_option("logging.log_file_name") + '.log'
+        disable_logging = str2bool(
+            self.config.get_option("logging.disable_logging"))
 
         logger = loguru_logger
         logger.remove()
         if disable_logging is False:
             logger.add(sys.stdout, level=logging_level)
             if log_to_file:
-                logger.add(log_file_name, level=logging_level, rotation="100 MB")
-        self._logger = logger 
+                logger.add(log_file_name, level=logging_level,
+                           rotation="100 MB")
+        self._logger = logger
