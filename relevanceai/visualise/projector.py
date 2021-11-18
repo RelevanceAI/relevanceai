@@ -66,7 +66,7 @@ class Projector(APIClient, Base, DocUtils):
         dims: Literal[3] = 3,
         ### Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 12,
+        vector_label_char_length: Union[None, int] = 50,
         colour_label: Union[None, str] = None,
         colour_label_char_length: Union[None, int] = 20,
         hover_label: Union[None, List[str]] = [],
