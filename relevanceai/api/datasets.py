@@ -1,5 +1,7 @@
 """All Dataset related functions
 """
+from typing import Union, Optional
+
 from relevanceai.base import Base
 from relevanceai.api.documents import Documents
 from relevanceai.api.monitor import Monitor
@@ -64,7 +66,7 @@ class Datasets(Base):
         self,
         dataset_id: str,
         schema: dict = {},
-        output_format: str = "json",
+        output_format: Union[str, bool] = "json",
         verbose: bool = True,
     ):
         return self.make_http_request(
@@ -75,7 +77,7 @@ class Datasets(Base):
             verbose=verbose,
         )
 
-    def list(self, output_format: str = "json", verbose: bool = True, retries=None):
+    def list(self, output_format: Optional[str] = "json", verbose: bool = True, retries=None):
         return self.make_http_request(
             endpoint="datasets/list",
             method="GET",

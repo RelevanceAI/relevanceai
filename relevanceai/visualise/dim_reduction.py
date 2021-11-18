@@ -25,10 +25,10 @@ class DimReduction(Base, DocUtils):
         api_key: str,
         base_url: str,
         data: List[JSONDict],
-        vector_label: str,
+        vector_label: Union[None, str],
         vector_field: str,
         dr: DIM_REDUCTION,
-        dr_args: Union[None, JSONDict] = None,
+        dr_args: Optional[Dict[Any, Any]] = None,
         dims: Literal[2, 3] = 3,
     ):  
 
@@ -46,7 +46,7 @@ class DimReduction(Base, DocUtils):
         self.dims = dims
 
         if dr_args is None:
-            self.dr_args = {**DIM_REDUCTION_DEFAULT_ARGS[dr]}
+            self.dr_args = DIM_REDUCTION_DEFAULT_ARGS[dr]
 
         self.vectors  = self._prepare_vectors(data=self.data, vector_field=self.vector_field)
         self.vectors_dr = self._dim_reduce(vectors=self.vectors, 
@@ -94,12 +94,23 @@ class DimReduction(Base, DocUtils):
             tsne = TSNE(n_components=dims, **dr_args)
             vectors_dr = tsne.fit_transform(data_pca)
         elif dr == "umap":
-            from umap import UMAP
+            try:
+                from umap import UMAP
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall umap\n \
+                    pip install -U relevanceai[umap]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
             umap = UMAP(n_components=dims, **dr_args)
             vectors_dr = umap.fit_transform(vectors)
         elif dr == "ivis":
-            from ivis import Ivis
+            try:
+                from ivis import Ivis
+            except ModuleNotFoundError as e:
+                raise ModuleNotFoundError(f'{e}\nInstall ivis\n \
+                    CPU: pip install -U relevanceai[ivis-cpu]\n \
+                    GPU: pip install -U relevanceai[ivis-gpu]')
             self.logger.debug(f'{json.dumps(dr_args, indent=4)}')
-            vectors_dr = Ivis(embedding_dims=dims, **dr_args).fit(vectors).transform(vectors)
+            ivis = Ivis(embedding_dims=dims, **dr_args)
+            if ivis.batch_size > vectors.shape[0]: ivis.batch_size = vectors.shape[0]
+            vectors_dr = ivis.fit(vectors).transform(vectors)
         return vectors_dr

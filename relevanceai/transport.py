@@ -2,7 +2,10 @@
 """
 import time
 import traceback
+from typing import Union
+from relevanceai.config import Config
 from json.decoder import JSONDecodeError
+from relevanceai.logger import AbstractLogger
 
 import requests
 from requests import Request
@@ -15,6 +18,9 @@ class Transport:
 
     project: str
     api_key: str
+    base_url: str
+    config: Config
+    logger: AbstractLogger
 
     @property
     def auth_header(self):
@@ -25,10 +31,10 @@ class Transport:
         endpoint: str,
         method: str = "GET",
         parameters: dict = {},
-        output_format: str = "json",
+        output_format: Union[str, bool, None] = "json",
         base_url: str = None,
         verbose: bool = True,
-        retries: bool = None,
+        retries: int = None,
     ):
         """Make the HTTP request
         Args:

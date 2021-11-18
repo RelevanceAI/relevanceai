@@ -280,7 +280,21 @@ This can be helpful during client demos when you do not need to show the API end
 
 ### Getting Started
 
-Setup has been simplified in [`Makefile`](./Makefile)
+To get started with development, ensure you have `pytest` and `mypy` installed. These will help ensure typechecking and testing.
+
+```
+python -m pip install pytest mypy
+```
+Then run testing using:
+
+
+```
+python -m pytest
+mypy relevanceai
+```
+
+Otherwise, you can also setup your dev env using the [`Makefile`](./Makefile)
+
 Setup your virtualenv, install requirements and package
 
 ```python
@@ -292,7 +306,6 @@ For all available targets
 ```python
 ❯ make help
 Available rules:
-
 clean               Delete all compiled Python files 
 install             Install dependencies 
 lint                Lint using flake8 
@@ -300,7 +313,7 @@ test                Test dependencies
 update              Update dependencies 
 ```
 
-To add new targets, add new command and intended script, add descriptive comment above the command block as description to the rule.`
+To add new targets, add new command and intended script, add descriptive comment above the command block as description to the rule.
 
 ```make
 #################################################################################
@@ -309,24 +322,22 @@ To add new targets, add new command and intended script, add descriptive comment
 ...
 ## Test dependencies
 test
-	pytest $(TEST_PATH) --cov=relevanceai -vv
+	pytest $(TEST_PATH) --cov=relevanceai -vv -rs
 ...
 ```
+Then run testing using:
 
+You can limit your testing on a single file/folder by specifying a test path to folder or file.
 
-Run your local tests in [`tests`](./tests)
 
 ```zsh
-❯ make test
-```
 
-You should see similar to below -
+❯ make test TEST_PATH=tests/integration    
 
-```
-❯ make test
-pytest . --cov=relevanceai -vv
+
+pytest . --cov=relevanceai -vv -rs
 ========================================= test session starts =========================================
-platform linux -- Python 3.8.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/relevanceai/.venv/bin/python3.8
+platform linux -- Python 3.7.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/relevanceai/.venv/bin/python3.8
 cachedir: .pytest_cache
 rootdir: /home/charlene/code/relevanceai
 plugins: cov-3.0.0, mock-3.6.1, dotenv-0.5.2

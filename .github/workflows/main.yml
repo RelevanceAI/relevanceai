@@ -1,14 +1,12 @@
-# This is a basic workflow to help you get started with Actions
 
 name: CI
 
-# Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
+  # push:
+  #   branches: [ main, feature/add_login]
   pull_request:
-    branches: [ main ]
+    branches: [ main, feature/add_login]
 
   workflow_dispatch:
 
@@ -44,8 +42,10 @@ jobs:
             ${{ runner.os }}-${{ env.pythonLocation }}-pip-
             ${{ runner.os }}-${{ env.pythonLocation }}-
       - name: Run tests
+        env:
+          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
-          python -m pytest --cov=relevanceai -vv
-          
+          python -m pytest --cov=relevanceai -vv -rs

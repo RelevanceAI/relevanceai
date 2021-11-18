@@ -2,13 +2,15 @@
 """
 import json
 import math
+import os
 import sys
 import time
 import traceback
 from datetime import datetime
-from typing import Callable
+from typing import Callable, List, Dict, Union, Any
 
 from relevanceai.api.client import APIClient
+from relevanceai.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
 from relevanceai.batch.chunk import Chunker
@@ -25,7 +27,7 @@ class BatchInsert(APIClient, Chunker):
         bulk_fn: Callable = None,
         verbose: bool = True,
         max_workers: int = 8,
-        retry_chunk_mult: int = 0.5,
+        retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize=100,
         max_retries=1,
@@ -44,7 +46,7 @@ class BatchInsert(APIClient, Chunker):
                 f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
             )
         # Check if the collection exists
-        self.datasets.create(dataset_id, output_format=None, verbose=False)
+        self.datasets.create(dataset_id, output_format=False, verbose=False)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
@@ -74,7 +76,7 @@ class BatchInsert(APIClient, Chunker):
         bulk_fn: Callable = None,
         verbose: bool = True,
         max_workers: int = 8,
-        retry_chunk_mult: int = 0.5,
+        retry_chunk_mult: float = 0.5,
         chunksize: int = 100,
         show_progress_bar=False,
         *args,
@@ -85,10 +87,8 @@ class BatchInsert(APIClient, Chunker):
         automatically enabled.
         This is useful especially when pull_update_push bugs out and you need somethin urgently.
         Set chunksize to `None` for automatic conversion
-
         >>> from relevanceai import Client
         >>>  url = "https://api-aueast.relevance.ai/v1/"
-
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
@@ -98,7 +98,6 @@ class BatchInsert(APIClient, Chunker):
         >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
         >>>     client.update_documents(collection, docs['documents'])
         >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
-
         """
         if verbose:
             self.logger.info(f"You are currently updating {dataset_id}")
@@ -132,6 +131,142 @@ class BatchInsert(APIClient, Chunker):
         original_collection: str,
         update_function,
         updated_collection: str = None,
+        log_file: str = None,
+        updating_args: dict = {},
+        retrieve_chunk_size: int = 100,
+        retrieve_chunk_size_failure_retry_multiplier: float = 0.5,
+        number_of_retrieve_retries: int = 3,
+        max_workers: int = 8,
+        max_error: int = 1000,
+        filters: list = [],
+        select_fields: list = [],
+        verbose: bool = True,
+        show_progress_bar: bool = True,
+    ):
+        """
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents. 
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+        Parameters
+        ----------
+        original_collection : string
+            The dataset_id of the collection where your original documents are
+        logging_collection: string
+            The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
+        updated_collection: string
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+        update_function: function
+            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+        updating_args: dict
+            Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        retrieve_chunk_size_failure_retry_multiplier: int
+            If fails, retry on each chunk
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error:
+            How many failed uploads before the function breaks
+        """
+        if not callable(update_function):
+            raise TypeError("Your update function needs to be a function! Please read the documentation if it is not.")
+        
+        # Check if a logging_collection has been supplied
+        if log_file is None:
+            log_file = original_collection + '___' + str(datetime.now().__str__()) + ".log"
+        
+        # Instantiate the logger to document the successful IDs
+        PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
+
+        # Track failed documents
+        failed_documents: List[Dict] = []
+
+        # Trust the process
+        # Get document lengths to calculate iterations
+        original_length = self.datasets.documents._get_number_of_documents(
+            original_collection, filters, verbose=verbose
+        )
+
+        # get the remaining number in case things break
+        remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
+        iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
+
+        completed_documents_list : list = []
+
+        # Get incomplete documents from raw collection
+        retrieve_filters = filters + [
+            {
+                "field": "ids",
+                "filter_type": "ids",
+                "condition": "!=",
+                "condition_value": completed_documents_list,
+            }
+        ]
+
+        for _ in progress_bar(
+            range(iterations_required), show_progress_bar=show_progress_bar
+        ):
+
+            orig_json = self.datasets.documents.get_where(
+                original_collection,
+                filters=retrieve_filters,
+                page_size=retrieve_chunk_size,
+                select_fields=select_fields,
+                verbose=verbose,
+            )
+
+            documents = orig_json["documents"]
+
+            try:
+                updated_data = update_function(documents, **updating_args)
+            except Exception as e:
+                self.logger.error("Your updating function does not work: " + str(e))
+                traceback.print_exc()
+                return
+            
+            updated_documents = [i["_id"] for i in documents]
+
+            # Upload documents
+            if updated_collection is None:
+                insert_json = self.update_documents(
+                    dataset_id=original_collection,
+                    docs=updated_data,
+                    verbose=verbose,
+                    max_workers=max_workers,
+                    show_progress_bar=False,
+                )
+            else:
+                insert_json = self.insert_documents(
+                    dataset_id=updated_collection,
+                    docs=updated_data,
+                    verbose=verbose,
+                    max_workers=max_workers,
+                    show_progress_bar=False,
+                )
+
+            # Check success
+            chunk_failed = insert_json["failed_documents"]
+            failed_documents.extend(chunk_failed)
+            success_documents = list(set(updated_documents) - set(failed_documents))
+            PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
+            if verbose:
+                self.logger.success(
+                    f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
+                )
+
+        self.logger.success(f"Pull, Update, Push is complete!") 
+        
+        if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:
+            os.remove(log_file)
+        return {
+            "failed_documents": failed_documents,
+        }
+
+        
+    def pull_update_push_to_cloud(
+        self,
+        original_collection: str,
+        update_function,
+        updated_collection: str = None,
         logging_collection: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
@@ -145,44 +280,32 @@ class BatchInsert(APIClient, Chunker):
         show_progress_bar: bool = True,
     ):
         """
-        Loops through every document in your collection and applies a function (that is specified by you) to the documents. These documents are then uploaded into either an updated collection, or back into the original collection.
-
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents. 
+        These documents are then uploaded into either an updated collection, or back into the original collection.
         Parameters
         ----------
         original_collection : string
             The dataset_id of the collection where your original documents are
-
         logging_collection: string
             The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
-
         updated_collection: string
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
-
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
-
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
-
         retrieve_chunk_size: int
             The number of documents that are received from the original collection with each loop iteration.
-
         retrieve_chunk_size_failure_retry_multiplier: int
             If fails, retry on each chunk
-
         max_workers: int
             The number of processors you want to parallelize with
-
         max_error:
             How many failed uploads before the function breaks
-
         """
-
         # Check if a logging_collection has been supplied
-        if logging_collection == None:
-            now = datetime.now()
-            dt_string = now.strftime("_log_update_started_%d-%m-%Y_%H-%M-%S")
-            logging_collection = original_collection + dt_string
+        if logging_collection is None:
+            logging_collection = original_collection + "_logs"
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose=False)
@@ -195,10 +318,9 @@ class BatchInsert(APIClient, Chunker):
             )
 
         # Track failed documents
-        failed_documents = []
+        failed_documents: List[Dict]= []
 
         # Trust the process
-
         for _ in range(number_of_retrieve_retries):
 
             # Get document lengths to calculate iterations
@@ -219,8 +341,8 @@ class BatchInsert(APIClient, Chunker):
             if remaining_length == 0:
                 self.logger.success(f"Pull, Update, Push is complete!")
                 return {
-                    "Failed Documents": failed_documents,
-                    "Logging Collection": logging_collection,
+                    "failed_documents": failed_documents,
+                    "logging_collection": logging_collection,
                 }
 
             for _ in progress_bar(
@@ -290,6 +412,7 @@ class BatchInsert(APIClient, Chunker):
                 failed_documents.extend(chunk_failed)
                 success_documents = list(set(updated_documents) - set(failed_documents))
                 upload_documents = [{"_id": i} for i in success_documents]
+                
                 self.insert_documents(
                     logging_collection,
                     upload_documents,
@@ -302,7 +425,7 @@ class BatchInsert(APIClient, Chunker):
                     self.logger.warning(
                         "Failed to upload. Retrieving half of previous number."
                     )
-                    retrieve_chunk_size = (
+                    retrieve_chunk_size = int(
                         retrieve_chunk_size
                         * retrieve_chunk_size_failure_retry_multiplier
                     )
@@ -314,14 +437,14 @@ class BatchInsert(APIClient, Chunker):
                         f"You have over {max_error} failed documents which failed to upload!"
                     )
                     return {
-                        "Failed Documents": failed_documents,
-                        "Logging Collection": logging_collection,
+                        "failed_documents": failed_documents,
+                        "logging_collection": logging_collection,
                     }
 
         self.logger.success(f"Pull, Update, Push is complete!")
         return {
-            "Failed Documents": failed_documents,
-            "Logging Collection": logging_collection,
+            "failed_documents": failed_documents,
+            "logging_collection": logging_collection,
         }
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
@@ -350,12 +473,21 @@ class BatchInsert(APIClient, Chunker):
         docs: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
-        retry_chunk_mult: int = 0.5,
+        retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = None,
     ):
 
         # Get one document to test the size
+        if len(docs) == 0:
+            self.logger.warn("No document is detected")
+            return {
+                "inserted": 0,
+                "failed_documents": [],
+                "failed_documents_detailed": [],
+            }
+
+        # Insert documents
         test_doc = json.dumps(docs[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize is None:
@@ -367,13 +499,13 @@ class BatchInsert(APIClient, Chunker):
             )
 
         # Initialise number of inserted documents
-        inserted = []
+        inserted: List[str] = []
 
         # Initialise failed documents
         failed_ids = [i["_id"] for i in docs]
 
         # Initialise failed documents detailed
-        failed_ids_detailed = []
+        failed_ids_detailed: List[str] = []
 
         # Initialise cancelled documents
         cancelled_ids = []
@@ -390,7 +522,7 @@ class BatchInsert(APIClient, Chunker):
                         show_progress_bar=show_progress_bar,
                     )
                 else:
-                    insert_json = multithread(
+                    insert_json= multithread(
                         insert_function,
                         docs,
                         max_workers=max_workers,
@@ -402,37 +534,36 @@ class BatchInsert(APIClient, Chunker):
                 failed_ids_detailed = []
 
                 # Update inserted amount
-                [
-                    inserted.append(chunk["response_json"]["inserted"])
-                    for chunk in insert_json
-                    if chunk["status_code"] == 200
-                ]
+                def is_successfully_inserted(chunk: Union[Dict, Any]) -> bool:
+                    return chunk['status_code'] == 200 
+
+                inserted += list(
+                    map(
+                        lambda x: x['response_json']['inserted'],
+                        filter(is_successfully_inserted, insert_json)
+                    )
+                )
+
                 for chunk in insert_json:
 
                     # Track failed in 200
                     if chunk["status_code"] == 200:
-                        [
-                            failed_ids.append(i["_id"])
-                            for i in chunk["response_json"]["failed_documents"]
-                        ]
+                        failed_ids += [i["_id"] for i in chunk['response_json']['failed_documents']]
 
-                        [
-                            failed_ids_detailed.append(i)
-                            for i in chunk["response_json"]["failed_documents"]
-                        ]
+                        failed_ids_detailed += [i for i in chunk["response_json"]["failed_documents"]]
 
                     # Cancel documents with 400 or 404
                     elif chunk["status_code"] in [400, 404]:
-                        [cancelled_ids.append(i["_id"]) for i in chunk["documents"]]
+                        cancelled_ids += [i['_id'] for i in chunk['documents']]
 
                     # Half chunksize with 413 or 524
                     elif chunk["status_code"] in [413, 524]:
-                        [failed_ids.append(i["_id"]) for i in chunk["documents"]]
-                        chunksize = chunksize * retry_chunk_mult
+                        failed_ids += [i["_id"] for i in chunk['documents']]
+                        chunksize = int(chunksize * retry_chunk_mult)
 
                     # Retry all other errors
                     else:
-                        [failed_ids.append(i["_id"]) for i in chunk["documents"]]
+                        failed_ids += [i["_id"] for i in chunk['documents']]
 
                 # Update docs to retry which have failed
                 docs = [i for i in docs if i["_id"] in failed_ids]
