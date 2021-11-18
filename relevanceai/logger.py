@@ -44,12 +44,12 @@ class LoguruLogger(AbstractLogger):
         logging_level = self.config.get_option("logging.logging_level")
         log_to_file = str2bool(self.config.get_option("logging.log_to_file"))
         log_file_name = self.config.get_option("logging.log_file_name") + '.log'
-        disable_logging = str2bool(
-            self.config.get_option("logging.disable_logging"))
+        enable_logging = str2bool(
+            self.config.get_option("logging.enable_logging"))
 
         logger = loguru_logger
         logger.remove()
-        if disable_logging is False:
+        if enable_logging:
             logger.add(sys.stdout, level=logging_level)
             if log_to_file:
                 logger.add(log_file_name, level=logging_level,
