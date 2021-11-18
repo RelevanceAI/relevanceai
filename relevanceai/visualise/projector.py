@@ -211,7 +211,6 @@ class Projector(APIClient, Base, DocUtils):
                 self.legend = "cluster_labels"
 
             self.embedding_df.index = self.embedding_df["_id"]
-            print(self.embedding_df)
             return self._generate_fig(
                 embedding_df=self.embedding_df, legend=self.legend
             )
