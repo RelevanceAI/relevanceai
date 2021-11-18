@@ -28,7 +28,7 @@ class Config(DocUtils):
 
 CONFIG = Config()
 
-# TO create the initial config
+# To create the initial config
 # if __name__ == "__main__":
 #     config = configparser.ConfigParser()
 #     config["retries"] = {"number_of_retries": 1, "seconds_between_retries": 2}

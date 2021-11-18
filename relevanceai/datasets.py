@@ -1,5 +1,5 @@
 """
-Datasets.
+Datasets to mock
 """
 
 from typing import List, Union
@@ -93,7 +93,7 @@ def get_dummy_ecommerce_dataset(
 
 
 def get_sample_ecommerce_dataset(
-    number_of_documents: int = 1000, select_fields: list = ["product_image", "product_title", "product_description", "product_image_clip_vector_", "product_title_use_vector_]
+    number_of_documents: int = 1000, select_fields: list = ["product_image", "product_title", "product_description", "product_image_clip_vector_"]
 ):
     docs = SampleDatasets._get_dummy_dataset("quickstart_data_sample", number_of_documents, select_fields)
     for d in docs:
@@ -183,36 +183,11 @@ def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
     'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
     'retail_price': 999.0}
     """
-    return SampleDatasets._get_online_dataset(
-      "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv", 
-      number_of_documents, drop_columns=['Unnamed: 0'])
+    return SampleDatasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv", number_of_documents, drop_columns=['Unnamed: 0'])
 
 def get_realestate_dataset(
     number_of_documents: int = 50,
     filters = []
 ):
     return SampleDatasets._get_dummy_dataset('realestate', number_of_documents, filters)
-
-def get_mission_statements_dataset(number_of_documents: Union[None, int] = 1433) -> List:
-    """Function to download a sample games dataset.
-    Dataset from https://www.freetogame.com/
-    Total Len: 1433
-    Sample document:
-    {'_id': 0,
-    'company': 'Starbucks',
-    'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'},
-    """
-    df = pd.read_csv('https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv').drop(['Unnamed: 0'], axis=1)
-    df = df.reset_index(drop=False)
-    df.columns = ['_id', 'company', 'text']
-    df
-    if number_of_documents:
-        df = df[:number_of_documents]
-    df = df.to_dict(orient='records')
-    return df
-
-def get_machine_learning_research_dataset():
-    """Here we get our Machine Learning research dataset.
-    """
-    raise NotImplementedError
 
