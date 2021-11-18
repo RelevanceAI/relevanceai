@@ -160,6 +160,8 @@ class Projector(APIClient, Base, DocUtils):
 
     def plot_from_docs(self, docs: List[Dict[str, Any]], *args, **kw):
         """Here we plot from docs"""
+        for k, v in kw.items():
+            setattr(self, k, v)
         self.vectors = self.get_field_across_documents(self.vector_field, self.docs)
         self.vector_dim = self.schema[self.vector_field]["vector"]
         self.vectors_dr = self._dim_reduce(self.vectors)
