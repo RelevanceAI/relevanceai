@@ -48,9 +48,9 @@ class SampleDatasets:
     @staticmethod
     def _get_online_dataset(url, number_of_documents, drop_columns = [], encoding = None, csv = True):
         if csv:
-            data = pd.read_csv(url, encoding=encoding).drop(columns = drop_columns).dropna().to_dict(orient="records")
+            data = pd.read_csv(url, encoding=encoding).drop(columns = drop_columns).to_dict(orient="records")
         else:
-            data = pd.read_excel(url).drop(columns = drop_columns).dropna().to_dict(orient="records")
+            data = pd.read_excel(url).drop(columns = drop_columns).to_dict(orient="records")
         if number_of_documents:
             data = data[:number_of_documents]
         return data
@@ -139,7 +139,7 @@ def get_news_dataset(number_of_documents: Union[None, int] = 250) -> List:
     'updated_at': '2018-02-02 01:19:41.756664',
     'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'}
     """
-    return SampleDatasets._get_online_dataset("https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv", number_of_documents)
+    return SampleDatasets._get_online_dataset("https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv", number_of_documents, drop_columns=['Unnamed: 0'])
 
 def get_ecommerce_dataset(number_of_documents: Union[None, int] = 1000) -> List:
     """Function to download a sample ecommerce dataset

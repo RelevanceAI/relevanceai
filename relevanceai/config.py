@@ -25,15 +25,22 @@ class Config(DocUtils):
     def set_option(self, option, value):
         self.set_field(option, self.config, str(value))
 
+    def reset_to_default(self):
+        self.read_config(CONFIG_PATH)
+
+    @staticmethod
+    def _create_default():
+        config = configparser.ConfigParser()
+        config["retries"] = {"number_of_retries": 1, "seconds_between_retries": 2}
+        config["logging"] = {"log_to_file": False, "logging_level": "SUCCESS"}
+        config["upload"] = {"target_chunk_mb": 100}
+        with open(CONFIG_PATH, "w") as configfile:
+            config.write(configfile)
+
+
 
 CONFIG = Config()
 
 # To create the initial config
-# if __name__ == "__main__":
-#     config = configparser.ConfigParser()
-#     config["retries"] = {"number_of_retries": 1, "seconds_between_retries": 2}
-#     config["logging"] = {"log_to_file": False, "logging_level": "SUCCESS"}
-#     config["upload"] = {"target_chunk_mb": 100}
-#     with open(CONFIG_PATH, "w") as configfile:
-#         config.write(configfile)
-#     print(CONFIG_PATH)
+if __name__ == "__main__":
+    Config._create_default()
