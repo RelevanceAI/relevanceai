@@ -22,5 +22,5 @@ def test_projector_smoke():
     from relevanceai.visualise.dim_reduction import DimReduction
     from relevanceai.visualise.cluster import Cluster
     from relevanceai.visualise.projector import Projector
-    
+
     assert True

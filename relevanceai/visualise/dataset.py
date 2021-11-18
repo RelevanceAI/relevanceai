@@ -15,6 +15,7 @@ from doc_utils import DocUtils
 
 JSONDict = Dict[str, Any]
 
+
 @dataclass
 class Dataset(Base, DocUtils):
     """Dataset Class"""
@@ -40,26 +41,30 @@ class Dataset(Base, DocUtils):
 
         self.dataset_id = dataset_id
         self.vector_field = vector_field
-        self.logger.info(f'Retrieving {number_of_documents} documents from {dataset_id} ...')
+        self.logger.info(
+            f"Retrieving {number_of_documents} documents from {dataset_id} ..."
+        )
 
         self.dataset = Datasets(self.project, self.api_key, self.base_url)
         self.random_state = random_state
-        
-        if hover_label is None: hover_label=[]
-        fields = [label for label in ['_id', vector_field, vector_label, colour_label]+hover_label if label] # type: ignore
-        self.docs = self._retrieve_documents(dataset_id, fields, number_of_documents, page_size)
+
+        if hover_label is None:
+            hover_label = []
+        fields = [label for label in ["_id", vector_field, vector_label, colour_label] + hover_label if label]  # type: ignore
+        self.docs = self._retrieve_documents(
+            dataset_id, fields, number_of_documents, page_size
+        )
         self.vector_fields = self._vector_fields()
         self.docs = self._remove_empty_vector_fields(vector_field)
-        self.vector_dim = self.schema[vector_field]['vector']
+        self.vector_dim = self.schema[vector_field]["vector"]
 
-        
-    
     def _retrieve_documents(
-        self, 
-        dataset_id: str, 
+        self,
+        dataset_id: str,
         fields: List[str],
         number_of_documents: Optional[int] = 1000,
         page_size: int = 1000,
+        filters=[],
     ) -> List[JSONDict]:
         """
         Retrieve all documents from dataset
@@ -67,25 +72,32 @@ class Dataset(Base, DocUtils):
 
         if number_of_documents:
             if page_size > number_of_documents or self.random_state != 0:
-                page_size = number_of_documents # type: ignore
+                page_size = number_of_documents  # type: ignore
         else:
             number_of_documents = 999999999999999
 
         is_random = True if self.random_state != 0 else False
         resp = self.dataset.documents.get_where(
-            dataset_id=dataset_id, select_fields=fields, 
+            dataset_id=dataset_id,
+            select_fields=fields,
             include_vector=True,
-            page_size=page_size, is_random=is_random, 
-            random_state=self.random_state
-            )
+            page_size=page_size,
+            is_random=is_random,
+            random_state=self.random_state,
+            filters=filters,
+        )
 
         data = resp["documents"]
-        
-        if (number_of_documents > page_size) and (is_random==False) and (self.random_state==0):
+
+        if (
+            (number_of_documents > page_size)
+            and (is_random == False)
+            and (self.random_state == 0)
+        ):
             _cursor = resp["cursor"]
             _page = 0
             while resp:
-                self.logger.debug(f'Paginating {_page} page size {page_size} ...')
+                self.logger.debug(f"Paginating {_page} page size {page_size} ...")
                 resp = self.dataset.documents.get_where(
                     dataset_id=dataset_id,
                     select_fields=fields,
@@ -96,9 +108,11 @@ class Dataset(Base, DocUtils):
                 )
                 _data = resp["documents"]
                 _cursor = resp["cursor"]
-                if (_data == []) or (_cursor == []): break
-                data += _data 
-                if number_of_documents and (len(data) >= int(number_of_documents)): break
+                if (_data == []) or (_cursor == []):
+                    break
+                data += _data
+                if number_of_documents and (len(data) >= int(number_of_documents)):
+                    break
                 _page += 1
             data = data[:number_of_documents]
 
@@ -108,25 +122,31 @@ class Dataset(Base, DocUtils):
 
     @staticmethod
     def _build_df(data: List[JSONDict]):
+        """Everything except vectors, ID and insert date
+        """
         df = pd.DataFrame(data)
         # detail_cols = self.get_fields_across_documents_except(fields=['_vector_', '_id', 'insert_date_'], data=data)
-        detail_cols = [ c for c in df.columns if not any(f in c for f in ['_vector_', '_id', 'insert_date_']) ]
-        detail = df[detail_cols]
-        return df, detail
+        detail_cols = [
+            c
+            for c in df.columns
+            # if c not in 
+            if not any(f in c for f in ["_vector_", "_id", "insert_date_"])
+        ]
+        return df
 
-
-    def _vector_fields(
-        self
-    ) -> List[str]:
+    def _vector_fields(self) -> List[str]:
         """
         Returns list of valid vector fields from dataset schema
         """
         self.schema = self.dataset.schema(dataset_id=self.dataset_id)
 
-        return [k for k, v in self.schema.items()
-                if isinstance(v, dict) 
-                if 'vector' in v.keys()]
-    
+        return [
+            k
+            for k, v in self.schema.items()
+            if isinstance(v, dict)
+            if "vector" in v.keys()
+        ]
+
     def valid_vector_name(self, vector_name: str) -> bool:
         """
         Check vector field name is valid
@@ -143,9 +163,10 @@ class Dataset(Base, DocUtils):
         """
         Check vector label name is valid
         """
-        if label_name == '_id': return True
+        if label_name == "_id":
+            return True
         if label_name in list(self.schema.keys()):
-            if  (self.schema[label_name] in ['numeric', 'text']):
+            if self.schema[label_name] in ["numeric", "text"]:
                 return True
             else:
                 raise ValueError(f"{label_name} is not a valid label name")
@@ -156,6 +177,6 @@ class Dataset(Base, DocUtils):
         """
         Remove documents with empty vector fields
         """
-        self.docs = [ d for d in self.docs if d.get(vector_field) ]
+        self.docs = [d for d in self.docs if d.get(vector_field)]
         self.df, self.detail = self._build_df(self.docs)
         return self.docs

@@ -77,7 +77,9 @@ class Datasets(Base):
             verbose=verbose,
         )
 
-    def list(self, output_format: Optional[str] = "json", verbose: bool = True, retries=None):
+    def list(
+        self, output_format: Optional[str] = "json", verbose: bool = True, retries=None
+    ):
         return self.make_http_request(
             endpoint="datasets/list",
             method="GET",

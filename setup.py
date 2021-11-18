@@ -28,17 +28,9 @@ requirements = [
     "numpy>=1.19.0",
 ]
 
-excel_requirements = [
-    "openpyxl>=3.0.9", 
-    "fsspec>=2021.10.1"
-]
+excel_requirements = ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
-vis_requirements = [
-    "scikit-learn",
-    "plotly>=5.3.1",
-    "typing-extensions",
-    "typeguard"
-]
+vis_requirements = ["scikit-learn", "plotly>=5.3.1", "typing-extensions", "typeguard"]
 
 umap = ["umap-learn>=0.5.2"]
 ivis_cpu = ["ivis[cpu]>=2.0.6"]
@@ -48,46 +40,37 @@ hdbscan = ["hdbscan>=0.8.27"]
 
 vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
-test_requirements =[
-    "pytest",
-    "pytest-dotenv",
-    "pytest-cov",
-    "pytest-mock",
-    "mypy",
-    "types-requests"
-] + excel_requirements \
-  + vis_requirements \
-  + vis_extras
+test_requirements = (
+    ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
+    + excel_requirements
+    + vis_requirements
+    + vis_extras
+)
 
 
 dev_requirements = [
     "autopep8",
     "pylint",
     "jupyter",
-    "sphinx-rtd-theme>=0.5.0"
+    "sphinx-rtd-theme>=0.5.0",
 ] + test_requirements
 
 
-dev_vis_requirements = [
-    "autopep8",
-    "pylint",
-    "jupyter",
-    "sphinx-rtd-theme>=0.5.0"
-] + test_requirements \
-  + vis_requirements \
-  + vis_extras
+dev_vis_requirements = (
+    ["autopep8", "pylint", "jupyter", "sphinx-rtd-theme>=0.5.0"]
+    + test_requirements
+    + vis_requirements
+    + vis_extras
+)
 
 setup(
     name="RelevanceAI",
     version=get_version("relevanceai/__init__.py"),
     url="https://relevance.ai/",
-    
     author="Relevance AI",
     author_email="dev@relevance.ai",
     long_description="",
-
     packages=find_packages(),
-
     setup_requires=["wheel"],
     install_requires=requirements,
     package_data={
@@ -107,7 +90,7 @@ setup(
         "ivis-cpu": ivis_cpu,
         "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
-        "hdbscan": hdbscan
+        "hdbscan": hdbscan,
     },
     python_requires=">=3.6",
     classifiers=[],
