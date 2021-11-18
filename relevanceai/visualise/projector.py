@@ -83,7 +83,7 @@ class Projector(APIClient, Base, DocUtils):
         number_of_points_to_render: int
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
-        
+        from relevanceai.visualise.dim_reduction import DimReductionBase 
         class CustomDimReduction(DimReductionBase):
             def fit_transform(self, vectors):
                 return np.arange(512, 2)
