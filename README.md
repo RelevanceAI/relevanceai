@@ -19,9 +19,7 @@ For example:
 ```python
 ## To instantiate the client 
 from relevanceai import Client
-project = input("Your project goes here")
-api_key = input("Your API key goes here")
-client = Client(project, api_key)
+client = Client()
 ```
 
 To use the following endpoint: 
@@ -53,7 +51,7 @@ Get multi-threading and multi-processing out of the box. The relevanceai Python 
 
 ```python
 
-vdb_client.insert_documents(
+client.insert_documents(
     dataset_id="match-example",
     docs=participant_frames,
     update_schema=True,
@@ -66,7 +64,7 @@ def bulk_fn(docs):
         d["value_update"] = d["value"] + 2
     return docs
 
-vdb_client.insert_documents(
+client.insert_documents(
     dataset_id="match-example",
     docs=participant_frames,
     update_schema=True,
@@ -122,7 +120,7 @@ Alternatively, a new collection could be specified to direct where updated docum
 
 ```python
 new_collection = 'updated_test_dataset'
-vec_client.pull_update_push(original_collection, even_function, new_collection)
+client.pull_update_push(original_collection, even_function, new_collection)
 ```
 
 An example of the data now: 
@@ -132,7 +130,7 @@ An example of the data now:
 
 To delete all logs created by pull_update_push, use the `delete_all_logs` function.
 ```python
-vec_client.delete_all_logs(original_collection)
+client.delete_all_logs(original_collection)
 ```
 
 ### Sample Datasets 
@@ -250,10 +248,7 @@ If this is the case, then you are free to use this:
 from relevanceai import Client
 url = "https://api-aueast.relevance.ai/v1/"
 
-collection = ""
-project = ""
-api_key = ""
-client = Client(project, api_key)
+client = Client()
 docs = client.datasets.documents.get_where(collection, select_fields=['title'])
 while len(docs['documents']) > 0:
     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
