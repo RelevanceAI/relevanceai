@@ -13,12 +13,15 @@ from relevanceai.errors import APIError
 vis_requirements = False
 try:
     from relevanceai.visualise.projector import Projector
+
     vis_requirements = True
 except ModuleNotFoundError as e:
     pass
 
+
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
+
 
 class Client(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's relevanceai"""
@@ -28,10 +31,10 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: Optional[str]=os.getenv("VDB_PROJECT", None),
-        api_key: Optional[str]=os.getenv("VDB_API_KEY", None),
-        base_url: Optional[str]="https://gateway-api-aueast.relevance.ai/v1/",
-        verbose: bool=True
+        project: Optional[str] = os.getenv("VDB_PROJECT", None),
+        api_key: Optional[str] = os.getenv("VDB_API_KEY", None),
+        base_url: Optional[str] = "https://gateway-api-aueast.relevance.ai/v1/",
+        verbose: bool = True,
     ):
 
         if project is None or api_key is None:
@@ -51,9 +54,10 @@ class Client(BatchAPIClient, DocUtils):
         #     if verbose: self.logger.success(self.WELCOME_MESSAGE)
         # else:
         # raise APIError(self.FAIL_MESSAGE)
-        if verbose: self.logger.success(self.WELCOME_MESSAGE)
+        if verbose:
+            self.logger.success(self.WELCOME_MESSAGE)
 
-        super().__init__(project, api_key, base_url) # type: ignore
+        super().__init__(project, api_key, base_url)  # type: ignore
         if vis_requirements:
             self.projector = Projector(project, api_key, base_url)
 

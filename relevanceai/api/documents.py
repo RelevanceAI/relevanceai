@@ -2,6 +2,7 @@ from requests.models import stream_decode_response_unicode
 from typing import List
 from relevanceai.base import Base
 
+
 class Documents(Base):
     def __init__(self, project, api_key, base_url):
         self.project = project
@@ -41,7 +42,7 @@ class Documents(Base):
         select_fields: list = [],
         cursor: str = None,
         page_size: int = 20,
-        sort: list = [], # type: ignore
+        sort: list = [],  # type: ignore
         include_vector: bool = True,
         output_format: str = "json",
         verbose: bool = True,
@@ -184,7 +185,7 @@ class Documents(Base):
 
             # Append fetched data to the full data
             if length > 0:
-                full_data += x['documents']
+                full_data += x["documents"]
         return full_data
 
     def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
@@ -201,6 +202,8 @@ class Documents(Base):
             for dataset_id, filters in zip(dataset_ids, list_of_filters)
         }
 
-    def _get_number_of_documents(self, dataset_id, filters=[], verbose: bool=False):
+    def _get_number_of_documents(self, dataset_id, filters=[], verbose: bool = False):
         """Certainty around the number of documents excluding chunks (until chunk documents is fixed)"""
-        return self.get_where(dataset_id, page_size=1, filters=filters, verbose=verbose)["count"]
+        return self.get_where(
+            dataset_id, page_size=1, filters=filters, verbose=verbose
+        )["count"]

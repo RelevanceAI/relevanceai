@@ -48,12 +48,14 @@ def get_dummy_ecommerce_dataset(
     response = client.datasets.documents.list(db_name, page_size=count)
     if "message" in response:
         import warnings
+
         warnings.warn(response["message"])
     return response
 
+
 def get_sample_ecommerce_dataset(
-    number_of_documents: int = 1000, vector_fields: list = ["product_image_clip_vector_",
-    "product_title_use_vector_"]
+    number_of_documents: int = 1000,
+    vector_fields: list = ["product_image_clip_vector_", "product_title_use_vector_"],
 ):
     """Here, we get the e-commerce dataset."""
     from .http_client import Client
@@ -75,6 +77,7 @@ def get_sample_ecommerce_dataset(
     )
     if "message" in response:
         import warnings
+
         warnings.warn(response["message"])
     docs = response["documents"]
     for d in docs:
@@ -184,11 +187,15 @@ def get_flipkart_dataset(number_of_documents: Union[None, int] = 20000) -> List:
     'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
     'retail_price': 999.0}
     """
-    df = pd.read_csv("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv").drop('Unnamed: 0', axis=1)
-    return df.to_dict(orient='records')[:number_of_documents]
+    df = pd.read_csv(
+        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv"
+    ).drop("Unnamed: 0", axis=1)
+    return df.to_dict(orient="records")[:number_of_documents]
 
 
-def get_mission_statements_dataset(number_of_documents: Union[None, int] = 1433) -> List:
+def get_mission_statements_dataset(
+    number_of_documents: Union[None, int] = 1433
+) -> List:
     """Function to download a sample games dataset.
     Dataset from https://www.freetogame.com/
     Total Len: 1433
@@ -197,16 +204,18 @@ def get_mission_statements_dataset(number_of_documents: Union[None, int] = 1433)
     'company': 'Starbucks',
     'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'},
     """
-    df = pd.read_csv('https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv').drop(['Unnamed: 0'], axis=1)
+    df = pd.read_csv(
+        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv"
+    ).drop(["Unnamed: 0"], axis=1)
     df = df.reset_index(drop=False)
-    df.columns = ['_id', 'company', 'text']
+    df.columns = ["_id", "company", "text"]
     df
     if number_of_documents:
         df = df[:number_of_documents]
-    df = df.to_dict(orient='records')
+    df = df.to_dict(orient="records")
     return df
 
+
 def get_machine_learning_research_dataset():
-    """Here we get our Machine Learning research dataset.
-    """
+    """Here we get our Machine Learning research dataset."""
     raise NotImplementedError

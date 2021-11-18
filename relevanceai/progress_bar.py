@@ -39,6 +39,7 @@ class ProgressBar:
 
     def get_bar(self):
         from tqdm.auto import tqdm
+
         return tqdm
 
 
@@ -70,7 +71,7 @@ class NullProgressBar(AbstractContextManager):
 
 
 def progress_bar(iterable, show_progress_bar: bool = False):
-    
+
     try:
         if show_progress_bar:
             return ProgressBar()(iterable)
