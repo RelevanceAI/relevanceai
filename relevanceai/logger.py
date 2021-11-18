@@ -41,9 +41,11 @@ class LoguruLogger(AbstractLogger):
         self.config = CONFIG
         logging_level = self.config.get_option("logging.logging_level")
         log_to_file = str2bool(self.config.get_option("logging.log_to_file"))
+        disable_logging = str2bool(self.config.get_option("logging.disable_logging"))
         logger = loguru_logger
         logger.remove()
-        logger.add(sys.stdout, level=logging_level)
-        if log_to_file:
-            logger.add(f"relevanceai.log", level=logging_level, rotation="100 MB")
+        if disable_logging is False:
+            logger.add(sys.stdout, level=logging_level)
+            if log_to_file:
+                logger.add(f"relevanceai.log", level=logging_level, rotation="100 MB")
         self._logger = logger 
