@@ -14,8 +14,6 @@ from typing_extensions import Literal
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-from relevanceai.visualise.dataset import JSONDict
-
 
 @dataclass
 class DimReduction(Base, DocUtils):
@@ -26,7 +24,7 @@ class DimReduction(Base, DocUtils):
         project: str,
         api_key: str,
         base_url: str,
-        data: List[JSONDict],
+        data: List[dict],
         vector_label: Union[None, str],
         vector_field: str,
         dr: DIM_REDUCTION,
@@ -57,7 +55,7 @@ class DimReduction(Base, DocUtils):
             vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims
         )
 
-    def _prepare_vectors(self, data: List[JSONDict], vector_field: str) -> np.ndarray:
+    def _prepare_vectors(self, data: List[dict], vector_field: str) -> np.ndarray:
         """
         Prepare vectors
         """
@@ -71,7 +69,7 @@ class DimReduction(Base, DocUtils):
     def _dim_reduce(
         self,
         dr: DIM_REDUCTION,
-        dr_args: Union[None, JSONDict],
+        dr_args: Union[None, dict],
         vectors: np.ndarray,
         dims: Literal[2, 3],
     ) -> np.ndarray:
@@ -122,6 +120,9 @@ class DimReduction(Base, DocUtils):
         return vectors_dr
 
 class DimReductionBase:
+    def __call__(self, *args, **kw):
+        return self.fit_transform(*args, **kw)
+
     def __init__(self):
         self._import()
 

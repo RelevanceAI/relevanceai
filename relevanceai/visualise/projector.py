@@ -60,7 +60,7 @@ class Projector(APIClient, Base, DocUtils):
         random_state: int = 0,
         ### Dimensionality reduction args
         dr: Union[str, DimReductionBase]= "pca",
-        dr_args: Union[None, JSONDict] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
+        dr_args: Union[None, dict] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
         # TODO: Add support for 2
         dims: Literal[3] = 3,
         ### Plot rendering args
@@ -71,7 +71,7 @@ class Projector(APIClient, Base, DocUtils):
         hover_label: Union[None, List[str]] = [],
         ### Cluster args
         cluster: Union[None, CLUSTER] = None,
-        cluster_args: Union[None, JSONDict] = {"n_init": 20},
+        cluster_args: Union[None, dict] = {"n_init": 20},
         num_clusters: Union[None, int] = 10,
     ):
         """
@@ -140,7 +140,7 @@ class Projector(APIClient, Base, DocUtils):
         """Instantiate the DR class if it is a string input
         """
         if isinstance(self.dr, str):
-            # TO DO: FIX ME
+            # TO DO: Add the other DR algorithms
             if self.dr == "pca":
                 from relevanceai.visualise.dim_reduction import PCAReduction
                 dr_model = PCAReduction()
@@ -155,17 +155,6 @@ class Projector(APIClient, Base, DocUtils):
             vectors_dr = self.dr.fit_transform(vectors)
         return vectors_dr
 
-    @staticmethod
-    def _build_df(data: List[JSONDict]):
-        df = pd.DataFrame(data)
-        # detail_cols = self.get_fields_across_documents_except(fields=['_vector_', '_id', 'insert_date_'], data=data)
-        detail_cols = [
-            c
-            for c in df.columns
-            if not any(f in c for f in ["_vector_", "_id", "insert_date_"])
-        ]
-        detail = df[detail_cols]
-        return df, detail
 
     def plot_from_docs(self, docs: List[Dict[str, Any]], *args, **kw):
         """Here we plot from docs"""
@@ -191,7 +180,7 @@ class Projector(APIClient, Base, DocUtils):
                     [self.embedding_df, self.detail[self.hover_label]], axis=1
                 )
 
-            if self.vector_label and self.valid_label_name(self.vector_label):
+            if self.vector_label and self.is_valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(
                     field=self.vector_label, docs=self.docs
                 )
@@ -199,7 +188,7 @@ class Projector(APIClient, Base, DocUtils):
                 self.embedding_df["labels"] = self.labels
 
             self.legend = None
-            if self.colour_label and self.valid_label_name(self.colour_label):
+            if self.colour_label and self.is_valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(
                     field=self.colour_label, docs=self.docs
                 )
@@ -258,13 +247,11 @@ class Projector(APIClient, Base, DocUtils):
         else:
             raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
 
-    def _remove_empty_vector_fields(self, vector_field: str) -> List[JSONDict]:
+    def _remove_empty_vector_fields(self, vector_field: str) -> List[dict]:
         """
         Remove documents with empty vector fields
         """
         self.docs = [d for d in self.docs if d.get(vector_field)]
-        self.df, self.
-        return self.docs
 
     def _retrieve_documents(
         self,
@@ -273,7 +260,7 @@ class Projector(APIClient, Base, DocUtils):
         number_of_documents: Optional[int] = 1000,
         page_size: int = 1000,
         filters=[],
-    ) -> List[JSONDict]:
+    ) -> List[dict]:
         """
         Retrieve all documents from dataset
         """
@@ -325,7 +312,6 @@ class Projector(APIClient, Base, DocUtils):
                 _page += 1
             data = data[:number_of_documents]
 
-        self.df, self.detail = self._build_df(data)
         self.docs = data
         return self.docs
 

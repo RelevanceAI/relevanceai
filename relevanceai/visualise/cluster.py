@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 import json
+import warnings
 
 from dataclasses import dataclass
 
@@ -11,7 +12,6 @@ from typing_extensions import Literal
 
 from relevanceai.base import Base
 from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
-from relevanceai.visualise.dataset import JSONDict
 
 
 @dataclass
@@ -25,7 +25,7 @@ class Cluster(Base):
         base_url: str,
         vectors: np.ndarray,
         cluster: CLUSTER,
-        cluster_args: Union[None, JSONDict] = None,
+        cluster_args: Union[None] = None,
         k: Union[None, int] = None,
     ):
         self.project = project
@@ -62,17 +62,14 @@ class Cluster(Base):
         Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
         where a is penalty factor of num_clusters
         """
-        import warnings
-
         warnings.warn("This method is not implemented yet k=10")
-
         return 10
 
     def _cluster_vectors(
         self,
         vectors: np.ndarray,
         cluster: CLUSTER,
-        cluster_args: Union[None, JSONDict],
+        cluster_args: Union[None, dict],
     ) -> Tuple[List[str], List[int]]:
         """
         Cluster method for numerical data
@@ -117,7 +114,7 @@ class Cluster(Base):
     #     self,
     #     df: pd.DataFrame,
     #     cluster: CLUSTER,
-    #     cluster_args: Union[None, JSONDict],
+    #     cluster_args: Union[None, dict],
     #     categorical_idx: Union[None, List[int]] = None
     # ):
     #     """
@@ -143,7 +140,7 @@ class Cluster(Base):
     #     self,
     #     df: pd.DataFrame,
     #     cluster: CLUSTER,
-    #     cluster_args: Union[None, JSONDict],
+    #     cluster_args: Union[None, dict],
     #     categorical_idx: Union[None, List[int]] = None
     # ):
     #     """

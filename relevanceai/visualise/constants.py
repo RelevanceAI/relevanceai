@@ -3,7 +3,7 @@ from typing_extensions import Literal, get_args
 
 from joblib.memory import Memory
 
-JSONDict = Dict[str, Any]
+dict = Dict[str, Any]
 
 DIM_REDUCTION = Literal["pca", "tsne", "umap", "ivis"]
 DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
