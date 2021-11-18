@@ -32,7 +32,7 @@ class Config(DocUtils):
     def _create_default():
         config = configparser.ConfigParser()
         config["retries"] = {"number_of_retries": 1, "seconds_between_retries": 2}
-        config["logging"] = {"log_to_file": False, "logging_level": "SUCCESS"}
+        config["logging"] = {"log_to_file": False, "logging_level": "SUCCESS", 'disable_logging': False, "log_file_name": "relevanceai.log"}
         config["upload"] = {"target_chunk_mb": 100}
         with open(CONFIG_PATH, "w") as configfile:
             config.write(configfile)

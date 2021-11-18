@@ -32,8 +32,6 @@ class LoguruLogger(AbstractLogger):
 
     @property
     def logger(self):
-        # if hasattr(self, "_logger"):
-        #     return self._logger
         self._init_logger()
         return self._logger
 
@@ -41,9 +39,13 @@ class LoguruLogger(AbstractLogger):
         self.config = CONFIG
         logging_level = self.config.get_option("logging.logging_level")
         log_to_file = str2bool(self.config.get_option("logging.log_to_file"))
+        log_file_name = str2bool(self.config.get_option("logging.log_file_name"))
+        disable_logging = str2bool(self.config.get_option("logging.disable_logging"))
+
         logger = loguru_logger
         logger.remove()
-        logger.add(sys.stdout, level=logging_level)
-        if log_to_file:
-            logger.add(f"relevanceai.log", level=logging_level, rotation="100 MB")
+        if disable_logging is False:
+            logger.add(sys.stdout, level=logging_level)
+            if log_to_file:
+                logger.add(log_file_name, level=logging_level, rotation="100 MB")
         self._logger = logger 
