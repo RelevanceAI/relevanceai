@@ -77,7 +77,6 @@ class Cluster(Base):
         self.logger.info(f"Performing {cluster} clustering with {self.k} clusters ... ")
         if cluster == "kmeans":
             from sklearn.cluster import MiniBatchKMeans
-
             self.logger.debug(f"{json.dumps(cluster_args, indent=4)}")
             km = MiniBatchKMeans(n_clusters=self.k, **cluster_args).fit(vectors)
             cluster_labels = km.labels_
@@ -107,7 +106,6 @@ class Cluster(Base):
             cluster_labels = hdbscan.labels_
             cluster_centroids = []  ## HDBSCAN does not provide centroids
 
-        # cluster_labels = [ f'c_{c}' for c in cluster_labels ]
         return cluster_labels, cluster_centroids
 
     # def _cluster_categorical(

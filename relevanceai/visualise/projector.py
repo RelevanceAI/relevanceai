@@ -6,7 +6,6 @@ import json
 import warnings
 
 import plotly.graph_objs as go
-import inspect
 
 from dataclasses import dataclass
 from typeguard import typechecked
@@ -15,9 +14,8 @@ from relevanceai.api.client import APIClient
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
 
-# from relevanceai.visualise.dataset import tas
 from relevanceai.visualise.cluster import Cluster
-from relevanceai.visualise.dim_reduction import DimReduction, DimReductionBase
+from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
 
 from doc_utils import DocUtils
 
@@ -77,10 +75,6 @@ class Projector(APIClient, Base, DocUtils):
     ):
         """
         Plot function for Embedding Projector class
-        
-        dataset_id: Dataset name 
-        vector_field: Vector field that ends wtih _vector_
-        number_of_points_to_render: int
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
         from relevanceai.visualise.dim_reduction import DimReductionBase 
@@ -102,10 +96,8 @@ class Projector(APIClient, Base, DocUtils):
                     cluster, cluster_args,
                     )
         """
-        ## Class args for generating figure
         self.dataset_id = dataset_id
         self.vector_label = vector_label
-        # Check that vector field is in dataset
         self.vector_field = vector_field
         self.random_state = random_state
         self.vector_label_char_length = vector_label_char_length
@@ -115,7 +107,7 @@ class Projector(APIClient, Base, DocUtils):
         self.cluster = cluster
         self.num_clusters = num_clusters
         self.dr = dr
-        # self.dr_args = self.dr_args
+        self.dr_args = dr_args
         self.dims = dims
         self.cluster_args = cluster_args
 
@@ -123,67 +115,45 @@ class Projector(APIClient, Base, DocUtils):
             warnings.warn(f"A vector_label or colour_label has not been specified.")
 
         if number_of_points_to_render and number_of_points_to_render > 1000:
-            warnings.warn(
-                f"You are rendering over 1000 points, this may take some time ..."
-            )
+            warnings.warn( f"You are rendering over 1000 points, this may take some time ...")
 
         number_of_documents = number_of_points_to_render
-
-        fields = [label for label in ["_id", vector_field, vector_label, colour_label] + hover_label if label]  # type: ignore
+        fields = [ label 
+                    for label in ["_id", vector_field, vector_label, colour_label] + hover_label 
+                    if self._is_valid_label_name(label)
+                ] 
         self.docs = self._retrieve_documents(
-            # TO CHECK: page size is batch size?
-            dataset_id, fields, number_of_documents, page_size=20
+            dataset_id, fields, number_of_documents, page_size=1000
         )
         self.vector_fields = self._get_vector_fields()
         self._remove_empty_vector_fields(vector_field)
         return self.plot_from_docs(self.docs)
    
-    def _dim_reduce(self, vectors, dr_args={}):
-        """Instantiate the DR class if it is a string input
-        """
-        vectors = np.array(vectors)
-        if isinstance(self.dr, str):
-            # TO DO: Add the other DR algorithms
-            if self.dr == "pca":
-                from relevanceai.visualise.dim_reduction import PCAReduction
-                dr_model = PCAReduction()
-                vectors_dr = dr_model.fit_transform(vectors)
-            elif self.dr == "ivis":
-                from relevanceai.visualise.dim_reduction import IvisReduction
-                dr_model = IvisReduction()
-                vectors_dr = dr_model.fit_transform(vectors)
-        elif isinstance(self.dr, DimReductionBase):
-            # Instantiate the class
-            self.dr = self.dr()
-            vectors_dr = self.dr.fit_transform(vectors)
-        return vectors_dr
 
-    def plot_from_docs(self, docs: List[Dict[str, Any]], *args, **kw):
-        """Here we plot from docs"""
-        for k, v in kw.items():
+
+    def plot_from_docs(self, docs: List[Dict[str, Any]], *args, **kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
         self.vectors = self.get_field_across_documents(self.vector_field, self.docs)
         self.vector_dim = self.schema[self.vector_field]["vector"]
-        self.vectors_dr = self._dim_reduce(self.vectors)
+        self.vectors_dr = self.dim_reduce(vectors=self.vectors, dr_args=self.dr_args, dims=self.dims)
 
-        if self.is_valid_vector_name(self.vector_field):
-            # self.vectors = self.dr.vectors
-            self.vectors_dr = self._dim_reduce(self.vectors)
+        if self._is_valid_vector_name(self.vector_field):
+            self.vectors_dr = self.dim_reduce(vectors=self.vectors, dr_args=self.dr_args, dims=self.dims)
             points = {
                 "x": self.vectors_dr[:, 0],
                 "y": self.vectors_dr[:, 1],
                 "z": self.vectors_dr[:, 2],
-                "_id": self.get_field_across_documents("_id", self.docs),
+                "_id": self.get_field_across_documents("_id", self.docs)
             }
 
             self.embedding_df = pd.DataFrame(points)
-
             if self.hover_label and all(
-                self.is_valid_label_name(l) for l in self.hover_label
+                self._is_valid_label_name(l) for l in self.hover_label
             ):
                 self.embedding_df = pd.DataFrame(self.docs)
 
-            if self.vector_label and self.is_valid_label_name(self.vector_label):
+            if self.vector_label and self._is_valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(
                     field=self.vector_label, docs=self.docs
                 )
@@ -191,7 +161,7 @@ class Projector(APIClient, Base, DocUtils):
                 self.embedding_df["labels"] = self.labels
 
             self.legend = None
-            if self.colour_label and self.is_valid_label_name(self.colour_label):
+            if self.colour_label and self._is_valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(
                     field=self.colour_label, docs=self.docs
                 )
@@ -224,7 +194,7 @@ class Projector(APIClient, Base, DocUtils):
         self.schema = self.datasets.schema(self.dataset_id)
         return [k for k in self.schema.keys() if k.endswith("_vector_")]
 
-    def is_valid_vector_name(self, vector_name: str) -> bool:
+    def _is_valid_vector_name(self, vector_name: str) -> bool:
         """
         Check vector field name is valid
         """
@@ -236,7 +206,7 @@ class Projector(APIClient, Base, DocUtils):
         else:
             raise ValueError(f"{vector_name} is not in the {self.dataset_id} schema")
 
-    def is_valid_label_name(self, label_name: str) -> bool:
+    def _is_valid_label_name(self, label_name: str) -> bool:
         """
         Check vector label name is valid. Checks that it is either numeric or text
         """
@@ -267,7 +237,6 @@ class Projector(APIClient, Base, DocUtils):
         """
         Retrieve all documents from dataset
         """
-
         if number_of_documents:
             if page_size > number_of_documents or self.random_state != 0:
                 page_size = number_of_documents  # type: ignore
@@ -284,7 +253,6 @@ class Projector(APIClient, Base, DocUtils):
             random_state=self.random_state,
             filters=filters,
         )
-
         data = resp["documents"]
 
         if (
@@ -344,7 +312,7 @@ class Projector(APIClient, Base, DocUtils):
                 )
                 embedding_df["labels"] = colour_labels
             if self.hover_label is None:
-                self.hover_label = [self.colour_label]
+                self.hover_label = [ self.colour_label ]
 
             data = []
             groups = embedding_df.groupby(legend)
@@ -355,13 +323,12 @@ class Projector(APIClient, Base, DocUtils):
                     x=val["x"],
                     y=val["y"],
                     z=val["z"],
-                    text=[idx for _ in range(val["x"].shape[0])],
+                    text=[ idx for _ in range(val["x"].shape[0]) ],
                     textposition="top center",
                     mode="markers",
                     marker={
                         "size": 3, "symbol": "circle"
                     },
-                    # dict(size=3, symbol="circle"),
                     customdata=custom_data,
                     hovertemplate=hovertemplate,
                 )
@@ -428,16 +395,14 @@ class Projector(APIClient, Base, DocUtils):
                     "color": RELEVANCEAI_BLUE,
                     "symbol": "circle"
                 },
-                # marker=dict(size=3, color=RELEVANCEAI_BLUE, symbol="circle"),
                 customdata=custom_data,
                 hovertemplate=hovertemplate,
             )
-            data = [scatter]
+            data = [ scatter ]
 
         """
         Generating figure
         """
-        # axes = dict(title="", showgrid=True, zeroline=False, showticklabels=False)
         axes = {
             "title": "",
             "showgrid": True,
@@ -451,13 +416,11 @@ class Projector(APIClient, Base, DocUtils):
                 "b": 0,
                 "t": 0
             },
-            # dict(l=0, r=0, b=0, t=0),
             scene={
                 "xaxis": axes,
                 "yaxis": axes,
                 "zaxis": axes
             }
-            # scene=dict(xaxis=axes, yaxis=axes, zaxis=axes),
         )
 
         if self.cluster:
@@ -485,7 +448,6 @@ class Projector(APIClient, Base, DocUtils):
                     "tracegroupgap": 1,
                 }
             )
-
         return fig
 
     def _generate_hover_template(

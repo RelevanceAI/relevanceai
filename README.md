@@ -177,18 +177,13 @@ client.pull_update_push("sample-cn", encode_documents)
 
 To use the Embedding projector - 
 
-See [`relevanceai/visualise/constants.py`]('./relevanceai/visualise/constants.py') for default args . avaialble
+See [`relevanceai/visualise/constants.py`]('./relevanceai/visualise/constants.py') with default args available ...
 
 
 ```python
 from relevanceai import Client
-
-
 client = Client(project=project, api_key=api_key, base_url=base_url)
 
-'''
-Retrieve docs in dataset  set `number_of_points_to_render = None` to retrieve all docs
-'''
 
 vector_label = "product_name"
 vector_field = "product_name_imagetext_vector_"
@@ -199,12 +194,12 @@ cluster = 'kmeans'
 client.projector.plot(
     dataset_id="ecommerce-6", 
     vector_field=vector_field,
-    number_of_points_to_render=1000,
+    number_of_points_to_render=1000, ## Set `number_of_points_to_render = None` to retrieve all docs
 )  
 ```
 
 
-Full options and more details on functionality, see [this notebook](https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing) here - 
+Full options and more details on functionality, see [this notebook](https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing) here
 
 
 ```python
@@ -270,7 +265,7 @@ while len(docs['documents']) > 0:
 
 In order to stop all logging, you can just run this: 
 
-```
+```python
 client.logger.stop()
 ```
 
@@ -282,13 +277,14 @@ This can be helpful during client demos when you do not need to show the API end
 
 To get started with development, ensure you have `pytest` and `mypy` installed. These will help ensure typechecking and testing.
 
-```
+```python
 python -m pip install pytest mypy
 ```
+
+
 Then run testing using:
 
-
-```
+```python
 python -m pytest
 mypy relevanceai
 ```
