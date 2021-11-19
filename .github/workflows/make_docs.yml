@@ -42,8 +42,6 @@ jobs:
             ${{ runner.os }}-${{ env.pythonLocation }}-pip-
             ${{ runner.os }}-${{ env.pythonLocation }}-
       - name: Build docs
-        with:
-          github_token: ${{ secrets.SECRET_TOKEN }}
         run: |
           python -m pip install sphinx sphinx-rtd-theme
           cd docsrc && make build_docs 
@@ -52,6 +50,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "ci: Automated build push" -a | exit 0
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
       - name: Push changes
         if: github.ref == 'refs/heads/main'
         uses: ad-m/github-push-action@master
