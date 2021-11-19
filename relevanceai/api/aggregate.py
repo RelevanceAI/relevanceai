@@ -22,7 +22,8 @@ class Aggregate(Base):
         flatten: bool = True,
         alias: str = "default",
     ):
-        """Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+        """
+        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
         >>> {
         >>>        "groupby" : [
         >>>            {"name": <alias>, "field": <field in the collection>, "agg": "category"},
@@ -86,7 +87,7 @@ class Aggregate(Base):
         flatten: bool
             Whether to flatten
         alias: string
-            Alias used to name a vector field. Belongs in field_{alias}vector
+            Alias used to name a vector field. Belongs in field_{alias} vector
         """
         return self.make_http_request(
             "services/aggregate/aggregate",
