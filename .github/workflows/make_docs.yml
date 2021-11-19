@@ -51,7 +51,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "ci: Automated build push" -a | exit 0
-        # git push --force
+          git push --force
 
       - name: Push changes
         if: github.ref == 'refs/heads/main'
