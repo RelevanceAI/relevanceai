@@ -32,6 +32,7 @@ class Admin(Base):
         filters: list = []
     ):
         """Copy a dataset from another user's projects into your project. This is considered a project job
+        
         Parameters
         ----------
         dataset_id : string
@@ -48,6 +49,7 @@ class Admin(Base):
             Api key to access the source project name
         filters: string
             Query for filtering the dataset
+
         """
         return self.make_http_request(
             "admin/copy_foreign_dataset",
