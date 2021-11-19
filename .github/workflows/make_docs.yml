@@ -41,6 +41,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.pythonLocation }}-pip-
             ${{ runner.os }}-${{ env.pythonLocation }}-
-      - name: Run tests
+      - name: Build docs
         run: |
+          python -m pip install sphinx
           cd docsrc && make build_docs 
+          echo ${{ github.ref }}
+          git add .
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "ci: Automated build push" -a | exit 0
+      - name: Push changes
+        if: github.ref == 'refs/heads/master'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
