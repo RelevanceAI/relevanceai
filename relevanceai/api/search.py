@@ -28,9 +28,86 @@ class Search(Base):
         include_count=True,
         asc=False,
         keep_search_history=False,
+        hundred_scale = False,
+        search_history_id = None,
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
+            1. Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. image_vector_ weights 100%, whilst description_vector_ 50%
+                An example of a simple multivector query:
+                >>> [
+                >>>     {"vector": [0.12, 0.23, 0.34], "fields": ["name_vector_"], "alias":"text"},
+                >>>     {"vector": [0.45, 0.56, 0.67], "fields": ["image_vector_"], "alias":"image"},
+                >>> ]
+                An example of a weighted multivector query:
+                >>> [
+                >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6}, "alias":"text"},
+                >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
+                >>> ]
+                An example of a weighted multivector query with multiple fields for each vector:
+                >>> [
+                >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6, "description_vector_":0.3}, "alias":"text"},
+                >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
+                >>> ]
+            2. Utilise faceted search with vector search. For information on how to apply facets/filters check out datasets.documents.get_where
+            3. Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. image_vector_ + text_vector_ or image_vector_ vs text_vector_.
+                When sum_fields=True:
+                - Multi-vector search allows you to obtain search scores by taking the sum of these scores.
+                - TextSearchScore + ImageSearchScore = SearchScore
+                - We then rank by the new SearchScore, so for searching 1000 documents there will be 1000 search scores and results
+                When sum_fields=False:
+                - Multi vector search but not summing the score, instead including it in the comparison!
+                - TextSearchScore = SearchScore1
+                - ImagSearchScore = SearchScore2
+                - We then rank by the 2 new SearchScore, so for searching 1000 documents there should be 2000 search scores and results.
+            4. Personalization with positive and negative document ids.
+                For more information about the positive and negative document ids to personalize check out services.recommend.vector
+            For more even more advanced configuration and customisation of vector search, reach out to us at dev@relevance.ai and learn about our new advanced_vector_search.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            positive_document_ids : dict
+                Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            negative_document_ids: dict
+                Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            vector_operation: string
+                Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
+            sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            similarity_metric: string
+                Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+            facets: list
+                Fields to include in the facets, if [] then all
+            filters: list
+                Query for filtering the search results
+            min_score: int
+                Minimum score for similarity metric
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            hundred_scale: bool
+                Whether to scale up the metric by 100
+            search_history_id: string
+                Search history ID, only used for storing search histories.
+            """
         return self.make_http_request(
             "services/search/vector",
             method="POST",
@@ -53,6 +130,8 @@ class Search(Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
+                "hundred_scale": hundred_scale,
+                "search_history_id": search_history_id
             },
             output_format=output_format,
             verbose=verbose,
@@ -78,9 +157,70 @@ class Search(Base):
         include_count=True,
         asc=False,
         keep_search_history=False,
+        hundred_scale = False,
+        search_history_id = None,
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible.
+
+            For information on how to use vector search check out services.search.vector.
+
+            For information on how to use traditional keyword faceted search check out services.search.traditional.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            text : string
+                Text Search Query (not encoded as vector)
+            fields : list
+                Text fields to search against
+            positive_document_ids : dict
+                Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            negative_document_ids: dict
+                Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            vector_operation: string
+                Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
+            sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            similarity_metric: string
+                Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+            facets: list
+                Fields to include in the facets, if [] then all
+            filters: list
+                Query for filtering the search results
+            min_score: int
+                Minimum score for similarity metric
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            hundred_scale: bool
+                Whether to scale up the metric by 100
+            search_history_id: string
+                Search history ID, only used for storing search histories.
+            edit_distance: int
+                This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
+            ignore_spaces: bool
+                Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
+            traditional_weight: integer
+                Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
+            """
         return self.make_http_request(
             "services/search/hybrid",
             method="POST",
@@ -101,6 +241,8 @@ class Search(Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
+                "hundred_scale": hundred_scale,
+                "search_history_id": search_history_id,
                 "edit_distance": edit_distance,
                 "ignore_spaces": ignore_spaces,
                 "traditional_weight": traditional_weight,
@@ -126,9 +268,57 @@ class Search(Base):
         include_count=True,
         asc=False,
         keep_search_history=False,
+        hundred_scale = False,
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results.
+
+            For information on how to configure semantic search check out services.search.hybrid.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            positive_document_ids : dict
+                Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            negative_document_ids: dict
+                Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            text : string
+                Text Search Query (not encoded as vector)
+            fields : list
+                Text fields to search against
+            approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            similarity_metric: string
+                Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+            facets: list
+                Fields to include in the facets, if [] then all
+            filters: list
+                Query for filtering the search results
+            min_score: int
+                Minimum score for similarity metric
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            hundred_scale: bool
+                Whether to scale up the metric by 100
+            """
         return self.make_http_request(
             "services/search/semantic",
             method="POST",
@@ -148,6 +338,7 @@ class Search(Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
+                "hundred_scale": hundred_scale,
             },
             output_format=output_format,
             verbose=verbose,
@@ -183,6 +374,74 @@ class Search(Base):
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:
+            >>> Cluster 0: [A, B, C]
+            >>> Cluster 1: [D, E]
+            >>> Cluster 2: [F, G]
+            >>> Cluster 3: [H, I]
+            (Note, each cluster is ordered by highest to lowest search score.)
+
+            This intermediately returns:
+            >>> results_batch_1: [A, H, F, D] (ordered by highest search score)
+            >>> results_batch_2: [G, E, B, I] (ordered by highest search score)
+            >>> results_batch_3: [C]
+
+            This then returns the final results:
+            >>> results: [A, H, F, D, G, E, B, I, C]
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            positive_document_ids : dict
+                Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            negative_document_ids: dict
+                Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
+            approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            vector_operation: string
+                Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
+            sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            similarity_metric: string
+                Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+            facets: list
+                Fields to include in the facets, if [] then all
+            filters: list
+                Query for filtering the search results
+            min_score: int
+                Minimum score for similarity metric
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            hundred_scale: bool
+                Whether to scale up the metric by 100
+            search_history_id: str
+                Search history ID, only used for storing search histories.
+            cluster_vector_field: str
+                The field to cluster on.
+            n_clusters: int
+                Number of clusters to be specified.
+            n_init: int
+                Number of runs to run with different centroid seeds
+            n_iter: int
+                Number of iterations in each run
+            return_as_clusters: bool
+                If True, return as clusters as opposed to results list
+            """
         return self.make_http_request(
             "services/search/diversity",
             method="POST",
@@ -235,6 +494,43 @@ class Search(Base):
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ Traditional Faceted Keyword Search with edit distance/fuzzy matching.
+
+        For information on how to apply facets/filters check out datasets.documents.get_where.
+
+        For information on how to construct the facets section for your search bar check out datasets.facets.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            text : string
+                Text Search Query (not encoded as vector)
+            fields : list
+                Text fields to search against
+            edit_distance: int
+                This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
+            ignore_spaces: bool
+                Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            search_history_id: string
+                Search history ID, only used for storing search histories.
+            """
         return self.make_http_request(
             "services/search/traditional",
             method="POST",
@@ -277,9 +573,67 @@ class Search(Base):
         include_count: bool = True,
         asc: bool = False,
         keep_search_history: bool = False,
+        hundred_scale: bool = False,
         verbose: bool = True,
         output_format: str = "json",
     ):
+
+        """ Chunks are data that has been divided into different units. e.g. A paragraph is made of many sentence chunks, a sentence is made of many word chunks, an image frame in a video. By searching through chunks you can pinpoint more specifically where a match is occuring. When creating a chunk in your document use the suffix "chunk" and "chunkvector". An example of a document with chunks:
+            >>> {
+            >>>     "_id" : "123",
+            >>>     "title" : "Lorem Ipsum Article",
+            >>>     "description" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
+            >>>     "description_vector_" : [1.1, 1.2, 1.3],
+            >>>     "description_sentence_chunk_" : [
+            >>>         {"sentence_id" : 0, "sentence_chunkvector_" : [0.1, 0.2, 0.3], "sentence" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry."},
+            >>>         {"sentence_id" : 1, "sentence_chunkvector_" : [0.4, 0.5, 0.6], "sentence" : "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."},
+            >>>         {"sentence_id" : 2, "sentence_chunkvector_" : [0.7, 0.8, 0.9], "sentence" : "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."},
+            >>>     ]
+            >>> }
+            For combining chunk search with other search check out services.search.advanced_chunk.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            chunk_field : string
+                Field where the array of chunked documents are.
+            chunk_scoring: string
+                Scoring method for determining for ranking between document chunks.
+            chunk_page_size: int
+                Size of each page of chunk results
+            chunk_page: int
+                Page of the chunk results
+            approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            similarity_metric: string
+                Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+            facets: list
+                Fields to include in the facets, if [] then all
+            filters: list
+                Query for filtering the search results
+            min_score: int
+                Minimum score for similarity metric
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            hundred_scale: bool
+                Whether to scale up the metric by 100
+            """
+
         return self.make_http_request(
             "services/search/chunk",
             method="POST",
@@ -302,6 +656,7 @@ class Search(Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
+                "hundred_scale": hundred_scale
             },
             output_format=output_format,
             verbose=verbose,
@@ -328,11 +683,66 @@ class Search(Base):
         include_count: bool = True,
         asc: bool = False,
         keep_search_history: bool = False,
+        hundred_scale: bool = False,
         first_step_page: int = 1,
         first_step_page_size: int = 20,
         verbose: bool = True,
         output_format: str = "json",
     ):
+
+        """ Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after.
+
+            For more information about chunk search checkout services.search.chunk.
+
+            For more information about vector search checkout services.search.vector
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            multivector_query : list
+                Query for advance search that allows for multiple vector and field querying.
+            chunk_field : string
+                Field where the array of chunked documents are.
+            chunk_scoring: string
+                Scoring method for determining for ranking between document chunks.
+            chunk_page_size: int
+                Size of each page of chunk results
+            chunk_page: int
+                Page of the chunk results
+            approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            similarity_metric: string
+                Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+            facets: list
+                Fields to include in the facets, if [] then all
+            filters: list
+                Query for filtering the search results
+            min_score: int
+                Minimum score for similarity metric
+            include_vector: bool
+                Include vectors in the search results
+            include_count: bool
+                Include the total count of results in the search results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            keep_search_history: bool
+                Whether to store the history into VecDB. This will increase the storage costs over time.
+            hundred_scale: bool
+                Whether to scale up the metric by 100
+            first_step_multivector_query: list
+                Query for advance search that allows for multiple vector and field querying.
+            first_step_page: int
+                Page of the results
+            first_step_page_size: int
+                Size of each page of results
+            """
         return self.make_http_request(
             "services/search/multistep_chunk",
             method="POST",
@@ -355,6 +765,7 @@ class Search(Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
+                "hundred_scale": hundred_scale,
                 "first_step_multivector_query": first_step_multivector_query,
                 "first_step_page": first_step_page,
                 "first_step_page_size": first_step_page_size,
@@ -374,6 +785,65 @@ class Search(Base):
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ A more advanced chunk search to be able to combine vector search and chunk search in many different ways.
+            Example 1 (Hybrid chunk search):
+            >>> chunk_query = {
+            >>>     "chunk" : "some.test",
+            >>>     "queries" : [
+            >>>         {"vector" : vec1, "fields": {"some.test.some_chunkvector_":1}, 
+            >>>         "traditional_query" : {"text":"python", "fields" : ["some.test.test_words"], "traditional_weight": 0.3}, 
+            >>>         "metric" : "cosine"},
+            >>>         {"vector" : vec, "fields": ["some.test.tt.some_other_chunkvector_"], 
+            >>>         "traditional_query" : {"text":"jumble", "fields" : ["some.test.test_words"], "traditional_weight": 0.3}, 
+            >>>         "metric" : "cosine"},
+            >>>     ]
+            >>> }
+            Example 2 (combines normal vector search with chunk search):
+            >>> chunk_query = {
+            >>>     "queries" : [
+            >>>         {
+            >>>             "queries": [
+            >>>                 {
+            >>>                     "vector": vec1,
+            >>>                     "fields": {
+            >>>                         "some.test.some_chunkvector_": 0.9
+            >>>                     },
+            >>>                     "traditional_query": {
+            >>>                         "text": "python",
+            >>>                         "fields": [
+            >>>                             "some.test.test_words"
+            >>>                         ],
+            >>>                         "traditional_weight": 0.3
+            >>>                     },
+            >>>                     "metric": "cosine"
+            >>>                 }
+            >>>             ],
+            >>>             "chunk": "some.test",
+            >>>         },
+            >>>         {
+            >>>             "vector" : vec, 
+            >>>             "fields": {
+            >>>                 ".some_vector_" : 0.1}, 
+            >>>                 "metric" : "cosine"
+            >>>                 },
+            >>>         ]
+            >>>     }
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            chunk_search_query : list
+                Advanced chunk query
+            min_score: int
+                Minimum score for similarity metric
+            page_size: int
+                Size of each page of results
+            include_vector: bool
+                Include vectors in the search results
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+            """
         return self.make_http_request(
             "services/search/advanced_chunk",
             method="POST",
@@ -411,6 +881,92 @@ class Search(Base):
         verbose: bool = True,
         output_format: str = "json",
     ):
+        """ Performs a vector hybrid search and then an advanced chunk search.
+
+            Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set.
+
+            Example 1 (Hybrid chunk search):
+            >>> chunk_query = {
+            >>>     "chunk" : "some.test",
+            >>>     "queries" : [
+            >>>         {"vector" : vec1, "fields": {"some.test.some_chunkvector_":1}, 
+            >>>         "traditional_query" : {"text":"python", "fields" : ["some.test.test_words"], "traditional_weight": 0.3}, 
+            >>>         "metric" : "cosine"},
+            >>>         {"vector" : vec, "fields": ["some.test.tt.some_other_chunkvector_"], 
+            >>>         "traditional_query" : {"text":"jumble", "fields" : ["some.test.test_words"], "traditional_weight": 0.3}, 
+            >>>         "metric" : "cosine"},
+            >>>     ]
+            >>> }
+            Example 2 (combines normal vector search with chunk search):
+            >>> chunk_query = {
+            >>>     "queries" : [
+            >>>         {
+            >>>             "queries": [
+            >>>                 {
+            >>>                     "vector": vec1,
+            >>>                     "fields": {
+            >>>                         "some.test.some_chunkvector_": 0.9
+            >>>                     },
+            >>>                     "traditional_query": {
+            >>>                         "text": "python",
+            >>>                         "fields": [
+            >>>                             "some.test.test_words"
+            >>>                         ],
+            >>>                         "traditional_weight": 0.3
+            >>>                     },
+            >>>                     "metric": "cosine"
+            >>>                 }
+            >>>             ],
+            >>>             "chunk": "some.test",
+            >>>         },
+            >>>         {
+            >>>             "vector" : vec, 
+            >>>             "fields": {
+            >>>                 ".some_vector_" : 0.1}, 
+            >>>                 "metric" : "cosine"
+            >>>                 },
+            >>>         ]
+            >>>     }
+
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            first_step_query : list
+                First step query
+            first_step_text : string
+                Text search query (not encoded as vector)
+            first_step_fields: list
+                Text fields to search against
+            chunk_search_query: list
+                Advanced chunk query
+            first_step_edit_distance: int
+                This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
+            first_step_ignore_spaces: bool
+                Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
+            first_step_traditional_weight: integer
+                Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
+            first_step_approximation_depth: integer
+                Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+            first_step_sum_fields : bool
+                Whether to sum the multiple vectors similarity search score as 1 or seperate
+            first_step_filters: list
+                Query for filtering the search results
+            first_step_page_size: int
+                In the first search, you are more interested in the contents
+            include_count: bool
+                Include the total count of results in the search results
+            min_score: int
+                Minimum score for similarity metric
+            page_size: int
+                Size of each page of results
+            include_vector: bool
+                Include vectors in the search results
+            select_fields: list
+                Fields to include in the search results, empty array/list means all fields.
+  
+            """
         return self.make_http_request(
             "services/search/advanced_multistep_chunk",
             method="POST",
