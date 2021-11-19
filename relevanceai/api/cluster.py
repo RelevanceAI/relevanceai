@@ -24,6 +24,32 @@ class Cluster(Base):
         alias: str = "default",
         output_format: str = "json",
     ):
+        """ Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
+            Only can be used after a vector field has been clustered.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            vector_field : string
+                The vector field that was clustered on
+            metrics: list
+                Fields and metrics you want to calculate
+            groupby: list 
+                Fields you want to split the data into
+            filters: list
+                Query for filtering the search results
+            page_size: int
+                Size of each page of results
+            page: int
+                Page of the results
+            asc: bool
+                Whether to sort results by ascending or descending order
+            flatten: bool
+                Whether to flatten
+            alias: string
+                Alias used to name a vector field. Belongs in field_{alias}vector
+            """
         return self.make_http_request(
             endpoint="services/cluster/aggregate",
             method="POST",

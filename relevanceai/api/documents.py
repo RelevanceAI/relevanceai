@@ -12,21 +12,38 @@ class Documents(Base):
     def list(
         self,
         dataset_id: str,
+        select_fields = [],
         cursor: str = None,
         page_size: int = 20,
-        sort: list = [],
         include_vector: bool = True,
         random_state: int = 0,
         output_format: str = "json",
         verbose: bool = True,
     ):
+        """Retrieve documents from a specified dataset. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the dataset. 
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            select_fields : list
+                Fields to include in the search results, empty array/list means all fields. 
+            page_size: int
+                Size of each page of results
+            cursor: string
+                Cursor to paginate the document retrieval
+            include_vector: bool
+                Include vectors in the search results
+            random_state: int
+                Random Seed for retrieving random documents.
+            """
+
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/list",
             method="GET",
             parameters={
+                "select_fields": select_fields,
                 "cursor": cursor,
                 "page_size": page_size,
-                "sort": sort,
                 "include_vector": include_vector,
                 "random_state": random_state,
             },
@@ -38,22 +55,26 @@ class Documents(Base):
         self,
         dataset_id: str,
         id: str,
-        select_fields: list = [],
-        cursor: str = None,
-        page_size: int = 20,
-        sort: list = [], # type: ignore
         include_vector: bool = True,
         output_format: str = "json",
         verbose: bool = True,
     ):
+
+        """Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field. 
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            id : list
+                ID of a document in a dataset.
+            include_vector: bool
+                Include vectors in the search results
+            """
+
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/get",
             parameters={
                 "id": id,
-                "select_fields": select_fields,
-                "cursor": cursor,
-                "page_size": page_size,
-                "sort": sort,
                 "include_vector": include_vector,
             },
             output_format=output_format,
@@ -74,6 +95,69 @@ class Documents(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
+
+        """ Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched.
+
+            The filters query is a json body that follows the schema of:
+
+            >>> [
+            >>>    {'field' : <field to filter>, 'filter_type' : <type of filter>, "condition":"==", "condition_value":"america"},
+            >>>    {'field' : <field to filter>, 'filter_type' : <type of filter>, "condition":">=", "condition_value":90},
+            >>> ]
+
+            These are the available filter_type types: ["contains", "category", "categories", "exists", "date", "numeric", "ids"]
+
+            "contains": for filtering documents that contains a string
+            >>> {'field' : 'item_brand', 'filter_type' : 'contains', "condition":"==", "condition_value": "samsu"}
+
+            "exact_match"/"category": for filtering documents that matches a string or list of strings exactly.
+            >>> {'field' : 'item_brand', 'filter_type' : 'category', "condition":"==", "condition_value": "sumsung"}
+
+            "categories": for filtering documents that contains any of a category from a list of categories.
+            >>> {'field' : 'item_category_tags', 'filter_type' : 'categories', "condition":"==", "condition_value": ["tv", "smart", "bluetooth_compatible"]}
+
+            "exists": for filtering documents that contains a field.
+            >>> {'field' : 'purchased', 'filter_type' : 'exists', "condition":"==", "condition_value":" "}
+
+            If you are looking to filter for documents where a field doesn't exist, run this:
+            >>> {'field' : 'purchased', 'filter_type' : 'exists', "condition":"!=", "condition_value":" "}
+
+            "date": for filtering date by date range.
+            >>> {'field' : 'insert_date_', 'filter_type' : 'date', "condition":">=", "condition_value":"2020-01-01"}
+
+            "numeric": for filtering by numeric range.
+            >>> {'field' : 'price', 'filter_type' : 'numeric', "condition":">=", "condition_value":90}
+
+            "ids": for filtering by document ids.
+            >>> {'field' : 'ids', 'filter_type' : 'ids', "condition":"==", "condition_value":["1", "10"]}
+
+            These are the available conditions:
+            >>> "==", "!=", ">=", ">", "<", "<="
+            If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            select_fields : list
+                Fields to include in the search results, empty array/list means all fields.
+            cursor: string
+                Cursor to paginate the document retrieval
+            page_size: int
+                Size of each page of results
+            include_vector: bool
+                Include vectors in the search results
+            sort: list
+                Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+            filters: list
+                Query for filtering the search results
+            is_random: bool
+                If True, retrieves doucments randomly. Cannot be used with cursor.
+            random_state: int
+                Random Seed for retrieving random documents.
+            """
+
+
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/documents/get_where",
             method="POST",
@@ -100,6 +184,22 @@ class Documents(Base):
         return_documents: bool = False,
         retries=None,
     ):
+
+        """ Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            updates : list
+                Updates to make to the documents. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+            insert_date	: bool
+                Whether to include insert date as a field 'insert_date_'.
+            include_updated_ids	: bool
+                Include the inserted IDs in the response
+        
+            """
+
         if return_documents is False:
             return self.make_http_request(
                 endpoint=f"datasets/{dataset_id}/documents/bulk_update",
@@ -139,9 +239,19 @@ class Documents(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
-        """Bulk delete."""
+
+        """ Delete a list of documents by their IDs. 
+
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            ids : list
+                IDs of documents to delete
+            """
+
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/get_where",
+            endpoint=f"datasets/{dataset_id}/documents/bulk_delete",
             method="POST",
             parameters={"ids": ids},
             output_format=output_format,
@@ -156,10 +266,27 @@ class Documents(Base):
         sort: list = [],
         select_fields: list = [],
         include_vector: bool = True,
-        random_state: int = 0,
         output_format: str = "json",
         verbose: bool = True,
     ):
+
+        """ Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
+            Parameters
+            ----------
+            dataset_id : string
+                Unique name of dataset
+            chunk_size : list
+                Number of documents to retrieve per retrieval
+            include_vector: bool
+                Include vectors in the search results
+            sort: list
+                Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+            filters: list
+                Query for filtering the search results
+            select_fields : list
+                Fields to include in the search results, empty array/list means all fields.
+            """
+
         # Initialise values
         length = 1
         cursor = None
@@ -175,7 +302,6 @@ class Documents(Base):
                 sort=sort,
                 select_fields=select_fields,
                 include_vector=include_vector,
-                random_state=random_state,
                 output_format=output_format,
                 verbose=verbose,
             )
@@ -188,9 +314,13 @@ class Documents(Base):
         return full_data
 
     def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
-        """
-        dataset_ids: list of dataset_ids
-        list_of_filters: list of list of filters corresponding to the same order of the dataset_ids
+        """ Get number of documents in a multiple different dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        Parameters
+            ----------
+            dataset_ids: list
+                Unique names of datasets
+            list_of_filters: list 
+                List of list of filters to select documents in the same order of the dataset_ids list
         """
 
         if list_of_filters is None:
@@ -202,5 +332,12 @@ class Documents(Base):
         }
 
     def _get_number_of_documents(self, dataset_id, filters=[], verbose: bool=False):
-        """Certainty around the number of documents excluding chunks (until chunk documents is fixed)"""
+        """ Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        Parameters
+            ----------
+            dataset_ids: list
+                Unique names of datasets
+            filters: list 
+                Filters to select documents
+        """
         return self.get_where(dataset_id, page_size=1, filters=filters, verbose=verbose)["count"]
