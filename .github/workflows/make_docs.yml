@@ -43,4 +43,4 @@ jobs:
             ${{ runner.os }}-${{ env.pythonLocation }}-
       - name: Run tests
         run: |
-          cd docsrc && make_docs
+          cd docsrc && make build_docs 
