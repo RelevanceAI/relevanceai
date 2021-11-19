@@ -9,8 +9,7 @@ class Admin(Base):
         super().__init__(project, api_key, base_url)
 
     def request_read_api_key(self, read_username: str):
-	"""Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used.
-	"""
+        """Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used."""
         return self.make_http_request(
             "admin/request_read_api_key",
             method="POST",
