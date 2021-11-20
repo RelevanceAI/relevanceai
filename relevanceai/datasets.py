@@ -88,9 +88,10 @@ class ExampleDatasets:
 
 def get_games_dataset(number_of_documents: Union[None, int] = 365, select_fields: list = []) -> List:
     """
-    Download an example games dataset (https://www.freetogame.com/) 
-    Total Len: 365
+    Download an example games dataset (https://www.freetogame.com/) \n
+    Total Len: 365 \n
     Sample document:
+
     >>> {'id': 1,
     >>> 'title': 'Dauntless',
     >>> 'thumbnail': 'https://www.freetogame.com/g/1/thumbnail.jpg',
@@ -103,6 +104,7 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365, select_fields
     >>> 'release_date': '2019-05-21',
     >>> 'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
     >>> }
+
     Parameters
     ----------
     number_of_documents: int
@@ -120,9 +122,10 @@ def get_ecommerce_1_dataset(
     number_of_documents: int = 1000, select_fields: list = []
 ):
     """
-    Download an example e-commerce dataset
-    Total Len: 14058
+    Download an example e-commerce dataset \n
+    Total Len: 14058 \n 
     Sample document:
+    
     >>> {'_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
     >>> 'uniq_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
     >>> 'crawl_timestamp': '2016-04-24 18:34:50 +0000',
@@ -144,6 +147,7 @@ def get_ecommerce_1_dataset(
     >>> 'insert_date_': '2021-08-13T11:38:52.110Z' 
     >>>  ... 
     >>>  }
+
     Parameters
     ----------
     number_of_documents: int
@@ -160,9 +164,10 @@ def get_ecommerce_2_dataset(
     number_of_documents: int = 1000, select_fields: list = []
 ):
     """
-    Download an example e-commerce dataset
-    Total Len: 739
+    Download an example e-commerce dataset \n
+    Total Len: 739 \n
     Sample document:
+
     >>> {'_id': '711160239',
     >>> '_unit_id': 711160239,
     >>> 'relevance': 3.67,
@@ -198,9 +203,11 @@ def get_ecommerce_2_dataset(
 
 def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000, select_fields: list = []) -> List:
     """
-    Download an example online retail dataset from UCI machine learning
-    Total Len: 541909
+    Download an example online retail dataset from UCI machine learning \n
+    Total Len: 541909 \n
+
     Sample document:
+
     >>> {'Country': 'United Kingdom',
     >>> 'CustomerID': 17850.0,
     >>> 'Description': 'WHITE HANGING HEART T-LIGHT HOLDER',
@@ -224,11 +231,12 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000, sele
 
 def get_news_dataset(number_of_documents: Union[None, int] = 250, select_fields: list = []) -> List:
     """
-    Download an example news dataset
-    Total Len: 250
+    Download an example news dataset \n
+    Total Len: 250 \n
     Sample document:
+
     >>> {'authors': 'Ruth Harris',
-    >>> 'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others. The simple act of giving without receiving is lost on many of us these days, as worries about money and success hold us back from giving to others who are in need. One congregation in Ohio was moved to action by the power of a sermon given at their church on Christmas Eve. The pastor at Grand Lake United Methodist Church in Celina, Ohio gave an emotional sermon about the importance of understanding the message of Jesus.\n\nFor many religious people the message of Jesus is to help others before yourself, to make sure the people who are suffering get the help they need to enjoy life a little bit. The sermon was really about generosity and what that can look like in our lives. Jesus lived a long time ago and he acted generously in the fashion of his time – but what would a generous act look like in our times? That was the focus of the sermon.\n\nThe potency of the sermon was not lost on the congregation, who were so moved they had to take action! After the sermon ended, the congregation decided to take an offering. A bowl was passed around the room and everyone pitched in what they could on this Christmas Eve with the words of the sermon still ringing in their ears.\n\nWhat did they do with this offering? Members of the congregation drove down to the local Waffle House to visit the ladies working the night shift. What a great choice on this most holy of days when everyone should be with their families!\n\nThe ladies working at Waffle House clearly were not with their families. They had no choice but to work on this holy day because it paid the bills. The congregation understood the sacrifice being made by these ladies, and wanted to help them out. They donated the entire offering to be split amongst the ladies at Waffle House.\n\nIn total that amounted to $3,500 being split amongst the staff. What a beautiful moment! What a perfect example of what the preacher was talking about in his sermon! Doing a good deed like this on Christmas really helped ease the burden felt by the ladies working at Waffle House. Sure, they could not see their families, but at least they got a little gift from the good people of their community.\n\nPerhaps the best part about this whole event was that the congregation did not ask anything in return. It was a simple act of generosity from people who understood the pain being felt by another group and sought to alleviate some of that pain. It speaks volumes about the merits of the Church in our daily lives. This simple act brought the entire community together because it showed empathy and compassion on the most special day of the year.',
+    >>> 'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others. 
     >>> 'domain': 'awm.com',
     >>> 'id': 141,
     >>> 'inserted_at': '2018-02-02 01:19:41.756632',
@@ -257,9 +265,10 @@ def get_news_dataset(number_of_documents: Union[None, int] = 250, select_fields:
 
 def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select_fields: list =[]) -> List:
     """
-    Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance)
-    Total Len: 15528
+    Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance) \n
+    Total Len: 15528 \n
     Sample document:
+
     >>> {'_unit_id': 711158459,
     >>> 'product_description': 'The PlayStation 4 system opens the door to an '
     >>>                     'incredible journey through immersive new gaming '
@@ -305,9 +314,10 @@ def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select
 
 def get_flipkart_dataset(number_of_documents: Union[None, int] = 19920, select_fields: list =[]) -> List:
     """
-    Download an example flipkat ecommerce dataset
-    Total Len: 19920
+    Download an example flipkat ecommerce dataset \n
+    Total Len: 19920 \n 
     Sample document:
+
     >>> {'_id': 0,
     >>> 'product_name': "Alisha Solid Women's Cycling Shorts",
     >>> 'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
@@ -330,9 +340,10 @@ def get_realestate_dataset(
     select_fields: list =[]
 ):
     """
-    Download an example real-estate dataset
-    Total Len: 5885
+    Download an example real-estate dataset \n
+    Total Len: 5885 \n
     Sample document:
+
     >>> {'propertyDetails': {'area': 'North Shore - Lower',
     >>> 'carspaces': 1,
     >>> 'streetNumber': '28',

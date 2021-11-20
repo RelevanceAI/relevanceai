@@ -36,11 +36,14 @@ class BatchInsert(APIClient, Chunker):
 
         """
         Insert a list of documents with multi-threading automatically enabled.
-        When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
-        When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
-        When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
-        When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+
+        - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+        
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        
         Parameters
         ----------
         dataset_id : string
@@ -102,6 +105,7 @@ class BatchInsert(APIClient, Chunker):
         """
         Update a list of documents with multi-threading automatically enabled.
         Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
         >>> from relevanceai import Client
         >>> url = "https://api-aueast.relevance.ai/v1/"
         >>> collection = ""
@@ -171,8 +175,9 @@ class BatchInsert(APIClient, Chunker):
         show_progress_bar: bool = True,
     ):
         """
-        Loops through every document in your collection and applies a function (that is specified by you) to the documents. 
-        These documents are then uploaded into either an updated collection, or back into the original collection.
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+        These documents are then uploaded into either an updated collection, or back into the original collection. 
+        
         Parameters
         ----------
         original_collection : string
@@ -305,8 +310,9 @@ class BatchInsert(APIClient, Chunker):
         show_progress_bar: bool = True,
     ):
         """
-        Loops through every document in your collection and applies a function (that is specified by you) to the documents. 
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents.
         These documents are then uploaded into either an updated collection, or back into the original collection.
+        
         Parameters
         ----------
         original_collection : string

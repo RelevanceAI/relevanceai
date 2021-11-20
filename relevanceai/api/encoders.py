@@ -11,6 +11,7 @@ class Encoders(Base):
     def textimage(self, text: str):
         """ 
         Encode text to make searchable with images
+
         Parameters
         ----------
         text: string
@@ -23,6 +24,7 @@ class Encoders(Base):
     def text(self, text: str):
         """ 
         Encode text
+
         Parameters
         ----------
         text: string
@@ -35,6 +37,7 @@ class Encoders(Base):
     def multi_text(self, text):
         """
         Encode multilingual text
+
         Parameters
         ----------
         text: string
@@ -47,6 +50,7 @@ class Encoders(Base):
     def image(self, image):
         """
         Encode an image
+
         Parameters
         ----------
         image: string
@@ -59,6 +63,7 @@ class Encoders(Base):
     def imagetext(self, image):
         """
         Encode an image to make searchable with text
+        
         Parameters
         ----------
         image: string

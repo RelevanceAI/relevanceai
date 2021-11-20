@@ -18,6 +18,7 @@ class Config(DocUtils):
     def read_config(self, config_path):
         """ 
         Set up custom config by reading in a file
+        
         Parameters
         ----------
         config_path : string
@@ -32,6 +33,7 @@ class Config(DocUtils):
     def get_option(self, option):
         """ 
         View current config settings
+
         Parameters
         ----------
         option : string
@@ -42,6 +44,7 @@ class Config(DocUtils):
     def set_option(self, option, value):
         """ 
         Change a config settings
+
         Parameters
         ----------
         option : string

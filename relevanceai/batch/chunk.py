@@ -9,10 +9,12 @@ class Chunker:
     """Update the chunk Mixins"""
     def chunk(self, documents: Union[pd.DataFrame, List], chunksize: int=20):
         """
-        Chunk an iterable object in Python.
+        Chunk an iterable object in Python. \n
         Example:
+
         >>> documents = [{...}]
         >>> ViClient.chunk(documents)
+
         Parameters
         ----------
         documents:

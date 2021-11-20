@@ -15,6 +15,7 @@ class Tasks(Base):
     def create(self, dataset_id, task_name, task_parameters):
         """ 
         Tasks unlock the power of VecDb AI by adding a lot more new functionality with a flexible way of searching.
+        
         Parameters
         ----------
         dataset_id : string
@@ -33,6 +34,7 @@ class Tasks(Base):
     def status(self, dataset_id: str, task_id: str):
         """ 
         Get status of a collection level job. Whether its starting, running, failed or finished.
+        
         Parameters
         ----------
         dataset_id : string
@@ -167,8 +169,9 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         """
-        Within a collection encode the specified dictionary field in every document into vectors.
+        Within a collection encode the specified dictionary field in every document into vectors. \n
         For example: a dictionary that represents a person's characteristics visiting a store:
+
         >>> document 1 field: {"person_characteristics" : {"height":180, "age":40, "weight":70}}
         >>> document 2 field: {"person_characteristics" : {"age":32, "purchases":10, "visits": 24}}
         >>> -> <Encode the dictionaries to vectors> ->
@@ -212,8 +215,9 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         """
-        Within a collection encode the specified array field in every document into vectors.
+        Within a collection encode the specified array field in every document into vectors. \n
         For example, array that represents a movie's categories:
+
         >>> document 1 array field: {"category" : ["sci-fi", "thriller", "comedy"]}
         >>> document 2 array field: {"category" : ["sci-fi", "romance", "drama"]}
         >>> -> <Encode the arrays to vectors> ->
@@ -223,6 +227,7 @@ class Tasks(Base):
         >>> | 1      | 0        | 0      | 1       | 1     |
         >>> document 1 array vector: {"movie_categories_vector_": [1, 1, 1, 0, 0]}
         >>> document 2 array vector: {"movie_categories_vector_": [1, 0, 0, 1, 1]}
+        
         Parameters
         ----------
         dataset_id : string
