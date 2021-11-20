@@ -3,7 +3,36 @@ Core RelevanceAI Specs
 
 The core RelevanceAI specs can be found in this section.
 
+For the RelevanceAI client, we want to ensure the SDK mirrors the API client.
 
+For example:
+
+```python
+## To instantiate the client 
+from relevanceai import Client
+client = Client()
+```
+
+To use the following endpoint: 
+
+`/datasets/bulk_insert`
+
+You can run: 
+
+```python
+# Bulk insert documents
+client.datasets.bulk_insert(dataset_id, documents)
+```
+
+Or similarly, when you are trying to run 
+
+`/services/search/vector`
+
+You then write: 
+```python
+# Vector search in a dataset
+client.services.search.vector(...)
+```
 
 Submodules
 ----------
