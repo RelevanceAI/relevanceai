@@ -1,3 +1,4 @@
+"""Configuration Settings"""
 import configparser
 import os
 
@@ -8,24 +9,50 @@ CONFIG_PATH = os.path.join(PATH, "config.ini")
 
 
 class Config(DocUtils):
+    """Set and change configuration settings"""
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.read_config(CONFIG_PATH)
         super().__init__()
 
     def read_config(self, config_path):
+        """ 
+        Set up custom config by reading in a file
+        Parameters
+        ----------
+        config_path : string
+            Path to config
+        """
         self.config.read(config_path)
 
     def view_options(self):
+        """View all current config settings"""
         return self.config._sections
 
     def get_option(self, option):
+        """ 
+        View current config settings
+        Parameters
+        ----------
+        option : string
+            Setting key
+        """
         return self.get_field(option, self.config)
 
     def set_option(self, option, value):
+        """ 
+        Change a config settings
+        Parameters
+        ----------
+        option : string
+            Setting key
+        value : string
+            New setting
+        """
         self.set_field(option, self.config, str(value))
 
     def reset_to_default(self):
+        """Reset config to default"""
         self.read_config(CONFIG_PATH)
 
     @staticmethod

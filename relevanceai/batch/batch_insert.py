@@ -1,5 +1,4 @@
-"""Batch operations
-"""
+"""Batch operations"""
 import json
 import math
 import os

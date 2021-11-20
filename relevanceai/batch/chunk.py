@@ -1,5 +1,4 @@
-"""Chunk Helper functions
-"""
+"""Chunk Helper functions"""
 from typing import List, Union
 
 import pandas as pd
@@ -11,14 +10,15 @@ class Chunker:
     def chunk(self, documents: Union[pd.DataFrame, List], chunksize: int=20):
         """
         Chunk an iterable object in Python.
-        Args:
-            documents:
-                List of dictionaries/Pandas dataframe
-            chunksize:
-                The chunk size of an object.
         Example:
-            >>> documents = [{...}]
-            >>> ViClient.chunk(documents)
+        >>> documents = [{...}]
+        >>> ViClient.chunk(documents)
+        Parameters
+        ----------
+        documents:
+            List of dictionaries/Pandas dataframe
+        chunksize:
+            The chunk size of an object.
         """
         if isinstance(documents, pd.DataFrame):
             for i in progress_bar(range(0, int(len(documents) / chunksize))):
