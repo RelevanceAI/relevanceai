@@ -295,75 +295,38 @@ class Projector(APIClient, Base, DocUtils):
         embedding_df: pd.DataFrame,
         legend: Union[None, str],
     ) -> go.Figure:
+
         """
         Generates the 3D scatter plot
         """
         plot_title = f"<b>3D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
-        if self.colour_label:
-            """
-            Generates data for colour plot
-            """
+        self.hover_label = ['_id'] + self.hover_label
+        text_labels = None
+        plot_mode = "markers"
+        
+        """
+        Generates data for word plot
+        If vector_label set, generates text_labels, otherwise shows points only
+        """
+        if self.vector_label:
             plot_title = plot_title.replace(
-                "</b>", f"Colour Label: {self.colour_label}<br></b>"
+                "</b>", f"Vector Label: {self.vector_label}<br></b>"
             )
-            if self.colour_label_char_length and not self.cluster:
+            plot_mode = "text+markers"
+            text_labels = embedding_df["labels"]
+            if self.vector_label_char_length and not self.cluster:
                 plot_title = plot_title.replace(
                     "<br></b>",
-                    f"  Char Length: {self.colour_label_char_length}<br></b>",
+                    f"  Char Length: {self.vector_label_char_length}<br></b>",
                 )
-                colour_labels = embedding_df["labels"].apply(
-                    lambda x: x[: self.colour_label_char_length] + "..."
+                text_labels = embedding_df["labels"].apply(
+                    lambda x: x[: self.vector_label_char_length] + "..."
                 )
-                embedding_df["labels"] = colour_labels
-
-            self.hover_label = [ self.colour_label ] + self.hover_label
-            self.hover_label = list(set(self.hover_label))
-            self.hover_label = ['_id'] + self.hover_label
             
-            data = []
-            groups = embedding_df.groupby(legend)
-            for idx, val in groups:
-                custom_data, hovertemplate = self._generate_hover_template(df=val)
-                scatter = go.Scatter3d(
-                    name=idx,
-                    x=val["x"],
-                    y=val["y"],
-                    z=val["z"],
-                    text=[ idx for _ in range(val["x"].shape[0]) ],
-                    textposition="top center",
-                    mode="markers",
-                    marker={
-                        "size": 3, "symbol": "circle"
-                    },
-                    customdata=custom_data,
-                    hovertemplate=hovertemplate,
-                )
-                data.append(scatter)
-        else:
-            """
-            Generates data for word plot
-            If vector_label set, generates text_labels, otherwise shows points only
-            """
-            if self.vector_label:
-                plot_title = plot_title.replace(
-                    "</b>", f"Vector Label: {self.vector_label}<br></b>"
-                )
-                plot_mode = "text+markers"
-                text_labels = embedding_df["labels"]
-                if self.vector_label_char_length and not self.cluster:
-                    plot_title = plot_title.replace(
-                        "<br></b>",
-                        f"  Char Length: {self.vector_label_char_length}<br></b>",
-                    )
-                    text_labels = embedding_df["labels"].apply(
-                        lambda x: x[: self.vector_label_char_length] + "..."
-                    )
+            self.hover_label.insert(1, self.vector_label)
 
-                self.hover_label = [self.vector_label] + self.hover_label
-                self.hover_label = list(set(self.hover_label))
-            else:
-                plot_mode = "markers"
-                text_labels = None
+            # self.hover_label = [self.vector_label] + self.hover_label
+            # self.hover_label = list(set(self.hover_label))
 
             ## TODO: We can change this later to show top 100 neighbours of a selected word
             #  # Regular displays the full scatter plot with only circles
@@ -386,25 +349,83 @@ class Projector(APIClient, Base, DocUtils):
 
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
-            self.hover_label = ['_id'] + self.hover_label
-            custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
-            scatter = go.Scatter3d(
-                x=embedding_df["x"],
-                y=embedding_df["y"],
-                z=embedding_df["z"],
-                text=text_labels,
-                textposition="middle center",
-                showlegend=False,
-                mode=plot_mode,
-                marker = {
-                    "size": 3,
-                    "color": RELEVANCEAI_BLUE,
-                    "symbol": "circle"
-                },
-                customdata=custom_data,
-                hovertemplate=hovertemplate,
+
+    
+        custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
+        scatter = go.Scatter3d(
+            x=embedding_df["x"],
+            y=embedding_df["y"],
+            z=embedding_df["z"],
+            text=text_labels,
+            textposition="middle center",
+            showlegend=False,
+            mode=plot_mode,
+            marker = {
+                "size": 3,
+                "color": RELEVANCEAI_BLUE,
+                "symbol": "circle"
+            },
+            customdata=custom_data,
+            hovertemplate=hovertemplate,
+        )
+        data = [ scatter ]
+        
+        """
+        Generates data for colour plot if selected
+        """
+        if self.colour_label:
+            plot_title = plot_title.replace(
+                "</b>", f"Colour Label: {self.colour_label}<br></b>"
             )
-            data = [ scatter ]
+            if self.colour_label_char_length and not self.cluster:
+                plot_title = plot_title.replace(
+                    "<br></b>",
+                    f"  Char Length: {self.colour_label_char_length}<br></b>",
+                )
+                colour_labels = embedding_df["labels"].apply(
+                    lambda x: x[: self.colour_label_char_length] + "..."
+                )
+                embedding_df["labels"] = colour_labels
+
+            self.hover_label.insert(1, self.colour_label)
+
+            
+            data = []
+            groups = embedding_df.groupby(legend)
+            for idx, val in groups:
+                # if self.vector_label:
+                #     plot_mode = "text+markers"
+                #     text_labels = val["labels"]
+                #     if self.vector_label_char_length and not self.cluster:
+                #         plot_title = plot_title.replace(
+                #             "<br></b>",
+                #             f"  Char Length: {self.vector_label_char_length}<br></b>",
+                #         )
+                #         text_labels = val["labels"].apply(
+                #             lambda x: x[: self.vector_label_char_length] + "..."
+                #         )
+
+                #     self.hover_label = [self.vector_label] + self.hover_label
+                #     self.hover_label = list(set(self.hover_label))
+                    
+                custom_data, hovertemplate = self._generate_hover_template(df=val)
+                scatter = go.Scatter3d(
+                    name=idx,
+                    x=val["x"],
+                    y=val["y"],
+                    z=val["z"],
+                    # text=[ idx for _ in range(val["x"].shape[0]) ],
+                    textposition="top center",
+                    text=text_labels,
+                    mode=plot_mode,
+                    marker={
+                        "size": 3, "symbol": "circle"
+                    },
+                    customdata=custom_data,
+                    hovertemplate=hovertemplate,
+                )
+                data.append(scatter)
+
 
         """
         Generating figure
@@ -462,6 +483,7 @@ class Projector(APIClient, Base, DocUtils):
         """
         Generating hover template
         """
+        self.hover_label = list(sorted(set(self.hover_label)))
         custom_data = df[ self.hover_label ]
         custom_data_hover = [
             f"{c}: %{{customdata[{i}]}}"
