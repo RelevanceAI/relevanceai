@@ -58,7 +58,7 @@ class Projector(APIClient, Base, DocUtils):
         number_of_points_to_render: Optional[int] = 1000,
         random_state: int = 0,
         ### Dimensionality reduction args
-        dr: Union[str, DimReductionBase]= "pca",
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dr_args: Union[None, Dict] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
         # TODO: Add support for 2
         dims: Literal[3] = 3,
@@ -119,10 +119,10 @@ class Projector(APIClient, Base, DocUtils):
 
         number_of_documents = number_of_points_to_render
         self.vector_fields = self._get_vector_fields()
-        fields = [ label 
-                    for label in (["_id", vector_field, vector_label, colour_label] + hover_label)
-                    if label
-                ] 
+
+        labels = ["_id", vector_field, vector_label, colour_label] 
+        if hover_label: labels += hover_label
+        fields = [ label for label in labels if label ] 
         self.docs = self._retrieve_documents(
             dataset_id, fields, number_of_documents, page_size=1000
         )

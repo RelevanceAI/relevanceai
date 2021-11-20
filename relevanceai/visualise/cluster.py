@@ -25,7 +25,7 @@ class Cluster(Base):
         base_url: str,
         vectors: np.ndarray,
         cluster: CLUSTER,
-        cluster_args: Union[None] = None,
+        cluster_args: Union[None, dict] = None,
         k: Union[None, int] = None,
     ):
         self.project = project

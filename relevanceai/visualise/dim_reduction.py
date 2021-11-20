@@ -20,7 +20,11 @@ class DimReductionBase(LoguruLogger):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, *args: Any, **kwargs: Any):
+    def fit_transform(self, 
+            vectors: np.ndarray, 
+            dr_args: Dict[Any, Any], 
+            dims: int
+    ) -> np.ndarray:
         raise NotImplementedError
 
 
@@ -28,7 +32,7 @@ class DimReductionBase(LoguruLogger):
 class PCAReduction(DimReductionBase):
     def fit_transform(self, 
         vectors: np.ndarray, 
-        dr_args: Dict[Any, Any] = DIM_REDUCTION_DEFAULT_ARGS['pca'], 
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['pca'], 
         dims: int = 3
     ) -> np.ndarray:
         from sklearn.decomposition import PCA
@@ -40,7 +44,7 @@ class PCAReduction(DimReductionBase):
 class TSNEReduction(DimReductionBase):
     def fit_transform(self, 
         vectors: np.ndarray, 
-        dr_args: Dict[Any, Any] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], 
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], 
         dims: int = 3
     ) -> np.ndarray:
         from sklearn.decomposition import PCA
@@ -55,7 +59,7 @@ class TSNEReduction(DimReductionBase):
 class UMAPReduction(DimReductionBase):
     def fit_transform(self, 
         vectors: np.ndarray, 
-        dr_args: Dict[Any, Any] = DIM_REDUCTION_DEFAULT_ARGS['umap'], 
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['umap'], 
         dims: int = 3 
     ) -> np.ndarray:
         try:
@@ -73,7 +77,7 @@ class UMAPReduction(DimReductionBase):
 class IvisReduction(DimReductionBase):
     def fit_transform(self, 
         vectors: np.ndarray, 
-        dr_args: Dict[Any, Any] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], 
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], 
         dims: int = 3
     ) -> np.ndarray:
         try:
@@ -93,7 +97,7 @@ class IvisReduction(DimReductionBase):
 
 def dim_reduce(
     vectors: np.ndarray,
-    dr: DIM_REDUCTION,
+    dr: Union[DIM_REDUCTION, DimReductionBase],
     dr_args: Union[None, dict],
     dims: Literal[2, 3],
 ) -> np.ndarray:
