@@ -374,3 +374,7 @@ def get_realestate_dataset(
     if number_of_documents is None:
         number_of_documents = 50
     return ExampleDatasets._get_dummy_dataset('realestate', number_of_documents, select_fields)
+
+get_dummy_ecommerce_dataset = get_ecommerce_1_dataset
+get_sample_ecommerce_dataset = get_ecommerce_2_dataset
+get_ecommerce_dataset = get_ecommerce_3_dataset
