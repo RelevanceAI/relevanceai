@@ -69,3 +69,5 @@ client.projector.plot(
 )
 
 ```
+
+Full options and more details on functionality, see [this notebook](https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing) here.
