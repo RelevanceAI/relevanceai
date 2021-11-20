@@ -315,9 +315,11 @@ class Projector(APIClient, Base, DocUtils):
                     lambda x: x[: self.colour_label_char_length] + "..."
                 )
                 embedding_df["labels"] = colour_labels
-            if self.hover_label is None:
-                self.hover_label = [ self.colour_label ]
 
+            self.hover_label = [ self.colour_label ] + self.hover_label
+            self.hover_label = list(set(self.hover_label))
+            self.hover_label = ['_id'] + self.hover_label
+            
             data = []
             groups = embedding_df.groupby(legend)
             for idx, val in groups:
@@ -356,9 +358,9 @@ class Projector(APIClient, Base, DocUtils):
                     text_labels = embedding_df["labels"].apply(
                         lambda x: x[: self.vector_label_char_length] + "..."
                     )
-                if self.hover_label is None:
-                    self.hover_label = [self.vector_label]
 
+                self.hover_label = [self.vector_label] + self.hover_label
+                self.hover_label = list(set(self.hover_label))
             else:
                 plot_mode = "markers"
                 text_labels = None
@@ -384,7 +386,7 @@ class Projector(APIClient, Base, DocUtils):
 
             #     neighbors_idx = nearest_neighbours[:100].index
             #     embedding_df =  embedding_df.loc[neighbors_idx]
-
+            self.hover_label = ['_id'] + self.hover_label
             custom_data, hovertemplate = self._generate_hover_template(df=embedding_df)
             scatter = go.Scatter3d(
                 x=embedding_df["x"],
@@ -460,11 +462,10 @@ class Projector(APIClient, Base, DocUtils):
         """
         Generating hover template
         """
-        hover_label = ["_id"] + self.hover_label
-        custom_data = df[ hover_label ]
+        custom_data = df[ self.hover_label ]
         custom_data_hover = [
             f"{c}: %{{customdata[{i}]}}"
-            for i, c in enumerate(hover_label)
+            for i, c in enumerate(self.hover_label)
             if self._is_valid_label_name(c)
         ]
         hovertemplate = "<br>".join([

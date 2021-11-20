@@ -133,12 +133,11 @@ def cluster(
     """
     if isinstance(cluster, str):
         if cluster_args is None:
-                cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
+            cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
         if cluster in ['kmeans', 'kmedoids']:
             if (k is None and cluster_args is None) \
                 or ("n_clusters" not in cluster_args.keys()):
                 k = _choose_k(vectors)
-
             if cluster == "kmeans":
                 return KMeans().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "kmedoids":
@@ -148,3 +147,4 @@ def cluster(
         
     elif isinstance(cluster, ClusterBase):
         return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
+    

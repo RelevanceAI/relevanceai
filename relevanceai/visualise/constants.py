@@ -26,7 +26,7 @@ DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
 
 
 # CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprototypes", None]
-CLUSTER = Literal["kmeans", "kmedoids", "hdbscan",  None]
+CLUSTER = Literal["kmeans", "kmedoids", "hdbscan"]
 CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     "kmeans": {
         "init": "k-means++",
