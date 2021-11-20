@@ -1,5 +1,9 @@
-relevanceai.api package
+Core RelevanceAI Specs
 =======================
+
+The core RelevanceAI specs can be found in this section.
+
+
 
 Submodules
 ----------
