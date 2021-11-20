@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.visualise package &mdash; Relevance AI 0.1.0 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="viz.html">Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">relevanceai</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>relevanceai.visualise package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/relevanceai.visualise.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="relevanceai-visualise-package">
+<h1>relevanceai.visualise package<a class="headerlink" href="#relevanceai-visualise-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-relevanceai.visualise.cluster">
+<span id="relevanceai-visualise-cluster-module"></span><h2>relevanceai.visualise.cluster module<a class="headerlink" href="#module-relevanceai.visualise.cluster" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="relevanceai.visualise.cluster.Cluster">
+<em class="property">class </em><code class="sig-prename descclassname">relevanceai.visualise.cluster.</code><code class="sig-name descname">Cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">api_key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">vectors</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">cluster</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>kmeans<span class="p">, </span>kmedoids<span class="p">, </span>kmodes<span class="p">, </span>kprototypes<span class="p">, </span>None<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">cluster_args</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.cluster.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a></p>
+<p>Clustering Visualisation Class</p>
+<dl class="py attribute">
+<dt id="relevanceai.visualise.cluster.Cluster.api_key">
+<code class="sig-name descname">api_key</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.cluster.Cluster.api_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.cluster.Cluster.base_url">
+<code class="sig-name descname">base_url</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.cluster.Cluster.base_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.cluster.Cluster.config">
+<code class="sig-name descname">config</code><em class="property">: <a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config">relevanceai.config.Config</a></em><a class="headerlink" href="#relevanceai.visualise.cluster.Cluster.config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.cluster.Cluster.project">
+<code class="sig-name descname">project</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.cluster.Cluster.project" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-relevanceai.visualise.constants">
+<span id="relevanceai-visualise-constants-module"></span><h2>relevanceai.visualise.constants module<a class="headerlink" href="#module-relevanceai.visualise.constants" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-relevanceai.visualise.dataset">
+<span id="relevanceai-visualise-dataset-module"></span><h2>relevanceai.visualise.dataset module<a class="headerlink" href="#module-relevanceai.visualise.dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="relevanceai.visualise.dataset.Dataset">
+<em class="property">class </em><code class="sig-prename descclassname">relevanceai.visualise.dataset.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">api_key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dataset_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">vector_field</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">vector_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">colour_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">hover_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">page_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
+<p>Dataset Class</p>
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dataset.Dataset.api_key">
+<code class="sig-name descname">api_key</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.dataset.Dataset.api_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dataset.Dataset.base_url">
+<code class="sig-name descname">base_url</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.dataset.Dataset.base_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dataset.Dataset.config">
+<code class="sig-name descname">config</code><em class="property">: <a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config">relevanceai.config.Config</a></em><a class="headerlink" href="#relevanceai.visualise.dataset.Dataset.config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dataset.Dataset.project">
+<code class="sig-name descname">project</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.dataset.Dataset.project" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="relevanceai.visualise.dataset.Dataset.valid_label_name">
+<code class="sig-name descname">valid_label_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#relevanceai.visualise.dataset.Dataset.valid_label_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check vector label name is valid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="relevanceai.visualise.dataset.Dataset.valid_vector_name">
+<code class="sig-name descname">valid_vector_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vector_name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#relevanceai.visualise.dataset.Dataset.valid_vector_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check vector field name is valid</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-relevanceai.visualise.dim_reduction">
+<span id="relevanceai-visualise-dim-reduction-module"></span><h2>relevanceai.visualise.dim_reduction module<a class="headerlink" href="#module-relevanceai.visualise.dim_reduction" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="relevanceai.visualise.dim_reduction.DimReduction">
+<em class="property">class </em><code class="sig-prename descclassname">relevanceai.visualise.dim_reduction.</code><code class="sig-name descname">DimReduction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">api_key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">vector_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">vector_field</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dr</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>pca<span class="p">, </span>tsne<span class="p">, </span>umap<span class="p">, </span>ivis<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">dr_args</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>Any<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dims</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>2<span class="p">, </span>3<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReduction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
+<p>Dim Reduction Class</p>
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dim_reduction.DimReduction.api_key">
+<code class="sig-name descname">api_key</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReduction.api_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dim_reduction.DimReduction.base_url">
+<code class="sig-name descname">base_url</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReduction.base_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dim_reduction.DimReduction.config">
+<code class="sig-name descname">config</code><em class="property">: <a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config">relevanceai.config.Config</a></em><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReduction.config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.dim_reduction.DimReduction.project">
+<code class="sig-name descname">project</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReduction.project" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-relevanceai.visualise.projector">
+<span id="relevanceai-visualise-projector-module"></span><h2>relevanceai.visualise.projector module<a class="headerlink" href="#module-relevanceai.visualise.projector" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="relevanceai.visualise.projector.Projector">
+<em class="property">class </em><code class="sig-prename descclassname">relevanceai.visualise.projector.</code><code class="sig-name descname">Projector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span></em>, <em class="sig-param"><span class="n">api_key</span></em>, <em class="sig-param"><span class="n">base_url</span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.projector.Projector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
+<p>Projector class.</p>
+<dl>
+<dt>Example: </dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api_key</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<span class="go">        dataset_id, vector_field, number_of_points_to_render, random_state, </span>
+<span class="go">        dr, dr_args, dims,</span>
+<span class="go">        vector_label, vector_label_char_length,</span>
+<span class="go">        color_label, colour_label_char_length, </span>
+<span class="go">        hover_label,</span>
+<span class="go">        cluster, cluster_args,</span>
+<span class="go">        )</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="relevanceai.visualise.projector.Projector.api_key">
+<code class="sig-name descname">api_key</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.api_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.projector.Projector.base_url">
+<code class="sig-name descname">base_url</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.base_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.projector.Projector.config">
+<code class="sig-name descname">config</code><em class="property">: <a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config">relevanceai.config.Config</a></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="relevanceai.visualise.projector.Projector.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">vector_field</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">number_of_points_to_render</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dr</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>pca<span class="p">, </span>tsne<span class="p">, </span>umap<span class="p">, </span>ivis<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'pca'</span></em>, <em class="sig-param"><span class="n">dr_args</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">{'random_state': 42, 'svd_solver': 'auto'}</span></em>, <em class="sig-param"><span class="n">dims</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>2<span class="p">, </span>3<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">3</span></em>, <em class="sig-param"><span class="n">vector_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vector_label_char_length</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">12</span></em>, <em class="sig-param"><span class="n">colour_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colour_label_char_length</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">20</span></em>, <em class="sig-param"><span class="n">hover_label</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cluster</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>Literal<span class="p">[</span>kmeans<span class="p">, </span>kmedoids<span class="p">, </span>kmodes<span class="p">, </span>kprototypes<span class="p">, </span>None<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cluster_args</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">{'n_init': 20}</span></em>, <em class="sig-param"><span class="n">num_clusters</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>None<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">10</span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot function for Embedding Projector class</p>
+<dl>
+<dt>Example: </dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api_key</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<span class="go">        dataset_id, vector_field, number_of_points_to_render, random_state, </span>
+<span class="go">        dr, dr_args, dims,</span>
+<span class="go">        vector_label, vector_label_char_length,</span>
+<span class="go">        color_label, colour_label_char_length, </span>
+<span class="go">        hover_label,</span>
+<span class="go">        cluster, cluster_args,</span>
+<span class="go">        )</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="relevanceai.visualise.projector.Projector.project">
+<code class="sig-name descname">project</code><em class="property">: str</em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.project" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-relevanceai.visualise">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-relevanceai.visualise" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
