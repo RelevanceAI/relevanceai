@@ -47,7 +47,9 @@ jobs:
           python -m pip install sphinx sphinx-rtd-theme
           cd docsrc && make build_docs 
           echo ${{ github.ref }}
-          git add .
+          echo "current path:"
+          pwd
+          git add ..
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "ci: Automated build push" -a | exit 0
