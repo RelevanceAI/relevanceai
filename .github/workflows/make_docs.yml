@@ -53,4 +53,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "ci: Automated build push" -a | exit 0
-          git push --force origin documentation
+          git push --force origin feature/add_docs
