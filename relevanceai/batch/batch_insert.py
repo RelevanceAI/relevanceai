@@ -517,7 +517,7 @@ class BatchInsert(APIClient, Chunker):
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
-            chunksize = target_chunk_mb / doc_mb if target_chunk_mb/ doc_mb < len(docs) else len(docs)
+            chunksize = int(target_chunk_mb / doc_mb) + 1 if int(target_chunk_mb/ doc_mb) + 1 < len(docs) else len(docs)
     
         # Initialise number of inserted documents
         inserted: List[str] = []
