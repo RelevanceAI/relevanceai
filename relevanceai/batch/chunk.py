@@ -6,11 +6,9 @@ import pandas as pd
 
 from relevanceai.progress_bar import progress_bar
 
-
 class Chunker:
-    """Update the chunk mixins"""
-
-    def chunk(self, documents: Union[pd.DataFrame, List], chunksize: int = 20):
+    """Update the chunk Mixins"""
+    def chunk(self, documents: Union[pd.DataFrame, List], chunksize: int=20):
         """
         Chunk an iterable object in Python.
         Args:

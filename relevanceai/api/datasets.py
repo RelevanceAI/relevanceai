@@ -21,12 +21,16 @@ class Datasets(Base):
 
         super().__init__(project, api_key, base_url)
 
-    def test(self):
-        return self.wtf
-
     def schema(
         self, dataset_id: str, output_format: str = "json", verbose: bool = True
     ):
+        """ 
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        """
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/schema",
             method="GET",
@@ -37,26 +41,15 @@ class Datasets(Base):
     def metadata(
         self, dataset_id: str, output_format: str = "json", verbose: bool = True
     ):
+        """ 
+        Retreives metadata about a dataset. Notably description, data source, etc
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        """
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/metadata",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
-        )
-
-    def stats(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
-        return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/monitor/stats",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
-        )
-
-    def health(
-        self, dataset_id: str, output_format: str = "json", verbose: bool = True
-    ):
-        return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/monitor/health",
             method="GET",
             output_format=output_format,
             verbose=verbose,
@@ -69,6 +62,47 @@ class Datasets(Base):
         output_format: Union[str, bool] = "json",
         verbose: bool = True,
     ):
+        """ 
+        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
+
+        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema.
+
+        For example:
+
+        >>>    {
+        >>>        "product_image_vector_": 1024,
+        >>>        "product_text_description_vector_" : 128
+        >>>    }
+
+        These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"].
+
+        For example:
+
+        >>>    {
+        >>>        "product_text_description" : "text",
+        >>>        "price" : "numeric",
+        >>>        "created_date" : "date",
+        >>>        "product_texts_chunk_": "chunks",
+        >>>        "product_text_chunkvector_" : 1024
+        >>>    }
+
+        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents.
+
+        Note:
+            - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
+            - "_id" is reserved as the key and id of a document.
+            - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
+
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        schema : dict
+            Schema for specifying the field that are vectors and its length
+    
+        """
         return self.make_http_request(
             endpoint=f"datasets/create",
             method="POST",
@@ -77,9 +111,8 @@ class Datasets(Base):
             verbose=verbose,
         )
 
-    def list(
-        self, output_format: Optional[str] = "json", verbose: bool = True, retries=None
-    ):
+    def list(self, output_format: Optional[str] = "json", verbose: bool = True, retries=None):
+        """ List all datasets in a project that you are authorized to read/write. """
         return self.make_http_request(
             endpoint="datasets/list",
             method="GET",
@@ -104,6 +137,41 @@ class Datasets(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
+
+        """ 
+        Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
+        schema - Data schema of a dataset (same as dataset.schema).
+        metadata - Metadata of a dataset (same as dataset.metadata).
+        stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
+        vector_health - Number of zero vectors stored (same as dataset.health).
+        schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
+        active_jobs - All active jobs/tasks on the dataset. 
+        
+        Parameters
+        ----------
+        include_schema : bool
+            Whether to return schema
+        include_stats : bool
+            Whether to return stats
+        include_metadata : bool
+            Whether to return metadata
+        include_vector_health : bool
+            Whether to return vector_health
+        include_schema_stats : bool
+            Whether to return schema_stats
+        include_active_jobs : bool
+            Whether to return active_jobs
+        dataset_ids : list
+            List of dataset IDs
+        sort_by_created_at_date : bool
+            Sort by created at date. By default shows the newest datasets. Set asc=False to get oldest dataset.
+        asc : bool
+            Whether to sort results by ascending or descending order
+        page_size : int
+            Size of each page of results
+        page : int
+            Page of the results
+        """
         return self.make_http_request(
             endpoint="datasets/list",
             method="POST",
@@ -135,6 +203,25 @@ class Datasets(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
+        """ 
+        Takes a high level aggregation of every field, return their unique values and frequencies. This is used to help create the filter bar for search.
+        
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        fields : list
+            Fields to include in the facets, if [] then all
+        date_interval : str
+            Interval for date facets
+        page_size : int
+            Size of facet page
+        page : int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+    
+        """
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/facets",
             method="POST",
@@ -152,6 +239,17 @@ class Datasets(Base):
     def check_missing_ids(
         self, dataset_id, ids, output_format: str = "json", verbose: bool = True
     ):
+
+        """ 
+        Look up in bulk if the ids exists in the dataset, returns all the missing one as a list.
+            
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        ids : list
+            IDs of documents
+        """
 
         # Check if dataset_id exists
         dataset_exists = dataset_id in self.list()["datasets"]
@@ -184,14 +282,36 @@ class Datasets(Base):
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
     ):
         """
+        When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
-        An example field_transformers object:
-        {
-            "field": "string",
-            "output_field": "string",
-            "remove_html": true,
-            "split_sentences": true
-        }
+
+        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
+        
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        documents : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        insert_date : bool
+            Whether to include insert date as a field 'insert_date_'.
+        overwrite : bool
+            Whether to overwrite document if it exists.
+        update_schema : bool
+            Whether the api should check the documents for vector datatype to update the schema.
+        include_inserted_ids: bool
+            Include the inserted IDs in the response
+        field_transformers: list
+            An example field_transformers object:
+            >>> {
+            >>>    "field": "string",
+            >>>    "output_field": "string",
+            >>>    "remove_html": true,
+            >>>    "split_sentences": true
+            >>> }
         """
         if return_documents is False:
             return self.make_http_request(
@@ -245,6 +365,15 @@ class Datasets(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
+        """
+        Delete a dataset
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+
+        """
         if confirm:
             # confirm with the user
             self.logger.critical(f"You are about to delete {dataset_id}")
@@ -280,6 +409,24 @@ class Datasets(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
+        """
+        Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.
+        
+        Parameters
+        ----------
+        old_dataset : string
+            Unique name of old dataset to copy from
+        new_dataset : string
+            Unique name of new dataset to copy to
+        schema : dict
+            Schema for specifying the field that are vectors and its length
+        rename_fields : dict
+            Fields to rename {'old_field': 'new_field'}. Defaults to no renames
+        remove_fields : list
+            Fields to remove ['random_field', 'another_random_field']. Defaults to no removes
+        filters : list
+            Query for filtering the search results
+        """
         return self.make_http_request(
             endpoint=f"datasets/{old_dataset}/clone",
             method="POST",
@@ -302,6 +449,18 @@ class Datasets(Base):
         output_format: str = "json",
         verbose: bool = True,
     ):
+        """
+        Search datasets by their names with a traditional keyword search.
+        
+        Parameters
+        ----------
+        query : string
+            Any string that belongs to part of a dataset.
+        sort_by_created_at_date : bool
+            Sort by created at date. By default shows the newest datasets. Set asc=False to get oldest dataset.
+        asc : bool
+            Whether to sort results by ascending or descending order
+        """
         return self.make_http_request(
             endpoint="datasets/search",
             method="GET",

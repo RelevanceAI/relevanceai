@@ -7,3 +7,11 @@ make build_docs
 ```
 
 For questions, contact Jacky Wong.
+
+## Installation 
+
+Run:
+
+```
+pip install -e .. && pip install sphinx sphinx-rtd-theme
+```

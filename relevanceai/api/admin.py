@@ -9,7 +9,12 @@ class Admin(Base):
         super().__init__(project, api_key, base_url)
 
     def request_read_api_key(self, read_username: str):
-        """Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used."""
+        """Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used.
+
+        Args:
+            read_username:
+                Read-only project
+        """
         return self.make_http_request(
             "admin/request_read_api_key",
             method="POST",
@@ -22,11 +27,24 @@ class Admin(Base):
         source_dataset_id: str,
         source_project: str,
         source_api_key: str,
-        project: str = None,
-        api_key: str = None,
+        project: str=None,
+        api_key: str=None,
     ):
-        """Copy a foreign dataset.
-        Documentation can be found at: https://docs.relevance.ai/reference/copy_foreign_dataset_admin_copy_foreign_dataset_post
+        """Copy a dataset from another user's projects into your project.
+
+        Args:
+            dataset_id:
+                The dataset to copy
+            source_dataset_id:
+                The original dataset
+            source_project:
+                The original project to copy from
+            source_api_key:
+                The original API key of the project
+            project:
+                The original project
+            api_key:
+                The original API key
         """
         return self.make_http_request(
             "admin/copy_foreign_dataset",
@@ -38,5 +56,6 @@ class Admin(Base):
                 "source_dataset_id": source_dataset_id,
                 "source_project": source_project,
                 "source_api_key": source_api_key,
+                # "filters": filters
             },
         )

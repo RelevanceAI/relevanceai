@@ -31,12 +31,13 @@ class Config(DocUtils):
     @staticmethod
     def _create_default():
         config = configparser.ConfigParser()
-        config["retries"] = {"number_of_retries": 1, "seconds_between_retries": 2}
-        config["logging"] = {"log_to_file": False, "logging_level": "SUCCESS"}
+        config["retries"] = {"number_of_retries": 1,
+                             "seconds_between_retries": 2}
+        config["logging"] = {"log_to_file": False, "logging_level": "ERROR",
+                             'enable_logging': True, "log_file_name": "relevanceai"}
         config["upload"] = {"target_chunk_mb": 100}
         with open(CONFIG_PATH, "w") as configfile:
             config.write(configfile)
-
 
 
 CONFIG = Config()
