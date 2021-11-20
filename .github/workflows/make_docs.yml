@@ -28,7 +28,6 @@ jobs:
           #   path: ~\AppData\Local\pip\Cache
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -43,7 +42,8 @@ jobs:
             ${{ runner.os }}-${{ env.pythonLocation }}-
       - name: Build docs
         run: |
-          python -m pip install -e .
+          sudo apt-get install -y pandoc
+          python -m pip install -e .[dev]
           python -m pip install sphinx sphinx-rtd-theme
           cd docsrc && make build_docs 
           echo ${{ github.ref }}
@@ -52,4 +52,9 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "ci: Automated build push" -a | exit 0
+      - name: Push changes
+        if: github.ref == 'refs/heads/master'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
           git push --force origin main
