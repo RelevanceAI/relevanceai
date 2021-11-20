@@ -32,7 +32,7 @@ class Recommend(Base):
         keep_search_history: bool = False,
     ):
         return self.make_http_request(
-            f"services/recommend/recommend/vector",
+            f"services/recommend/vector",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
