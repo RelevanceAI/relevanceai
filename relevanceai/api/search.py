@@ -35,35 +35,47 @@ class Search(Base):
     ):
         """ 
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
-        1. Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. image_vector_ weights 100%, whilst description_vector_ 50%
+        
+        1. Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. image_vector_ weights 100%, whilst description_vector_ 50% \n
             An example of a simple multivector query:
+
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": ["name_vector_"], "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": ["image_vector_"], "alias":"image"},
             >>> ]
+            
             An example of a weighted multivector query:
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6}, "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
             >>> ]
+
             An example of a weighted multivector query with multiple fields for each vector:
+
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6, "description_vector_":0.3}, "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
             >>> ]
-        2. Utilise faceted search with vector search. For information on how to apply facets/filters check out datasets.documents.get_where
-        3. Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. image_vector_ + text_vector_ or image_vector_ vs text_vector_.
+
+        2. Utilise faceted search with vector search. For information on how to apply facets/filters check out datasets.documents.get_where \n
+        3. Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. image_vector_ + text_vector_ or image_vector_ vs text_vector_. \n
             When sum_fields=True:
+
             - Multi-vector search allows you to obtain search scores by taking the sum of these scores.
             - TextSearchScore + ImageSearchScore = SearchScore
             - We then rank by the new SearchScore, so for searching 1000 documents there will be 1000 search scores and results
+
             When sum_fields=False:
+
             - Multi vector search but not summing the score, instead including it in the comparison!
             - TextSearchScore = SearchScore1
             - ImagSearchScore = SearchScore2
             - We then rank by the 2 new SearchScore, so for searching 1000 documents there should be 2000 search scores and results.
+
         4. Personalization with positive and negative document ids.
-            For more information about the positive and negative document ids to personalize check out services.recommend.vector
+
+            - For more information about the positive and negative document ids to personalize check out services.recommend.vector
+        
         For more even more advanced configuration and customisation of vector search, reach out to us at dev@relevance.ai and learn about our new advanced_vector_search.
 
         Parameters
@@ -164,9 +176,9 @@ class Search(Base):
         output_format: str = "json",
     ):
         """ 
-        Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible.
+        Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
 
-        For information on how to use vector search check out services.search.vector.
+        For information on how to use vector search check out services.search.vector. \n
 
         For information on how to use traditional keyword faceted search check out services.search.traditional.
 
@@ -275,7 +287,7 @@ class Search(Base):
         output_format: str = "json",
     ):
         """ 
-        A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results.
+        A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results. \n
 
         For information on how to configure semantic search check out services.search.hybrid.
 
@@ -379,18 +391,22 @@ class Search(Base):
     ):
         """ 
         This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:
+        
         >>> Cluster 0: [A, B, C]
         >>> Cluster 1: [D, E]
         >>> Cluster 2: [F, G]
         >>> Cluster 3: [H, I]
-        (Note, each cluster is ordered by highest to lowest search score.)
+
+        (Note, each cluster is ordered by highest to lowest search score.) \n
 
         This intermediately returns:
+
         >>> results_batch_1: [A, H, F, D] (ordered by highest search score)
         >>> results_batch_2: [G, E, B, I] (ordered by highest search score)
         >>> results_batch_3: [C]
 
         This then returns the final results:
+
         >>> results: [A, H, F, D, G, E, B, I, C]
 
         Parameters
@@ -499,9 +515,9 @@ class Search(Base):
         output_format: str = "json",
     ):
         """ 
-        Traditional Faceted Keyword Search with edit distance/fuzzy matching.
+        Traditional Faceted Keyword Search with edit distance/fuzzy matching. \n
 
-        For information on how to apply facets/filters check out datasets.documents.get_where.
+        For information on how to apply facets/filters check out datasets.documents.get_where. \n
 
         For information on how to construct the facets section for your search bar check out datasets.facets.
 
@@ -585,6 +601,7 @@ class Search(Base):
 
         """ 
         Chunks are data that has been divided into different units. e.g. A paragraph is made of many sentence chunks, a sentence is made of many word chunks, an image frame in a video. By searching through chunks you can pinpoint more specifically where a match is occuring. When creating a chunk in your document use the suffix "chunk" and "chunkvector". An example of a document with chunks:
+        
         >>> {
         >>>     "_id" : "123",
         >>>     "title" : "Lorem Ipsum Article",
@@ -596,6 +613,7 @@ class Search(Base):
         >>>         {"sentence_id" : 2, "sentence_chunkvector_" : [0.7, 0.8, 0.9], "sentence" : "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."},
         >>>     ]
         >>> }
+        
         For combining chunk search with other search check out services.search.advanced_chunk.
 
         Parameters
@@ -697,11 +715,11 @@ class Search(Base):
     ):
 
         """ 
-        Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after.
+        Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
-        For more information about chunk search checkout services.search.chunk.
+        For more information about chunk search check out services.search.chunk. \n
 
-        For more information about vector search checkout services.search.vector
+        For more information about vector search check out services.search.vector
 
         Parameters
         ----------
@@ -793,8 +811,9 @@ class Search(Base):
         output_format: str = "json",
     ):
         """ 
-        A more advanced chunk search to be able to combine vector search and chunk search in many different ways.
+        A more advanced chunk search to be able to combine vector search and chunk search in many different ways. \n
         Example 1 (Hybrid chunk search):
+
         >>> chunk_query = {
         >>>     "chunk" : "some.test",
         >>>     "queries" : [
@@ -806,7 +825,9 @@ class Search(Base):
         >>>         "metric" : "cosine"},
         >>>     ]
         >>> }
+
         Example 2 (combines normal vector search with chunk search):
+
         >>> chunk_query = {
         >>>     "queries" : [
         >>>         {
@@ -890,11 +911,10 @@ class Search(Base):
         output_format: str = "json",
     ):
         """ 
-        Performs a vector hybrid search and then an advanced chunk search.
-
-        Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set.
+        Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set. \n
 
         Example 1 (Hybrid chunk search):
+
         >>> chunk_query = {
         >>>     "chunk" : "some.test",
         >>>     "queries" : [
@@ -906,7 +926,9 @@ class Search(Base):
         >>>         "metric" : "cosine"},
         >>>     ]
         >>> }
+
         Example 2 (combines normal vector search with chunk search):
+
         >>> chunk_query = {
         >>>     "queries" : [
         >>>         {
@@ -936,7 +958,6 @@ class Search(Base):
         >>>                 },
         >>>         ]
         >>>     }
-
 
         Parameters
         ----------

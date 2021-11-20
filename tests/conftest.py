@@ -7,6 +7,8 @@ import random
 import numpy as np
 from relevanceai import Client
 
+RANDOM_STRING = str(random.randint(0, 999))
+
 @pytest.fixture
 def test_project():
     # test projects
@@ -29,7 +31,7 @@ def test_client(test_project, test_api_key):
 
 @pytest.fixture
 def test_dataset_id():
-    return "_sample_test_dataset"
+    return "_sample_test_dataset" + RANDOM_STRING
 
 @pytest.fixture
 def test_sample_dataset(test_client, simple_doc, test_dataset_id):

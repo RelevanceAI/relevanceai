@@ -36,10 +36,14 @@ class Transport:
         verbose: bool = True,
         retries: int = None,
     ):
-        """Make the HTTP request
-        Args:
-            endpoint: The endpoint from the documentation to use
-            method_type: POST or GET request
+        """
+        Make the HTTP request
+        Parameters
+        ----------
+        endpoint: string
+            The endpoint from the documentation to use
+        method_type: string
+            POST or GET request
         """
 
         t1 = time.time()
