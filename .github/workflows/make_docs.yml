@@ -3,7 +3,7 @@ name: Documentation
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, documentation ]
   pull_request:
     branches: [ main ]
 
@@ -49,7 +49,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -m "ci: Automated build push" -a | exit 0
       - name: Push changes
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/documentation'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.SECRET_TOKEN }}

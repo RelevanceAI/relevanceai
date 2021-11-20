@@ -56,5 +56,6 @@ class Admin(Base):
                 "source_dataset_id": source_dataset_id,
                 "source_project": source_project,
                 "source_api_key": source_api_key,
+                # "filters": filters
             },
         )
