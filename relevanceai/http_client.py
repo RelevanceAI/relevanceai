@@ -74,7 +74,6 @@ class Client(BatchAPIClient, DocUtils):
 
     @staticmethod
     def login(
-        self,
         base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
         verbose: bool = True,
     ):
