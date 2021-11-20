@@ -14,7 +14,7 @@ from relevanceai.api.client import APIClient
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
 
-from relevanceai.visualise.cluster import Cluster
+from relevanceai.visualise.cluster import cluster, ClusterBase
 from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
 
 from doc_utils import DocUtils
@@ -59,7 +59,7 @@ class Projector(APIClient, Base, DocUtils):
         random_state: int = 0,
         ### Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
-        dr_args: Union[None, Dict] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
+        dr_args: Union[None, Dict] = None,
         # TODO: Add support for 2
         dims: Literal[3] = 3,
         ### Plot rendering args
@@ -69,8 +69,8 @@ class Projector(APIClient, Base, DocUtils):
         colour_label_char_length: Union[None, int] = 20,
         hover_label: List[str] = [],
         ### Cluster args
-        cluster: Union[None, CLUSTER] = None,
-        cluster_args: Union[None, Dict] = {"n_init": 20},
+        cluster: Union[CLUSTER, ClusterBase] = None,
+        cluster_args: Union[None, Dict] = None,
         num_clusters: Union[None, int] = 10,
     ):
         """
@@ -172,14 +172,15 @@ class Projector(APIClient, Base, DocUtils):
 
             # TODO: refactor Cluster
             if self.cluster:
-                _cluster = Cluster(
-                    **self.base_args,
-                    vectors=self.vectors,
-                    cluster=self.cluster,
-                    cluster_args=self.cluster_args,
-                    k=self.num_clusters,
-                )
-                self.cluster_labels = _cluster.cluster_labels
+                # _cluster = Cluster(
+                #     **self.base_args,
+                #     vectors=self.vectors,
+                #     cluster=self.cluster,
+                #     cluster_args=self.cluster_args,
+                #     k=self.num_clusters,
+                # )
+                # self.cluster_labels = _cluster.cluster_labels
+                self.cluster_labels = cluster(vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args)
                 self.embedding_df["cluster_labels"] = self.cluster_labels
                 self.legend = "cluster_labels"
 
