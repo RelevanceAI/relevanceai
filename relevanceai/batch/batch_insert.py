@@ -29,15 +29,33 @@ class BatchInsert(APIClient, Chunker):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        chunksize=100,
+        chunksize=None,
         max_retries=1,
         *args,
         **kwargs,
     ):
 
         """
-        Insert a list of documents with multi-threading automatically
-        enabled.
+        Insert a list of documents with multi-threading automatically enabled.
+        When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        docs : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         """
         if verbose:
             self.logger.info(f"You are currently inserting into {dataset_id}")
@@ -77,18 +95,16 @@ class BatchInsert(APIClient, Chunker):
         verbose: bool = True,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
-        chunksize: int = 100,
+        chunksize: int = None,
         show_progress_bar=False,
         *args,
         **kwargs,
     ):
         """
-        Update a list of documents with multi-threading
-        automatically enabled.
-        This is useful especially when pull_update_push bugs out and you need somethin urgently.
-        Set chunksize to `None` for automatic conversion
+        Update a list of documents with multi-threading automatically enabled.
+        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
         >>> from relevanceai import Client
-        >>>  url = "https://api-aueast.relevance.ai/v1/"
+        >>> url = "https://api-aueast.relevance.ai/v1/"
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
@@ -98,6 +114,21 @@ class BatchInsert(APIClient, Chunker):
         >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
         >>>     client.update_documents(collection, docs['documents'])
         >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        docs : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         """
         if verbose:
             self.logger.info(f"You are currently updating {dataset_id}")
@@ -134,10 +165,7 @@ class BatchInsert(APIClient, Chunker):
         log_file: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
-        retrieve_chunk_size_failure_retry_multiplier: float = 0.5,
-        number_of_retrieve_retries: int = 3,
         max_workers: int = 8,
-        max_error: int = 1000,
         filters: list = [],
         select_fields: list = [],
         verbose: bool = True,
@@ -160,8 +188,6 @@ class BatchInsert(APIClient, Chunker):
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
         retrieve_chunk_size: int
             The number of documents that are received from the original collection with each loop iteration.
-        retrieve_chunk_size_failure_retry_multiplier: int
-            If fails, retry on each chunk
         max_workers: int
             The number of processors you want to parallelize with
         max_error:
