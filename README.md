@@ -1,16 +1,16 @@
-# relevanceai Python SDK 
+# RelevanceAI
 
-For documentation about how to use this package, visit: https://docs.relevance.ai/docs
+For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
-This is the Python SDK of relevanceai and is the main Pythonic interface for the relevanceai.
+If you are looking for an SDK reference, you can find that [here](https://youthful-leakey-ab1977.netlify.app/index.html).
 
-Built mainly for users looking to experiment with vectors/embeddings without having to consistently rely on the `requests` module.
+Built mainly for users looking to experiment with vectors/embeddings.
 
 ## Installation 
 
 The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
 
-## How to use the relevanceai client
+## How to use the RelevanceAI client
 
 For the relevanceai client, we want to ensure the SDK mirrors the API client.
 
