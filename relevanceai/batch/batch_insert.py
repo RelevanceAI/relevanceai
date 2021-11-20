@@ -28,7 +28,7 @@ class BatchInsert(APIClient, Chunker):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        chunksize=None,
+        chunksize=0,
         max_retries=1,
         *args,
         **kwargs,
@@ -94,7 +94,7 @@ class BatchInsert(APIClient, Chunker):
         verbose: bool = True,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
-        chunksize: int = None,
+        chunksize: int = 0,
         show_progress_bar=False,
         *args,
         **kwargs,
@@ -500,7 +500,7 @@ class BatchInsert(APIClient, Chunker):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        chunksize: int = None,
+        chunksize: int = 0,
     ):
 
         # Get one document to test the size
@@ -515,7 +515,7 @@ class BatchInsert(APIClient, Chunker):
         # Insert documents
         test_doc = json.dumps(docs[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
-        if chunksize is None:
+        if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             chunksize = target_chunk_mb / doc_mb if target_chunk_mb/ doc_mb < len(docs) else len(docs)
     
