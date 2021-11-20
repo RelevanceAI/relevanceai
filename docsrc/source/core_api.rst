@@ -7,11 +7,11 @@ For the RelevanceAI client, we want to ensure the SDK mirrors the API client.
 
 For example:
 
-```python
-## To instantiate the client 
-from relevanceai import Client
-client = Client()
-```
+.. code-block:: python
+
+   ## To instantiate the client 
+   from relevanceai import Client
+   client = Client()
 
 To use the following endpoint: 
 
@@ -19,20 +19,21 @@ To use the following endpoint:
 
 You can run: 
 
-```python
-# Bulk insert documents
-client.datasets.bulk_insert(dataset_id, documents)
-```
+.. code-block:: python
+
+   # Bulk insert documents
+   client.datasets.bulk_insert(dataset_id, documents)
 
 Or similarly, when you are trying to run 
 
 `/services/search/vector`
 
 You then write: 
-```python
-# Vector search in a dataset
-client.services.search.vector(...)
-```
+
+.. code-block:: python
+
+   # Vector search in a dataset
+   client.services.search.vector(...)
 
 Submodules
 ----------

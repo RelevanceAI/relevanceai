@@ -41,10 +41,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Visualisation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#embedding-projector">Embedding Projector</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">)</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#embedding-projector">Embedding Projector</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="core_api.html">Core RelevanceAI Specs</a></li>
@@ -81,55 +78,61 @@
 <h2>Embedding Projector<a class="headerlink" href="#embedding-projector" title="Permalink to this headline"></a></h2>
 <p>To use the Embedding projector -</p>
 <p>See [<cite>relevanceai/visualise/constants.py</cite>](‘./relevanceai/visualise/constants.py’) for default args . available</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
-from relevanceai import Client</p>
-<p>client = Client()</p>
-<p>‘’’
-Retrieve docs in dataset  set <cite>number_of_points_to_render = None</cite> to retrieve all docs
-‘’’</p>
-<p>vector_label = “product_name”
-vector_field = “<a href="#id14"><span class="problematic" id="id15">product_name_imagetext_vector_</span></a>”</p>
-<p>dr = ‘pca’
-cluster = ‘kmeans’</p>
-<dl class="simple">
-<dt>client.projector.plot(</dt><dd><p>dataset_id=”ecommerce-6”,
-vector_field=vector_field,
-number_of_points_to_render=1000,</p>
-</dd>
-</dl>
-<section id="id5">
-<h3>)<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Retrieve docs in dataset  set `number_of_points_to_render = None` to retrieve all docs</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="n">vector_label</span> <span class="o">=</span> <span class="s2">&quot;product_name&quot;</span>
+<span class="n">vector_field</span> <span class="o">=</span> <span class="s2">&quot;product_name_imagetext_vector_&quot;</span>
+
+<span class="n">dr</span> <span class="o">=</span> <span class="s1">&#39;pca&#39;</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="s1">&#39;kmeans&#39;</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">dataset_id</span><span class="o">=</span><span class="s2">&quot;ecommerce-6&quot;</span><span class="p">,</span>
+    <span class="n">vector_field</span><span class="o">=</span><span class="n">vector_field</span><span class="p">,</span>
+    <span class="n">number_of_points_to_render</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <p>Full options and more details on functionality, see [this notebook](<a class="reference external" href="https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing">https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing</a>) here -</p>
-<p><a href="#id6"><span class="problematic" id="id7">``</span></a><a href="#id8"><span class="problematic" id="id9">`</span></a>python</p>
-<p>‘’’
-If <cite>cluster</cite> specified, will override <cite>colour_label</cite> option and render cluster as legend
-‘’’</p>
-<p>dr = ‘tsne’
-cluster = ‘kmedoids’</p>
-<p>dataset_id = “ecommerce-6”
-vector_label = “product_name”
-vector_field = “<a href="#id16"><span class="problematic" id="id17">product_name_imagetext_vector_</span></a>”</p>
-<dl>
-<dt>client.projector.plot(</dt><dd><p>dataset_id = dataset_id,
-vector_field = vector_field,
-number_of_points_to_render=1000,</p>
-<p>### Dimensionality reduction args
-dr = dr,
-dr_args = DIM_REDUCTION_DEFAULT_ARGS[ dr ],</p>
-<p>## Plot rendering args
-vector_label = None,
-colour_label = vector_label,
-hover_label = None,</p>
-<p>### Cluster args
-cluster = cluster,
-cluster_args = CLUSTER_DEFAULT_ARGS[ cluster ],
-num_clusters = 20</p>
-</dd>
-</dl>
-<p>)</p>
-<p><a href="#id10"><span class="problematic" id="id11">``</span></a><a href="#id12"><span class="problematic" id="id13">`</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">If `cluster` specified, will override `colour_label` option and render cluster as legend</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="n">dr</span> <span class="o">=</span> <span class="s1">&#39;tsne&#39;</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="s1">&#39;kmedoids&#39;</span>
+
+<span class="n">dataset_id</span> <span class="o">=</span> <span class="s2">&quot;ecommerce-6&quot;</span>
+<span class="n">vector_label</span> <span class="o">=</span> <span class="s2">&quot;product_name&quot;</span>
+<span class="n">vector_field</span> <span class="o">=</span> <span class="s2">&quot;product_name_imagetext_vector_&quot;</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">dataset_id</span><span class="p">,</span>
+    <span class="n">vector_field</span> <span class="o">=</span> <span class="n">vector_field</span><span class="p">,</span>
+    <span class="n">number_of_points_to_render</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+
+    <span class="c1">### Dimensionality reduction args</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="n">dr</span><span class="p">,</span>
+    <span class="n">dr_args</span> <span class="o">=</span> <span class="n">DIM_REDUCTION_DEFAULT_ARGS</span><span class="p">[</span> <span class="n">dr</span> <span class="p">],</span>
+
+    <span class="c1">## Plot rendering args</span>
+    <span class="n">vector_label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">colour_label</span> <span class="o">=</span> <span class="n">vector_label</span><span class="p">,</span>
+    <span class="n">hover_label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="c1">### Cluster args</span>
+    <span class="n">cluster</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">,</span>
+    <span class="n">cluster_args</span> <span class="o">=</span> <span class="n">CLUSTER_DEFAULT_ARGS</span><span class="p">[</span> <span class="n">cluster</span> <span class="p">],</span>
+    <span class="n">num_clusters</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <p>Full options and more details on functionality, see [this notebook](<a class="reference external" href="https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing">https://colab.research.google.com/drive/1ONEjcIf1CqUhXy8dknlyAnp1DnSAYHnR?usp=sharing</a>) here.</p>
-</section>
 </section>
 </section>
 

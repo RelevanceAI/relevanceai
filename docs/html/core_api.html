@@ -92,25 +92,25 @@
 <p>The core RelevanceAI specs can be found in this section.</p>
 <p>For the RelevanceAI client, we want to ensure the SDK mirrors the API client.</p>
 <p>For example:</p>
-<p><code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">##</span> <span class="pre">To</span> <span class="pre">instantiate</span> <span class="pre">the</span> <span class="pre">client</span>
-<span class="pre">from</span> <span class="pre">relevanceai</span> <span class="pre">import</span> <span class="pre">Client</span>
-<span class="pre">client</span> <span class="pre">=</span> <span class="pre">Client()</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## To instantiate the client</span>
+<span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+</pre></div>
+</div>
 <p>To use the following endpoint:</p>
 <p><cite>/datasets/bulk_insert</cite></p>
 <p>You can run:</p>
-<p><code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">#</span> <span class="pre">Bulk</span> <span class="pre">insert</span> <span class="pre">documents</span>
-<span class="pre">client.datasets.bulk_insert(dataset_id,</span> <span class="pre">documents)</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bulk insert documents</span>
+<span class="n">client</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">documents</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Or similarly, when you are trying to run</p>
 <p><cite>/services/search/vector</cite></p>
-<p>You then write:
-<code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">#</span> <span class="pre">Vector</span> <span class="pre">search</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">dataset</span>
-<span class="pre">client.services.search.vector(...)</span>
-<span class="pre">`</span></code></p>
+<p>You then write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vector search in a dataset</span>
+<span class="n">client</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">vector</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
