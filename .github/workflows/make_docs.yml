@@ -51,7 +51,6 @@ jobs:
       - name: Push changes
         if: github.ref == 'refs/heads/master'
         uses: ad-m/github-push-action@master
-        inputs:
-          force: true
         with:
           github_token: ${{ secrets.SECRET_TOKEN }}
+          force: true
