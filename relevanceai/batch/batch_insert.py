@@ -197,7 +197,7 @@ class BatchInsert(APIClient, Chunker):
         
         # Check if a logging_collection has been supplied
         if log_file is None:
-            log_file = original_collection + '___' + str(datetime.now().__str__()) + ".log"
+            log_file = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push" + ".log"
         
         # Instantiate the logger to document the successful IDs
         PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
@@ -280,8 +280,8 @@ class BatchInsert(APIClient, Chunker):
 
         self.logger.success(f"Pull, Update, Push is complete!") 
         
-        if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:
-            os.remove(log_file)
+        # if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:
+        #     os.remove(log_file)
         return {
             "failed_documents": failed_documents,
         }
@@ -330,7 +330,7 @@ class BatchInsert(APIClient, Chunker):
         """
         # Check if a logging_collection has been supplied
         if logging_collection is None:
-            logging_collection = original_collection + "_logs"
+            logging_collection = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push"
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose=False)
@@ -487,7 +487,7 @@ class BatchInsert(APIClient, Chunker):
         log_collections = [
             i
             for i in collection_list
-            if ("log_update_started" in i) and (dataset_id in i)
+            if ("pull_update_push" in i) and (dataset_id in i)
         ]
         [self.datasets.delete(i, confirm=False) for i in log_collections]
         return
@@ -516,13 +516,9 @@ class BatchInsert(APIClient, Chunker):
         test_doc = json.dumps(docs[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize is None:
-            chunksize = (
-                int(self.config.get_option("upload.target_chunk_mb") / doc_mb)
-                if int(self.config.get_option("upload.target_chunk_mb") / doc_mb)
-                < len(docs)
-                else len(docs)
-            )
-
+            target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
+            chunksize = target_chunk_mb / doc_mb if target_chunk_mb/ doc_mb < len(docs) else len(docs)
+    
         # Initialise number of inserted documents
         inserted: List[str] = []
 

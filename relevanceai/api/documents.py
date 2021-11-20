@@ -111,31 +111,41 @@ class Documents(Base):
         These are the available filter_type types: ["contains", "category", "categories", "exists", "date", "numeric", "ids"]
 
         "contains": for filtering documents that contains a string
+
         >>> {'field' : 'item_brand', 'filter_type' : 'contains', "condition":"==", "condition_value": "samsu"}
 
         "exact_match"/"category": for filtering documents that matches a string or list of strings exactly.
+
         >>> {'field' : 'item_brand', 'filter_type' : 'category', "condition":"==", "condition_value": "sumsung"}
 
         "categories": for filtering documents that contains any of a category from a list of categories.
+
         >>> {'field' : 'item_category_tags', 'filter_type' : 'categories', "condition":"==", "condition_value": ["tv", "smart", "bluetooth_compatible"]}
 
         "exists": for filtering documents that contains a field.
+
         >>> {'field' : 'purchased', 'filter_type' : 'exists', "condition":"==", "condition_value":" "}
 
         If you are looking to filter for documents where a field doesn't exist, run this:
+
         >>> {'field' : 'purchased', 'filter_type' : 'exists', "condition":"!=", "condition_value":" "}
 
         "date": for filtering date by date range.
+
         >>> {'field' : 'insert_date_', 'filter_type' : 'date', "condition":">=", "condition_value":"2020-01-01"}
 
         "numeric": for filtering by numeric range.
+
         >>> {'field' : 'price', 'filter_type' : 'numeric', "condition":">=", "condition_value":90}
 
         "ids": for filtering by document ids.
+
         >>> {'field' : 'ids', 'filter_type' : 'ids', "condition":"==", "condition_value":["1", "10"]}
 
         These are the available conditions:
+
         >>> "==", "!=", ">=", ">", "<", "<="
+        
         If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
 
         Parameters

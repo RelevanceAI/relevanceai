@@ -140,12 +140,13 @@ class Datasets(Base):
 
         """ 
         Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
-        schema - Data schema of a dataset (same as dataset.schema).
-        metadata - Metadata of a dataset (same as dataset.metadata).
-        stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
-        vector_health - Number of zero vectors stored (same as dataset.health).
-        schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
-        active_jobs - All active jobs/tasks on the dataset. 
+
+        - Schema - Data schema of a dataset (same as dataset.schema).
+        - Metadata - Metadata of a dataset (same as dataset.metadata).
+        - Stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
+        - Vector_health - Number of zero vectors stored (same as dataset.health).
+        - Schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
+        - Active_jobs - All active jobs/tasks on the dataset. 
         
         Parameters
         ----------
@@ -282,13 +283,12 @@ class Datasets(Base):
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
     ):
         """
-        When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
-        When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
-        When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
-        When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
-
-        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
+        - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+        - Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
         
         Parameters
         ----------
