@@ -5,8 +5,6 @@ import pandas as pd
 import numpy as np
 import json
 
-from dataclasses import dataclass
-
 from doc_utils.doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
@@ -17,13 +15,12 @@ from relevanceai.logger import LoguruLogger
 from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 
 
-@dataclass
 class DimReductionBase(LoguruLogger):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self):
+    def fit_transform(self, *args: Any, **kwargs: Any):
         raise NotImplementedError
 
 
@@ -32,7 +29,7 @@ class PCAReduction(DimReductionBase):
     def fit_transform(self, 
         vectors: np.ndarray, 
         dr_args: Dict[Any, Any] = DIM_REDUCTION_DEFAULT_ARGS['pca'], 
-        dims:int=3
+        dims: int = 3
     ) -> np.ndarray:
         from sklearn.decomposition import PCA
         self.logger.debug(f"{json.dumps(dr_args, indent=4)}")
@@ -95,7 +92,6 @@ class IvisReduction(DimReductionBase):
 
 
 def dim_reduce(
-    self,
     vectors: np.ndarray,
     dr: DIM_REDUCTION,
     dr_args: Union[None, dict],
@@ -106,16 +102,16 @@ def dim_reduce(
     """
     if isinstance(dr, str):
         if dr == "pca":
-            return PCAReduction.fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+            return PCAReduction().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
 
         elif dr == "tsne":
-            return TSNEReduction.fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+            return TSNEReduction().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
         
         elif dr == "umap":
-            return UMAPReduction.fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+            return UMAPReduction().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
 
         elif dr == "ivis":
-            return IvisReduction.fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+            return IvisReduction().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
 
     elif isinstance(dr, DimReductionBase):
-        return dr.fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+        return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)

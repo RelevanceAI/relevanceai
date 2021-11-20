@@ -67,7 +67,7 @@ class Projector(APIClient, Base, DocUtils):
         vector_label_char_length: Union[None, int] = 50,
         colour_label: Union[None, str] = None,
         colour_label_char_length: Union[None, int] = 20,
-        hover_label: Union[None, List[str]] = [],
+        hover_label: List[str] = [],
         ### Cluster args
         cluster: Union[None, CLUSTER] = None,
         cluster_args: Union[None, Dict] = {"n_init": 20},
@@ -118,15 +118,16 @@ class Projector(APIClient, Base, DocUtils):
             warnings.warn( f"You are rendering over 1000 points, this may take some time ...")
 
         number_of_documents = number_of_points_to_render
+        self.vector_fields = self._get_vector_fields()
         fields = [ label 
-                    for label in ["_id", vector_field, vector_label, colour_label] + hover_label 
-                    if self._is_valid_label_name(label)
+                    for label in (["_id", vector_field, vector_label, colour_label] + hover_label)
+                    if label
                 ] 
         self.docs = self._retrieve_documents(
             dataset_id, fields, number_of_documents, page_size=1000
         )
-        self.vector_fields = self._get_vector_fields()
         self._remove_empty_vector_fields(vector_field)
+        
         return self.plot_from_docs(self.docs)
    
 
@@ -134,28 +135,28 @@ class Projector(APIClient, Base, DocUtils):
     def plot_from_docs(self, docs: List[Dict[str, Any]], *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
-        self.vectors = self.get_field_across_documents(self.vector_field, self.docs)
-        self.vector_dim = self.schema[self.vector_field]["vector"]
-        self.vectors_dr = self.dim_reduce(vectors=self.vectors, dr_args=self.dr_args, dims=self.dims)
+        self.vectors = np.array(self.get_field_across_documents(self.vector_field, docs))
+        self.vectors_dr = dim_reduce(vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims)
 
         if self._is_valid_vector_name(self.vector_field):
-            self.vectors_dr = self.dim_reduce(vectors=self.vectors, dr_args=self.dr_args, dims=self.dims)
+            
+            self.vectors_dr = dim_reduce(vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims)
             points = {
                 "x": self.vectors_dr[:, 0],
                 "y": self.vectors_dr[:, 1],
                 "z": self.vectors_dr[:, 2],
-                "_id": self.get_field_across_documents("_id", self.docs)
+                "_id": self.get_field_across_documents("_id", docs)
             }
-
+            
             self.embedding_df = pd.DataFrame(points)
             if self.hover_label and all(
                 self._is_valid_label_name(l) for l in self.hover_label
             ):
-                self.embedding_df = pd.DataFrame(self.docs)
+                self.embedding_df = pd.concat([self.embedding_df, pd.DataFrame(docs)], axis=1)
 
             if self.vector_label and self._is_valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(
-                    field=self.vector_label, docs=self.docs
+                    field=self.vector_label, docs=docs
                 )
                 self.embedding_df[self.vector_label] = self.labels
                 self.embedding_df["labels"] = self.labels
@@ -163,7 +164,7 @@ class Projector(APIClient, Base, DocUtils):
             self.legend = None
             if self.colour_label and self._is_valid_label_name(self.colour_label):
                 self.labels = self.get_field_across_documents(
-                    field=self.colour_label, docs=self.docs
+                    field=self.colour_label, docs=docs
                 )
                 self.embedding_df["labels"] = self.labels
                 self.embedding_df[self.colour_label] = self.labels
@@ -192,6 +193,7 @@ class Projector(APIClient, Base, DocUtils):
         Returns list of valid vector fields from dataset schema
         """
         self.schema = self.datasets.schema(self.dataset_id)
+        self.vector_dim = self.schema[self.vector_field]["vector"]
         return [k for k in self.schema.keys() if k.endswith("_vector_")]
 
     def _is_valid_vector_name(self, vector_name: str) -> bool:
@@ -225,6 +227,7 @@ class Projector(APIClient, Base, DocUtils):
         Remove documents with empty vector fields
         """
         self.docs = [d for d in self.docs if d.get(vector_field)]
+        return self.docs
 
     def _retrieve_documents(
         self,
@@ -456,25 +459,16 @@ class Projector(APIClient, Base, DocUtils):
         """
         Generating hover template
         """
-        if self.hover_label:
-            hover_label = ["_id"] + self.hover_label
-            custom_data = df[hover_label]
-            custom_data_hover = [
-                f"{c}: %{{customdata[{i}]}}"
-                for i, c in enumerate(hover_label)
-                if self.dataset.valid_label_name(c)
-            ]
-            hovertemplate = (
-                "<br>".join(
-                    [
-                        "X: %{x}   Y: %{y}   Z: %{z}",
-                    ]
-                    + custom_data_hover
-                )
-                + "<extra></extra>"
-            )
-
-        else:
-            custom_data = None
-            hovertemplate = ""
+        hover_label = ["_id"] + self.hover_label
+        custom_data = df[ hover_label ]
+        custom_data_hover = [
+            f"{c}: %{{customdata[{i}]}}"
+            for i, c in enumerate(hover_label)
+            if self._is_valid_label_name(c)
+        ]
+        hovertemplate = "<br>".join([
+                "X: %{x}   Y: %{y}   Z: %{z}",
+                ] + custom_data_hover 
+                ) + "<extra></extra>"
+                
         return custom_data, hovertemplate
