@@ -2,13 +2,10 @@
 name: Documentation
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
-  workflow_dispatch:
 
 jobs:
   build:
@@ -43,9 +40,8 @@ jobs:
       - name: Build docs
         run: |
           sudo apt-get install -y pandoc
-          python -m pip install -e .[dev]
-          python -m pip install sphinx sphinx-rtd-theme
-          cd docsrc && make build_docs 
+          python -m pip install -e .[dev] && sphinx && sphinx-rtd-theme
+          cd docsrc && make build_docs
           echo ${{ github.ref }}
           cd ..
           git add .
@@ -55,6 +51,7 @@ jobs:
       - name: Push changes
         if: github.ref == 'refs/heads/master'
         uses: ad-m/github-push-action@master
+        inputs:
+          force: true
         with:
           github_token: ${{ secrets.SECRET_TOKEN }}
-          git push --force origin main
