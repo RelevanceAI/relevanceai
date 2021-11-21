@@ -2,7 +2,7 @@
 Datasets to mock
 """
 
-from typing import List, Union
+from typing import List, Union, Dict, Any
 import sys
 import pandas as pd
 import requests
@@ -119,8 +119,9 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365, select_fields
 
 
 def get_ecommerce_1_dataset(
-    number_of_documents: int = 1000, select_fields: list = []
-):
+    number_of_documents: int = 1000, 
+    select_fields: list = []
+) -> List[Dict[Any, Any]]:
     """
     Download an example e-commerce dataset \n
     Total Len: 14058 \n 
@@ -312,9 +313,12 @@ def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select
     return df.to_dict("records")
 
 
-def get_flipkart_dataset(number_of_documents: Union[None, int] = 19920, select_fields: list =[]) -> List:
+def get_flipkart_dataset(
+    number_of_documents: Union[None, int] = 19920, 
+    select_fields: list =[]
+    ) -> List:
     """
-    Download an example flipkat ecommerce dataset \n
+    Download an example flipkart ecommerce dataset \n
     Total Len: 19920 \n 
     Sample document:
 
@@ -386,9 +390,9 @@ def get_realestate_dataset(
         number_of_documents = 50
     return ExampleDatasets._get_dummy_dataset('realestate', number_of_documents, select_fields)
 
-<<<<<<< HEAD
 def get_mission_statements_dataset(
-    number_of_documents: Union[None, int] = 1433
+    number_of_documents: Union[None, int] = 1433,
+    select_fields: list =[]
 ) -> List:
     """Function to download a sample company mission statement dataset.
     Total Len: 1433
@@ -397,22 +401,34 @@ def get_mission_statements_dataset(
     'company': 'Starbucks',
     'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'},
     """
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv"
-    ).drop(["Unnamed: 0"], axis=1)
-    df = df.reset_index(drop=False)
-    df.columns = ["_id", "company", "text"]
-    if number_of_documents:
-        df = df[:number_of_documents]
-    df = df.to_dict(orient="records")
-    return df
+
+    """
+    Download an example ompany mission statement dataset \n
+    Total Len: 1433 \n 
+    Sample document:
+
+    >>> {'_id': 0,
+    >>> 'company': 'Starbucks',
+    >>> 'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'
+    >>> },
+    
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+            Fields to include in the dataset, empty array/list means all fields.
+    """
+    if number_of_documents is None:
+        number_of_documents = 514330
+    return ExampleDatasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv", number_of_documents, select_fields)
 
 
 def get_machine_learning_research_dataset():
     """Here we get our Machine Learning research dataset."""
     raise NotImplementedError
-=======
+
 get_dummy_ecommerce_dataset = get_ecommerce_1_dataset
 get_sample_ecommerce_dataset = get_ecommerce_2_dataset
 get_ecommerce_dataset = get_ecommerce_3_dataset
->>>>>>> main
