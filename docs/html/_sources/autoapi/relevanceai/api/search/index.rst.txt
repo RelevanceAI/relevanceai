@@ -23,7 +23,7 @@ Classes
 
    Base class for all relevanceai utilities
 
-   .. py:method:: vector(self, dataset_id: str, multivector_query: list, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth=0, sum_fields=True, page_size=20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: vector(self, dataset_id: str, multivector_query: List, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth=0, sum_fields=True, page_size=20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None, verbose: bool = True, output_format: str = 'json')
 
       Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
 
@@ -114,7 +114,7 @@ Classes
       :type search_history_id: string
 
 
-   .. py:method:: hybrid(self, dataset_id: str, multivector_query: list, text: str, fields: list, edit_distance: int = -1, ignore_spaces: bool = True, traditional_weight: float = 0.075, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: hybrid(self, dataset_id: str, multivector_query: List, text: str, fields: list, edit_distance: int = -1, ignore_spaces: bool = True, traditional_weight: float = 0.075, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None, verbose: bool = True, output_format: str = 'json')
 
       Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible.
 
@@ -153,7 +153,7 @@ Classes
       :param filters: Query for filtering the search results
       :type filters: list
       :param min_score: Minimum score for similarity metric
-      :type min_score: int
+      :type min_score: float
       :param select_fields: Fields to include in the search results, empty array/list means all fields.
       :type select_fields: list
       :param include_vector: Include vectors in the search results
@@ -453,7 +453,7 @@ Classes
       :type first_step_page_size: int
 
 
-   .. py:method:: advanced_chunk(self, dataset_ids, chunk_search_query, min_score: int = None, page_size: int = 20, include_vector: bool = False, select_fields: list = [], verbose: bool = True, output_format: str = 'json')
+   .. py:method:: advanced_chunk(self, dataset_ids, chunk_search_query: List, min_score: int = None, page_size: int = 20, include_vector: bool = False, select_fields: list = [], verbose: bool = True, output_format: str = 'json')
 
       A more advanced chunk search to be able to combine vector search and chunk search in many different ways.
 
