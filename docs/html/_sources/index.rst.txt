@@ -20,7 +20,6 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    features
    viz
    core_api
-   modules
    
 
 Indices and tables

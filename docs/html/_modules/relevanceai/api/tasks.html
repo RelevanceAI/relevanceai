@@ -6,6 +6,7 @@
   <title>relevanceai.api.tasks &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.api.tasks</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -98,8 +100,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="n">task_name</span><span class="p">,</span> <span class="o">**</span><span class="n">task_parameters</span><span class="p">},</span>
-        <span class="p">)</span></div>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="n">task_name</span><span class="p">,</span> <span class="o">**</span><span class="n">task_parameters</span><span class="p">},</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Tasks.status"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.tasks.Tasks.status">[docs]</a>    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
@@ -115,10 +117,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/status&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_loop_status_until_finish</span><span class="p">(</span>
+<div class="viewcode-block" id="Tasks._loop_status_until_finish"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/tasks/index.html#relevanceai.api.tasks.Tasks._loop_status_until_finish">[docs]</a>    <span class="k">def</span> <span class="nf">_loop_status_until_finish</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -139,9 +141,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your task is </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
-        <span class="k">return</span>
+        <span class="k">return</span></div>
 
-    <span class="k">def</span> <span class="nf">_check_status_until_finish</span><span class="p">(</span>
+<div class="viewcode-block" id="Tasks._check_status_until_finish"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/tasks/index.html#relevanceai.api.tasks.Tasks._check_status_until_finish">[docs]</a>    <span class="k">def</span> <span class="nf">_check_status_until_finish</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -164,7 +166,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs&quot;</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">}</span></div>
 
     <span class="c1"># Note: The following tasks are instantiated manually to accelerate</span>
     <span class="c1"># creation of certain popular tasks</span>

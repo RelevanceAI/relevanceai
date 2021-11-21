@@ -6,6 +6,7 @@
   <title>relevanceai.api.admin &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.api.admin</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -74,14 +76,14 @@
 <span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
-<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.admin.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.admin.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Admin.request_read_api_key"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.admin.Admin.request_read_api_key">[docs]</a>    <span class="k">def</span> <span class="nf">request_read_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Admin.request_read_api_key"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.admin.Admin.request_read_api_key">[docs]</a>    <span class="k">def</span> <span class="nf">request_read_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used.</span>
 
 <span class="sd">        Parameters</span>
@@ -92,10 +94,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="s2">&quot;admin/request_read_api_key&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read_username&quot;</span><span class="p">:</span> <span class="n">read_username</span><span class="p">},</span>
-        <span class="p">)</span></div>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read_username&quot;</span><span class="p">:</span> <span class="n">read_username</span><span class="p">},</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Admin.copy_foreign_dataset"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.admin.Admin.copy_foreign_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">copy_foreign_dataset</span><span class="p">(</span>
+<div class="viewcode-block" id="Admin.copy_foreign_dataset"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.admin.Admin.copy_foreign_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">copy_foreign_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source_dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -130,10 +132,10 @@
                 <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
                 <span class="s2">&quot;source_dataset_id&quot;</span><span class="p">:</span> <span class="n">source_dataset_id</span><span class="p">,</span>
                 <span class="s2">&quot;source_project&quot;</span><span class="p">:</span> <span class="n">source_project</span><span class="p">,</span>
-                <span class="s2">&quot;source_api_key&quot;</span><span class="p">:</span> <span class="n">source_api_key</span><span class="p">,</span>
+                <span class="s2">&quot;source_api_key&quot;</span><span class="p">:</span> <span class="n">source_api_key</span><span class="p">,</span></div></div>
                 <span class="c1"># &quot;filters&quot;: filters</span>
             <span class="p">},</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

@@ -1,0 +1,85 @@
+:py:mod:`relevanceai.http_client`
+=================================
+
+.. py:module:: relevanceai.http_client
+
+.. autoapi-nested-parse::
+
+   access the client via this class
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.http_client.Client
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.http_client.str2bool
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.http_client.vis_requirements
+   relevanceai.http_client.vis_requirements
+
+
+.. py:data:: vis_requirements
+   :annotation: = False
+
+   
+
+.. py:data:: vis_requirements
+   :annotation: = True
+
+   
+
+.. py:function:: str2bool(v)
+
+
+.. py:class:: Client(project: Optional[str] = os.getenv('VDB_PROJECT', None), api_key: Optional[str] = os.getenv('VDB_API_KEY', None), base_url: Optional[str] = 'https://gateway-api-aueast.relevance.ai/v1/', verbose: bool = True)
+
+   Bases: :py:obj:`relevanceai.batch.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
+
+   Python Client for Relevance AI's relevanceai
+
+   .. py:attribute:: WELCOME_MESSAGE
+      :annotation: = Welcome to the RelevanceAI Python SDK
+
+      
+
+   .. py:attribute:: FAIL_MESSAGE
+      :annotation: = Your API key is invalid. Please login again
+
+      
+
+   .. py:method:: token_to_auth(verbose=True)
+      :staticmethod:
+
+
+   .. py:method:: login(base_url: str = 'https://gateway-api-aueast.relevance.ai/v1/', verbose: bool = True)
+      :staticmethod:
+
+      Preferred login method for demos and interactive usage.
+
+
+   .. py:method:: auth_header(self)
+      :property:
+
+
+

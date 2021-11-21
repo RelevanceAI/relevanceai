@@ -6,6 +6,7 @@
   <title>relevanceai.batch.batch_insert &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.batch.batch_insert</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -84,8 +86,8 @@
 <span class="kn">from</span> <span class="nn">relevanceai.progress_bar</span> <span class="kn">import</span> <span class="n">progress_bar</span>
 <span class="kn">from</span> <span class="nn">relevanceai.batch.chunk</span> <span class="kn">import</span> <span class="n">Chunker</span>
 
-<span class="n">BYTE_TO_MB</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
-<span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">=</span> <span class="mi">3</span>
+<div class="viewcode-block" id="BYTE_TO_MB"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BYTE_TO_MB">[docs]</a><span class="n">BYTE_TO_MB</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span></div>
+<div class="viewcode-block" id="LIST_SIZE_MULTIPLIER"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.LIST_SIZE_MULTIPLIER">[docs]</a><span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">=</span> <span class="mi">3</span></div>
 
 
 <div class="viewcode-block" id="BatchInsert"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert">[docs]</a><span class="k">class</span> <span class="nc">BatchInsert</span><span class="p">(</span><span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span>
@@ -156,8 +158,8 @@
             <span class="n">max_workers</span><span class="p">,</span>
             <span class="n">retry_chunk_mult</span><span class="p">,</span>
             <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span><span class="p">,</span>
-            <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="BatchInsert.update_documents"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.update_documents">[docs]</a>    <span class="k">def</span> <span class="nf">update_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -227,8 +229,8 @@
             <span class="n">bulk_fn</span><span class="p">,</span>
             <span class="n">max_workers</span><span class="p">,</span>
             <span class="n">retry_chunk_mult</span><span class="p">,</span>
-            <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="BatchInsert.pull_update_push"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -358,8 +360,8 @@
         <span class="c1"># if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:</span>
         <span class="c1">#     os.remove(log_file)</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span>
-        <span class="p">}</span></div>
+            <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span></div>
+        <span class="p">}</span>
 
         
 <div class="viewcode-block" id="BatchInsert.pull_update_push_to_cloud"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push_to_cloud</span><span class="p">(</span>
@@ -545,8 +547,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span>
-            <span class="s2">&quot;logging_collection&quot;</span><span class="p">:</span> <span class="n">logging_collection</span><span class="p">,</span>
-        <span class="p">}</span></div>
+            <span class="s2">&quot;logging_collection&quot;</span><span class="p">:</span> <span class="n">logging_collection</span><span class="p">,</span></div>
+        <span class="p">}</span>
 
 <div class="viewcode-block" id="BatchInsert.insert_df"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_df">[docs]</a>    <span class="k">def</span> <span class="nf">insert_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Insert a dataframe for eachd doc&quot;&quot;&quot;</span>
@@ -558,7 +560,7 @@
         <span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">delete_all_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchInsert.delete_all_logs"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BatchInsert.delete_all_logs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_all_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">):</span>
         <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span>
         <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">i</span>
@@ -566,9 +568,9 @@
             <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dataset_id</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
         <span class="p">]</span>
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_collections</span><span class="p">]</span>
-        <span class="k">return</span>
+        <span class="k">return</span></div>
 
-    <span class="k">def</span> <span class="nf">_write_documents</span><span class="p">(</span>
+<div class="viewcode-block" id="BatchInsert._write_documents"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BatchInsert._write_documents">[docs]</a>    <span class="k">def</span> <span class="nf">_write_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">insert_function</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -676,7 +678,7 @@
             <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_ids</span><span class="p">,</span>
             <span class="s2">&quot;failed_documents_detailed&quot;</span><span class="p">:</span> <span class="n">failed_ids_detailed</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">return</span> <span class="n">output</span></div>
+        <span class="k">return</span> <span class="n">output</span></div></div>
 </pre></div>
 
            </div>

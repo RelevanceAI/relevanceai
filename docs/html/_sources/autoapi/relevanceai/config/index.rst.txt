@@ -1,0 +1,96 @@
+:py:mod:`relevanceai.config`
+============================
+
+.. py:module:: relevanceai.config
+
+.. autoapi-nested-parse::
+
+   Configuration Settings
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.config.Config
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.config.PATH
+   relevanceai.config.CONFIG_PATH
+   relevanceai.config.CONFIG
+
+
+.. py:data:: PATH
+   
+
+   
+
+.. py:data:: CONFIG_PATH
+   
+
+   
+
+.. py:class:: Config
+
+   Bases: :py:obj:`doc_utils.doc_utils.DocUtils`
+
+   Set and change configuration settings
+
+   .. py:method:: read_config(self, config_path)
+
+      Set up custom config by reading in a file
+
+      :param config_path: Path to config
+      :type config_path: string
+
+
+   .. py:method:: view_options(self)
+
+      View all current config settings
+
+
+   .. py:method:: get_option(self, option)
+
+      View current config settings
+
+      :param option: Setting key
+      :type option: string
+
+
+   .. py:method:: set_option(self, option, value)
+
+      Change a config settings
+
+      :param option: Setting key
+      :type option: string
+      :param value: New setting
+      :type value: string
+
+
+   .. py:method:: reset_to_default(self)
+
+      Reset config to default
+
+
+   .. py:method:: _create_default()
+      :staticmethod:
+
+
+
+.. py:data:: CONFIG
+   
+
+   
+

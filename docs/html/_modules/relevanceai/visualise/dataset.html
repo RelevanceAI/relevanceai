@@ -6,6 +6,7 @@
   <title>relevanceai.visualise.dataset &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.visualise.dataset</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -83,7 +85,7 @@
 
 <span class="kn">from</span> <span class="nn">doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
 
-<span class="n">JSONDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<div class="viewcode-block" id="JSONDict"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/dataset/index.html#relevanceai.visualise.dataset.JSONDict">[docs]</a><span class="n">JSONDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.dataset.Dataset">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Dataset</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span>
@@ -122,7 +124,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_empty_vector_fields</span><span class="p">(</span><span class="n">vector_field</span><span class="p">)</span>
 
     
-    <span class="k">def</span> <span class="nf">_retrieve_documents</span><span class="p">(</span>
+<div class="viewcode-block" id="Dataset._retrieve_documents"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/dataset/index.html#relevanceai.visualise.dataset.Dataset._retrieve_documents">[docs]</a>    <span class="k">def</span> <span class="nf">_retrieve_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
         <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -171,18 +173,18 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_df</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_build_df</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">JSONDict</span><span class="p">]):</span>
+<div class="viewcode-block" id="Dataset._build_df"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/dataset/index.html#relevanceai.visualise.dataset.Dataset._build_df">[docs]</a>    <span class="k">def</span> <span class="nf">_build_df</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">JSONDict</span><span class="p">]):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="c1"># detail_cols = self.get_fields_across_documents_except(fields=[&#39;_vector_&#39;, &#39;_id&#39;, &#39;insert_date_&#39;], data=data)</span>
         <span class="n">detail_cols</span> <span class="o">=</span> <span class="p">[</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;_vector_&#39;</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_date_&#39;</span><span class="p">])</span> <span class="p">]</span>
         <span class="n">detail</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">detail_cols</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">detail</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">detail</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_vector_fields</span><span class="p">(</span>
+<div class="viewcode-block" id="Dataset._vector_fields"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/dataset/index.html#relevanceai.visualise.dataset.Dataset._vector_fields">[docs]</a>    <span class="k">def</span> <span class="nf">_vector_fields</span><span class="p">(</span>
         <span class="bp">self</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -191,7 +193,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> 
-                <span class="k">if</span> <span class="s1">&#39;vector&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+                <span class="k">if</span> <span class="s1">&#39;vector&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
     
 <div class="viewcode-block" id="Dataset.valid_vector_name"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.dataset.Dataset.valid_vector_name">[docs]</a>    <span class="k">def</span> <span class="nf">valid_vector_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -218,13 +220,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label_name</span><span class="si">}</span><span class="s2"> is not in the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2"> schema&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_remove_empty_vector_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">JSONDict</span><span class="p">]:</span>
+<div class="viewcode-block" id="Dataset._remove_empty_vector_fields"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/dataset/index.html#relevanceai.visualise.dataset.Dataset._remove_empty_vector_fields">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_empty_vector_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">JSONDict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove documents with empty vector fields</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vector_field</span><span class="p">)</span> <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span></div></div>
 </pre></div>
 
            </div>

@@ -6,6 +6,7 @@
   <title>relevanceai.api.centroids &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.api.centroids</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -71,14 +73,14 @@
 <span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
-<div class="viewcode-block" id="Centroids"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.centroids.Centroids">[docs]</a><span class="k">class</span> <span class="nc">Centroids</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Centroids"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.centroids.Centroids">[docs]</a><span class="k">class</span> <span class="nc">Centroids</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Centroids.list"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.centroids.Centroids.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
+<div class="viewcode-block" id="Centroids.list"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.centroids.Centroids.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -119,10 +121,10 @@
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Centroids.get"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.centroids.Centroids.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
+<div class="viewcode-block" id="Centroids.get"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.centroids.Centroids.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">cluster_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -161,8 +163,8 @@
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
             <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span></div></div>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

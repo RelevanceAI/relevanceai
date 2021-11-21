@@ -13,5 +13,5 @@ For questions, contact Jacky Wong.
 Run:
 
 ```
-pip install -e .. && pip install sphinx sphinx-rtd-theme
+pip install -e .. && pip install sphinx sphinx-rtd-theme && python -m pip install sphinx-autoapi
 ```

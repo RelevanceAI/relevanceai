@@ -6,6 +6,7 @@
   <title>relevanceai.datasets &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.datasets</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -77,24 +79,24 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">THIS_MODULE</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
-<span class="n">DATASETS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;games&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_1&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_2&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_3&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;online_retail&#39;</span><span class="p">,</span> <span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="s1">&#39;flipkart&#39;</span><span class="p">,</span> <span class="s1">&#39;realestate&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="THIS_MODULE"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.THIS_MODULE">[docs]</a><span class="n">THIS_MODULE</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span></div>
+<div class="viewcode-block" id="DATASETS"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.DATASETS">[docs]</a><span class="n">DATASETS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;games&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_1&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_2&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_3&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;online_retail&#39;</span><span class="p">,</span> <span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="s1">&#39;flipkart&#39;</span><span class="p">,</span> <span class="s1">&#39;realestate&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">def</span> <span class="nf">select_fields_from_json</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">select_fields</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">json</span><span class="p">]</span>
+<div class="viewcode-block" id="select_fields_from_json"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.select_fields_from_json">[docs]</a><span class="k">def</span> <span class="nf">select_fields_from_json</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">select_fields</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">json</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">ExampleDatasets</span><span class="p">:</span>
+<div class="viewcode-block" id="ExampleDatasets"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets">[docs]</a><span class="k">class</span> <span class="nc">ExampleDatasets</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">DATASETS</span>
 
-    <span class="k">def</span> <span class="nf">list_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExampleDatasets.list_datasets"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets.list_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">list_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;List of example datasets available to download&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span></div>
 
-    <span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="ExampleDatasets.get_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets.get_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download an example dataset</span>
 <span class="sd">        Parameters</span>
@@ -109,10 +111,10 @@
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">THIS_MODULE</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;get_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_dataset&#39;</span><span class="p">)(</span><span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Not a valid dataset&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Not a valid dataset&#39;</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_dummy_dataset</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="ExampleDatasets._get_dummy_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_dummy_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">_get_dummy_dataset</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
         <span class="kn">from</span> <span class="nn">.http_client</span> <span class="kn">import</span> <span class="n">Client</span>
         <span class="n">project</span> <span class="o">=</span> <span class="s2">&quot;dummy-collections&quot;</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="p">(</span>
@@ -131,10 +133,10 @@
             <span class="kn">import</span> <span class="nn">warnings</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span>
         <span class="n">docs</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">docs</span>
+        <span class="k">return</span> <span class="n">docs</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_online_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[],</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csv</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ExampleDatasets._get_online_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_online_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">_get_online_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[],</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csv</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">csv</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span>
                 <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
@@ -144,16 +146,16 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="n">number_of_documents</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">select_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">select_fields_from_json</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="n">data</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_api_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="ExampleDatasets._get_api_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_api_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">_get_api_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">number_of_documents</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="n">number_of_documents</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">select_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">select_fields_from_json</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
 
 
 <div class="viewcode-block" id="get_games_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_games_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_games_dataset</span><span class="p">(</span><span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">365</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
@@ -456,9 +458,9 @@
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">50</span>
     <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_dummy_dataset</span><span class="p">(</span><span class="s1">&#39;realestate&#39;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
 
-<span class="n">get_dummy_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_1_dataset</span>
-<span class="n">get_sample_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_2_dataset</span>
-<span class="n">get_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_3_dataset</span>
+<div class="viewcode-block" id="get_dummy_ecommerce_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_dummy_ecommerce_dataset">[docs]</a><span class="n">get_dummy_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_1_dataset</span></div>
+<div class="viewcode-block" id="get_sample_ecommerce_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_sample_ecommerce_dataset">[docs]</a><span class="n">get_sample_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_2_dataset</span></div>
+<div class="viewcode-block" id="get_ecommerce_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_ecommerce_dataset">[docs]</a><span class="n">get_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_3_dataset</span></div>
 </pre></div>
 
            </div>

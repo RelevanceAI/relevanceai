@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.datasets &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.datasets</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/relevanceai/datasets/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.datasets">
+<span id="relevanceai-datasets"></span><h1><a class="reference internal" href="../../../relevanceai.html#module-relevanceai.datasets" title="relevanceai.datasets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.datasets</span></code></a><a class="headerlink" href="#module-relevanceai.datasets" title="Permalink to this headline"></a></h1>
+<p>Datasets to mock</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.datasets.ExampleDatasets" title="relevanceai.datasets.ExampleDatasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExampleDatasets</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.datasets.select_fields_from_json" title="relevanceai.datasets.select_fields_from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_fields_from_json</span></code></a>(json, select_fields)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_games_dataset" title="relevanceai.datasets.get_games_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_games_dataset</span></code></a>(number_of_documents: Union[None, int] = 365, select_fields: list = []) → List</p></td>
+<td><p>Download an example games dataset (<a class="reference external" href="https://www.freetogame.com/">https://www.freetogame.com/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_1_dataset" title="relevanceai.datasets.get_ecommerce_1_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_1_dataset</span></code></a>(number_of_documents: int = 1000, select_fields: list = [])</p></td>
+<td><p>Download an example e-commerce dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_2_dataset" title="relevanceai.datasets.get_ecommerce_2_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_2_dataset</span></code></a>(number_of_documents: int = 1000, select_fields: list = [])</p></td>
+<td><p>Download an example e-commerce dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_online_retail_dataset" title="relevanceai.datasets.get_online_retail_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_online_retail_dataset</span></code></a>(number_of_documents: Union[None, int] = 1000, select_fields: list = []) → List</p></td>
+<td><p>Download an example online retail dataset from UCI machine learning</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_news_dataset" title="relevanceai.datasets.get_news_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_news_dataset</span></code></a>(number_of_documents: Union[None, int] = 250, select_fields: list = []) → List</p></td>
+<td><p>Download an example news dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_3_dataset" title="relevanceai.datasets.get_ecommerce_3_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_3_dataset</span></code></a>(number_of_documents: Union[None, int] = 1000, select_fields: list = []) → List</p></td>
+<td><p>Download an example ecommerce dataset (<a class="reference external" href="https://data.world/crowdflower/ecommerce-search-relevance">https://data.world/crowdflower/ecommerce-search-relevance</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_flipkart_dataset" title="relevanceai.datasets.get_flipkart_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flipkart_dataset</span></code></a>(number_of_documents: Union[None, int] = 19920, select_fields: list = []) → List</p></td>
+<td><p>Download an example flipkat ecommerce dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_realestate_dataset" title="relevanceai.datasets.get_realestate_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_realestate_dataset</span></code></a>(number_of_documents: int = 50, select_fields: list = [])</p></td>
+<td><p>Download an example real-estate dataset</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.datasets.THIS_MODULE" title="relevanceai.datasets.THIS_MODULE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THIS_MODULE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#relevanceai.datasets.DATASETS" title="relevanceai.datasets.DATASETS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DATASETS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_dummy_ecommerce_dataset" title="relevanceai.datasets.get_dummy_ecommerce_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dummy_ecommerce_dataset</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_sample_ecommerce_dataset" title="relevanceai.datasets.get_sample_ecommerce_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sample_ecommerce_dataset</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_dataset" title="relevanceai.datasets.get_ecommerce_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_dataset</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.datasets.THIS_MODULE">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">THIS_MODULE</span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#THIS_MODULE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.THIS_MODULE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.datasets.DATASETS">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">DATASETS</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">['games',</span> <span class="pre">'ecommerce_1',</span> <span class="pre">'ecommerce_2',</span> <span class="pre">'ecommerce_3',</span> <span class="pre">'online_retail',</span> <span class="pre">'news',</span> <span class="pre">'flipkart',</span> <span class="pre">'realestate']</span></em><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#DATASETS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.DATASETS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.select_fields_from_json">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">select_fields_from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#select_fields_from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.select_fields_from_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.datasets.ExampleDatasets">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">ExampleDatasets</span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#ExampleDatasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.ExampleDatasets" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.datasets.ExampleDatasets.list_datasets">
+<span class="sig-name descname"><span class="pre">list_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#ExampleDatasets.list_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.ExampleDatasets.list_datasets" title="Permalink to this definition"></a></dt>
+<dd><p>List of example datasets available to download</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.datasets.ExampleDatasets.get_dataset">
+<span class="sig-name descname"><span class="pre">get_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#ExampleDatasets.get_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.ExampleDatasets.get_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example dataset
+:param name: Name of example dataset
+:type name: string
+:param number_of_documents: Number of documents to download
+:type number_of_documents: int
+:param select_fields: Fields to include in the dataset, empty array/list means all fields.
+:type select_fields: list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.datasets.ExampleDatasets._get_dummy_dataset">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_dummy_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#ExampleDatasets._get_dummy_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.ExampleDatasets._get_dummy_dataset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.datasets.ExampleDatasets._get_online_dataset">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_online_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#ExampleDatasets._get_online_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.ExampleDatasets._get_online_dataset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.datasets.ExampleDatasets._get_api_dataset">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_api_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#ExampleDatasets._get_api_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.ExampleDatasets._get_api_dataset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_games_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_games_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">365</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_games_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_games_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example games dataset (<a class="reference external" href="https://www.freetogame.com/">https://www.freetogame.com/</a>)</p>
+<p>Total Len: 365</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Dauntless&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;thumbnail&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.freetogame.com/g/1/thumbnail.jpg&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;short_description&#39;</span><span class="p">:</span> <span class="s1">&#39;A free-to-play, co-op action RPG with gameplay similar to Monster Hunter.&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;game_url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.freetogame.com/open/dauntless&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;genre&#39;</span><span class="p">:</span> <span class="s1">&#39;MMORPG&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;platform&#39;</span><span class="p">:</span> <span class="s1">&#39;PC (Windows)&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;publisher&#39;</span><span class="p">:</span> <span class="s1">&#39;Phoenix Labs&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;developer&#39;</span><span class="p">:</span> <span class="s1">&#39;Phoenix Labs, Iron Galaxy&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;release_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2019-05-21&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;freetogame_profile_url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.freetogame.com/dauntless&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_ecommerce_1_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_1_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_ecommerce_1_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_1_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example e-commerce dataset</p>
+<p>Total Len: 14058</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;b7fc9acbc9ddd18855f96863d37a4fe9&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;uniq_id&#39;</span><span class="p">:</span> <span class="s1">&#39;b7fc9acbc9ddd18855f96863d37a4fe9&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;crawl_timestamp&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-04-24 18:34:50 +0000&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.flipkart.com/babeezworld-baby-boy-s-romper/p/itmehyhguebbzb6h?pid=DRPEHYHGNAF5UYUQ&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_name&#39;</span><span class="p">:</span> <span class="s2">&quot;Babeezworld Baby Boy&#39;s Romper&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_category_tree&#39;</span><span class="p">:</span> <span class="s1">&#39;[&quot;Baby Care &gt;&gt; Infant Wear &gt;&gt; Baby Boys&#39;</span> <span class="n">Clothes</span> <span class="o">&gt;&gt;</span> <span class="n">Dungarees</span> <span class="o">&amp;</span> <span class="n">Jumpsuits</span> <span class="o">&gt;&gt;</span> <span class="n">Dungarees</span> <span class="o">&gt;&gt;</span> <span class="n">Babeezworld</span> <span class="n">Dungarees</span> <span class="o">&gt;&gt;</span> <span class="n">Babeezworld</span> <span class="n">Baby</span> <span class="n">Boy</span><span class="s1">&#39;s Romper&quot;]&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;pid&#39;</span><span class="p">:</span> <span class="s1">&#39;DRPEHYHGNAF5UYUQ&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;retail_price&#39;</span><span class="p">:</span> <span class="mi">999</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;discounted_price&#39;</span><span class="p">:</span> <span class="mi">499</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;[&quot;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg&quot;, &quot;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehbf3h3jsmzhb.jpeg&quot;, &quot;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehbf4nupsmhzt.jpeg&quot;, &quot;http://img5a.flixcart.com/image/dungaree-romper/z/n/u/1012blue-yellow-6-9-babeezworld-6-9-months-original-imaehbfbkynega2z.jpeg&quot;, &quot;http://img6a.flixcart.com/image/dungaree-romper/z/n/u/1012blue-yellow-6-9-babeezworld-6-9-months-original-imaehbfbjjffht4e.jpeg&quot;]&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;is_FK_Advantage_product&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s2">&quot;Key Features of Babeezworld Baby Boy&#39;s Romper Fabric: Cotton Brand Color: Blue:Yellow,Babeezworld Baby Boy&#39;s Romper Price: Rs. 499 Babeezworld presents a cute baby dungaree set for your little one.This dungaree set comes with a trendy round neck cotton t-shirt with shoulder loops for ease and comfort fit. Set is made of soft cotton material and has adjustable straps with two button closures. The front has a special character which gives it a stylish look. This dungaree set is an ideal pick for this summer and is available in multiple colors.,Specifications of Babeezworld Baby Boy&#39;s Romper Top Details Sleeve Half Sleeve Number of Contents in Sales Package Pack of 2 Fabric Cotton Type Romper Neck Round Neck General Details Pattern Printed Ideal For Baby Boy&#39;s Fabric Care Wash with Similar Colors, Use Detergent for Colors&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_rating&#39;</span><span class="p">:</span> <span class="s1">&#39;No rating available&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;overall_rating&#39;</span><span class="p">:</span> <span class="s1">&#39;No rating available&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;brand&#39;</span><span class="p">:</span> <span class="s1">&#39;Babeezworld&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_specifications&#39;</span><span class="p">:</span> <span class="s1">&#39;{&quot;product_specification&quot;=&gt;[{&quot;key&quot;=&gt;&quot;Sleeve&quot;, &quot;value&quot;=&gt;&quot;Half Sleeve&quot;}, {&quot;key&quot;=&gt;&quot;Number of Contents in Sales Package&quot;, &quot;value&quot;=&gt;&quot;Pack of 2&quot;}, {&quot;key&quot;=&gt;&quot;Fabric&quot;, &quot;value&quot;=&gt;&quot;Cotton&quot;}, {&quot;key&quot;=&gt;&quot;Type&quot;, &quot;value&quot;=&gt;&quot;Romper&quot;}, {&quot;key&quot;=&gt;&quot;Neck&quot;, &quot;value&quot;=&gt;&quot;Round Neck&quot;}, {&quot;key&quot;=&gt;&quot;Pattern&quot;, &quot;value&quot;=&gt;&quot;Printed&quot;}, {&quot;key&quot;=&gt;&quot;Ideal For&quot;, &quot;value&quot;=&gt;&quot;Baby Boy&#39;</span><span class="n">s</span><span class="s2">&quot;}, {&quot;</span><span class="n">value</span><span class="s2">&quot;=&gt;&quot;</span><span class="n">Wash</span> <span class="k">with</span> <span class="n">Similar</span> <span class="n">Colors</span><span class="p">,</span> <span class="n">Use</span> <span class="n">Detergent</span> <span class="k">for</span> <span class="n">Colors</span><span class="s2">&quot;}]}&#39;,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image_first&#39;</span><span class="p">:</span> <span class="s1">&#39;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;Baby Care &#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;insert_date_&#39;</span><span class="p">:</span> <span class="s1">&#39;2021-08-13T11:38:52.110Z&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_ecommerce_2_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_2_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_ecommerce_2_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_2_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example e-commerce dataset</p>
+<p>Total Len: 739</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;711160239&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;_unit_id&#39;</span><span class="p">:</span> <span class="mi">711160239</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;relevance&#39;</span><span class="p">:</span> <span class="mf">3.67</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;relevance:variance&#39;</span><span class="p">:</span> <span class="mf">0.47100000000000003</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_image&#39;</span><span class="p">:</span> <span class="s1">&#39;https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_link&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&amp;var=&amp;hash=item4adee9354f&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_price&#39;</span><span class="p">:</span> <span class="s1">&#39;$7.99 to $12.99&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_title&#39;</span><span class="p">:</span> <span class="s1">&#39;20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM&quot;&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;steel necklace&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;rank&#39;</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;eBay&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&amp;_nkw=steel%20necklace&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_description&#39;</span><span class="p">:</span> <span class="s1">&#39;eBay item number:321567405391</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Seller assumes all responsibility for this listing</p>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_online_retail_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_online_retail_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_online_retail_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_online_retail_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example online retail dataset from UCI machine learning</p>
+<p>Total Len: 541909</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;Country&#39;</span><span class="p">:</span> <span class="s1">&#39;United Kingdom&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;CustomerID&#39;</span><span class="p">:</span> <span class="mf">17850.0</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;WHITE HANGING HEART T-LIGHT HOLDER&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;InvoiceDate&#39;</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;2010-12-01 08:26:00&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;InvoiceNo&#39;</span><span class="p">:</span> <span class="mi">536365</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;Quantity&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;StockCode&#39;</span><span class="p">:</span> <span class="s1">&#39;85123A&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;UnitPrice&#39;</span><span class="p">:</span> <span class="mf">2.55</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_news_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_news_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_news_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_news_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example news dataset</p>
+<p>Total Len: 250</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;authors&#39;</span><span class="p">:</span> <span class="s1">&#39;Ruth Harris&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;domain&#39;</span><span class="p">:</span> <span class="s1">&#39;awm.com&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">141</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;inserted_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-02-02 01:19:41.756632&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;keywords&#39;</span><span class="p">:</span> <span class="n">nan</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;meta_description&#39;</span><span class="p">:</span> <span class="n">nan</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;meta_keywords&#39;</span><span class="p">:</span> <span class="s2">&quot;[&#39;&#39;]&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;scraped_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-01-25 16:17:44.789555&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;summary&#39;</span><span class="p">:</span> <span class="n">nan</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="n">nan</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Church Congregation Brings Gift to Waitresses Working on Christmas Eve, Has Them Crying (video)&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;unreliable&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;updated_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-02-02 01:19:41.756664&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_ecommerce_3_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_3_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_ecommerce_3_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_3_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example ecommerce dataset (<a class="reference external" href="https://data.world/crowdflower/ecommerce-search-relevance">https://data.world/crowdflower/ecommerce-search-relevance</a>)</p>
+<p>Total Len: 15528</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;_unit_id&#39;</span><span class="p">:</span> <span class="mi">711158459</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_description&#39;</span><span class="p">:</span> <span class="s1">&#39;The PlayStation 4 system opens the door to an &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s1">&#39;incredible journey through immersive new gaming &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s1">&#39;worlds and a deeply connected gaming community. Step &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s1">&#39;into living, breathing worlds where you are hero of &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s1">&#39;...&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_image&#39;</span><span class="p">:</span> <span class="s1">&#39;http://thumbs2.ebaystatic.com/d/l225/m/mzvzEUIknaQclZ801YCY1ew.jpg&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_link&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.ebay.com/itm/Sony-PlayStation-4-PS4-Latest-Model-500-GB-Jet-Black-Console-/321459436277?pt=LH_DefaultDomain_0&amp;hash=item4ad879baf5&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_price&#39;</span><span class="p">:</span> <span class="s1">&#39;$329.98 &#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_title&#39;</span><span class="p">:</span> <span class="s1">&#39;Sony PlayStation 4 (PS4) (Latest Model)- 500 GB Jet Black &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="s1">&#39;Console&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;playstation 4&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;rank&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;relevance&#39;</span><span class="p">:</span> <span class="mf">3.67</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;relevance:variance&#39;</span><span class="p">:</span> <span class="mf">0.471</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;eBay&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&amp;_nkw=playstation%204&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_flipkart_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_flipkart_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">19920</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_flipkart_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_flipkart_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example flipkat ecommerce dataset</p>
+<p>Total Len: 19920</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_name&#39;</span><span class="p">:</span> <span class="s2">&quot;Alisha Solid Women&#39;s Cycling Shorts&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s2">&quot;Key Features of Alisha Solid Women&#39;s Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women&#39;s Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women&#39;s Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;retail_price&#39;</span><span class="p">:</span> <span class="mf">999.0</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_realestate_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_realestate_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_realestate_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_realestate_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Download an example real-estate dataset</p>
+<p>Total Len: 5885</p>
+<p>Sample document:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;propertyDetails&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;area&#39;</span><span class="p">:</span> <span class="s1">&#39;North Shore - Lower&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;carspaces&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;streetNumber&#39;</span><span class="p">:</span> <span class="s1">&#39;28&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;latitude&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">33.8115768</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;allPropertyTypes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;ApartmentUnitFlat&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;postcode&#39;</span><span class="p">:</span> <span class="s1">&#39;2066&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;unitNumber&#39;</span><span class="p">:</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;bathrooms&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;bedrooms&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;BuiltInWardrobes&#39;</span><span class="p">,</span> <span class="s1">&#39;InternalLaundry&#39;</span><span class="p">,</span><span class="s1">&#39;Intercom&#39;</span><span class="p">,</span> <span class="s1">&#39;Dishwasher&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;street&#39;</span><span class="p">:</span> <span class="s1">&#39;Epping Road&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;propertyType&#39;</span><span class="p">:</span> <span class="s1">&#39;ApartmentUnitFlat&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;suburb&#39;</span><span class="p">:</span> <span class="s1">&#39;LANE COVE&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;NSW&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;Sydney Region&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;displayableAddress&#39;</span><span class="p">:</span> <span class="s1">&#39;6/28 Epping Road, Lane Cove&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;longitude&#39;</span><span class="p">:</span> <span class="mf">151.166611</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;listingSlug&#39;</span><span class="p">:</span> <span class="s1">&#39;6-28-epping-road-lane-cove-nsw-2066-14688794&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">14688794</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;headline&#39;</span><span class="p">:</span> <span class="s1">&#39;Extra large one bedroom unit&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;summaryDescription&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;b&gt;&lt;/b&gt;&lt;br /&gt;This modern and spacious one-bedroom apartment situated on the top floor, the quiet rear side of a small 2 story boutique block, enjoys a wonderfully private, leafy, and greenly outlook from 2 sides and balcony. A short stroll to city buse...&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;advertiser&#39;</span><span class="p">:</span> <span class="s1">&#39;Ray White Lane Cove&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image_url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://bucket-api.domain.com.au/v1/bucket/image/14688794_1_1_201203_101135-w1600-h1065&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;insert_date_&#39;</span><span class="p">:</span> <span class="s1">&#39;2021-03-01T14:19:22.805086&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image_url_5&#39;</span><span class="p">:</span> <span class="s1">&#39;https://bucket-api.domain.com.au/v1/bucket/image/14688794_5_1_201203_101135-w1600-h1067&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image_url_4&#39;</span><span class="p">:</span> <span class="s1">&#39;https://bucket-api.domain.com.au/v1/bucket/image/14688794_4_1_201203_101135-w1600-h1067&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;priceDetails&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;displayPrice&#39;</span><span class="p">:</span> <span class="s1">&#39;Deposit Taken ! Inspection Cancelled thank you !!!&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_dummy_ecommerce_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_dummy_ecommerce_dataset</span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_dummy_ecommerce_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_dummy_ecommerce_dataset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_sample_ecommerce_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_sample_ecommerce_dataset</span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_sample_ecommerce_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_sample_ecommerce_dataset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_ecommerce_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_dataset</span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_ecommerce_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_dataset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
