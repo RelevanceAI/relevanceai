@@ -1,4 +1,5 @@
 from relevanceai.base import Base
+from typing import List
 
 
 class Search(Base):
@@ -11,7 +12,7 @@ class Search(Base):
     def vector(
         self,
         dataset_id: str,
-        multivector_query: list,
+        multivector_query: List,
         positive_document_ids: dict = {},
         negative_document_ids: dict = {},
         vector_operation="sum",
@@ -153,7 +154,7 @@ class Search(Base):
     def hybrid(
         self,
         dataset_id: str,
-        multivector_query: list,
+        multivector_query: List,
         text: str,
         fields: list,
         edit_distance: int = -1,
@@ -212,7 +213,7 @@ class Search(Base):
             Fields to include in the facets, if [] then all
         filters: list
             Query for filtering the search results
-        min_score: int
+        min_score: float
             Minimum score for similarity metric
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
@@ -802,7 +803,7 @@ class Search(Base):
     def advanced_chunk(
         self,
         dataset_ids,
-        chunk_search_query,
+        chunk_search_query: List,
         min_score: int = None,
         page_size: int = 20,
         include_vector: bool = False,
