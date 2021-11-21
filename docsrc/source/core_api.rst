@@ -1,4 +1,4 @@
-Core Specs
+Core Features
 =======================
 
 The core RelevanceAI specs can be found in this section.
@@ -69,7 +69,4 @@ You then write:
    :members:
 
 .. automodule:: relevanceai.api.tasks
-   :members:
-
-.. automodule:: relevanceai.api
    :members:

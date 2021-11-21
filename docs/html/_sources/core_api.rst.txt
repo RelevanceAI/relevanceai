@@ -1,4 +1,4 @@
-Core Specs
+Core Features
 =======================
 
 The core RelevanceAI specs can be found in this section.
@@ -38,10 +38,13 @@ You then write:
 .. automodule:: relevanceai.api.search
    :members:
 
-.. automodule:: relevanceai.api.admin
+.. automodule:: relevanceai.api.aggregate
    :members:
 
-.. automodule:: relevanceai.api.aggregate
+.. automodule:: relevanceai.api.recommend
+   :members:
+
+.. automodule:: relevanceai.api.admin
    :members:
 
 .. automodule:: relevanceai.api.centroids
@@ -62,14 +65,8 @@ You then write:
 .. automodule:: relevanceai.api.monitor
    :members:
 
-.. automodule:: relevanceai.api.recommend
-   :members:
-
 .. automodule:: relevanceai.api.requests_config
    :members:
 
 .. automodule:: relevanceai.api.tasks
-   :members:
-
-.. automodule:: relevanceai.api
    :members:
