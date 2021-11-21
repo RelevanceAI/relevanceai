@@ -21,7 +21,11 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    viz
    core_api
    modules
-   
+
+.. currentmodule:: relevanceai
+
+..autosummary::
+   :nosignatures:
 
 Indices and tables
 ==================

@@ -119,18 +119,16 @@
 <li><p>When inserting or specifying chunk vectors in a document’s chunks use the suffix (ends with) “_chunkvector_” for the field name. e.g. “<a href="#id5"><span class="problematic" id="id6">products_chunk_</span></a>.product_description_chunkvector_”.</p></li>
 </ul>
 <p>Documentation can be found here: <a class="reference external" href="https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode">https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</a></p>
-<dl class="simple">
-<dt>dataset_id<span class="classifier">string</span></dt><dd><p>Unique name of dataset</p>
-</dd>
-<dt>docs<span class="classifier">list</span></dt><dd><p>A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p>
-</dd>
-<dt>bulk_fn<span class="classifier">callable</span></dt><dd><p>Function to apply to documents before uploading</p>
-</dd>
-<dt>max_workers<span class="classifier">int</span></dt><dd><p>Number of workers active for multi-threading</p>
-</dd>
-<dt>retry_chunk_mult: int</dt><dd><p>Multiplier to apply to chunksize if upload fails</p>
-</dd>
-<dt>chunksize<span class="classifier">int</span></dt><dd><p>Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>docs</strong> (<em>list</em>) – A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p></li>
+<li><p><strong>bulk_fn</strong> (<em>callable</em>) – Function to apply to documents before uploading</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of workers active for multi-threading</p></li>
+<li><p><strong>retry_chunk_mult</strong> (<em>int</em>) – Multiplier to apply to chunksize if upload fails</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -140,22 +138,18 @@
 <span class="sig-name descname"><span class="pre">pull_update_push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updating_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.pull_update_push" title="Permalink to this definition"></a></dt>
 <dd><p>Loops through every document in your collection and applies a function (that is specified by you) to the documents.
 These documents are then uploaded into either an updated collection, or back into the original collection.</p>
-<dl class="simple">
-<dt>original_collection<span class="classifier">string</span></dt><dd><p>The dataset_id of the collection where your original documents are</p>
-</dd>
-<dt>logging_collection: string</dt><dd><p>The dataset_id of the collection which logs which documents have been updated. If ‘None’, then one will be created for you.</p>
-</dd>
-<dt>updated_collection: string</dt><dd><p>The dataset_id of the collection where your updated documents are uploaded into. If ‘None’, then your original collection will be updated.</p>
-</dd>
-<dt>update_function: function</dt><dd><p>A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</p>
-</dd>
-<dt>updating_args: dict</dt><dd><p>Additional arguments to your update_function, if they exist. They must be in the format of {‘Argument’: Value}</p>
-</dd>
-<dt>retrieve_chunk_size: int</dt><dd><p>The number of documents that are received from the original collection with each loop iteration.</p>
-</dd>
-<dt>max_workers: int</dt><dd><p>The number of processors you want to parallelize with</p>
-</dd>
-<dt>max_error:</dt><dd><p>How many failed uploads before the function breaks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_collection</strong> (<em>string</em>) – The dataset_id of the collection where your original documents are</p></li>
+<li><p><strong>logging_collection</strong> (<em>string</em>) – The dataset_id of the collection which logs which documents have been updated. If ‘None’, then one will be created for you.</p></li>
+<li><p><strong>updated_collection</strong> (<em>string</em>) – The dataset_id of the collection where your updated documents are uploaded into. If ‘None’, then your original collection will be updated.</p></li>
+<li><p><strong>update_function</strong> (<em>function</em>) – A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</p></li>
+<li><p><strong>updating_args</strong> (<em>dict</em>) – Additional arguments to your update_function, if they exist. They must be in the format of {‘Argument’: Value}</p></li>
+<li><p><strong>retrieve_chunk_size</strong> (<em>int</em>) – The number of documents that are received from the original collection with each loop iteration.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – The number of processors you want to parallelize with</p></li>
+<li><p><strong>max_error</strong> – How many failed uploads before the function breaks</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -165,24 +159,19 @@ These documents are then uploaded into either an updated collection, or back int
 <span class="sig-name descname"><span class="pre">pull_update_push_to_cloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updating_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_chunk_size_failure_retry_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_retrieve_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud" title="Permalink to this definition"></a></dt>
 <dd><p>Loops through every document in your collection and applies a function (that is specified by you) to the documents.
 These documents are then uploaded into either an updated collection, or back into the original collection.</p>
-<dl class="simple">
-<dt>original_collection<span class="classifier">string</span></dt><dd><p>The dataset_id of the collection where your original documents are</p>
-</dd>
-<dt>logging_collection: string</dt><dd><p>The dataset_id of the collection which logs which documents have been updated. If ‘None’, then one will be created for you.</p>
-</dd>
-<dt>updated_collection: string</dt><dd><p>The dataset_id of the collection where your updated documents are uploaded into. If ‘None’, then your original collection will be updated.</p>
-</dd>
-<dt>update_function: function</dt><dd><p>A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</p>
-</dd>
-<dt>updating_args: dict</dt><dd><p>Additional arguments to your update_function, if they exist. They must be in the format of {‘Argument’: Value}</p>
-</dd>
-<dt>retrieve_chunk_size: int</dt><dd><p>The number of documents that are received from the original collection with each loop iteration.</p>
-</dd>
-<dt>retrieve_chunk_size_failure_retry_multiplier: int</dt><dd><p>If fails, retry on each chunk</p>
-</dd>
-<dt>max_workers: int</dt><dd><p>The number of processors you want to parallelize with</p>
-</dd>
-<dt>max_error:</dt><dd><p>How many failed uploads before the function breaks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_collection</strong> (<em>string</em>) – The dataset_id of the collection where your original documents are</p></li>
+<li><p><strong>logging_collection</strong> (<em>string</em>) – The dataset_id of the collection which logs which documents have been updated. If ‘None’, then one will be created for you.</p></li>
+<li><p><strong>updated_collection</strong> (<em>string</em>) – The dataset_id of the collection where your updated documents are uploaded into. If ‘None’, then your original collection will be updated.</p></li>
+<li><p><strong>update_function</strong> (<em>function</em>) – A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</p></li>
+<li><p><strong>updating_args</strong> (<em>dict</em>) – Additional arguments to your update_function, if they exist. They must be in the format of {‘Argument’: Value}</p></li>
+<li><p><strong>retrieve_chunk_size</strong> (<em>int</em>) – The number of documents that are received from the original collection with each loop iteration.</p></li>
+<li><p><strong>retrieve_chunk_size_failure_retry_multiplier</strong> (<em>int</em>) – If fails, retry on each chunk</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – The number of processors you want to parallelize with</p></li>
+<li><p><strong>max_error</strong> – How many failed uploads before the function breaks</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -205,18 +194,16 @@ Edits documents by providing a key value pair of fields you are adding or changi
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;product_name&#39;</span><span class="p">],</span> <span class="n">cursor</span><span class="o">=</span><span class="n">docs</span><span class="p">[</span><span class="s1">&#39;cursor&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>dataset_id<span class="classifier">string</span></dt><dd><p>Unique name of dataset</p>
-</dd>
-<dt>docs<span class="classifier">list</span></dt><dd><p>A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p>
-</dd>
-<dt>bulk_fn<span class="classifier">callable</span></dt><dd><p>Function to apply to documents before uploading</p>
-</dd>
-<dt>max_workers<span class="classifier">int</span></dt><dd><p>Number of workers active for multi-threading</p>
-</dd>
-<dt>retry_chunk_mult: int</dt><dd><p>Multiplier to apply to chunksize if upload fails</p>
-</dd>
-<dt>chunksize<span class="classifier">int</span></dt><dd><p>Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>docs</strong> (<em>list</em>) – A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p></li>
+<li><p><strong>bulk_fn</strong> (<em>callable</em>) – Function to apply to documents before uploading</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of workers active for multi-threading</p></li>
+<li><p><strong>retry_chunk_mult</strong> (<em>int</em>) – Multiplier to apply to chunksize if upload fails</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -240,10 +227,12 @@ Edits documents by providing a key value pair of fields you are adding or changi
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ViClient</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>documents:</dt><dd><p>List of dictionaries/Pandas dataframe</p>
-</dd>
-<dt>chunksize:</dt><dd><p>The chunk size of an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>documents</strong> – List of dictionaries/Pandas dataframe</p></li>
+<li><p><strong>chunksize</strong> – The chunk size of an object.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

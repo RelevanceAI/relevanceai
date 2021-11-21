@@ -154,8 +154,9 @@
 <dt class="sig sig-object py" id="relevanceai.config.Config.get_option">
 <span class="sig-name descname"><span class="pre">get_option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.config.Config.get_option" title="Permalink to this definition"></a></dt>
 <dd><p>View current config settings</p>
-<dl class="simple">
-<dt>option<span class="classifier">string</span></dt><dd><p>Setting key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>option</strong> (<em>string</em>) – Setting key</p>
 </dd>
 </dl>
 </dd></dl>
@@ -164,8 +165,9 @@
 <dt class="sig sig-object py" id="relevanceai.config.Config.read_config">
 <span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.config.Config.read_config" title="Permalink to this definition"></a></dt>
 <dd><p>Set up custom config by reading in a file</p>
-<dl class="simple">
-<dt>config_path<span class="classifier">string</span></dt><dd><p>Path to config</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>string</em>) – Path to config</p>
 </dd>
 </dl>
 </dd></dl>
@@ -180,10 +182,12 @@
 <dt class="sig sig-object py" id="relevanceai.config.Config.set_option">
 <span class="sig-name descname"><span class="pre">set_option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.config.Config.set_option" title="Permalink to this definition"></a></dt>
 <dd><p>Change a config settings</p>
-<dl class="simple">
-<dt>option<span class="classifier">string</span></dt><dd><p>Setting key</p>
-</dd>
-<dt>value<span class="classifier">string</span></dt><dd><p>New setting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> (<em>string</em>) – Setting key</p></li>
+<li><p><strong>value</strong> (<em>string</em>) – New setting</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -224,15 +228,17 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_specifications&#39;</span><span class="p">:</span> <span class="s1">&#39;{&quot;product_specification&quot;=&gt;[{&quot;key&quot;=&gt;&quot;Sleeve&quot;, &quot;value&quot;=&gt;&quot;Half Sleeve&quot;}, {&quot;key&quot;=&gt;&quot;Number of Contents in Sales Package&quot;, &quot;value&quot;=&gt;&quot;Pack of 2&quot;}, {&quot;key&quot;=&gt;&quot;Fabric&quot;, &quot;value&quot;=&gt;&quot;Cotton&quot;}, {&quot;key&quot;=&gt;&quot;Type&quot;, &quot;value&quot;=&gt;&quot;Romper&quot;}, {&quot;key&quot;=&gt;&quot;Neck&quot;, &quot;value&quot;=&gt;&quot;Round Neck&quot;}, {&quot;key&quot;=&gt;&quot;Pattern&quot;, &quot;value&quot;=&gt;&quot;Printed&quot;}, {&quot;key&quot;=&gt;&quot;Ideal For&quot;, &quot;value&quot;=&gt;&quot;Baby Boy&#39;</span><span class="n">s</span><span class="s2">&quot;}, {&quot;</span><span class="n">value</span><span class="s2">&quot;=&gt;&quot;</span><span class="n">Wash</span> <span class="k">with</span> <span class="n">Similar</span> <span class="n">Colors</span><span class="p">,</span> <span class="n">Use</span> <span class="n">Detergent</span> <span class="k">for</span> <span class="n">Colors</span><span class="s2">&quot;}]}&#39;,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image_first&#39;</span><span class="p">:</span> <span class="s1">&#39;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;Baby Care &#39;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;insert_date_&#39;</span><span class="p">:</span> <span class="s1">&#39;2021-08-13T11:38:52.110Z&#39;</span> 
-<span class="gp">&gt;&gt;&gt; </span> <span class="o">...</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;insert_date_&#39;</span><span class="p">:</span> <span class="s1">&#39;2021-08-13T11:38:52.110Z&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="o">...</span>
 <span class="gp">&gt;&gt;&gt; </span> <span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -261,15 +267,17 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;product_specifications&#39;</span><span class="p">:</span> <span class="s1">&#39;{&quot;product_specification&quot;=&gt;[{&quot;key&quot;=&gt;&quot;Sleeve&quot;, &quot;value&quot;=&gt;&quot;Half Sleeve&quot;}, {&quot;key&quot;=&gt;&quot;Number of Contents in Sales Package&quot;, &quot;value&quot;=&gt;&quot;Pack of 2&quot;}, {&quot;key&quot;=&gt;&quot;Fabric&quot;, &quot;value&quot;=&gt;&quot;Cotton&quot;}, {&quot;key&quot;=&gt;&quot;Type&quot;, &quot;value&quot;=&gt;&quot;Romper&quot;}, {&quot;key&quot;=&gt;&quot;Neck&quot;, &quot;value&quot;=&gt;&quot;Round Neck&quot;}, {&quot;key&quot;=&gt;&quot;Pattern&quot;, &quot;value&quot;=&gt;&quot;Printed&quot;}, {&quot;key&quot;=&gt;&quot;Ideal For&quot;, &quot;value&quot;=&gt;&quot;Baby Boy&#39;</span><span class="n">s</span><span class="s2">&quot;}, {&quot;</span><span class="n">value</span><span class="s2">&quot;=&gt;&quot;</span><span class="n">Wash</span> <span class="k">with</span> <span class="n">Similar</span> <span class="n">Colors</span><span class="p">,</span> <span class="n">Use</span> <span class="n">Detergent</span> <span class="k">for</span> <span class="n">Colors</span><span class="s2">&quot;}]}&#39;,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;image_first&#39;</span><span class="p">:</span> <span class="s1">&#39;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;Baby Care &#39;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;insert_date_&#39;</span><span class="p">:</span> <span class="s1">&#39;2021-08-13T11:38:52.110Z&#39;</span> 
-<span class="gp">&gt;&gt;&gt; </span> <span class="o">...</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;insert_date_&#39;</span><span class="p">:</span> <span class="s1">&#39;2021-08-13T11:38:52.110Z&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="o">...</span>
 <span class="gp">&gt;&gt;&gt; </span> <span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -302,10 +310,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -335,10 +345,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&amp;_nkw=playstation%204&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -368,10 +380,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&amp;_nkw=playstation%204&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -388,10 +402,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;retail_price&#39;</span><span class="p">:</span> <span class="mf">999.0</span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -416,10 +432,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -431,7 +449,7 @@
 <p>Total Len: 250</p>
 <p>Sample document:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;authors&#39;</span><span class="p">:</span> <span class="s1">&#39;Ruth Harris&#39;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others. </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;domain&#39;</span><span class="p">:</span> <span class="s1">&#39;awm.com&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">141</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;inserted_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-02-02 01:19:41.756632&#39;</span><span class="p">,</span>
@@ -447,10 +465,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -471,10 +491,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;UnitPrice&#39;</span><span class="p">:</span> <span class="mf">2.55</span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -517,10 +539,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -553,10 +577,12 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
 </pre></div>
 </div>
-<dl class="simple">
-<dt>number_of_documents: int</dt><dd><p>Number of documents to download</p>
-</dd>
-<dt>select_fields<span class="classifier">list</span></dt><dd><p>Fields to include in the dataset, empty array/list means all fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number_of_documents</strong> (<em>int</em>) – Number of documents to download</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the dataset, empty array/list means all fields.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -622,16 +648,10 @@ with cm:</p>
 <dt class="sig sig-object py" id="relevanceai.transport.Transport.make_http_request">
 <span class="sig-name descname"><span class="pre">make_http_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'GET'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.transport.Transport.make_http_request" title="Permalink to this definition"></a></dt>
 <dd><p>Make the HTTP request
-Parameters
-———-
-endpoint: string</p>
-<blockquote>
-<div><p>The endpoint from the documentation to use</p>
-</div></blockquote>
-<dl class="simple">
-<dt>method_type: string</dt><dd><p>POST or GET request</p>
-</dd>
-</dl>
+:param endpoint: The endpoint from the documentation to use
+:type endpoint: string
+:param method_type: POST or GET request
+:type method_type: string</p>
 </dd></dl>
 
 </dd></dl>

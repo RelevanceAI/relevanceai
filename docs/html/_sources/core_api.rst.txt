@@ -38,6 +38,7 @@ You then write:
 Admin
 ----------------------------
 
+
 .. automodule:: relevanceai.api.admin
    :members:
 
