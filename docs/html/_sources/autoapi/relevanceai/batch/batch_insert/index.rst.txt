@@ -1,0 +1,163 @@
+:py:mod:`relevanceai.batch.batch_insert`
+========================================
+
+.. py:module:: relevanceai.batch.batch_insert
+
+.. autoapi-nested-parse::
+
+   Batch operations
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.batch.batch_insert.BatchInsert
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.batch.batch_insert.BYTE_TO_MB
+   relevanceai.batch.batch_insert.LIST_SIZE_MULTIPLIER
+
+
+.. py:data:: BYTE_TO_MB
+   
+
+   
+
+.. py:data:: LIST_SIZE_MULTIPLIER
+   :annotation: = 3
+
+   
+
+.. py:class:: BatchInsert(project: str, api_key: str, base_url: str)
+
+   Bases: :py:obj:`relevanceai.api.client.APIClient`, :py:obj:`relevanceai.batch.chunk.Chunker`
+
+   API Client
+
+   .. py:method:: insert_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, verbose: bool = True, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize=0, max_retries=1, *args, **kwargs)
+
+      Insert a list of documents with multi-threading automatically enabled.
+
+      - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+      - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+      - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+      - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+
+      Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param docs: A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+      :type docs: list
+      :param bulk_fn: Function to apply to documents before uploading
+      :type bulk_fn: callable
+      :param max_workers: Number of workers active for multi-threading
+      :type max_workers: int
+      :param retry_chunk_mult: Multiplier to apply to chunksize if upload fails
+      :type retry_chunk_mult: int
+      :param chunksize: Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+      :type chunksize: int
+
+
+   .. py:method:: update_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, verbose: bool = True, max_workers: int = 8, retry_chunk_mult: float = 0.5, chunksize: int = 0, show_progress_bar=False, *args, **kwargs)
+
+      Update a list of documents with multi-threading automatically enabled.
+      Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+      >>> from relevanceai import Client
+      >>> url = "https://api-aueast.relevance.ai/v1/"
+      >>> collection = ""
+      >>> project = ""
+      >>> api_key = ""
+      >>> client = Client(project, api_key)
+      >>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
+      >>> while len(docs['documents']) > 0:
+      >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
+      >>>     client.update_documents(collection, docs['documents'])
+      >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param docs: A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+      :type docs: list
+      :param bulk_fn: Function to apply to documents before uploading
+      :type bulk_fn: callable
+      :param max_workers: Number of workers active for multi-threading
+      :type max_workers: int
+      :param retry_chunk_mult: Multiplier to apply to chunksize if upload fails
+      :type retry_chunk_mult: int
+      :param chunksize: Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+      :type chunksize: int
+
+
+   .. py:method:: pull_update_push(self, original_collection: str, update_function, updated_collection: str = None, log_file: str = None, updating_args: dict = {}, retrieve_chunk_size: int = 100, max_workers: int = 8, filters: list = [], select_fields: list = [], verbose: bool = True, show_progress_bar: bool = True)
+
+      Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+      These documents are then uploaded into either an updated collection, or back into the original collection.
+
+      :param original_collection: The dataset_id of the collection where your original documents are
+      :type original_collection: string
+      :param logging_collection: The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
+      :type logging_collection: string
+      :param updated_collection: The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+      :type updated_collection: string
+      :param update_function: A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+      :type update_function: function
+      :param updating_args: Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+      :type updating_args: dict
+      :param retrieve_chunk_size: The number of documents that are received from the original collection with each loop iteration.
+      :type retrieve_chunk_size: int
+      :param max_workers: The number of processors you want to parallelize with
+      :type max_workers: int
+      :param max_error: How many failed uploads before the function breaks
+
+
+   .. py:method:: pull_update_push_to_cloud(self, original_collection: str, update_function, updated_collection: str = None, logging_collection: str = None, updating_args: dict = {}, retrieve_chunk_size: int = 100, retrieve_chunk_size_failure_retry_multiplier: float = 0.5, number_of_retrieve_retries: int = 3, max_workers: int = 8, max_error: int = 1000, filters: list = [], select_fields: list = [], verbose: bool = True, show_progress_bar: bool = True)
+
+      Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+      These documents are then uploaded into either an updated collection, or back into the original collection.
+
+      :param original_collection: The dataset_id of the collection where your original documents are
+      :type original_collection: string
+      :param logging_collection: The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
+      :type logging_collection: string
+      :param updated_collection: The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+      :type updated_collection: string
+      :param update_function: A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+      :type update_function: function
+      :param updating_args: Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+      :type updating_args: dict
+      :param retrieve_chunk_size: The number of documents that are received from the original collection with each loop iteration.
+      :type retrieve_chunk_size: int
+      :param retrieve_chunk_size_failure_retry_multiplier: If fails, retry on each chunk
+      :type retrieve_chunk_size_failure_retry_multiplier: int
+      :param max_workers: The number of processors you want to parallelize with
+      :type max_workers: int
+      :param max_error: How many failed uploads before the function breaks
+
+
+   .. py:method:: insert_df(self, dataset_id, dataframe, *args, **kwargs)
+
+      Insert a dataframe for eachd doc
+
+
+   .. py:method:: delete_all_logs(self, dataset_id)
+
+
+   .. py:method:: _write_documents(self, insert_function, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize: int = 0)
+
+
+

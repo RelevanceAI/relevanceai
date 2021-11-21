@@ -1,0 +1,36 @@
+:py:mod:`relevanceai.visualise.dim_reduction`
+=============================================
+
+.. py:module:: relevanceai.visualise.dim_reduction
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.dim_reduction.DimReduction
+
+
+
+
+.. py:class:: DimReduction(project: str, api_key: str, base_url: str, data: List[relevanceai.visualise.dataset.JSONDict], vector_label: Union[None, str], vector_field: str, dr: relevanceai.visualise.constants.DIM_REDUCTION, dr_args: Optional[Dict[Any, Any]] = None, dims: typing_extensions.Literal[2, 3] = 3)
+
+   Bases: :py:obj:`relevanceai.base.Base`, :py:obj:`doc_utils.doc_utils.DocUtils`
+
+   Dim Reduction Class
+
+   .. py:method:: _prepare_vectors(self, data: List[relevanceai.visualise.dataset.JSONDict], vector_field: str) -> numpy.ndarray
+
+      Prepare vectors
+
+
+   .. py:method:: _dim_reduce(self, dr: relevanceai.visualise.constants.DIM_REDUCTION, dr_args: Union[None, relevanceai.visualise.dataset.JSONDict], vectors: numpy.ndarray, dims: typing_extensions.Literal[2, 3]) -> numpy.ndarray
+
+      Dimensionality reduction
+
+
+

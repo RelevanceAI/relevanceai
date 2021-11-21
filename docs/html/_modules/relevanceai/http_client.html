@@ -6,6 +6,7 @@
   <title>relevanceai.http_client &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.http_client</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -83,18 +86,18 @@
 <span class="n">vis_requirements</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">relevanceai.visualise.projector</span> <span class="kn">import</span> <span class="n">Projector</span>
-    <span class="n">vis_requirements</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="viewcode-block" id="vis_requirements"><a class="viewcode-back" href="../../autoapi/relevanceai/http_client/index.html#relevanceai.http_client.vis_requirements">[docs]</a>    <span class="n">vis_requirements</span> <span class="o">=</span> <span class="kc">True</span></div>
 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="k">pass</span>
 
-<span class="k">def</span> <span class="nf">str2bool</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="str2bool"><a class="viewcode-back" href="../../autoapi/relevanceai/http_client/index.html#relevanceai.http_client.str2bool">[docs]</a><span class="k">def</span> <span class="nf">str2bool</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.http_client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">BatchAPIClient</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Python Client for Relevance AI&#39;s relevanceai&quot;&quot;&quot;</span>
 
-    <span class="n">WELCOME_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Welcome to the RelevanceAI Python SDK&quot;&quot;&quot;</span>
-    <span class="n">FAIL_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Your API key is invalid. Please login again&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Client.WELCOME_MESSAGE"><a class="viewcode-back" href="../../autoapi/relevanceai/http_client/index.html#relevanceai.http_client.Client.WELCOME_MESSAGE">[docs]</a>    <span class="n">WELCOME_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Welcome to the RelevanceAI Python SDK&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="Client.FAIL_MESSAGE"><a class="viewcode-back" href="../../autoapi/relevanceai/http_client/index.html#relevanceai.http_client.Client.FAIL_MESSAGE">[docs]</a>    <span class="n">FAIL_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Your API key is invalid. Please login again&quot;&quot;&quot;</span></div>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -128,7 +131,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">projector</span> <span class="o">=</span> <span class="n">Projector</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">token_to_auth</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.token_to_auth"><a class="viewcode-back" href="../../autoapi/relevanceai/http_client/index.html#relevanceai.http_client.Client.token_to_auth">[docs]</a>    <span class="k">def</span> <span class="nf">token_to_auth</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You can sign up/login and find your credentials here: https://auth.relevance.ai/signup/?callback=https%3A</span><span class="si">%2F%2F</span><span class="s2">cloud.relevance.ai</span><span class="si">%2F</span><span class="s2">login</span><span class="si">%3F</span><span class="s2">redirect%3Dcli-api&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Once you have signed up, click on the value under `Authorization token` and paste it here:&quot;</span><span class="p">)</span>
@@ -140,22 +143,22 @@
         <span class="c1"># )</span>
         <span class="n">project</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span>
+        <span class="k">return</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span></div>
 
-<div class="viewcode-block" id="Client.login"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.http_client.Client.login">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Client.login"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.http_client.Client.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span>
         <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://gateway-api-aueast.relevance.ai/v1/&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Preferred login method for demos and interactive usage.&quot;&quot;&quot;</span>
         <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span> <span class="o">=</span> <span class="n">Client</span><span class="o">.</span><span class="n">token_to_auth</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Client</span><span class="p">(</span>
-            <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
-        <span class="p">)</span></div>
+            <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span></div>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">auth_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span></div>
+<div class="viewcode-block" id="Client.auth_header"><a class="viewcode-back" href="../../autoapi/relevanceai/http_client/index.html#relevanceai.http_client.Client.auth_header">[docs]</a>    <span class="k">def</span> <span class="nf">auth_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span></div></div>
 </pre></div>
 
            </div>

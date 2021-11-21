@@ -6,6 +6,7 @@
   <title>relevanceai.visualise.cluster &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.visualise.cluster</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -120,7 +123,7 @@
                             <span class="p">)</span>
     
 
-    <span class="k">def</span> <span class="nf">_choose_k</span><span class="p">(</span>
+<div class="viewcode-block" id="Cluster._choose_k"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/cluster/index.html#relevanceai.visualise.cluster.Cluster._choose_k">[docs]</a>    <span class="k">def</span> <span class="nf">_choose_k</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">vectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">):</span>
@@ -136,10 +139,10 @@
         <span class="kn">import</span> <span class="nn">warnings</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;This method is not implemented yet k=10&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="mi">10</span>
+        <span class="k">return</span> <span class="mi">10</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_cluster_vectors</span><span class="p">(</span>
+<div class="viewcode-block" id="Cluster._cluster_vectors"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/cluster/index.html#relevanceai.visualise.cluster.Cluster._cluster_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">_cluster_vectors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">vectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">cluster</span><span class="p">:</span> <span class="n">CLUSTER</span><span class="p">,</span>
@@ -166,11 +169,11 @@
             <span class="n">cluster_labels</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span>
             <span class="n">cluster_centroids</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">cluster_centers_</span>
         <span class="c1"># cluster_labels = [ f&#39;c_{c}&#39; for c in cluster_labels ]</span>
-        <span class="k">return</span> <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">cluster_centroids</span>
+        <span class="k">return</span> <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">cluster_centroids</span></div>
     
 
 
-    <span class="k">def</span> <span class="nf">_cluster_categorical</span><span class="p">(</span>
+<div class="viewcode-block" id="Cluster._cluster_categorical"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/cluster/index.html#relevanceai.visualise.cluster.Cluster._cluster_categorical">[docs]</a>    <span class="k">def</span> <span class="nf">_cluster_categorical</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">cluster</span><span class="p">:</span> <span class="n">CLUSTER</span><span class="p">,</span>
@@ -194,10 +197,10 @@
         <span class="c1">#         cluster_centroids = km.cluster_centroids_</span>
         <span class="c1"># cluster_labels = [ f&#39;c_{c}&#39; for c in cluster_labels ]</span>
         <span class="c1"># return cluster_labels, cluster_centroids&#39;</span>
-        <span class="k">return</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
     
         
-    <span class="k">def</span> <span class="nf">_cluster_mixed</span><span class="p">(</span>
+<div class="viewcode-block" id="Cluster._cluster_mixed"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/cluster/index.html#relevanceai.visualise.cluster.Cluster._cluster_mixed">[docs]</a>    <span class="k">def</span> <span class="nf">_cluster_mixed</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">cluster</span><span class="p">:</span> <span class="n">CLUSTER</span><span class="p">,</span>
@@ -221,7 +224,7 @@
         <span class="c1">#         cluster_centroids = kp.cluster_centroids_</span>
         <span class="c1"># cluster_labels = [ f&#39;c_{c}&#39; for c in cluster_labels ]</span>
         <span class="c1"># return cluster_labels, cluster_centroids</span>
-        <span class="k">return</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 
            </div>

@@ -1,0 +1,68 @@
+:py:mod:`relevanceai.visualise.dataset`
+=======================================
+
+.. py:module:: relevanceai.visualise.dataset
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.dataset.Dataset
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.dataset.JSONDict
+
+
+.. py:data:: JSONDict
+   
+
+   
+
+.. py:class:: Dataset(project: str, api_key: str, base_url: str, dataset_id: str, vector_field: str, vector_label: Union[None, str], colour_label: Union[None, str], hover_label: Union[None, List[str]], number_of_documents: Union[None, int] = 1000, page_size: int = 1000, random_state: int = 0)
+
+   Bases: :py:obj:`relevanceai.base.Base`, :py:obj:`doc_utils.DocUtils`
+
+   Dataset Class
+
+   .. py:method:: _retrieve_documents(self, dataset_id: str, fields: List[str], number_of_documents: Optional[int] = 1000, page_size: int = 1000) -> List[JSONDict]
+
+      Retrieve all documents from dataset
+
+
+   .. py:method:: _build_df(data: List[JSONDict])
+      :staticmethod:
+
+
+   .. py:method:: _vector_fields(self) -> List[str]
+
+      Returns list of valid vector fields from dataset schema
+
+
+   .. py:method:: valid_vector_name(self, vector_name: str) -> bool
+
+      Check vector field name is valid
+
+
+   .. py:method:: valid_label_name(self, label_name: str) -> bool
+
+      Check vector label name is valid
+
+
+   .. py:method:: _remove_empty_vector_fields(self, vector_field: str) -> List[JSONDict]
+
+      Remove documents with empty vector fields
+
+
+

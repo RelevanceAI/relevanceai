@@ -6,6 +6,7 @@
   <title>relevanceai.transport &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.transport</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -86,15 +89,15 @@
 <div class="viewcode-block" id="Transport"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.transport.Transport">[docs]</a><span class="k">class</span> <span class="nc">Transport</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Base class for all relevanceai objects&quot;&quot;&quot;</span>
 
-    <span class="n">project</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">AbstractLogger</span>
+<div class="viewcode-block" id="Transport.project"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.project">[docs]</a>    <span class="n">project</span><span class="p">:</span> <span class="nb">str</span></div>
+<div class="viewcode-block" id="Transport.api_key"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.api_key">[docs]</a>    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span></div>
+<div class="viewcode-block" id="Transport.base_url"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.base_url">[docs]</a>    <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span></div>
+<div class="viewcode-block" id="Transport.config"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.config">[docs]</a>    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span></div>
+<div class="viewcode-block" id="Transport.logger"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.logger">[docs]</a>    <span class="n">logger</span><span class="p">:</span> <span class="n">AbstractLogger</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">auth_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span>
+<div class="viewcode-block" id="Transport.auth_header"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.auth_header">[docs]</a>    <span class="k">def</span> <span class="nf">auth_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="Transport.make_http_request"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.transport.Transport.make_http_request">[docs]</a>    <span class="k">def</span> <span class="nf">make_http_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

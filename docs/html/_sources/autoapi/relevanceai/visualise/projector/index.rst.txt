@@ -1,0 +1,84 @@
+:py:mod:`relevanceai.visualise.projector`
+=========================================
+
+.. py:module:: relevanceai.visualise.projector
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.projector.Projector
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.projector.RELEVANCEAI_BLUE
+
+
+.. py:data:: RELEVANCEAI_BLUE
+   :annotation: = #1854FF
+
+   
+
+.. py:class:: Projector(project, api_key, base_url)
+
+   Bases: :py:obj:`relevanceai.base.Base`, :py:obj:`doc_utils.DocUtils`
+
+   Projector class.
+
+   .. rubric:: Example
+
+   >>> from relevanceai import Client
+   >>> project = input()
+   >>> api_key = input()
+   >>> client = Client(project, api_key)
+   >>> client.projector.plot(
+           dataset_id, vector_field, number_of_points_to_render, random_state,
+           dr, dr_args, dims,
+           vector_label, vector_label_char_length,
+           color_label, colour_label_char_length,
+           hover_label,
+           cluster, cluster_args,
+           )
+
+   .. py:method:: plot(self, dataset_id: str, vector_field: str, number_of_points_to_render: relevanceai.visualise.constants.Optional[int] = 1000, random_state: int = 0, dr: relevanceai.visualise.constants.DIM_REDUCTION = 'pca', dr_args: relevanceai.visualise.constants.Union[None, relevanceai.visualise.constants.JSONDict] = DIM_REDUCTION_DEFAULT_ARGS['pca'], dims: relevanceai.visualise.constants.Literal[2, 3] = 3, vector_label: relevanceai.visualise.constants.Union[None, str] = None, vector_label_char_length: relevanceai.visualise.constants.Union[None, int] = 12, colour_label: relevanceai.visualise.constants.Union[None, str] = None, colour_label_char_length: relevanceai.visualise.constants.Union[None, int] = 20, hover_label: relevanceai.visualise.constants.Union[None, relevanceai.visualise.constants.List[str]] = None, cluster: relevanceai.visualise.constants.Union[None, relevanceai.visualise.constants.CLUSTER] = None, cluster_args: relevanceai.visualise.constants.Union[None, relevanceai.visualise.constants.JSONDict] = {'n_init': 20}, num_clusters: relevanceai.visualise.constants.Union[None, int] = 10)
+
+      Plot function for Embedding Projector class
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client
+      >>> project = input()
+      >>> api_key = input()
+      >>> client = Client(project, api_key)
+      >>> client.projector.plot(
+              dataset_id, vector_field, number_of_points_to_render, random_state,
+              dr, dr_args, dims,
+              vector_label, vector_label_char_length,
+              color_label, colour_label_char_length,
+              hover_label,
+              cluster, cluster_args,
+              )
+
+
+   .. py:method:: _generate_fig(self, embedding_df: pandas.DataFrame, legend: relevanceai.visualise.constants.Union[None, str]) -> plotly.graph_objs.Figure
+
+      Generates the 3D scatter plot
+
+
+   .. py:method:: _generate_hover_template(self, df: pandas.DataFrame) -> relevanceai.visualise.constants.Tuple[relevanceai.visualise.constants.Union[pandas.DataFrame, str], relevanceai.visualise.constants.Union[relevanceai.visualise.constants.List, str]]
+
+      Generating hover template
+
+
+

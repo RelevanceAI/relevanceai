@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.api.search &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../viz.html">Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core_api.html">Core Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.search</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/relevanceai/api/search/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.api.search">
+<span id="relevanceai-api-search"></span><h1><a class="reference internal" href="../../../../core_api.html#module-relevanceai.api.search" title="relevanceai.api.search"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.search</span></code></a><a class="headerlink" href="#module-relevanceai.api.search" title="Permalink to this headline"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../core_api.html#relevanceai.api.search.Search" title="relevanceai.api.search.Search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Search</span></code></a></p></td>
+<td><p>Base class for all relevanceai utilities</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.search.</span></span><span class="sig-name descname"><span class="pre">Search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a></p>
+<p>Base class for all relevanceai utilities</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.vector">
+<span class="sig-name descname"><span class="pre">vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.vector" title="Permalink to this definition"></a></dt>
+<dd><p>Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:</p>
+<ol class="arabic">
+<li><p>Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. <a href="#id1"><span class="problematic" id="id2">image_vector_</span></a> weights 100%, whilst <a href="#id3"><span class="problematic" id="id4">description_vector_</span></a> 50%</p>
+<blockquote>
+<div><p>An example of a simple multivector query:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.34</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;name_vector_&quot;</span><span class="p">],</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.56</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;image_vector_&quot;</span><span class="p">],</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;image&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+</pre></div>
+</div>
+<p>An example of a weighted multivector query:
+&gt;&gt;&gt; [
+&gt;&gt;&gt;     {“vector”: [0.12, 0.23, 0.34], “fields”: {”<a href="#id5"><span class="problematic" id="id6">name_vector_</span></a>”:0.6}, “alias”:”text”},
+&gt;&gt;&gt;     {“vector”: [0.45, 0.56, 0.67], “fields”: {”<a href="#id7"><span class="problematic" id="id8">image_vector_</span></a>”0.4}, “alias”:”image”},
+&gt;&gt;&gt; ]</p>
+<p>An example of a weighted multivector query with multiple fields for each vector:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.34</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name_vector_&quot;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span> <span class="s2">&quot;description_vector_&quot;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">},</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.56</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;image_vector_&quot;</span><span class="mf">0.4</span><span class="p">},</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;image&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Utilise faceted search with vector search. For information on how to apply facets/filters check out datasets.documents.get_where</p></li>
+<li><p>Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. <a href="#id9"><span class="problematic" id="id10">image_vector_</span></a> + <a href="#id11"><span class="problematic" id="id12">text_vector_</span></a> or <a href="#id13"><span class="problematic" id="id14">image_vector_</span></a> vs <a href="#id15"><span class="problematic" id="id16">text_vector_</span></a>.</p>
+<blockquote>
+<div><p>When sum_fields=True:</p>
+<ul class="simple">
+<li><p>Multi-vector search allows you to obtain search scores by taking the sum of these scores.</p></li>
+<li><p>TextSearchScore + ImageSearchScore = SearchScore</p></li>
+<li><p>We then rank by the new SearchScore, so for searching 1000 documents there will be 1000 search scores and results</p></li>
+</ul>
+<p>When sum_fields=False:</p>
+<ul class="simple">
+<li><p>Multi vector search but not summing the score, instead including it in the comparison!</p></li>
+<li><p>TextSearchScore = SearchScore1</p></li>
+<li><p>ImagSearchScore = SearchScore2</p></li>
+<li><p>We then rank by the 2 new SearchScore, so for searching 1000 documents there should be 2000 search scores and results.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Personalization with positive and negative document ids.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>For more information about the positive and negative document ids to personalize check out services.recommend.vector</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+<p>For more even more advanced configuration and customisation of vector search, reach out to us at <a class="reference external" href="mailto:dev&#37;&#52;&#48;relevance&#46;ai">dev<span>&#64;</span>relevance<span>&#46;</span>ai</a> and learn about our new advanced_vector_search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+<li><p><strong>search_history_id</strong> (<em>string</em>) – Search history ID, only used for storing search histories.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.hybrid">
+<span class="sig-name descname"><span class="pre">hybrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edit_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_spaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traditional_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.075</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.hybrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.hybrid" title="Permalink to this definition"></a></dt>
+<dd><p>Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible.</p>
+<p>For information on how to use vector search check out services.search.vector.</p>
+<p>For information on how to use traditional keyword faceted search check out services.search.traditional.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>text</strong> (<em>string</em>) – Text Search Query (not encoded as vector)</p></li>
+<li><p><strong>fields</strong> (<em>list</em>) – Text fields to search against</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+<li><p><strong>search_history_id</strong> (<em>string</em>) – Search history ID, only used for storing search histories.</p></li>
+<li><p><strong>edit_distance</strong> (<em>int</em>) – This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.</p></li>
+<li><p><strong>ignore_spaces</strong> (<em>bool</em>) – Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.</p></li>
+<li><p><strong>traditional_weight</strong> (<em>integer</em>) – Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.semantic">
+<span class="sig-name descname"><span class="pre">semantic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.semantic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.semantic" title="Permalink to this definition"></a></dt>
+<dd><p>A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results.</p>
+<p>For information on how to configure semantic search check out services.search.hybrid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>text</strong> (<em>string</em>) – Text Search Query (not encoded as vector)</p></li>
+<li><p><strong>fields</strong> (<em>list</em>) – Text fields to search against</p></li>
+<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.diversity">
+<span class="sig-name descname"><span class="pre">diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.diversity" title="Permalink to this definition"></a></dt>
+<dd><p>This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Cluster</span> <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cluster</span> <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cluster</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cluster</span> <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="n">H</span><span class="p">,</span> <span class="n">I</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>(Note, each cluster is ordered by highest to lowest search score.)</p>
+<p>This intermediately returns:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">results_batch_1</span><span class="p">:</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">D</span><span class="p">]</span> <span class="p">(</span><span class="n">ordered</span> <span class="n">by</span> <span class="n">highest</span> <span class="n">search</span> <span class="n">score</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results_batch_2</span><span class="p">:</span> <span class="p">[</span><span class="n">G</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">I</span><span class="p">]</span> <span class="p">(</span><span class="n">ordered</span> <span class="n">by</span> <span class="n">highest</span> <span class="n">search</span> <span class="n">score</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results_batch_3</span><span class="p">:</span> <span class="p">[</span><span class="n">C</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This then returns the final results:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">results</span><span class="p">:</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+<li><p><strong>search_history_id</strong> (<em>str</em>) – Search history ID, only used for storing search histories.</p></li>
+<li><p><strong>cluster_vector_field</strong> (<em>str</em>) – The field to cluster on.</p></li>
+<li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters to be specified.</p></li>
+<li><p><strong>n_init</strong> (<em>int</em>) – Number of runs to run with different centroid seeds</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations in each run</p></li>
+<li><p><strong>return_as_clusters</strong> (<em>bool</em>) – If True, return as clusters as opposed to results list</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.traditional">
+<span class="sig-name descname"><span class="pre">traditional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edit_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_spaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">29</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.traditional"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.traditional" title="Permalink to this definition"></a></dt>
+<dd><p>Traditional Faceted Keyword Search with edit distance/fuzzy matching.</p>
+<p>For information on how to apply facets/filters check out datasets.documents.get_where.</p>
+<p>For information on how to construct the facets section for your search bar check out datasets.facets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>text</strong> (<em>string</em>) – Text Search Query (not encoded as vector)</p></li>
+<li><p><strong>fields</strong> (<em>list</em>) – Text fields to search against</p></li>
+<li><p><strong>edit_distance</strong> (<em>int</em>) – This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.</p></li>
+<li><p><strong>ignore_spaces</strong> (<em>bool</em>) – Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>search_history_id</strong> (<em>string</em>) – Search history ID, only used for storing search histories.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.chunk">
+<span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.chunk" title="Permalink to this definition"></a></dt>
+<dd><p>Chunks are data that has been divided into different units. e.g. A paragraph is made of many sentence chunks, a sentence is made of many word chunks, an image frame in a video. By searching through chunks you can pinpoint more specifically where a match is occuring. When creating a chunk in your document use the suffix “chunk” and “chunkvector”. An example of a document with chunks:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;123&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;title&quot;</span> <span class="p">:</span> <span class="s2">&quot;Lorem Ipsum Article&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;description&quot;</span> <span class="p">:</span> <span class="s2">&quot;Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&#39;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;description_vector_&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;description_sentence_chunk_&quot;</span> <span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;sentence_id&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;sentence_chunkvector_&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="s2">&quot;sentence&quot;</span> <span class="p">:</span> <span class="s2">&quot;Lorem Ipsum is simply dummy text of the printing and typesetting industry.&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;sentence_id&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;sentence_chunkvector_&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="s2">&quot;sentence&quot;</span> <span class="p">:</span> <span class="s2">&quot;Lorem Ipsum has been the industry&#39;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;sentence_id&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;sentence_chunkvector_&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="s2">&quot;sentence&quot;</span> <span class="p">:</span> <span class="s2">&quot;It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For combining chunk search with other search check out services.search.advanced_chunk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>chunk_field</strong> (<em>string</em>) – Field where the array of chunked documents are.</p></li>
+<li><p><strong>chunk_scoring</strong> (<em>string</em>) – Scoring method for determining for ranking between document chunks.</p></li>
+<li><p><strong>chunk_page_size</strong> (<em>int</em>) – Size of each page of chunk results</p></li>
+<li><p><strong>chunk_page</strong> (<em>int</em>) – Page of the chunk results</p></li>
+<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.multistep_chunk">
+<span class="sig-name descname"><span class="pre">multistep_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_multivector_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.multistep_chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.multistep_chunk" title="Permalink to this definition"></a></dt>
+<dd><p>Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after.</p>
+<p>For more information about chunk search check out services.search.chunk.</p>
+<p>For more information about vector search check out services.search.vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>chunk_field</strong> (<em>string</em>) – Field where the array of chunked documents are.</p></li>
+<li><p><strong>chunk_scoring</strong> (<em>string</em>) – Scoring method for determining for ranking between document chunks.</p></li>
+<li><p><strong>chunk_page_size</strong> (<em>int</em>) – Size of each page of chunk results</p></li>
+<li><p><strong>chunk_page</strong> (<em>int</em>) – Page of the chunk results</p></li>
+<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+<li><p><strong>first_step_multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
+<li><p><strong>first_step_page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>first_step_page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.advanced_chunk">
+<span class="sig-name descname"><span class="pre">advanced_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_search_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.advanced_chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.advanced_chunk" title="Permalink to this definition"></a></dt>
+<dd><p>A more advanced chunk search to be able to combine vector search and chunk search in many different ways.</p>
+<p>Example 1 (Hybrid chunk search):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;chunk&quot;</span> <span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec1</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;traditional_query&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.test_words&quot;</span><span class="p">],</span> <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.tt.some_other_chunkvector_&quot;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;traditional_query&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;jumble&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.test_words&quot;</span><span class="p">],</span> <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Example 2 (combines normal vector search with chunk search):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;queries&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="n">vec1</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;traditional_query&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>                            <span class="s2">&quot;some.test.test_words&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;chunk&quot;</span><span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;.some_vector_&quot;</span> <span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>chunk_search_query</strong> (<em>list</em>) – Advanced chunk query</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.search.Search.advanced_multistep_chunk">
+<span class="sig-name descname"><span class="pre">advanced_multistep_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_search_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_edit_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_ignore_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_traditional_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.075</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_approximation_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_sum_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/search.html#Search.advanced_multistep_chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.advanced_multistep_chunk" title="Permalink to this definition"></a></dt>
+<dd><p>Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set.</p>
+<p>Example 1 (Hybrid chunk search):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;chunk&quot;</span> <span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec1</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;traditional_query&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.test_words&quot;</span><span class="p">],</span> <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.tt.some_other_chunkvector_&quot;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;traditional_query&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;jumble&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.test_words&quot;</span><span class="p">],</span> <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Example 2 (combines normal vector search with chunk search):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;queries&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="n">vec1</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;traditional_query&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>                            <span class="s2">&quot;some.test.test_words&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;chunk&quot;</span><span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;.some_vector_&quot;</span> <span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                <span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>first_step_query</strong> (<em>list</em>) – First step query</p></li>
+<li><p><strong>first_step_text</strong> (<em>string</em>) – Text search query (not encoded as vector)</p></li>
+<li><p><strong>first_step_fields</strong> (<em>list</em>) – Text fields to search against</p></li>
+<li><p><strong>chunk_search_query</strong> (<em>list</em>) – Advanced chunk query</p></li>
+<li><p><strong>first_step_edit_distance</strong> (<em>int</em>) – This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.</p></li>
+<li><p><strong>first_step_ignore_spaces</strong> (<em>bool</em>) – Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.</p></li>
+<li><p><strong>first_step_traditional_weight</strong> (<em>integer</em>) – Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range</p></li>
+<li><p><strong>first_step_approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>first_step_sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>first_step_filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>first_step_page_size</strong> (<em>int</em>) – In the first search, you are more interested in the contents</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

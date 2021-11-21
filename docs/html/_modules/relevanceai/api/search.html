@@ -6,6 +6,7 @@
   <title>relevanceai.api.search &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.api.search</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -71,14 +74,14 @@
 <span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
-<div class="viewcode-block" id="Search"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search">[docs]</a><span class="k">class</span> <span class="nc">Search</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Search"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search">[docs]</a><span class="k">class</span> <span class="nc">Search</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Search.vector"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.vector"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">multivector_query</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -217,10 +220,10 @@
                 <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.hybrid"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.hybrid">[docs]</a>    <span class="k">def</span> <span class="nf">hybrid</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.hybrid"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.hybrid">[docs]</a>    <span class="k">def</span> <span class="nf">hybrid</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">multivector_query</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -332,10 +335,10 @@
                 <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="n">traditional_weight</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.semantic"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.semantic">[docs]</a>    <span class="k">def</span> <span class="nf">semantic</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.semantic"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.semantic">[docs]</a>    <span class="k">def</span> <span class="nf">semantic</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">multivector_query</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -426,10 +429,10 @@
                 <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.diversity"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.diversity">[docs]</a>    <span class="k">def</span> <span class="nf">diversity</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.diversity"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.diversity">[docs]</a>    <span class="k">def</span> <span class="nf">diversity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">cluster_vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -563,10 +566,10 @@
                 <span class="s2">&quot;return_as_clusters&quot;</span><span class="p">:</span> <span class="n">return_as_clusters</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.traditional"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.traditional">[docs]</a>    <span class="k">def</span> <span class="nf">traditional</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.traditional"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.traditional">[docs]</a>    <span class="k">def</span> <span class="nf">traditional</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -641,10 +644,10 @@
                 <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.chunk"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">,</span>
         <span class="n">multivector_query</span><span class="p">,</span>
@@ -753,10 +756,10 @@
                 <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.multistep_chunk"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.multistep_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">multistep_chunk</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.multistep_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.multistep_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">multistep_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">,</span>
         <span class="n">multivector_query</span><span class="p">,</span>
@@ -866,10 +869,10 @@
                 <span class="s2">&quot;first_step_page_size&quot;</span><span class="p">:</span> <span class="n">first_step_page_size</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.advanced_chunk"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.advanced_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_chunk</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.advanced_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.advanced_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_ids</span><span class="p">,</span>
         <span class="n">chunk_search_query</span><span class="p">,</span>
@@ -955,10 +958,10 @@
                 <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Search.advanced_multistep_chunk"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.search.Search.advanced_multistep_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_multistep_chunk</span><span class="p">(</span>
+<div class="viewcode-block" id="Search.advanced_multistep_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.advanced_multistep_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_multistep_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">first_step_query</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -1090,8 +1093,8 @@
                 <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div></div>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

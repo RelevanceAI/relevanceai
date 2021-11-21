@@ -6,6 +6,7 @@
   <title>relevanceai.api.datasets &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.api.datasets</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -78,7 +81,7 @@
 <span class="kn">from</span> <span class="nn">relevanceai.api.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
 
 
-<div class="viewcode-block" id="Datasets"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets">[docs]</a><span class="k">class</span> <span class="nc">Datasets</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Datasets"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets">[docs]</a><span class="k">class</span> <span class="nc">Datasets</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;All dataset-related functions&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -91,7 +94,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.schema"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.schema"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
@@ -106,10 +109,10 @@
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/schema&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.metadata"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.metadata"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
@@ -124,10 +127,10 @@
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/metadata&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.create"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.create"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -180,20 +183,20 @@
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.list"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Datasets.list"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; List all datasets in a project that you are authorized to read/write. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;datasets/list&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.list_all"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.list_all">[docs]</a>    <span class="k">def</span> <span class="nf">list_all</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.list_all"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.list_all">[docs]</a>    <span class="k">def</span> <span class="nf">list_all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">include_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -262,10 +265,10 @@
                 <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.facets"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.facets"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">,</span>
         <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
@@ -306,10 +309,10 @@
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.check_missing_ids"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.check_missing_ids">[docs]</a>    <span class="k">def</span> <span class="nf">check_missing_ids</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.check_missing_ids"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.check_missing_ids">[docs]</a>    <span class="k">def</span> <span class="nf">check_missing_ids</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">):</span>
 
@@ -340,7 +343,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataset does not exist&quot;</span><span class="p">)</span>
             <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Datasets.bulk_insert"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.bulk_insert">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.bulk_insert"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.bulk_insert">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -428,10 +431,10 @@
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;response_json&quot;</span><span class="p">:</span> <span class="n">response_json</span><span class="p">,</span>
                 <span class="s2">&quot;documents&quot;</span><span class="p">:</span> <span class="n">documents</span><span class="p">,</span>
-                <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">insert_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
-            <span class="p">}</span></div>
+                <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">insert_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span></div>
+            <span class="p">}</span>
 
-<div class="viewcode-block" id="Datasets.delete"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.delete"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">confirm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -471,7 +474,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Input </span><span class="si">{</span><span class="n">user_input</span><span class="si">}</span><span class="s2"> unrecognised.&quot;</span><span class="p">)</span>
             <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Datasets.clone"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.clone"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">old_dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">new_dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -511,10 +514,10 @@
                 <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.search"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.datasets.Datasets.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+<div class="viewcode-block" id="Datasets.search"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/datasets/index.html#relevanceai.api.datasets.Datasets.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">,</span>
         <span class="n">sort_by_created_at_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -543,8 +546,8 @@
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div></div>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

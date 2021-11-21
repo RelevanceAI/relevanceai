@@ -6,6 +6,7 @@
   <title>relevanceai.api.recommend &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.api.recommend</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -73,14 +76,14 @@
 <span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
-<div class="viewcode-block" id="Recommend"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.recommend.Recommend">[docs]</a><span class="k">class</span> <span class="nc">Recommend</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Recommend"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.recommend.Recommend">[docs]</a><span class="k">class</span> <span class="nc">Recommend</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Recommend.vector"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.recommend.Recommend.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span>
+<div class="viewcode-block" id="Recommend.vector"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.recommend.Recommend.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">positive_document_ids</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -201,9 +204,9 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span>
+                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span></div></div>
             <span class="p">},</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

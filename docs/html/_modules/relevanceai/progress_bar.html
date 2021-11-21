@@ -6,6 +6,7 @@
   <title>relevanceai.progress_bar &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.progress_bar</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -74,12 +77,12 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
 
 
-<span class="k">class</span> <span class="nc">ProgressBar</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bar</span><span class="p">()(</span><span class="n">iterable</span><span class="p">)</span>
+<div class="viewcode-block" id="ProgressBar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar">[docs]</a><span class="k">class</span> <span class="nc">ProgressBar</span><span class="p">:</span>
+<div class="viewcode-block" id="ProgressBar.__call__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bar</span><span class="p">()(</span><span class="n">iterable</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_in_ipython</span><span class="p">():</span>
+<div class="viewcode-block" id="ProgressBar.is_in_ipython"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.is_in_ipython">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_ipython</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if current code is executed within an ipython session.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -92,9 +95,9 @@
                 <span class="n">is_in_ipython</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="k">pass</span>  <span class="c1"># If dependencies are not available, then not interactive for sure.</span>
-        <span class="k">return</span> <span class="n">is_in_ipython</span>
+        <span class="k">return</span> <span class="n">is_in_ipython</span></div>
 
-    <span class="k">def</span> <span class="nf">is_in_notebook</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="ProgressBar.is_in_notebook"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.is_in_notebook">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_notebook</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if current code is executed from an ipython notebook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -105,11 +108,11 @@
 
             <span class="k">if</span> <span class="s2">&quot;IPKernelApp&quot;</span> <span class="ow">in</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
                 <span class="n">is_in_notebook</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="n">is_in_notebook</span>
+        <span class="k">return</span> <span class="n">is_in_notebook</span></div>
 
-    <span class="k">def</span> <span class="nf">get_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProgressBar.get_bar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.get_bar">[docs]</a>    <span class="k">def</span> <span class="nf">get_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
-        <span class="k">return</span> <span class="n">tqdm</span>
+        <span class="k">return</span> <span class="n">tqdm</span></div></div>
 
 
 <div class="viewcode-block" id="NullProgressBar"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.progress_bar.NullProgressBar">[docs]</a><span class="k">class</span> <span class="nc">NullProgressBar</span><span class="p">(</span><span class="n">AbstractContextManager</span><span class="p">):</span>
@@ -126,32 +129,32 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="o">=</span> <span class="n">iterable</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span>
+<div class="viewcode-block" id="NullProgressBar.__enter__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar.__enter__">[docs]</a>    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span></div>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">excinfo</span><span class="p">):</span>
-        <span class="k">pass</span>
+<div class="viewcode-block" id="NullProgressBar.__exit__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar.__exit__">[docs]</a>    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">excinfo</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NullProgressBar.__iter__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">i</span></div>
+            <span class="k">yield</span> <span class="n">i</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">progress_bar</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="progress_bar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.progress_bar">[docs]</a><span class="k">def</span> <span class="nf">progress_bar</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">show_progress_bar</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ProgressBar</span><span class="p">()(</span><span class="n">iterable</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">pass</span>
-    <span class="k">return</span> <span class="n">NullProgressBar</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NullProgressBar</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 
-    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="viewcode-block" id="x"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.x">[docs]</a>    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span></div>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>

@@ -6,6 +6,7 @@
   <title>relevanceai.config &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -39,8 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core Specs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -58,6 +60,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../relevanceai.html">relevanceai</a> &raquo;</li>
       <li>relevanceai.config</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -74,8 +77,8 @@
 
 <span class="kn">from</span> <span class="nn">doc_utils.doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
 
-<span class="n">PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
-<span class="n">CONFIG_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PATH</span><span class="p">,</span> <span class="s2">&quot;config.ini&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="PATH"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.PATH">[docs]</a><span class="n">PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span></div>
+<div class="viewcode-block" id="CONFIG_PATH"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.CONFIG_PATH">[docs]</a><span class="n">CONFIG_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PATH</span><span class="p">,</span> <span class="s2">&quot;config.ini&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">DocUtils</span><span class="p">):</span>
@@ -129,7 +132,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_create_default</span><span class="p">():</span>
+<div class="viewcode-block" id="Config._create_default"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config._create_default">[docs]</a>    <span class="k">def</span> <span class="nf">_create_default</span><span class="p">():</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;retries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;number_of_retries&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                              <span class="s2">&quot;seconds_between_retries&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
@@ -137,10 +140,10 @@
                              <span class="s1">&#39;enable_logging&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;log_file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;relevanceai&quot;</span><span class="p">}</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;target_chunk_mb&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span></div>
+            <span class="n">config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span></div></div>
 
 
-<span class="n">CONFIG</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+<div class="viewcode-block" id="CONFIG"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.CONFIG">[docs]</a><span class="n">CONFIG</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span></div>
 
 <span class="c1"># To create the initial config</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
