@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.api.aggregate &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../viz.html">Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core RelevanceAI Specs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">relevanceai</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>relevanceai.api.aggregate</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for relevanceai.api.aggregate</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
+
+
+<div class="viewcode-block" id="Aggregate"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.aggregate.Aggregate">[docs]</a><span class="k">class</span> <span class="nc">Aggregate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Aggregate service&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Aggregate.aggregate"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.aggregate.Aggregate.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">groupby</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; {</span>
+<span class="sd">        &gt;&gt;&gt;        &quot;groupby&quot; : [</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &lt;alias&gt;, &quot;field&quot;: &lt;field in the collection&gt;, &quot;agg&quot;: &quot;category&quot;},</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &lt;alias&gt;, &quot;field&quot;: &lt;another groupby field in the collection&gt;, &quot;agg&quot;: &quot;numeric&quot;}</span>
+<span class="sd">        &gt;&gt;&gt;        ],</span>
+<span class="sd">        &gt;&gt;&gt;        &quot;metrics&quot; : [</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &lt;alias&gt;, &quot;field&quot;: &lt;numeric field in the collection&gt;, &quot;agg&quot;: &quot;avg&quot;}</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &lt;alias&gt;, &quot;field&quot;: &lt;another numeric field in the collection&gt;, &quot;agg&quot;: &quot;max&quot;}</span>
+<span class="sd">        &gt;&gt;&gt;        ]</span>
+<span class="sd">        &gt;&gt;&gt;    }</span>
+<span class="sd">        &gt;&gt;&gt;    For example, one can use the following aggregations to group score based on region and player name.</span>
+<span class="sd">        &gt;&gt;&gt;    {</span>
+<span class="sd">        &gt;&gt;&gt;        &quot;groupby&quot; : [</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &quot;region&quot;, &quot;field&quot;: &quot;player_region&quot;, &quot;agg&quot;: &quot;category&quot;},</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &quot;player_name&quot;, &quot;field&quot;: &quot;name&quot;, &quot;agg&quot;: &quot;category&quot;}</span>
+<span class="sd">        &gt;&gt;&gt;        ],</span>
+<span class="sd">        &gt;&gt;&gt;        &quot;metrics&quot; : [</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &quot;average_score&quot;, &quot;field&quot;: &quot;final_score&quot;, &quot;agg&quot;: &quot;avg&quot;},</span>
+<span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &quot;max_score&quot;, &quot;field&quot;: &quot;final_score&quot;, &quot;agg&quot;: &quot;max&quot;},</span>
+<span class="sd">        &gt;&gt;&gt;            {&#39;name&#39;:&#39;total_score&#39;,&#39;field&#39;:&quot;final_score&quot;, &#39;agg&#39;:&#39;sum&#39;},</span>
+<span class="sd">        &gt;&gt;&gt;            {&#39;name&#39;:&#39;average_deaths&#39;,&#39;field&#39;:&quot;final_deaths&quot;, &#39;agg&#39;:&#39;avg&#39;},</span>
+<span class="sd">        &gt;&gt;&gt;            {&#39;name&#39;:&#39;highest_deaths&#39;,&#39;field&#39;:&quot;final_deaths&quot;, &#39;agg&#39;:&#39;max&#39;},</span>
+<span class="sd">        &gt;&gt;&gt;        ]</span>
+<span class="sd">        &gt;&gt;&gt;    }</span>
+
+<span class="sd">        &quot;groupby&quot; is the fields you want to split the data into. These are the available groupby types:</span>
+
+<span class="sd">            - category : groupby a field that is a category</span>
+<span class="sd">            - numeric: groupby a field that is a numeric</span>
+
+<span class="sd">        &quot;metrics&quot; is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:</span>
+<span class="sd">            </span>
+<span class="sd">            - &quot;avg&quot;, &quot;max&quot;, &quot;min&quot;, &quot;sum&quot;, &quot;cardinality&quot;</span>
+
+<span class="sd">        The response returned has the following in descending order. \n</span>
+
+<span class="sd">        If you want to return documents, specify a &quot;group_size&quot; parameter and a &quot;select_fields&quot; parameter if you want to limit the specific fields chosen. This looks as such:</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt;    {</span>
+<span class="sd">        &gt;&gt;&gt;    &#39;groupby&#39;:[</span>
+<span class="sd">        &gt;&gt;&gt;        {&#39;name&#39;:&#39;Manufacturer&#39;,&#39;field&#39;:&#39;manufacturer&#39;,&#39;agg&#39;:&#39;category&#39;,</span>
+<span class="sd">        &gt;&gt;&gt;        &#39;group_size&#39;: 10, &#39;select_fields&#39;: [&quot;name&quot;]},</span>
+<span class="sd">        &gt;&gt;&gt;    ],</span>
+<span class="sd">        &gt;&gt;&gt;    &#39;metrics&#39;:[</span>
+<span class="sd">        &gt;&gt;&gt;        {&#39;name&#39;:&#39;Price Average&#39;,&#39;field&#39;:&#39;price&#39;,&#39;agg&#39;:&#39;avg&#39;},</span>
+<span class="sd">        &gt;&gt;&gt;    ],</span>
+<span class="sd">        &gt;&gt;&gt;    }</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt;    {&quot;title&quot;: {&quot;title&quot;: &quot;books&quot;, &quot;frequency&quot;: 200, &quot;documents&quot;: [{...}, {...}]}, {&quot;title&quot;: &quot;books&quot;, &quot;frequency&quot;: 100, &quot;documents&quot;: [{...}, {...}]}}</span>
+<span class="sd">        </span>
+<span class="sd">        For array-aggregations, you can add &quot;agg&quot;: &quot;array&quot; into the aggregation query.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        metrics: list</span>
+<span class="sd">            Fields and metrics you want to calculate</span>
+<span class="sd">        groupby: list </span>
+<span class="sd">            Fields you want to split the data into</span>
+<span class="sd">        filters: list</span>
+<span class="sd">            Query for filtering the search results</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        page: int</span>
+<span class="sd">            Page of the results</span>
+<span class="sd">        asc: bool</span>
+<span class="sd">            Whether to sort results by ascending or descending order</span>
+<span class="sd">        flatten: bool</span>
+<span class="sd">            Whether to flatten</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias used to name a vector field. Belongs in field_{alias} vector</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;services/aggregate/aggregate&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;aggregation_query&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;groupby&quot;</span><span class="p">:</span> <span class="n">groupby</span><span class="p">,</span> <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">},</span>
+                <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+                <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
+                <span class="s2">&quot;flatten&quot;</span><span class="p">:</span> <span class="n">flatten</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
