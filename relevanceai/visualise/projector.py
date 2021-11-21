@@ -49,8 +49,6 @@ class Projector(Base, DocUtils):
         }
         super().__init__(**self.base_args)
 
-
-    @typechecked
     def plot(
         self,
         dataset_id: str,

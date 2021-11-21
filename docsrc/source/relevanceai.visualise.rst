@@ -1,41 +1,27 @@
-relevanceai.visualise package
+Visualisations
 =============================
-
-Submodules
-----------
-
-relevanceai.visualise.cluster module
-------------------------------------
 
 .. automodule:: relevanceai.visualise.cluster
    :members:
-
-relevanceai.visualise.constants module
---------------------------------------
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: relevanceai.visualise.constants
    :members:
-
-relevanceai.visualise.dataset module
-------------------------------------
-
-.. automodule:: relevanceai.visualise.dataset
-   :members:
-
-relevanceai.visualise.dim\_reduction module
--------------------------------------------
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: relevanceai.visualise.dim_reduction
    :members:
-
-relevanceai.visualise.projector module
---------------------------------------
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: relevanceai.visualise.projector
    :members:
-
-Module contents
----------------
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: relevanceai.visualise
    :members:
+   :undoc-members:
+   :show-inheritance:

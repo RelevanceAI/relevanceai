@@ -40,6 +40,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
@@ -87,11 +88,11 @@
 <span class="kn">from</span> <span class="nn">relevanceai.visualise.cluster</span> <span class="kn">import</span> <span class="n">Cluster</span>
 <span class="kn">from</span> <span class="nn">relevanceai.visualise.dim_reduction</span> <span class="kn">import</span> <span class="n">DimReduction</span> 
 
-<span class="kn">from</span> <span class="nn">doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
-
-<div class="viewcode-block" id="RELEVANCEAI_BLUE"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.RELEVANCEAI_BLUE">[docs]</a><span class="n">RELEVANCEAI_BLUE</span> <span class="o">=</span> <span class="s1">&#39;#1854FF&#39;</span></div>
-
-<div class="viewcode-block" id="Projector"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Projector.project"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.projector.Projector.project">[docs]</a><span class="kn">from</span> <span class="nn">doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span></div>
+<div class="viewcode-block" id="Projector.api_key"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.projector.Projector.api_key">[docs]</a></div>
+<div class="viewcode-block" id="Projector.base_url"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.projector.Projector.base_url">[docs]</a><div class="viewcode-block" id="RELEVANCEAI_BLUE"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.RELEVANCEAI_BLUE">[docs]</a><span class="n">RELEVANCEAI_BLUE</span> <span class="o">=</span> <span class="s1">&#39;#1854FF&#39;</span></div></div>
+<div class="viewcode-block" id="Projector.config"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.projector.Projector.config">[docs]</a></div>
+<div class="viewcode-block" id="Projector"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.projector.Projector">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Projector</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Projector class.</span>
@@ -120,9 +121,7 @@
         <span class="p">}</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">base_args</span><span class="p">)</span>
 
-
-    <span class="nd">@typechecked</span>
-<div class="viewcode-block" id="Projector.plot"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+<div class="viewcode-block" id="Projector.plot"><a class="viewcode-back" href="../../../relevanceai.visualise.html#relevanceai.visualise.projector.Projector.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
