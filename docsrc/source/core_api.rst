@@ -35,10 +35,7 @@ You then write:
    # Vector search in a dataset
    client.services.search.vector(...)
 
-Submodules
-----------
-
-relevanceai.api.admin module
+Admin
 ----------------------------
 
 .. automodule:: relevanceai.api.admin
@@ -46,7 +43,7 @@ relevanceai.api.admin module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.aggregate module
+Aggregate
 --------------------------------
 
 .. automodule:: relevanceai.api.aggregate
@@ -54,7 +51,7 @@ relevanceai.api.aggregate module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.centroids module
+Centroids
 --------------------------------
 
 .. automodule:: relevanceai.api.centroids
@@ -62,7 +59,7 @@ relevanceai.api.centroids module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.client module
+Client
 -----------------------------
 
 .. automodule:: relevanceai.api.client
@@ -70,7 +67,7 @@ relevanceai.api.client module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.cluster module
+Cluster
 ------------------------------
 
 .. automodule:: relevanceai.api.cluster
@@ -78,7 +75,7 @@ relevanceai.api.cluster module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.datasets module
+Datasets
 -------------------------------
 
 .. automodule:: relevanceai.api.datasets
@@ -86,7 +83,7 @@ relevanceai.api.datasets module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.documents module
+Document Operations
 --------------------------------
 
 .. automodule:: relevanceai.api.documents
@@ -94,7 +91,7 @@ relevanceai.api.documents module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.encoders module
+Available Encoders
 -------------------------------
 
 .. automodule:: relevanceai.api.encoders
@@ -102,7 +99,7 @@ relevanceai.api.encoders module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.monitor module
+Monitoring
 ------------------------------
 
 .. automodule:: relevanceai.api.monitor
@@ -110,7 +107,7 @@ relevanceai.api.monitor module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.recommend module
+Recommendations
 --------------------------------
 
 .. automodule:: relevanceai.api.recommend
@@ -118,7 +115,7 @@ relevanceai.api.recommend module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.requests\_config module
+Request Configuration
 ---------------------------------------
 
 .. automodule:: relevanceai.api.requests_config
@@ -126,7 +123,7 @@ relevanceai.api.requests\_config module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.search module
+Search
 -----------------------------
 
 .. automodule:: relevanceai.api.search
@@ -134,15 +131,7 @@ relevanceai.api.search module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.api.services module
--------------------------------
-
-.. automodule:: relevanceai.api.services
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-relevanceai.api.tasks module
+Tasks
 ----------------------------
 
 .. automodule:: relevanceai.api.tasks

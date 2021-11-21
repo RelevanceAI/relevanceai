@@ -1,3 +1,6 @@
+"""
+All admin-related tasks.
+"""
 from relevanceai.base import Base
 
 

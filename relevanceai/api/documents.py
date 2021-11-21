@@ -279,15 +279,14 @@ class Documents(Base):
         self,
         dataset_id: str,
         chunk_size: int = 10000,
-        filters: list = [],
-        sort: list = [],
-        select_fields: list = [],
+        filters: List = [],
+        sort: List = [],
+        select_fields: List = [],
         include_vector: bool = True,
         output_format: str = "json",
         verbose: bool = True,
     ):
-
-        """ 
+        """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
         
         Parameters
