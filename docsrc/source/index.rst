@@ -17,9 +17,8 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Contents
 
-   features
-   viz
    core_api
+   Python Utilities
    
 
 Indices and tables
