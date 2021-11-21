@@ -18,8 +18,8 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :caption: Contents
 
    core_api
-   features
    relevanceai.visualise
+   features
    
 
 Indices and tables
