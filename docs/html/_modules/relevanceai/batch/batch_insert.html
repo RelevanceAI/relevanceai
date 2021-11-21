@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.batch.batch_insert &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
+      <li>relevanceai.batch.batch_insert</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for relevanceai.batch.batch_insert</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Batch operations&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">relevanceai.api.client</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.batch.local_logger</span> <span class="kn">import</span> <span class="n">PullUpdatePushLocalLogger</span>
+<span class="kn">from</span> <span class="nn">relevanceai.concurrency</span> <span class="kn">import</span> <span class="n">multiprocess</span><span class="p">,</span> <span class="n">multithread</span>
+<span class="kn">from</span> <span class="nn">relevanceai.progress_bar</span> <span class="kn">import</span> <span class="n">progress_bar</span>
+<span class="kn">from</span> <span class="nn">relevanceai.batch.chunk</span> <span class="kn">import</span> <span class="n">Chunker</span>
+
+<div class="viewcode-block" id="BYTE_TO_MB"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BYTE_TO_MB">[docs]</a><span class="n">BYTE_TO_MB</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span></div>
+<div class="viewcode-block" id="LIST_SIZE_MULTIPLIER"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.LIST_SIZE_MULTIPLIER">[docs]</a><span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+
+<div class="viewcode-block" id="BatchInsert"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert">[docs]</a><span class="k">class</span> <span class="nc">BatchInsert</span><span class="p">(</span><span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchInsert.insert_documents"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_documents">[docs]</a>    <span class="k">def</span> <span class="nf">insert_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">retry_chunk_mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">chunksize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">max_retries</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert a list of documents with multi-threading automatically enabled.</span>
+
+<span class="sd">        - When inserting the document you can optionally specify your own id for a document by using the field name &quot;_id&quot;, if not specified a random id is assigned.</span>
+<span class="sd">        - When inserting or specifying vectors in a document use the suffix (ends with) &quot;_vector_&quot; for the field name. e.g. &quot;product_description_vector_&quot;.</span>
+<span class="sd">        - When inserting or specifying chunks in a document the suffix (ends with) &quot;_chunk_&quot; for the field name. e.g. &quot;products_chunk_&quot;.</span>
+<span class="sd">        - When inserting or specifying chunk vectors in a document&#39;s chunks use the suffix (ends with) &quot;_chunkvector_&quot; for the field name. e.g. &quot;products_chunk_.product_description_chunkvector_&quot;.</span>
+<span class="sd">        </span>
+<span class="sd">        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        docs : list</span>
+<span class="sd">            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field &#39;_id&#39;, for specifying vector field use the suffix of &#39;_vector_&#39;</span>
+<span class="sd">        bulk_fn : callable</span>
+<span class="sd">            Function to apply to documents before uploading</span>
+<span class="sd">        max_workers : int</span>
+<span class="sd">            Number of workers active for multi-threading</span>
+<span class="sd">        retry_chunk_mult: int</span>
+<span class="sd">            Multiplier to apply to chunksize if upload fails</span>
+<span class="sd">        chunksize : int</span>
+<span class="sd">            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are currently inserting into </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection=</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># Check if the collection exists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">bulk_insert_func</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span>
+                <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="n">docs</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">return_documents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="n">max_retries</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_documents</span><span class="p">(</span>
+            <span class="n">bulk_insert_func</span><span class="p">,</span>
+            <span class="n">docs</span><span class="p">,</span>
+            <span class="n">bulk_fn</span><span class="p">,</span>
+            <span class="n">max_workers</span><span class="p">,</span>
+            <span class="n">retry_chunk_mult</span><span class="p">,</span>
+            <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span><span class="p">,</span>
+            <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="BatchInsert.update_documents"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.update_documents">[docs]</a>    <span class="k">def</span> <span class="nf">update_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">retry_chunk_mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a list of documents with multi-threading automatically enabled.</span>
+<span class="sd">        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the &quot;_id&quot; in the documents.</span>
+
+<span class="sd">        &gt;&gt;&gt; from relevanceai import Client</span>
+<span class="sd">        &gt;&gt;&gt; url = &quot;https://api-aueast.relevance.ai/v1/&quot;</span>
+<span class="sd">        &gt;&gt;&gt; collection = &quot;&quot;</span>
+<span class="sd">        &gt;&gt;&gt; project = &quot;&quot;</span>
+<span class="sd">        &gt;&gt;&gt; api_key = &quot;&quot;</span>
+<span class="sd">        &gt;&gt;&gt; client = Client(project, api_key)</span>
+<span class="sd">        &gt;&gt;&gt; docs = client.datasets.documents.get_where(collection, select_fields=[&#39;title&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; while len(docs[&#39;documents&#39;]) &gt; 0:</span>
+<span class="sd">        &gt;&gt;&gt;     docs[&#39;documents&#39;] = model.encode_documents_in_bulk([&#39;product_name&#39;], docs[&#39;documents&#39;])</span>
+<span class="sd">        &gt;&gt;&gt;     client.update_documents(collection, docs[&#39;documents&#39;])</span>
+<span class="sd">        &gt;&gt;&gt;     docs = client.datasets.documents.get_where(collection, select_fields=[&#39;product_name&#39;], cursor=docs[&#39;cursor&#39;])</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        docs : list</span>
+<span class="sd">            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field &#39;_id&#39;, for specifying vector field use the suffix of &#39;_vector_&#39;</span>
+<span class="sd">        bulk_fn : callable</span>
+<span class="sd">            Function to apply to documents before uploading</span>
+<span class="sd">        max_workers : int</span>
+<span class="sd">            Number of workers active for multi-threading</span>
+<span class="sd">        retry_chunk_mult: int</span>
+<span class="sd">            Multiplier to apply to chunksize if upload fails</span>
+<span class="sd">        chunksize : int</span>
+<span class="sd">            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are currently updating </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection=</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">bulk_update_func</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">bulk_update</span><span class="p">(</span>
+                <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="n">docs</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">return_documents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_documents</span><span class="p">(</span>
+            <span class="n">bulk_update_func</span><span class="p">,</span>
+            <span class="n">docs</span><span class="p">,</span>
+            <span class="n">bulk_fn</span><span class="p">,</span>
+            <span class="n">max_workers</span><span class="p">,</span>
+            <span class="n">retry_chunk_mult</span><span class="p">,</span>
+            <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="BatchInsert.pull_update_push"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">original_collection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">update_function</span><span class="p">,</span>
+        <span class="n">updated_collection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">updating_args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">retrieve_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loops through every document in your collection and applies a function (that is specified by you) to the documents.</span>
+<span class="sd">        These documents are then uploaded into either an updated collection, or back into the original collection. </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        original_collection : string</span>
+<span class="sd">            The dataset_id of the collection where your original documents are</span>
+<span class="sd">        logging_collection: string</span>
+<span class="sd">            The dataset_id of the collection which logs which documents have been updated. If &#39;None&#39;, then one will be created for you.</span>
+<span class="sd">        updated_collection: string</span>
+<span class="sd">            The dataset_id of the collection where your updated documents are uploaded into. If &#39;None&#39;, then your original collection will be updated.</span>
+<span class="sd">        update_function: function</span>
+<span class="sd">            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</span>
+<span class="sd">        updating_args: dict</span>
+<span class="sd">            Additional arguments to your update_function, if they exist. They must be in the format of {&#39;Argument&#39;: Value}</span>
+<span class="sd">        retrieve_chunk_size: int</span>
+<span class="sd">            The number of documents that are received from the original collection with each loop iteration.</span>
+<span class="sd">        max_workers: int</span>
+<span class="sd">            The number of processors you want to parallelize with</span>
+<span class="sd">        max_error:</span>
+<span class="sd">            How many failed uploads before the function breaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">update_function</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Your update function needs to be a function! Please read the documentation if it is not.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Check if a logging_collection has been supplied</span>
+        <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="n">original_collection</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
+        
+        <span class="c1"># Instantiate the logger to document the successful IDs</span>
+        <span class="n">PULL_UPDATE_PUSH_LOGGER</span> <span class="o">=</span> <span class="n">PullUpdatePushLocalLogger</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+
+        <span class="c1"># Track failed documents</span>
+        <span class="n">failed_documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Trust the process</span>
+        <span class="c1"># Get document lengths to calculate iterations</span>
+        <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
+            <span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="p">)</span>
+
+        <span class="c1"># get the remaining number in case things break</span>
+        <span class="n">remaining_length</span> <span class="o">=</span> <span class="n">original_length</span> <span class="o">-</span> <span class="n">PULL_UPDATE_PUSH_LOGGER</span><span class="o">.</span><span class="n">count_ids_in_fn</span><span class="p">()</span>
+        <span class="n">iterations_required</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">remaining_length</span> <span class="o">/</span> <span class="n">retrieve_chunk_size</span><span class="p">)</span>
+
+        <span class="n">completed_documents_list</span> <span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Get incomplete documents from raw collection</span>
+        <span class="n">retrieve_filters</span> <span class="o">=</span> <span class="n">filters</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;ids&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;filter_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ids&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;condition_value&quot;</span><span class="p">:</span> <span class="n">completed_documents_list</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="n">iterations_required</span><span class="p">),</span> <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span>
+        <span class="p">):</span>
+
+            <span class="n">orig_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span>
+                <span class="n">original_collection</span><span class="p">,</span>
+                <span class="n">filters</span><span class="o">=</span><span class="n">retrieve_filters</span><span class="p">,</span>
+                <span class="n">page_size</span><span class="o">=</span><span class="n">retrieve_chunk_size</span><span class="p">,</span>
+                <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">documents</span> <span class="o">=</span> <span class="n">orig_json</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">updated_data</span> <span class="o">=</span> <span class="n">update_function</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="o">**</span><span class="n">updating_args</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Your updating function does not work: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">return</span>
+            
+            <span class="n">updated_documents</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">]</span>
+
+            <span class="c1"># Upload documents</span>
+            <span class="k">if</span> <span class="n">updated_collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span>
+                    <span class="n">dataset_id</span><span class="o">=</span><span class="n">original_collection</span><span class="p">,</span>
+                    <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                    <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span>
+                    <span class="n">dataset_id</span><span class="o">=</span><span class="n">updated_collection</span><span class="p">,</span>
+                    <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                    <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Check success</span>
+            <span class="n">chunk_failed</span> <span class="o">=</span> <span class="n">insert_json</span><span class="p">[</span><span class="s2">&quot;failed_documents&quot;</span><span class="p">]</span>
+            <span class="n">failed_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span>
+            <span class="n">success_documents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">updated_documents</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">failed_documents</span><span class="p">))</span>
+            <span class="n">PULL_UPDATE_PUSH_LOGGER</span><span class="o">.</span><span class="n">log_ids</span><span class="p">(</span><span class="n">success_documents</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Chunk of </span><span class="si">{</span><span class="n">retrieve_chunk_size</span><span class="si">}</span><span class="s2"> original documents updated and uploaded with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed documents!&quot;</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span> 
+        
+        <span class="c1"># if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:</span>
+        <span class="c1">#     os.remove(log_file)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span></div>
+        <span class="p">}</span>
+
+        
+<div class="viewcode-block" id="BatchInsert.pull_update_push_to_cloud"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push_to_cloud</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">original_collection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">update_function</span><span class="p">,</span>
+        <span class="n">updated_collection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logging_collection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">updating_args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">retrieve_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">retrieve_chunk_size_failure_retry_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">number_of_retrieve_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">max_error</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loops through every document in your collection and applies a function (that is specified by you) to the documents.</span>
+<span class="sd">        These documents are then uploaded into either an updated collection, or back into the original collection.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        original_collection : string</span>
+<span class="sd">            The dataset_id of the collection where your original documents are</span>
+<span class="sd">        logging_collection: string</span>
+<span class="sd">            The dataset_id of the collection which logs which documents have been updated. If &#39;None&#39;, then one will be created for you.</span>
+<span class="sd">        updated_collection: string</span>
+<span class="sd">            The dataset_id of the collection where your updated documents are uploaded into. If &#39;None&#39;, then your original collection will be updated.</span>
+<span class="sd">        update_function: function</span>
+<span class="sd">            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</span>
+<span class="sd">        updating_args: dict</span>
+<span class="sd">            Additional arguments to your update_function, if they exist. They must be in the format of {&#39;Argument&#39;: Value}</span>
+<span class="sd">        retrieve_chunk_size: int</span>
+<span class="sd">            The number of documents that are received from the original collection with each loop iteration.</span>
+<span class="sd">        retrieve_chunk_size_failure_retry_multiplier: int</span>
+<span class="sd">            If fails, retry on each chunk</span>
+<span class="sd">        max_workers: int</span>
+<span class="sd">            The number of processors you want to parallelize with</span>
+<span class="sd">        max_error:</span>
+<span class="sd">            How many failed uploads before the function breaks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if a logging_collection has been supplied</span>
+        <span class="k">if</span> <span class="n">logging_collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging_collection</span> <span class="o">=</span> <span class="n">original_collection</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span>
+
+        <span class="c1"># Check collections and create completed list if needed</span>
+        <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logging_collection</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">collection_list</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a logging collection for you.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">logging_collection</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Track failed documents</span>
+        <span class="n">failed_documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Trust the process</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_retrieve_retries</span><span class="p">):</span>
+
+            <span class="c1"># Get document lengths to calculate iterations</span>
+            <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
+                <span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span>
+            <span class="p">)</span>
+            <span class="n">completed_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
+                <span class="n">logging_collection</span>
+            <span class="p">)</span>
+            <span class="n">remaining_length</span> <span class="o">=</span> <span class="n">original_length</span> <span class="o">-</span> <span class="n">completed_length</span>
+            <span class="n">iterations_required</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">remaining_length</span> <span class="o">/</span> <span class="n">retrieve_chunk_size</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">original_length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">completed_length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iterations_required</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Return if no documents to update</span>
+            <span class="k">if</span> <span class="n">remaining_length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span>
+                    <span class="s2">&quot;logging_collection&quot;</span><span class="p">:</span> <span class="n">logging_collection</span><span class="p">,</span>
+                <span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span><span class="n">iterations_required</span><span class="p">),</span> <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span>
+            <span class="p">):</span>
+
+                <span class="c1"># Get completed documents</span>
+                <span class="n">log_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where_all</span><span class="p">(</span>
+                    <span class="n">logging_collection</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+                <span class="p">)</span>
+                <span class="n">completed_documents_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_json</span><span class="p">]</span>
+
+                <span class="c1"># Get incomplete documents from raw collection</span>
+                <span class="n">retrieve_filters</span> <span class="o">=</span> <span class="n">filters</span> <span class="o">+</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;ids&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;filter_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ids&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;condition_value&quot;</span><span class="p">:</span> <span class="n">completed_documents_list</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+
+                <span class="n">orig_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span>
+                    <span class="n">original_collection</span><span class="p">,</span>
+                    <span class="n">filters</span><span class="o">=</span><span class="n">retrieve_filters</span><span class="p">,</span>
+                    <span class="n">page_size</span><span class="o">=</span><span class="n">retrieve_chunk_size</span><span class="p">,</span>
+                    <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">documents</span> <span class="o">=</span> <span class="n">orig_json</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Update documents</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">updated_data</span> <span class="o">=</span> <span class="n">update_function</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="o">**</span><span class="n">updating_args</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Your updating function does not work: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                    <span class="k">return</span>
+                <span class="n">updated_documents</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">updated_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Upload documents</span>
+                <span class="k">if</span> <span class="n">updated_collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span>
+                        <span class="n">dataset_id</span><span class="o">=</span><span class="n">original_collection</span><span class="p">,</span>
+                        <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                        <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                        <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span>
+                        <span class="n">dataset_id</span><span class="o">=</span><span class="n">updated_collection</span><span class="p">,</span>
+                        <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                        <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                        <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Check success</span>
+                <span class="n">chunk_failed</span> <span class="o">=</span> <span class="n">insert_json</span><span class="p">[</span><span class="s2">&quot;failed_documents&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Chunk of </span><span class="si">{</span><span class="n">retrieve_chunk_size</span><span class="si">}</span><span class="s2"> original documents updated and uploaded with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed documents!&quot;</span>
+                <span class="p">)</span>
+                <span class="n">failed_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span>
+                <span class="n">success_documents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">updated_documents</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">failed_documents</span><span class="p">))</span>
+                <span class="n">upload_documents</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">success_documents</span><span class="p">]</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span>
+                    <span class="n">logging_collection</span><span class="p">,</span>
+                    <span class="n">upload_documents</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="c1"># If fail, try to reduce retrieve chunk</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Failed to upload. Retrieving half of previous number.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">retrieve_chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                        <span class="n">retrieve_chunk_size</span>
+                        <span class="o">*</span> <span class="n">retrieve_chunk_size_failure_retry_multiplier</span>
+                    <span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">seconds_between_retries</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed_documents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_error</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;You have over </span><span class="si">{</span><span class="n">max_error</span><span class="si">}</span><span class="s2"> failed documents which failed to upload!&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="p">{</span>
+                        <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span>
+                        <span class="s2">&quot;logging_collection&quot;</span><span class="p">:</span> <span class="n">logging_collection</span><span class="p">,</span>
+                    <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span>
+            <span class="s2">&quot;logging_collection&quot;</span><span class="p">:</span> <span class="n">logging_collection</span><span class="p">,</span></div>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="BatchInsert.insert_df"><a class="viewcode-back" href="../../../relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_df">[docs]</a>    <span class="k">def</span> <span class="nf">insert_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert a dataframe for eachd doc&quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">v</span><span class="p">)}</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BatchInsert.delete_all_logs"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BatchInsert.delete_all_logs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_all_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">):</span>
+        <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span>
+        <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">collection_list</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dataset_id</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_collections</span><span class="p">]</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BatchInsert._write_documents"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BatchInsert._write_documents">[docs]</a>    <span class="k">def</span> <span class="nf">_write_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">insert_function</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">retry_chunk_mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="c1"># Get one document to test the size</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No document is detected&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;inserted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s2">&quot;failed_documents_detailed&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="p">}</span>
+
+        <span class="c1"># Insert documents</span>
+        <span class="n">test_doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">doc_mb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">test_doc</span><span class="p">)</span> <span class="o">*</span> <span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">/</span> <span class="n">BYTE_TO_MB</span>
+        <span class="k">if</span> <span class="n">chunksize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">target_chunk_mb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;upload.target_chunk_mb&quot;</span><span class="p">))</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_chunk_mb</span> <span class="o">/</span> <span class="n">doc_mb</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_chunk_mb</span><span class="o">/</span> <span class="n">doc_mb</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    
+        <span class="c1"># Initialise number of inserted documents</span>
+        <span class="n">inserted</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialise failed documents</span>
+        <span class="n">failed_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Initialise failed documents detailed</span>
+        <span class="n">failed_ids_detailed</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialise cancelled documents</span>
+        <span class="n">cancelled_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;retries.number_of_retries&quot;</span><span class="p">))):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">bulk_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">insert_json</span> <span class="o">=</span> <span class="n">multiprocess</span><span class="p">(</span>
+                        <span class="n">func</span><span class="o">=</span><span class="n">bulk_fn</span><span class="p">,</span>
+                        <span class="n">iterables</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
+                        <span class="n">post_func_hook</span><span class="o">=</span><span class="n">insert_function</span><span class="p">,</span>
+                        <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                        <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span>
+                        <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">insert_json</span><span class="o">=</span> <span class="n">multithread</span><span class="p">(</span>
+                        <span class="n">insert_function</span><span class="p">,</span>
+                        <span class="n">docs</span><span class="p">,</span>
+                        <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+                        <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span>
+                        <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="n">failed_ids</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">failed_ids_detailed</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="c1"># Update inserted amount</span>
+                <span class="k">def</span> <span class="nf">is_successfully_inserted</span><span class="p">(</span><span class="n">chunk</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;status_code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">200</span> 
+
+                <span class="n">inserted</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">map</span><span class="p">(</span>
+                        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;response_json&#39;</span><span class="p">][</span><span class="s1">&#39;inserted&#39;</span><span class="p">],</span>
+                        <span class="nb">filter</span><span class="p">(</span><span class="n">is_successfully_inserted</span><span class="p">,</span> <span class="n">insert_json</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">insert_json</span><span class="p">:</span>
+
+                    <span class="c1"># Track failed in 200</span>
+                    <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                        <span class="n">failed_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;response_json&#39;</span><span class="p">][</span><span class="s1">&#39;failed_documents&#39;</span><span class="p">]]</span>
+
+                        <span class="n">failed_ids_detailed</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;response_json&quot;</span><span class="p">][</span><span class="s2">&quot;failed_documents&quot;</span><span class="p">]]</span>
+
+                    <span class="c1"># Cancel documents with 400 or 404</span>
+                    <span class="k">elif</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">404</span><span class="p">]:</span>
+                        <span class="n">cancelled_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]]</span>
+
+                    <span class="c1"># Half chunksize with 413 or 524</span>
+                    <span class="k">elif</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">413</span><span class="p">,</span> <span class="mi">524</span><span class="p">]:</span>
+                        <span class="n">failed_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]]</span>
+                        <span class="n">chunksize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunksize</span> <span class="o">*</span> <span class="n">retry_chunk_mult</span><span class="p">)</span>
+
+                    <span class="c1"># Retry all other errors</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">failed_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]]</span>
+
+                <span class="c1"># Update docs to retry which have failed</span>
+                <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">docs</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">failed_ids</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c1"># When returning, add in the cancelled ids</span>
+        <span class="n">failed_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cancelled_ids</span><span class="p">)</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;inserted&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">inserted</span><span class="p">),</span>
+            <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_ids</span><span class="p">,</span>
+            <span class="s2">&quot;failed_documents_detailed&quot;</span><span class="p">:</span> <span class="n">failed_ids_detailed</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

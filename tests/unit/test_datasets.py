@@ -2,9 +2,9 @@ import pytest
 
 
 def test_get_sample_ecommerce_dataset():
-    from relevanceai.datasets import get_sample_ecommerce_dataset
+    from relevanceai.datasets import get_ecommerce_1_dataset
 
-    assert len(get_sample_ecommerce_dataset(number_of_documents=100)) == 100
+    assert len(get_ecommerce_1_dataset(number_of_documents=100)) == 100
 
 
 def test_get_games_dataset_subset():
@@ -48,13 +48,13 @@ def test_get_news_dataset_full():
 
 
 def test_get_ecommerce_dataset_subset():
-    from relevanceai.datasets import get_ecommerce_dataset
+    from relevanceai.datasets import get_ecommerce_3_dataset
 
-    assert len(get_ecommerce_dataset(number_of_documents=1000)) == 1000
+    assert len(get_ecommerce_3_dataset(number_of_documents=1000)) == 1000
 
 
 @pytest.mark.skip(reason="Min time to insight")
 def test_get_ecommerce_dataset_full():
-    from relevanceai.datasets import get_ecommerce_dataset
+    from relevanceai.datasets import get_ecommerce_3_dataset
 
-    assert len(get_ecommerce_dataset(number_of_documents=None)) == 15528
+    assert len(get_ecommerce_3_dataset(number_of_documents=None)) == 15528

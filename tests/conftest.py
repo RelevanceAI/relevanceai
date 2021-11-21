@@ -9,6 +9,7 @@ from relevanceai import Client
 
 from utils import generate_random_string, generate_random_vector
 
+RANDOM_STRING = str(random.randint(0, 999))
 
 @pytest.fixture
 def test_project():
@@ -38,7 +39,7 @@ def test_client(test_project, test_api_key):
 
 @pytest.fixture
 def test_dataset_id():
-    return "_sample_test_dataset"
+    return "_sample_test_dataset" + RANDOM_STRING
 
 
 @pytest.fixture

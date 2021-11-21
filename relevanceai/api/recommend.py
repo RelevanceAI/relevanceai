@@ -41,25 +41,25 @@ class Recommend(Base):
 
         >>> positive_document_ids=['A']
 
-        -> Document ID A Vector = Search Query
+        -> Document ID A Vector = Search Query \n
 
         Recommendations Personalized by multiple liked product:
 
         >>> positive_document_ids=['A', 'B']
 
-        -> Document ID A Vector + Document ID B Vector = Search Query
+        -> Document ID A Vector + Document ID B Vector = Search Query \n
 
         Recommendations Personalized by multiple liked product and disliked products:
 
         >>> positive_document_ids=['A', 'B'], negative_document_ids=['C', 'D']
 
-        -> (Document ID A Vector + Document ID B Vector) - (Document ID C Vector + Document ID C Vector) = Search Query
+        -> (Document ID A Vector + Document ID B Vector) - (Document ID C Vector + Document ID C Vector) = Search Query \n
 
         Recommendations Personalized by multiple liked product and disliked products with weights:
 
         >>> positive_document_ids={'A':0.5, 'B':1}, negative_document_ids={'C':0.6, 'D':0.4}
 
-        -> (Document ID A Vector * 0.5 + Document ID B Vector * 1) - (Document ID C Vector * 0.6 + Document ID D Vector * 0.4) = Search Query
+        -> (Document ID A Vector * 0.5 + Document ID B Vector * 1) - (Document ID C Vector * 0.6 + Document ID D Vector * 0.4) = Search Query \n
 
         You can change the operator between vectors with vector_operation:
 

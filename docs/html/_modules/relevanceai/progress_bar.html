@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.progress_bar &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../relevanceai.html">relevanceai</a> &raquo;</li>
+      <li>relevanceai.progress_bar</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for relevanceai.progress_bar</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Get a good progress bar</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># from contextlib import nullcontext</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
+
+
+<div class="viewcode-block" id="ProgressBar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar">[docs]</a><span class="k">class</span> <span class="nc">ProgressBar</span><span class="p">:</span>
+<div class="viewcode-block" id="ProgressBar.__call__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bar</span><span class="p">()(</span><span class="n">iterable</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ProgressBar.is_in_ipython"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.is_in_ipython">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_ipython</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if current code is executed within an ipython session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_in_ipython</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Check if the runtime is within an interactive environment, i.e., ipython.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">get_ipython</span>  <span class="c1"># pylint: disable=import-error</span>
+
+            <span class="k">if</span> <span class="n">get_ipython</span><span class="p">():</span>
+                <span class="n">is_in_ipython</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># If dependencies are not available, then not interactive for sure.</span>
+        <span class="k">return</span> <span class="n">is_in_ipython</span></div>
+
+<div class="viewcode-block" id="ProgressBar.is_in_notebook"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.is_in_notebook">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_notebook</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if current code is executed from an ipython notebook.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_in_notebook</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_in_ipython</span><span class="p">():</span>
+            <span class="c1"># The import and usage must be valid under the execution path.</span>
+            <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">get_ipython</span>
+
+            <span class="k">if</span> <span class="s2">&quot;IPKernelApp&quot;</span> <span class="ow">in</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+                <span class="n">is_in_notebook</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">is_in_notebook</span></div>
+
+<div class="viewcode-block" id="ProgressBar.get_bar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.get_bar">[docs]</a>    <span class="k">def</span> <span class="nf">get_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
+        <span class="k">return</span> <span class="n">tqdm</span></div></div>
+
+
+<div class="viewcode-block" id="NullProgressBar"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.progress_bar.NullProgressBar">[docs]</a><span class="k">class</span> <span class="nc">NullProgressBar</span><span class="p">(</span><span class="n">AbstractContextManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Context manager that does no additional processing.</span>
+
+<span class="sd">    Used as a stand-in for a normal context manager, when a particular</span>
+<span class="sd">    block of code is only sometimes used with a normal context manager:</span>
+
+<span class="sd">    cm = optional_cm if condition else nullcontext()</span>
+<span class="sd">    with cm:</span>
+<span class="sd">        # Perform operation, using optional_cm if condition is True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="o">=</span> <span class="n">iterable</span>
+
+<div class="viewcode-block" id="NullProgressBar.__enter__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar.__enter__">[docs]</a>    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span></div>
+
+<div class="viewcode-block" id="NullProgressBar.__exit__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar.__exit__">[docs]</a>    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">excinfo</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="NullProgressBar.__iter__"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">i</span></div></div>
+
+
+<div class="viewcode-block" id="progress_bar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.progress_bar">[docs]</a><span class="k">def</span> <span class="nf">progress_bar</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">show_progress_bar</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ProgressBar</span><span class="p">()(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">NullProgressBar</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+<div class="viewcode-block" id="x"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.x">[docs]</a>    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span></div>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">break</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

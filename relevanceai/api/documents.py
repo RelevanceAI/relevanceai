@@ -23,6 +23,7 @@ class Documents(Base):
     ):
         """
         Retrieve documents from a specified dataset. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the dataset. 
+        
         Parameters
         ----------
         dataset_id : string
@@ -64,6 +65,7 @@ class Documents(Base):
 
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field. 
+        
         Parameters
         ----------
         dataset_id : string
@@ -100,7 +102,7 @@ class Documents(Base):
     ):
 
         """ 
-        Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched.
+        Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
 
         The filters query is a json body that follows the schema of:
 
@@ -109,34 +111,44 @@ class Documents(Base):
         >>>    {'field' : <field to filter>, 'filter_type' : <type of filter>, "condition":">=", "condition_value":90},
         >>> ]
 
-        These are the available filter_type types: ["contains", "category", "categories", "exists", "date", "numeric", "ids"]
+        These are the available filter_type types: ["contains", "category", "categories", "exists", "date", "numeric", "ids"] \n
 
         "contains": for filtering documents that contains a string
+
         >>> {'field' : 'item_brand', 'filter_type' : 'contains', "condition":"==", "condition_value": "samsu"}
 
         "exact_match"/"category": for filtering documents that matches a string or list of strings exactly.
+
         >>> {'field' : 'item_brand', 'filter_type' : 'category', "condition":"==", "condition_value": "sumsung"}
 
         "categories": for filtering documents that contains any of a category from a list of categories.
+
         >>> {'field' : 'item_category_tags', 'filter_type' : 'categories', "condition":"==", "condition_value": ["tv", "smart", "bluetooth_compatible"]}
 
         "exists": for filtering documents that contains a field.
+
         >>> {'field' : 'purchased', 'filter_type' : 'exists', "condition":"==", "condition_value":" "}
 
         If you are looking to filter for documents where a field doesn't exist, run this:
+
         >>> {'field' : 'purchased', 'filter_type' : 'exists', "condition":"!=", "condition_value":" "}
 
         "date": for filtering date by date range.
+
         >>> {'field' : 'insert_date_', 'filter_type' : 'date', "condition":">=", "condition_value":"2020-01-01"}
 
         "numeric": for filtering by numeric range.
+
         >>> {'field' : 'price', 'filter_type' : 'numeric', "condition":">=", "condition_value":90}
 
         "ids": for filtering by document ids.
+
         >>> {'field' : 'ids', 'filter_type' : 'ids', "condition":"==", "condition_value":["1", "10"]}
 
         These are the available conditions:
+
         >>> "==", "!=", ">=", ">", "<", "<="
+        
         If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
 
         Parameters
@@ -268,16 +280,16 @@ class Documents(Base):
         self,
         dataset_id: str,
         chunk_size: int = 10000,
-        filters: list = [],
-        sort: list = [],
-        select_fields: list = [],
+        filters: List = [],
+        sort: List = [],
+        select_fields: List = [],
         include_vector: bool = True,
         output_format: str = "json",
         verbose: bool = True,
     ):
-
-        """ 
+        """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
+        
         Parameters
         ----------
         dataset_id : string
@@ -323,6 +335,7 @@ class Documents(Base):
     def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
         """ 
         Get number of documents in a multiple different dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        
         Parameters
         ----------
         dataset_ids: list
@@ -343,6 +356,7 @@ class Documents(Base):
     def _get_number_of_documents(self, dataset_id, filters=[], verbose: bool=False):
         """ 
         Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        
         Parameters
         ----------
         dataset_ids: list
