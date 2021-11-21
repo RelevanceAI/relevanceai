@@ -63,13 +63,19 @@ dev_vis_requirements = (
     + vis_extras
 )
 
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
+
+
 setup(
     name="RelevanceAI",
     version=get_version("relevanceai/__init__.py"),
     url="https://relevance.ai/",
     author="Relevance AI",
     author_email="dev@relevance.ai",
-    long_description="",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     setup_requires=["wheel"],
     install_requires=requirements,
@@ -93,5 +99,32 @@ setup(
         "hdbscan": hdbscan,
     },
     python_requires=">=3.6",
-    classifiers=[],
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: Financial and Insurance Industry",
+        "Intended Audience :: Healthcare Industry",
+        "Intended Audience :: Manufacturing",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Database",
+        "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+        "Topic :: Multimedia :: Sound/Audio :: Conversion",
+        "Topic :: Multimedia :: Video :: Conversion",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Scientific/Engineering :: Image Recognition",
+        "Topic :: Scientific/Engineering :: Information Analysis",
+        "Topic :: Scientific/Engineering :: Visualization",
+        "Topic :: Software Development :: Libraries :: Application Frameworks",
+    ],
 )
