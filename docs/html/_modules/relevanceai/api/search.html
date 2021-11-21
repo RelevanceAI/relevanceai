@@ -39,8 +39,9 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.batch.html">Batch Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
 </ul>
 
@@ -71,6 +72,7 @@
              
   <h1>Source code for relevanceai.api.search</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 
 <div class="viewcode-block" id="Search"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search">[docs]</a><span class="k">class</span> <span class="nc">Search</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -83,7 +85,7 @@
 <div class="viewcode-block" id="Search.vector"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">multivector_query</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">multivector_query</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
         <span class="n">positive_document_ids</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">negative_document_ids</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">vector_operation</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
@@ -225,7 +227,7 @@
 <div class="viewcode-block" id="Search.hybrid"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.hybrid">[docs]</a>    <span class="k">def</span> <span class="nf">hybrid</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">multivector_query</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">multivector_query</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
         <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">edit_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
@@ -284,7 +286,7 @@
 <span class="sd">            Fields to include in the facets, if [] then all</span>
 <span class="sd">        filters: list</span>
 <span class="sd">            Query for filtering the search results</span>
-<span class="sd">        min_score: int</span>
+<span class="sd">        min_score: float</span>
 <span class="sd">            Minimum score for similarity metric</span>
 <span class="sd">        select_fields: list</span>
 <span class="sd">            Fields to include in the search results, empty array/list means all fields.</span>
@@ -874,7 +876,7 @@
 <div class="viewcode-block" id="Search.advanced_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.advanced_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_ids</span><span class="p">,</span>
-        <span class="n">chunk_search_query</span><span class="p">,</span>
+        <span class="n">chunk_search_query</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
