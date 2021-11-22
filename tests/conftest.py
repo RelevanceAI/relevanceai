@@ -87,3 +87,4 @@ def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id)
     """Sample vector dataset"""
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
     yield test_dataset_id
+    test_client.datasets.delete(test_dataset_id)
