@@ -2,6 +2,7 @@ from requests.models import stream_decode_response_unicode
 from typing import List
 from relevanceai.base import Base
 
+
 class Documents(Base):
     def __init__(self, project, api_key, base_url):
         self.project = project
@@ -328,7 +329,7 @@ class Documents(Base):
 
             # Append fetched data to the full data
             if length > 0:
-                full_data += x['documents']
+                full_data += x["documents"]
         return full_data
 
     def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
