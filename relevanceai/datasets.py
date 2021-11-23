@@ -15,7 +15,6 @@ DATASETS = ['games', 'ecommerce_1', 'ecommerce_2', 'ecommerce_3',
 def select_fields_from_json(json, select_fields):
     return [{key: i[key] for key in select_fields} for i in json]
 
-
 class ExampleDatasets:
     def __init__(self):
         self.datasets = DATASETS
@@ -310,7 +309,11 @@ def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select
         df["url"] = df["url"].str.replace("http://", "https://")
     if "_unit_id" in df.columns:
         df["_id"] = df["_unit_id"].astype(str)
-    return df.to_dict("records")
+    docs = [
+        {k: v for k, v in doc.items() if not pd.isna(v)}
+        for doc in df.to_dict(orient="records")
+    ]
+    return docs
 
 
 def get_flipkart_dataset(
