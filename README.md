@@ -150,10 +150,3 @@ TOTAL                            702    364    48%
 
 ```
 
-
-```
-Copyright (C) Relevance AI - All Rights Reserved
-Unauthorized copying of this repository, via any medium is strictly prohibited
-Proprietary and confidential
-Relevance AI <dev@relevance.ai> 2021 
-```
