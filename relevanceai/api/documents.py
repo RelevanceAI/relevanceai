@@ -39,7 +39,7 @@ class Documents(Base):
         """
 
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/list",
+            endpoint=f"/datasets/{dataset_id}/documents/list",
             method="GET",
             parameters={
                 "select_fields": select_fields,
@@ -74,7 +74,7 @@ class Documents(Base):
         """
 
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/get",
+            endpoint=f"/datasets/{dataset_id}/documents/get",
             parameters={
                 "id": id,
                 "include_vector": include_vector,
@@ -162,7 +162,7 @@ class Documents(Base):
 
 
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/get_where",
+            endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
             parameters={
                 "select_fields": select_fields,
@@ -206,23 +206,23 @@ class Documents(Base):
 
         if return_documents is False:
             return self.make_http_request(
-                endpoint=f"datasets/{dataset_id}/documents/bulk_update",
+                endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={"updates": updates},
                 output_format=output_format,
                 verbose=verbose,
                 retries=retries,
-                base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+                base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
             )
         else:
             insert_response = self.make_http_request(
-                endpoint=f"datasets/{dataset_id}/documents/bulk_update",
+                endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={"updates": updates},
                 output_format="",
                 verbose=verbose,
                 retries=retries,
-                base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+                base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
             )
 
             try:
@@ -256,7 +256,7 @@ class Documents(Base):
         """
 
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/documents/bulk_delete",
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_delete",
             method="POST",
             parameters={"ids": ids},
             output_format=output_format,

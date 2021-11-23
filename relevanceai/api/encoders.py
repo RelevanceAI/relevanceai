@@ -17,7 +17,7 @@ class Encoders(Base):
             Text to encode
         """
         return self.make_http_request(
-            "services/encoders/textimage", method="GET", parameters={"text": text}
+            "/services/encoders/textimage", method="GET", parameters={"text": text}
         )
 
     def text(self, text: str):
@@ -29,7 +29,7 @@ class Encoders(Base):
             Text to encode
         """
         return self.make_http_request(
-            "services/encoders/text", method="GET", parameters={"text": text}
+            "/services/encoders/text", method="GET", parameters={"text": text}
         )
 
     def multi_text(self, text):
@@ -41,7 +41,7 @@ class Encoders(Base):
             Text to encode
         """
         return self.make_http_request(
-            "services/encoders/multi_text", method="GET", parameters={"text": text}
+            "/services/encoders/multi_text", method="GET", parameters={"text": text}
         )
 
     def image(self, image):
@@ -53,7 +53,7 @@ class Encoders(Base):
             URL of image to encode
         """
         return self.make_http_request(
-            "services/encoders/image", method="POST", parameters={"image": image}
+            "/services/encoders/image", method="POST", parameters={"image": image}
         )
 
     def imagetext(self, image):
@@ -65,5 +65,5 @@ class Encoders(Base):
             URL of image to encode
         """
         return self.make_http_request(
-            "services/encoders/imagetext", method="GET", parameters={"image": image}
+            "/services/encoders/imagetext", method="GET", parameters={"image": image}
         )

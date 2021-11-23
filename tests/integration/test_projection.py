@@ -22,7 +22,7 @@ from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 def fixture_base_args():
     project = "dummy-collections"
     api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # Read access
-    base_url = "https://api-aueast.relevance.ai/v1/"
+    base_url = "https://api-aueast.relevance.ai/v1"
     base_args = {
                 "project": project, 
                 "api_key": api_key, 

@@ -14,14 +14,14 @@ class Tasks(Base):
 
     def create(self, dataset_id, task_name, task_parameters):
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={"task_name": task_name, **task_parameters},
         )
 
     def status(self, dataset_id: str, task_id: str):
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
+            endpoint=f"/datasets/{dataset_id}/tasks/{task_id}/status",
             method="GET",
             verbose=False,
         )
@@ -93,7 +93,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "Clusterer",
@@ -137,7 +137,7 @@ class Tasks(Base):
             document 2 dictionary vector: {"person_characteristics_vector_": [0, 32, 0, 10, 24]}
         """
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={"task_name": "NumericEncoder", "fields": fields},
         )
@@ -172,7 +172,7 @@ class Tasks(Base):
             document 2 array vector: {"movie_categories_vector_": [1, 0, 0, 1, 1]}
         """
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={"task_name": "CategoriesEncoder", "fields": fields},
         )
@@ -197,7 +197,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "TextEncoder",
@@ -228,7 +228,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "TextImageEncoder",
@@ -259,7 +259,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "ImageTextEncoder",

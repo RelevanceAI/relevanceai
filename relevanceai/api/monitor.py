@@ -21,7 +21,7 @@ class Monitor(Base):
             Unique name of dataset
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/monitor/health",
+            endpoint=f"/datasets/{dataset_id}/monitor/health",
             method="GET",
             output_format=output_format,
             verbose=verbose,
@@ -37,7 +37,7 @@ class Monitor(Base):
             Unique name of dataset
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/monitor/stats",
+            endpoint=f"/datasets/{dataset_id}/monitor/stats",
             method="GET",
             output_format=output_format,
             verbose=verbose,

@@ -110,7 +110,7 @@ class Search(Base):
             Search history ID, only used for storing search histories.
         """
         return self.make_http_request(
-            "services/search/vector",
+            "/services/search/vector",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -224,7 +224,7 @@ class Search(Base):
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
         """
         return self.make_http_request(
-            "services/search/hybrid",
+            "/services/search/hybrid",
             method="POST",
             parameters={
                 "dataset_id": "ecommerce-experiments",
@@ -323,7 +323,7 @@ class Search(Base):
             Whether to scale up the metric by 100
         """
         return self.make_http_request(
-            "services/search/semantic",
+            "/services/search/semantic",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -447,7 +447,7 @@ class Search(Base):
             If True, return as clusters as opposed to results list
         """
         return self.make_http_request(
-            "services/search/diversity",
+            "/services/search/diversity",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -537,7 +537,7 @@ class Search(Base):
             Search history ID, only used for storing search histories.
         """
         return self.make_http_request(
-            "services/search/traditional",
+            "/services/search/traditional",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -641,7 +641,7 @@ class Search(Base):
         """
 
         return self.make_http_request(
-            "services/search/chunk",
+            "/services/search/chunk",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -751,7 +751,7 @@ class Search(Base):
             Size of each page of results
         """
         return self.make_http_request(
-            "services/search/multistep_chunk",
+            "/services/search/multistep_chunk",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -853,7 +853,7 @@ class Search(Base):
             Fields to include in the search results, empty array/list means all fields.
         """
         return self.make_http_request(
-            "services/search/advanced_chunk",
+            "/services/search/advanced_chunk",
             method="POST",
             parameters={
                 "dataset_ids": dataset_ids,
@@ -977,7 +977,7 @@ class Search(Base):
 
         """
         return self.make_http_request(
-            "services/search/advanced_multistep_chunk",
+            "/services/search/advanced_multistep_chunk",
             method="POST",
             parameters={
                 "dataset_ids": dataset_ids,

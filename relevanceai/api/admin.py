@@ -16,7 +16,7 @@ class Admin(Base):
                 Read-only project
         """
         return self.make_http_request(
-            "admin/request_read_api_key",
+            "/admin/request_read_api_key",
             method="POST",
             parameters={"read_username": read_username},
         )
@@ -47,7 +47,7 @@ class Admin(Base):
                 The original API key
         """
         return self.make_http_request(
-            "admin/copy_foreign_dataset",
+            "/admin/copy_foreign_dataset",
             method="POST",
             parameters={
                 "project": self.project if project is None else project,

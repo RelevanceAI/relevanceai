@@ -32,7 +32,7 @@ class Datasets(Base):
             Unique name of dataset
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/schema",
+            endpoint=f"/datasets/{dataset_id}/schema",
             method="GET",
             output_format=output_format,
             verbose=verbose,
@@ -49,7 +49,7 @@ class Datasets(Base):
             Unique name of dataset
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/metadata",
+            endpoint=f"/datasets/{dataset_id}/metadata",
             method="GET",
             output_format=output_format,
             verbose=verbose,
@@ -104,7 +104,7 @@ class Datasets(Base):
     
         """
         return self.make_http_request(
-            endpoint=f"datasets/create",
+            endpoint=f"/datasets/create",
             method="POST",
             parameters={"id": dataset_id, "schema": schema},
             output_format=output_format,
@@ -114,7 +114,7 @@ class Datasets(Base):
     def list(self, output_format: Optional[str] = "json", verbose: bool = True, retries=None):
         """ List all datasets in a project that you are authorized to read/write. """
         return self.make_http_request(
-            endpoint="datasets/list",
+            endpoint="/datasets/list",
             method="GET",
             output_format=output_format,
             verbose=verbose,
@@ -173,7 +173,7 @@ class Datasets(Base):
             Page of the results
         """
         return self.make_http_request(
-            endpoint="datasets/list",
+            endpoint="/datasets/list",
             method="POST",
             parameters={
                 "include_schema": include_schema,
@@ -223,7 +223,7 @@ class Datasets(Base):
     
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/facets",
+            endpoint=f"/datasets/{dataset_id}/facets",
             method="POST",
             parameters={
                 "fields": fields,
@@ -256,7 +256,7 @@ class Datasets(Base):
 
         if dataset_exists:
             return self.make_http_request(
-                endpoint=f"datasets/{dataset_id}/documents/get_missing",
+                endpoint=f"/datasets/{dataset_id}/documents/get_missing",
                 method="GET",
                 parameters={"ids": ids},
                 output_format=output_format,
@@ -279,7 +279,7 @@ class Datasets(Base):
         return_documents: bool = False,
         retries: int = None,
         output_format: str = "json",
-        base_url="https://ingest-api-dev-aueast.relevance.ai/latest/",
+        base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
         """
         When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
@@ -315,7 +315,7 @@ class Datasets(Base):
         """
         if return_documents is False:
             return self.make_http_request(
-                endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
+                endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
                 base_url=base_url,
                 method="POST",
                 parameters={
@@ -332,7 +332,7 @@ class Datasets(Base):
 
         else:
             insert_response = self.make_http_request(
-                endpoint=f"datasets/{dataset_id}/documents/bulk_insert",
+                endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
                 base_url=base_url,
                 method="POST",
                 parameters={
@@ -383,7 +383,7 @@ class Datasets(Base):
         # input validation
         if user_input.lower() in ("y", "yes"):
             return self.make_http_request(
-                endpoint=f"datasets/delete",
+                endpoint=f"/datasets/delete",
                 method="POST",
                 parameters={"dataset_id": dataset_id},
                 output_format=output_format,
@@ -427,8 +427,9 @@ class Datasets(Base):
         filters : list
             Query for filtering the search results
         """
+        dataset_id = old_dataset
         return self.make_http_request(
-            endpoint=f"datasets/{old_dataset}/clone",
+            endpoint=f"/datasets/{dataset_id}/clone",
             method="POST",
             parameters={
                 "new_dataset_id": new_dataset,
@@ -462,7 +463,7 @@ class Datasets(Base):
             Whether to sort results by ascending or descending order
         """
         return self.make_http_request(
-            endpoint="datasets/search",
+            endpoint="/datasets/search",
             method="GET",
             parameters={
                 "query": query,

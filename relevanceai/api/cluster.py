@@ -52,7 +52,7 @@ class Cluster(Base):
             Alias used to name a vector field. Belongs in field_{alias}vector
         """
         return self.make_http_request(
-            endpoint="services/cluster/aggregate",
+            endpoint="/services/cluster/aggregate",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,

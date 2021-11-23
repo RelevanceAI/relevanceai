@@ -110,7 +110,7 @@ class Recommend(Base):
         """
 
         return self.make_http_request(
-            f"services/recommend/vector",
+            f"/services/recommend/vector",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,

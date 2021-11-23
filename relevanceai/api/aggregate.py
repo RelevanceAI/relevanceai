@@ -90,7 +90,7 @@ class Aggregate(Base):
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
         return self.make_http_request(
-            "services/aggregate/aggregate",
+            "/services/aggregate/aggregate",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,

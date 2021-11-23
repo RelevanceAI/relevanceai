@@ -17,7 +17,7 @@ class Centroids(Base):
         cursor: str = None,
         include_vector: bool = False,
         output_format: str = "json",
-        base_url="https://gateway-api-aueast.relevance.ai/latest/",
+        base_url="https://gateway-api-aueast.relevance.ai/latest",
     ):
         """
         Retrieve the cluster centroid
@@ -37,7 +37,7 @@ class Centroids(Base):
             Include vectors in the search results
         """
         return self.make_http_request(
-            "services/cluster/centroids/list",
+            "/services/cluster/centroids/list",
             method="GET",
             parameters={
                 "dataset_id": dataset_id,
@@ -79,7 +79,7 @@ class Centroids(Base):
             Cursor to paginate the document retrieval
         """
         return self.make_http_request(
-            "services/cluster/centroids/get",
+            "/services/cluster/centroids/get",
             method="GET",
             parameters={
                 "dataset_id": dataset_id,
