@@ -21,6 +21,7 @@ class Centroids(Base):
     ):
         """
         Retrieve the cluster centroid
+
         Parameters
         ----------
         dataset_id : string
@@ -63,6 +64,7 @@ class Centroids(Base):
     ):
         """
         Retrieve the cluster centroids by IDs
+        
         Parameters
         ----------
         dataset_id : string

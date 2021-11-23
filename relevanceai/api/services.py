@@ -7,6 +7,8 @@ from relevanceai.api.cluster import Cluster
 from relevanceai.api.search import Search
 from relevanceai.api.aggregate import Aggregate
 from relevanceai.api.recommend import Recommend
+
+
 class Services(Base):
     def __init__(self, project: str, api_key: str, base_url: str):
         self.base_url = base_url

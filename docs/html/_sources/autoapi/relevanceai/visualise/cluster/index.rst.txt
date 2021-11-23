@@ -1,0 +1,47 @@
+:py:mod:`relevanceai.visualise.cluster`
+=======================================
+
+.. py:module:: relevanceai.visualise.cluster
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.cluster.Cluster
+
+
+
+
+.. py:class:: Cluster(project: str, api_key: str, base_url: str, vectors: numpy.ndarray, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict] = None, k: Union[None, int] = None)
+
+   Bases: :py:obj:`relevanceai.base.Base`
+
+   Clustering Visualisation Class
+
+   .. py:method:: _choose_k(self, vectors: numpy.ndarray)
+
+      "
+      Choose k clusters
+
+
+   .. py:method:: _cluster_vectors(self, vectors: numpy.ndarray, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict]) -> Tuple[List[str], List[int]]
+
+      Cluster method for numerical data
+
+
+   .. py:method:: _cluster_categorical(self, df: pandas.DataFrame, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict], categorical_idx: Union[None, List[int]] = None)
+
+      Clustering categorical data types
+
+
+   .. py:method:: _cluster_mixed(self, df: pandas.DataFrame, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict], categorical_idx: Union[None, List[int]] = None)
+
+      Clustering mixed data types
+
+
+

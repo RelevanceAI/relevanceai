@@ -13,5 +13,11 @@ For questions, contact Jacky Wong.
 Run:
 
 ```
-pip install -e .. && pip install sphinx sphinx-rtd-theme
+pip install -e .. && pip install sphinx sphinx-rtd-theme && python -m pip install sphinx-autoapi
 ```
+
+## Re-creating docs
+
+In order to re-create the documentation, 
+
+run `make_build` and, look at every RST created by automodule and then remove unnecessary subheadings.

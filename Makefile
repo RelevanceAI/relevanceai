@@ -19,13 +19,19 @@ install:
 	pip install --upgrade pip                    
 	pip install -q -r requirements-dev.txt
 
+install-vis:
+	python -m venv .venv
+	. .venv/bin/activate
+	pip install --upgrade pip                    
+	pip install -q -e .[dev-vis]
+
 ## Update dependencies
 update:
 	pip install -U -q -r requirements-dev.txt
 
 ## Test dependencies
 test:
-	pytest $(TEST_PATH) --cov=relevanceai -vv -rs
+	pytest $(TEST_PATH) --cov=relevanceai -vv -rs -x
 
 ## Delete all compiled Python files
 clean:

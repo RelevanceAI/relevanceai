@@ -11,8 +11,8 @@ def str2bool(v):
 
 
 class AbstractLogger:
-    """Base Logging Instance
-    """
+    """Base Logging Instance"""
+
     info: Callable
     error: Callable
     success: Callable
@@ -27,8 +27,8 @@ class AbstractLogger:
 
 
 class LoguruLogger(AbstractLogger):
-    """Using verbose loguru as base logger for now
-    """
+    """Using verbose loguru as base logger for now"""
+
     # Add Logging
 
     def __init__(self):

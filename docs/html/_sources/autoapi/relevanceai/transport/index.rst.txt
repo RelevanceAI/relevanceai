@@ -1,0 +1,67 @@
+:py:mod:`relevanceai.transport`
+===============================
+
+.. py:module:: relevanceai.transport
+
+.. autoapi-nested-parse::
+
+   The Transport Class defines a transport as used by the Channel class to communicate with the network.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.transport.Transport
+
+
+
+
+.. py:class:: Transport
+
+   Base class for all relevanceai objects
+
+   .. py:attribute:: project
+      :annotation: :str
+
+      
+
+   .. py:attribute:: api_key
+      :annotation: :str
+
+      
+
+   .. py:attribute:: base_url
+      :annotation: :str
+
+      
+
+   .. py:attribute:: config
+      :annotation: :relevanceai.config.Config
+
+      
+
+   .. py:attribute:: logger
+      :annotation: :relevanceai.logger.AbstractLogger
+
+      
+
+   .. py:method:: auth_header(self)
+      :property:
+
+
+   .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, output_format: Union[str, bool, None] = 'json', base_url: str = None, verbose: bool = True, retries: int = None)
+
+      Make the HTTP request
+      :param endpoint: The endpoint from the documentation to use
+      :type endpoint: string
+      :param method_type: POST or GET request
+      :type method_type: string
+
+
+

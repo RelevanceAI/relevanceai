@@ -2,7 +2,7 @@ Visualisation
 ================
 
 Embedding Projector
-------------------
+---------------------
 
 To use the Embedding projector - 
 
