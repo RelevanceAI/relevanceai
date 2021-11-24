@@ -267,6 +267,59 @@ class Datasets(Base):
             print("Dataset does not exist")
             return
 
+    def insert(
+        self,
+        dataset_id: str,
+        document: dict,
+        insert_date: bool = True,
+        overwrite: bool = True,
+        update_schema: bool = True,
+        verbose: bool = True,
+        retries: int = None,
+        output_format: str = "json"
+    ):
+        """
+        Insert a single documents
+
+        - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+
+        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode \n
+
+        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n 
+        
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        documents : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        insert_date : bool
+            Whether to include insert date as a field 'insert_date_'.
+        overwrite : bool
+            Whether to overwrite document if it exists.
+        update_schema : bool
+            Whether the api should check the documents for vector datatype to update the schema.
+
+        """
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/insert",
+            method="POST",
+            parameters={
+                "document": document,
+                "insert_date": insert_date,
+                "overwrite": overwrite,
+                "update_schema": update_schema,
+            },
+            output_format=output_format,
+            retries=retries,
+            verbose=verbose,
+        )
+
+
     def bulk_insert(
         self,
         dataset_id: str,
@@ -282,13 +335,16 @@ class Datasets(Base):
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
         """
-        When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
-        When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
-        When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
-        When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
-        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        Insert multiple documents
 
-        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
+        - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+        
+        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode \n
+
+        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n 
         
         Parameters
         ----------
@@ -469,6 +525,88 @@ class Datasets(Base):
                 "query": query,
                 "sort_by_created_at_date": sort_by_created_at_date,
                 "asc": asc,
+            },
+            output_format=output_format,
+            verbose=verbose,
+        )
+
+    def vectorize(
+        self,
+        dataset_id: str,
+        model_id: str,
+        fields: list = [],
+        filters: list = [],
+        refresh: bool = False,
+        alias: str = "default",
+        chunksize: int = 20,
+        chunk_field: str = None,
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+        """
+        Queue the encoding of a dataset using the method given by model_id.
+        
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        model_id : string
+            Model ID to use for vectorizing (encoding.)
+        fields : list
+            Fields to remove ['random_field', 'another_random_field']. Defaults to no removes
+        filters : list
+            Filters to run against
+        refresh : bool
+            If True, re-runs encoding on whole dataset.
+        alias : string
+            Alias used to name a vector field. Belongs in field_{alias}vector
+        chunksize : int
+            Batch for each encoding. Change at your own risk.
+        chunk_field : string
+            The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.
+        
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/vectorize",
+            method="GET",
+            parameters={
+                "model_id": model_id,
+                "fields": fields,
+                "filters": filters,
+                "refresh": refresh,
+                "alias": alias,
+                "chunksize": chunksize,
+                "chunk_field": chunk_field,
+            },
+            output_format=output_format,
+            verbose=verbose,
+        )
+
+    def task_status(
+        self,
+        dataset_id: str,
+        task_id: str,
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+        """
+        Check the status of an existing encoding task on the given dataset. \n
+
+        The required task_id was returned in the original encoding request such as datasets.vectorize.
+        
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        task_id : string
+            The task ID of the earlier queued vectorize task
+        
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/task_status",
+            method="GET",
+            parameters={
+                "task_id": task_id
             },
             output_format=output_format,
             verbose=verbose,

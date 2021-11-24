@@ -67,7 +67,7 @@ class Documents(Base):
         ----------
         dataset_id : string
             Unique name of dataset
-        id : list
+        id : string
             ID of a document in a dataset.
         include_vector: bool
             Include vectors in the search results
@@ -82,6 +82,44 @@ class Documents(Base):
             output_format=output_format,
             verbose=verbose,
         )
+
+    def bulk_get(
+        self,
+        dataset_id: str,
+        ids: str,
+        include_vector: bool = True,
+        select_fields: list = [],
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+
+        """
+        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field. \n
+        For single id lookup version of this request use datasets.documents.get.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        ids: list
+            IDs of documents in the dataset.
+        include_vector: bool
+            Include vectors in the search results
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields. 
+        """
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_get",
+            parameters={
+                "id": ids,
+                "include_vector": include_vector,
+                "select_fields": select_fields
+            },
+            output_format=output_format,
+            verbose=verbose,
+        )
+
 
     def get_where(
         self,
@@ -140,9 +178,9 @@ class Documents(Base):
 
         Parameters
         ----------
-        dataset_id : string
+        dataset_id: string
             Unique name of dataset
-        select_fields : list
+        select_fields: list
             Fields to include in the search results, empty array/list means all fields.
         cursor: string
             Cursor to paginate the document retrieval
@@ -178,14 +216,125 @@ class Documents(Base):
             verbose=verbose,
         )
 
+    def paginate(
+        self,
+        dataset_id: str,
+        page: int = 1,
+        page_size: int = 20,
+        include_vector: bool = True,
+        select_fields: list = [],
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+
+        """
+        Retrieve documents with filters and support for pagination. \n
+        For more information about filters check out datasets.documents.get_where.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        page: int
+            Page of the results
+        page_size: int
+            Size of each page of results
+        include_vector: bool
+            Include vectors in the search results
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields. 
+        """
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/paginate",
+            parameters={
+                "page": page,
+                "page_size": page_size,
+                "include_vector": include_vector,
+                "select_fields": select_fields
+            },
+            output_format=output_format,
+            verbose=verbose,
+        )
+
+    def update(
+        self,
+        dataset_id: str,
+        update: dict,
+        insert_date: bool = True,
+        output_format: str = "json",
+        verbose: bool = True,
+        retries=None,
+    ):
+
+        """ 
+        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents. \n
+        For update multiple documents refer to datasets.documents.bulk_update
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        update : list
+            A dictionary to edit and add fields to a document. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+        insert_date	: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        """
+
+        return self.make_http_request(
+                endpoint=f"/datasets/{dataset_id}/documents/update",
+                method="POST",
+                parameters={"update": update, "insert_date": insert_date},
+                output_format=output_format,
+                verbose=verbose,
+                retries=retries,
+            )
+
+    def update_where(
+        self,
+        dataset_id: str,
+        update: dict,
+        filters: list = [],
+        output_format: str = "json",
+        verbose: bool = True,
+        retries=None,
+    ):
+
+        """ 
+        Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
+        For more information about filters refer to datasets.documents.get_where.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        update : list
+            A dictionary to edit and add fields to a document. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+        filters: list
+            Query for filtering the search results
+
+        """
+
+        return self.make_http_request(
+                endpoint=f"/datasets/{dataset_id}/documents/update_where",
+                method="POST",
+                parameters={"update": update, "filters": filters},
+                output_format=output_format,
+                verbose=verbose,
+                retries=retries,
+            )
+
     def bulk_update(
         self,
         dataset_id: str,
         updates: list,
+        insert_date: bool = True,
         output_format: str = "json",
         verbose: bool = True,
         return_documents: bool = False,
         retries=None,
+        base_url="https://ingest-api-dev-aueast.relevance.ai/latest"
     ):
 
         """ 
@@ -208,21 +357,21 @@ class Documents(Base):
             return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
-                parameters={"updates": updates},
+                parameters={"updates": updates, "insert_date": insert_date},
                 output_format=output_format,
                 verbose=verbose,
                 retries=retries,
-                base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
+                base_url=base_url,
             )
         else:
             insert_response = self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
-                parameters={"updates": updates},
+                parameters={"updates": updates, "insert_date": insert_date},
                 output_format="",
                 verbose=verbose,
                 retries=retries,
-                base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
+                base_url=base_url,
             )
 
             try:
@@ -235,6 +384,64 @@ class Documents(Base):
                 "documents": updates,
                 "status_code": insert_response.status_code,
             }
+
+    def delete(
+        self,
+        dataset_id: str,
+        id: str,
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+
+        """ 
+        Delete a document by ID. \n
+        For deleting multiple documents refer to datasets.documents.bulk_delete
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        id : string
+            ID of document to delete
+        """
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/delete",
+            method="POST",
+            parameters={"id": id},
+            output_format=output_format,
+            verbose=verbose,
+        )
+
+    def delete_where(
+        self,
+        dataset_id: str,
+        filters: list,
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+
+        """ 
+        Delete a document by filters. \n
+        For more information about filters refer to datasets.documents.get_where.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        filters: list
+            Query for filtering the search results
+        """
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/delete_where",
+            method="POST",
+            parameters={"filters": filters},
+            output_format=output_format,
+            verbose=verbose,
+        )
+
+
 
     def bulk_delete(
         self,
@@ -259,6 +466,36 @@ class Documents(Base):
             endpoint=f"/datasets/{dataset_id}/documents/bulk_delete",
             method="POST",
             parameters={"ids": ids},
+            output_format=output_format,
+            verbose=verbose,
+        )
+
+    def delete_fields(
+        self,
+        dataset_id: str,
+        id: str,
+        fields: list,
+        output_format: str = "json",
+        verbose: bool = True,
+    ):
+
+        """ 
+        Delete fields in a document in a dataset by its id
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        id : string
+            ID of a document in a dataset
+        fields: list
+            List of fields to delete in a document
+        """
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/delete_fields",
+            method="POST",
+            parameters={"id": id, "fields": fields},
             output_format=output_format,
             verbose=verbose,
         )

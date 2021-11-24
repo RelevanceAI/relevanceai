@@ -67,3 +67,46 @@ class Cluster(Base):
             },
             output_format=output_format,
         )
+
+    def facets(
+        self,
+        dataset_id: str,
+        facets_fields: list = [],
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        date_interval: str = "monthly",
+        output_format: str = "json",
+    ):
+        """ 
+        Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them. \n
+        Only can be used after a vector field has been clustered.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        facets_fields : list
+            Fields to include in the facets, if [] then all
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        date_interval: string
+            Interval for date facets
+        """
+        return self.make_http_request(
+            endpoint="/services/cluster/facets",
+            method="GET",
+            parameters={
+                "dataset_id": dataset_id,
+                "facets_fields": facets_fields,
+                "page_size": page_size,
+                "page": page,
+                "asc": asc,
+                "date_interval": date_interval,
+            },
+            output_format=output_format,
+        )

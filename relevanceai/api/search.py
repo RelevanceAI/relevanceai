@@ -37,20 +37,26 @@ class Search(Base):
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
         1. Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. image_vector_ weights 100%, whilst description_vector_ 50%
             An example of a simple multivector query:
+
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": ["name_vector_"], "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": ["image_vector_"], "alias":"image"},
             >>> ]
+
             An example of a weighted multivector query:
+
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6}, "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
             >>> ]
+
             An example of a weighted multivector query with multiple fields for each vector:
+
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6, "description_vector_":0.3}, "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
             >>> ]
+
         2. Utilise faceted search with vector search. For information on how to apply facets/filters check out datasets.documents.get_where
         3. Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. image_vector_ + text_vector_ or image_vector_ vs text_vector_.
             When sum_fields=True:
@@ -76,7 +82,7 @@ class Search(Base):
             Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
         negative_document_ids: dict
             Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         vector_operation: string
             Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
@@ -184,7 +190,7 @@ class Search(Base):
             Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
         negative_document_ids: dict
             Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         vector_operation: string
             Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
@@ -220,7 +226,7 @@ class Search(Base):
             This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
         ignore_spaces: bool
             Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
-        traditional_weight: integer
+        traditional_weight: int
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
         """
         return self.make_http_request(
@@ -293,7 +299,7 @@ class Search(Base):
             Text Search Query (not encoded as vector)
         fields : list
             Text fields to search against
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -351,6 +357,7 @@ class Search(Base):
         self,
         dataset_id: str,
         cluster_vector_field: str,
+        n_clusters: int,
         multivector_query: list,
         positive_document_ids: dict = {},
         negative_document_ids: dict = {},
@@ -370,7 +377,6 @@ class Search(Base):
         keep_search_history=False,
         hundred_scale: bool = False,
         search_history_id: str = None,
-        n_clusters: int = 0,
         n_init: int = 5,
         n_iter: int = 10,
         return_as_clusters: bool = False,
@@ -397,13 +403,15 @@ class Search(Base):
         ----------
         dataset_id : string
             Unique name of dataset
+        cluster_vector_field: str
+            The field to cluster on.
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         positive_document_ids : dict
             Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
         negative_document_ids: dict
             Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         vector_operation: string
             Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
@@ -435,8 +443,6 @@ class Search(Base):
             Whether to scale up the metric by 100
         search_history_id: str
             Search history ID, only used for storing search histories.
-        cluster_vector_field: str
-            The field to cluster on.
         n_clusters: int
             Number of clusters to be specified.
         n_init: int
@@ -585,6 +591,7 @@ class Search(Base):
 
         """ 
         Chunks are data that has been divided into different units. e.g. A paragraph is made of many sentence chunks, a sentence is made of many word chunks, an image frame in a video. By searching through chunks you can pinpoint more specifically where a match is occuring. When creating a chunk in your document use the suffix "chunk" and "chunkvector". An example of a document with chunks:
+        
         >>> {
         >>>     "_id" : "123",
         >>>     "title" : "Lorem Ipsum Article",
@@ -596,6 +603,7 @@ class Search(Base):
         >>>         {"sentence_id" : 2, "sentence_chunkvector_" : [0.7, 0.8, 0.9], "sentence" : "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."},
         >>>     ]
         >>> }
+
         For combining chunk search with other search check out services.search.advanced_chunk.
 
         Parameters
@@ -612,7 +620,7 @@ class Search(Base):
             Size of each page of chunk results
         chunk_page: int
             Page of the chunk results
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -717,7 +725,7 @@ class Search(Base):
             Size of each page of chunk results
         chunk_page: int
             Page of the chunk results
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -795,6 +803,7 @@ class Search(Base):
         """ 
         A more advanced chunk search to be able to combine vector search and chunk search in many different ways.
         Example 1 (Hybrid chunk search):
+        
         >>> chunk_query = {
         >>>     "chunk" : "some.test",
         >>>     "queries" : [
@@ -806,7 +815,9 @@ class Search(Base):
         >>>         "metric" : "cosine"},
         >>>     ]
         >>> }
+
         Example 2 (combines normal vector search with chunk search):
+        
         >>> chunk_query = {
         >>>     "queries" : [
         >>>         {
@@ -895,6 +906,7 @@ class Search(Base):
         Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set.
 
         Example 1 (Hybrid chunk search):
+
         >>> chunk_query = {
         >>>     "chunk" : "some.test",
         >>>     "queries" : [
@@ -906,7 +918,9 @@ class Search(Base):
         >>>         "metric" : "cosine"},
         >>>     ]
         >>> }
+
         Example 2 (combines normal vector search with chunk search):
+        
         >>> chunk_query = {
         >>>     "queries" : [
         >>>         {
@@ -954,9 +968,9 @@ class Search(Base):
             This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
         first_step_ignore_spaces: bool
             Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
-        first_step_traditional_weight: integer
+        first_step_traditional_weight: int
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
-        first_step_approximation_depth: integer
+        first_step_approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         first_step_sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
