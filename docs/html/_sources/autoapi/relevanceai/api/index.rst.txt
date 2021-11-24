@@ -24,10 +24,13 @@ Submodules
    documents/index.rst
    encoders/index.rst
    monitor/index.rst
+   prediction/index.rst
    recommend/index.rst
    requests_config/index.rst
    search/index.rst
    services/index.rst
+   tagger/index.rst
    tasks/index.rst
+   wordclouds/index.rst
 
 

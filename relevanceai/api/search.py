@@ -46,6 +46,7 @@ class Search(Base):
             >>> ]
             
             An example of a weighted multivector query:
+
             >>> [
             >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6}, "alias":"text"},
             >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
@@ -89,7 +90,7 @@ class Search(Base):
             Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
         negative_document_ids: dict
             Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         vector_operation: string
             Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
@@ -123,7 +124,7 @@ class Search(Base):
             Search history ID, only used for storing search histories.
         """
         return self.make_http_request(
-            "services/search/vector",
+            "/services/search/vector",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -197,7 +198,7 @@ class Search(Base):
             Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
         negative_document_ids: dict
             Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         vector_operation: string
             Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
@@ -233,11 +234,11 @@ class Search(Base):
             This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
         ignore_spaces: bool
             Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
-        traditional_weight: integer
+        traditional_weight: int
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
         """
         return self.make_http_request(
-            "services/search/hybrid",
+            "/services/search/hybrid",
             method="POST",
             parameters={
                 "dataset_id": "ecommerce-experiments",
@@ -306,7 +307,7 @@ class Search(Base):
             Text Search Query (not encoded as vector)
         fields : list
             Text fields to search against
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -336,7 +337,7 @@ class Search(Base):
             Whether to scale up the metric by 100
         """
         return self.make_http_request(
-            "services/search/semantic",
+            "/services/search/semantic",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -364,6 +365,7 @@ class Search(Base):
         self,
         dataset_id: str,
         cluster_vector_field: str,
+        n_clusters: int,
         multivector_query: list,
         positive_document_ids: dict = {},
         negative_document_ids: dict = {},
@@ -383,7 +385,6 @@ class Search(Base):
         keep_search_history=False,
         hundred_scale: bool = False,
         search_history_id: str = None,
-        n_clusters: int = 0,
         n_init: int = 5,
         n_iter: int = 10,
         return_as_clusters: bool = False,
@@ -414,13 +415,15 @@ class Search(Base):
         ----------
         dataset_id : string
             Unique name of dataset
+        cluster_vector_field: str
+            The field to cluster on.
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         positive_document_ids : dict
             Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
         negative_document_ids: dict
             Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         vector_operation: string
             Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
@@ -452,8 +455,6 @@ class Search(Base):
             Whether to scale up the metric by 100
         search_history_id: str
             Search history ID, only used for storing search histories.
-        cluster_vector_field: str
-            The field to cluster on.
         n_clusters: int
             Number of clusters to be specified.
         n_init: int
@@ -464,7 +465,7 @@ class Search(Base):
             If True, return as clusters as opposed to results list
         """
         return self.make_http_request(
-            "services/search/diversity",
+            "/services/search/diversity",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -554,7 +555,7 @@ class Search(Base):
             Search history ID, only used for storing search histories.
         """
         return self.make_http_request(
-            "services/search/traditional",
+            "/services/search/traditional",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -631,7 +632,7 @@ class Search(Base):
             Size of each page of chunk results
         chunk_page: int
             Page of the chunk results
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -660,7 +661,7 @@ class Search(Base):
         """
 
         return self.make_http_request(
-            "services/search/chunk",
+            "/services/search/chunk",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -736,7 +737,7 @@ class Search(Base):
             Size of each page of chunk results
         chunk_page: int
             Page of the chunk results
-        approximation_depth: integer
+        approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -770,7 +771,7 @@ class Search(Base):
             Size of each page of results
         """
         return self.make_http_request(
-            "services/search/multistep_chunk",
+            "/services/search/multistep_chunk",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -814,7 +815,6 @@ class Search(Base):
         """ 
         A more advanced chunk search to be able to combine vector search and chunk search in many different ways. \n
         Example 1 (Hybrid chunk search):
-
         >>> chunk_query = {
         >>>     "chunk" : "some.test",
         >>>     "queries" : [
@@ -828,7 +828,6 @@ class Search(Base):
         >>> }
 
         Example 2 (combines normal vector search with chunk search):
-
         >>> chunk_query = {
         >>>     "queries" : [
         >>>         {
@@ -875,7 +874,7 @@ class Search(Base):
             Fields to include in the search results, empty array/list means all fields.
         """
         return self.make_http_request(
-            "services/search/advanced_chunk",
+            "/services/search/advanced_chunk",
             method="POST",
             parameters={
                 "dataset_ids": dataset_ids,
@@ -929,7 +928,6 @@ class Search(Base):
         >>> }
 
         Example 2 (combines normal vector search with chunk search):
-
         >>> chunk_query = {
         >>>     "queries" : [
         >>>         {
@@ -976,9 +974,9 @@ class Search(Base):
             This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.
         first_step_ignore_spaces: bool
             Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
-        first_step_traditional_weight: integer
+        first_step_traditional_weight: int
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
-        first_step_approximation_depth: integer
+        first_step_approximation_depth: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
         first_step_sum_fields : bool
             Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -999,7 +997,7 @@ class Search(Base):
 
         """
         return self.make_http_request(
-            "services/search/advanced_multistep_chunk",
+            "/services/search/advanced_multistep_chunk",
             method="POST",
             parameters={
                 "dataset_ids": dataset_ids,

@@ -48,9 +48,25 @@ Classes
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param id: ID of a document in a dataset.
-      :type id: list
+      :type id: string
       :param include_vector: Include vectors in the search results
       :type include_vector: bool
+
+
+   .. py:method:: bulk_get(self, dataset_id: str, ids: str, include_vector: bool = True, select_fields: list = [], output_format: str = 'json', verbose: bool = True)
+
+      Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+
+      For single id lookup version of this request use datasets.documents.get.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param ids: IDs of documents in the dataset.
+      :type ids: list
+      :param include_vector: Include vectors in the search results
+      :type include_vector: bool
+      :param select_fields: Fields to include in the search results, empty array/list means all fields.
+      :type select_fields: list
 
 
    .. py:method:: get_where(self, dataset_id: str, filters: list = [], cursor: str = None, page_size: int = 20, sort: list = [], select_fields: list = [], include_vector: bool = True, random_state: int = 0, is_random: bool = False, output_format: str = 'json', verbose: bool = True)
@@ -126,7 +142,53 @@ Classes
       :type random_state: int
 
 
-   .. py:method:: bulk_update(self, dataset_id: str, updates: list, output_format: str = 'json', verbose: bool = True, return_documents: bool = False, retries=None)
+   .. py:method:: paginate(self, dataset_id: str, page: int = 1, page_size: int = 20, include_vector: bool = True, select_fields: list = [], output_format: str = 'json', verbose: bool = True)
+
+      Retrieve documents with filters and support for pagination.
+
+      For more information about filters check out datasets.documents.get_where.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param page: Page of the results
+      :type page: int
+      :param page_size: Size of each page of results
+      :type page_size: int
+      :param include_vector: Include vectors in the search results
+      :type include_vector: bool
+      :param select_fields: Fields to include in the search results, empty array/list means all fields.
+      :type select_fields: list
+
+
+   .. py:method:: update(self, dataset_id: str, update: dict, insert_date: bool = True, output_format: str = 'json', verbose: bool = True, retries=None)
+
+      Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+      For update multiple documents refer to datasets.documents.bulk_update
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param update: A dictionary to edit and add fields to a document. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+      :type update: list
+      :param insert_date: Whether to include insert date as a field 'insert_date_'.
+      :type insert_date: bool
+
+
+   .. py:method:: update_where(self, dataset_id: str, update: dict, filters: list = [], output_format: str = 'json', verbose: bool = True, retries=None)
+
+      Updates documents by filters. The updates to make to the documents that is returned by a filter.
+
+      For more information about filters refer to datasets.documents.get_where.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param update: A dictionary to edit and add fields to a document. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+      :type update: list
+      :param filters: Query for filtering the search results
+      :type filters: list
+
+
+   .. py:method:: bulk_update(self, dataset_id: str, updates: list, insert_date: bool = True, output_format: str = 'json', verbose: bool = True, return_documents: bool = False, retries=None, base_url='https://ingest-api-dev-aueast.relevance.ai/latest')
 
       Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
 
@@ -140,6 +202,30 @@ Classes
       :type include_updated_ids: bool
 
 
+   .. py:method:: delete(self, dataset_id: str, id: str, output_format: str = 'json', verbose: bool = True)
+
+      Delete a document by ID.
+
+      For deleting multiple documents refer to datasets.documents.bulk_delete
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param id: ID of document to delete
+      :type id: string
+
+
+   .. py:method:: delete_where(self, dataset_id: str, filters: list, output_format: str = 'json', verbose: bool = True)
+
+      Delete a document by filters.
+
+      For more information about filters refer to datasets.documents.get_where.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param filters: Query for filtering the search results
+      :type filters: list
+
+
    .. py:method:: bulk_delete(self, dataset_id: str, ids: list = [], output_format: str = 'json', verbose: bool = True)
 
       Delete a list of documents by their IDs.
@@ -148,6 +234,18 @@ Classes
       :type dataset_id: string
       :param ids: IDs of documents to delete
       :type ids: list
+
+
+   .. py:method:: delete_fields(self, dataset_id: str, id: str, fields: list, output_format: str = 'json', verbose: bool = True)
+
+      Delete fields in a document in a dataset by its id
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param id: ID of a document in a dataset
+      :type id: string
+      :param fields: List of fields to delete in a document
+      :type fields: list
 
 
    .. py:method:: get_where_all(self, dataset_id: str, chunk_size: int = 10000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, output_format: str = 'json', verbose: bool = True)

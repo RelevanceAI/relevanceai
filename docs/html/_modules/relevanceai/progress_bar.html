@@ -112,6 +112,7 @@
 
 <div class="viewcode-block" id="ProgressBar.get_bar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.get_bar">[docs]</a>    <span class="k">def</span> <span class="nf">get_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
         <span class="k">return</span> <span class="n">tqdm</span></div></div>
 
 
@@ -143,7 +144,7 @@
 
 
 <div class="viewcode-block" id="progress_bar"><a class="viewcode-back" href="../../autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.progress_bar">[docs]</a><span class="k">def</span> <span class="nf">progress_bar</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">show_progress_bar</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ProgressBar</span><span class="p">()(</span><span class="n">iterable</span><span class="p">)</span>

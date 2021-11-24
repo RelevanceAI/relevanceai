@@ -31,10 +31,11 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: Optional[str] = os.getenv("VDB_PROJECT", None),
-        api_key: Optional[str] = os.getenv("VDB_API_KEY", None),
-        base_url: Optional[str] = "https://gateway-api-aueast.relevance.ai/v1/",
-        verbose: bool = True,
+        project: Optional[str]=os.getenv("VDB_PROJECT", None),
+        api_key: Optional[str]=os.getenv("VDB_API_KEY", None),
+        base_url: Optional[str]="https://gateway-api-aueast.relevance.ai/v1",
+        verbose: bool=True
+
     ):
 
         if project is None or api_key is None:
@@ -78,7 +79,7 @@ class Client(BatchAPIClient, DocUtils):
 
     @staticmethod
     def login(
-        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
+        base_url: str = "https://gateway-api-aueast.relevance.ai/v1",
         verbose: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""

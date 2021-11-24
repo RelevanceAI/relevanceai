@@ -26,7 +26,7 @@ class Tasks(Base):
             Parameters of task to complete
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={"task_name": task_name, **task_parameters},
         )
@@ -43,8 +43,28 @@ class Tasks(Base):
             Unique name of task
         """
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/{task_id}/status",
+            endpoint=f"/datasets/{dataset_id}/tasks/{task_id}/status",
             method="GET",
+            verbose=False,
+        )
+    
+    def list(self, dataset_id: str, show_active_only: bool = True):
+        """ 
+        List and get a history of all the jobs and its job_id, parameters, start time, etc.
+        
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        show_active_only : bool
+            Whether to show active only
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/tasks/list",
+            method="GET",
+            parameters={
+                "show_active_only": show_active_only,
+            },
             verbose=False,
         )
 
@@ -117,7 +137,6 @@ class Tasks(Base):
 
         """ 
         Start a task which creates clusters for a dataset based on a vector field
-
         Parameters
         ----------
         dataset_id : string
@@ -137,7 +156,7 @@ class Tasks(Base):
         """
         
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "Clusterer",
@@ -171,7 +190,6 @@ class Tasks(Base):
         """
         Within a collection encode the specified dictionary field in every document into vectors. \n
         For example: a dictionary that represents a person's characteristics visiting a store:
-
         >>> document 1 field: {"person_characteristics" : {"height":180, "age":40, "weight":70}}
         >>> document 2 field: {"person_characteristics" : {"age":32, "purchases":10, "visits": 24}}
         >>> -> <Encode the dictionaries to vectors> ->
@@ -181,7 +199,6 @@ class Tasks(Base):
         >>> | 0      | 32  | 0      | 10        | 24     |
         >>> document 1 dictionary vector: {"person_characteristics_vector_": [180, 40, 70, 0, 0]}
         >>> document 2 dictionary vector: {"person_characteristics_vector_": [0, 32, 0, 10, 24]}
-
         Parameters
         ----------
         dataset_id : string
@@ -192,7 +209,7 @@ class Tasks(Base):
             The name of the vector field created
         """
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={"task_name": "NumericEncoder", "fields": fields, "vector_name": vector_name},
         )
@@ -217,7 +234,6 @@ class Tasks(Base):
         """
         Within a collection encode the specified array field in every document into vectors. \n
         For example, array that represents a movie's categories:
-
         >>> document 1 array field: {"category" : ["sci-fi", "thriller", "comedy"]}
         >>> document 2 array field: {"category" : ["sci-fi", "romance", "drama"]}
         >>> -> <Encode the arrays to vectors> ->
@@ -236,7 +252,7 @@ class Tasks(Base):
             The numeric fields to encode into vectors.
         """
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={"task_name": "CategoriesEncoder", "fields": fields},
         )
@@ -262,7 +278,6 @@ class Tasks(Base):
     ):
         """ 
         Start a task which encodes a text field
-
         Parameters
         ----------
         dataset_id : string
@@ -276,7 +291,7 @@ class Tasks(Base):
         """
 
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "TextEncoder",
@@ -308,7 +323,6 @@ class Tasks(Base):
     ):
         """ 
         Start a task which encodes a text field for image representation
-
         Parameters
         ----------
         dataset_id : string
@@ -321,7 +335,7 @@ class Tasks(Base):
             Whether to rerun task on the whole dataset or just the ones missing the output
         """
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "TextImageEncoder",
@@ -353,7 +367,6 @@ class Tasks(Base):
     ):
         """ 
         Start a task which encodes an image field for text representation
-
         Parameters
         ----------
         dataset_id : string
@@ -366,7 +379,7 @@ class Tasks(Base):
             Whether to rerun task on the whole dataset or just the ones missing the output
         """
         task = self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/tasks/create",
+            endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
                 "task_name": "ImageTextEncoder",

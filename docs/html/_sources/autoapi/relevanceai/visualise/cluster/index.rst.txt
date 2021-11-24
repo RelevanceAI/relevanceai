@@ -12,36 +12,105 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.visualise.cluster.Cluster
+   relevanceai.visualise.cluster.ClusterBase
+   relevanceai.visualise.cluster.CentroidCluster
+   relevanceai.visualise.cluster.DensityCluster
+   relevanceai.visualise.cluster.KMeans
+   relevanceai.visualise.cluster.KMedoids
+   relevanceai.visualise.cluster.HDBSCAN
 
 
 
+Functions
+~~~~~~~~~
 
-.. py:class:: Cluster(project: str, api_key: str, base_url: str, vectors: numpy.ndarray, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict] = None, k: Union[None, int] = None)
+.. autoapisummary::
 
-   Bases: :py:obj:`relevanceai.base.Base`
-
-   Clustering Visualisation Class
-
-   .. py:method:: _choose_k(self, vectors: numpy.ndarray)
-
-      "
-      Choose k clusters
+   relevanceai.visualise.cluster._choose_k
+   relevanceai.visualise.cluster.cluster
 
 
-   .. py:method:: _cluster_vectors(self, vectors: numpy.ndarray, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict]) -> Tuple[List[str], List[int]]
 
-      Cluster method for numerical data
+.. py:class:: ClusterBase
+
+   Bases: :py:obj:`relevanceai.logger.LoguruLogger`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
 
 
-   .. py:method:: _cluster_categorical(self, df: pandas.DataFrame, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict], categorical_idx: Union[None, List[int]] = None)
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Dict[Any, Any]) -> numpy.ndarray
+      :abstractmethod:
 
-      Clustering categorical data types
 
 
-   .. py:method:: _cluster_mixed(self, df: pandas.DataFrame, cluster: relevanceai.visualise.constants.CLUSTER, cluster_args: Union[None, relevanceai.visualise.dataset.JSONDict], categorical_idx: Union[None, List[int]] = None)
+.. py:class:: CentroidCluster
 
-      Clustering mixed data types
+   Bases: :py:obj:`ClusterBase`
 
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
+
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Dict[Any, Any], k: Union[None, int] = None) -> numpy.ndarray
+      :abstractmethod:
+
+
+
+.. py:class:: DensityCluster
+
+   Bases: :py:obj:`ClusterBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
+
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Dict[Any, Any], min_cluster_size: Union[None, int] = None) -> numpy.ndarray
+      :abstractmethod:
+
+
+
+.. py:class:: KMeans
+
+   Bases: :py:obj:`CentroidCluster`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'], k: Union[None, int] = 10) -> numpy.ndarray
+
+
+
+.. py:class:: KMedoids
+
+   Bases: :py:obj:`CentroidCluster`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmedoids'], k: Union[None, int] = 10) -> numpy.ndarray
+
+
+
+.. py:class:: HDBSCAN
+
+   Bases: :py:obj:`DensityCluster`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['hdbscan'], min_cluster_size: Union[None, int] = 10) -> numpy.ndarray
+
+
+
+.. py:function:: _choose_k(vectors: numpy.ndarray)
+
+   "
+   Choose k clusters
+
+
+.. py:function:: cluster(vectors: numpy.ndarray, cluster: Union[relevanceai.visualise.constants.CLUSTER, ClusterBase], cluster_args: Union[None, dict], k: Union[None, int] = None) -> numpy.ndarray
+
+   Cluster vectors
 
 

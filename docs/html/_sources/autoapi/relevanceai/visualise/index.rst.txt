@@ -12,7 +12,6 @@ Submodules
 
    cluster/index.rst
    constants/index.rst
-   dataset/index.rst
    dim_reduction/index.rst
    projector/index.rst
 

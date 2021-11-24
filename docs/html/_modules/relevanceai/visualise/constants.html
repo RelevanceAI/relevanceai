@@ -71,67 +71,71 @@
            <div itemprop="articleBody">
              
   <h1>Source code for relevanceai.visualise.constants</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">get_args</span>
 
-<div class="viewcode-block" id="JSONDict"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.JSONDict">[docs]</a><span class="n">JSONDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></div>
+<span class="kn">from</span> <span class="nn">joblib.memory</span> <span class="kn">import</span> <span class="n">Memory</span>
+
+<div class="viewcode-block" id="dict"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.dict">[docs]</a><span class="nb">dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="DIM_REDUCTION"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.DIM_REDUCTION">[docs]</a><span class="n">DIM_REDUCTION</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;pca&quot;</span><span class="p">,</span> <span class="s2">&quot;tsne&quot;</span><span class="p">,</span> <span class="s2">&quot;umap&quot;</span><span class="p">,</span> <span class="s2">&quot;ivis&quot;</span><span class="p">]</span></div>
 <div class="viewcode-block" id="DIM_REDUCTION_DEFAULT_ARGS"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.DIM_REDUCTION_DEFAULT_ARGS">[docs]</a><span class="n">DIM_REDUCTION_DEFAULT_ARGS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;pca&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;svd_solver&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span>
-    <span class="p">},</span>
-    <span class="s1">&#39;tsne&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;pca&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;svd_solver&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+    <span class="s2">&quot;tsne&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
         <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
         <span class="s2">&quot;perplexity&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
         <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="s1">&#39;umap&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;umap&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;n_neighbors&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
         <span class="s2">&quot;min_dist&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
         <span class="s2">&quot;transform_seed&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="s1">&#39;ivis&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> 
-        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;maaten&quot;</span><span class="p">,</span> 
-        <span class="s2">&quot;n_epochs_without_progress&quot;</span><span class="p">:</span> <span class="mi">2</span></div>
-    <span class="p">}</span>
+    <span class="s2">&quot;ivis&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;maaten&quot;</span><span class="p">,</span> <span class="s2">&quot;n_epochs_without_progress&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span></div>
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="CLUSTER"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.CLUSTER">[docs]</a><span class="n">CLUSTER</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span> <span class="s2">&quot;kmedoids&quot;</span><span class="p">,</span> <span class="s2">&quot;kmodes&quot;</span><span class="p">,</span> <span class="s2">&quot;kprototypes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
-
-
+<span class="c1"># CLUSTER = Literal[&quot;kmeans&quot;, &quot;kmedoids&quot;, &quot;kmodes&quot;, &quot;kprototypes&quot;, None]</span>
+<div class="viewcode-block" id="CLUSTER"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.CLUSTER">[docs]</a><span class="n">CLUSTER</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span> <span class="s2">&quot;kmedoids&quot;</span><span class="p">,</span> <span class="s2">&quot;hdbscan&quot;</span><span class="p">]</span></div>
 <div class="viewcode-block" id="CLUSTER_DEFAULT_ARGS"><a class="viewcode-back" href="../../../autoapi/relevanceai/visualise/constants/index.html#relevanceai.visualise.constants.CLUSTER_DEFAULT_ARGS">[docs]</a><span class="n">CLUSTER_DEFAULT_ARGS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;kmeans&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;k-means++&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;k-means++&quot;</span><span class="p">,</span>
         <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="s2">&quot;compute_labels&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;max_no_improvement&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="s2">&quot;max_no_improvement&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="s1">&#39;kmedoids&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;kmedoids&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;k-medoids++&quot;</span><span class="p">,</span>
         <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
-        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;pam&quot;</span>
+        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;pam&quot;</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="s1">&#39;kmodes&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;Huang&quot;</span><span class="p">,</span> 
-        <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
-        <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="c1"># &#39;kmodes&#39;: {</span>
+    <span class="c1">#     &quot;init&quot;: &quot;Huang&quot;,</span>
+    <span class="c1">#     &quot;verbose&quot;: 1,</span>
+    <span class="c1">#     &quot;random_state&quot;: 42,</span>
+    <span class="c1">#     &quot;n_jobs&quot;: -1</span>
+    <span class="c1"># },</span>
+    <span class="c1"># &#39;kprototypes&#39;: {</span>
+    <span class="c1">#     &quot;init&quot;: &quot;Huang&quot;,</span>
+    <span class="c1">#     &quot;verbose&quot;: 1,</span>
+    <span class="c1">#     &quot;random_state&quot;: 42,</span>
+    <span class="c1">#     &quot;n_jobs&quot;: -1</span>
+    <span class="c1"># },</span>
+    <span class="s2">&quot;hdbscan&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="s2">&quot;best&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">&quot;approx_min_span_tree&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;gen_min_span_tree&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;leaf_size&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="s2">&quot;memory&quot;</span><span class="p">:</span> <span class="n">Memory</span><span class="p">(</span><span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+        <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;min_samples&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span></div>
     <span class="p">},</span>
-    <span class="s1">&#39;kprototypes&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;Huang&quot;</span><span class="p">,</span> 
-        <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
-        <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span></div>
-    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 
