@@ -137,6 +137,7 @@ class Centroids(Base):
         cursor: str = None,
         page: int = 1,
         include_vector: bool = False,
+        similarity_metric: str = "cosine",
         output_format: str = "json",
     ):
         """

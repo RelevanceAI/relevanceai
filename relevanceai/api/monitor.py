@@ -73,10 +73,9 @@ class Monitor(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/usage",
-            method="GET",
+            method="POST",
             parameters={
                 "filters": filters,
-                "cursor": cursor,
                 "page_size": page_size,
                 "page": page,
                 "asc": asc,
