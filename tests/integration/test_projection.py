@@ -19,41 +19,15 @@ from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT
 from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
-@pytest.fixture(name='base_args')
-def fixture_base_args():
-    project = "dummy-collections"
-    api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # Read access
-    base_url = "https://api-aueast.relevance.ai/v1"
-    base_args = {
-                "project": project, 
-                "api_key": api_key, 
-                "base_url": base_url,
-            }
-    return base_args
-
-# @pytest.fixture
-# def sample_doc():
-#     return [{
-#         "_id": uuid.uuid4().__str__(),
-#         "value": random.randint(0, 1000),
-#     }]
-
-
-# @pytest.fixture(name='test-dataset-1')
-# def fixture_test_dataset_1():
-#     test_dataset_1 = json.load(open("../tests/data/_ecommerce-6.json"))
-    
-
-@pytest.fixture(name='dataset_args', 
-params =[ 
-        { 
-        "dataset_id" : "test-dataset",
-        "vector_field": "product_name_imagetext_vector_",
-        "number_of_points_to_render" : 100,
-        "random_state" : 0,
-        "vector_label" : "product_name",
-        "vector_label_char_length"  : 12,
-        "hover_label": ["category"],
+@pytest.fixture(
+    name="dataset_args",
+    params=[
+        {  ## Testing vector label and empty hover label
+            "vector_field": "sample_1_vector_",
+            "vector_label": "sample_1_label",
+            "vector_label_char_length": 12,
+            "number_of_points_to_render": 100,
+            "random_state": 0,
         },
         {  ## Testing colour label
             "vector_field": "sample_2_vector_",
