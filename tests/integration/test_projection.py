@@ -72,8 +72,8 @@ params =[
         },
     ],
 )
-def fixture_dataset_args(request):
-    return request.param
+def fixture_dataset_args(test_sample_vector_dataset, request):
+    return {"dataset_id": test_sample_vector_dataset, **request.param}
 
 
 @pytest.fixture(
