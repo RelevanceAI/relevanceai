@@ -1,0 +1,31 @@
+:py:mod:`relevanceai.api.services`
+==================================
+
+.. py:module:: relevanceai.api.services
+
+.. autoapi-nested-parse::
+
+   Services class
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.api.services.Services
+
+
+
+
+.. py:class:: Services(project: str, api_key: str, base_url: str)
+
+   Bases: :py:obj:`relevanceai.base.Base`
+
+   Base class for all relevanceai utilities
+
+

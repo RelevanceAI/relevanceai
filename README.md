@@ -28,13 +28,21 @@ client = Client()
 
 To get started with development, ensure you have `pytest` and `mypy` installed. These will help ensure typechecking and testing.
 
-```
+```python
 python -m pip install pytest mypy
 ```
+
+
 Then run testing using:
 
+Make sure to set your test credentials!
 
 ```
+export TEST_PROJECT = xxx 
+export TEST_API_KEY = xxx 
+```
+
+```python
 python -m pytest
 mypy relevanceai
 ```
@@ -68,7 +76,7 @@ To add new targets, add new command and intended script, add descriptive comment
 ...
 ## Test dependencies
 test
-	pytest $(TEST_PATH) --cov=relevanceai -vv -rs
+	pytest $(TEST_PATH) --cov=relevanceai -vv -rs -x
 ...
 ```
 Then run testing using:
@@ -78,10 +86,10 @@ You can limit your testing on a single file/folder by specifying a test path to 
 
 ```zsh
 
-❯ make test TEST_PATH=tests/integration    
+❯ make test TEST_PATH=tests/integration
 
 
-pytest . --cov=relevanceai -vv -rs
+pytest . --cov=relevanceai -vv -rs -x
 ========================================= test session starts =========================================
 platform linux -- Python 3.7.0, pytest-6.2.5, py-1.10.0, pluggy-1.0.0 -- /home/charlene/code/relevanceai/.venv/bin/python3.8
 cachedir: .pytest_cache

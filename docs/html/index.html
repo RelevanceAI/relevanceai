@@ -7,6 +7,8 @@
   <title>Welcome to Relevance AI’s documentation! &mdash; Relevance AI 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -18,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Features" href="features.html" /> 
+    <link rel="next" title="Core Features" href="core_api.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,10 +40,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="viz.html">Visualisation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core RelevanceAI Specs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">relevanceai</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -76,52 +79,153 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search">Search</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.advanced_chunk">advanced_chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.advanced_multistep_chunk">advanced_multistep_chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.chunk">chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.diversity">diversity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.hybrid">hybrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.multistep_chunk">multistep_chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.semantic">semantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.traditional">traditional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.search.Search.vector">vector</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.aggregate.Aggregate">Aggregate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.aggregate.Aggregate.aggregate">aggregate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.recommend.Recommend">Recommend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.recommend.Recommend.vector">vector</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.admin.Admin">Admin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.admin.Admin.copy_foreign_dataset">copy_foreign_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.admin.Admin.request_read_api_key">request_read_api_key</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids">Centroids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.get">get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.list">list</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.client.APIClient">APIClient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.cluster.Cluster">Cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.cluster.Cluster.aggregate">aggregate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents">Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.bulk_delete">bulk_delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.bulk_update">bulk_update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get">get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get_number_of_documents">get_number_of_documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get_where">get_where</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get_where_all">get_where_all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.list">list</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders">Encoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders.image">image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders.imagetext">imagetext</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders.multi_text">multi_text</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders.text">text</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders.textimage">textimage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor">Monitor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor.health">health</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor.stats">stats</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks">Tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create">create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_cluster_task">create_cluster_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_encode_categories_task">create_encode_categories_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_encode_imagetext_task">create_encode_imagetext_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_encode_text_task">create_encode_text_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_encode_textimage_task">create_encode_textimage_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_numeric_encoder_task">create_numeric_encoder_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.status">status</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert">BatchInsert</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_df">insert_df</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_documents">insert_documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push">pull_update_push</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">pull_update_push_to_cloud</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.update_documents">update_documents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.chunk.Chunker">Chunker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.chunk.Chunker.chunk">chunk</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.client.BatchAPIClient">BatchAPIClient</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.client.BatchAPIClient.batch_get_and_edit">batch_get_and_edit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster">Cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.api_key">api_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.base_url">base_url</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.config">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.project">project</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction">DimReduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.api_key">api_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.base_url">base_url</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.config">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.project">project</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector">Projector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.api_key">api_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.base_url">base_url</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.config">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.plot">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.project">project</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="features.html#inserting-with-automatic-multi-processing-and-multi-threading">Inserting with automatic multi-processing and multi-threading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html#pull-update-push">Pull Update Push</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html#integration-with-vectorhub">Integration With VectorHub</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="viz.html">Visualisation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="viz.html#embedding-projector">Embedding Projector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/relevanceai/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/relevanceai/index.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/api/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/batch/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.batch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/visualise/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.visualise</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core RelevanceAI Specs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.admin">relevanceai.api.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.aggregate">relevanceai.api.aggregate module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.centroids">relevanceai.api.centroids module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.client">relevanceai.api.client module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.cluster">relevanceai.api.cluster module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.datasets">relevanceai.api.datasets module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.documents">relevanceai.api.documents module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.encoders">relevanceai.api.encoders module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.monitor">relevanceai.api.monitor module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.recommend">relevanceai.api.recommend module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.requests_config">relevanceai.api.requests_config module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.search">relevanceai.api.search module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.services">relevanceai.api.services module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api.tasks">relevanceai.api.tasks module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_api.html#module-relevanceai.api">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/relevanceai/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/base/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/concurrency/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.concurrency</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/datasets/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.datasets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/errors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.errors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/http_client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.http_client</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/progress_bar/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.progress_bar</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/transport/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.transport</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">relevanceai</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.html">relevanceai package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html">relevanceai.api package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.batch.html">relevanceai.batch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/relevanceai/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/relevanceai/index.html#attributes">Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.base">relevanceai.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.concurrency">relevanceai.concurrency module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.config">relevanceai.config module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.datasets">relevanceai.datasets module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.errors">relevanceai.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.http_client">relevanceai.http_client module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.progress_bar">relevanceai.progress_bar module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai.transport">relevanceai.transport module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.html#module-relevanceai">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -142,7 +246,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="core_api.html" class="btn btn-neutral float-right" title="Core Features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

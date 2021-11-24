@@ -15,6 +15,7 @@ class Monitor(Base):
     ):
         """ 
         Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors 
+        
         Parameters
         ----------
         dataset_id : string
@@ -31,6 +32,7 @@ class Monitor(Base):
     def stats(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
         """ 
         All operations related to monitoring
+        
         Parameters
         ----------
         dataset_id : string

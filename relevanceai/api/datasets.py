@@ -26,6 +26,7 @@ class Datasets(Base):
     ):
         """ 
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+        
         Parameters
         ----------
         dataset_id : string
@@ -43,6 +44,7 @@ class Datasets(Base):
     ):
         """ 
         Retreives metadata about a dataset. Notably description, data source, etc
+
         Parameters
         ----------
         dataset_id : string
@@ -63,9 +65,8 @@ class Datasets(Base):
         verbose: bool = True,
     ):
         """ 
-        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
-
-        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema.
+        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch). 
+        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
 
@@ -74,7 +75,7 @@ class Datasets(Base):
         >>>        "product_text_description_vector_" : 128
         >>>    }
 
-        These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"].
+        These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"]. \n
 
         For example:
 
@@ -86,9 +87,10 @@ class Datasets(Base):
         >>>        "product_text_chunkvector_" : 1024
         >>>    }
 
-        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents.
+        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
         Note:
+
             - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
@@ -140,12 +142,13 @@ class Datasets(Base):
 
         """ 
         Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
-        schema - Data schema of a dataset (same as dataset.schema).
-        metadata - Metadata of a dataset (same as dataset.metadata).
-        stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
-        vector_health - Number of zero vectors stored (same as dataset.health).
-        schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
-        active_jobs - All active jobs/tasks on the dataset. 
+
+        - Schema - Data schema of a dataset (same as dataset.schema).
+        - Metadata - Metadata of a dataset (same as dataset.metadata).
+        - Stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
+        - Vector_health - Number of zero vectors stored (same as dataset.health).
+        - Schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
+        - Active_jobs - All active jobs/tasks on the dataset. 
         
         Parameters
         ----------
@@ -335,16 +338,13 @@ class Datasets(Base):
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
         """
-        Insert multiple documents
-
+        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        
         - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
         - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
         - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
         - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
-        
-        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode \n
-
-        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n 
+        - Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
         
         Parameters
         ----------
@@ -362,6 +362,7 @@ class Datasets(Base):
             Include the inserted IDs in the response
         field_transformers: list
             An example field_transformers object:
+            
             >>> {
             >>>    "field": "string",
             >>>    "output_field": "string",
