@@ -50,6 +50,16 @@ Classes
       :type task_id: string
 
 
+   .. py:method:: list(self, dataset_id: str, show_active_only: bool = True)
+
+      List and get a history of all the jobs and its job_id, parameters, start time, etc.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param show_active_only: Whether to show active only
+      :type show_active_only: bool
+
+
    .. py:method:: _loop_status_until_finish(self, dataset_id: str, task_id: str, verbose: bool = True, time_between_ping: int = 10)
 
 
@@ -59,7 +69,6 @@ Classes
    .. py:method:: create_cluster_task(self, dataset_id, vector_field: str, n_clusters: int, alias: str = 'default', refresh: bool = False, n_iter: int = 10, n_init: int = 5, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10)
 
       Start a task which creates clusters for a dataset based on a vector field
-
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param vector_field: The field to cluster on.
@@ -81,7 +90,6 @@ Classes
       Within a collection encode the specified dictionary field in every document into vectors.
 
       For example: a dictionary that represents a person's characteristics visiting a store:
-
       >>> document 1 field: {"person_characteristics" : {"height":180, "age":40, "weight":70}}
       >>> document 2 field: {"person_characteristics" : {"age":32, "purchases":10, "visits": 24}}
       >>> -> <Encode the dictionaries to vectors> ->
@@ -91,7 +99,6 @@ Classes
       >>> | 0      | 32  | 0      | 10        | 24     |
       >>> document 1 dictionary vector: {"person_characteristics_vector_": [180, 40, 70, 0, 0]}
       >>> document 2 dictionary vector: {"person_characteristics_vector_": [0, 32, 0, 10, 24]}
-
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param fields: The numeric fields to encode into vectors.
@@ -105,7 +112,6 @@ Classes
       Within a collection encode the specified array field in every document into vectors.
 
       For example, array that represents a movie's categories:
-
       >>> document 1 array field: {"category" : ["sci-fi", "thriller", "comedy"]}
       >>> document 2 array field: {"category" : ["sci-fi", "romance", "drama"]}
       >>> -> <Encode the arrays to vectors> ->
@@ -125,7 +131,6 @@ Classes
    .. py:method:: create_encode_text_task(self, dataset_id: str, field: str, alias: str = 'default', refresh: bool = False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10)
 
       Start a task which encodes a text field
-
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param field: The field to encode
@@ -139,7 +144,6 @@ Classes
    .. py:method:: create_encode_textimage_task(self, dataset_id: str, field: str, alias: str = 'default', refresh: bool = False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10)
 
       Start a task which encodes a text field for image representation
-
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param field: The field to encode
@@ -153,7 +157,6 @@ Classes
    .. py:method:: create_encode_imagetext_task(self, dataset_id: str, field: str, alias: str = 'default', refresh: bool = False, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10)
 
       Start a task which encodes an image field for text representation
-
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param field: The field to encode

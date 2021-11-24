@@ -7,7 +7,7 @@
 Module Contents
 ---------------
 
-.. py:data:: JSONDict
+.. py:data:: dict
    
 
    

@@ -33,7 +33,6 @@ Functions
 
    Base Logging Instance
 
-
    .. py:attribute:: info
       :annotation: :Callable
 
@@ -75,7 +74,6 @@ Functions
    Bases: :py:obj:`AbstractLogger`
 
    Using verbose loguru as base logger for now
-
 
    .. py:method:: logger(self)
       :property:

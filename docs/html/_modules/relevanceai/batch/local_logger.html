@@ -79,29 +79,28 @@
 <span class="kn">from</span> <span class="nn">relevanceai.config</span> <span class="kn">import</span> <span class="n">CONFIG</span>
 <span class="kn">from</span> <span class="nn">relevanceai.logger</span> <span class="kn">import</span> <span class="n">LoguruLogger</span>
 
+
 <div class="viewcode-block" id="PullUpdatePushLocalLogger"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/local_logger/index.html#relevanceai.batch.local_logger.PullUpdatePushLocalLogger">[docs]</a><span class="k">class</span> <span class="nc">PullUpdatePushLocalLogger</span><span class="p">(</span><span class="n">LoguruLogger</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This logger class is specifically for pull_update_push to log</span>
 <span class="sd">    failures locally as opposed to on the cloud.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Filename for failed IDs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Filename for failed IDs&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CONFIG</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-<div class="viewcode-block" id="PullUpdatePushLocalLogger.log_ids"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/local_logger/index.html#relevanceai.batch.local_logger.PullUpdatePushLocalLogger.log_ids">[docs]</a>    <span class="k">def</span> <span class="nf">log_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_list</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Log the failed IDs to the file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class="viewcode-block" id="PullUpdatePushLocalLogger.log_ids"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/local_logger/index.html#relevanceai.batch.local_logger.PullUpdatePushLocalLogger.log_ids">[docs]</a>    <span class="k">def</span> <span class="nf">log_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_list</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Log the failed IDs to the file&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_id</span> <span class="ow">in</span> <span class="n">id_list</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">_id</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logging&quot;</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="PullUpdatePushLocalLogger.count_ids_in_fn"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/local_logger/index.html#relevanceai.batch.local_logger.PullUpdatePushLocalLogger.count_ids_in_fn">[docs]</a>    <span class="k">def</span> <span class="nf">count_ids_in_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns total count of failed IDs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns total count of failed IDs&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>

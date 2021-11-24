@@ -34,11 +34,9 @@ Classes
       Log the failed IDs to the file
 
 
-
    .. py:method:: count_ids_in_fn(self) -> int
 
       Returns total count of failed IDs
-
 
 
 

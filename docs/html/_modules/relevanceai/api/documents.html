@@ -75,6 +75,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
+
 <div class="viewcode-block" id="Documents"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents">[docs]</a><span class="k">class</span> <span class="nc">Documents</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
@@ -113,7 +114,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/list&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/list&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
@@ -142,14 +143,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
 <span class="sd">            Unique name of dataset</span>
-<span class="sd">        id : list</span>
+<span class="sd">        id : string</span>
 <span class="sd">            ID of a document in a dataset.</span>
 <span class="sd">        include_vector: bool</span>
 <span class="sd">            Include vectors in the search results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/get&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/get&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
@@ -157,6 +158,44 @@
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="Documents.bulk_get"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.bulk_get">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ids</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a document by its ID (&quot;_id&quot; field). This will retrieve the document faster than a filter applied on the &quot;_id&quot; field. \n</span>
+<span class="sd">        For single id lookup version of this request use datasets.documents.get.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        ids: list</span>
+<span class="sd">            IDs of documents in the dataset.</span>
+<span class="sd">        include_vector: bool</span>
+<span class="sd">            Include vectors in the search results</span>
+<span class="sd">        select_fields: list</span>
+<span class="sd">            Fields to include in the search results, empty array/list means all fields. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_get&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">ids</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span>
+            <span class="p">},</span>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
 
 <div class="viewcode-block" id="Documents.get_where"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.get_where">[docs]</a>    <span class="k">def</span> <span class="nf">get_where</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -225,9 +264,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        dataset_id : string</span>
+<span class="sd">        dataset_id: string</span>
 <span class="sd">            Unique name of dataset</span>
-<span class="sd">        select_fields : list</span>
+<span class="sd">        select_fields: list</span>
 <span class="sd">            Fields to include in the search results, empty array/list means all fields.</span>
 <span class="sd">        cursor: string</span>
 <span class="sd">            Cursor to paginate the document retrieval</span>
@@ -247,7 +286,7 @@
 
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/get_where&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/get_where&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
@@ -263,14 +302,125 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
         <span class="p">)</span>
 
+<div class="viewcode-block" id="Documents.paginate"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.paginate">[docs]</a>    <span class="k">def</span> <span class="nf">paginate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve documents with filters and support for pagination. \n</span>
+<span class="sd">        For more information about filters check out datasets.documents.get_where.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        page: int</span>
+<span class="sd">            Page of the results</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        include_vector: bool</span>
+<span class="sd">            Include vectors in the search results</span>
+<span class="sd">        select_fields: list</span>
+<span class="sd">            Fields to include in the search results, empty array/list means all fields. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/paginate&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span>
+            <span class="p">},</span>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Documents.update"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">update</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">insert_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">retries</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the &quot;_id&quot; in the documents. \n</span>
+<span class="sd">        For update multiple documents refer to datasets.documents.bulk_update</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        update : list</span>
+<span class="sd">            A dictionary to edit and add fields to a document. It should be specified in a format of {&quot;field_name&quot;: &quot;value&quot;}. e.g. {&quot;item.status&quot; : &quot;Sold Out&quot;}</span>
+<span class="sd">        insert_date	: bool</span>
+<span class="sd">            Whether to include insert date as a field &#39;insert_date_&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+                <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/update&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;update&quot;</span><span class="p">:</span> <span class="n">update</span><span class="p">,</span> <span class="s2">&quot;insert_date&quot;</span><span class="p">:</span> <span class="n">insert_date</span><span class="p">},</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span></div>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Documents.update_where"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.update_where">[docs]</a>    <span class="k">def</span> <span class="nf">update_where</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">update</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">retries</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Updates documents by filters. The updates to make to the documents that is returned by a filter. \n</span>
+<span class="sd">        For more information about filters refer to datasets.documents.get_where.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        update : list</span>
+<span class="sd">            A dictionary to edit and add fields to a document. It should be specified in a format of {&quot;field_name&quot;: &quot;value&quot;}. e.g. {&quot;item.status&quot; : &quot;Sold Out&quot;}</span>
+<span class="sd">        filters: list</span>
+<span class="sd">            Query for filtering the search results</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+                <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/update_where&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;update&quot;</span><span class="p">:</span> <span class="n">update</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">},</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span></div>
+            <span class="p">)</span>
+
 <div class="viewcode-block" id="Documents.bulk_update"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.bulk_update">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">updates</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">insert_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">return_documents</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">retries</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://ingest-api-dev-aueast.relevance.ai/latest&quot;</span>
     <span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; </span>
@@ -291,23 +441,23 @@
 
         <span class="k">if</span> <span class="n">return_documents</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-                <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_update&quot;</span><span class="p">,</span>
+                <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_update&quot;</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;updates&quot;</span><span class="p">:</span> <span class="n">updates</span><span class="p">},</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;updates&quot;</span><span class="p">:</span> <span class="n">updates</span><span class="p">,</span> <span class="s2">&quot;insert_date&quot;</span><span class="p">:</span> <span class="n">insert_date</span><span class="p">},</span>
                 <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                 <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
-                <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://ingest-api-dev-aueast.relevance.ai/latest/&quot;</span><span class="p">,</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">insert_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-                <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_update&quot;</span><span class="p">,</span>
+                <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_update&quot;</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;updates&quot;</span><span class="p">:</span> <span class="n">updates</span><span class="p">},</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;updates&quot;</span><span class="p">:</span> <span class="n">updates</span><span class="p">,</span> <span class="s2">&quot;insert_date&quot;</span><span class="p">:</span> <span class="n">insert_date</span><span class="p">},</span>
                 <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                 <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
-                <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://ingest-api-dev-aueast.relevance.ai/latest/&quot;</span><span class="p">,</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -320,6 +470,64 @@
                 <span class="s2">&quot;documents&quot;</span><span class="p">:</span> <span class="n">updates</span><span class="p">,</span>
                 <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">insert_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span></div>
             <span class="p">}</span>
+
+<div class="viewcode-block" id="Documents.delete"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Delete a document by ID. \n</span>
+<span class="sd">        For deleting multiple documents refer to datasets.documents.bulk_delete</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        id : string</span>
+<span class="sd">            ID of document to delete</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/delete&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Documents.delete_where"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.delete_where">[docs]</a>    <span class="k">def</span> <span class="nf">delete_where</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Delete a document by filters. \n</span>
+<span class="sd">        For more information about filters refer to datasets.documents.get_where.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        filters: list</span>
+<span class="sd">            Query for filtering the search results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/delete_where&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">},</span>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+
 
 <div class="viewcode-block" id="Documents.bulk_delete"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.bulk_delete">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_delete</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -341,9 +549,39 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_delete&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_delete&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="n">ids</span><span class="p">},</span>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Documents.delete_fields"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.delete_fields">[docs]</a>    <span class="k">def</span> <span class="nf">delete_fields</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Delete fields in a document in a dataset by its id</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        id : string</span>
+<span class="sd">            ID of a document in a dataset</span>
+<span class="sd">        fields: list</span>
+<span class="sd">            List of fields to delete in a document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/delete_fields&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
         <span class="p">)</span>
@@ -401,7 +639,7 @@
 
             <span class="c1"># Append fetched data to the full data</span>
             <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">full_data</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]</span>
+                <span class="n">full_data</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">full_data</span></div>
 
 <div class="viewcode-block" id="Documents.get_number_of_documents"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.documents.Documents.get_number_of_documents">[docs]</a>    <span class="k">def</span> <span class="nf">get_number_of_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">list_of_filters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

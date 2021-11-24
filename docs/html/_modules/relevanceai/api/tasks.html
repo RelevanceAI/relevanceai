@@ -99,7 +99,7 @@
 <span class="sd">            Parameters of task to complete</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="n">task_name</span><span class="p">,</span> <span class="o">**</span><span class="n">task_parameters</span><span class="p">},</span></div>
         <span class="p">)</span>
@@ -116,8 +116,28 @@
 <span class="sd">            Unique name of task</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/status&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/status&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span></div>
+        <span class="p">)</span>
+    
+<div class="viewcode-block" id="Tasks.list"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.tasks.Tasks.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">show_active_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        List and get a history of all the jobs and its job_id, parameters, start time, etc.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        show_active_only : bool</span>
+<span class="sd">            Whether to show active only</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/list&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;show_active_only&quot;</span><span class="p">:</span> <span class="n">show_active_only</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span></div>
         <span class="p">)</span>
 
@@ -190,7 +210,6 @@
 
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Start a task which creates clusters for a dataset based on a vector field</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -210,7 +229,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Clusterer&quot;</span><span class="p">,</span>
@@ -244,7 +263,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Within a collection encode the specified dictionary field in every document into vectors. \n</span>
 <span class="sd">        For example: a dictionary that represents a person&#39;s characteristics visiting a store:</span>
-
 <span class="sd">        &gt;&gt;&gt; document 1 field: {&quot;person_characteristics&quot; : {&quot;height&quot;:180, &quot;age&quot;:40, &quot;weight&quot;:70}}</span>
 <span class="sd">        &gt;&gt;&gt; document 2 field: {&quot;person_characteristics&quot; : {&quot;age&quot;:32, &quot;purchases&quot;:10, &quot;visits&quot;: 24}}</span>
 <span class="sd">        &gt;&gt;&gt; -&gt; &lt;Encode the dictionaries to vectors&gt; -&gt;</span>
@@ -254,7 +272,6 @@
 <span class="sd">        &gt;&gt;&gt; | 0      | 32  | 0      | 10        | 24     |</span>
 <span class="sd">        &gt;&gt;&gt; document 1 dictionary vector: {&quot;person_characteristics_vector_&quot;: [180, 40, 70, 0, 0]}</span>
 <span class="sd">        &gt;&gt;&gt; document 2 dictionary vector: {&quot;person_characteristics_vector_&quot;: [0, 32, 0, 10, 24]}</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -265,7 +282,7 @@
 <span class="sd">            The name of the vector field created</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="s2">&quot;NumericEncoder&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">,</span> <span class="s2">&quot;vector_name&quot;</span><span class="p">:</span> <span class="n">vector_name</span><span class="p">},</span>
         <span class="p">)</span>
@@ -290,7 +307,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Within a collection encode the specified array field in every document into vectors. \n</span>
 <span class="sd">        For example, array that represents a movie&#39;s categories:</span>
-
 <span class="sd">        &gt;&gt;&gt; document 1 array field: {&quot;category&quot; : [&quot;sci-fi&quot;, &quot;thriller&quot;, &quot;comedy&quot;]}</span>
 <span class="sd">        &gt;&gt;&gt; document 2 array field: {&quot;category&quot; : [&quot;sci-fi&quot;, &quot;romance&quot;, &quot;drama&quot;]}</span>
 <span class="sd">        &gt;&gt;&gt; -&gt; &lt;Encode the arrays to vectors&gt; -&gt;</span>
@@ -309,7 +325,7 @@
 <span class="sd">            The numeric fields to encode into vectors.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="s2">&quot;CategoriesEncoder&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">},</span>
         <span class="p">)</span>
@@ -335,7 +351,6 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Start a task which encodes a text field</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -349,7 +364,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="s2">&quot;TextEncoder&quot;</span><span class="p">,</span>
@@ -381,7 +396,6 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Start a task which encodes a text field for image representation</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -394,7 +408,7 @@
 <span class="sd">            Whether to rerun task on the whole dataset or just the ones missing the output</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="s2">&quot;TextImageEncoder&quot;</span><span class="p">,</span>
@@ -426,7 +440,6 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Start a task which encodes an image field for text representation</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -439,7 +452,7 @@
 <span class="sd">            Whether to rerun task on the whole dataset or just the ones missing the output</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;task_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ImageTextEncoder&quot;</span><span class="p">,</span>

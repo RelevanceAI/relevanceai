@@ -127,7 +127,7 @@
 <span class="sd">            Alias used to name a vector field. Belongs in field_{alias}vector</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;services/cluster/aggregate&quot;</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/services/cluster/aggregate&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
@@ -139,6 +139,49 @@
                 <span class="s2">&quot;flatten&quot;</span><span class="p">:</span> <span class="n">flatten</span><span class="p">,</span>
                 <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
                 <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Cluster.facets"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.cluster.Cluster.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">facets_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">date_interval</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them. \n</span>
+<span class="sd">        Only can be used after a vector field has been clustered.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        facets_fields : list</span>
+<span class="sd">            Fields to include in the facets, if [] then all</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        page: int</span>
+<span class="sd">            Page of the results</span>
+<span class="sd">        asc: bool</span>
+<span class="sd">            Whether to sort results by ascending or descending order</span>
+<span class="sd">        date_interval: string</span>
+<span class="sd">            Interval for date facets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/services/cluster/facets&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;facets_fields&quot;</span><span class="p">:</span> <span class="n">facets_fields</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+                <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
+                <span class="s2">&quot;date_interval&quot;</span><span class="p">:</span> <span class="n">date_interval</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span></div></div>
         <span class="p">)</span>
