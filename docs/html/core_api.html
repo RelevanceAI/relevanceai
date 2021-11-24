@@ -59,6 +59,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.recommend.Recommend">Recommend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.recommend.Recommend.diversity">diversity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.recommend.Recommend.vector">vector</a></li>
 </ul>
 </li>
@@ -68,23 +69,33 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.centroids.Centroids">Centroids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.centroids.Centroids.documents">documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.centroids.Centroids.get">get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.centroids.Centroids.insert">insert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.centroids.Centroids.list">list</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.client.APIClient">APIClient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.cluster.Cluster">Cluster</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.cluster.Cluster.aggregate">aggregate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.cluster.Cluster.facets">facets</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.documents.Documents">Documents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.bulk_delete">bulk_delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.bulk_get">bulk_get</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.bulk_update">bulk_update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.delete">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.delete_fields">delete_fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.delete_where">delete_where</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.get">get</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.get_number_of_documents">get_number_of_documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.get_where">get_where</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.get_where_all">get_where_all</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.list">list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.paginate">paginate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.update">update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.documents.Documents.update_where">update_where</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.encoders.Encoders">Encoders</a><ul>
@@ -98,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.monitor.Monitor">Monitor</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.monitor.Monitor.health">health</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.monitor.Monitor.stats">stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.monitor.Monitor.usage">usage</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.api.tasks.Tasks">Tasks</a><ul>
@@ -108,6 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.tasks.Tasks.create_encode_text_task">create_encode_text_task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.tasks.Tasks.create_encode_textimage_task">create_encode_textimage_task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.tasks.Tasks.create_numeric_encoder_task">create_numeric_encoder_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.tasks.Tasks.list">list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.api.tasks.Tasks.status">status</a></li>
 </ul>
 </li>
@@ -174,52 +187,48 @@
 <dt class="sig sig-object py" id="relevanceai.api.search.Search.advanced_chunk">
 <span class="sig-name descname"><span class="pre">advanced_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_search_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/search.html#Search.advanced_chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.advanced_chunk" title="Permalink to this definition"></a></dt>
 <dd><p>A more advanced chunk search to be able to combine vector search and chunk search in many different ways.</p>
-<p>Example 1 (Hybrid chunk search):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;chunk&quot;</span> <span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec1</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;traditional_query&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.test_words&quot;</span><span class="p">],</span> <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span><span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.tt.some_other_chunkvector_&quot;</span><span class="p">],</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;traditional_query&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;jumble&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;some.test.test_words&quot;</span><span class="p">],</span> <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>Example 2 (combines normal vector search with chunk search):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;queries&quot;</span><span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="n">vec1</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;traditional_query&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>                            <span class="s2">&quot;some.test.test_words&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="p">],</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="p">],</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;chunk&quot;</span><span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;.some_vector_&quot;</span> <span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="p">}</span>
-</pre></div>
-</div>
+<p>Example 1 (Hybrid chunk search):
+&gt;&gt;&gt; chunk_query = {
+&gt;&gt;&gt;     “chunk” : “some.test”,
+&gt;&gt;&gt;     “queries” : [
+&gt;&gt;&gt;         {“vector” : vec1, “fields”: {”<a href="#id13"><span class="problematic" id="id14">some.test.some_chunkvector_</span></a>”:1},
+&gt;&gt;&gt;         “traditional_query” : {“text”:”python”, “fields” : [“some.test.test_words”], “traditional_weight”: 0.3},
+&gt;&gt;&gt;         “metric” : “cosine”},
+&gt;&gt;&gt;         {“vector” : vec, “fields”: [”<a href="#id15"><span class="problematic" id="id16">some.test.tt.some_other_chunkvector_</span></a>”],
+&gt;&gt;&gt;         “traditional_query” : {“text”:”jumble”, “fields” : [“some.test.test_words”], “traditional_weight”: 0.3},
+&gt;&gt;&gt;         “metric” : “cosine”},
+&gt;&gt;&gt;     ]
+&gt;&gt;&gt; }</p>
+<p>Example 2 (combines normal vector search with chunk search):
+&gt;&gt;&gt; chunk_query = {
+&gt;&gt;&gt;     “queries” : [
+&gt;&gt;&gt;         {
+&gt;&gt;&gt;             “queries”: [
+&gt;&gt;&gt;                 {
+&gt;&gt;&gt;                     “vector”: vec1,
+&gt;&gt;&gt;                     “fields”: {
+&gt;&gt;&gt;                         “<a href="#id17"><span class="problematic" id="id18">some.test.some_chunkvector_</span></a>”: 0.9
+&gt;&gt;&gt;                     },
+&gt;&gt;&gt;                     “traditional_query”: {
+&gt;&gt;&gt;                         “text”: “python”,
+&gt;&gt;&gt;                         “fields”: [
+&gt;&gt;&gt;                             “some.test.test_words”
+&gt;&gt;&gt;                         ],
+&gt;&gt;&gt;                         “traditional_weight”: 0.3
+&gt;&gt;&gt;                     },
+&gt;&gt;&gt;                     “metric”: “cosine”
+&gt;&gt;&gt;                 }
+&gt;&gt;&gt;             ],
+&gt;&gt;&gt;             “chunk”: “some.test”,
+&gt;&gt;&gt;         },
+&gt;&gt;&gt;         {
+&gt;&gt;&gt;             “vector” : vec,
+&gt;&gt;&gt;             “fields”: {
+&gt;&gt;&gt;                 “.some_vector_” : 0.1},
+&gt;&gt;&gt;                 “metric” : “cosine”
+&gt;&gt;&gt;                 },
+&gt;&gt;&gt;         ]
+&gt;&gt;&gt;     }</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -252,38 +261,36 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
 </pre></div>
 </div>
-<p>Example 2 (combines normal vector search with chunk search):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_query</span> <span class="o">=</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;queries&quot;</span> <span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;queries&quot;</span><span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="n">vec1</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;some.test.some_chunkvector_&quot;</span><span class="p">:</span> <span class="mf">0.9</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;traditional_query&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>                            <span class="s2">&quot;some.test.test_words&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="p">],</span>
-<span class="gp">&gt;&gt;&gt; </span>                        <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="p">],</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;chunk&quot;</span><span class="p">:</span> <span class="s2">&quot;some.test&quot;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;vector&quot;</span> <span class="p">:</span> <span class="n">vec</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;.some_vector_&quot;</span> <span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="s2">&quot;metric&quot;</span> <span class="p">:</span> <span class="s2">&quot;cosine&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span>                <span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="p">}</span>
-</pre></div>
-</div>
+<p>Example 2 (combines normal vector search with chunk search):
+&gt;&gt;&gt; chunk_query = {
+&gt;&gt;&gt;     “queries” : [
+&gt;&gt;&gt;         {
+&gt;&gt;&gt;             “queries”: [
+&gt;&gt;&gt;                 {
+&gt;&gt;&gt;                     “vector”: vec1,
+&gt;&gt;&gt;                     “fields”: {
+&gt;&gt;&gt;                         “<a href="#id19"><span class="problematic" id="id20">some.test.some_chunkvector_</span></a>”: 0.9
+&gt;&gt;&gt;                     },
+&gt;&gt;&gt;                     “traditional_query”: {
+&gt;&gt;&gt;                         “text”: “python”,
+&gt;&gt;&gt;                         “fields”: [
+&gt;&gt;&gt;                             “some.test.test_words”
+&gt;&gt;&gt;                         ],
+&gt;&gt;&gt;                         “traditional_weight”: 0.3
+&gt;&gt;&gt;                     },
+&gt;&gt;&gt;                     “metric”: “cosine”
+&gt;&gt;&gt;                 }
+&gt;&gt;&gt;             ],
+&gt;&gt;&gt;             “chunk”: “some.test”,
+&gt;&gt;&gt;         },
+&gt;&gt;&gt;         {
+&gt;&gt;&gt;             “vector” : vec,
+&gt;&gt;&gt;             “fields”: {
+&gt;&gt;&gt;                 “.some_vector_” : 0.1},
+&gt;&gt;&gt;                 “metric” : “cosine”
+&gt;&gt;&gt;                 },
+&gt;&gt;&gt;         ]
+&gt;&gt;&gt;     }</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -294,8 +301,8 @@
 <li><p><strong>chunk_search_query</strong> (<em>list</em>) – Advanced chunk query</p></li>
 <li><p><strong>first_step_edit_distance</strong> (<em>int</em>) – This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.</p></li>
 <li><p><strong>first_step_ignore_spaces</strong> (<em>bool</em>) – Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.</p></li>
-<li><p><strong>first_step_traditional_weight</strong> (<em>integer</em>) – Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range</p></li>
-<li><p><strong>first_step_approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>first_step_traditional_weight</strong> (<em>int</em>) – Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range</p></li>
+<li><p><strong>first_step_approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>first_step_sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>first_step_filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
 <li><p><strong>first_step_page_size</strong> (<em>int</em>) – In the first search, you are more interested in the contents</p></li>
@@ -336,7 +343,7 @@
 <li><p><strong>chunk_scoring</strong> (<em>string</em>) – Scoring method for determining for ranking between document chunks.</p></li>
 <li><p><strong>chunk_page_size</strong> (<em>int</em>) – Size of each page of chunk results</p></li>
 <li><p><strong>chunk_page</strong> (<em>int</em>) – Page of the chunk results</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
 <li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
@@ -356,7 +363,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.search.Search.diversity">
-<span class="sig-name descname"><span class="pre">diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/search.html#Search.diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.diversity" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/search.html#Search.diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.diversity" title="Permalink to this definition"></a></dt>
 <dd><p>This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Cluster</span> <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Cluster</span> <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">]</span>
@@ -379,10 +386,11 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>cluster_vector_field</strong> (<em>str</em>) – The field to cluster on.</p></li>
 <li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
 <li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
 <li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
@@ -398,7 +406,6 @@
 <li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
 <li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
 <li><p><strong>search_history_id</strong> (<em>str</em>) – Search history ID, only used for storing search histories.</p></li>
-<li><p><strong>cluster_vector_field</strong> (<em>str</em>) – The field to cluster on.</p></li>
 <li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters to be specified.</p></li>
 <li><p><strong>n_init</strong> (<em>int</em>) – Number of runs to run with different centroid seeds</p></li>
 <li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations in each run</p></li>
@@ -423,7 +430,7 @@
 <li><p><strong>fields</strong> (<em>list</em>) – Text fields to search against</p></li>
 <li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
 <li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
@@ -441,7 +448,7 @@
 <li><p><strong>search_history_id</strong> (<em>string</em>) – Search history ID, only used for storing search histories.</p></li>
 <li><p><strong>edit_distance</strong> (<em>int</em>) – This refers to the amount of letters it takes to reach from 1 string to another string. e.g. band vs bant is a 1 word edit distance. Use -1 if you would like this to be automated.</p></li>
 <li><p><strong>ignore_spaces</strong> (<em>bool</em>) – Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.</p></li>
-<li><p><strong>traditional_weight</strong> (<em>integer</em>) – Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range</p></li>
+<li><p><strong>traditional_weight</strong> (<em>int</em>) – Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range</p></li>
 </ul>
 </dd>
 </dl>
@@ -462,7 +469,7 @@
 <li><p><strong>chunk_scoring</strong> (<em>string</em>) – Scoring method for determining for ranking between document chunks.</p></li>
 <li><p><strong>chunk_page_size</strong> (<em>int</em>) – Size of each page of chunk results</p></li>
 <li><p><strong>chunk_page</strong> (<em>int</em>) – Page of the chunk results</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
 <li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
@@ -497,7 +504,7 @@
 <li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
 <li><p><strong>text</strong> (<em>string</em>) – Text Search Query (not encoded as vector)</p></li>
 <li><p><strong>fields</strong> (<em>list</em>) – Text fields to search against</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
 <li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
@@ -549,7 +556,7 @@
 <span class="sig-name descname"><span class="pre">vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multivector_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/search.html#Search.vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.search.Search.vector" title="Permalink to this definition"></a></dt>
 <dd><p>Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:</p>
 <ol class="arabic">
-<li><p>Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. <a href="#id1"><span class="problematic" id="id2">image_vector_</span></a> weights 100%, whilst <a href="#id3"><span class="problematic" id="id4">description_vector_</span></a> 50%</p>
+<li><p>Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. <a href="#id21"><span class="problematic" id="id22">image_vector_</span></a> weights 100%, whilst <a href="#id23"><span class="problematic" id="id24">description_vector_</span></a> 50%</p>
 <blockquote>
 <div><p>An example of a simple multivector query:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span>
@@ -558,11 +565,13 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
 </pre></div>
 </div>
-<p>An example of a weighted multivector query:
-&gt;&gt;&gt; [
-&gt;&gt;&gt;     {“vector”: [0.12, 0.23, 0.34], “fields”: {”<a href="#id5"><span class="problematic" id="id6">name_vector_</span></a>”:0.6}, “alias”:”text”},
-&gt;&gt;&gt;     {“vector”: [0.45, 0.56, 0.67], “fields”: {”<a href="#id7"><span class="problematic" id="id8">image_vector_</span></a>”0.4}, “alias”:”image”},
-&gt;&gt;&gt; ]</p>
+<p>An example of a weighted multivector query:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.34</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name_vector_&quot;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">},</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.56</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;image_vector_&quot;</span><span class="mf">0.4</span><span class="p">},</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;image&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+</pre></div>
+</div>
 <p>An example of a weighted multivector query with multiple fields for each vector:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="p">{</span><span class="s2">&quot;vector&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.34</span><span class="p">],</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name_vector_&quot;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span> <span class="s2">&quot;description_vector_&quot;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">},</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
@@ -573,7 +582,7 @@
 </div></blockquote>
 </li>
 <li><p>Utilise faceted search with vector search. For information on how to apply facets/filters check out datasets.documents.get_where</p></li>
-<li><p>Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. <a href="#id9"><span class="problematic" id="id10">image_vector_</span></a> + <a href="#id11"><span class="problematic" id="id12">text_vector_</span></a> or <a href="#id13"><span class="problematic" id="id14">image_vector_</span></a> vs <a href="#id15"><span class="problematic" id="id16">text_vector_</span></a>.</p>
+<li><p>Sum Fields option to adjust whether you want multiple vectors to be combined in the scoring or compared in the scoring. e.g. <a href="#id25"><span class="problematic" id="id26">image_vector_</span></a> + <a href="#id27"><span class="problematic" id="id28">text_vector_</span></a> or <a href="#id29"><span class="problematic" id="id30">image_vector_</span></a> vs <a href="#id31"><span class="problematic" id="id32">text_vector_</span></a>.</p>
 <blockquote>
 <div><p>When sum_fields=True:</p>
 <ul class="simple">
@@ -606,7 +615,7 @@
 <li><p><strong>multivector_query</strong> (<em>list</em>) – Query for advance search that allows for multiple vector and field querying.</p></li>
 <li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
 <li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
@@ -716,10 +725,72 @@
 <dt class="sig sig-object py" id="relevanceai.api.recommend.Recommend">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.recommend.</span></span><span class="sig-name descname"><span class="pre">Recommend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/recommend.html#Recommend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.recommend.Recommend" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.recommend.Recommend.diversity">
+<span class="sig-name descname"><span class="pre">diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/recommend.html#Recommend.diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.recommend.Recommend.diversity" title="Permalink to this definition"></a></dt>
+<dd><p>Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations.</p>
+<p>Diversity recommendation increases the variety within the recommendations via clustering. Search results are clustered and the top k items in each cluster are selected. The main clustering parameters are cluster_vector_field and n_clusters, the vector field on which to perform clustering and number of clusters respectively.</p>
+<p>Here are a couple of different scenarios and what the queries would look like for those:</p>
+<p>Recommendations Personalized by single liked product:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; Document ID A Vector = Search Query</p>
+<p>Recommendations Personalized by multiple liked product:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; Document ID A Vector + Document ID B Vector = Search Query</p>
+<p>Recommendations Personalized by multiple liked product and disliked products:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">],</span> <span class="n">negative_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; (Document ID A Vector + Document ID B Vector) - (Document ID C Vector + Document ID C Vector) = Search Query</p>
+<p>Recommendations Personalized by multiple liked product and disliked products with weights:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span> <span class="n">negative_document_ids</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mf">0.4</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>-&gt; (Document ID A Vector * 0.5 + Document ID B Vector * 1) - (Document ID C Vector * 0.6 + Document ID D Vector * 0.4) = Search Query</p>
+<p>You can change the operator between vectors with vector_operation:</p>
+<p>e.g. &gt;&gt;&gt; positive_document_ids=[‘A’, ‘B’], negative_document_ids=[‘C’, ‘D’], vector_operation=’multiply’</p>
+<p>-&gt; (Document ID A Vector * Document ID B Vector) - (Document ID C Vector * Document ID D Vector) = Search Query</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>cluster_vector_field</strong> (<em>str</em>) – The field to cluster on.</p></li>
+<li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters to be specified.</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>vector_fields</strong> (<em>list</em>) – The vector field to search in. It can either be an array of strings (automatically equally weighted) (e.g. [’<a href="#id33"><span class="problematic" id="id34">check_vector_</span></a>’, ‘<a href="#id35"><span class="problematic" id="id36">yellow_vector_</span></a>’]) or it is a dictionary mapping field to float where the weighting is explicitly specified (e.g. {’<a href="#id37"><span class="problematic" id="id38">check_vector_</span></a>’: 0.2, ‘<a href="#id39"><span class="problematic" id="id40">yellow_vector_</span></a>’: 0.5})</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+<li><p><strong>search_history_id</strong> (<em>str</em>) – Search history ID, only used for storing search histories.</p></li>
+<li><p><strong>n_init</strong> (<em>int</em>) – Number of runs to run with different centroid seeds</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations in each run</p></li>
+<li><p><strong>return_as_clusters</strong> (<em>bool</em>) – If True, return as clusters as opposed to results list</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.recommend.Recommend.vector">
 <span class="sig-name descname"><span class="pre">vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/recommend.html#Recommend.vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.recommend.Recommend.vector" title="Permalink to this definition"></a></dt>
-<dd><p>Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector.
-This allows us to not only do recommendations but personalized and weighted recommendations here are a couple of different scenarios and what the queries would look like for those:</p>
+<dd><p>Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations.</p>
+<p>Here are a couple of different scenarios and what the queries would look like for those:</p>
 <p>Recommendations Personalized by single liked product:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
 </pre></div>
@@ -749,8 +820,8 @@ This allows us to not only do recommendations but personalized and weighted reco
 <li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
 <li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
 <li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
-<li><p><strong>vector_fields</strong> (<em>list</em>) – The vector field to search in. It can either be an array of strings (automatically equally weighted) (e.g. [’<a href="#id17"><span class="problematic" id="id18">check_vector_</span></a>’, ‘<a href="#id19"><span class="problematic" id="id20">yellow_vector_</span></a>’]) or it is a dictionary mapping field to float where the weighting is explicitly specified (e.g. {’<a href="#id21"><span class="problematic" id="id22">check_vector_</span></a>’: 0.2, ‘<a href="#id23"><span class="problematic" id="id24">yellow_vector_</span></a>’: 0.5})</p></li>
-<li><p><strong>approximation_depth</strong> (<em>integer</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_fields</strong> (<em>list</em>) – The vector field to search in. It can either be an array of strings (automatically equally weighted) (e.g. [’<a href="#id41"><span class="problematic" id="id42">check_vector_</span></a>’, ‘<a href="#id43"><span class="problematic" id="id44">yellow_vector_</span></a>’]) or it is a dictionary mapping field to float where the weighting is explicitly specified (e.g. {’<a href="#id45"><span class="problematic" id="id46">check_vector_</span></a>’: 0.2, ‘<a href="#id47"><span class="problematic" id="id48">yellow_vector_</span></a>’: 0.5})</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
 <li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
 <li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
 <li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
@@ -811,6 +882,39 @@ This allows us to not only do recommendations but personalized and weighted reco
 <dt class="sig sig-object py" id="relevanceai.api.centroids.Centroids">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.centroids.</span></span><span class="sig-name descname"><span class="pre">Centroids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/centroids.html#Centroids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.centroids.Centroids" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.centroids.Centroids.documents">
+<span class="sig-name descname"><span class="pre">documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/centroids.html#Centroids.documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.centroids.Centroids.documents" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve the cluster centroids by IDs
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type cluster_ids: <a class="reference internal" href="#relevanceai.api.centroids.Centroids.list" title="relevanceai.api.centroids.Centroids.list"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+:param cluster_ids: List of cluster IDs
+:type cluster_ids: list
+:type vector_field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param vector_field: The vector field where a clustering task was run.
+:type vector_field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias is used to name a cluster
+:type alias: string
+:type page_size: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param page_size: Size of each page of results
+:type page_size: int
+:type cursor: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:param cursor: Cursor to paginate the document retrieval
+:type cursor: string
+:type page: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param page: Page of the results
+:type page: int
+:type include_vector: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param include_vector: Include vectors in the search results
+:type include_vector: bool
+:type similarity_metric: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param similarity_metric: Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]
+:type similarity_metric: string</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.centroids.Centroids.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/centroids.html#Centroids.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.centroids.Centroids.get" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the cluster centroids by IDs</p>
@@ -829,8 +933,26 @@ This allows us to not only do recommendations but personalized and weighted reco
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.centroids.Centroids.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/centroids.html#Centroids.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.centroids.Centroids.insert" title="Permalink to this definition"></a></dt>
+<dd><p>Insert your own cluster centroids for it to be used in approximate search settings and cluster aggregations.
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type cluster_centers: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>
+:param cluster_centers: Cluster centers with the key being the index number
+:type cluster_centers: list
+:type vector_field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param vector_field: The vector field where a clustering task was run.
+:type vector_field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias is used to name a cluster
+:type alias: string</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.centroids.Centroids.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://gateway-api-aueast.relevance.ai/latest/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/centroids.html#Centroids.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.centroids.Centroids.list" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://gateway-api-aueast.relevance.ai/latest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/centroids.html#Centroids.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.centroids.Centroids.list" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve the cluster centroid</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -882,6 +1004,25 @@ It can only can be used after a vector field has been clustered.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.cluster.Cluster.facets">
+<span class="sig-name descname"><span class="pre">facets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'monthly'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/cluster.html#Cluster.facets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.cluster.Cluster.facets" title="Permalink to this definition"></a></dt>
+<dd><p>Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them.</p>
+<p>Only can be used after a vector field has been clustered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>facets_fields</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>date_interval</strong> (<em>string</em>) – Interval for date facets</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-relevanceai.api.documents"></span><dl class="py class">
@@ -902,16 +1043,78 @@ It can only can be used after a vector field has been clustered.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.bulk_get">
+<span class="sig-name descname"><span class="pre">bulk_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.bulk_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.bulk_get" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve a document by its ID (“_id” field). This will retrieve the document faster than a filter applied on the “_id” field.</p>
+<p>For single id lookup version of this request use datasets.documents.get.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>ids</strong> (<em>list</em>) – IDs of documents in the dataset.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.documents.Documents.bulk_update">
-<span class="sig-name descname"><span class="pre">bulk_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.bulk_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.bulk_update" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bulk_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://ingest-api-dev-aueast.relevance.ai/latest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.bulk_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.bulk_update" title="Permalink to this definition"></a></dt>
 <dd><p>Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the “_id” in the documents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
 <li><p><strong>updates</strong> (<em>list</em>) – Updates to make to the documents. It should be specified in a format of {“field_name”: “value”}. e.g. {“item.status” : “Sold Out”}</p></li>
-<li><p><strong>insert_date</strong> (<em>bool</em>) – Whether to include insert date as a field ‘<a href="#id25"><span class="problematic" id="id26">insert_date_</span></a>’.</p></li>
+<li><p><strong>insert_date</strong> (<em>bool</em>) – Whether to include insert date as a field ‘<a href="#id49"><span class="problematic" id="id50">insert_date_</span></a>’.</p></li>
 <li><p><strong>include_updated_ids</strong> (<em>bool</em>) – Include the inserted IDs in the response</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a document by ID.</p>
+<p>For deleting multiple documents refer to datasets.documents.bulk_delete</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>id</strong> (<em>string</em>) – ID of document to delete</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.delete_fields">
+<span class="sig-name descname"><span class="pre">delete_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.delete_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.delete_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Delete fields in a document in a dataset by its id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>id</strong> (<em>string</em>) – ID of a document in a dataset</p></li>
+<li><p><strong>fields</strong> (<em>list</em>) – List of fields to delete in a document</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.delete_where">
+<span class="sig-name descname"><span class="pre">delete_where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.delete_where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.delete_where" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a document by filters.</p>
+<p>For more information about filters refer to datasets.documents.get_where.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
 </ul>
 </dd>
 </dl>
@@ -925,7 +1128,7 @@ It can only can be used after a vector field has been clustered.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>id</strong> (<em>list</em>) – ID of a document in a dataset.</p></li>
+<li><p><strong>id</strong> (<em>string</em>) – ID of a document in a dataset.</p></li>
 <li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
 </ul>
 </dd>
@@ -1048,6 +1251,56 @@ It can only can be used after a vector field has been clustered.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.paginate">
+<span class="sig-name descname"><span class="pre">paginate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.paginate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.paginate" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve documents with filters and support for pagination.</p>
+<p>For more information about filters check out datasets.documents.get_where.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.update" title="Permalink to this definition"></a></dt>
+<dd><p>Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the “_id” in the documents.</p>
+<p>For update multiple documents refer to datasets.documents.bulk_update</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>update</strong> (<em>list</em>) – A dictionary to edit and add fields to a document. It should be specified in a format of {“field_name”: “value”}. e.g. {“item.status” : “Sold Out”}</p></li>
+<li><p><strong>insert_date</strong> (<em>bool</em>) – Whether to include insert date as a field ‘<a href="#id51"><span class="problematic" id="id52">insert_date_</span></a>’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.documents.Documents.update_where">
+<span class="sig-name descname"><span class="pre">update_where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/documents.html#Documents.update_where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.documents.Documents.update_where" title="Permalink to this definition"></a></dt>
+<dd><p>Updates documents by filters. The updates to make to the documents that is returned by a filter.</p>
+<p>For more information about filters refer to datasets.documents.get_where.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>update</strong> (<em>list</em>) – A dictionary to edit and add fields to a document. It should be specified in a format of {“field_name”: “value”}. e.g. {“item.status” : “Sold Out”}</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-relevanceai.api.encoders"></span><dl class="py class">
@@ -1136,6 +1389,29 @@ It can only can be used after a vector field has been clustered.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.monitor.Monitor.usage">
+<span class="sig-name descname"><span class="pre">usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/monitor.html#Monitor.usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.monitor.Monitor.usage" title="Permalink to this definition"></a></dt>
+<dd><p>Aggregate the logs for a dataset.</p>
+<p>The response returned has the following fields:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mi">958</span><span class="p">,</span> <span class="s1">&#39;insert_date&#39;</span><span class="p">:</span> <span class="mi">1630159200000</span><span class="p">},</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>flatten</strong> (<em>bool</em>) – Whether to flatten</p></li>
+<li><p><strong>log_ids</strong> (<em>list</em>) – The log dataset IDs to aggregate with - one or more of logs, logs-write, logs-search, logs-task or js-logs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-relevanceai.api.requests_config"></span><span class="target" id="module-relevanceai.api.tasks"></span><p>Tasks Module</p>
@@ -1160,38 +1436,43 @@ It can only can be used after a vector field has been clustered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_cluster_task">
 <span class="sig-name descname"><span class="pre">create_cluster_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_cluster_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_cluster_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which creates clusters for a dataset based on a vector field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>vector_field</strong> (<em>string</em>) – The field to cluster on.</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias is used to name a cluster</p></li>
-<li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters to be specified.</p></li>
-<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations in each run</p></li>
-<li><p><strong>n_init</strong> (<em>int</em>) – Number of runs to run with different centroid seeds</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which creates clusters for a dataset based on a vector field
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type vector_field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param vector_field: The field to cluster on.
+:type vector_field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias is used to name a cluster
+:type alias: string
+:type n_clusters: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param n_clusters: Number of clusters to be specified.
+:type n_clusters: int
+:type n_iter: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param n_iter: Number of iterations in each run
+:type n_iter: int
+:type n_init: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param n_init: Number of runs to run with different centroid seeds
+:type n_init: int
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_categories_task">
 <span class="sig-name descname"><span class="pre">create_encode_categories_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_categories_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_categories_task" title="Permalink to this definition"></a></dt>
 <dd><p>Within a collection encode the specified array field in every document into vectors.</p>
-<p>For example, array that represents a movie’s categories:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">array</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;category&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sci-fi&quot;</span><span class="p">,</span> <span class="s2">&quot;thriller&quot;</span><span class="p">,</span> <span class="s2">&quot;comedy&quot;</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">array</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;category&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sci-fi&quot;</span><span class="p">,</span> <span class="s2">&quot;romance&quot;</span><span class="p">,</span> <span class="s2">&quot;drama&quot;</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">-&gt;</span> <span class="o">&lt;</span><span class="n">Encode</span> <span class="n">the</span> <span class="n">arrays</span> <span class="n">to</span> <span class="n">vectors</span><span class="o">&gt;</span> <span class="o">-&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="n">sci</span><span class="o">-</span><span class="n">fi</span> <span class="o">|</span> <span class="n">thriller</span> <span class="o">|</span> <span class="n">comedy</span> <span class="o">|</span> <span class="n">romance</span> <span class="o">|</span> <span class="n">drama</span> <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|--------|----------|--------|---------|-------|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">1</span>      <span class="o">|</span> <span class="mi">1</span>        <span class="o">|</span> <span class="mi">1</span>      <span class="o">|</span> <span class="mi">0</span>       <span class="o">|</span> <span class="mi">0</span>     <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">1</span>      <span class="o">|</span> <span class="mi">0</span>        <span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span> <span class="mi">1</span>       <span class="o">|</span> <span class="mi">1</span>     <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">array</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;movie_categories_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">array</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;movie_categories_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]}</span>
-</pre></div>
-</div>
+<p>For example, array that represents a movie’s categories:
+&gt;&gt;&gt; document 1 array field: {“category” : [“sci-fi”, “thriller”, “comedy”]}
+&gt;&gt;&gt; document 2 array field: {“category” : [“sci-fi”, “romance”, “drama”]}
+&gt;&gt;&gt; -&gt; &lt;Encode the arrays to vectors&gt; -&gt;
+&gt;&gt;&gt; | sci-fi | thriller | comedy | romance | drama |
+&gt;&gt;&gt; <a href="#id1"><span class="problematic" id="id2">|--------|</span></a>———-<a href="#id3"><span class="problematic" id="id4">|--------|</span></a>———<a href="#id5"><span class="problematic" id="id6">|-------|</span></a>
+&gt;&gt;&gt; | 1      | 1        | 1      | 0       | 0     |
+&gt;&gt;&gt; | 1      | 0        | 0      | 1       | 1     |
+&gt;&gt;&gt; document 1 array vector: {”<a href="#id53"><span class="problematic" id="id54">movie_categories_vector_</span></a>”: [1, 1, 1, 0, 0]}
+&gt;&gt;&gt; document 2 array vector: {”<a href="#id55"><span class="problematic" id="id56">movie_categories_vector_</span></a>”: [1, 0, 0, 1, 1]}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1205,73 +1486,91 @@ It can only can be used after a vector field has been clustered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_imagetext_task">
 <span class="sig-name descname"><span class="pre">create_encode_imagetext_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_imagetext_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_imagetext_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which encodes an image field for text representation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>field</strong> (<em>string</em>) – The field to encode</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which encodes an image field for text representation
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param field: The field to encode
+:type field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+:type alias: string
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_text_task">
 <span class="sig-name descname"><span class="pre">create_encode_text_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_text_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_text_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which encodes a text field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>field</strong> (<em>string</em>) – The field to encode</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which encodes a text field
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param field: The field to encode
+:type field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+:type alias: string
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_textimage_task">
 <span class="sig-name descname"><span class="pre">create_encode_textimage_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_textimage_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_textimage_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which encodes a text field for image representation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>field</strong> (<em>string</em>) – The field to encode</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which encodes a text field for image representation
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param field: The field to encode
+:type field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+:type alias: string
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_numeric_encoder_task">
 <span class="sig-name descname"><span class="pre">create_numeric_encoder_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_vector_'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_numeric_encoder_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_numeric_encoder_task" title="Permalink to this definition"></a></dt>
 <dd><p>Within a collection encode the specified dictionary field in every document into vectors.</p>
-<p>For example: a dictionary that represents a person’s characteristics visiting a store:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;height&quot;</span><span class="p">:</span><span class="mi">180</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span><span class="mi">70</span><span class="p">}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;purchases&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;visits&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">-&gt;</span> <span class="o">&lt;</span><span class="n">Encode</span> <span class="n">the</span> <span class="n">dictionaries</span> <span class="n">to</span> <span class="n">vectors</span><span class="o">&gt;</span> <span class="o">-&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="n">height</span> <span class="o">|</span> <span class="n">age</span> <span class="o">|</span> <span class="n">weight</span> <span class="o">|</span> <span class="n">purchases</span> <span class="o">|</span> <span class="n">visits</span> <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|--------|-----|--------|-----------|--------|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">180</span>    <span class="o">|</span> <span class="mi">40</span>  <span class="o">|</span> <span class="mi">70</span>     <span class="o">|</span> <span class="mi">0</span>         <span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span> <span class="mi">32</span>  <span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span> <span class="mi">10</span>        <span class="o">|</span> <span class="mi">24</span>     <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">dictionary</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">180</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">dictionary</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">24</span><span class="p">]}</span>
-</pre></div>
-</div>
+<p>For example: a dictionary that represents a person’s characteristics visiting a store:
+&gt;&gt;&gt; document 1 field: {“person_characteristics” : {“height”:180, “age”:40, “weight”:70}}
+&gt;&gt;&gt; document 2 field: {“person_characteristics” : {“age”:32, “purchases”:10, “visits”: 24}}
+&gt;&gt;&gt; -&gt; &lt;Encode the dictionaries to vectors&gt; -&gt;
+&gt;&gt;&gt; | height | age | weight | purchases | visits |
+&gt;&gt;&gt; <a href="#id7"><span class="problematic" id="id8">|--------|</span></a>—–<a href="#id9"><span class="problematic" id="id10">|--------|</span></a>———–<a href="#id11"><span class="problematic" id="id12">|--------|</span></a>
+&gt;&gt;&gt; | 180    | 40  | 70     | 0         | 0      |
+&gt;&gt;&gt; | 0      | 32  | 0      | 10        | 24     |
+&gt;&gt;&gt; document 1 dictionary vector: {”<a href="#id57"><span class="problematic" id="id58">person_characteristics_vector_</span></a>”: [180, 40, 70, 0, 0]}
+&gt;&gt;&gt; document 2 dictionary vector: {”<a href="#id59"><span class="problematic" id="id60">person_characteristics_vector_</span></a>”: [0, 32, 0, 10, 24]}
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type fields: <a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.list" title="relevanceai.api.tasks.Tasks.list"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+:param fields: The numeric fields to encode into vectors.
+:type fields: list
+:type vector_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param vector_name: The name of the vector field created
+:type vector_name: string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_active_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.list" title="Permalink to this definition"></a></dt>
+<dd><p>List and get a history of all the jobs and its job_id, parameters, start time, etc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>fields</strong> (<em>list</em>) – The numeric fields to encode into vectors.</p></li>
-<li><p><strong>vector_name</strong> (<em>string</em>) – The name of the vector field created</p></li>
+<li><p><strong>show_active_only</strong> (<em>bool</em>) – Whether to show active only</p></li>
 </ul>
 </dd>
 </dl>

@@ -93,7 +93,7 @@
 <span class="sd">            Read-only project</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="s2">&quot;admin/request_read_api_key&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;/admin/request_read_api_key&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read_username&quot;</span><span class="p">:</span> <span class="n">read_username</span><span class="p">},</span></div>
         <span class="p">)</span>
@@ -125,7 +125,7 @@
 <span class="sd">            The original API key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="s2">&quot;admin/copy_foreign_dataset&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;/admin/copy_foreign_dataset&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">project</span><span class="p">,</span>

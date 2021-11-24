@@ -53,4 +53,24 @@ Classes
       :type alias: string
 
 
+   .. py:method:: facets(self, dataset_id: str, facets_fields: list = [], page_size: int = 20, page: int = 1, asc: bool = False, date_interval: str = 'monthly', output_format: str = 'json')
+
+      Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them.
+
+      Only can be used after a vector field has been clustered.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param facets_fields: Fields to include in the facets, if [] then all
+      :type facets_fields: list
+      :param page_size: Size of each page of results
+      :type page_size: int
+      :param page: Page of the results
+      :type page: int
+      :param asc: Whether to sort results by ascending or descending order
+      :type asc: bool
+      :param date_interval: Interval for date facets
+      :type date_interval: string
+
+
 

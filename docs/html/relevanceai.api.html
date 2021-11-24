@@ -99,38 +99,43 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_cluster_task">
 <span class="sig-name descname"><span class="pre">create_cluster_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_cluster_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_cluster_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which creates clusters for a dataset based on a vector field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>vector_field</strong> (<em>string</em>) – The field to cluster on.</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias is used to name a cluster</p></li>
-<li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters to be specified.</p></li>
-<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations in each run</p></li>
-<li><p><strong>n_init</strong> (<em>int</em>) – Number of runs to run with different centroid seeds</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which creates clusters for a dataset based on a vector field
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type vector_field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param vector_field: The field to cluster on.
+:type vector_field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias is used to name a cluster
+:type alias: string
+:type n_clusters: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param n_clusters: Number of clusters to be specified.
+:type n_clusters: int
+:type n_iter: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param n_iter: Number of iterations in each run
+:type n_iter: int
+:type n_init: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param n_init: Number of runs to run with different centroid seeds
+:type n_init: int
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_categories_task">
 <span class="sig-name descname"><span class="pre">create_encode_categories_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_categories_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_categories_task" title="Permalink to this definition"></a></dt>
 <dd><p>Within a collection encode the specified array field in every document into vectors.</p>
-<p>For example, array that represents a movie’s categories:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">array</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;category&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sci-fi&quot;</span><span class="p">,</span> <span class="s2">&quot;thriller&quot;</span><span class="p">,</span> <span class="s2">&quot;comedy&quot;</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">array</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;category&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sci-fi&quot;</span><span class="p">,</span> <span class="s2">&quot;romance&quot;</span><span class="p">,</span> <span class="s2">&quot;drama&quot;</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">-&gt;</span> <span class="o">&lt;</span><span class="n">Encode</span> <span class="n">the</span> <span class="n">arrays</span> <span class="n">to</span> <span class="n">vectors</span><span class="o">&gt;</span> <span class="o">-&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="n">sci</span><span class="o">-</span><span class="n">fi</span> <span class="o">|</span> <span class="n">thriller</span> <span class="o">|</span> <span class="n">comedy</span> <span class="o">|</span> <span class="n">romance</span> <span class="o">|</span> <span class="n">drama</span> <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|--------|----------|--------|---------|-------|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">1</span>      <span class="o">|</span> <span class="mi">1</span>        <span class="o">|</span> <span class="mi">1</span>      <span class="o">|</span> <span class="mi">0</span>       <span class="o">|</span> <span class="mi">0</span>     <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">1</span>      <span class="o">|</span> <span class="mi">0</span>        <span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span> <span class="mi">1</span>       <span class="o">|</span> <span class="mi">1</span>     <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">array</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;movie_categories_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">array</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;movie_categories_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]}</span>
-</pre></div>
-</div>
+<p>For example, array that represents a movie’s categories:
+&gt;&gt;&gt; document 1 array field: {“category” : [“sci-fi”, “thriller”, “comedy”]}
+&gt;&gt;&gt; document 2 array field: {“category” : [“sci-fi”, “romance”, “drama”]}
+&gt;&gt;&gt; -&gt; &lt;Encode the arrays to vectors&gt; -&gt;
+&gt;&gt;&gt; | sci-fi | thriller | comedy | romance | drama |
+&gt;&gt;&gt; <a href="#id1"><span class="problematic" id="id2">|--------|</span></a>———-<a href="#id3"><span class="problematic" id="id4">|--------|</span></a>———<a href="#id5"><span class="problematic" id="id6">|-------|</span></a>
+&gt;&gt;&gt; | 1      | 1        | 1      | 0       | 0     |
+&gt;&gt;&gt; | 1      | 0        | 0      | 1       | 1     |
+&gt;&gt;&gt; document 1 array vector: {”<a href="#id13"><span class="problematic" id="id14">movie_categories_vector_</span></a>”: [1, 1, 1, 0, 0]}
+&gt;&gt;&gt; document 2 array vector: {”<a href="#id15"><span class="problematic" id="id16">movie_categories_vector_</span></a>”: [1, 0, 0, 1, 1]}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -144,73 +149,91 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_imagetext_task">
 <span class="sig-name descname"><span class="pre">create_encode_imagetext_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_imagetext_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_imagetext_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which encodes an image field for text representation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>field</strong> (<em>string</em>) – The field to encode</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which encodes an image field for text representation
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param field: The field to encode
+:type field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+:type alias: string
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_text_task">
 <span class="sig-name descname"><span class="pre">create_encode_text_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_text_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_text_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which encodes a text field</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>field</strong> (<em>string</em>) – The field to encode</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which encodes a text field
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param field: The field to encode
+:type field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+:type alias: string
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_encode_textimage_task">
 <span class="sig-name descname"><span class="pre">create_encode_textimage_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_encode_textimage_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_encode_textimage_task" title="Permalink to this definition"></a></dt>
-<dd><p>Start a task which encodes a text field for image representation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>field</strong> (<em>string</em>) – The field to encode</p></li>
-<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
-<li><p><strong>refresh</strong> (<em>bool</em>) – Whether to rerun task on the whole dataset or just the ones missing the output</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Start a task which encodes a text field for image representation
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type field: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param field: The field to encode
+:type field: string
+:type alias: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+:type alias: string
+:type refresh: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param refresh: Whether to rerun task on the whole dataset or just the ones missing the output
+:type refresh: bool</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.create_numeric_encoder_task">
 <span class="sig-name descname"><span class="pre">create_numeric_encoder_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_vector_'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_between_ping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.create_numeric_encoder_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.create_numeric_encoder_task" title="Permalink to this definition"></a></dt>
 <dd><p>Within a collection encode the specified dictionary field in every document into vectors.</p>
-<p>For example: a dictionary that represents a person’s characteristics visiting a store:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;height&quot;</span><span class="p">:</span><span class="mi">180</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span><span class="mi">70</span><span class="p">}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">field</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;purchases&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;visits&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">-&gt;</span> <span class="o">&lt;</span><span class="n">Encode</span> <span class="n">the</span> <span class="n">dictionaries</span> <span class="n">to</span> <span class="n">vectors</span><span class="o">&gt;</span> <span class="o">-&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="n">height</span> <span class="o">|</span> <span class="n">age</span> <span class="o">|</span> <span class="n">weight</span> <span class="o">|</span> <span class="n">purchases</span> <span class="o">|</span> <span class="n">visits</span> <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|--------|-----|--------|-----------|--------|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">180</span>    <span class="o">|</span> <span class="mi">40</span>  <span class="o">|</span> <span class="mi">70</span>     <span class="o">|</span> <span class="mi">0</span>         <span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span> <span class="mi">32</span>  <span class="o">|</span> <span class="mi">0</span>      <span class="o">|</span> <span class="mi">10</span>        <span class="o">|</span> <span class="mi">24</span>     <span class="o">|</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">1</span> <span class="n">dictionary</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">180</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="mi">2</span> <span class="n">dictionary</span> <span class="n">vector</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;person_characteristics_vector_&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">24</span><span class="p">]}</span>
-</pre></div>
-</div>
+<p>For example: a dictionary that represents a person’s characteristics visiting a store:
+&gt;&gt;&gt; document 1 field: {“person_characteristics” : {“height”:180, “age”:40, “weight”:70}}
+&gt;&gt;&gt; document 2 field: {“person_characteristics” : {“age”:32, “purchases”:10, “visits”: 24}}
+&gt;&gt;&gt; -&gt; &lt;Encode the dictionaries to vectors&gt; -&gt;
+&gt;&gt;&gt; | height | age | weight | purchases | visits |
+&gt;&gt;&gt; <a href="#id7"><span class="problematic" id="id8">|--------|</span></a>—–<a href="#id9"><span class="problematic" id="id10">|--------|</span></a>———–<a href="#id11"><span class="problematic" id="id12">|--------|</span></a>
+&gt;&gt;&gt; | 180    | 40  | 70     | 0         | 0      |
+&gt;&gt;&gt; | 0      | 32  | 0      | 10        | 24     |
+&gt;&gt;&gt; document 1 dictionary vector: {”<a href="#id17"><span class="problematic" id="id18">person_characteristics_vector_</span></a>”: [180, 40, 70, 0, 0]}
+&gt;&gt;&gt; document 2 dictionary vector: {”<a href="#id19"><span class="problematic" id="id20">person_characteristics_vector_</span></a>”: [0, 32, 0, 10, 24]}
+:type dataset_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:type fields: <a class="reference internal" href="#relevanceai.api.tasks.Tasks.list" title="relevanceai.api.tasks.Tasks.list"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+:param fields: The numeric fields to encode into vectors.
+:type fields: list
+:type vector_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param vector_name: The name of the vector field created
+:type vector_name: string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.tasks.Tasks.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_active_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/api/tasks.html#Tasks.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.tasks.Tasks.list" title="Permalink to this definition"></a></dt>
+<dd><p>List and get a history of all the jobs and its job_id, parameters, start time, etc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
-<li><p><strong>fields</strong> (<em>list</em>) – The numeric fields to encode into vectors.</p></li>
-<li><p><strong>vector_name</strong> (<em>string</em>) – The name of the vector field created</p></li>
+<li><p><strong>show_active_only</strong> (<em>bool</em>) – Whether to show active only</p></li>
 </ul>
 </dd>
 </dl>
