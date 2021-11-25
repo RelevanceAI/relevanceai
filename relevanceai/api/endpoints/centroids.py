@@ -16,7 +16,6 @@ class Centroids(Base):
         page_size: int = 5,
         cursor: str = None,
         include_vector: bool = False,
-        output_format: str = "json",
         base_url="https://gateway-api-aueast.relevance.ai/latest",
     ):
         """
@@ -48,7 +47,6 @@ class Centroids(Base):
                 "cursor": cursor,
                 "include_vector": include_vector,
             },
-            output_format=output_format,
             base_url=base_url,
         )
 
@@ -59,8 +57,7 @@ class Centroids(Base):
         vector_field: str,
         alias: str = "default",
         page_size: int = 5,
-        cursor: str = None,
-        output_format: str = "json",
+        cursor: str = None
     ):
         """
         Retrieve the cluster centroids by IDs
@@ -90,8 +87,7 @@ class Centroids(Base):
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
-            },
-            output_format=output_format,
+            }
         )
 
     def insert(
@@ -99,8 +95,7 @@ class Centroids(Base):
         dataset_id: str,
         cluster_centers: dict,
         vector_field: str,
-        alias: str = "default",
-        output_format: str = "json",
+        alias: str = "default"
     ):
         """
         Insert your own cluster centroids for it to be used in approximate search settings and cluster aggregations.
@@ -123,8 +118,7 @@ class Centroids(Base):
                 "cluster_centers": cluster_centers,
                 "vector_field": vector_field,
                 "alias": alias,
-            },
-            output_format=output_format,
+            }
         )
 
     def documents(
@@ -137,8 +131,7 @@ class Centroids(Base):
         cursor: str = None,
         page: int = 1,
         include_vector: bool = False,
-        similarity_metric: str = "cosine",
-        output_format: str = "json",
+        similarity_metric: str = "cosine"
     ):
         """
         Retrieve the cluster centroids by IDs
@@ -177,6 +170,5 @@ class Centroids(Base):
                 "page": page,
                 "include_vector": include_vector,
                 "similarity_metric": similarity_metric,
-            },
-            output_format=output_format,
+            }
         )

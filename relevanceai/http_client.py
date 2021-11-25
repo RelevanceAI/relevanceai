@@ -42,8 +42,8 @@ class Client(BatchAPIClient, DocUtils):
         if project is None or api_key is None:
             project, api_key = Client.token_to_auth(verbose=verbose)
 
-        if verbose:
-            self.logger.success(self.WELCOME_MESSAGE)
+        
+        self.logger.error(self.WELCOME_MESSAGE)
 
         super().__init__(project, api_key, base_url)  # type: ignore
         if vis_requirements:

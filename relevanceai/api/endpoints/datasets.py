@@ -22,7 +22,7 @@ class Datasets(Base):
         super().__init__(project, api_key, base_url)
 
     def schema(
-        self, dataset_id: str, output_format: str = "json", verbose: bool = True
+        self, dataset_id: str
     ):
         """ 
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
@@ -34,13 +34,11 @@ class Datasets(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/schema",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
+            method="GET"
         )
 
     def metadata(
-        self, dataset_id: str, output_format: str = "json", verbose: bool = True
+        self, dataset_id: str
     ):
         """ 
         Retreives metadata about a dataset. Notably description, data source, etc
@@ -52,17 +50,13 @@ class Datasets(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/metadata",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
+            method="GET"
         )
 
     def create(
         self,
         dataset_id: str,
-        schema: dict = {},
-        output_format: Union[str, bool] = "json",
-        verbose: bool = True,
+        schema: dict = {}
     ):
         """ 
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch). 
@@ -108,19 +102,14 @@ class Datasets(Base):
         return self.make_http_request(
             endpoint=f"/datasets/create",
             method="POST",
-            parameters={"id": dataset_id, "schema": schema},
-            output_format=output_format,
-            verbose=verbose,
+            parameters={"id": dataset_id, "schema": schema}
         )
 
-    def list(self, output_format: Optional[str] = "json", verbose: bool = True, retries=None):
+    def list(self):
         """ List all datasets in a project that you are authorized to read/write. """
         return self.make_http_request(
             endpoint="/datasets/list",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
-            retries=retries,
+            method="GET"
         )
 
     def list_all(

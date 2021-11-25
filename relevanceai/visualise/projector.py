@@ -60,7 +60,7 @@ class Projector(APIClient, Base, DocUtils):
         dr: Union[DIM_REDUCTION, DimReduction] = "pca",
         dr_args: Union[None, Dict] = None,
         # TODO: Add support for 2
-        dims: Literal[2,3] = 2,
+        dims: Literal[2, 3] = 3,
         # Plot rendering args
         vector_label: Union[None, str] = None,
         vector_label_char_length: Union[None, int] = 50,
@@ -76,7 +76,7 @@ class Projector(APIClient, Base, DocUtils):
         Plot function for Embedding Projector class
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
-        from relevanceai.visualise.dim_reduction import DimReductionBase 
+        from relevanceai.visualise.dim_reduction import DimReductionBase
         class CustomDimReduction(DimReductionBase):
             def fit_transform(self, vectors):
                 return np.arange(512, 2)
@@ -112,12 +112,12 @@ class Projector(APIClient, Base, DocUtils):
         self.cluster_args = cluster_args
 
         if (vector_label is None) and (colour_label is None):
-            warnings.warn(
-                f"A vector_label or colour_label has not been specified.")
+            warnings.warn(f"A vector_label or colour_label has not been specified.")
 
         if number_of_points_to_render and number_of_points_to_render > 1000:
             warnings.warn(
-                f"You are rendering over 1000 points, this may take some time ...")
+                f"You are rendering over 1000 points, this may take some time ..."
+            )
 
         number_of_documents = number_of_points_to_render
         self.vector_fields = self._get_vector_fields()
@@ -127,7 +127,7 @@ class Projector(APIClient, Base, DocUtils):
             labels += hover_label
         fields = [label for label in labels if label]
         self.docs = self.datasets.documents.get_where(
-            dataset_id, number_of_documents = number_of_documents , select_fields = fields
+            dataset_id, number_of_documents=number_of_documents, select_fields=fields
         )
         self._remove_empty_vector_fields(vector_field)
 
@@ -140,13 +140,15 @@ class Projector(APIClient, Base, DocUtils):
         if self._is_valid_vector_name(self.vector_field):
 
             self.vectors = np.array(
-                self.get_field_across_documents(self.vector_field, docs))
+                self.get_field_across_documents(self.vector_field, docs)
+            )
             self.vectors_dr = DimReduction.dim_reduce(
-                vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims)
+                vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims
+            )
             points = {
                 "x": self.vectors_dr[:, 0],
                 "y": self.vectors_dr[:, 1],
-                "_id": self.get_field_across_documents("_id", docs)
+                "_id": self.get_field_across_documents("_id", docs),
             }
             if dims == 3:
                 points["z"] = self.vectors_dr[:, 2]
@@ -156,7 +158,8 @@ class Projector(APIClient, Base, DocUtils):
                 self._is_valid_label_name(l) for l in self.hover_label
             ):
                 self.embedding_df = pd.concat(
-                    [self.embedding_df, pd.DataFrame(docs)], axis=1)
+                    [self.embedding_df, pd.DataFrame(docs)], axis=1
+                )
 
             if self.vector_label and self._is_valid_label_name(self.vector_label):
                 self.labels = self.get_field_across_documents(
@@ -185,7 +188,10 @@ class Projector(APIClient, Base, DocUtils):
                 # )
                 # self.cluster_labels = _cluster.cluster_labels
                 self.cluster_labels = Cluster.cluster(
-                    vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args)
+                    vectors=self.vectors,
+                    cluster=self.cluster,
+                    cluster_args=self.cluster_args,
+                )
                 self.embedding_df["cluster_labels"] = self.cluster_labels
                 self.legend = "cluster_labels"
 
@@ -212,8 +218,7 @@ class Projector(APIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{vector_name} is not a valid vector name")
         else:
-            raise ValueError(
-                f"{vector_name} is not in the {self.dataset_id} schema")
+            raise ValueError(f"{vector_name} is not in the {self.dataset_id} schema")
 
     def _is_valid_label_name(self, label_name: str) -> bool:
         """
@@ -227,8 +232,7 @@ class Projector(APIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{label_name} is not a valid label name")
         else:
-            raise ValueError(
-                f"{label_name} is not in the {self.dataset_id} schema")
+            raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
 
     def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
         """
@@ -246,7 +250,7 @@ class Projector(APIClient, Base, DocUtils):
         Generates the Scatter plot
         """
         plot_title = f"<b>{self.dims}D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
-        self.hover_label = ['_id'] + self.hover_label
+        self.hover_label = ["_id"] + self.hover_label
         text_labels = None
         plot_mode = "markers"
 
@@ -297,36 +301,36 @@ class Projector(APIClient, Base, DocUtils):
             #     embedding_df =  embedding_df.loc[neighbors_idx]
 
         custom_data, hovertemplate = self._generate_hover_template(
-            df=embedding_df, dims=self.dims)
+            df=embedding_df, dims=self.dims
+        )
 
-        vector_label_scatter_args = {"text": text_labels,
-                                     "textposition": "middle center",
-                                     "showlegend": False,
-                                     "mode": plot_mode,
-                                     "marker": {
-                                         "size": MARKER_SIZE,
-                                         "color": RELEVANCEAI_BLUE,
-                                         "symbol": "circle"
-                                     },
-                                     "customdata": custom_data,
-                                     "hovertemplate": hovertemplate}
+        vector_label_scatter_args = {
+            "text": text_labels,
+            "textposition": "middle center",
+            "showlegend": False,
+            "mode": plot_mode,
+            "marker": {
+                "size": MARKER_SIZE,
+                "color": RELEVANCEAI_BLUE,
+                "symbol": "circle",
+            },
+            "customdata": custom_data,
+            "hovertemplate": hovertemplate,
+        }
 
         if self.dims == 3:
             scatter = go.Scatter3d(
                 x=embedding_df["x"],
                 y=embedding_df["y"],
                 z=embedding_df["z"],
-                **vector_label_scatter_args
+                **vector_label_scatter_args,
             )
-            
 
         else:
             scatter = go.Scatter(
-                x=embedding_df["x"],
-                y=embedding_df["y"],
-                ** vector_label_scatter_args
+                x=embedding_df["x"], y=embedding_df["y"], **vector_label_scatter_args
             )
-            
+
         data = [scatter]
 
         """
@@ -367,19 +371,20 @@ class Projector(APIClient, Base, DocUtils):
                 #     self.hover_label = list(set(self.hover_label))
 
                 custom_data, hovertemplate = self._generate_hover_template(
-                    df=val, dims = self.dims)
+                    df=val, dims=self.dims
+                )
 
-                colour_label_scatter_args = {# text:[ idx for _ in range(val["x"].shape[0]) ],
-                                            "text": text_labels,
-                                             "textposition": "top center",
-                                             "showlegend": False,
-                                             "mode": plot_mode,
-                                             "marker": {
-                                                 "size": MARKER_SIZE,
-                                                 "symbol": "circle"
-                                             },
-                                             "customdata": custom_data,
-                                             "hovertemplate": hovertemplate}
+                colour_label_scatter_args = (
+                    {  # text:[ idx for _ in range(val["x"].shape[0]) ],
+                        "text": text_labels,
+                        "textposition": "top center",
+                        "showlegend": False,
+                        "mode": plot_mode,
+                        "marker": {"size": MARKER_SIZE, "symbol": "circle"},
+                        "customdata": custom_data,
+                        "hovertemplate": hovertemplate,
+                    }
+                )
 
                 if self.dims == 3:
                     scatter = go.Scatter3d(
@@ -387,18 +392,14 @@ class Projector(APIClient, Base, DocUtils):
                         x=val["x"],
                         y=val["y"],
                         z=val["z"],
-                        **colour_label_scatter_args
-                    )
-                    
-                else:
-                    
-                    scatter = go.Scatter(
-                        name=idx,
-                        x=val["x"],
-                        y=val["y"],
-                        **colour_label_scatter_args
+                        **colour_label_scatter_args,
                     )
 
+                else:
+
+                    scatter = go.Scatter(
+                        name=idx, x=val["x"], y=val["y"], **colour_label_scatter_args
+                    )
 
                 data.append(scatter)
 
@@ -409,20 +410,11 @@ class Projector(APIClient, Base, DocUtils):
             "title": "",
             "showgrid": True,
             "zeroline": False,
-            "showticklabels": False
+            "showticklabels": False,
         }
         layout = go.Layout(
-            margin={
-                "l": 0,
-                "r": 0,
-                "b": 0,
-                "t": 0
-            },
-            scene={
-                "xaxis": axes,
-                "yaxis": axes,
-                "zaxis": axes
-            }
+            margin={"l": 0, "r": 0, "b": 0, "t": 0},
+            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes},
         )
 
         if self.cluster:
@@ -471,9 +463,14 @@ class Projector(APIClient, Base, DocUtils):
         else:
             coord_info = "X: %{x}   Y: %{y}   Z: %{z}"
 
-        hovertemplate = "<br>".join([
-            coord_info,
-        ] + custom_data_hover
-        ) + "<extra></extra>"
+        hovertemplate = (
+            "<br>".join(
+                [
+                    coord_info,
+                ]
+                + custom_data_hover
+            )
+            + "<extra></extra>"
+        )
 
         return custom_data, hovertemplate
