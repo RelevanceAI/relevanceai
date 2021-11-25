@@ -14,8 +14,8 @@ from relevanceai.api.client import APIClient
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
 
-from relevanceai.visualise.cluster import cluster, ClusterBase
-from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
+from relevanceai.cluster import cluster, ClusterBase
+from relevanceai.dim_reduction import dim_reduce, DimReductionBase
 
 from doc_utils import DocUtils
 

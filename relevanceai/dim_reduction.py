@@ -27,8 +27,6 @@ class DimReductionBase(LoguruLogger):
     ) -> np.ndarray:
         raise NotImplementedError
 
-
-
 class PCA(DimReductionBase):
     def fit_transform(self, 
         vectors: np.ndarray, 

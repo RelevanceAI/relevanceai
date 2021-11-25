@@ -48,22 +48,43 @@ class DensityCluster(ClusterBase):
     @abstractmethod
     def fit_transform(self, 
             vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
+            cluster_arge: Dict[Any, Any],
             min_cluster_size: Union[None, int] = None
     ) -> np.ndarray:
         raise NotImplementedError
 
 
 class KMeans(CentroidCluster):
+    def _init_model(self, k: int, 
+        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'],
+    ):
+        """Keeping the internal model state persistent for clustering
+        """
+        try:
+            from sklearn.cluster import MiniBatchKMeans
+            self.km = MiniBatchKMeans(n_clusters=k, **cluster_args)
+        except:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall umap\n \
+                pip install -U scikit-learn"
+            )
+    
+    def get_metadata(self):
+        """
+        Get the metadata in this model - here we want to get the metadata in this file.
+        """
+        raise NotImplemented
+
     def fit_transform(self, 
         vectors: np.ndarray, 
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'], 
+        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'],
         k: Union[None, int] = 10
     ) -> np.ndarray:
-        from sklearn.cluster import MiniBatchKMeans
+        if not hasattr(self, "km"):
+            self._init_model(k, cluster_args)
+        self.km.fit(vectors)
         self.logger.debug(f"{cluster_args}")
-        km = MiniBatchKMeans(n_clusters=k, **cluster_args).fit(vectors)
-        cluster_labels = km.labels_
+        cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
 
