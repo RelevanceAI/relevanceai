@@ -73,6 +73,8 @@ class Projector(APIClient, Base, DocUtils):
         cluster: Union[CLUSTER, ClusterBase] = None,
         cluster_args: Union[None, Dict] = None,
         num_clusters: Union[None, int] = 10,
+        marker_colour: str = RELEVANCEAI_BLUE,
+        marker_size: int = MARKER_SIZE
     ):
         """
         Plot function for Embedding Projector class
@@ -133,9 +135,9 @@ class Projector(APIClient, Base, DocUtils):
         )
         self._remove_empty_vector_fields(vector_field)
 
-        return self.plot_from_docs(self.docs, self.dims)
+        return self.plot_from_docs(self.docs, self.dims, marker_size, marker_colour)
 
-    def plot_from_docs(self, docs: List[Dict[str, Any]], dims: int, *args, **kwargs):
+    def plot_from_docs(self, docs: List[Dict[str, Any]], dims: int, marker_size: int, marker_colour: str, *args, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -199,7 +201,7 @@ class Projector(APIClient, Base, DocUtils):
 
             self.embedding_df.index = self.embedding_df["_id"]
             return self._generate_fig(
-                embedding_df=self.embedding_df, legend=self.legend
+                embedding_df=self.embedding_df, legend=self.legend, marker_size = marker_size, marker_colour = marker_colour
             )
 
     def _get_vector_fields(self) -> List[str]:
@@ -306,6 +308,8 @@ class Projector(APIClient, Base, DocUtils):
     def _generate_fig(
         self,
         embedding_df: pd.DataFrame,
+        marker_size: int,
+        marker_colour: str,
         legend: Union[None, str],
     ) -> go.Figure:
         """
@@ -372,8 +376,8 @@ class Projector(APIClient, Base, DocUtils):
             "showlegend": False,
             "mode": plot_mode,
             "marker": {
-                "size": MARKER_SIZE,
-                "color": RELEVANCEAI_BLUE,
+                "size": marker_size,
+                "color": marker_colour,
                 "symbol": "circle",
             },
             "customdata": custom_data,
@@ -442,7 +446,7 @@ class Projector(APIClient, Base, DocUtils):
                         "textposition": "top center",
                         "showlegend": False,
                         "mode": plot_mode,
-                        "marker": {"size": MARKER_SIZE, "symbol": "circle"},
+                        "marker": {"size": marker_size, "symbol": "circle"},
                         "customdata": custom_data,
                         "hovertemplate": hovertemplate,
                     }
