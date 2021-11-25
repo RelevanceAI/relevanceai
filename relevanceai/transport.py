@@ -6,7 +6,6 @@ from typing import Union
 from relevanceai.config import Config
 from json.decoder import JSONDecodeError
 from relevanceai.logger import AbstractLogger
-from relevanceai.experiment_helper import ExperimentHelper
 
 import requests
 from requests import Request
@@ -46,6 +45,7 @@ class Transport:
         method_type: string
             POST or GET request
         """
+        self._last_used_endpoint = endpoint
 
         t1 = time.time()
         if base_url is None:
@@ -78,14 +78,6 @@ class Transport:
                     self.logger.debug(
                         f"Request ran in {time_diff} seconds ({base_url + endpoint})"
                     )
-
-                    if verbose and "/services/search/" in endpoint:
-                        eh = ExperimentHelper(last_search = endpoint.split('/')[-1])
-                        suggestions = eh._make_suggestion()
-                        if output_format == "json":
-                            response = response.json()
-                            response["experiment_helper"] = suggestions
-                            return response
 
                     if output_format == "json":
                         return response.json()

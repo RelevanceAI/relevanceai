@@ -22,7 +22,6 @@ except ModuleNotFoundError as e:
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
-
 class Client(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's relevanceai"""
 
@@ -90,3 +89,6 @@ class Client(BatchAPIClient, DocUtils):
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
+
+    def make_search_suggestion(self):
+        return self.services.search.make_suggestion()
