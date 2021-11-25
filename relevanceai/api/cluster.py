@@ -25,7 +25,7 @@ class Cluster(Base):
         output_format: str = "json",
     ):
         """ 
-        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
+        Takes an aggregation query and gets the aggregate of each cluster in a dataset_id. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
 
         For more information about aggregations check out services.aggregate.aggregate. 
@@ -81,7 +81,7 @@ class Cluster(Base):
         output_format: str = "json",
     ):
         """ 
-        Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them. \n
+        Takes a high level aggregation of every field and every cluster in a dataset_id. This helps you interpret each cluster and what is in them. \n
         Only can be used after a vector field has been clustered.
 
         Parameters

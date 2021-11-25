@@ -23,16 +23,16 @@ class Aggregate(Base):
         alias: str = "default",
     ):
         """
-        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+        Aggregation/Groupby of a dataset_id using an aggregation query. The aggregation query is a json body that follows the schema of:
         
         >>> {
         >>>        "groupby" : [
-        >>>            {"name": <alias>, "field": <field in the collection>, "agg": "category"},
-        >>>            {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
+        >>>            {"name": <alias>, "field": <field in the dataset_id>, "agg": "category"},
+        >>>            {"name": <alias>, "field": <another groupby field in the dataset_id>, "agg": "numeric"}
         >>>        ],
         >>>        "metrics" : [
-        >>>            {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
-        >>>            {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
+        >>>            {"name": <alias>, "field": <numeric field in the dataset_id>, "agg": "avg"}
+        >>>            {"name": <alias>, "field": <another numeric field in the dataset_id>, "agg": "max"}
         >>>        ]
         >>>    }
         >>>    For example, one can use the following aggregations to group score based on region and player name.

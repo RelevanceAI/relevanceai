@@ -162,9 +162,9 @@ class BatchInsert(APIClient, Chunker):
 
     def pull_update_push(
         self,
-        original_collection: str,
+        dataset_id: str,
         update_function,
-        updated_collection: str = None,
+        updated_dataset_id: str = None,
         log_file: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
@@ -180,11 +180,11 @@ class BatchInsert(APIClient, Chunker):
         
         Parameters
         ----------
-        original_collection : string
+        dataset_id : string
             The dataset_id of the collection where your original documents are
         logging_collection: string
             The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
-        updated_collection: string
+        updated_dataset_id: string
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
@@ -204,7 +204,7 @@ class BatchInsert(APIClient, Chunker):
 
         # Check if a logging_collection has been supplied
         if log_file is None:
-            log_file = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push" + ".log"
+            log_file = dataset_id + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push" + ".log"
         
         # Instantiate the logger to document the successful IDs
         PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
@@ -215,7 +215,7 @@ class BatchInsert(APIClient, Chunker):
         # Trust the process
         # Get document lengths to calculate iterations
         original_length = self.datasets.documents._get_number_of_documents(
-            original_collection, filters, verbose=verbose
+            dataset_id, filters, verbose=verbose
         )
 
         # get the remaining number in case things break
@@ -225,7 +225,7 @@ class BatchInsert(APIClient, Chunker):
         completed_documents_list: list = []
 
         # Get incomplete documents from raw collection
-        retrieve_filters = filters + [
+        retrieve_filters: list = filters + [
             {
                 "field": "ids",
                 "filter_type": "ids",
@@ -239,7 +239,7 @@ class BatchInsert(APIClient, Chunker):
         ):
 
             orig_json = self.datasets.documents.get_where(
-                original_collection,
+                dataset_id,
                 filters=retrieve_filters,
                 page_size=retrieve_chunk_size,
                 select_fields=select_fields,
@@ -258,9 +258,9 @@ class BatchInsert(APIClient, Chunker):
             updated_documents = [i["_id"] for i in documents]
 
             # Upload documents
-            if updated_collection is None:
+            if updated_dataset_id is None:
                 insert_json = self.update_documents(
-                    dataset_id=original_collection,
+                    dataset_id=dataset_id,
                     docs=updated_data,
                     verbose=verbose,
                     max_workers=max_workers,
@@ -268,7 +268,7 @@ class BatchInsert(APIClient, Chunker):
                 )
             else:
                 insert_json = self.insert_documents(
-                    dataset_id=updated_collection,
+                    dataset_id=updated_dataset_id,
                     docs=updated_data,
                     verbose=verbose,
                     max_workers=max_workers,
@@ -295,9 +295,9 @@ class BatchInsert(APIClient, Chunker):
 
     def pull_update_push_to_cloud(
         self,
-        original_collection: str,
+        dataset_id: str,
         update_function,
-        updated_collection: str = None,
+        updated_dataset_id: str = None,
         logging_collection: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
@@ -316,11 +316,11 @@ class BatchInsert(APIClient, Chunker):
         
         Parameters
         ----------
-        original_collection : string
+        dataset_id : string
             The dataset_id of the collection where your original documents are
         logging_collection: string
             The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
-        updated_collection: string
+        updated_dataset_id: string
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
@@ -337,7 +337,7 @@ class BatchInsert(APIClient, Chunker):
         """
         # Check if a logging_collection has been supplied
         if logging_collection is None:
-            logging_collection = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push"
+            logging_collection = dataset_id + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push"
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list(verbose=False)
@@ -357,7 +357,7 @@ class BatchInsert(APIClient, Chunker):
 
             # Get document lengths to calculate iterations
             original_length = self.datasets.documents._get_number_of_documents(
-                original_collection, filters
+                dataset_id, filters
             )
             completed_length = self.datasets.documents._get_number_of_documents(
                 logging_collection
@@ -398,7 +398,7 @@ class BatchInsert(APIClient, Chunker):
                 ]
 
                 orig_json = self.datasets.documents.get_where(
-                    original_collection,
+                    dataset_id,
                     filters=retrieve_filters,
                     page_size=retrieve_chunk_size,
                     select_fields=select_fields,
@@ -419,9 +419,9 @@ class BatchInsert(APIClient, Chunker):
                 self.logger.debug(f"{len(updated_data)}")
 
                 # Upload documents
-                if updated_collection is None:
+                if updated_dataset_id is None:
                     insert_json = self.update_documents(
-                        dataset_id=original_collection,
+                        dataset_id=dataset_id,
                         docs=updated_data,
                         verbose=verbose,
                         max_workers=max_workers,
@@ -429,7 +429,7 @@ class BatchInsert(APIClient, Chunker):
                     )
                 else:
                     insert_json = self.insert_documents(
-                        dataset_id=updated_collection,
+                        dataset_id=updated_dataset_id,
                         docs=updated_data,
                         verbose=verbose,
                         max_workers=max_workers,

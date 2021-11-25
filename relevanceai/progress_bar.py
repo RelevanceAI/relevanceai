@@ -17,7 +17,6 @@ class ProgressBar:
         # Check if the runtime is within an interactive environment, i.e., ipython.
         try:
             from IPython import get_ipython  # pylint: disable=import-error
-
             if get_ipython():
                 is_in_ipython = True
         except ImportError:
@@ -39,7 +38,6 @@ class ProgressBar:
 
     def get_bar(self):
         from tqdm.auto import tqdm
-
         return tqdm
 
 
@@ -76,6 +74,7 @@ def progress_bar(iterable, show_progress_bar: bool = False):
         if show_progress_bar:
             return ProgressBar()(iterable)
     except Exception as e:
+        print(e)
         pass
     return NullProgressBar(iterable)
 

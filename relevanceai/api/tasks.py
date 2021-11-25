@@ -33,12 +33,13 @@ class Tasks(Base):
 
     def status(self, dataset_id: str, task_id: str):
         """ 
-        Get status of a collection level job. Whether its starting, running, failed or finished.
+        Get status of a dataset_id level job. Whether its starting, running, failed or finished.
         
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
+
         task_id : string
             Unique name of task
         """
@@ -112,7 +113,7 @@ class Tasks(Base):
 
         else:
             self.logger.info(
-                "To view the progress of your job, visit https://cloud.relevanceai.com/collections/dashboard/jobs"
+                "To view the progress of your job, visit https://cloud.relevanceai.com/dataset_ids/dashboard/jobs"
             )
             return {"task_id": task_id}
 
@@ -188,7 +189,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         """
-        Within a collection encode the specified dictionary field in every document into vectors. \n
+        Within a dataset_id encode the specified dictionary field in every document into vectors. \n
         For example: a dictionary that represents a person's characteristics visiting a store:
         >>> document 1 field: {"person_characteristics" : {"height":180, "age":40, "weight":70}}
         >>> document 2 field: {"person_characteristics" : {"age":32, "purchases":10, "visits": 24}}
@@ -232,7 +233,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
         """
-        Within a collection encode the specified array field in every document into vectors. \n
+        Within a dataset_id encode the specified array field in every document into vectors. \n
         For example, array that represents a movie's categories:
         >>> document 1 array field: {"category" : ["sci-fi", "thriller", "comedy"]}
         >>> document 2 array field: {"category" : ["sci-fi", "romance", "drama"]}
