@@ -123,24 +123,19 @@ class Documents(Base):
             verbose=verbose,
         )
 
-
     def get_where(
         self,
         dataset_id: str,
         filters: list = [],
+        number_of_documents: int = 20,
         cursor: str = None,
-        page_size: int = 20,
+        batch_size: int = 1000,
         sort: list = [],
         select_fields: list = [],
-        include_vector: bool = True,
-        random_state: int = 0,
-        is_random: bool = False,
-        output_format: str = "json",
-        verbose: bool = True,
-    ):
+        include_vector: bool = True):
 
         """ 
-        Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
+        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
 
         The filters query is a json body that follows the schema of:
 
@@ -193,6 +188,88 @@ class Documents(Base):
         ----------
         dataset_id: string
             Unique name of dataset
+        number_of_documents: int
+            Number of documents to retrieve
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+        cursor: string
+            Cursor to paginate the document retrieval
+        batch_size: int
+            Number of documents to retrieve per iteration
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        """
+        if batch_size > number_of_documents:
+            batch_size = number_of_documents 
+
+        resp = self._get_documents(
+            dataset_id=dataset_id,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            page_size=batch_size,
+            sort = sort,
+            is_random=False,
+            random_state=0,
+            filters=filters,
+            cursor=cursor
+        )
+        data = resp["documents"]
+
+        if number_of_documents > batch_size:
+            _cursor = resp["cursor"]
+            _page = 0
+            while resp:
+                self.logger.debug(f"Paginating {_page} batch size {batch_size} ...")
+                resp = self._get_documents(
+                    dataset_id=dataset_id,
+                    select_fields=select_fields,
+                    include_vector=include_vector,
+                    page_size=batch_size,
+                    sort = sort,
+                    is_random=False,
+                    random_state=0,
+                    filters=filters,
+                    cursor=_cursor
+                )
+                _data = resp["documents"]
+                _cursor = resp["cursor"]
+                if (_data == []) or (_cursor == []):
+                    break
+                data += _data
+                if number_of_documents and (len(data) >= int(number_of_documents)):
+                    break
+                _page += 1
+            data = data[:number_of_documents]
+
+        return data
+
+    def _get_documents(
+            self,
+            dataset_id: str,
+            filters: list = [],
+            cursor: str = None,
+            page_size: int = 20,
+            sort: list = [],
+            select_fields: list = [],
+            include_vector: bool = True,
+            random_state: int = 0,
+            is_random: bool = False,
+            output_format: str = "json",
+            verbose: bool = True,
+        ):
+
+        """ 
+        Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. \n
+        For more details see documents.get_where.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
         cursor: string
@@ -228,6 +305,50 @@ class Documents(Base):
             output_format=output_format,
             verbose=verbose,
         )
+
+
+    def get_where_random(
+        self,
+        dataset_id: str,
+        filters: list = [],
+        page_size: int = 1000,
+        sort: list = [],
+        select_fields: list = [],
+        include_vector: bool = True,
+        random_state: int = 0):
+
+        """ 
+        Retrieve documents with filters randomly. \n
+        For more details see documents.get_where.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        page_size: int
+            Size of each page of results
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        random_state: int
+            Random Seed for retrieving random documents.
+        """
+        
+        return self._get_documents(
+                dataset_id,
+                filters=filters,
+                page_size=page_size,
+                sort=sort,
+                select_fields=select_fields,
+                include_vector=include_vector,
+                is_random = True,
+                random_state=random_state
+            )
 
     def paginate(
         self,
@@ -525,7 +646,8 @@ class Documents(Base):
         verbose: bool = True,
     ):
         """
-        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
+        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n 
+        For more details see documents.get_where.
         
         Parameters
         ----------
@@ -550,7 +672,7 @@ class Documents(Base):
 
         # While there is still data to fetch, fetch it at the latest cursor
         while length > 0:
-            x = self.get_where(
+            x = self._get_documents(
                 dataset_id,
                 filters=filters,
                 cursor=cursor,
@@ -586,7 +708,7 @@ class Documents(Base):
             list_of_filters = [[] for _ in range(len(dataset_ids))]
 
         return {
-            dataset_id: self._get_number_of_documents(dataset_id, filters)
+            dataset_id: self._get_documents(dataset_id, filters)
             for dataset_id, filters in zip(dataset_ids, list_of_filters)
         }
 
@@ -601,4 +723,6 @@ class Documents(Base):
         filters: list 
             Filters to select documents
         """
-        return self.get_where(dataset_id, page_size=1, filters=filters, verbose=verbose)["count"]
+        return self._get_documents(dataset_id, page_size=1, filters=filters, verbose=verbose)["count"]
+
+

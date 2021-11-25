@@ -9,10 +9,10 @@ from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
 from relevanceai.api.client import APIClient
-from relevanceai.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
-from relevanceai.batch.chunk import Chunker
+from relevanceai.api.batch.chunk import Chunker
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -238,15 +238,12 @@ class BatchInsert(APIClient, Chunker):
             range(iterations_required), show_progress_bar=show_progress_bar
         ):
 
-            orig_json = self.datasets.documents.get_where(
+            documents = self.datasets.documents.get_where(
                 original_collection,
                 filters=retrieve_filters,
-                page_size=retrieve_chunk_size,
-                select_fields=select_fields,
-                verbose=verbose,
+                number_of_documents=retrieve_chunk_size,
+                select_fields=select_fields
             )
-
-            documents = orig_json["documents"]
 
             try:
                 updated_data = update_function(documents, **updating_args)
@@ -397,15 +394,14 @@ class BatchInsert(APIClient, Chunker):
                     }
                 ]
 
-                orig_json = self.datasets.documents.get_where(
+                documents = self.datasets.documents.get_where(
                     original_collection,
                     filters=retrieve_filters,
-                    page_size=retrieve_chunk_size,
+                    number_of_documents=retrieve_chunk_size,
                     select_fields=select_fields,
                     verbose=verbose,
                 )
 
-                documents = orig_json["documents"]
                 self.logger.debug(f"{len(documents)}")
 
                 # Update documents

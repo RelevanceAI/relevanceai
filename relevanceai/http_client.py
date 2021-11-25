@@ -6,7 +6,8 @@ from typing import Optional
 
 from doc_utils.doc_utils import DocUtils
 
-from relevanceai.batch.client import BatchAPIClient
+from relevanceai.vector_tools import VectorTools
+from relevanceai.api.batch.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
 
@@ -40,21 +41,7 @@ class Client(BatchAPIClient, DocUtils):
 
         if project is None or api_key is None:
             project, api_key = Client.token_to_auth(verbose=verbose)
-            # raise ValueError(
-            #     "It seems you are missing an API key, "
-            #     + "you can sign up for an API key following the instructions here: "
-            #     + "https://discovery.relevance.ai/reference/usage"
-            # )
 
-        # if (
-        #     self.datasets.list(
-        #         verbose=False, output_format=None, retries=1
-        #     ).status_code
-        #     == 200
-        # ):
-        #     if verbose: self.logger.success(self.WELCOME_MESSAGE)
-        # else:
-        # raise APIError(self.FAIL_MESSAGE)
         if verbose:
             self.logger.success(self.WELCOME_MESSAGE)
 
@@ -62,17 +49,16 @@ class Client(BatchAPIClient, DocUtils):
         if vis_requirements:
             self.projector = Projector(project, api_key, base_url)
 
+        self.vector_tools = VectorTools(project, api_key, base_url)
+
+
+
     @staticmethod
     def token_to_auth(verbose=True):
         if verbose:
             print("You can sign up/login and find your credentials here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
             print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
         token = getpass.getpass("Authorization token:")
-        # project = getpass.getpass("Project:")
-        # api_key = getpass.getpass("API key:")
-        # token = getpass.getpass(
-        #     "Paste your project and API key in the format: of `project:api_key` here:"
-        # )
         project = token.split(":")[0]
         api_key = token.split(":")[1]
         return project, api_key

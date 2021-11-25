@@ -3,9 +3,9 @@
 from typing import Union, Optional
 
 from relevanceai.base import Base
-from relevanceai.api.documents import Documents
-from relevanceai.api.monitor import Monitor
-from relevanceai.api.tasks import Tasks
+from relevanceai.api.endpoints.documents import Documents
+from relevanceai.api.endpoints.monitor import Monitor
+from relevanceai.api.endpoints.tasks import Tasks
 
 
 class Datasets(Base):

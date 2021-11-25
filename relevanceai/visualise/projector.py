@@ -12,10 +12,10 @@ from typeguard import typechecked
 
 from relevanceai.api.client import APIClient
 from relevanceai.base import Base
-from relevanceai.visualise.constants import *
+from relevanceai.vector_tools.constants import *
 
-from relevanceai.visualise.cluster import cluster, ClusterBase
-from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
+from relevanceai.vector_tools.cluster import Cluster
+from relevanceai.vector_tools.dim_reduction import DimReduction
 
 from doc_utils import DocUtils
 
@@ -44,12 +44,10 @@ class Projector(APIClient, Base, DocUtils):
     """
 
     def __init__(self, project, api_key, base_url):
-        self.base_args = {
-            "project": project,
-            "api_key": api_key,
-            "base_url": base_url,
-        }
-        super().__init__(**self.base_args)
+        self.project = project
+        self.api_key = api_key
+        self.base_url = base_url
+        super().__init__(project, api_key, base_url)
 
     @typechecked
     def plot(
@@ -59,7 +57,7 @@ class Projector(APIClient, Base, DocUtils):
         number_of_points_to_render: Optional[int] = 1000,
         random_state: int = 0,
         # Dimensionality reduction args
-        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
+        dr: Union[DIM_REDUCTION, DimReduction] = "pca",
         dr_args: Union[None, Dict] = None,
         # TODO: Add support for 2
         dims: Literal[2,3] = 2,
@@ -70,7 +68,7 @@ class Projector(APIClient, Base, DocUtils):
         colour_label_char_length: Union[None, int] = 20,
         hover_label: List[str] = [],
         # Cluster args
-        cluster: Union[CLUSTER, ClusterBase] = None,
+        cluster: Union[CLUSTER, Cluster] = None,
         cluster_args: Union[None, Dict] = None,
         num_clusters: Union[None, int] = 10,
     ):
@@ -128,8 +126,8 @@ class Projector(APIClient, Base, DocUtils):
         if hover_label:
             labels += hover_label
         fields = [label for label in labels if label]
-        self.docs = self._retrieve_documents(
-            dataset_id, fields, number_of_documents, page_size=1000
+        self.docs = self.datasets.documents.get_where(
+            dataset_id, number_of_documents = number_of_documents , select_fields = fields
         )
         self._remove_empty_vector_fields(vector_field)
 
@@ -143,7 +141,7 @@ class Projector(APIClient, Base, DocUtils):
 
             self.vectors = np.array(
                 self.get_field_across_documents(self.vector_field, docs))
-            self.vectors_dr = dim_reduce(
+            self.vectors_dr = DimReduction.dim_reduce(
                 vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims)
             points = {
                 "x": self.vectors_dr[:, 0],
@@ -186,7 +184,7 @@ class Projector(APIClient, Base, DocUtils):
                 #     k=self.num_clusters,
                 # )
                 # self.cluster_labels = _cluster.cluster_labels
-                self.cluster_labels = cluster(
+                self.cluster_labels = Cluster.cluster(
                     vectors=self.vectors, cluster=self.cluster, cluster_args=self.cluster_args)
                 self.embedding_df["cluster_labels"] = self.cluster_labels
                 self.legend = "cluster_labels"
@@ -237,67 +235,6 @@ class Projector(APIClient, Base, DocUtils):
         Remove documents with empty vector fields
         """
         self.docs = [d for d in self.docs if d.get(vector_field)]
-        return self.docs
-
-    def _retrieve_documents(
-        self,
-        dataset_id: str,
-        fields: List[str],
-        number_of_documents: Optional[int] = 1000,
-        page_size: int = 1000,
-        filters=[],
-    ) -> List[Dict]:
-        """
-        Retrieve all documents from dataset
-        """
-        if number_of_documents:
-            if page_size > number_of_documents or self.random_state != 0:
-                page_size = number_of_documents  # type: ignore
-        else:
-            number_of_documents = 999999999999999
-
-        is_random = True if self.random_state != 0 else False
-        resp = self.datasets.documents.get_where(
-            dataset_id=dataset_id,
-            select_fields=fields,
-            include_vector=True,
-            page_size=page_size,
-            is_random=is_random,
-            random_state=self.random_state,
-            filters=filters,
-        )
-        data = resp["documents"]
-
-        if (
-            (number_of_documents > page_size)
-            and (is_random == False)
-            and (self.random_state == 0)
-        ):
-            _cursor = resp["cursor"]
-            _page = 0
-            while resp:
-                self.logger.debug(
-                    f"Paginating {_page} page size {page_size} ...")
-                resp = self.datasets.documents.get_where(
-                    dataset_id=dataset_id,
-                    select_fields=fields,
-                    page_size=page_size,
-                    cursor=_cursor,
-                    include_vector=True,
-                    verbose=True,
-                    filters=filters,
-                )
-                _data = resp["documents"]
-                _cursor = resp["cursor"]
-                if (_data == []) or (_cursor == []):
-                    break
-                data += _data
-                if number_of_documents and (len(data) >= int(number_of_documents)):
-                    break
-                _page += 1
-            data = data[:number_of_documents]
-
-        self.docs = data
         return self.docs
 
     def _generate_fig(
