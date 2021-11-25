@@ -71,6 +71,9 @@ class KMeans(CentroidCluster):
         cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
+    
+    def get_cluster_centers(self):
+        raise NotImplementedError
 
 
 class KMedoids(CentroidCluster):
