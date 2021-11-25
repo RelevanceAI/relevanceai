@@ -55,15 +55,20 @@ class DensityCluster(ClusterBase):
 
 
 class KMeans(CentroidCluster):
+    def _init_model(self, n_clusters: int=10, cluster_args={}):
+        from sklearn.cluster import MiniBatchKMeans
+        self.km = MiniBatchKMeans(n_clusters=k, **cluster_args)
+
     def fit_transform(self, 
         vectors: np.ndarray, 
         cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'], 
         k: Union[None, int] = 10
     ) -> np.ndarray:
-        from sklearn.cluster import MiniBatchKMeans
+        if not hasattr(self, "km"):
+            self._init_model(k=k, cluster_args=cluster_args)
         self.logger.debug(f"{cluster_args}")
-        km = MiniBatchKMeans(n_clusters=k, **cluster_args).fit(vectors)
-        cluster_labels = km.labels_
+        self.km.fit(vectors)
+        cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
 
