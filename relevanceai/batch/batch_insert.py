@@ -472,13 +472,23 @@ class BatchInsert(APIClient, Chunker):
         ]
         return self.insert_documents(dataset_id, docs, *args, **kwargs)
 
-    def delete_all_logs(self, dataset_id):
+    def delete_pull_update_push_logs(self, dataset_id = False):
+
         collection_list = self.datasets.list()["datasets"]
-        log_collections = [
-            i
-            for i in collection_list
-            if ("pull_update_push" in i) and (dataset_id in i)
-        ]
+
+        if dataset_id:
+            log_collections = [
+                i
+                for i in collection_list
+                if ("pull_update_push" in i) and (dataset_id in i)
+            ]
+
+        else:
+            log_collections = [
+                i
+                for i in collection_list
+                if ("pull_update_push" in i)
+            ]
         [self.datasets.delete(i, confirm=False) for i in log_collections]
         return
 
