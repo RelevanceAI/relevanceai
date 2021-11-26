@@ -11,7 +11,7 @@ class Monitor(Base):
         super().__init__(project, api_key, base_url)
 
     def health(
-        self, dataset_id: str, output_format: str = "json", verbose: bool = True
+        self, dataset_id: str
     ):
         """ 
         Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors 
@@ -23,13 +23,11 @@ class Monitor(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/health",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
+            method="GET"
         )
 
 
-    def stats(self, dataset_id: str, output_format: str = "json", verbose: bool = True):
+    def stats(self, dataset_id: str):
         """ 
         All operations related to monitoring
         
@@ -40,12 +38,10 @@ class Monitor(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/stats",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
+            method="GET"
         )
 
-    def usage(self, dataset_id: str, filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, log_ids: list = [], output_format: str = "json", verbose: bool = True):
+    def usage(self, dataset_id: str, filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, log_ids: list = []):
         """ 
         Aggregate the logs for a dataset. \n
 
@@ -82,7 +78,5 @@ class Monitor(Base):
                 "filters": filters,
                 "flatten": flatten,
                 "log_ids": log_ids,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )

@@ -17,9 +17,7 @@ class Documents(Base):
         cursor: str = None,
         page_size: int = 20,
         include_vector: bool = True,
-        random_state: int = 0,
-        output_format: str = "json",
-        verbose: bool = True,
+        random_state: int = 0
     ):
         """
         Retrieve documents from a specified dataset. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the dataset. 
@@ -49,18 +47,14 @@ class Documents(Base):
                 "page_size": page_size,
                 "include_vector": include_vector,
                 "random_state": random_state,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def get(
         self,
         dataset_id: str,
         id: str,
-        include_vector: bool = True,
-        output_format: str = "json",
-        verbose: bool = True,
+        include_vector: bool = True
     ):
 
         """
@@ -81,9 +75,7 @@ class Documents(Base):
             parameters={
                 "id": id,
                 "include_vector": include_vector,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def bulk_get(
@@ -91,9 +83,7 @@ class Documents(Base):
         dataset_id: str,
         ids: str,
         include_vector: bool = True,
-        select_fields: list = [],
-        output_format: str = "json",
-        verbose: bool = True,
+        select_fields: list = []
     ):
 
         """
@@ -118,9 +108,7 @@ class Documents(Base):
                 "id": ids,
                 "include_vector": include_vector,
                 "select_fields": select_fields
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
 
@@ -134,9 +122,7 @@ class Documents(Base):
         select_fields: list = [],
         include_vector: bool = True,
         random_state: int = 0,
-        is_random: bool = False,
-        output_format: str = "json",
-        verbose: bool = True,
+        is_random: bool = False
     ):
 
         """ 
@@ -224,9 +210,7 @@ class Documents(Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def paginate(
@@ -235,9 +219,7 @@ class Documents(Base):
         page: int = 1,
         page_size: int = 20,
         include_vector: bool = True,
-        select_fields: list = [],
-        output_format: str = "json",
-        verbose: bool = True,
+        select_fields: list = []
     ):
 
         """
@@ -265,9 +247,7 @@ class Documents(Base):
                 "page_size": page_size,
                 "include_vector": include_vector,
                 "select_fields": select_fields
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def update(
@@ -275,8 +255,6 @@ class Documents(Base):
         dataset_id: str,
         update: dict,
         insert_date: bool = True,
-        output_format: str = "json",
-        verbose: bool = True,
         retries=None,
     ):
 
@@ -299,8 +277,6 @@ class Documents(Base):
                 endpoint=f"/datasets/{dataset_id}/documents/update",
                 method="POST",
                 parameters={"update": update, "insert_date": insert_date},
-                output_format=output_format,
-                verbose=verbose,
                 retries=retries,
             )
 
@@ -309,8 +285,6 @@ class Documents(Base):
         dataset_id: str,
         update: dict,
         filters: list = [],
-        output_format: str = "json",
-        verbose: bool = True,
         retries=None,
     ):
 
@@ -333,8 +307,6 @@ class Documents(Base):
                 endpoint=f"/datasets/{dataset_id}/documents/update_where",
                 method="POST",
                 parameters={"update": update, "filters": filters},
-                output_format=output_format,
-                verbose=verbose,
                 retries=retries,
             )
 
@@ -343,10 +315,7 @@ class Documents(Base):
         dataset_id: str,
         updates: list,
         insert_date: bool = True,
-        output_format: str = "json",
-        verbose: bool = True,
         return_documents: bool = False,
-        retries=None,
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest"
     ):
 
@@ -371,39 +340,31 @@ class Documents(Base):
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={"updates": updates, "insert_date": insert_date},
-                output_format=output_format,
-                verbose=verbose,
-                retries=retries,
                 base_url=base_url,
             )
         else:
-            insert_response = self.make_http_request(
+            response_json = self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={"updates": updates, "insert_date": insert_date},
-                output_format="",
-                verbose=verbose,
-                retries=retries,
                 base_url=base_url,
             )
 
             try:
-                response_json = insert_response.json()
+                status_code = response_json.status_code
             except:
-                response_json = None
+                status_code = 200
 
             return {
                 "response_json": response_json,
                 "documents": updates,
-                "status_code": insert_response.status_code,
+                "status_code": status_code,
             }
 
     def delete(
         self,
         dataset_id: str,
-        id: str,
-        output_format: str = "json",
-        verbose: bool = True,
+        id: str
     ):
 
         """ 
@@ -421,17 +382,13 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/delete",
             method="POST",
-            parameters={"id": id},
-            output_format=output_format,
-            verbose=verbose,
+            parameters={"id": id}
         )
 
     def delete_where(
         self,
         dataset_id: str,
-        filters: list,
-        output_format: str = "json",
-        verbose: bool = True,
+        filters: list
     ):
 
         """ 
@@ -449,9 +406,7 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/delete_where",
             method="POST",
-            parameters={"filters": filters},
-            output_format=output_format,
-            verbose=verbose,
+            parameters={"filters": filters}
         )
 
 
@@ -459,9 +414,7 @@ class Documents(Base):
     def bulk_delete(
         self,
         dataset_id: str,
-        ids: list = [],
-        output_format: str = "json",
-        verbose: bool = True,
+        ids: list = []
     ):
 
         """ 
@@ -478,18 +431,14 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_delete",
             method="POST",
-            parameters={"ids": ids},
-            output_format=output_format,
-            verbose=verbose,
+            parameters={"ids": ids}
         )
 
     def delete_fields(
         self,
         dataset_id: str,
         id: str,
-        fields: list,
-        output_format: str = "json",
-        verbose: bool = True,
+        fields: list
     ):
 
         """ 
@@ -508,9 +457,7 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/delete_fields",
             method="POST",
-            parameters={"id": id, "fields": fields},
-            output_format=output_format,
-            verbose=verbose,
+            parameters={"id": id, "fields": fields}
         )
 
     def get_where_all(
@@ -520,9 +467,7 @@ class Documents(Base):
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
-        include_vector: bool = True,
-        output_format: str = "json",
-        verbose: bool = True,
+        include_vector: bool = True
     ):
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
@@ -557,9 +502,7 @@ class Documents(Base):
                 page_size=chunk_size,
                 sort=sort,
                 select_fields=select_fields,
-                include_vector=include_vector,
-                output_format=output_format,
-                verbose=verbose,
+                include_vector=include_vector
             )
             length = len(x["documents"])
             cursor = x["cursor"]
@@ -590,7 +533,7 @@ class Documents(Base):
             for dataset_id, filters in zip(dataset_ids, list_of_filters)
         }
 
-    def _get_number_of_documents(self, dataset_id, filters=[], verbose: bool=False):
+    def _get_number_of_documents(self, dataset_id, filters=[]):
         """ 
         Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
         
@@ -601,4 +544,4 @@ class Documents(Base):
         filters: list 
             Filters to select documents
         """
-        return self.get_where(dataset_id, page_size=1, filters=filters, verbose=verbose)["count"]
+        return self.get_where(dataset_id, page_size=1, filters=filters)["count"]

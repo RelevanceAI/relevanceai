@@ -2,6 +2,7 @@
 """
 import time
 import traceback
+import json
 from typing import Union
 from relevanceai.config import Config
 from json.decoder import JSONDecodeError
@@ -31,10 +32,7 @@ class Transport:
         endpoint: str,
         method: str = "GET",
         parameters: dict = {},
-        output_format: Union[str, bool, None] = "json",
-        base_url: str = None,
-        verbose: bool = True,
-        retries: int = None,
+        base_url: str = None
     ):
         """
         Make the HTTP request
@@ -47,16 +45,17 @@ class Transport:
         """
         self._last_used_endpoint = endpoint
 
-        t1 = time.time()
+        start_time = time.perf_counter()
         if base_url is None:
             base_url = self.base_url
 
-        if retries is None:
-            retries = int(self.config.get_option("retries.number_of_retries"))
+        retries = int(self.config.get_option("retries.number_of_retries"))
+        seconds_between_retries = int(self.config.get_option("retries.seconds_between_retries"))
 
         for _ in range(retries):
-            if verbose:
-                self.logger.info("URL you are trying to access:" + base_url + endpoint)
+
+            self.logger.info(
+                "URL you are trying to access:" + base_url + endpoint)
             try:
                 req = Request(
                     method=method.upper(),
@@ -70,55 +69,44 @@ class Transport:
                     response = s.send(req)
 
                 if response.status_code == 200:
-                    if verbose:
-                        self.logger.success(
-                            f"Response success! ({base_url + endpoint})"
-                        )
-                    time_diff = time.time() - t1
-                    self.logger.debug(
-                        f"Request ran in {time_diff} seconds ({base_url + endpoint})"
-                    )
-
-                    if output_format == "json":
-                        return response.json()
-                    else:
-                        return response
+                    self._log_response_success(base_url, endpoint)
+                    self._log_response_time(base_url, endpoint, time.perf_counter() - start_time)
+                    return response.json()
 
                 elif response.status_code == 404:
-                    if verbose:
-                        self.logger.error(
-                            f"Response failed ({base_url + endpoint}) (status: {response.status_code} Content: {response.content.decode()})"
-                        )
+                    self._log_response_fail(base_url, endpoint, response.status_code, response.content.decode())
                     raise APIError(response.content.decode())
 
                 else:
-                    if verbose:
-                        self.logger.error(
-                            f"Response failed ({base_url + endpoint}) (status: {response.status_code} Content: {response.content.decode()})"
-                        )
+                    self._log_response_fail(base_url, endpoint, response.status_code, response.content.decode())
                     continue
 
             except (ConnectionError) as error:
                 # Print the error
                 traceback.print_exc()
-                if verbose:
-                    self.logger.error(
-                        f"Connection error but re-trying. ({base_url + endpoint})"
-                    )
-                time.sleep(
-                    int(self.config.get_option("retries.seconds_between_retries"))
-                )
+                self._log_connection_error(base_url, endpoint)
+                time.sleep(seconds_between_retries)
                 continue
 
             except JSONDecodeError as error:
-                if verbose:
-                    self.logger.error(f"No Json available ({base_url + endpoint})")
-                self.logger.error(response)
-
-            if verbose:
-                self.logger.error(
-                    f"Response failed, stopped trying ({base_url + endpoint})"
-                )
-            raise APIError(response.content.decode())
+                self._log_no_json(base_url, endpoint, response.status_code, response)
+                return response
 
         return response
+
+    def _log_response_success(self, base_url, endpoint):
+        self.logger.success(f"Response success! ({base_url + endpoint})")
+
+    def _log_response_time(self, base_url, endpoint, time):
+        self.logger.debug(f"Request ran in {time} seconds ({base_url + endpoint})")
+
+    def _log_response_fail(self, base_url, endpoint, status_code, content):
+        self.logger.error(f"Response failed ({base_url + endpoint}) (Status: {status_code} Response: {content})")
+
+    def _log_connection_error(self, base_url, endpoint):
+        self.logger.error(f"Connection error but re-trying. ({base_url + endpoint})")
+
+    def _log_no_json(self, base_url, endpoint, status_code, content):
+        self.logger.error(f"No JSON Available ({base_url + endpoint}) (Status: {status_code} Response: {content})")
+
+

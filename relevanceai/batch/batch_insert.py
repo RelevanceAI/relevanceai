@@ -24,12 +24,10 @@ class BatchInsert(APIClient, Chunker):
         dataset_id: str,
         docs: list,
         bulk_fn: Callable = None,
-        verbose: bool = True,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize=0,
-        max_retries=1,
         *args,
         **kwargs,
     ):
@@ -59,22 +57,20 @@ class BatchInsert(APIClient, Chunker):
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         """
-        if verbose:
-            self.logger.info(f"You are currently inserting into {dataset_id}")
-        if verbose:
-            self.logger.info(
-                f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
-            )
+
+        self.logger.info(f"You are currently inserting into {dataset_id}")
+
+        self.logger.info(
+            f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
+        )
         # Check if the collection exists
-        self.datasets.create(dataset_id, output_format=False, verbose=False)
+        self.datasets.create(dataset_id)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
                 docs,
-                verbose=verbose,
                 return_documents=True,
-                retries=max_retries,
                 *args,
                 **kwargs,
             )
@@ -94,7 +90,6 @@ class BatchInsert(APIClient, Chunker):
         dataset_id: str,
         docs: list,
         bulk_fn: Callable = None,
-        verbose: bool = True,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
@@ -133,20 +128,18 @@ class BatchInsert(APIClient, Chunker):
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         """
-        if verbose:
-            self.logger.info(f"You are currently updating {dataset_id}")
-        if verbose:
-            self.logger.info(
-                f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
-            )
+
+        self.logger.info(f"You are currently updating {dataset_id}")
+
+        self.logger.info(
+            f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
+        )
 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
                 docs,
-                verbose=verbose,
                 return_documents=True,
-                retries=1,
                 *args,
                 **kwargs,
             )
@@ -171,7 +164,6 @@ class BatchInsert(APIClient, Chunker):
         max_workers: int = 8,
         filters: list = [],
         select_fields: list = [],
-        verbose: bool = True,
         show_progress_bar: bool = True,
     ):
         """
@@ -215,7 +207,7 @@ class BatchInsert(APIClient, Chunker):
         # Trust the process
         # Get document lengths to calculate iterations
         original_length = self.datasets.documents._get_number_of_documents(
-            original_collection, filters, verbose=verbose
+            original_collection, filters
         )
 
         # get the remaining number in case things break
@@ -242,8 +234,7 @@ class BatchInsert(APIClient, Chunker):
                 original_collection,
                 filters=retrieve_filters,
                 page_size=retrieve_chunk_size,
-                select_fields=select_fields,
-                verbose=verbose,
+                select_fields=select_fields
             )
 
             documents = orig_json["documents"]
@@ -262,7 +253,6 @@ class BatchInsert(APIClient, Chunker):
                 insert_json = self.update_documents(
                     dataset_id=original_collection,
                     docs=updated_data,
-                    verbose=verbose,
                     max_workers=max_workers,
                     show_progress_bar=False,
                 )
@@ -270,7 +260,6 @@ class BatchInsert(APIClient, Chunker):
                 insert_json = self.insert_documents(
                     dataset_id=updated_collection,
                     docs=updated_data,
-                    verbose=verbose,
                     max_workers=max_workers,
                     show_progress_bar=False,
                 )
@@ -280,10 +269,9 @@ class BatchInsert(APIClient, Chunker):
             failed_documents.extend(chunk_failed)
             success_documents = list(set(updated_documents) - set(failed_documents))
             PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
-            if verbose:
-                self.logger.success(
-                    f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
-                )
+            self.logger.success(
+                f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
+            )
 
         self.logger.success(f"Pull, Update, Push is complete!") 
         
@@ -307,7 +295,6 @@ class BatchInsert(APIClient, Chunker):
         max_error: int = 1000,
         filters: list = [],
         select_fields: list = [],
-        verbose: bool = True,
         show_progress_bar: bool = True,
     ):
         """
@@ -340,12 +327,12 @@ class BatchInsert(APIClient, Chunker):
             logging_collection = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push"
 
         # Check collections and create completed list if needed
-        collection_list = self.datasets.list(verbose=False)
+        collection_list = self.datasets.list()
         if logging_collection not in collection_list["datasets"]:
             self.logger.info("Creating a logging collection for you.")
             self.logger.info(
                 self.datasets.create(
-                    logging_collection, output_format="json", verbose=verbose
+                    logging_collection
                 )
             )
 
@@ -383,7 +370,7 @@ class BatchInsert(APIClient, Chunker):
 
                 # Get completed documents
                 log_json = self.datasets.documents.get_where_all(
-                    logging_collection, verbose=verbose
+                    logging_collection
                 )
                 completed_documents_list = [i["_id"] for i in log_json]
 
@@ -401,8 +388,7 @@ class BatchInsert(APIClient, Chunker):
                     original_collection,
                     filters=retrieve_filters,
                     page_size=retrieve_chunk_size,
-                    select_fields=select_fields,
-                    verbose=verbose,
+                    select_fields=select_fields
                 )
 
                 documents = orig_json["documents"]
@@ -423,7 +409,6 @@ class BatchInsert(APIClient, Chunker):
                     insert_json = self.update_documents(
                         dataset_id=original_collection,
                         docs=updated_data,
-                        verbose=verbose,
                         max_workers=max_workers,
                         show_progress_bar=False,
                     )
@@ -431,7 +416,6 @@ class BatchInsert(APIClient, Chunker):
                     insert_json = self.insert_documents(
                         dataset_id=updated_collection,
                         docs=updated_data,
-                        verbose=verbose,
                         max_workers=max_workers,
                         show_progress_bar=False,
                     )
@@ -448,7 +432,6 @@ class BatchInsert(APIClient, Chunker):
                 self.insert_documents(
                     logging_collection,
                     upload_documents,
-                    verbose=False,
                     max_workers=max_workers,
                 )
 
