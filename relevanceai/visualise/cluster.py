@@ -57,7 +57,10 @@ class DensityCluster(ClusterBase):
 class KMeans(CentroidCluster):
     def _init_model(self, n_clusters: int=10, cluster_args={}):
         from sklearn.cluster import MiniBatchKMeans
-        self.km = MiniBatchKMeans(n_clusters=k, **cluster_args)
+        self.km = MiniBatchKMeans(
+            n_clusters=n_clusters, 
+            **cluster_args
+        )
 
     def fit_transform(self, 
         vectors: np.ndarray, 
