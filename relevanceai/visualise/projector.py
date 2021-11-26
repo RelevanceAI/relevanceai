@@ -289,7 +289,6 @@ class Projector(APIClient, Base, DocUtils):
                     page_size=page_size,
                     cursor=_cursor,
                     include_vector=True,
-                    verbose=True,
                     filters=filters,
                 )
                 _data = resp["documents"]

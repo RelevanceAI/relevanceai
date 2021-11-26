@@ -254,8 +254,7 @@ class Documents(Base):
         self,
         dataset_id: str,
         update: dict,
-        insert_date: bool = True,
-        retries=None,
+        insert_date: bool = True
     ):
 
         """ 
@@ -276,16 +275,14 @@ class Documents(Base):
         return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/update",
                 method="POST",
-                parameters={"update": update, "insert_date": insert_date},
-                retries=retries,
+                parameters={"update": update, "insert_date": insert_date}
             )
 
     def update_where(
         self,
         dataset_id: str,
         update: dict,
-        filters: list = [],
-        retries=None,
+        filters: list = []
     ):
 
         """ 
@@ -306,8 +303,7 @@ class Documents(Base):
         return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/update_where",
                 method="POST",
-                parameters={"update": update, "filters": filters},
-                retries=retries,
+                parameters={"update": update, "filters": filters}
             )
 
     def bulk_update(
