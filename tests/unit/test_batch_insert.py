@@ -3,7 +3,15 @@
 import numpy as np
 import random
 import pytest
+from relevanceai.concurrency import chunk
 
+# Tests should be written with prefix 'test_' for Pytest
+def test_chunk(simple_doc):
+    """Test if our chunks are consistently of size 50 in an array of 1000
+    """
+    docs = simple_doc * 1000
+    for c in chunk(docs, n=50):
+        assert len(c) == 50, "Not chunking properly."
 
 class TestInsert:
     """Testing the insert functionalities"""
@@ -72,3 +80,5 @@ class TestPullUpdatePush:
 class TestCleanUp:
     def test_clean_up(self, test_client, test_dataset_id):
         assert test_client.datasets.delete(test_dataset_id)
+
+

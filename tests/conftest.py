@@ -28,6 +28,7 @@ def simple_doc():
         {
             "_id": uuid.uuid4().__str__(),
             "value": random.randint(0, 1000),
+            "sample_1_vector_": [0.01] * 512
         }
     ]
 
@@ -47,15 +48,15 @@ def test_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_docs = simple_doc * 1000
     response = test_client.insert_documents(test_dataset_id, simple_docs)
+    # Yield statements are returned first to the object
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture
-def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
+def test_large_sample_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample dataset to insert and then delete"""
-    simple_docs = simple_doc * 1000
-    response = test_client.insert_documents(test_dataset_id, simple_docs)
+    response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 

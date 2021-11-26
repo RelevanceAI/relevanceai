@@ -72,7 +72,7 @@ def fixture_dr_args(request):
 def fixture_cluster_args(request):
     return request.param
 
-
+@pytest.mark.slow
 def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
     """Testing vector label with cluster"""
     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
