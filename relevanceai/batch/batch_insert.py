@@ -489,6 +489,7 @@ class BatchInsert(APIClient, Chunker):
                 for i in collection_list
                 if ("pull_update_push" in i)
             ]
+
         [self.datasets.delete(i, confirm=False) for i in log_collections]
         return
 
