@@ -45,6 +45,7 @@ class Transport:
         method_type: string
             POST or GET request
         """
+        self._last_used_endpoint = endpoint
 
         t1 = time.time()
         if base_url is None:

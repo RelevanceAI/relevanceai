@@ -91,3 +91,7 @@ class Client(BatchAPIClient, DocUtils):
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
+
+    def make_search_suggestion(self):
+        return self.services.search.make_suggestion() 
+
