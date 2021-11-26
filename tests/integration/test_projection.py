@@ -77,3 +77,14 @@ def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
     """Testing vector label with cluster"""
     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
     assert True
+
+@pytest.mark.parametrize("dims,cluster", [(2,"kmeans"), (3,"kmeans")])
+def test_projector(test_client, test_sample_vector_dataset, dims):
+    test_client.projector.plot(
+        test_sample_vector_dataset, 
+        "sample_1_vector_", 
+        colour_label = "sample_1_label",  
+        cluster = 'kmeans', 
+        dims = dims, 
+        number_of_points_to_render=50)
+    assert True
