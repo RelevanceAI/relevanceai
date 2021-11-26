@@ -11,12 +11,14 @@ from dataclasses import dataclass
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
+from doc_utils import DocUtils
+
 from relevanceai.base import Base
 from relevanceai.logger import LoguruLogger
 from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
-class ClusterBase(LoguruLogger):
+class ClusterBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
@@ -26,7 +28,21 @@ class ClusterBase(LoguruLogger):
             cluster_args: Dict[Any, Any],
     ) -> np.ndarray:
         raise NotImplementedError
-
+    
+    def fit_documents(
+        self,
+        vector_field: list,
+        docs: list,
+        alias: str="default"
+    ):
+        """
+        Train clustering algorithm on documents and then return useful information
+        """
+        vectors = self.get_field_across_documents(vector_field, docs)
+        docs = self.set_field_across_documents(
+            f"_clusters_.{vector_field}.{alias}", vectors, docs
+        )
+        return docs
 
 class CentroidCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
@@ -39,7 +55,21 @@ class CentroidCluster(ClusterBase):
             k: Union[None, int] = None
     ) -> np.ndarray:
         raise NotImplementedError
-
+    
+    @abstractmethod
+    def get_centers(self) -> Union[np.ndarray, List[list]]:
+        raise NotImplementedError
+    
+    def get_centroid_docs(self) -> Union[np.ndarray, List[list]]:
+        """Get the centroid documents
+        """
+        self.centers = self.get_centers()
+        return [
+            {
+                "_id": f"cluster_{i}",
+                "centroid_vector_": self.centers[i]
+            } for i in range(len(self.centers)))
+        ]
 
 class DensityCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
@@ -55,29 +85,49 @@ class DensityCluster(ClusterBase):
 
 
 class KMeans(CentroidCluster):
-    def _init_model(self, n_clusters: int=10, cluster_args={}):
+    def _init_model(self, 
+        n_clusters: int=10, 
+        init: str = "k-means++",
+        verbose: bool = True,
+        compute_labels: bool = True,
+        max_no_improvement: int=2
+    ):
         from sklearn.cluster import MiniBatchKMeans
         self.km = MiniBatchKMeans(
             n_clusters=n_clusters, 
-            **cluster_args
+            init=init,
+            verbose=verbose,
+            compute_labels=compute_labels,
+            max_no_improvement=max_no_improvement
         )
 
     def fit_transform(self, 
         vectors: np.ndarray, 
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'], 
-        k: Union[None, int] = 10
+        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'],
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        verbose: bool = True,
+        compute_labels: bool = True,
+        max_no_improvement: int=2
     ) -> np.ndarray:
         if not hasattr(self, "km"):
-            self._init_model(k=k, cluster_args=cluster_args)
+            self._init_model(
+                k=k, 
+                init=init,
+                verbose=verbose,
+                compute_labels=compute_labels,
+                max_no_improvement=max_no_improvement
+            )
         self.logger.debug(f"{cluster_args}")
         self.km.fit(vectors)
         cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
-    
-    def get_cluster_centers(self):
-        raise NotImplementedError
 
+    def get_centers(self) -> np.ndarray:
+        """Returns a numpy array of clusters
+        """
+        return self.km.cluster_centers_
 
 class KMedoids(CentroidCluster):
     def fit_transform(self, 
