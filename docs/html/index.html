@@ -97,6 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.recommend.Recommend">Recommend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.recommend.Recommend.diversity">diversity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.recommend.Recommend.vector">vector</a></li>
 </ul>
 </li>
@@ -106,23 +107,33 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids">Centroids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.documents">documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.get">get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.insert">insert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.list">list</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.client.APIClient">APIClient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.cluster.Cluster">Cluster</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.cluster.Cluster.aggregate">aggregate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.cluster.Cluster.facets">facets</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents">Documents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.bulk_delete">bulk_delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.bulk_get">bulk_get</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.bulk_update">bulk_update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.delete">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.delete_fields">delete_fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.delete_where">delete_where</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get">get</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get_number_of_documents">get_number_of_documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get_where">get_where</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.get_where_all">get_where_all</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.list">list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.paginate">paginate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.update">update</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.documents.Documents.update_where">update_where</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.encoders.Encoders">Encoders</a><ul>
@@ -136,6 +147,7 @@
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor">Monitor</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor.health">health</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor.stats">stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.monitor.Monitor.usage">usage</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks">Tasks</a><ul>
@@ -146,6 +158,7 @@
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_encode_text_task">create_encode_text_task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_encode_textimage_task">create_encode_textimage_task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.create_numeric_encoder_task">create_numeric_encoder_task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.list">list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.tasks.Tasks.status">status</a></li>
 </ul>
 </li>
@@ -171,25 +184,135 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster">Cluster</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.api_key">api_key</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.base_url">base_url</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.config">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.Cluster.project">project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster">CentroidCluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.warning">warning</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction">DimReduction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.api_key">api_key</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.base_url">base_url</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.config">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReduction.project">project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase">ClusterBase</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.warning">warning</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster">DensityCluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.DensityCluster.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN">HDBSCAN</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.HDBSCAN.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans">KMeans</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids">KMedoids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.cluster">cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase">DimReductionBase</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.DimReductionBase.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis">Ivis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.Ivis.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA">PCA</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.PCA.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE">TSNE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.TSNE.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP">UMAP</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.UMAP.warning">warning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.dim_reduction.dim_reduce">dim_reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector">Projector</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.api_key">api_key</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.base_url">base_url</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.config">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.plot">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.plot_from_docs">plot_from_docs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.project">project</a></li>
 </ul>
 </li>

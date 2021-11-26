@@ -22,6 +22,7 @@ except ModuleNotFoundError as e:
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
+
 class Client(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's relevanceai"""
 
@@ -30,10 +31,11 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: Optional[str] = os.getenv("VDB_PROJECT", None),
-        api_key: Optional[str] = os.getenv("VDB_API_KEY", None),
-        base_url: Optional[str] = "https://gateway-api-aueast.relevance.ai/v1/",
-        verbose: bool = True,
+        project: Optional[str]=os.getenv("VDB_PROJECT", None),
+        api_key: Optional[str]=os.getenv("VDB_API_KEY", None),
+        base_url: Optional[str]="https://gateway-api-aueast.relevance.ai/v1",
+        verbose: bool=True
+
     ):
 
         if project is None or api_key is None:
@@ -77,7 +79,7 @@ class Client(BatchAPIClient, DocUtils):
 
     @staticmethod
     def login(
-        base_url: str = "https://gateway-api-aueast.relevance.ai/v1/",
+        base_url: str = "https://gateway-api-aueast.relevance.ai/v1",
         verbose: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
@@ -89,6 +91,3 @@ class Client(BatchAPIClient, DocUtils):
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
-
-    def make_search_suggestion(self):
-        return self.services.search.make_suggestion()

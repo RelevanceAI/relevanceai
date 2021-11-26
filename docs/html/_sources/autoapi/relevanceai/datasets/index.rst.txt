@@ -35,6 +35,8 @@ Functions
    relevanceai.datasets.get_ecommerce_3_dataset
    relevanceai.datasets.get_flipkart_dataset
    relevanceai.datasets.get_realestate_dataset
+   relevanceai.datasets.get_mission_statements_dataset
+   relevanceai.datasets.get_machine_learning_research_dataset
 
 
 
@@ -121,7 +123,7 @@ Attributes
    :type select_fields: list
 
 
-.. py:function:: get_ecommerce_1_dataset(number_of_documents: int = 1000, select_fields: list = [])
+.. py:function:: get_ecommerce_1_dataset(number_of_documents: int = 1000, select_fields: list = []) -> List[Dict[Any, Any]]
 
    Download an example e-commerce dataset
 
@@ -278,7 +280,7 @@ Attributes
 
 .. py:function:: get_flipkart_dataset(number_of_documents: Union[None, int] = 19920, select_fields: list = []) -> List
 
-   Download an example flipkat ecommerce dataset
+   Download an example flipkart ecommerce dataset
 
    Total Len: 19920
 
@@ -338,6 +340,21 @@ Attributes
    :type number_of_documents: int
    :param select_fields: Fields to include in the dataset, empty array/list means all fields.
    :type select_fields: list
+
+
+.. py:function:: get_mission_statements_dataset(number_of_documents: Union[None, int] = 1433, select_fields: list = []) -> List
+
+   Function to download a sample company mission statement dataset.
+   Total Len: 1433
+   Sample document:
+   {'_id': 0,
+   'company': 'Starbucks',
+   'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'},
+
+
+.. py:function:: get_machine_learning_research_dataset()
+
+   Here we get our Machine Learning research dataset.
 
 
 .. py:data:: get_dummy_ecommerce_dataset

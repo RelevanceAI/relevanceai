@@ -103,7 +103,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_games_dataset" title="relevanceai.datasets.get_games_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_games_dataset</span></code></a>(number_of_documents: Union[None, int] = 365, select_fields: list = []) → List</p></td>
 <td><p>Download an example games dataset (<a class="reference external" href="https://www.freetogame.com/">https://www.freetogame.com/</a>)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_1_dataset" title="relevanceai.datasets.get_ecommerce_1_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_1_dataset</span></code></a>(number_of_documents: int = 1000, select_fields: list = [])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_1_dataset" title="relevanceai.datasets.get_ecommerce_1_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_1_dataset</span></code></a>(number_of_documents: int = 1000, select_fields: list = []) → List[Dict[Any, Any]]</p></td>
 <td><p>Download an example e-commerce dataset</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_ecommerce_2_dataset" title="relevanceai.datasets.get_ecommerce_2_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ecommerce_2_dataset</span></code></a>(number_of_documents: int = 1000, select_fields: list = [])</p></td>
@@ -119,10 +119,16 @@
 <td><p>Download an example ecommerce dataset (<a class="reference external" href="https://data.world/crowdflower/ecommerce-search-relevance">https://data.world/crowdflower/ecommerce-search-relevance</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_flipkart_dataset" title="relevanceai.datasets.get_flipkart_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flipkart_dataset</span></code></a>(number_of_documents: Union[None, int] = 19920, select_fields: list = []) → List</p></td>
-<td><p>Download an example flipkat ecommerce dataset</p></td>
+<td><p>Download an example flipkart ecommerce dataset</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_realestate_dataset" title="relevanceai.datasets.get_realestate_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_realestate_dataset</span></code></a>(number_of_documents: int = 50, select_fields: list = [])</p></td>
 <td><p>Download an example real-estate dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_mission_statements_dataset" title="relevanceai.datasets.get_mission_statements_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mission_statements_dataset</span></code></a>(number_of_documents: Union[None, int] = 1433, select_fields: list = []) → List</p></td>
+<td><p>Function to download a sample company mission statement dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../relevanceai.html#relevanceai.datasets.get_machine_learning_research_dataset" title="relevanceai.datasets.get_machine_learning_research_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_machine_learning_research_dataset</span></code></a>()</p></td>
+<td><p>Here we get our Machine Learning research dataset.</p></td>
 </tr>
 </tbody>
 </table>
@@ -237,7 +243,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="relevanceai.datasets.get_ecommerce_1_dataset">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_1_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_ecommerce_1_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_1_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_1_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_ecommerce_1_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_1_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Download an example e-commerce dataset</p>
 <p>Total Len: 14058</p>
 <p>Sample document:</p>
@@ -409,7 +415,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="relevanceai.datasets.get_flipkart_dataset">
 <span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_flipkart_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">19920</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_flipkart_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_flipkart_dataset" title="Permalink to this definition"></a></dt>
-<dd><p>Download an example flipkat ecommerce dataset</p>
+<dd><p>Download an example flipkart ecommerce dataset</p>
 <p>Total Len: 19920</p>
 <p>Sample document:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -474,6 +480,23 @@
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_mission_statements_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_mission_statements_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1433</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_mission_statements_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_mission_statements_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Function to download a sample company mission statement dataset.
+Total Len: 1433
+Sample document:
+{‘_id’: 0,
+‘company’: ‘Starbucks’,
+‘text’: ‘Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.’},</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.datasets.get_machine_learning_research_dataset">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_machine_learning_research_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/datasets.html#get_machine_learning_research_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_machine_learning_research_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Here we get our Machine Learning research dataset.</p>
 </dd></dl>
 
 <dl class="py data">

@@ -37,6 +37,7 @@ Classes
           >>> ]
 
           An example of a weighted multivector query:
+
           >>> [
           >>>     {"vector": [0.12, 0.23, 0.34], "fields": {"name_vector_":0.6}, "alias":"text"},
           >>>     {"vector": [0.45, 0.56, 0.67], "fields": {"image_vector_"0.4}, "alias":"image"},
@@ -81,7 +82,7 @@ Classes
       :param negative_document_ids: Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
       :type negative_document_ids: dict
       :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type approximation_depth: integer
+      :type approximation_depth: int
       :param vector_operation: Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
       :type vector_operation: string
       :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -137,7 +138,7 @@ Classes
       :param negative_document_ids: Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
       :type negative_document_ids: dict
       :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type approximation_depth: integer
+      :type approximation_depth: int
       :param vector_operation: Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
       :type vector_operation: string
       :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -173,7 +174,7 @@ Classes
       :param ignore_spaces: Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
       :type ignore_spaces: bool
       :param traditional_weight: Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
-      :type traditional_weight: integer
+      :type traditional_weight: int
 
 
    .. py:method:: semantic(self, dataset_id: str, multivector_query: list, fields: list, text: str, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, verbose: bool = True, output_format: str = 'json')
@@ -196,7 +197,7 @@ Classes
       :param fields: Text fields to search against
       :type fields: list
       :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type approximation_depth: integer
+      :type approximation_depth: int
       :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
       :type sum_fields: bool
       :param page_size: Size of each page of results
@@ -225,7 +226,7 @@ Classes
       :type hundred_scale: bool
 
 
-   .. py:method:: diversity(self, dataset_id: str, cluster_vector_field: str, multivector_query: list, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale: bool = False, search_history_id: str = None, n_clusters: int = 0, n_init: int = 5, n_iter: int = 10, return_as_clusters: bool = False, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: diversity(self, dataset_id: str, cluster_vector_field: str, n_clusters: int, multivector_query: list, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale: bool = False, search_history_id: str = None, n_init: int = 5, n_iter: int = 10, return_as_clusters: bool = False, verbose: bool = True, output_format: str = 'json')
 
       This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:
 
@@ -249,6 +250,8 @@ Classes
 
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
+      :param cluster_vector_field: The field to cluster on.
+      :type cluster_vector_field: str
       :param multivector_query: Query for advance search that allows for multiple vector and field querying.
       :type multivector_query: list
       :param positive_document_ids: Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
@@ -256,7 +259,7 @@ Classes
       :param negative_document_ids: Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.
       :type negative_document_ids: dict
       :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type approximation_depth: integer
+      :type approximation_depth: int
       :param vector_operation: Aggregation for the vectors when using positive and negative document IDs, choose from ['mean', 'sum', 'min', 'max', 'divide', 'mulitple']
       :type vector_operation: string
       :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
@@ -287,8 +290,6 @@ Classes
       :type hundred_scale: bool
       :param search_history_id: Search history ID, only used for storing search histories.
       :type search_history_id: str
-      :param cluster_vector_field: The field to cluster on.
-      :type cluster_vector_field: str
       :param n_clusters: Number of clusters to be specified.
       :type n_clusters: int
       :param n_init: Number of runs to run with different centroid seeds
@@ -370,7 +371,7 @@ Classes
       :param chunk_page: Page of the chunk results
       :type chunk_page: int
       :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type approximation_depth: integer
+      :type approximation_depth: int
       :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
       :type sum_fields: bool
       :param page_size: Size of each page of results
@@ -420,7 +421,7 @@ Classes
       :param chunk_page: Page of the chunk results
       :type chunk_page: int
       :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type approximation_depth: integer
+      :type approximation_depth: int
       :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
       :type sum_fields: bool
       :param page_size: Size of each page of results
@@ -458,7 +459,6 @@ Classes
       A more advanced chunk search to be able to combine vector search and chunk search in many different ways.
 
       Example 1 (Hybrid chunk search):
-
       >>> chunk_query = {
       >>>     "chunk" : "some.test",
       >>>     "queries" : [
@@ -472,7 +472,6 @@ Classes
       >>> }
 
       Example 2 (combines normal vector search with chunk search):
-
       >>> chunk_query = {
       >>>     "queries" : [
       >>>         {
@@ -537,7 +536,6 @@ Classes
       >>> }
 
       Example 2 (combines normal vector search with chunk search):
-
       >>> chunk_query = {
       >>>     "queries" : [
       >>>         {
@@ -583,9 +581,9 @@ Classes
       :param first_step_ignore_spaces: Whether to consider cases when there is a space in the word. E.g. Go Pro vs GoPro.
       :type first_step_ignore_spaces: bool
       :param first_step_traditional_weight: Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
-      :type first_step_traditional_weight: integer
+      :type first_step_traditional_weight: int
       :param first_step_approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
-      :type first_step_approximation_depth: integer
+      :type first_step_approximation_depth: int
       :param first_step_sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
       :type first_step_sum_fields: bool
       :param first_step_filters: Query for filtering the search results
