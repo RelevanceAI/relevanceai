@@ -44,15 +44,21 @@ class ClusterBase(LoguruLogger, DocUtils):
         )
         return docs
 
+    def to_metadata(self):
+        """You can also store the metadata of this clustering algorithm
+        """
+        raise NotImplementedError
+
 class CentroidCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
-            k: Union[None, int] = None
+    def fit_transform(
+        self, 
+        vectors: np.ndarray, 
+        cluster_args: Dict[Any, Any],
+        k: Union[None, int] = None
     ) -> np.ndarray:
         raise NotImplementedError
     
@@ -68,7 +74,7 @@ class CentroidCluster(ClusterBase):
             {
                 "_id": f"cluster_{i}",
                 "centroid_vector_": self.centers[i]
-            } for i in range(len(self.centers)))
+            } for i in range(len(self.centers))
         ]
 
 class DensityCluster(ClusterBase):
@@ -85,40 +91,38 @@ class DensityCluster(ClusterBase):
 
 
 class KMeans(CentroidCluster):
-    def _init_model(self, 
-        n_clusters: int=10, 
-        init: str = "k-means++",
-        verbose: bool = True,
-        compute_labels: bool = True,
-        max_no_improvement: int=2
-    ):
-        from sklearn.cluster import MiniBatchKMeans
-        self.km = MiniBatchKMeans(
-            n_clusters=n_clusters, 
-            init=init,
-            verbose=verbose,
-            compute_labels=compute_labels,
-            max_no_improvement=max_no_improvement
-        )
-
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'],
+    def __init__(
+        self,
         k: Union[None, int] = 10,
         init: str = "k-means++",
         verbose: bool = True,
         compute_labels: bool = True,
         max_no_improvement: int=2
+     ):
+        """Kmeans Centroid Clustering
+        """
+        self.k = k
+        self.init = init
+        self.verbose = verbose
+        self.compute_labels = compute_labels
+        self.max_no_improvement = max_no_improvement
+
+    def _init_model(self):
+        from sklearn.cluster import MiniBatchKMeans
+        self.km = MiniBatchKMeans(
+            n_clusters=self.k, 
+            init=self.init,
+            verbose=self.verbose,
+            compute_labels=self.compute_labels,
+            max_no_improvement=self.max_no_improvement
+        )
+
+    def fit_transform(
+        self,
+        vectors: np.ndarray, 
     ) -> np.ndarray:
         if not hasattr(self, "km"):
-            self._init_model(
-                k=k, 
-                init=init,
-                verbose=verbose,
-                compute_labels=compute_labels,
-                max_no_improvement=max_no_improvement
-            )
-        self.logger.debug(f"{cluster_args}")
+            self._init_model()
         self.km.fit(vectors)
         cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
@@ -128,25 +132,36 @@ class KMeans(CentroidCluster):
         """Returns a numpy array of clusters
         """
         return self.km.cluster_centers_
+    
+    def to_metadata(self) -> np.ndarray:
+        """Editing the metadata of the function
+        """
+        return {
+            "k": self,k,
+            "init": self.init,
+            "verbose": self.verbose,
+            "compute_labels": self.compute_labels,
+            "max_no_improvement": self.max_no_improvement
+        }
 
-class KMedoids(CentroidCluster):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmedoids'], 
-        k: Union[None, int] = 10,
-    ) -> np.ndarray:
-        try:
-            from sklearn_extra.cluster import KMedoids
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall umap\n \
-                pip install -U relevanceai[kmedoids]"
-            )
-        self.logger.debug(f"{cluster_args}")
-        km = KMedoids(n_clusters=k, **cluster_args).fit(vectors)
-        cluster_labels = km.labels_
-        # cluster_centroids = km.cluster_centers_
-        return cluster_labels
+# class KMedoids(CentroidCluster):
+#     def fit_transform(self, 
+#         vectors: np.ndarray, 
+#         cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmedoids'], 
+#         k: Union[None, int] = 10,
+#     ) -> np.ndarray:
+#         try:
+#             from sklearn_extra.cluster import KMedoids
+#         except ModuleNotFoundError as e:
+#             raise ModuleNotFoundError(
+#                 f"{e}\nInstall umap\n \
+#                 pip install -U relevanceai[kmedoids]"
+#             )
+#         self.logger.debug(f"{cluster_args}")
+#         km = KMedoids(n_clusters=k, **cluster_args).fit(vectors)
+#         cluster_labels = km.labels_
+#         # cluster_centroids = km.cluster_centers_
+#         return cluster_labels
 
 
 class HDBSCAN(DensityCluster):
