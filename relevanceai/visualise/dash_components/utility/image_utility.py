@@ -6,10 +6,9 @@ import cv2
 import numpy as np
 
 def resize(
-    img: np.ndarray,
-    width: float = None,
-    height: float = None
-) -> np.ndarray:
+    img,
+    width = None,
+    height = None):
     (h, w) = img.shape[:2]
     if width is None:
         r = height / float(h)
