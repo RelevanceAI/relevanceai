@@ -13,6 +13,7 @@ from typeguard import typechecked
 from relevanceai.api.client import APIClient
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
+from relevanceai.visualise.dash_components.app import create_dash_graph
 
 from relevanceai.visualise.cluster import cluster, ClusterBase
 from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
@@ -200,9 +201,11 @@ class Projector(APIClient, Base, DocUtils):
                 self.legend = "cluster_labels"
 
             self.embedding_df.index = self.embedding_df["_id"]
-            return self._generate_fig(
+            data, layout =  self._generate_fig(
                 embedding_df=self.embedding_df, legend=self.legend, marker_size = marker_size, marker_colour = marker_colour
             )
+            create_dash_graph(data, layout)
+            return
 
     def _get_vector_fields(self) -> List[str]:
         """
@@ -488,27 +491,29 @@ class Projector(APIClient, Base, DocUtils):
                 "</b>",
                 f"<b>Cluster Method: {self.cluster}<br>Num Clusters: {self.num_clusters}</b>",
             )
-        fig = go.Figure(data=data, layout=layout)
-        fig.update_layout(
-            title={
-                "text": plot_title,
-                "y": 0.1,
-                "x": 0.1,
-                "xanchor": "left",
-                "yanchor": "bottom",
-                "font": {"size": 10},
-            },
-        )
-        if legend and self.colour_label:
-            fig.update_layout(
-                legend={
-                    "title": {"text": self.colour_label, "font": {"size": 12}},
-                    "font": {"size": 10},
-                    "itemwidth": 30,
-                    "tracegroupgap": 1,
-                }
-            )
-        return fig
+        return data, layout
+
+        # fig = go.Figure(data=data, layout=layout)
+        # fig.update_layout(
+        #     title={
+        #         "text": plot_title,
+        #         "y": 0.1,
+        #         "x": 0.1,
+        #         "xanchor": "left",
+        #         "yanchor": "bottom",
+        #         "font": {"size": 10},
+        #     },
+        # )
+        # if legend and self.colour_label:
+        #     fig.update_layout(
+        #         legend={
+        #             "title": {"text": self.colour_label, "font": {"size": 12}},
+        #             "font": {"size": 10},
+        #             "itemwidth": 30,
+        #             "tracegroupgap": 1,
+        #         }
+        #     )
+        # return fig
 
     def _generate_hover_template(
         self, df: pd.DataFrame, dims: int
