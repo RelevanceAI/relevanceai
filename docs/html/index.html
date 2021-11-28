@@ -111,6 +111,7 @@
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.get">get</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.insert">insert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.list">list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core_api.html#relevanceai.api.centroids.Centroids.metadata">metadata</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core_api.html#relevanceai.api.client.APIClient">APIClient</a></li>
@@ -189,6 +190,8 @@
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.debug">debug</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.error">error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.get_centers">get_centers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs">get_centroid_docs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.success">success</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.CentroidCluster.warn">warn</a></li>
@@ -199,9 +202,11 @@
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.critical">critical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.debug">debug</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.fit_documents">fit_documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.fit_transform">fit_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.to_metadata">to_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.warn">warn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.ClusterBase.warning">warning</a></li>
 </ul>
@@ -233,21 +238,12 @@
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.debug">debug</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.error">error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.get_centers">get_centers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.to_metadata">to_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.warn">warn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMeans.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids">KMedoids</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.KMedoids.warning">warning</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="relevanceai.visualise.html#relevanceai.visualise.cluster.cluster">cluster</a></li>

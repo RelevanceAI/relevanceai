@@ -82,4 +82,7 @@ Attributes
       :property:
 
 
+   .. py:method:: make_search_suggestion(self)
+
+
 
