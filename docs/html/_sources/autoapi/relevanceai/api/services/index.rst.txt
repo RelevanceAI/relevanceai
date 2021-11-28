@@ -28,7 +28,7 @@ Classes
 
    Base class for all relevanceai utilities
 
-   .. py:method:: document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = [], output_format: str = 'json', verbose: bool = True)
+   .. py:method:: document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = [])
 
       Find differences between documents
 

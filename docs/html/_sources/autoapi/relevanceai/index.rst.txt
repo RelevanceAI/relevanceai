@@ -83,9 +83,12 @@ Attributes
       :property:
 
 
+   .. py:method:: make_search_suggestion(self)
+
+
 
 .. py:data:: __version__
-   :annotation: = 0.16.2
+   :annotation: = 0.17.0
 
    
 

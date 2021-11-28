@@ -71,7 +71,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for relevanceai.batch.batch_insert</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Batch operations&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Batch operation&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -97,12 +97,10 @@
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
         <span class="n">retry_chunk_mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">chunksize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">max_retries</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -132,22 +130,20 @@
 <span class="sd">        chunksize : int</span>
 <span class="sd">            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are currently inserting into </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection=</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are currently inserting into </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection=</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># Check if the collection exists</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">bulk_insert_func</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span>
                 <span class="n">dataset_id</span><span class="p">,</span>
                 <span class="n">docs</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                 <span class="n">return_documents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">retries</span><span class="o">=</span><span class="n">max_retries</span><span class="p">,</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
@@ -167,7 +163,6 @@
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
         <span class="n">retry_chunk_mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -206,20 +201,18 @@
 <span class="sd">        chunksize : int</span>
 <span class="sd">            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are currently updating </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection=</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are currently updating </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection=</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">bulk_update_func</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">bulk_update</span><span class="p">(</span>
                 <span class="n">dataset_id</span><span class="p">,</span>
                 <span class="n">docs</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                 <span class="n">return_documents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">retries</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
@@ -244,7 +237,6 @@
         <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
         <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -288,7 +280,7 @@
         <span class="c1"># Trust the process</span>
         <span class="c1"># Get document lengths to calculate iterations</span>
         <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
-            <span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+            <span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span>
         <span class="p">)</span>
 
         <span class="c1"># get the remaining number in case things break</span>
@@ -315,8 +307,7 @@
                 <span class="n">original_collection</span><span class="p">,</span>
                 <span class="n">filters</span><span class="o">=</span><span class="n">retrieve_filters</span><span class="p">,</span>
                 <span class="n">page_size</span><span class="o">=</span><span class="n">retrieve_chunk_size</span><span class="p">,</span>
-                <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span>
             <span class="p">)</span>
 
             <span class="n">documents</span> <span class="o">=</span> <span class="n">orig_json</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
@@ -335,7 +326,6 @@
                 <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span>
                     <span class="n">dataset_id</span><span class="o">=</span><span class="n">original_collection</span><span class="p">,</span>
                     <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
-                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                     <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
                     <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -343,7 +333,6 @@
                 <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span>
                     <span class="n">dataset_id</span><span class="o">=</span><span class="n">updated_collection</span><span class="p">,</span>
                     <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
-                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                     <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
                     <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -353,10 +342,9 @@
             <span class="n">failed_documents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span>
             <span class="n">success_documents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">updated_documents</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">failed_documents</span><span class="p">))</span>
             <span class="n">PULL_UPDATE_PUSH_LOGGER</span><span class="o">.</span><span class="n">log_ids</span><span class="p">(</span><span class="n">success_documents</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Chunk of </span><span class="si">{</span><span class="n">retrieve_chunk_size</span><span class="si">}</span><span class="s2"> original documents updated and uploaded with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed documents!&quot;</span>
-                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Chunk of </span><span class="si">{</span><span class="n">retrieve_chunk_size</span><span class="si">}</span><span class="s2"> original documents updated and uploaded with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed documents!&quot;</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span> 
         
@@ -380,7 +368,6 @@
         <span class="n">max_error</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -413,12 +400,12 @@
             <span class="n">logging_collection</span> <span class="o">=</span> <span class="n">original_collection</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span>
 
         <span class="c1"># Check collections and create completed list if needed</span>
-        <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">logging_collection</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">collection_list</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a logging collection for you.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-                    <span class="n">logging_collection</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+                    <span class="n">logging_collection</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -456,7 +443,7 @@
 
                 <span class="c1"># Get completed documents</span>
                 <span class="n">log_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where_all</span><span class="p">(</span>
-                    <span class="n">logging_collection</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+                    <span class="n">logging_collection</span>
                 <span class="p">)</span>
                 <span class="n">completed_documents_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_json</span><span class="p">]</span>
 
@@ -474,8 +461,7 @@
                     <span class="n">original_collection</span><span class="p">,</span>
                     <span class="n">filters</span><span class="o">=</span><span class="n">retrieve_filters</span><span class="p">,</span>
                     <span class="n">page_size</span><span class="o">=</span><span class="n">retrieve_chunk_size</span><span class="p">,</span>
-                    <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
-                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                    <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span>
                 <span class="p">)</span>
 
                 <span class="n">documents</span> <span class="o">=</span> <span class="n">orig_json</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
@@ -496,7 +482,6 @@
                     <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span>
                         <span class="n">dataset_id</span><span class="o">=</span><span class="n">original_collection</span><span class="p">,</span>
                         <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
-                        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                         <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
                         <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -504,7 +489,6 @@
                     <span class="n">insert_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span>
                         <span class="n">dataset_id</span><span class="o">=</span><span class="n">updated_collection</span><span class="p">,</span>
                         <span class="n">docs</span><span class="o">=</span><span class="n">updated_data</span><span class="p">,</span>
-                        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
                         <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
                         <span class="n">show_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -521,7 +505,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span>
                     <span class="n">logging_collection</span><span class="p">,</span>
                     <span class="n">upload_documents</span><span class="p">,</span>
-                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -562,13 +545,24 @@
         <span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BatchInsert.delete_all_logs"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BatchInsert.delete_all_logs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_all_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchInsert.delete_pull_update_push_logs"><a class="viewcode-back" href="../../../autoapi/relevanceai/batch/batch_insert/index.html#relevanceai.batch.batch_insert.BatchInsert.delete_pull_update_push_logs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_pull_update_push_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
         <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span>
-        <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">i</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">collection_list</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dataset_id</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
-        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dataset_id</span><span class="p">:</span>
+            <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">collection_list</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dataset_id</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">i</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">collection_list</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
+            <span class="p">]</span>
+
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_collections</span><span class="p">]</span>
         <span class="k">return</span></div>
 

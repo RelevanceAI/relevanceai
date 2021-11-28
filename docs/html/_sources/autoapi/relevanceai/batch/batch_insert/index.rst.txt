@@ -5,7 +5,7 @@
 
 .. autoapi-nested-parse::
 
-   Batch operations
+   Batch operation
 
 
 
@@ -47,7 +47,7 @@ Attributes
 
    API Client
 
-   .. py:method:: insert_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, verbose: bool = True, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize=0, max_retries=1, *args, **kwargs)
+   .. py:method:: insert_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize=0, *args, **kwargs)
 
       Insert a list of documents with multi-threading automatically enabled.
 
@@ -72,7 +72,7 @@ Attributes
       :type chunksize: int
 
 
-   .. py:method:: update_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, verbose: bool = True, max_workers: int = 8, retry_chunk_mult: float = 0.5, chunksize: int = 0, show_progress_bar=False, *args, **kwargs)
+   .. py:method:: update_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, chunksize: int = 0, show_progress_bar=False, *args, **kwargs)
 
       Update a list of documents with multi-threading automatically enabled.
       Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
@@ -103,7 +103,7 @@ Attributes
       :type chunksize: int
 
 
-   .. py:method:: pull_update_push(self, original_collection: str, update_function, updated_collection: str = None, log_file: str = None, updating_args: dict = {}, retrieve_chunk_size: int = 100, max_workers: int = 8, filters: list = [], select_fields: list = [], verbose: bool = True, show_progress_bar: bool = True)
+   .. py:method:: pull_update_push(self, original_collection: str, update_function, updated_collection: str = None, log_file: str = None, updating_args: dict = {}, retrieve_chunk_size: int = 100, max_workers: int = 8, filters: list = [], select_fields: list = [], show_progress_bar: bool = True)
 
       Loops through every document in your collection and applies a function (that is specified by you) to the documents.
       These documents are then uploaded into either an updated collection, or back into the original collection.
@@ -125,7 +125,7 @@ Attributes
       :param max_error: How many failed uploads before the function breaks
 
 
-   .. py:method:: pull_update_push_to_cloud(self, original_collection: str, update_function, updated_collection: str = None, logging_collection: str = None, updating_args: dict = {}, retrieve_chunk_size: int = 100, retrieve_chunk_size_failure_retry_multiplier: float = 0.5, number_of_retrieve_retries: int = 3, max_workers: int = 8, max_error: int = 1000, filters: list = [], select_fields: list = [], verbose: bool = True, show_progress_bar: bool = True)
+   .. py:method:: pull_update_push_to_cloud(self, original_collection: str, update_function, updated_collection: str = None, logging_collection: str = None, updating_args: dict = {}, retrieve_chunk_size: int = 100, retrieve_chunk_size_failure_retry_multiplier: float = 0.5, number_of_retrieve_retries: int = 3, max_workers: int = 8, max_error: int = 1000, filters: list = [], select_fields: list = [], show_progress_bar: bool = True)
 
       Loops through every document in your collection and applies a function (that is specified by you) to the documents.
       These documents are then uploaded into either an updated collection, or back into the original collection.
@@ -154,7 +154,7 @@ Attributes
       Insert a dataframe for eachd doc
 
 
-   .. py:method:: delete_all_logs(self, dataset_id)
+   .. py:method:: delete_pull_update_push_logs(self, dataset_id=False)
 
 
    .. py:method:: _write_documents(self, insert_function, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize: int = 0)
