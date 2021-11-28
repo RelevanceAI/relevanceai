@@ -181,7 +181,6 @@ class Centroids(Base):
         vector_field: str,
         alias: str="default",
         metadata: Optional[Dict[str, Any]] = None,
-        output_format: str="json"
     ):
         """
         If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
@@ -209,7 +208,6 @@ class Centroids(Base):
                     "vector_field": vector_field,
                     "alias": alias
                 },
-                output_format=output_format
             )
         else:
             return self.make_http_request(
@@ -221,5 +219,4 @@ class Centroids(Base):
                     "alias": alias,
                     "metadata": metadata
                 },
-                output_format=output_format
             )
