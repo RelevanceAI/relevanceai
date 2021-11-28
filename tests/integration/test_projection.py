@@ -72,3 +72,4 @@ def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
 
 def test_projector_plot_fast(test_client, test_sample_vector_dataset):
     test_client.projector.plot(test_sample_vector_dataset, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
+    assert True
