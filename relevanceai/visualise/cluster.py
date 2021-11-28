@@ -23,10 +23,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
-    ) -> np.ndarray:
+    def fit_transform(self, vectors):
         raise NotImplementedError
     
     def fit_documents(
@@ -54,19 +51,14 @@ class CentroidCluster(ClusterBase):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(
-        self, 
-        vectors: np.ndarray, 
-        cluster_args: Dict[Any, Any],
-        k: Union[None, int] = None
-    ) -> np.ndarray:
+    def fit_transform(self, vectors):
         raise NotImplementedError
     
     @abstractmethod
     def get_centers(self) -> Union[np.ndarray, List[list]]:
         raise NotImplementedError
     
-    def get_centroid_docs(self) -> Union[np.ndarray, List[list]]:
+    def get_centroid_docs(self) -> List:
         """Get the centroid documents
         """
         self.centers = self.get_centers()
@@ -81,12 +73,7 @@ class DensityCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
-    @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
-            min_cluster_size: Union[None, int] = None
-    ) -> np.ndarray:
+    def fit_transform(self, vectors):
         raise NotImplementedError
 
 
@@ -116,11 +103,15 @@ class KMeans(CentroidCluster):
             compute_labels=self.compute_labels,
             max_no_improvement=self.max_no_improvement
         )
+        return
 
     def fit_transform(
         self,
-        vectors: np.ndarray, 
-    ) -> np.ndarray:
+        vectors: Union[np.ndarray, List]
+    ):
+        """
+        Fit and transform transform the vectors
+        """
         if not hasattr(self, "km"):
             self._init_model()
         self.km.fit(vectors)
@@ -133,7 +124,7 @@ class KMeans(CentroidCluster):
         """
         return self.km.cluster_centers_
     
-    def to_metadata(self) -> np.ndarray:
+    def to_metadata(self):
         """Editing the metadata of the function
         """
         return {
@@ -215,7 +206,7 @@ def cluster(
                 or ("n_clusters" not in cluster_args.keys()):
                 k = _choose_k(vectors)
             if cluster == "kmeans":
-                return KMeans().fit_transform(vectors=vectors, cluster_args=cluster_args)
+                return KMeans(**cluster_args).fit_transform(vectors=vectors)
             elif cluster == "kmedoids":
                 raise NotImplementedError
                 # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
@@ -224,4 +215,5 @@ def cluster(
         
     elif isinstance(cluster, ClusterBase):
         return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
+    raise ValueError("Not valid cluster input.")
     
