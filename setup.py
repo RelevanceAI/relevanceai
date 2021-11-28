@@ -66,7 +66,7 @@ dev_vis_requirements = (
 
 from pathlib import Path
 this_directory = Path(__file__).parent
-klong_description = (this_directory / "README.md").read_text()
+long_description = (this_directory / "README.md").read_text()
 
 if os.getenv("_IS_DEV"):
     name = "RelevanceAI-dev"
@@ -77,11 +77,11 @@ else:
 
 setup(
     name=name,
-    version=get_version("relevanceai/__init__.py"),
+    version=version,
     url="https://relevance.ai/",
     author="Relevance AI",
     author_email="dev@relevance.ai",
-    long_description="",
+    long_description=,
     long_description_content_type='text/markdown',
     packages=find_packages(),
     setup_requires=["wheel"],
