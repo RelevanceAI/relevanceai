@@ -33,5 +33,5 @@ def test_cluster_integration(
         alias="kmeans_10",
         cluster_centers=cluster_centers
     )
-    cluster_metadata = cluster.get_metadata()
+    cluster_metadata = cluster.to_metadata()
     assert True

@@ -72,12 +72,16 @@ class CentroidCluster(ClusterBase):
     
     @abstractmethod
     def get_centers(self) -> Union[np.ndarray, List[list]]:
+        """Get centers for the centroid-based clusters
+        """
         raise NotImplementedError
     
     def get_centroid_docs(self) -> List:
         """Get the centroid documents
         """
         self.centers = self.get_centers()
+        if isinstance(self.centers, np.ndarray):
+            self.centers = self.centers.tolist()
         return [
             {
                 "_id": f"cluster_{i}",
