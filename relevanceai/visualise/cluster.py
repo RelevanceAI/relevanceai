@@ -137,7 +137,7 @@ class KMeans(CentroidCluster):
         """Editing the metadata of the function
         """
         return {
-            "k": self,k,
+            "k": self.k,
             "init": self.init,
             "verbose": self.verbose,
             "compute_labels": self.compute_labels,
