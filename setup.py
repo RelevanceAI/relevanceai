@@ -81,7 +81,7 @@ setup(
     url="https://relevance.ai/",
     author="Relevance AI",
     author_email="dev@relevance.ai",
-    long_description=,
+    long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
     setup_requires=["wheel"],
