@@ -68,12 +68,12 @@ from pathlib import Path
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
+name = "RelevanceAI"
+version=get_version("relevanceai/__init__.py")
+
 if os.getenv("_IS_DEV"):
     name = "RelevanceAI-dev"
-    version=get_version("relevanceai/__init__.py")
     version = version + '.' + datetime.now().__str__().replace('-', '.').replace(" ", ".").replace(":", ".")
-else:
-    name = "RelevanceAI"
 
 setup(
     name=name,
