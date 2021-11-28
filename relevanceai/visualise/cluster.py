@@ -24,6 +24,8 @@ class ClusterBase(LoguruLogger, DocUtils):
 
     @abstractmethod
     def fit_transform(self, vectors):
+        """Return the 
+        """
         raise NotImplementedError
     
     def fit_documents(
@@ -33,11 +35,17 @@ class ClusterBase(LoguruLogger, DocUtils):
         alias: str="default"
     ):
         """
-        Train clustering algorithm on documents and then return useful information
+        Train clustering algorithm on documents and then return useful information.
         """
-        vectors = self.get_fields_across_documents(vector_field, docs)
-        docs = self.set_field_across_documents(
-            f"_clusters_.{vector_field}.{alias}", vectors, docs
+        if len(vector_field) == 1:
+            vectors = self.get_field_across_documents(vector_field[0], docs)
+        else:
+            raise ValueError("We currently do not support more than 1 vector field yet. This will be supported in the future.")
+        cluster_labels = self.fit_transform(vectors)
+        # Label the clusters
+        cluster_labels = self._label_clusters(cluster_labels)
+        self.set_field_across_documents(
+            f"_clusters_.{vector_field}.{alias}", cluster_labels, docs
         )
         return docs
 
@@ -45,6 +53,14 @@ class ClusterBase(LoguruLogger, DocUtils):
         """You can also store the metadata of this clustering algorithm
         """
         raise NotImplementedError
+    
+    def _label_cluster(self, label: Union[int, str]):
+        if isinstance(label, (int, float)):
+            return "_cluster_" + str(label)
+        return label
+
+    def _label_clusters(self, labels):
+        return [self._label_cluster(x) for x in labels]
 
 class CentroidCluster(ClusterBase):
     def __call__(self, *args, **kwargs):

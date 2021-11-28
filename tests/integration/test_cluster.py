@@ -9,10 +9,14 @@ def test_cluster_integration(
     """
     # Retrieve a previous dataset 
     docs = test_client.datasets.documents.list(test_sample_vector_dataset)
+
+    # check if docs are inserted
+    if len(docs['documents']) == 0:
+        raise ValueError("Missing docs")
     cluster = KMeans(k=10)
     # Now when we want to fit the documents
     docs['documents'] = cluster.fit_documents(
-        ["sample_1_vector_"], 
+        ["sample_1_vector_"],
         docs['documents']
     )
     test_client.update_documents(
