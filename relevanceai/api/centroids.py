@@ -226,7 +226,7 @@ class Centroids(Base):
                 parameters={
                     "dataset_id": dataset_id,
                     "vector_field": vector_field,
-                    "alias": alias
+                    "alias": alias,
                     "metadata": metadata
                 },
                 output_format=output_format
