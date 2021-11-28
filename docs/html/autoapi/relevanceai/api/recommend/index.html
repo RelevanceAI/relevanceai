@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.api.recommend &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.recommend</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/relevanceai/api/recommend/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.api.recommend">
+<span id="relevanceai-api-recommend"></span><h1><a class="reference internal" href="../../../../core_api.html#module-relevanceai.api.recommend" title="relevanceai.api.recommend"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.recommend</span></code></a><a class="headerlink" href="#module-relevanceai.api.recommend" title="Permalink to this headline"></a></h1>
+<p>Recommmend services.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../core_api.html#relevanceai.api.recommend.Recommend" title="relevanceai.api.recommend.Recommend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Recommend</span></code></a></p></td>
+<td><p>Base class for all relevanceai utilities</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.api.recommend.Recommend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.recommend.</span></span><span class="sig-name descname"><span class="pre">Recommend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/recommend.html#Recommend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.recommend.Recommend" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a></p>
+<p>Base class for all relevanceai utilities</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.recommend.Recommend.vector">
+<span class="sig-name descname"><span class="pre">vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/recommend.html#Recommend.vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.recommend.Recommend.vector" title="Permalink to this definition"></a></dt>
+<dd><p>Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations.</p>
+<p>Here are a couple of different scenarios and what the queries would look like for those:</p>
+<p>Recommendations Personalized by single liked product:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; Document ID A Vector = Search Query</p>
+<p>Recommendations Personalized by multiple liked product:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; Document ID A Vector + Document ID B Vector = Search Query</p>
+<p>Recommendations Personalized by multiple liked product and disliked products:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">],</span> <span class="n">negative_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; (Document ID A Vector + Document ID B Vector) - (Document ID C Vector + Document ID C Vector) = Search Query</p>
+<p>Recommendations Personalized by multiple liked product and disliked products with weights:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span> <span class="n">negative_document_ids</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mf">0.4</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>-&gt; (Document ID A Vector * 0.5 + Document ID B Vector * 1) - (Document ID C Vector * 0.6 + Document ID D Vector * 0.4) = Search Query</p>
+<p>You can change the operator between vectors with vector_operation:</p>
+<p>e.g. &gt;&gt;&gt; positive_document_ids=[‘A’, ‘B’], negative_document_ids=[‘C’, ‘D’], vector_operation=’multiply’</p>
+<p>-&gt; (Document ID A Vector * Document ID B Vector) - (Document ID C Vector * Document ID D Vector) = Search Query</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>vector_fields</strong> (<em>list</em>) – The vector field to search in. It can either be an array of strings (automatically equally weighted) (e.g. [’<a href="#id1"><span class="problematic" id="id2">check_vector_</span></a>’, ‘<a href="#id3"><span class="problematic" id="id4">yellow_vector_</span></a>’]) or it is a dictionary mapping field to float where the weighting is explicitly specified (e.g. {’<a href="#id5"><span class="problematic" id="id6">check_vector_</span></a>’: 0.2, ‘<a href="#id7"><span class="problematic" id="id8">yellow_vector_</span></a>’: 0.5})</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.recommend.Recommend.diversity">
+<span class="sig-name descname"><span class="pre">diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_document_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximation_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_search_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hundred_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_history_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/recommend.html#Recommend.diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.recommend.Recommend.diversity" title="Permalink to this definition"></a></dt>
+<dd><p>Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations.</p>
+<p>Diversity recommendation increases the variety within the recommendations via clustering. Search results are clustered and the top k items in each cluster are selected. The main clustering parameters are cluster_vector_field and n_clusters, the vector field on which to perform clustering and number of clusters respectively.</p>
+<p>Here are a couple of different scenarios and what the queries would look like for those:</p>
+<p>Recommendations Personalized by single liked product:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; Document ID A Vector = Search Query</p>
+<p>Recommendations Personalized by multiple liked product:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; Document ID A Vector + Document ID B Vector = Search Query</p>
+<p>Recommendations Personalized by multiple liked product and disliked products:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">],</span> <span class="n">negative_document_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>-&gt; (Document ID A Vector + Document ID B Vector) - (Document ID C Vector + Document ID C Vector) = Search Query</p>
+<p>Recommendations Personalized by multiple liked product and disliked products with weights:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">positive_document_ids</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span> <span class="n">negative_document_ids</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mf">0.4</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>-&gt; (Document ID A Vector * 0.5 + Document ID B Vector * 1) - (Document ID C Vector * 0.6 + Document ID D Vector * 0.4) = Search Query</p>
+<p>You can change the operator between vectors with vector_operation:</p>
+<p>e.g. &gt;&gt;&gt; positive_document_ids=[‘A’, ‘B’], negative_document_ids=[‘C’, ‘D’], vector_operation=’multiply’</p>
+<p>-&gt; (Document ID A Vector * Document ID B Vector) - (Document ID C Vector * Document ID D Vector) = Search Query</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>cluster_vector_field</strong> (<em>str</em>) – The field to cluster on.</p></li>
+<li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters to be specified.</p></li>
+<li><p><strong>positive_document_ids</strong> (<em>dict</em>) – Positive document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>negative_document_ids</strong> (<em>dict</em>) – Negative document IDs to personalize the results with, this will retrive the vectors from the document IDs and consider it in the operation.</p></li>
+<li><p><strong>vector_fields</strong> (<em>list</em>) – The vector field to search in. It can either be an array of strings (automatically equally weighted) (e.g. [’<a href="#id9"><span class="problematic" id="id10">check_vector_</span></a>’, ‘<a href="#id11"><span class="problematic" id="id12">yellow_vector_</span></a>’]) or it is a dictionary mapping field to float where the weighting is explicitly specified (e.g. {’<a href="#id13"><span class="problematic" id="id14">check_vector_</span></a>’: 0.2, ‘<a href="#id15"><span class="problematic" id="id16">yellow_vector_</span></a>’: 0.5})</p></li>
+<li><p><strong>approximation_depth</strong> (<em>int</em>) – Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.</p></li>
+<li><p><strong>vector_operation</strong> (<em>string</em>) – Aggregation for the vectors when using positive and negative document IDs, choose from [‘mean’, ‘sum’, ‘min’, ‘max’, ‘divide’, ‘mulitple’]</p></li>
+<li><p><strong>sum_fields</strong> (<em>bool</em>) – Whether to sum the multiple vectors similarity search score as 1 or seperate</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>similarity_metric</strong> (<em>string</em>) – Similarity Metric, choose from [‘cosine’, ‘l1’, ‘l2’, ‘dp’]</p></li>
+<li><p><strong>facets</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>min_score</strong> (<em>int</em>) – Minimum score for similarity metric</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>include_count</strong> (<em>bool</em>) – Include the total count of results in the search results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>keep_search_history</strong> (<em>bool</em>) – Whether to store the history into VecDB. This will increase the storage costs over time.</p></li>
+<li><p><strong>hundred_scale</strong> (<em>bool</em>) – Whether to scale up the metric by 100</p></li>
+<li><p><strong>search_history_id</strong> (<em>str</em>) – Search history ID, only used for storing search histories.</p></li>
+<li><p><strong>n_init</strong> (<em>int</em>) – Number of runs to run with different centroid seeds</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Number of iterations in each run</p></li>
+<li><p><strong>return_as_clusters</strong> (<em>bool</em>) – If True, return as clusters as opposed to results list</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

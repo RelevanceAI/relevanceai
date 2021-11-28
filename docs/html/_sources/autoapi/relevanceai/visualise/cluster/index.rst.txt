@@ -1,0 +1,175 @@
+:py:mod:`relevanceai.visualise.cluster`
+=======================================
+
+.. py:module:: relevanceai.visualise.cluster
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.cluster.ClusterBase
+   relevanceai.visualise.cluster.CentroidCluster
+   relevanceai.visualise.cluster.DensityCluster
+   relevanceai.visualise.cluster.KMeans
+   relevanceai.visualise.cluster.HDBSCAN
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.visualise.cluster._choose_k
+   relevanceai.visualise.cluster.cluster
+
+
+
+.. py:class:: ClusterBase
+
+   Bases: :py:obj:`relevanceai.logger.LoguruLogger`, :py:obj:`doc_utils.DocUtils`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
+
+
+   .. py:method:: fit_transform(self, vectors)
+      :abstractmethod:
+
+      Return the
+
+
+
+   .. py:method:: fit_documents(self, vector_field: list, docs: list, alias: str = 'default', cluster_field: str = '_clusters_')
+
+      Train clustering algorithm on documents and then store the labels
+      inside the documents.
+
+      :param vector_field: The vector field of the documents
+      :type vector_field: list
+      :param docs: List of documents to run clustering on
+      :type docs: list
+      :param alias: What the clusters can be called
+      :type alias: str
+      :param cluster_field: What the cluster fields should be called
+      :type cluster_field: str
+
+
+   .. py:method:: to_metadata(self)
+      :abstractmethod:
+
+      You can also store the metadata of this clustering algorithm
+
+
+
+   .. py:method:: _label_cluster(self, label: Union[int, str])
+
+
+   .. py:method:: _label_clusters(self, labels)
+
+
+
+.. py:class:: CentroidCluster
+
+   Bases: :py:obj:`ClusterBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
+
+
+   .. py:method:: fit_transform(self, vectors)
+      :abstractmethod:
+
+      Return the
+
+
+
+   .. py:method:: get_centers(self) -> Union[numpy.ndarray, List[list]]
+      :abstractmethod:
+
+      Get centers for the centroid-based clusters
+
+
+
+   .. py:method:: get_centroid_docs(self) -> List
+
+      Get the centroid documents to store.
+
+
+
+
+.. py:class:: DensityCluster
+
+   Bases: :py:obj:`ClusterBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
+
+
+   .. py:method:: fit_transform(self, vectors)
+      :abstractmethod:
+
+      Return the
+
+
+
+
+.. py:class:: KMeans(k: Union[None, int] = 10, init: str = 'k-means++', verbose: bool = True, compute_labels: bool = True, max_no_improvement: int = 2)
+
+   Bases: :py:obj:`CentroidCluster`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: _init_model(self)
+
+
+   .. py:method:: fit_transform(self, vectors: Union[numpy.ndarray, List])
+
+      Fit and transform transform the vectors
+
+
+   .. py:method:: get_centers(self) -> numpy.ndarray
+
+      Returns a numpy array of clusters
+
+
+
+   .. py:method:: to_metadata(self)
+
+      Editing the metadata of the function
+
+
+
+
+.. py:class:: HDBSCAN
+
+   Bases: :py:obj:`DensityCluster`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['hdbscan'], min_cluster_size: Union[None, int] = 10) -> numpy.ndarray
+
+      Return the
+
+
+
+
+.. py:function:: _choose_k(vectors: numpy.ndarray)
+
+   "
+   Choose k clusters
+
+
+.. py:function:: cluster(vectors: numpy.ndarray, cluster: Union[relevanceai.visualise.constants.CLUSTER, ClusterBase], cluster_args: Union[None, dict], k: Union[None, int] = None) -> numpy.ndarray
+
+   Cluster vectors
+
+

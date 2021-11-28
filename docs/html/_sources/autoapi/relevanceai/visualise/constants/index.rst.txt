@@ -1,0 +1,34 @@
+:py:mod:`relevanceai.visualise.constants`
+=========================================
+
+.. py:module:: relevanceai.visualise.constants
+
+
+Module Contents
+---------------
+
+.. py:data:: dict
+   
+
+   
+
+.. py:data:: DIM_REDUCTION
+   
+
+   
+
+.. py:data:: DIM_REDUCTION_DEFAULT_ARGS
+   :annotation: :Dict[Any, Any]
+
+   
+
+.. py:data:: CLUSTER
+   
+
+   
+
+.. py:data:: CLUSTER_DEFAULT_ARGS
+   :annotation: :Dict[Any, Any]
+
+   
+

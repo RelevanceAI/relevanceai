@@ -1,0 +1,291 @@
+:py:mod:`relevanceai.api.datasets`
+==================================
+
+.. py:module:: relevanceai.api.datasets
+
+.. autoapi-nested-parse::
+
+   All Dataset related functions
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.api.datasets.Datasets
+
+
+
+
+.. py:class:: Datasets(project: str, api_key: str, base_url: str)
+
+   Bases: :py:obj:`relevanceai.base.Base`
+
+   All dataset-related functions
+
+   .. py:method:: schema(self, dataset_id: str)
+
+      Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+
+
+   .. py:method:: metadata(self, dataset_id: str)
+
+      Retreives metadata about a dataset. Notably description, data source, etc
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+
+
+   .. py:method:: create(self, dataset_id: str, schema: dict = {})
+
+      A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
+      A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema.
+
+
+      For example:
+
+      >>>    {
+      >>>        "product_image_vector_": 1024,
+      >>>        "product_text_description_vector_" : 128
+      >>>    }
+
+      These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"].
+
+
+      For example:
+
+      >>>    {
+      >>>        "product_text_description" : "text",
+      >>>        "price" : "numeric",
+      >>>        "created_date" : "date",
+      >>>        "product_texts_chunk_": "chunks",
+      >>>        "product_text_chunkvector_" : 1024
+      >>>    }
+
+      You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents.
+
+
+      .. note::
+
+         - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
+         - "_id" is reserved as the key and id of a document.
+         - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
+
+      For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param schema: Schema for specifying the field that are vectors and its length
+      :type schema: dict
+
+
+   .. py:method:: list(self)
+
+      List all datasets in a project that you are authorized to read/write.
+
+
+   .. py:method:: list_all(self, include_schema: bool = True, include_stats: bool = True, include_metadata: bool = True, include_schema_stats: bool = False, include_vector_health: bool = False, include_active_jobs: bool = False, dataset_ids: list = [], sort_by_created_at_date: bool = False, asc: bool = False, page_size: int = 20, page: int = 1)
+
+      Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
+
+      - Schema - Data schema of a dataset (same as dataset.schema).
+      - Metadata - Metadata of a dataset (same as dataset.metadata).
+      - Stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
+      - Vector_health - Number of zero vectors stored (same as dataset.health).
+      - Schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
+      - Active_jobs - All active jobs/tasks on the dataset.
+
+      :param include_schema: Whether to return schema
+      :type include_schema: bool
+      :param include_stats: Whether to return stats
+      :type include_stats: bool
+      :param include_metadata: Whether to return metadata
+      :type include_metadata: bool
+      :param include_vector_health: Whether to return vector_health
+      :type include_vector_health: bool
+      :param include_schema_stats: Whether to return schema_stats
+      :type include_schema_stats: bool
+      :param include_active_jobs: Whether to return active_jobs
+      :type include_active_jobs: bool
+      :param dataset_ids: List of dataset IDs
+      :type dataset_ids: list
+      :param sort_by_created_at_date: Sort by created at date. By default shows the newest datasets. Set asc=False to get oldest dataset.
+      :type sort_by_created_at_date: bool
+      :param asc: Whether to sort results by ascending or descending order
+      :type asc: bool
+      :param page_size: Size of each page of results
+      :type page_size: int
+      :param page: Page of the results
+      :type page: int
+
+
+   .. py:method:: facets(self, dataset_id, fields: list = [], date_interval: str = 'monthly', page_size: int = 5, page: int = 1, asc: bool = False)
+
+      Takes a high level aggregation of every field, return their unique values and frequencies. This is used to help create the filter bar for search.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param fields: Fields to include in the facets, if [] then all
+      :type fields: list
+      :param date_interval: Interval for date facets
+      :type date_interval: str
+      :param page_size: Size of facet page
+      :type page_size: int
+      :param page: Page of the results
+      :type page: int
+      :param asc: Whether to sort results by ascending or descending order
+      :type asc: bool
+
+
+   .. py:method:: check_missing_ids(self, dataset_id, ids)
+
+      Look up in bulk if the ids exists in the dataset, returns all the missing one as a list.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param ids: IDs of documents
+      :type ids: list
+
+
+   .. py:method:: insert(self, dataset_id: str, document: dict, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True)
+
+      Insert a single documents
+
+      - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+      - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+      - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+      - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+
+      Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+
+
+      Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
+
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param documents: A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+      :type documents: list
+      :param insert_date: Whether to include insert date as a field 'insert_date_'.
+      :type insert_date: bool
+      :param overwrite: Whether to overwrite document if it exists.
+      :type overwrite: bool
+      :param update_schema: Whether the api should check the documents for vector datatype to update the schema.
+      :type update_schema: bool
+
+
+   .. py:method:: bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, field_transformers=[], return_documents: bool = False, base_url='https://ingest-api-dev-aueast.relevance.ai/latest')
+
+      Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+
+      - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+      - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+      - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+      - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+      - Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param documents: A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+      :type documents: list
+      :param insert_date: Whether to include insert date as a field 'insert_date_'.
+      :type insert_date: bool
+      :param overwrite: Whether to overwrite document if it exists.
+      :type overwrite: bool
+      :param update_schema: Whether the api should check the documents for vector datatype to update the schema.
+      :type update_schema: bool
+      :param include_inserted_ids: Include the inserted IDs in the response
+      :type include_inserted_ids: bool
+      :param field_transformers: An example field_transformers object:
+
+                                 >>> {
+                                 >>>    "field": "string",
+                                 >>>    "output_field": "string",
+                                 >>>    "remove_html": true,
+                                 >>>    "split_sentences": true
+                                 >>> }
+      :type field_transformers: list
+
+
+   .. py:method:: delete(self, dataset_id: str, confirm: bool = False)
+
+      Delete a dataset
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+
+
+   .. py:method:: clone(self, old_dataset: str, new_dataset: str, schema: dict = {}, rename_fields: dict = {}, remove_fields: list = [], filters: list = [])
+
+      Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.
+
+      :param old_dataset: Unique name of old dataset to copy from
+      :type old_dataset: string
+      :param new_dataset: Unique name of new dataset to copy to
+      :type new_dataset: string
+      :param schema: Schema for specifying the field that are vectors and its length
+      :type schema: dict
+      :param rename_fields: Fields to rename {'old_field': 'new_field'}. Defaults to no renames
+      :type rename_fields: dict
+      :param remove_fields: Fields to remove ['random_field', 'another_random_field']. Defaults to no removes
+      :type remove_fields: list
+      :param filters: Query for filtering the search results
+      :type filters: list
+
+
+   .. py:method:: search(self, query, sort_by_created_at_date: bool = False, asc: bool = False)
+
+      Search datasets by their names with a traditional keyword search.
+
+      :param query: Any string that belongs to part of a dataset.
+      :type query: string
+      :param sort_by_created_at_date: Sort by created at date. By default shows the newest datasets. Set asc=False to get oldest dataset.
+      :type sort_by_created_at_date: bool
+      :param asc: Whether to sort results by ascending or descending order
+      :type asc: bool
+
+
+   .. py:method:: vectorize(self, dataset_id: str, model_id: str, fields: list = [], filters: list = [], refresh: bool = False, alias: str = 'default', chunksize: int = 20, chunk_field: str = None)
+
+      Queue the encoding of a dataset using the method given by model_id.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param model_id: Model ID to use for vectorizing (encoding.)
+      :type model_id: string
+      :param fields: Fields to remove ['random_field', 'another_random_field']. Defaults to no removes
+      :type fields: list
+      :param filters: Filters to run against
+      :type filters: list
+      :param refresh: If True, re-runs encoding on whole dataset.
+      :type refresh: bool
+      :param alias: Alias used to name a vector field. Belongs in field_{alias}vector
+      :type alias: string
+      :param chunksize: Batch for each encoding. Change at your own risk.
+      :type chunksize: int
+      :param chunk_field: The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.
+      :type chunk_field: string
+
+
+   .. py:method:: task_status(self, dataset_id: str, task_id: str)
+
+      Check the status of an existing encoding task on the given dataset.
+
+
+      The required task_id was returned in the original encoding request such as datasets.vectorize.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param task_id: The task ID of the earlier queued vectorize task
+      :type task_id: string
+
+
+

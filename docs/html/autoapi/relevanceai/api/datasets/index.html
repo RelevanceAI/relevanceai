@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.api.datasets &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core_api.html">Core Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.datasets</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/relevanceai/api/datasets/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.api.datasets">
+<span id="relevanceai-api-datasets"></span><h1><a class="reference internal" href="#module-relevanceai.api.datasets" title="relevanceai.api.datasets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.datasets</span></code></a><a class="headerlink" href="#module-relevanceai.api.datasets" title="Permalink to this headline"></a></h1>
+<p>All Dataset related functions</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.api.datasets.Datasets" title="relevanceai.api.datasets.Datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Datasets</span></code></a></p></td>
+<td><p>All dataset-related functions</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.datasets.</span></span><span class="sig-name descname"><span class="pre">Datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a></p>
+<p>All dataset-related functions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.schema" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Retreives metadata about a dataset. Notably description, data source, etc</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.create" title="Permalink to this definition"></a></dt>
+<dd><p>A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
+A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) “_vector_” for the field name, and specify the length of the vector in dataset_schema.</p>
+<p>For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span>   <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;product_image_vector_&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;product_text_description_vector_&quot;</span> <span class="p">:</span> <span class="mi">128</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="p">}</span>
+</pre></div>
+</div>
+<p>These are the field types supported in our datasets: [“text”, “numeric”, “date”, “dict”, “chunks”, “vector”, “chunkvector”].</p>
+<p>For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span>   <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;product_text_description&quot;</span> <span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;price&quot;</span> <span class="p">:</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;created_date&quot;</span> <span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;product_texts_chunk_&quot;</span><span class="p">:</span> <span class="s2">&quot;chunks&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>       <span class="s2">&quot;product_text_chunkvector_&quot;</span> <span class="p">:</span> <span class="mi">1024</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="p">}</span>
+</pre></div>
+</div>
+<p>You don’t have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its “_vector_” suffix). Infact you also don’t always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>A dataset name/id can only contain undercase letters, dash, underscore and numbers.</p></li>
+<li><p>“_id” is reserved as the key and id of a document.</p></li>
+<li><p>Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.</p></li>
+</ul>
+</div>
+<p>For more information about vectors check out the ‘Vectorizing’ section, services.search.vector or out blog at <a class="reference external" href="https://relevance.ai/blog">https://relevance.ai/blog</a>. For more information about chunks and chunk vectors check out services.search.chunk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>schema</strong> (<em>dict</em>) – Schema for specifying the field that are vectors and its length</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.list" title="Permalink to this definition"></a></dt>
+<dd><p>List all datasets in a project that you are authorized to read/write.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.list_all">
+<span class="sig-name descname"><span class="pre">list_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_schema_stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector_health</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_active_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by_created_at_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.list_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.list_all" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a page of datasets and in detail the dataset’s associated information that you are authorized to read/write. The information includes:</p>
+<ul class="simple">
+<li><p>Schema - Data schema of a dataset (same as dataset.schema).</p></li>
+<li><p>Metadata - Metadata of a dataset (same as dataset.metadata).</p></li>
+<li><p>Stats - Statistics of number of documents and size of a dataset (same as dataset.stats).</p></li>
+<li><p>Vector_health - Number of zero vectors stored (same as dataset.health).</p></li>
+<li><p>Schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).</p></li>
+<li><p>Active_jobs - All active jobs/tasks on the dataset.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_schema</strong> (<em>bool</em>) – Whether to return schema</p></li>
+<li><p><strong>include_stats</strong> (<em>bool</em>) – Whether to return stats</p></li>
+<li><p><strong>include_metadata</strong> (<em>bool</em>) – Whether to return metadata</p></li>
+<li><p><strong>include_vector_health</strong> (<em>bool</em>) – Whether to return vector_health</p></li>
+<li><p><strong>include_schema_stats</strong> (<em>bool</em>) – Whether to return schema_stats</p></li>
+<li><p><strong>include_active_jobs</strong> (<em>bool</em>) – Whether to return active_jobs</p></li>
+<li><p><strong>dataset_ids</strong> (<em>list</em>) – List of dataset IDs</p></li>
+<li><p><strong>sort_by_created_at_date</strong> (<em>bool</em>) – Sort by created at date. By default shows the newest datasets. Set asc=False to get oldest dataset.</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of each page of results</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.facets">
+<span class="sig-name descname"><span class="pre">facets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'monthly'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.facets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.facets" title="Permalink to this definition"></a></dt>
+<dd><p>Takes a high level aggregation of every field, return their unique values and frequencies. This is used to help create the filter bar for search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>fields</strong> (<em>list</em>) – Fields to include in the facets, if [] then all</p></li>
+<li><p><strong>date_interval</strong> (<em>str</em>) – Interval for date facets</p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – Size of facet page</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page of the results</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.check_missing_ids">
+<span class="sig-name descname"><span class="pre">check_missing_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.check_missing_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.check_missing_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Look up in bulk if the ids exists in the dataset, returns all the missing one as a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>ids</strong> (<em>list</em>) – IDs of documents</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.insert" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a single documents</p>
+<ul class="simple">
+<li><p>When inserting the document you can optionally specify your own id for a document by using the field name “_id”, if not specified a random id is assigned.</p></li>
+<li><p>When inserting or specifying vectors in a document use the suffix (ends with) “_vector_” for the field name. e.g. “<a href="#id1"><span class="problematic" id="id2">product_description_vector_</span></a>”.</p></li>
+<li><p>When inserting or specifying chunks in a document the suffix (ends with) “_chunk_” for the field name. e.g. “<a href="#id3"><span class="problematic" id="id4">products_chunk_</span></a>”.</p></li>
+<li><p>When inserting or specifying chunk vectors in a document’s chunks use the suffix (ends with) “_chunkvector_” for the field name. e.g. “<a href="#id5"><span class="problematic" id="id6">products_chunk_</span></a>.product_description_chunkvector_”.</p></li>
+</ul>
+<p>Documentation can be found here: <a class="reference external" href="https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode">https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</a></p>
+<p>Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>documents</strong> (<em>list</em>) – A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p></li>
+<li><p><strong>insert_date</strong> (<em>bool</em>) – Whether to include insert date as a field ‘<a href="#id7"><span class="problematic" id="id8">insert_date_</span></a>’.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – Whether to overwrite document if it exists.</p></li>
+<li><p><strong>update_schema</strong> (<em>bool</em>) – Whether the api should check the documents for vector datatype to update the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.bulk_insert">
+<span class="sig-name descname"><span class="pre">bulk_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_transformers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://ingest-api-dev-aueast.relevance.ai/latest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.bulk_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.bulk_insert" title="Permalink to this definition"></a></dt>
+<dd><p>Documentation can be found here: <a class="reference external" href="https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode">https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</a></p>
+<ul class="simple">
+<li><p>When inserting the document you can optionally specify your own id for a document by using the field name “_id”, if not specified a random id is assigned.</p></li>
+<li><p>When inserting or specifying vectors in a document use the suffix (ends with) “_vector_” for the field name. e.g. “<a href="#id9"><span class="problematic" id="id10">product_description_vector_</span></a>”.</p></li>
+<li><p>When inserting or specifying chunks in a document the suffix (ends with) “_chunk_” for the field name. e.g. “<a href="#id11"><span class="problematic" id="id12">products_chunk_</span></a>”.</p></li>
+<li><p>When inserting or specifying chunk vectors in a document’s chunks use the suffix (ends with) “_chunkvector_” for the field name. e.g. “<a href="#id13"><span class="problematic" id="id14">products_chunk_</span></a>.product_description_chunkvector_”.</p></li>
+<li><p>Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>documents</strong> (<em>list</em>) – A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p></li>
+<li><p><strong>insert_date</strong> (<em>bool</em>) – Whether to include insert date as a field ‘<a href="#id15"><span class="problematic" id="id16">insert_date_</span></a>’.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – Whether to overwrite document if it exists.</p></li>
+<li><p><strong>update_schema</strong> (<em>bool</em>) – Whether the api should check the documents for vector datatype to update the schema.</p></li>
+<li><p><strong>include_inserted_ids</strong> (<em>bool</em>) – Include the inserted IDs in the response</p></li>
+<li><p><strong>field_transformers</strong> (<em>list</em>) – <p>An example field_transformers object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;output_field&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;remove_html&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;split_sentences&quot;</span><span class="p">:</span> <span class="n">true</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confirm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.clone" title="Permalink to this definition"></a></dt>
+<dd><p>Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_dataset</strong> (<em>string</em>) – Unique name of old dataset to copy from</p></li>
+<li><p><strong>new_dataset</strong> (<em>string</em>) – Unique name of new dataset to copy to</p></li>
+<li><p><strong>schema</strong> (<em>dict</em>) – Schema for specifying the field that are vectors and its length</p></li>
+<li><p><strong>rename_fields</strong> (<em>dict</em>) – Fields to rename {‘old_field’: ‘new_field’}. Defaults to no renames</p></li>
+<li><p><strong>remove_fields</strong> (<em>list</em>) – Fields to remove [‘random_field’, ‘another_random_field’]. Defaults to no removes</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by_created_at_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.search" title="Permalink to this definition"></a></dt>
+<dd><p>Search datasets by their names with a traditional keyword search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>string</em>) – Any string that belongs to part of a dataset.</p></li>
+<li><p><strong>sort_by_created_at_date</strong> (<em>bool</em>) – Sort by created at date. By default shows the newest datasets. Set asc=False to get oldest dataset.</p></li>
+<li><p><strong>asc</strong> (<em>bool</em>) – Whether to sort results by ascending or descending order</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.vectorize">
+<span class="sig-name descname"><span class="pre">vectorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#relevanceai.api.datasets.Datasets.list" title="relevanceai.api.datasets.Datasets.list"><span class="pre">list</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.vectorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.vectorize" title="Permalink to this definition"></a></dt>
+<dd><p>Queue the encoding of a dataset using the method given by model_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>model_id</strong> (<em>string</em>) – Model ID to use for vectorizing (encoding.)</p></li>
+<li><p><strong>fields</strong> (<em>list</em>) – Fields to remove [‘random_field’, ‘another_random_field’]. Defaults to no removes</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Filters to run against</p></li>
+<li><p><strong>refresh</strong> (<em>bool</em>) – If True, re-runs encoding on whole dataset.</p></li>
+<li><p><strong>alias</strong> (<em>string</em>) – Alias used to name a vector field. Belongs in field_{alias}vector</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – Batch for each encoding. Change at your own risk.</p></li>
+<li><p><strong>chunk_field</strong> (<em>string</em>) – The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.datasets.Datasets.task_status">
+<span class="sig-name descname"><span class="pre">task_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/datasets.html#Datasets.task_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.datasets.Datasets.task_status" title="Permalink to this definition"></a></dt>
+<dd><p>Check the status of an existing encoding task on the given dataset.</p>
+<p>The required task_id was returned in the original encoding request such as datasets.vectorize.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>task_id</strong> (<em>string</em>) – The task ID of the earlier queued vectorize task</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

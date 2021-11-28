@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batch Processing &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Visualisations" href="relevanceai.visualise.html" />
+    <link rel="prev" title="Core Features" href="core_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core Features</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Batch Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#relevanceai.batch.batch_insert.BatchInsert">BatchInsert</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.batch_insert.BatchInsert.insert_df">insert_df</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.batch_insert.BatchInsert.insert_documents">insert_documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.batch_insert.BatchInsert.pull_update_push">pull_update_push</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">pull_update_push_to_cloud</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.batch_insert.BatchInsert.update_documents">update_documents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#relevanceai.batch.chunk.Chunker">Chunker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.chunk.Chunker.chunk">chunk</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#relevanceai.batch.client.BatchAPIClient">BatchAPIClient</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.batch.client.BatchAPIClient.batch_get_and_edit">batch_get_and_edit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Batch Processing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/relevanceai.batch.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.batch.batch_insert">
+<span id="batch-processing"></span><h1>Batch Processing<a class="headerlink" href="#module-relevanceai.batch.batch_insert" title="Permalink to this headline"></a></h1>
+<p>Batch operation</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.batch.batch_insert.BatchInsert">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.batch.batch_insert.</span></span><span class="sig-name descname"><span class="pre">BatchInsert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/batch_insert.html#BatchInsert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.batch_insert.BatchInsert.insert_df">
+<span class="sig-name descname"><span class="pre">insert_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/batch_insert.html#BatchInsert.insert_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.insert_df" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a dataframe for eachd doc</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.batch_insert.BatchInsert.insert_documents">
+<span class="sig-name descname"><span class="pre">insert_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_chunk_mult</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/batch_insert.html#BatchInsert.insert_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.insert_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Insert a list of documents with multi-threading automatically enabled.</p>
+<ul class="simple">
+<li><p>When inserting the document you can optionally specify your own id for a document by using the field name “_id”, if not specified a random id is assigned.</p></li>
+<li><p>When inserting or specifying vectors in a document use the suffix (ends with) “_vector_” for the field name. e.g. “<a href="#id1"><span class="problematic" id="id2">product_description_vector_</span></a>”.</p></li>
+<li><p>When inserting or specifying chunks in a document the suffix (ends with) “_chunk_” for the field name. e.g. “<a href="#id3"><span class="problematic" id="id4">products_chunk_</span></a>”.</p></li>
+<li><p>When inserting or specifying chunk vectors in a document’s chunks use the suffix (ends with) “_chunkvector_” for the field name. e.g. “<a href="#id5"><span class="problematic" id="id6">products_chunk_</span></a>.product_description_chunkvector_”.</p></li>
+</ul>
+<p>Documentation can be found here: <a class="reference external" href="https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode">https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>docs</strong> (<em>list</em>) – A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p></li>
+<li><p><strong>bulk_fn</strong> (<em>callable</em>) – Function to apply to documents before uploading</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of workers active for multi-threading</p></li>
+<li><p><strong>retry_chunk_mult</strong> (<em>int</em>) – Multiplier to apply to chunksize if upload fails</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.batch_insert.BatchInsert.pull_update_push">
+<span class="sig-name descname"><span class="pre">pull_update_push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updating_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/batch_insert.html#BatchInsert.pull_update_push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.pull_update_push" title="Permalink to this definition"></a></dt>
+<dd><p>Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+These documents are then uploaded into either an updated collection, or back into the original collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_collection</strong> (<em>string</em>) – The dataset_id of the collection where your original documents are</p></li>
+<li><p><strong>logging_collection</strong> (<em>string</em>) – The dataset_id of the collection which logs which documents have been updated. If ‘None’, then one will be created for you.</p></li>
+<li><p><strong>updated_collection</strong> (<em>string</em>) – The dataset_id of the collection where your updated documents are uploaded into. If ‘None’, then your original collection will be updated.</p></li>
+<li><p><strong>update_function</strong> (<em>function</em>) – A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</p></li>
+<li><p><strong>updating_args</strong> (<em>dict</em>) – Additional arguments to your update_function, if they exist. They must be in the format of {‘Argument’: Value}</p></li>
+<li><p><strong>retrieve_chunk_size</strong> (<em>int</em>) – The number of documents that are received from the original collection with each loop iteration.</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – The number of processors you want to parallelize with</p></li>
+<li><p><strong>max_error</strong> – How many failed uploads before the function breaks</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">
+<span class="sig-name descname"><span class="pre">pull_update_push_to_cloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updating_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_chunk_size_failure_retry_multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_retrieve_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/batch_insert.html#BatchInsert.pull_update_push_to_cloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud" title="Permalink to this definition"></a></dt>
+<dd><p>Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+These documents are then uploaded into either an updated collection, or back into the original collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_collection</strong> (<em>string</em>) – The dataset_id of the collection where your original documents are</p></li>
+<li><p><strong>logging_collection</strong> (<em>string</em>) – The dataset_id of the collection which logs which documents have been updated. If ‘None’, then one will be created for you.</p></li>
+<li><p><strong>updated_collection</strong> (<em>string</em>) – The dataset_id of the collection where your updated documents are uploaded into. If ‘None’, then your original collection will be updated.</p></li>
+<li><p><strong>update_function</strong> (<em>function</em>) – A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.</p></li>
+<li><p><strong>updating_args</strong> (<em>dict</em>) – Additional arguments to your update_function, if they exist. They must be in the format of {‘Argument’: Value}</p></li>
+<li><p><strong>retrieve_chunk_size</strong> (<em>int</em>) – The number of documents that are received from the original collection with each loop iteration.</p></li>
+<li><p><strong>retrieve_chunk_size_failure_retry_multiplier</strong> (<em>int</em>) – If fails, retry on each chunk</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – The number of processors you want to parallelize with</p></li>
+<li><p><strong>max_error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – How many failed uploads before the function breaks</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.batch_insert.BatchInsert.update_documents">
+<span class="sig-name descname"><span class="pre">update_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_chunk_mult</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/batch_insert.html#BatchInsert.update_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.batch_insert.BatchInsert.update_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Update a list of documents with multi-threading automatically enabled.
+Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the “_id” in the documents.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://api-aueast.relevance.ai/v1/&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode_documents_in_bulk</span><span class="p">([</span><span class="s1">&#39;product_name&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">client</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;product_name&#39;</span><span class="p">],</span> <span class="n">cursor</span><span class="o">=</span><span class="n">docs</span><span class="p">[</span><span class="s1">&#39;cursor&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>docs</strong> (<em>list</em>) – A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field ‘_id’, for specifying vector field use the suffix of ‘_vector_’</p></li>
+<li><p><strong>bulk_fn</strong> (<em>callable</em>) – Function to apply to documents before uploading</p></li>
+<li><p><strong>max_workers</strong> (<em>int</em>) – Number of workers active for multi-threading</p></li>
+<li><p><strong>retry_chunk_mult</strong> (<em>int</em>) – Multiplier to apply to chunksize if upload fails</p></li>
+<li><p><strong>chunksize</strong> (<em>int</em>) – Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-relevanceai.batch.chunk"></span><p>Chunk Helper functions</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.batch.chunk.Chunker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.batch.chunk.</span></span><span class="sig-name descname"><span class="pre">Chunker</span></span><a class="reference internal" href="_modules/relevanceai/batch/chunk.html#Chunker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.chunk.Chunker" title="Permalink to this definition"></a></dt>
+<dd><p>Update the chunk Mixins</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.chunk.Chunker.chunk">
+<span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/chunk.html#Chunker.chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.chunk.Chunker.chunk" title="Permalink to this definition"></a></dt>
+<dd><p>Chunk an iterable object in Python.</p>
+<p>Example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">documents</span> <span class="o">=</span> <span class="p">[{</span><span class="o">...</span><span class="p">}]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ViClient</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>documents</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]) – List of dictionaries/Pandas dataframe</p></li>
+<li><p><strong>chunksize</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The chunk size of an object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-relevanceai.batch.client"></span><p>Batch client to allow for batch insertions/retrieval and encoding</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.batch.client.BatchAPIClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.batch.client.</span></span><span class="sig-name descname"><span class="pre">BatchAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/client.html#BatchAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.client.BatchAPIClient" title="Permalink to this definition"></a></dt>
+<dd><p>Batch API client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.batch.client.BatchAPIClient.batch_get_and_edit">
+<span class="sig-name descname"><span class="pre">batch_get_and_edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_edit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/batch/client.html#BatchAPIClient.batch_get_and_edit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.batch.client.BatchAPIClient.batch_get_and_edit" title="Permalink to this definition"></a></dt>
+<dd><p>Batch get the documents and return the documents</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-relevanceai.batch"></span></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="core_api.html" class="btn btn-neutral float-left" title="Core Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="relevanceai.visualise.html" class="btn btn-neutral float-right" title="Visualisations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
