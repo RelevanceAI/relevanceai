@@ -35,7 +35,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         """
         Train clustering algorithm on documents and then return useful information
         """
-        vectors = self.get_field_across_documents(vector_field, docs)
+        vectors = self.get_fields_across_documents(vector_field, docs)
         docs = self.set_field_across_documents(
             f"_clusters_.{vector_field}.{alias}", vectors, docs
         )
