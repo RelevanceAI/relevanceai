@@ -117,8 +117,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/status&quot;</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span></div>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
         <span class="p">)</span>
     
 <div class="viewcode-block" id="Tasks.list"><a class="viewcode-back" href="../../../relevanceai.api.html#relevanceai.api.tasks.Tasks.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">show_active_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
@@ -136,9 +135,8 @@
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/tasks/list&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;show_active_only&quot;</span><span class="p">:</span> <span class="n">show_active_only</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span></div>
+                <span class="s2">&quot;show_active_only&quot;</span><span class="p">:</span> <span class="n">show_active_only</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Tasks._loop_status_until_finish"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/tasks/index.html#relevanceai.api.tasks.Tasks._loop_status_until_finish">[docs]</a>    <span class="k">def</span> <span class="nf">_loop_status_until_finish</span><span class="p">(</span>

@@ -23,7 +23,7 @@ Classes
 
    Base class for all relevanceai utilities
 
-   .. py:method:: vector(self, dataset_id: str, multivector_query: List, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth=0, sum_fields=True, page_size=20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: vector(self, dataset_id: str, multivector_query: List, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth=0, sum_fields=True, page_size=20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None)
 
       Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
 
@@ -115,7 +115,7 @@ Classes
       :type search_history_id: string
 
 
-   .. py:method:: hybrid(self, dataset_id: str, multivector_query: List, text: str, fields: list, edit_distance: int = -1, ignore_spaces: bool = True, traditional_weight: float = 0.075, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: hybrid(self, dataset_id: str, multivector_query: List, text: str, fields: list, edit_distance: int = -1, ignore_spaces: bool = True, traditional_weight: float = 0.075, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, search_history_id=None)
 
       Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible.
 
@@ -177,7 +177,7 @@ Classes
       :type traditional_weight: int
 
 
-   .. py:method:: semantic(self, dataset_id: str, multivector_query: list, fields: list, text: str, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: semantic(self, dataset_id: str, multivector_query: list, fields: list, text: str, page_size: int = 20, page=1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale=False)
 
       A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results.
 
@@ -226,7 +226,7 @@ Classes
       :type hundred_scale: bool
 
 
-   .. py:method:: diversity(self, dataset_id: str, cluster_vector_field: str, n_clusters: int, multivector_query: list, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale: bool = False, search_history_id: str = None, n_init: int = 5, n_iter: int = 10, return_as_clusters: bool = False, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: diversity(self, dataset_id: str, cluster_vector_field: str, n_clusters: int, multivector_query: list, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_operation='sum', approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric='cosine', facets=[], filters=[], min_score=0, select_fields=[], include_vector=False, include_count=True, asc=False, keep_search_history=False, hundred_scale: bool = False, search_history_id: str = None, n_init: int = 5, n_iter: int = 10, return_as_clusters: bool = False)
 
       This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:
 
@@ -300,7 +300,7 @@ Classes
       :type return_as_clusters: bool
 
 
-   .. py:method:: traditional(self, dataset_id: str, text: str, fields: list = [], edit_distance: int = -1, ignore_spaces: bool = True, page_size: int = 29, page: int = 1, select_fields: list = [], include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, search_history_id: str = None, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: traditional(self, dataset_id: str, text: str, fields: list = [], edit_distance: int = -1, ignore_spaces: bool = True, page_size: int = 29, page: int = 1, select_fields: list = [], include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, search_history_id: str = None)
 
       Traditional Faceted Keyword Search with edit distance/fuzzy matching.
 
@@ -340,7 +340,7 @@ Classes
       :type search_history_id: string
 
 
-   .. py:method:: chunk(self, dataset_id, multivector_query, chunk_field, chunk_scoring='max', chunk_page_size: int = 3, chunk_page: int = 1, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', facets: list = [], filters: list = [], min_score: int = None, include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, hundred_scale: bool = False, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: chunk(self, dataset_id, multivector_query, chunk_field, chunk_scoring='max', chunk_page_size: int = 3, chunk_page: int = 1, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', facets: list = [], filters: list = [], min_score: int = None, include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, hundred_scale: bool = False)
 
       Chunks are data that has been divided into different units. e.g. A paragraph is made of many sentence chunks, a sentence is made of many word chunks, an image frame in a video. By searching through chunks you can pinpoint more specifically where a match is occuring. When creating a chunk in your document use the suffix "chunk" and "chunkvector". An example of a document with chunks:
 
@@ -398,7 +398,7 @@ Classes
       :type hundred_scale: bool
 
 
-   .. py:method:: multistep_chunk(self, dataset_id, multivector_query, first_step_multivector_query, chunk_field, chunk_scoring='max', chunk_page_size: int = 3, chunk_page: int = 1, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', facets: list = [], filters: list = [], min_score: int = None, include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, hundred_scale: bool = False, first_step_page: int = 1, first_step_page_size: int = 20, verbose: bool = True, output_format: str = 'json')
+   .. py:method:: multistep_chunk(self, dataset_id, multivector_query, first_step_multivector_query, chunk_field, chunk_scoring='max', chunk_page_size: int = 3, chunk_page: int = 1, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', facets: list = [], filters: list = [], min_score: int = None, include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, hundred_scale: bool = False, first_step_page: int = 1, first_step_page_size: int = 20)
 
       Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after.
 
@@ -454,7 +454,7 @@ Classes
       :type first_step_page_size: int
 
 
-   .. py:method:: advanced_chunk(self, dataset_ids, chunk_search_query: List, min_score: int = None, page_size: int = 20, include_vector: bool = False, select_fields: list = [], verbose: bool = True, output_format: str = 'json')
+   .. py:method:: advanced_chunk(self, dataset_ids, chunk_search_query: List, min_score: int = None, page_size: int = 20, include_vector: bool = False, select_fields: list = [])
 
       A more advanced chunk search to be able to combine vector search and chunk search in many different ways.
 
@@ -516,7 +516,7 @@ Classes
       :type select_fields: list
 
 
-   .. py:method:: advanced_multistep_chunk(self, dataset_ids: list, first_step_query: list, first_step_text: str, first_step_fields: list, chunk_search_query: list, first_step_edit_distance: int = -1, first_step_ignore_space: bool = True, first_step_traditional_weight: float = 0.075, first_step_approximation_depth: int = 0, first_step_sum_fields: bool = True, first_step_filters: list = [], first_step_page_size: int = 50, include_count: bool = True, min_score: int = 0, page_size: int = 20, include_vector: bool = False, select_fields: list = [], verbose: bool = True, output_format: str = 'json')
+   .. py:method:: advanced_multistep_chunk(self, dataset_ids: list, first_step_query: list, first_step_text: str, first_step_fields: list, chunk_search_query: list, first_step_edit_distance: int = -1, first_step_ignore_space: bool = True, first_step_traditional_weight: float = 0.075, first_step_approximation_depth: int = 0, first_step_sum_fields: bool = True, first_step_filters: list = [], first_step_page_size: int = 50, include_count: bool = True, min_score: int = 0, page_size: int = 20, include_vector: bool = False, select_fields: list = [])
 
       Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set.
 
@@ -600,6 +600,12 @@ Classes
       :type include_vector: bool
       :param select_fields: Fields to include in the search results, empty array/list means all fields.
       :type select_fields: list
+
+
+   .. py:method:: _init_experiment_helper(self, categories=['chunk', 'vector', 'diversity', 'traditional'])
+
+
+   .. py:method:: make_suggestion(self)
 
 
 

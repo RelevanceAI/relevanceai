@@ -48,7 +48,6 @@ class Client(BatchAPIClient, DocUtils):
 
         # if (
         #     self.datasets.list(
-        #         verbose=False, output_format=None, retries=1
         #     ).status_code
         #     == 200
         # ):
@@ -67,7 +66,7 @@ class Client(BatchAPIClient, DocUtils):
         if verbose:
             print("You can sign up/login and find your credentials here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
             print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
-        token = getpass.getpass("Authorization token:")
+        token = getpass.getpass("Authorization token (you can find it here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
         # project = getpass.getpass("Project:")
         # api_key = getpass.getpass("API key:")
         # token = getpass.getpass(

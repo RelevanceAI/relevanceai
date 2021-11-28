@@ -49,6 +49,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.debug">debug</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.error">error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.get_centers">get_centers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs">get_centroid_docs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.success">success</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.warn">warn</a></li>
@@ -59,9 +61,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.critical">critical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.debug">debug</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.fit_documents">fit_documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.fit_transform">fit_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.to_metadata">to_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.warn">warn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.warning">warning</a></li>
 </ul>
@@ -93,21 +97,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.debug">debug</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.error">error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.fit_transform">fit_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.get_centers">get_centers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.to_metadata">to_metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.warn">warn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids">KMedoids</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMedoids.warning">warning</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.cluster">cluster</a></li>
@@ -229,10 +224,28 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.fit_transform">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Return the</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.get_centers">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.get_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Get centers for the centroid-based clusters</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs">
+<span class="sig-name descname"><span class="pre">get_centroid_docs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.get_centroid_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the centroid documents to store.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -262,7 +275,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">ClusterBase</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="autoapi/relevanceai/logger/index.html#relevanceai.logger.LoguruLogger" title="relevanceai.logger.LoguruLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.logger.LoguruLogger</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="autoapi/relevanceai/logger/index.html#relevanceai.logger.LoguruLogger" title="relevanceai.logger.LoguruLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.logger.LoguruLogger</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.critical" title="Permalink to this definition"></a></dt>
@@ -279,13 +292,26 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.fit_transform">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.fit_documents">
+<span class="sig-name descname"><span class="pre">fit_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_clusters_'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.fit_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.fit_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Train clustering algorithm on documents and then store the labels
+inside the documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vector_field</strong> (<em>list</em>) – The vector field of the documents</p></li>
+<li><p><strong>docs</strong> (<em>list</em>) – List of documents to run clustering on</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – What the clusters can be called</p></li>
+<li><p><strong>cluster_field</strong> (<em>str</em>) – What the cluster fields should be called</p></li>
+</ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.fit_transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Return the</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -297,6 +323,12 @@
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.success">
 <span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.success" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.to_metadata">
+<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.to_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>You can also store the metadata of this clustering algorithm</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.warn">
@@ -331,12 +363,8 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.fit_transform">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Return the</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -383,7 +411,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.fit_transform">
 <span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'algorithm':</span> <span class="pre">'best',</span> <span class="pre">'alpha':</span> <span class="pre">1.0,</span> <span class="pre">'approx_min_span_tree':</span> <span class="pre">True,</span> <span class="pre">'gen_min_span_tree':</span> <span class="pre">False,</span> <span class="pre">'leaf_size':</span> <span class="pre">40,</span> <span class="pre">'memory':</span> <span class="pre">Memory(location=None),</span> <span class="pre">'metric':</span> <span class="pre">'euclidean',</span> <span class="pre">'min_samples':</span> <span class="pre">None,</span> <span class="pre">'p':</span> <span class="pre">None}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return the</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
 </dd>
@@ -414,7 +443,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_no_improvement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster" title="relevanceai.visualise.cluster.CentroidCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.cluster.CentroidCluster</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.critical">
@@ -433,8 +462,15 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'compute_labels':</span> <span class="pre">True,</span> <span class="pre">'init':</span> <span class="pre">'k-means++',</span> <span class="pre">'max_no_improvement':</span> <span class="pre">2,</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Fit and transform transform the vectors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.get_centers">
+<span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.get_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a numpy array of clusters</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
 </dd>
@@ -451,6 +487,12 @@
 <span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.success" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.to_metadata">
+<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.to_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Editing the metadata of the function</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.warn">
 <span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.warn" title="Permalink to this definition"></a></dt>
@@ -459,57 +501,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.warning">
 <span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">KMedoids</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster" title="relevanceai.visualise.cluster.CentroidCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.cluster.CentroidCluster</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'init':</span> <span class="pre">'k-medoids++',</span> <span class="pre">'method':</span> <span class="pre">'pam',</span> <span class="pre">'metric':</span> <span class="pre">'euclidean',</span> <span class="pre">'random_state':</span> <span class="pre">42}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMedoids.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMedoids.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMedoids.warning" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -828,7 +819,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_points_to_render</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_label_char_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour_label_char_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_points_to_render</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_label_char_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour_label_char_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#1854FF'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot" title="Permalink to this definition"></a></dt>
 <dd><p>Plot function for Embedding Projector class</p>
 <p>To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
 from relevanceai.visualise.dim_reduction import DimReductionBase
@@ -858,7 +849,7 @@ class CustomDimReduction(DimReductionBase):</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.plot_from_docs">
-<span class="sig-name descname"><span class="pre">plot_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.plot_from_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot_from_docs" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_colour</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.plot_from_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot_from_docs" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

@@ -22,7 +22,7 @@ class Datasets(Base):
         super().__init__(project, api_key, base_url)
 
     def schema(
-        self, dataset_id: str, output_format: str = "json", verbose: bool = True
+        self, dataset_id: str
     ):
         """ 
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
@@ -34,13 +34,11 @@ class Datasets(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/schema",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
+            method="GET"
         )
 
     def metadata(
-        self, dataset_id: str, output_format: str = "json", verbose: bool = True
+        self, dataset_id: str
     ):
         """ 
         Retreives metadata about a dataset. Notably description, data source, etc
@@ -52,17 +50,13 @@ class Datasets(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/metadata",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
+            method="GET"
         )
 
     def create(
         self,
         dataset_id: str,
-        schema: dict = {},
-        output_format: Union[str, bool] = "json",
-        verbose: bool = True,
+        schema: dict = {}
     ):
         """ 
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch). 
@@ -108,19 +102,14 @@ class Datasets(Base):
         return self.make_http_request(
             endpoint=f"/datasets/create",
             method="POST",
-            parameters={"id": dataset_id, "schema": schema},
-            output_format=output_format,
-            verbose=verbose,
+            parameters={"id": dataset_id, "schema": schema}
         )
 
-    def list(self, output_format: Optional[str] = "json", verbose: bool = True, retries=None):
+    def list(self):
         """ List all datasets in a project that you are authorized to read/write. """
         return self.make_http_request(
             endpoint="/datasets/list",
-            method="GET",
-            output_format=output_format,
-            verbose=verbose,
-            retries=retries,
+            method="GET"
         )
 
     def list_all(
@@ -135,9 +124,7 @@ class Datasets(Base):
         sort_by_created_at_date: bool = False,
         asc: bool = False,
         page_size: int = 20,
-        page: int = 1,
-        output_format: str = "json",
-        verbose: bool = True,
+        page: int = 1
     ):
 
         """ 
@@ -190,9 +177,7 @@ class Datasets(Base):
                 "asc": asc,
                 "page_size": page_size,
                 "page": page,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def facets(
@@ -202,9 +187,7 @@ class Datasets(Base):
         date_interval: str = "monthly",
         page_size: int = 5,
         page: int = 1,
-        asc: bool = False,
-        output_format: str = "json",
-        verbose: bool = True,
+        asc: bool = False
     ):
         """ 
         Takes a high level aggregation of every field, return their unique values and frequencies. This is used to help create the filter bar for search.
@@ -234,13 +217,11 @@ class Datasets(Base):
                 "page_size": page_size,
                 "page": page,
                 "asc": asc,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def check_missing_ids(
-        self, dataset_id, ids, output_format: str = "json", verbose: bool = True
+        self, dataset_id, ids
     ):
 
         """ 
@@ -261,9 +242,7 @@ class Datasets(Base):
             return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/get_missing",
                 method="GET",
-                parameters={"ids": ids},
-                output_format=output_format,
-                verbose=verbose,
+                parameters={"ids": ids}
             )
 
         else:
@@ -276,10 +255,7 @@ class Datasets(Base):
         document: dict,
         insert_date: bool = True,
         overwrite: bool = True,
-        update_schema: bool = True,
-        verbose: bool = True,
-        retries: int = None,
-        output_format: str = "json"
+        update_schema: bool = True
     ):
         """
         Insert a single documents
@@ -316,10 +292,7 @@ class Datasets(Base):
                 "insert_date": insert_date,
                 "overwrite": overwrite,
                 "update_schema": update_schema,
-            },
-            output_format=output_format,
-            retries=retries,
-            verbose=verbose,
+            }
         )
 
 
@@ -331,10 +304,7 @@ class Datasets(Base):
         overwrite: bool = True,
         update_schema: bool = True,
         field_transformers=[],
-        verbose: bool = True,
         return_documents: bool = False,
-        retries: int = None,
-        output_format: str = "json",
         base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
         """
@@ -381,14 +351,11 @@ class Datasets(Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
-                },
-                output_format=output_format,
-                retries=retries,
-                verbose=verbose,
+                }
             )
 
         else:
-            insert_response = self.make_http_request(
+            response_json = self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
                 base_url=base_url,
                 method="POST",
@@ -398,29 +365,24 @@ class Datasets(Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
-                },
-                output_format=False,
-                retries=retries,
-                verbose=verbose,
+                }
             )
 
             try:
-                response_json = insert_response.json()
+                status_code = response_json.status_code
             except:
-                response_json = None
+                status_code = 200
 
             return {
                 "response_json": response_json,
                 "documents": documents,
-                "status_code": insert_response.status_code,
+                "status_code": status_code,
             }
 
     def delete(
         self,
         dataset_id: str,
-        confirm: bool = False,
-        output_format: str = "json",
-        verbose: bool = True,
+        confirm: bool = False
     ):
         """
         Delete a dataset
@@ -442,9 +404,7 @@ class Datasets(Base):
             return self.make_http_request(
                 endpoint=f"/datasets/delete",
                 method="POST",
-                parameters={"dataset_id": dataset_id},
-                output_format=output_format,
-                verbose=verbose,
+                parameters={"dataset_id": dataset_id}
             )
 
         elif user_input.lower() in ("n", "no"):
@@ -462,9 +422,7 @@ class Datasets(Base):
         schema: dict = {},
         rename_fields: dict = {},
         remove_fields: list = [],
-        filters: list = [],
-        output_format: str = "json",
-        verbose: bool = True,
+        filters: list = []
     ):
         """
         Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.
@@ -494,9 +452,7 @@ class Datasets(Base):
                 "rename_fields": rename_fields,
                 "remove_fields": remove_fields,
                 "filters": filters,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def search(
@@ -504,8 +460,6 @@ class Datasets(Base):
         query,
         sort_by_created_at_date: bool = False,
         asc: bool = False,
-        output_format: str = "json",
-        verbose: bool = True,
     ):
         """
         Search datasets by their names with a traditional keyword search.
@@ -526,9 +480,7 @@ class Datasets(Base):
                 "query": query,
                 "sort_by_created_at_date": sort_by_created_at_date,
                 "asc": asc,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def vectorize(
@@ -540,9 +492,7 @@ class Datasets(Base):
         refresh: bool = False,
         alias: str = "default",
         chunksize: int = 20,
-        chunk_field: str = None,
-        output_format: str = "json",
-        verbose: bool = True,
+        chunk_field: str = None
     ):
         """
         Queue the encoding of a dataset using the method given by model_id.
@@ -578,17 +528,13 @@ class Datasets(Base):
                 "alias": alias,
                 "chunksize": chunksize,
                 "chunk_field": chunk_field,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def task_status(
         self,
         dataset_id: str,
-        task_id: str,
-        output_format: str = "json",
-        verbose: bool = True,
+        task_id: str
     ):
         """
         Check the status of an existing encoding task on the given dataset. \n
@@ -608,9 +554,7 @@ class Datasets(Base):
             method="GET",
             parameters={
                 "task_id": task_id
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
 

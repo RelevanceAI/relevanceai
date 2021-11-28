@@ -55,13 +55,28 @@ Classes
       :property:
 
 
-   .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, output_format: Union[str, bool, None] = 'json', base_url: str = None, verbose: bool = True, retries: int = None)
+   .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, base_url: str = None)
 
       Make the HTTP request
       :param endpoint: The endpoint from the documentation to use
       :type endpoint: string
       :param method_type: POST or GET request
       :type method_type: string
+
+
+   .. py:method:: _log_response_success(self, base_url, endpoint)
+
+
+   .. py:method:: _log_response_time(self, base_url, endpoint, time)
+
+
+   .. py:method:: _log_response_fail(self, base_url, endpoint, status_code, content)
+
+
+   .. py:method:: _log_connection_error(self, base_url, endpoint)
+
+
+   .. py:method:: _log_no_json(self, base_url, endpoint, status_code, content)
 
 
 

@@ -28,7 +28,7 @@ Classes
 
    Base class for all relevanceai utilities
 
-   .. py:method:: health(self, dataset_id: str, output_format: str = 'json', verbose: bool = True)
+   .. py:method:: health(self, dataset_id: str)
 
       Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors
 
@@ -36,7 +36,7 @@ Classes
       :type dataset_id: string
 
 
-   .. py:method:: stats(self, dataset_id: str, output_format: str = 'json', verbose: bool = True)
+   .. py:method:: stats(self, dataset_id: str)
 
       All operations related to monitoring
 
@@ -44,7 +44,7 @@ Classes
       :type dataset_id: string
 
 
-   .. py:method:: usage(self, dataset_id: str, filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, log_ids: list = [], output_format: str = 'json', verbose: bool = True)
+   .. py:method:: usage(self, dataset_id: str, filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, log_ids: list = [])
 
       Aggregate the logs for a dataset.
 

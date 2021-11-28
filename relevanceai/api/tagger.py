@@ -84,7 +84,7 @@ class Tagger(Base):
                 "search_relevance_cutoff_aggressiveness": search_relevance_cutoff_aggressiveness,
                 "asc": asc,
                 "include_score": include_score
-            },
+            }
         )
 
     def diversity(

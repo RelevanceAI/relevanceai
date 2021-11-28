@@ -23,7 +23,7 @@ Classes
 
    Base class for all relevanceai utilities
 
-   .. py:method:: aggregate(self, dataset_id: str, vector_field: str, metrics: list = [], groupby: list = [], filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, alias: str = 'default', output_format: str = 'json')
+   .. py:method:: aggregate(self, dataset_id: str, vector_field: str, metrics: list = [], groupby: list = [], filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, alias: str = 'default')
 
       Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
       It can only can be used after a vector field has been clustered.
@@ -53,7 +53,7 @@ Classes
       :type alias: string
 
 
-   .. py:method:: facets(self, dataset_id: str, facets_fields: list = [], page_size: int = 20, page: int = 1, asc: bool = False, date_interval: str = 'monthly', output_format: str = 'json')
+   .. py:method:: facets(self, dataset_id: str, facets_fields: list = [], page_size: int = 20, page: int = 1, asc: bool = False, date_interval: str = 'monthly')
 
       Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them.
 

@@ -74,13 +74,13 @@
 <span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-
 <div class="viewcode-block" id="Search"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search">[docs]</a><span class="k">class</span> <span class="nc">Search</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_experiment_helper</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Search.vector"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.vector">[docs]</a>    <span class="k">def</span> <span class="nf">vector</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -103,9 +103,7 @@
         <span class="n">asc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">hundred_scale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:</span>
@@ -219,10 +217,8 @@
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
                 <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
-                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.hybrid"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.hybrid">[docs]</a>    <span class="k">def</span> <span class="nf">hybrid</span><span class="p">(</span>
@@ -246,9 +242,7 @@
         <span class="n">asc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">hundred_scale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n</span>
@@ -334,10 +328,8 @@
                 <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span>
                 <span class="s2">&quot;edit_distance&quot;</span><span class="p">:</span> <span class="n">edit_distance</span><span class="p">,</span>
                 <span class="s2">&quot;ignore_spaces&quot;</span><span class="p">:</span> <span class="n">ignore_spaces</span><span class="p">,</span>
-                <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="n">traditional_weight</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="n">traditional_weight</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.semantic"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.semantic">[docs]</a>    <span class="k">def</span> <span class="nf">semantic</span><span class="p">(</span>
@@ -357,9 +349,7 @@
         <span class="n">include_count</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">asc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">hundred_scale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">hundred_scale</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results. \n</span>
@@ -428,10 +418,8 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.diversity"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.diversity">[docs]</a>    <span class="k">def</span> <span class="nf">diversity</span><span class="p">(</span>
@@ -460,9 +448,7 @@
         <span class="n">search_history_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_init</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">return_as_clusters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">return_as_clusters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:</span>
@@ -565,10 +551,8 @@
                 <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span> <span class="n">n_clusters</span><span class="p">,</span>
                 <span class="s2">&quot;n_init&quot;</span><span class="p">:</span> <span class="n">n_init</span><span class="p">,</span>
                 <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="n">n_iter</span><span class="p">,</span>
-                <span class="s2">&quot;return_as_clusters&quot;</span><span class="p">:</span> <span class="n">return_as_clusters</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;return_as_clusters&quot;</span><span class="p">:</span> <span class="n">return_as_clusters</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.traditional"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.traditional">[docs]</a>    <span class="k">def</span> <span class="nf">traditional</span><span class="p">(</span>
@@ -585,9 +569,7 @@
         <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">search_history_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">search_history_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Traditional Faceted Keyword Search with edit distance/fuzzy matching. \n</span>
@@ -643,10 +625,8 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
@@ -669,9 +649,7 @@
         <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">hundred_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">hundred_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; </span>
@@ -755,10 +733,8 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.multistep_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.multistep_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">multistep_chunk</span><span class="p">(</span>
@@ -784,9 +760,7 @@
         <span class="n">keep_search_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">hundred_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">first_step_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">first_step_page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">first_step_page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
     <span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; </span>
@@ -868,10 +842,8 @@
                 <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
                 <span class="s2">&quot;first_step_multivector_query&quot;</span><span class="p">:</span> <span class="n">first_step_multivector_query</span><span class="p">,</span>
                 <span class="s2">&quot;first_step_page&quot;</span><span class="p">:</span> <span class="n">first_step_page</span><span class="p">,</span>
-                <span class="s2">&quot;first_step_page_size&quot;</span><span class="p">:</span> <span class="n">first_step_page_size</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;first_step_page_size&quot;</span><span class="p">:</span> <span class="n">first_step_page_size</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.advanced_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.advanced_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_chunk</span><span class="p">(</span>
@@ -881,9 +853,7 @@
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        A more advanced chunk search to be able to combine vector search and chunk search in many different ways. \n</span>
@@ -955,10 +925,8 @@
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
-                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Search.advanced_multistep_chunk"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.search.Search.advanced_multistep_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">advanced_multistep_chunk</span><span class="p">(</span>
@@ -979,9 +947,7 @@
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set. \n</span>
@@ -1089,11 +1055,65 @@
                 <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
-                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span></div></div>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span></div>
+            <span class="p">}</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="Search._init_experiment_helper"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/search/index.html#relevanceai.api.search.Search._init_experiment_helper">[docs]</a>    <span class="k">def</span> <span class="nf">_init_experiment_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chunk&#39;</span><span class="p">,</span> <span class="s1">&#39;vector&#39;</span><span class="p">,</span> <span class="s1">&#39;diversity&#39;</span><span class="p">,</span> <span class="s1">&#39;traditional&#39;</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">categories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traditional_search_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/better-text-search-with-hybrid&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vector_search_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diversity_search_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/better-text-search-diversified-search-results&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hybrid_search_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both-1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semantic_search_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both-2&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_search_doc</span> <span class="o">=</span>  <span class="s2">&quot;https://docs.relevance.ai/docs/better-text-search-chunk-search&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multistep_chunk_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advanced_chunk_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data-1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advanced_multistep_chunk_doc</span> <span class="o">=</span> <span class="s2">&quot;https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data-2&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initiative_messages</span> <span class="o">=</span> <span class="s2">&quot;What else to experiment with :)</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_initiative_messages</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;chunk&#39;</span><span class="p">:</span> <span class="s2">&quot;if you are searching on large pieces of text, you could chunk your data and try</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;vector&#39;</span><span class="p">:</span> <span class="s2">&quot;if you are looking for strong conceptual relations and not just word matching, you could try</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;diversity&#39;</span><span class="p">:</span> <span class="s2">&quot;if you are looking for strong conceptual relations as well as diverse results, you could try</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;traditional&#39;</span><span class="p">:</span> <span class="s2">&quot;if you are looking for specific text such as id, names, etc., you could try</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span></div>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="Search.make_suggestion"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/search/index.html#relevanceai.api.search.Search.make_suggestion">[docs]</a>    <span class="k">def</span> <span class="nf">make_suggestion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_last_used_endpoint&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_used_endpoint</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">suggestion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initiative_messages</span>
+        <span class="k">if</span> <span class="s1">&#39;traditional&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s1">&#39;traditional&#39;</span><span class="p">:</span>
+            <span class="n">suggestion</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_initiative_messages</span><span class="p">[</span><span class="s1">&#39;traditional&#39;</span><span class="p">]</span>
+            <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * traditional search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">traditional_search_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;vector&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
+            <span class="n">suggestion</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_initiative_messages</span><span class="p">[</span><span class="s1">&#39;vector&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;vector&quot;</span><span class="p">:</span>
+                 <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * vector search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vector_search_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;hybrid&quot;</span><span class="p">:</span>
+                 <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * hybrid search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hybrid_search_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;semantic&quot;</span><span class="p">:</span>
+                 <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * semantic search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">semantic_search_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;diversity&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s1">&#39;diversity&#39;</span><span class="p">:</span>
+            <span class="n">suggestion</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_initiative_messages</span><span class="p">[</span><span class="s1">&#39;diversity&#39;</span><span class="p">]</span>
+            <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * diversity search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">diversity_search_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;chunk&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
+          <span class="n">suggestion</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_initiative_messages</span><span class="p">[</span><span class="s1">&#39;chunk&#39;</span><span class="p">]</span>
+          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;chunk&quot;</span><span class="p">:</span>
+              <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * chunk search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_search_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;multistep_chunk&quot;</span><span class="p">:</span>
+              <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * multistep_chunk search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multistep_chunk_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;advanced_chunk&quot;</span><span class="p">:</span>
+              <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * advanced_chunk search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">advanced_chunk_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_search</span> <span class="o">!=</span> <span class="s2">&quot;advanced_multistep_chunk&quot;</span><span class="p">:</span>
+              <span class="n">suggestion</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   * advanced_multistep_chunk search (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">advanced_multistep_chunk_doc</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;search&quot;</span><span class="p">:</span><span class="n">suggestion</span><span class="p">}</span></div></div>
 </pre></div>
 
            </div>

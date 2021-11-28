@@ -1,5 +1,6 @@
 import os
-
+import uuid
+from datetime import datetime
 from setuptools import find_packages, setup
 
 
@@ -64,16 +65,23 @@ dev_vis_requirements = (
 )
 
 from pathlib import Path
-# this_directory = Path(__file__).parent
-# klong_description = (this_directory / "README.md").read_text()
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
+
+name = "RelevanceAI"
+version=get_version("relevanceai/__init__.py")
+
+if os.getenv("_IS_DEV"):
+    name = "RelevanceAI-dev"
+    version = version + '.' + datetime.now().__str__().replace('-', '.').replace(" ", ".").replace(":", ".")
 
 setup(
-    name="RelevanceAI",
-    version=get_version("relevanceai/__init__.py"),
+    name=name,
+    version=version,
     url="https://relevance.ai/",
     author="Relevance AI",
     author_email="dev@relevance.ai",
-    long_description="",
+    long_description=,
     long_description_content_type='text/markdown',
     packages=find_packages(),
     setup_requires=["wheel"],

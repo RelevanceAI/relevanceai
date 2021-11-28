@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding:utf-8 -*-
-#####
-# Author: Charlene Leong charleneleong84@gmail.com
-# Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 17th 2021,8:53:50 am
-#####
-
 from pathlib import Path
 import ivis
 import pytest

@@ -1,4 +1,5 @@
 from relevanceai.base import Base
+from typing import Optional, Dict, Any
 
 
 class Centroids(Base):
@@ -16,7 +17,6 @@ class Centroids(Base):
         page_size: int = 5,
         cursor: str = None,
         include_vector: bool = False,
-        output_format: str = "json",
         base_url="https://gateway-api-aueast.relevance.ai/latest",
     ):
         """
@@ -48,7 +48,6 @@ class Centroids(Base):
                 "cursor": cursor,
                 "include_vector": include_vector,
             },
-            output_format=output_format,
             base_url=base_url,
         )
 
@@ -59,8 +58,7 @@ class Centroids(Base):
         vector_field: str,
         alias: str = "default",
         page_size: int = 5,
-        cursor: str = None,
-        output_format: str = "json",
+        cursor: str = None
     ):
         """
         Retrieve the cluster centroids by IDs
@@ -90,17 +88,15 @@ class Centroids(Base):
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
-            },
-            output_format=output_format,
+            }
         )
 
     def insert(
         self,
         dataset_id: str,
-        cluster_centers: dict,
+        cluster_centers: list,
         vector_field: str,
-        alias: str = "default",
-        output_format: str = "json",
+        alias: str = "default"
     ):
         """
         Insert your own cluster centroids for it to be used in approximate search settings and cluster aggregations.
@@ -123,8 +119,7 @@ class Centroids(Base):
                 "cluster_centers": cluster_centers,
                 "vector_field": vector_field,
                 "alias": alias,
-            },
-            output_format=output_format,
+            }
         )
 
     def documents(
@@ -137,11 +132,11 @@ class Centroids(Base):
         cursor: str = None,
         page: int = 1,
         include_vector: bool = False,
-        similarity_metric: str = "cosine",
-        output_format: str = "json",
+        similarity_metric: str = "cosine"
     ):
         """
         Retrieve the cluster centroids by IDs
+
         Parameters
         ----------
         dataset_id : string
@@ -178,5 +173,50 @@ class Centroids(Base):
                 "include_vector": include_vector,
                 "similarity_metric": similarity_metric,
             },
-            output_format=output_format,
         )
+
+    def metadata(
+        self, 
+        dataset_id: str, 
+        vector_field: str,
+        alias: str="default",
+        metadata: Optional[Dict[str, Any]] = None,
+    ):
+        """
+        If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
+        Otherwise, you can store the metadata about your cluster here.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_field: string
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+        metadata: Optional[dict]
+           If None, it will retrieve the metadata, otherwise
+           it will overwrite the metadata of the cluster
+
+        """
+        if metadata is None:
+            return self.make_http_request(
+                "/services/cluster/centroids/metadata",
+                method="GET",
+                parameters={
+                    "dataset_id": dataset_id,
+                    "vector_field": vector_field,
+                    "alias": alias
+                },
+            )
+        else:
+            return self.make_http_request(
+                "/services/cluster/centroids/metadata",
+                method="POST",
+                parameters={
+                    "dataset_id": dataset_id,
+                    "vector_field": vector_field,
+                    "alias": alias,
+                    "metadata": metadata
+                },
+            )
