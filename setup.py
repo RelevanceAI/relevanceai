@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime
 from setuptools import find_packages, setup
 
 
@@ -64,11 +64,18 @@ dev_vis_requirements = (
 )
 
 from pathlib import Path
-# this_directory = Path(__file__).parent
-# klong_description = (this_directory / "README.md").read_text()
+this_directory = Path(__file__).parent
+klong_description = (this_directory / "README.md").read_text()
+
+if os.getenv("_IS_DEV"):
+    name = "RelevanceAI-dev"
+    version=get_version("relevanceai/__init__.py")
+    version = version + '.' + datetime.today().date().__str__().replace('-', '.')
+else:
+    name = "RelevanceAI"
 
 setup(
-    name="RelevanceAI",
+    name=name,
     version=get_version("relevanceai/__init__.py"),
     url="https://relevance.ai/",
     author="Relevance AI",
