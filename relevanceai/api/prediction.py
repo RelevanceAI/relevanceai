@@ -60,7 +60,7 @@ class Prediction(Base):
                 "impute_value": impute_value,
                 "predict_operation": predict_operation,
                 "include_search_results": include_search_results
-            },
+            }
         )
 
     def KNN_from_results(
@@ -96,7 +96,7 @@ class Prediction(Base):
                 "results": results,
                 "impute_value": impute_value,
                 "predict_operation": predict_operation
-            },
+            }
         )
 
 

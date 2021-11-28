@@ -44,8 +44,7 @@ class Tasks(Base):
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/tasks/{task_id}/status",
-            method="GET",
-            verbose=False,
+            method="GET"
         )
     
     def list(self, dataset_id: str, show_active_only: bool = True):
@@ -64,8 +63,7 @@ class Tasks(Base):
             method="GET",
             parameters={
                 "show_active_only": show_active_only,
-            },
-            verbose=False,
+            }
         )
 
     def _loop_status_until_finish(

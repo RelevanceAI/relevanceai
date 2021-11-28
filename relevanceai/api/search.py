@@ -1,13 +1,13 @@
 from relevanceai.base import Base
 from typing import List
 
-
 class Search(Base):
     def __init__(self, project, api_key, base_url):
         self.project = project
         self.api_key = api_key
         self.base_url = base_url
         super().__init__(project, api_key, base_url)
+        self._init_experiment_helper()
 
     def vector(
         self,
@@ -30,9 +30,7 @@ class Search(Base):
         asc=False,
         keep_search_history=False,
         hundred_scale = False,
-        search_history_id = None,
-        verbose: bool = True,
-        output_format: str = "json",
+        search_history_id = None
     ):
         """ 
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
@@ -147,9 +145,7 @@ class Search(Base):
                 "keep_search_history": keep_search_history,
                 "hundred_scale": hundred_scale,
                 "search_history_id": search_history_id
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def hybrid(
@@ -173,9 +169,7 @@ class Search(Base):
         asc=False,
         keep_search_history=False,
         hundred_scale = False,
-        search_history_id = None,
-        verbose: bool = True,
-        output_format: str = "json",
+        search_history_id = None
     ):
         """ 
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -262,9 +256,7 @@ class Search(Base):
                 "edit_distance": edit_distance,
                 "ignore_spaces": ignore_spaces,
                 "traditional_weight": traditional_weight,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def semantic(
@@ -284,9 +276,7 @@ class Search(Base):
         include_count=True,
         asc=False,
         keep_search_history=False,
-        hundred_scale = False,
-        verbose: bool = True,
-        output_format: str = "json",
+        hundred_scale = False
     ):
         """ 
         A more automated hybrid search with a few extra things that automatically adjusts some of the key parameters for more automated and good out of the box results. \n
@@ -356,9 +346,7 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "hundred_scale": hundred_scale,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def diversity(
@@ -387,9 +375,7 @@ class Search(Base):
         search_history_id: str = None,
         n_init: int = 5,
         n_iter: int = 10,
-        return_as_clusters: bool = False,
-        verbose: bool = True,
-        output_format: str = "json",
+        return_as_clusters: bool = False
     ):
         """ 
         This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:
@@ -493,9 +479,7 @@ class Search(Base):
                 "n_init": n_init,
                 "n_iter": n_iter,
                 "return_as_clusters": return_as_clusters,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def traditional(
@@ -512,9 +496,7 @@ class Search(Base):
         include_count: bool = True,
         asc: bool = False,
         keep_search_history: bool = False,
-        search_history_id: str = None,
-        verbose: bool = True,
-        output_format: str = "json",
+        search_history_id: str = None
     ):
         """ 
         Traditional Faceted Keyword Search with edit distance/fuzzy matching. \n
@@ -571,9 +553,7 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "search_history_id": search_history_id,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def chunk(
@@ -596,9 +576,7 @@ class Search(Base):
         include_count: bool = True,
         asc: bool = False,
         keep_search_history: bool = False,
-        hundred_scale: bool = False,
-        verbose: bool = True,
-        output_format: str = "json",
+        hundred_scale: bool = False
     ):
 
         """ 
@@ -683,9 +661,7 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "hundred_scale": hundred_scale
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def multistep_chunk(
@@ -711,9 +687,7 @@ class Search(Base):
         keep_search_history: bool = False,
         hundred_scale: bool = False,
         first_step_page: int = 1,
-        first_step_page_size: int = 20,
-        verbose: bool = True,
-        output_format: str = "json",
+        first_step_page_size: int = 20
     ):
 
         """ 
@@ -796,9 +770,7 @@ class Search(Base):
                 "first_step_multivector_query": first_step_multivector_query,
                 "first_step_page": first_step_page,
                 "first_step_page_size": first_step_page_size,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def advanced_chunk(
@@ -808,9 +780,7 @@ class Search(Base):
         min_score: int = None,
         page_size: int = 20,
         include_vector: bool = False,
-        select_fields: list = [],
-        verbose: bool = True,
-        output_format: str = "json",
+        select_fields: list = []
     ):
         """ 
         A more advanced chunk search to be able to combine vector search and chunk search in many different ways. \n
@@ -883,9 +853,7 @@ class Search(Base):
                 "min_score": min_score,
                 "include_vector": include_vector,
                 "select_fields": select_fields,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 
     def advanced_multistep_chunk(
@@ -906,9 +874,7 @@ class Search(Base):
         min_score: int = 0,
         page_size: int = 20,
         include_vector: bool = False,
-        select_fields: list = [],
-        verbose: bool = True,
-        output_format: str = "json",
+        select_fields: list = []
     ):
         """ 
         Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set. \n
@@ -1017,7 +983,61 @@ class Search(Base):
                 "page_size": page_size,
                 "include_vector": include_vector,
                 "select_fields": select_fields,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
+
+    def _init_experiment_helper(self, categories = ['chunk', 'vector', 'diversity', 'traditional']):
+        self.categories = categories
+        self.traditional_search_doc = "https://docs.relevance.ai/docs/better-text-search-with-hybrid"
+        self.vector_search_doc = "https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both"
+        self.diversity_search_doc = "https://docs.relevance.ai/docs/better-text-search-diversified-search-results"
+        self.hybrid_search_doc = "https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both-1"
+        self.semantic_search_doc = "https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both-2"
+        self.chunk_search_doc =  "https://docs.relevance.ai/docs/better-text-search-chunk-search"
+        self.multistep_chunk_doc = "https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data"
+        self.advanced_chunk_doc = "https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data-1"
+        self.advanced_multistep_chunk_doc = "https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data-2"
+
+        self.initiative_messages = "What else to experiment with :)\n"
+        self.category_initiative_messages = {
+            'chunk': "if you are searching on large pieces of text, you could chunk your data and try\n",
+            'vector': "if you are looking for strong conceptual relations and not just word matching, you could try\n",
+            'diversity': "if you are looking for strong conceptual relations as well as diverse results, you could try\n",
+            'traditional': "if you are looking for specific text such as id, names, etc., you could try\n",
+        }
+
+    def make_suggestion(self):
+        if hasattr(self, "_last_used_endpoint"):
+            self.last_search = self._last_used_endpoint.split('/')[-1]
+        else:
+            self.last_search = None
+        suggestion = self.initiative_messages
+        if 'traditional' in self.categories and self.last_search != 'traditional':
+            suggestion += self.category_initiative_messages['traditional']
+            suggestion += f"   * traditional search ({self.traditional_search_doc})\n"
+
+        if 'vector' in self.categories:
+            suggestion += self.category_initiative_messages['vector']
+            if self.last_search != "vector":
+                 suggestion += f"   * vector search ({self.vector_search_doc})\n"
+            if self.last_search != "hybrid":
+                 suggestion += f"   * hybrid search ({self.hybrid_search_doc})\n"
+            if self.last_search != "semantic":
+                 suggestion += f"   * semantic search ({self.semantic_search_doc})\n"
+
+        if 'diversity' in self.categories and self.last_search != 'diversity':
+            suggestion += self.category_initiative_messages['diversity']
+            suggestion += f"   * diversity search ({self.diversity_search_doc})\n"
+
+        if 'chunk' in self.categories:
+          suggestion += self.category_initiative_messages['chunk']
+          if self.last_search != "chunk":
+              suggestion += f"   * chunk search ({self.chunk_search_doc})\n"
+          if self.last_search != "multistep_chunk":
+              suggestion += f"   * multistep_chunk search ({self.multistep_chunk_doc})\n"
+          if self.last_search != "advanced_chunk":
+              suggestion += f"   * advanced_chunk search ({self.advanced_chunk_doc})\n"
+          if self.last_search != "advanced_multistep_chunk":
+              suggestion += f"   * advanced_multistep_chunk search ({self.advanced_multistep_chunk_doc})\n"
+
+        return {"search":suggestion}
