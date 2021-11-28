@@ -1,4 +1,5 @@
 from relevanceai.base import Base
+from typing import Optional, Dict, Any
 
 
 class Centroids(Base):
@@ -142,6 +143,7 @@ class Centroids(Base):
     ):
         """
         Retrieve the cluster centroids by IDs
+
         Parameters
         ----------
         dataset_id : string
@@ -180,3 +182,52 @@ class Centroids(Base):
             },
             output_format=output_format,
         )
+
+    def metadata(
+        self, 
+        dataset_id: str, 
+        vector_field: str,
+        alias: str="default",
+        metadata: Optional[Dict[str, Any]] = None,
+        output_format: str="json"
+    ):
+        """
+        If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
+        Otherwise, you can store the metadata about your cluster here.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_field: string
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+        metadata: Optional[dict]
+           If None, it will retrieve the metadata, otherwise
+           it will overwrite the metadata of the cluster
+
+        """
+        if metadata is None:
+            return self.make_http_request(
+                "/services/cluster/centroids/metadata",
+                method="GET",
+                parameters={
+                    "dataset_id": dataset_id,
+                    "vector_field": vector_field,
+                    "alias": alias
+                },
+                output_format=output_format
+            )
+        else:
+            return self.make_http_request(
+                "/services/cluster/centroids/metadata",
+                method="POST",
+                parameters={
+                    "dataset_id": dataset_id,
+                    "vector_field": vector_field,
+                    "alias": alias
+                    "metadata": metadata
+                },
+                output_format=output_format
+            )

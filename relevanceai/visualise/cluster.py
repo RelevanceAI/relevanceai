@@ -217,7 +217,8 @@ def cluster(
             if cluster == "kmeans":
                 return KMeans().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "kmedoids":
-                return KMedoids().fit_transform(vectors=vectors, cluster_args=cluster_args)
+                raise NotImplementedError
+                # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
         elif cluster == "hdbscan":
             return HDBSCAN().fit_transform(vectors=vectors, cluster_args=cluster_args)
         
