@@ -26,7 +26,7 @@ class Services(Base):
         self.wordclouds = Wordclouds(project=project, api_key=api_key, base_url=base_url)
         super().__init__(project, api_key, base_url)
 
-    def document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = [], output_format: str = "json", verbose: bool = True):
+    def document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = []):
         """ 
         Find differences between documents
 
@@ -47,8 +47,6 @@ class Services(Base):
                 "doc": doc,
                 "docs_to_compare": docs_to_compare,
                 "difference_fields": difference_fields,
-            },
-            output_format=output_format,
-            verbose=verbose,
+            }
         )
 

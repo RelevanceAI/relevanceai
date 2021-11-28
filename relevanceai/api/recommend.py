@@ -132,7 +132,7 @@ class Recommend(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "hundred_scale": hundred_scale
-            },
+            }
         )
 
     def diversity(
@@ -282,6 +282,6 @@ class Recommend(Base):
                 "n_init": n_init,
                 "n_iter": n_iter,
                 "return_as_clusters": return_as_clusters
-            },
+            }
         )
 

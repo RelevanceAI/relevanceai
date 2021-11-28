@@ -21,8 +21,7 @@ class Cluster(Base):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        alias: str = "default",
-        output_format: str = "json",
+        alias: str = "default"
     ):
         """ 
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
@@ -66,8 +65,7 @@ class Cluster(Base):
                 "flatten": flatten,
                 "vector_field": vector_field,
                 "alias": alias,
-            },
-            output_format=output_format,
+            }
         )
 
     def facets(
@@ -77,8 +75,7 @@ class Cluster(Base):
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
-        date_interval: str = "monthly",
-        output_format: str = "json",
+        date_interval: str = "monthly"
     ):
         """ 
         Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them. \n
@@ -109,6 +106,5 @@ class Cluster(Base):
                 "page": page,
                 "asc": asc,
                 "date_interval": date_interval,
-            },
-            output_format=output_format,
+            }
         )
