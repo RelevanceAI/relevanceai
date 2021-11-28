@@ -30,7 +30,7 @@ requirements = [
 
 excel_requirements = ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
-vis_requirements = ["scikit-learn", "plotly>=5.3.1", "typing-extensions", "typeguard", "dash", "pillow", "opencv-python"]
+vis_requirements = ["scikit-learn", "plotly>=5.3.1", "typing-extensions", "typeguard", "dash", "pillow", "opencv-python", "jupyter_dash", "joblib"]
 
 umap = ["umap-learn>=0.5.2"]
 ivis_cpu = ["ivis[cpu]>=2.0.6"]
