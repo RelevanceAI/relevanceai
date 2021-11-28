@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime
 from setuptools import find_packages, setup
 
@@ -70,7 +71,7 @@ klong_description = (this_directory / "README.md").read_text()
 if os.getenv("_IS_DEV"):
     name = "RelevanceAI-dev"
     version=get_version("relevanceai/__init__.py")
-    version = version + '.' + datetime.today().date().__str__().replace('-', '.')
+    version = version + '.' + datetime.now().__str__().replace('-', '.').replace(" ", ".").replace(":", ".")
 else:
     name = "RelevanceAI"
 
