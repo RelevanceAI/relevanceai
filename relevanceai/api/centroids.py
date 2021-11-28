@@ -98,7 +98,7 @@ class Centroids(Base):
     def insert(
         self,
         dataset_id: str,
-        cluster_centers: dict,
+        cluster_centers: list,
         vector_field: str,
         alias: str = "default",
         output_format: str = "json",
