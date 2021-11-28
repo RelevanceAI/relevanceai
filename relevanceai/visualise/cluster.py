@@ -32,10 +32,23 @@ class ClusterBase(LoguruLogger, DocUtils):
         self,
         vector_field: list,
         docs: list,
-        alias: str="default"
+        alias: str="default",
+        cluster_field: str="_clusters_"
     ):
         """
-        Train clustering algorithm on documents and then return useful information.
+        Train clustering algorithm on documents and then store the labels
+        inside the documents.
+        
+        Parameters
+        -----------
+        vector_field: list
+            The vector field of the documents
+        docs: list
+            List of documents to run clustering on
+        alias: str
+            What the clusters can be called
+        cluster_field: str
+            What the cluster fields should be called
         """
         if len(vector_field) == 1:
             vectors = self.get_field_across_documents(vector_field[0], docs)
@@ -45,7 +58,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
         self.set_field_across_documents(
-            f"_clusters_.{vector_field}.{alias}", cluster_labels, docs
+            f"{cluster_field}.{vector_field}.{alias}", cluster_labels, docs
         )
         return docs
 
@@ -56,7 +69,7 @@ class ClusterBase(LoguruLogger, DocUtils):
     
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):
-            return "_cluster_" + str(label)
+            return "cluster_" + str(label)
         return str(label)
 
     def _label_clusters(self, labels):
@@ -77,7 +90,7 @@ class CentroidCluster(ClusterBase):
         raise NotImplementedError
     
     def get_centroid_docs(self) -> List:
-        """Get the centroid documents
+        """Get the centroid documents to store.
         """
         self.centers = self.get_centers()
         if isinstance(self.centers, np.ndarray):
@@ -106,7 +119,21 @@ class KMeans(CentroidCluster):
         compute_labels: bool = True,
         max_no_improvement: int=2
      ):
-        """Kmeans Centroid Clustering
+        """
+        Kmeans Centroid Clustering
+
+        Parameters
+        ------------
+        k: int
+            The number of clusters
+        init: str
+            The optional parameter to be clustering
+        verbose: bool
+            If True, will print what is happening 
+        compute_labels: bool
+            If True, computes the labels of the cluster 
+        max_no_improvement: int
+            The maximum number of improvemnets
         """
         self.k = k
         self.init = init
