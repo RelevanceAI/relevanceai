@@ -11,81 +11,168 @@ from dataclasses import dataclass
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
+from doc_utils import DocUtils
+
 from relevanceai.base import Base
 from relevanceai.logger import LoguruLogger
 from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
-class ClusterBase(LoguruLogger):
+class ClusterBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
-    ) -> np.ndarray:
+    def fit_transform(self, vectors):
+        """Return the 
+        """
         raise NotImplementedError
+    
+    def fit_documents(
+        self,
+        vector_field: list,
+        docs: list,
+        alias: str="default"
+    ):
+        """
+        Train clustering algorithm on documents and then return useful information.
+        """
+        if len(vector_field) == 1:
+            vectors = self.get_field_across_documents(vector_field[0], docs)
+        else:
+            raise ValueError("We currently do not support more than 1 vector field yet. This will be supported in the future.")
+        cluster_labels = self.fit_transform(vectors)
+        # Label the clusters
+        cluster_labels = self._label_clusters(cluster_labels)
+        self.set_field_across_documents(
+            f"_clusters_.{vector_field}.{alias}", cluster_labels, docs
+        )
+        return docs
 
+    def to_metadata(self):
+        """You can also store the metadata of this clustering algorithm
+        """
+        raise NotImplementedError
+    
+    def _label_cluster(self, label: Union[int, str]):
+        if isinstance(label, (int, float)):
+            return "_cluster_" + str(label)
+        return str(label)
+
+    def _label_clusters(self, labels):
+        return [self._label_cluster(x) for x in labels]
 
 class CentroidCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
-            k: Union[None, int] = None
-    ) -> np.ndarray:
+    def fit_transform(self, vectors):
         raise NotImplementedError
-
+    
+    @abstractmethod
+    def get_centers(self) -> Union[np.ndarray, List[list]]:
+        """Get centers for the centroid-based clusters
+        """
+        raise NotImplementedError
+    
+    def get_centroid_docs(self) -> List:
+        """Get the centroid documents
+        """
+        self.centers = self.get_centers()
+        if isinstance(self.centers, np.ndarray):
+            self.centers = self.centers.tolist()
+        return [
+            {
+                "_id": f"cluster_{i}",
+                "centroid_vector_": self.centers[i]
+            } for i in range(len(self.centers))
+        ]
 
 class DensityCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
-    @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            cluster_args: Dict[Any, Any],
-            min_cluster_size: Union[None, int] = None
-    ) -> np.ndarray:
+    def fit_transform(self, vectors):
         raise NotImplementedError
 
 
 class KMeans(CentroidCluster):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmeans'], 
-        k: Union[None, int] = 10
-    ) -> np.ndarray:
-        from sklearn.cluster import MiniBatchKMeans
-        self.logger.debug(f"{cluster_args}")
-        km = MiniBatchKMeans(n_clusters=k, **cluster_args).fit(vectors)
-        cluster_labels = km.labels_
-        # cluster_centroids = km.cluster_centers_
-        return cluster_labels
-
-
-class KMedoids(CentroidCluster):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmedoids'], 
+    def __init__(
+        self,
         k: Union[None, int] = 10,
-    ) -> np.ndarray:
-        try:
-            from sklearn_extra.cluster import KMedoids
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall umap\n \
-                pip install -U relevanceai[kmedoids]"
-            )
-        self.logger.debug(f"{cluster_args}")
-        km = KMedoids(n_clusters=k, **cluster_args).fit(vectors)
-        cluster_labels = km.labels_
+        init: str = "k-means++",
+        verbose: bool = True,
+        compute_labels: bool = True,
+        max_no_improvement: int=2
+     ):
+        """Kmeans Centroid Clustering
+        """
+        self.k = k
+        self.init = init
+        self.verbose = verbose
+        self.compute_labels = compute_labels
+        self.max_no_improvement = max_no_improvement
+
+    def _init_model(self):
+        from sklearn.cluster import MiniBatchKMeans
+        self.km = MiniBatchKMeans(
+            n_clusters=self.k, 
+            init=self.init,
+            verbose=self.verbose,
+            compute_labels=self.compute_labels,
+            max_no_improvement=self.max_no_improvement
+        )
+        return
+
+    def fit_transform(
+        self,
+        vectors: Union[np.ndarray, List]
+    ):
+        """
+        Fit and transform transform the vectors
+        """
+        if not hasattr(self, "km"):
+            self._init_model()
+        self.km.fit(vectors)
+        cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
+
+    def get_centers(self) -> np.ndarray:
+        """Returns a numpy array of clusters
+        """
+        return self.km.cluster_centers_
+    
+    def to_metadata(self):
+        """Editing the metadata of the function
+        """
+        return {
+            "k": self.k,
+            "init": self.init,
+            "verbose": self.verbose,
+            "compute_labels": self.compute_labels,
+            "max_no_improvement": self.max_no_improvement
+        }
+
+# class KMedoids(CentroidCluster):
+#     def fit_transform(self, 
+#         vectors: np.ndarray, 
+#         cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmedoids'], 
+#         k: Union[None, int] = 10,
+#     ) -> np.ndarray:
+#         try:
+#             from sklearn_extra.cluster import KMedoids
+#         except ModuleNotFoundError as e:
+#             raise ModuleNotFoundError(
+#                 f"{e}\nInstall umap\n \
+#                 pip install -U relevanceai[kmedoids]"
+#             )
+#         self.logger.debug(f"{cluster_args}")
+#         km = KMedoids(n_clusters=k, **cluster_args).fit(vectors)
+#         cluster_labels = km.labels_
+#         # cluster_centroids = km.cluster_centers_
+#         return cluster_labels
 
 
 class HDBSCAN(DensityCluster):
@@ -139,12 +226,14 @@ def cluster(
                 or ("n_clusters" not in cluster_args.keys()):
                 k = _choose_k(vectors)
             if cluster == "kmeans":
-                return KMeans().fit_transform(vectors=vectors, cluster_args=cluster_args)
+                return KMeans(**cluster_args).fit_transform(vectors=vectors)
             elif cluster == "kmedoids":
-                return KMedoids().fit_transform(vectors=vectors, cluster_args=cluster_args)
+                raise NotImplementedError
+                # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
         elif cluster == "hdbscan":
             return HDBSCAN().fit_transform(vectors=vectors, cluster_args=cluster_args)
         
     elif isinstance(cluster, ClusterBase):
         return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
+    raise ValueError("Not valid cluster input.")
     
