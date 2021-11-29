@@ -18,8 +18,8 @@ def test_datasets_smoke():
 
 def test_projector_smoke():
     import relevanceai.vector_tools.constants
-    from relevanceai.vector_tools.dim_reduction import dim_reduce
-    from relevanceai.vector_tools.cluster import cluster
+    from relevanceai.vector_tools.dim_reduction import DimReduction
+    from relevanceai.vector_tools.cluster import Cluster
     from relevanceai.visualise.projector import Projector
 
     assert True
