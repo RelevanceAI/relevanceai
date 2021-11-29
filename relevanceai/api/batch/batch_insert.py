@@ -1,24 +1,24 @@
-"""Batch operation"""
+"""Batch Insert"""
 import json
 import math
-import os
 import sys
 import time
 import traceback
 from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
-from relevanceai.api.client import APIClient
-from relevanceai.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai.api.endpoints.client import APIClient
+from relevanceai.api.batch.batch_retrieve import BatchRetrieve
+from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
-from relevanceai.batch.chunk import Chunker
+from relevanceai.api.batch.chunk import Chunker
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
 
-class BatchInsert(APIClient, Chunker):
+class BatchInsert(BatchRetrieve, APIClient, Chunker):
     def insert_documents(
         self,
         dataset_id: str,
@@ -369,7 +369,7 @@ class BatchInsert(APIClient, Chunker):
             ):
 
                 # Get completed documents
-                log_json = self.datasets.documents.get_where_all(
+                log_json = self.get_all_documents(
                     logging_collection
                 )
                 completed_documents_list = [i["_id"] for i in log_json]

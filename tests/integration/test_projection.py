@@ -15,8 +15,8 @@ from pprint import pprint
 import typing
 from typing_extensions import get_args
 
-from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
+from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
 @pytest.fixture(
@@ -73,8 +73,12 @@ def fixture_cluster_args(request):
     return request.param
 
 
-@pytest.mark.skip(reason="too slow")
-def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
-    """Testing vector label with cluster"""
-    test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
+# @pytest.mark.skip(reason="too slow")
+# def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
+#     """Testing vector label with cluster"""
+#     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
+#     assert True
+
+def test_projector_plot_fast(test_client, test_sample_vector_dataset):
+    test_client.projector.plot(test_sample_vector_dataset, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
     assert True

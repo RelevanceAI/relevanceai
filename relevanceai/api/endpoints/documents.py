@@ -1,4 +1,3 @@
-from requests.models import stream_decode_response_unicode
 from typing import List
 from relevanceai.base import Base
 
@@ -196,7 +195,6 @@ class Documents(Base):
         random_state: int
             Random Seed for retrieving random documents.
         """
-
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
@@ -455,58 +453,6 @@ class Documents(Base):
             method="POST",
             parameters={"id": id, "fields": fields}
         )
-
-    def get_where_all(
-        self,
-        dataset_id: str,
-        chunk_size: int = 10000,
-        filters: List = [],
-        sort: List = [],
-        select_fields: List = [],
-        include_vector: bool = True
-    ):
-        """
-        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
-        
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        chunk_size : list
-            Number of documents to retrieve per retrieval
-        include_vector: bool
-            Include vectors in the search results
-        sort: list
-            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
-        filters: list
-            Query for filtering the search results
-        select_fields : list
-            Fields to include in the search results, empty array/list means all fields.
-        """
-
-        # Initialise values
-        length = 1
-        cursor = None
-        full_data = []
-
-        # While there is still data to fetch, fetch it at the latest cursor
-        while length > 0:
-            x = self.get_where(
-                dataset_id,
-                filters=filters,
-                cursor=cursor,
-                page_size=chunk_size,
-                sort=sort,
-                select_fields=select_fields,
-                include_vector=include_vector
-            )
-            length = len(x["documents"])
-            cursor = x["cursor"]
-
-            # Append fetched data to the full data
-            if length > 0:
-                full_data += x["documents"]
-        return full_data
 
     def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
         """ 

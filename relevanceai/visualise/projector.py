@@ -10,12 +10,15 @@ import plotly.graph_objs as go
 from dataclasses import dataclass
 from typeguard import typechecked
 
-from relevanceai.api.client import APIClient
+from relevanceai.api.client import BatchAPIClient
 from relevanceai.base import Base
-from relevanceai.visualise.constants import *
+from relevanceai.vector_tools.constants import DIM_REDUCTION, CLUSTER
 
-from relevanceai.visualise.cluster import cluster, ClusterBase
-from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
+from relevanceai.vector_tools.cluster import Cluster, ClusterBase
+from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
+
+from typing import List, Union, Dict, Any, Tuple, Optional
+from typing_extensions import Literal
 
 from doc_utils import DocUtils
 
@@ -24,7 +27,7 @@ MARKER_SIZE = 5
 
 
 @dataclass
-class Projector(APIClient, Base, DocUtils):
+class Projector(BatchAPIClient, Base, DocUtils):
     """
     Projector class.
 
@@ -56,7 +59,7 @@ class Projector(APIClient, Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        number_of_points_to_render: Optional[int] = 1000,
+        number_of_points_to_render: int = 1000,
         random_state: int = 0,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
@@ -116,7 +119,8 @@ class Projector(APIClient, Base, DocUtils):
         self.cluster_args = cluster_args
 
         if (vector_label is None) and (colour_label is None):
-            warnings.warn(f"A vector_label or colour_label has not been specified.")
+            warnings.warn(
+                f"A vector_label or colour_label has not been specified.")
 
         if number_of_points_to_render and number_of_points_to_render > 1000:
             warnings.warn(
@@ -130,8 +134,8 @@ class Projector(APIClient, Base, DocUtils):
         if hover_label:
             labels += hover_label
         fields = [label for label in labels if label]
-        self.docs = self._retrieve_documents(
-            dataset_id, fields, number_of_documents, page_size=1000
+        self.docs = self.get_documents(
+            dataset_id, number_of_documents=number_of_documents, batch_size=1000, select_fields=fields
         )
         self._remove_empty_vector_fields(vector_field)
 
@@ -146,7 +150,7 @@ class Projector(APIClient, Base, DocUtils):
             self.vectors = np.array(
                 self.get_field_across_documents(self.vector_field, docs)
             )
-            self.vectors_dr = dim_reduce(
+            self.vectors_dr = DimReduction.dim_reduce(
                 vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims
             )
             points = {
@@ -191,7 +195,7 @@ class Projector(APIClient, Base, DocUtils):
                 #     k=self.num_clusters,
                 # )
                 # self.cluster_labels = _cluster.cluster_labels
-                self.cluster_labels = cluster(
+                self.cluster_labels = Cluster.cluster(
                     vectors=self.vectors,
                     cluster=self.cluster,
                     cluster_args=self.cluster_args,
@@ -201,7 +205,7 @@ class Projector(APIClient, Base, DocUtils):
 
             self.embedding_df.index = self.embedding_df["_id"]
             return self._generate_fig(
-                embedding_df=self.embedding_df, legend=self.legend, marker_size = marker_size, marker_colour = marker_colour
+                embedding_df=self.embedding_df, legend=self.legend, marker_size=marker_size, marker_colour=marker_colour
             )
 
     def _get_vector_fields(self) -> List[str]:
@@ -222,7 +226,8 @@ class Projector(APIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{vector_name} is not a valid vector name")
         else:
-            raise ValueError(f"{vector_name} is not in the {self.dataset_id} schema")
+            raise ValueError(
+                f"{vector_name} is not in the {self.dataset_id} schema")
 
     def _is_valid_label_name(self, label_name: str) -> bool:
         """
@@ -236,72 +241,14 @@ class Projector(APIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{label_name} is not a valid label name")
         else:
-            raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
+            raise ValueError(
+                f"{label_name} is not in the {self.dataset_id} schema")
 
     def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
         """
         Remove documents with empty vector fields
         """
         self.docs = [d for d in self.docs if d.get(vector_field)]
-        return self.docs
-
-    def _retrieve_documents(
-        self,
-        dataset_id: str,
-        fields: List[str],
-        number_of_documents: Optional[int] = 1000,
-        page_size: int = 1000,
-        filters=[],
-    ) -> List[Dict]:
-        """
-        Retrieve all documents from dataset
-        """
-        if number_of_documents:
-            if page_size > number_of_documents or self.random_state != 0:
-                page_size = number_of_documents  # type: ignore
-        else:
-            number_of_documents = 999999999999999
-
-        is_random = True if self.random_state != 0 else False
-        resp = self.datasets.documents.get_where(
-            dataset_id=dataset_id,
-            select_fields=fields,
-            include_vector=True,
-            page_size=page_size,
-            is_random=is_random,
-            random_state=self.random_state,
-            filters=filters,
-        )
-        data = resp["documents"]
-
-        if (
-            (number_of_documents > page_size)
-            and (is_random == False)
-            and (self.random_state == 0)
-        ):
-            _cursor = resp["cursor"]
-            _page = 0
-            while resp:
-                self.logger.debug(f"Paginating {_page} page size {page_size} ...")
-                resp = self.datasets.documents.get_where(
-                    dataset_id=dataset_id,
-                    select_fields=fields,
-                    page_size=page_size,
-                    cursor=_cursor,
-                    include_vector=True,
-                    filters=filters,
-                )
-                _data = resp["documents"]
-                _cursor = resp["cursor"]
-                if (_data == []) or (_cursor == []):
-                    break
-                data += _data
-                if number_of_documents and (len(data) >= int(number_of_documents)):
-                    break
-                _page += 1
-            data = data[:number_of_documents]
-
-        self.docs = data
         return self.docs
 
     def _generate_fig(
