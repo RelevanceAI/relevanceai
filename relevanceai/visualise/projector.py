@@ -17,6 +17,8 @@ from relevanceai.vector_tools.constants import *
 from relevanceai.vector_tools.cluster import Cluster, ClusterBase
 from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
 
+from typing import *
+
 from doc_utils import DocUtils
 
 RELEVANCEAI_BLUE = "#1854FF"
