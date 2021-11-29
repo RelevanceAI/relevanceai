@@ -1,22 +1,19 @@
-"""API Client
+"""Batch client to allow for batch insertions/retrieval and encoding
 """
-from relevanceai.base import Base
-from relevanceai.api.endpoints.admin import Admin
-from relevanceai.api.endpoints.datasets import Datasets
-from relevanceai.api.endpoints.services import Services
-from relevanceai.datasets import ExampleDatasets
+from typing import Callable
+
+from relevanceai.api.batch.batch_insert import BatchInsert
+from relevanceai.api.batch.batch_retrieve import BatchRetrieve
+from relevanceai.api.endpoints.client import APIClient
+from relevanceai.api.batch.chunk import Chunker
 
 
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
+class BatchAPIClient(BatchInsert, BatchRetrieve, APIClient):
+    """Batch API client"""
 
+    def batch_insert(self):
+        raise NotImplemented
 
-class APIClient(Base):
-    """API Client"""
-
-    def __init__(self, project: str, api_key: str, base_url: str):
-        self.datasets = Datasets(project=project, api_key=api_key, base_url=base_url)
-        self.services = Services(project=project, api_key=api_key, base_url=base_url)
-        self.example_datasets = ExampleDatasets()
-        self.admin = Admin(project=project, api_key=api_key, base_url=base_url)
-        super().__init__(project, api_key, base_url)
+    def batch_get_and_edit(self, dataset_id: str, chunk_size: int, bulk_edit: Callable):
+        """Batch get the documents and return the documents"""
+        raise NotImplemented

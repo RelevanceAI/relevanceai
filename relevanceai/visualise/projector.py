@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 from dataclasses import dataclass
 from typeguard import typechecked
 
-from relevanceai.api.client import APIClient
+from relevanceai.api.client import BatchAPIClient
 from relevanceai.base import Base
 from relevanceai.visualise.constants import *
 
@@ -24,7 +24,7 @@ MARKER_SIZE = 5
 
 
 @dataclass
-class Projector(APIClient, Base, DocUtils):
+class Projector(BatchAPIClient, Base, DocUtils):
     """
     Projector class.
 
@@ -130,8 +130,8 @@ class Projector(APIClient, Base, DocUtils):
         if hover_label:
             labels += hover_label
         fields = [label for label in labels if label]
-        self.docs = self._retrieve_documents(
-            dataset_id, fields, number_of_documents, page_size=1000
+        self.docs = self.get_documents(
+            dataset_id, number_of_documents=number_of_documents, batch_size=1000, select_fields=fields
         )
         self._remove_empty_vector_fields(vector_field)
 
@@ -243,65 +243,6 @@ class Projector(APIClient, Base, DocUtils):
         Remove documents with empty vector fields
         """
         self.docs = [d for d in self.docs if d.get(vector_field)]
-        return self.docs
-
-    def _retrieve_documents(
-        self,
-        dataset_id: str,
-        fields: List[str],
-        number_of_documents: Optional[int] = 1000,
-        page_size: int = 1000,
-        filters=[],
-    ) -> List[Dict]:
-        """
-        Retrieve all documents from dataset
-        """
-        if number_of_documents:
-            if page_size > number_of_documents or self.random_state != 0:
-                page_size = number_of_documents  # type: ignore
-        else:
-            number_of_documents = 999999999999999
-
-        is_random = True if self.random_state != 0 else False
-        resp = self.datasets.documents.get_where(
-            dataset_id=dataset_id,
-            select_fields=fields,
-            include_vector=True,
-            page_size=page_size,
-            is_random=is_random,
-            random_state=self.random_state,
-            filters=filters,
-        )
-        data = resp["documents"]
-
-        if (
-            (number_of_documents > page_size)
-            and (is_random == False)
-            and (self.random_state == 0)
-        ):
-            _cursor = resp["cursor"]
-            _page = 0
-            while resp:
-                self.logger.debug(f"Paginating {_page} page size {page_size} ...")
-                resp = self.datasets.documents.get_where(
-                    dataset_id=dataset_id,
-                    select_fields=fields,
-                    page_size=page_size,
-                    cursor=_cursor,
-                    include_vector=True,
-                    filters=filters,
-                )
-                _data = resp["documents"]
-                _cursor = resp["cursor"]
-                if (_data == []) or (_cursor == []):
-                    break
-                data += _data
-                if number_of_documents and (len(data) >= int(number_of_documents)):
-                    break
-                _page += 1
-            data = data[:number_of_documents]
-
-        self.docs = data
         return self.docs
 
     def _generate_fig(

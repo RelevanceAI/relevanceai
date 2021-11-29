@@ -7,7 +7,7 @@ import traceback
 from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
-from relevanceai.api.client import APIClient
+from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar

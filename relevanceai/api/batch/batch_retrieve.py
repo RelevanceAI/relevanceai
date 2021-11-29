@@ -1,7 +1,7 @@
 """Batch Retrieve"""
 
 from typing import List
-from relevanceai.api.client import APIClient
+from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
 
 BYTE_TO_MB = 1024 * 1024
