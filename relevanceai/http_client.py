@@ -18,6 +18,7 @@ try:
 except ModuleNotFoundError as e:
     pass
 
+from relevanceai.vector_tools.client import VectorTools
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -40,26 +41,20 @@ class Client(BatchAPIClient, DocUtils):
 
         if project is None or api_key is None:
             project, api_key = Client.token_to_auth(verbose=verbose)
-            # raise ValueError(
-            #     "It seems you are missing an API key, "
-            #     + "you can sign up for an API key following the instructions here: "
-            #     + "https://discovery.relevance.ai/reference/usage"
-            # )
-
-        # if (
-        #     self.datasets.list(
-        #     ).status_code
-        #     == 200
-        # ):
-        #     if verbose: self.logger.success(self.WELCOME_MESSAGE)
-        # else:
-        # raise APIError(self.FAIL_MESSAGE)
-        if verbose:
-            self.logger.success(self.WELCOME_MESSAGE)
 
         super().__init__(project, api_key, base_url)  # type: ignore
+
+        if self.check_auth():
+            if verbose: self.logger.success(self.WELCOME_MESSAGE)
+        else:
+            raise APIError(self.FAIL_MESSAGE)
+
         if vis_requirements:
             self.projector = Projector(project, api_key, base_url)
+
+        self.vector_tools = VectorTools(project, api_key, base_url)
+
+        
 
     @staticmethod
     def token_to_auth(verbose=True):
@@ -67,11 +62,6 @@ class Client(BatchAPIClient, DocUtils):
             print("You can sign up/login and find your credentials here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
             print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
         token = getpass.getpass("Authorization token (you can find it here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
-        # project = getpass.getpass("Project:")
-        # api_key = getpass.getpass("API key:")
-        # token = getpass.getpass(
-        #     "Paste your project and API key in the format: of `project:api_key` here:"
-        # )
         project = token.split(":")[0]
         api_key = token.split(":")[1]
         return project, api_key
@@ -93,4 +83,8 @@ class Client(BatchAPIClient, DocUtils):
 
     def make_search_suggestion(self):
         return self.services.search.make_suggestion() 
+
+    def check_auth(self):
+        #TO DO
+        return True
 

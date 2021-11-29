@@ -12,10 +12,10 @@ from typeguard import typechecked
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.base import Base
-from relevanceai.visualise.constants import *
+from relevanceai.vector_tools.constants import *
 
-from relevanceai.visualise.cluster import cluster, ClusterBase
-from relevanceai.visualise.dim_reduction import dim_reduce, DimReductionBase
+from relevanceai.vector_tools.cluster import Cluster, ClusterBase
+from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
 
 from doc_utils import DocUtils
 
@@ -146,7 +146,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             self.vectors = np.array(
                 self.get_field_across_documents(self.vector_field, docs)
             )
-            self.vectors_dr = dim_reduce(
+            self.vectors_dr = DimReduction.dim_reduce(
                 vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims
             )
             points = {
@@ -191,7 +191,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 #     k=self.num_clusters,
                 # )
                 # self.cluster_labels = _cluster.cluster_labels
-                self.cluster_labels = cluster(
+                self.cluster_labels = Cluster.cluster(
                     vectors=self.vectors,
                     cluster=self.cluster,
                     cluster_args=self.cluster_args,

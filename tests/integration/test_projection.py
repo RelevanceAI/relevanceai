@@ -15,8 +15,8 @@ from pprint import pprint
 import typing
 from typing_extensions import get_args
 
-from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
+from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
 @pytest.fixture(

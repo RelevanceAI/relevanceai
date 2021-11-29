@@ -1,6 +1,6 @@
 """Test the clustering workflow from getting the documents, clustering and then inserting the relevant centroids
 """
-from relevanceai.visualise.cluster import KMeans
+from relevanceai.vector_tools.cluster import KMeans
 
 def test_cluster_integration(
         test_client, test_sample_vector_dataset
