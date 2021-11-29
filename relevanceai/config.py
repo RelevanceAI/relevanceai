@@ -67,7 +67,7 @@ class Config(DocUtils):
         config["logging"] = {"log_to_file": False, "logging_level": "ERROR",
                              'enable_logging': True, "log_file_name": "relevanceai"}
         config["upload"] = {"target_chunk_mb": 100}
-        config["api"] = {"base_url": "https://gateway-api-aueast.relevance.ai/v1"}
+        config["api"] = {"base_url": "https://gateway-api-aueast.relevance.ai/v1", "output_format": "json"}
         with open(CONFIG_PATH, "w") as configfile:
             config.write(configfile)
 
