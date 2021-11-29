@@ -6,7 +6,7 @@ from typing import Optional
 
 from doc_utils.doc_utils import DocUtils
 
-from relevanceai.batch.client import BatchAPIClient
+from relevanceai.api.batch.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
 

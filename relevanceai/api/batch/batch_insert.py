@@ -1,7 +1,6 @@
-"""Batch operation"""
+"""Batch Insert"""
 import json
 import math
-import os
 import sys
 import time
 import traceback
@@ -9,10 +8,10 @@ from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
 from relevanceai.api.client import APIClient
-from relevanceai.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
-from relevanceai.batch.chunk import Chunker
+from relevanceai.api.batch.chunk import Chunker
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3

@@ -1,9 +1,9 @@
 """API Client
 """
 from relevanceai.base import Base
-from relevanceai.api.admin import Admin
-from relevanceai.api.datasets import Datasets
-from relevanceai.api.services import Services
+from relevanceai.api.endpoints.admin import Admin
+from relevanceai.api.endpoints.datasets import Datasets
+from relevanceai.api.endpoints.services import Services
 from relevanceai.datasets import ExampleDatasets
 
 
