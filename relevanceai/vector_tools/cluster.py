@@ -166,11 +166,11 @@ class KMeans(CentroidCluster):
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
 
-    def get_centers(self) -> np.ndarray:
-        """Returns a numpy array of clusters
+    def get_centers(self, return_list = True):
+        """Returns centroids of clusters
         """
-        return self.km.cluster_centers_
-    
+        return {idx:list(i) for idx, i in enumerate(self.km.cluster_centers_)}
+
     def to_metadata(self):
         """Editing the metadata of the function
         """
