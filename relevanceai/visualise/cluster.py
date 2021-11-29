@@ -169,10 +169,10 @@ class KMeans(CentroidCluster):
         # cluster_centroids = km.cluster_centers_
         return cluster_labels.tolist()
 
-    def get_centers(self) -> np.ndarray:
+    def get_centers(self) -> List:
         """Returns a numpy array of clusters
         """
-        return self.km.cluster_centers_
+        return self.km.cluster_centers_.tolist()
     
     def to_metadata(self):
         """Editing the metadata of the function
@@ -226,7 +226,7 @@ class HDBSCAN(DensityCluster):
 
 
 def _choose_k(vectors: np.ndarray):
-    """ "
+    """
     Choose k clusters
     """
     # Partitioning methods
