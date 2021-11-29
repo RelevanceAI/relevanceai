@@ -64,6 +64,8 @@ class Client(BatchAPIClient, DocUtils):
         token = getpass.getpass("Authorization token (you can find it here: https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api")
         project = token.split(":")[0]
         api_key = token.split(":")[1]
+        os.environ["VDB_PROJECT"] = project
+        os.environ["VDB_API_KEY"] = api_key
         return project, api_key
 
     @staticmethod
