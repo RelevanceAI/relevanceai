@@ -59,7 +59,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        number_of_points_to_render: Optional[int] = 1000,
+        number_of_points_to_render: int = 1000,
         random_state: int = 0,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
