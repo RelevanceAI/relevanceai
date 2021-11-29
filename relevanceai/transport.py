@@ -19,7 +19,6 @@ class Transport:
 
     project: str
     api_key: str
-    base_url: str
     config: Config
     logger: AbstractLogger
 
@@ -47,7 +46,7 @@ class Transport:
 
         start_time = time.perf_counter()
         if base_url is None:
-            base_url = self.base_url
+            base_url = self.config.get_option("api.base_url")
 
         retries = int(self.config.get_option("retries.number_of_retries"))
         seconds_between_retries = int(self.config.get_option("retries.seconds_between_retries"))

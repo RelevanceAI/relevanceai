@@ -34,7 +34,6 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project: Optional[str]=os.getenv("VDB_PROJECT", None),
         api_key: Optional[str]=os.getenv("VDB_API_KEY", None),
-        base_url: Optional[str]="https://gateway-api-aueast.relevance.ai/v1",
         verbose: bool=True
 
     ):
@@ -42,7 +41,7 @@ class Client(BatchAPIClient, DocUtils):
         if project is None or api_key is None:
             project, api_key = Client.token_to_auth(verbose=verbose)
 
-        super().__init__(project, api_key, base_url)  # type: ignore
+        super().__init__(project, api_key)
 
         if self.check_auth():
             if verbose: self.logger.success(self.WELCOME_MESSAGE)
@@ -50,9 +49,9 @@ class Client(BatchAPIClient, DocUtils):
             raise APIError(self.FAIL_MESSAGE)
 
         if vis_requirements:
-            self.projector = Projector(project, api_key, base_url)
+            self.projector = Projector(project, api_key)
 
-        self.vector_tools = VectorTools(project, api_key, base_url)
+        self.vector_tools = VectorTools(project, api_key)
 
         
 
@@ -70,13 +69,12 @@ class Client(BatchAPIClient, DocUtils):
 
     @staticmethod
     def login(
-        base_url: str = "https://gateway-api-aueast.relevance.ai/v1",
         verbose: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = Client.token_to_auth()
         return Client(
-            project=project, api_key=api_key, base_url=base_url, verbose=verbose
+            project=project, api_key=api_key, verbose=verbose
         )
 
     @property
@@ -87,6 +85,9 @@ class Client(BatchAPIClient, DocUtils):
         return self.services.search.make_suggestion() 
 
     def check_auth(self):
-        #TO DO
-        return True
+        response = self.datasets.list()
+        try:
+            return response.status_code == 200    
+        except:
+            return 'datasets' in response
 

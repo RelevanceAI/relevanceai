@@ -4,11 +4,10 @@ from relevanceai.base import Base
 
 
 class Monitor(Base):
-    def __init__(self, project, api_key, base_url):
+    def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
-        self.base_url = base_url
-        super().__init__(project, api_key, base_url)
+        super().__init__(project, api_key)
 
     def health(
         self, dataset_id: str
