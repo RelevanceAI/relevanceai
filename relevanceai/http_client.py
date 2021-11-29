@@ -74,6 +74,8 @@ class Client(BatchAPIClient, DocUtils):
         # )
         project = token.split(":")[0]
         api_key = token.split(":")[1]
+        os.environ["VDB_PROJECT"] = project
+        os.environ["VDB_API_KEY"] = api_key
         return project, api_key
 
     @staticmethod
