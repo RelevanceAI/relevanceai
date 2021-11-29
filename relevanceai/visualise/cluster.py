@@ -50,6 +50,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         cluster_field: str
             What the cluster fields should be called
         """
+        # TODO: Add support for multiple vector fields
         if len(vector_field) == 1:
             vectors = self.get_field_across_documents(vector_field[0], docs)
         else:
@@ -91,7 +92,7 @@ class CentroidCluster(ClusterBase):
         """
         raise NotImplementedError
     
-    def get_centroid_docs(self) -> List:
+    def get_cluster_centers(self) -> List:
         """Get the centroid documents to store.
         """
         self.centers = self.get_centers()
@@ -166,12 +167,12 @@ class KMeans(CentroidCluster):
         self.km.fit(vectors)
         cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
-        return cluster_labels
+        return cluster_labels.tolist()
 
-    def get_centers(self) -> np.ndarray:
+    def get_centers(self) -> List:
         """Returns a numpy array of clusters
         """
-        return self.km.cluster_centers_
+        return self.km.cluster_centers_.tolist()
     
     def to_metadata(self):
         """Editing the metadata of the function
@@ -225,7 +226,7 @@ class HDBSCAN(DensityCluster):
 
 
 def _choose_k(vectors: np.ndarray):
-    """ "
+    """
     Choose k clusters
     """
     # Partitioning methods

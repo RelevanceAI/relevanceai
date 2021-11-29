@@ -26,7 +26,7 @@ def test_cluster_integration(
     )
 
     # Centroids
-    cluster_centers = cluster.get_centroid_docs()
+    cluster_centers = cluster.get_centers()
     test_client.services.cluster.centroids.insert(
         test_sample_vector_dataset,
         vector_field=[VECTOR_FIELD],
@@ -34,4 +34,10 @@ def test_cluster_integration(
         cluster_centers=cluster_centers
     )
     cluster_metadata = cluster.to_metadata()
+    # Insert the centroids
+    # test_client.services.cluster.centroids.insert(
+    #     test_sample_vector_dataset, 
+    #     vector_field="dostring_use_vector_",
+    #     cluster_centers=cluster_centers,
+    #     alias="kmeans_10")    
     assert True
