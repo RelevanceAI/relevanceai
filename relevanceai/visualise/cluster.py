@@ -50,6 +50,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         cluster_field: str
             What the cluster fields should be called
         """
+        # TODO: Add support for multiple vector fields
         if len(vector_field) == 1:
             vectors = self.get_field_across_documents(vector_field[0], docs)
         else:
@@ -166,7 +167,7 @@ class KMeans(CentroidCluster):
         self.km.fit(vectors)
         cluster_labels = self.km.labels_
         # cluster_centroids = km.cluster_centers_
-        return cluster_labels
+        return cluster_labels.tolist()
 
     def get_centers(self) -> np.ndarray:
         """Returns a numpy array of clusters
