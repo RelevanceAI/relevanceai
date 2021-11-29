@@ -32,8 +32,8 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project: str=os.getenv("VDB_PROJECT", None),
-        api_key: str=os.getenv("VDB_API_KEY", None),
+        project = os.getenv("VDB_PROJECT", None),
+        api_key = os.getenv("VDB_API_KEY", None),
         verbose: bool=True
 
     ):
