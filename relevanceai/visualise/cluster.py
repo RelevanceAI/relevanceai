@@ -58,7 +58,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
         self.set_field_across_documents(
-            f"{cluster_field}.{vector_field}.{alias}", cluster_labels, docs
+            f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
         )
         return docs
 
@@ -72,7 +72,9 @@ class ClusterBase(LoguruLogger, DocUtils):
             return "cluster_" + str(label)
         return str(label)
 
-    def _label_clusters(self, labels):
+    def _label_clusters(self, labels: Union[list, np.ndarray]):
+        if isinstance(labels, np.ndarray):
+            labels = labels.tolist()
         return [self._label_cluster(x) for x in labels]
 
 class CentroidCluster(ClusterBase):
