@@ -161,7 +161,7 @@ def get_ecommerce_1_dataset(
 
 
 def get_ecommerce_2_dataset(
-    number_of_documents: int = 1000, select_fields: list = []
+    number_of_documents: int = 1000, select_fields: list = ["_id", "product_image", "product_link", "product_title", "product_price", "query", "source"]
 ):
     """
     Download an example e-commerce dataset \n

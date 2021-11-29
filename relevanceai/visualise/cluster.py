@@ -91,7 +91,7 @@ class CentroidCluster(ClusterBase):
         """
         raise NotImplementedError
     
-    def get_centroid_docs(self) -> List:
+    def get_cluster_centers(self) -> List:
         """Get the centroid documents to store.
         """
         self.centers = self.get_centers()
