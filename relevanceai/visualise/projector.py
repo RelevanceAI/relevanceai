@@ -12,12 +12,13 @@ from typeguard import typechecked
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.base import Base
-from relevanceai.vector_tools.constants import *
+from relevanceai.vector_tools.constants import DIM_REDUCTION, CLUSTER
 
 from relevanceai.vector_tools.cluster import Cluster, ClusterBase
 from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
 
-from typing import *
+from typing import List, Union, Dict, Any, Tuple, Optional
+from typing_extensions import Literal
 
 from doc_utils import DocUtils
 
@@ -118,7 +119,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
         self.cluster_args = cluster_args
 
         if (vector_label is None) and (colour_label is None):
-            warnings.warn(f"A vector_label or colour_label has not been specified.")
+            warnings.warn(
+                f"A vector_label or colour_label has not been specified.")
 
         if number_of_points_to_render and number_of_points_to_render > 1000:
             warnings.warn(
@@ -203,7 +205,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
             self.embedding_df.index = self.embedding_df["_id"]
             return self._generate_fig(
-                embedding_df=self.embedding_df, legend=self.legend, marker_size = marker_size, marker_colour = marker_colour
+                embedding_df=self.embedding_df, legend=self.legend, marker_size=marker_size, marker_colour=marker_colour
             )
 
     def _get_vector_fields(self) -> List[str]:
@@ -224,7 +226,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{vector_name} is not a valid vector name")
         else:
-            raise ValueError(f"{vector_name} is not in the {self.dataset_id} schema")
+            raise ValueError(
+                f"{vector_name} is not in the {self.dataset_id} schema")
 
     def _is_valid_label_name(self, label_name: str) -> bool:
         """
@@ -238,7 +241,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{label_name} is not a valid label name")
         else:
-            raise ValueError(f"{label_name} is not in the {self.dataset_id} schema")
+            raise ValueError(
+                f"{label_name} is not in the {self.dataset_id} schema")
 
     def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
         """
