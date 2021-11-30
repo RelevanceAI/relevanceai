@@ -70,6 +70,18 @@ class Config(DocUtils):
         config["api"] = {"base_url": "https://gateway-api-aueast.relevance.ai/v1", "output_format": "json"}
         with open(CONFIG_PATH, "w") as configfile:
             config.write(configfile)
+    
+    def __getitem__(self, key):
+        """
+        Get teh config using client.config["api.base_url"]
+        """
+        return self.get_option(key)
+    
+    def __setitem__(self, key: str, value: str):
+        """
+        Set the config using client.config["api.base_url"] = "https://..."
+        """
+        return self.set_option(key, value)
 
 
 CONFIG = Config()
