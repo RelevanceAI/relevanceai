@@ -46,13 +46,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 )
     """
 
-    def __init__(self, project, api_key, base_url):
-        self.base_args = {
-            "project": project,
-            "api_key": api_key,
-            "base_url": base_url,
-        }
-        super().__init__(**self.base_args)
+    def __init__(self, project, api_key):
+        self.project = project
+        self.api_key = api_key
+        super().__init__(project, api_key)
 
     @typechecked
     def plot(

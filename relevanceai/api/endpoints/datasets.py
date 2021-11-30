@@ -11,15 +11,14 @@ from relevanceai.api.endpoints.tasks import Tasks
 class Datasets(Base):
     """All dataset-related functions"""
 
-    def __init__(self, project: str, api_key: str, base_url: str):
-        self.base_url = base_url
+    def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
-        self.tasks = Tasks(project=project, api_key=api_key, base_url=base_url)
-        self.documents = Documents(project=project, api_key=api_key, base_url=base_url)
-        self.monitor = Monitor(project=project, api_key=api_key, base_url=base_url)
+        self.tasks = Tasks(project=project, api_key=api_key)
+        self.documents = Documents(project=project, api_key=api_key)
+        self.monitor = Monitor(project=project, api_key=api_key)
 
-        super().__init__(project, api_key, base_url)
+        super().__init__(project, api_key)
 
     def schema(
         self, dataset_id: str

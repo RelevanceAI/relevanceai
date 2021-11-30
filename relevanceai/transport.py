@@ -19,7 +19,6 @@ class Transport:
 
     project: str
     api_key: str
-    base_url: str
     config: Config
     logger: AbstractLogger
 
@@ -32,7 +31,8 @@ class Transport:
         endpoint: str,
         method: str = "GET",
         parameters: dict = {},
-        base_url: str = None
+        base_url: str = None,
+        output_format = None
     ):
         """
         Make the HTTP request
@@ -44,10 +44,12 @@ class Transport:
             POST or GET request
         """
         self._last_used_endpoint = endpoint
-
         start_time = time.perf_counter()
+
         if base_url is None:
-            base_url = self.base_url
+            base_url = self.config.get_option("api.base_url")
+        if output_format is None:
+            output_format = self.config.get_option("api.output_format")
 
         retries = int(self.config.get_option("retries.number_of_retries"))
         seconds_between_retries = int(self.config.get_option("retries.seconds_between_retries"))
@@ -68,15 +70,22 @@ class Transport:
                 with requests.Session() as s:
                     response = s.send(req)
 
+                # Successful response
                 if response.status_code == 200:
                     self._log_response_success(base_url, endpoint)
                     self._log_response_time(base_url, endpoint, time.perf_counter() - start_time)
-                    return response.json()
 
+                    if output_format == 'json':
+                        return response.json()
+                    else:
+                        return response
+
+                # Cancel bad URLs
                 elif response.status_code == 404:
                     self._log_response_fail(base_url, endpoint, response.status_code, response.content.decode())
                     raise APIError(response.content.decode())
 
+                # Retry other errors
                 else:
                     self._log_response_fail(base_url, endpoint, response.status_code, response.content.decode())
                     continue

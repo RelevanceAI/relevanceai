@@ -98,11 +98,10 @@ class Ivis(DimReductionBase):
 
 class DimReduction(Base, DimReductionBase):
 
-    def __init__(self, project, api_key, base_url):
+    def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
-        self.base_url = base_url
-        super().__init__(project, api_key, base_url)
+        super().__init__(project, api_key)
 
     @staticmethod
     def dim_reduce(

@@ -13,10 +13,9 @@ def str2bool(v):
 class Base(Transport, LoguruLogger):
     """Base class for all relevanceai utilities"""
 
-    def __init__(self, project: str, api_key: str, base_url: str):
+    def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
-        self.base_url = base_url
         self.config = CONFIG
         # Initialize logger
         super().__init__()
