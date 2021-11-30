@@ -61,7 +61,6 @@ class Client(BatchAPIClient, DocUtils):
     @output_format.setter
     def output_format(self, value):
         CONFIG.set_option("api.output_format", value)
-        
 
     @staticmethod
     def token_to_auth(verbose=True):
