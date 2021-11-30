@@ -1,7 +1,7 @@
 import pytest
+import random
 
 def test_search_vector(test_client, test_sample_dataset):
-    import random
     results = test_client.services.search.vector(
         test_sample_dataset,
         multivector_query=[
@@ -14,8 +14,6 @@ def test_search_vector(test_client, test_sample_dataset):
     assert "results" in results
 
 def test_suggestion(test_client, test_sample_dataset):
-    import random
-
     results = test_client.services.search.vector(
         test_sample_dataset,
         multivector_query=[
