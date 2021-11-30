@@ -11,8 +11,6 @@ def test_search_vector(test_client, test_sample_dataset):
             }
         ]
     )
-    print("----\n", results.keys(), "\n---")
-
     assert "results" in results
 
 def test_suggestion(test_client, test_sample_dataset):

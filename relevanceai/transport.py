@@ -77,6 +77,10 @@ class Transport:
 
                     if output_format == 'json':
                         return response.json()
+                    elif output_format == 'content':
+                        return response.content
+                    elif output_format == 'status_code':
+                        return response.status_code
                     else:
                         return response
 

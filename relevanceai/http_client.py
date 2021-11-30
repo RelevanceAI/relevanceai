@@ -52,7 +52,15 @@ class Client(BatchAPIClient, DocUtils):
             self.projector = Projector(project, api_key)
 
         self.vector_tools = VectorTools(project, api_key)
+        self.output_format = CONFIG.get_field("api.output_format", CONFIG.config)
 
+    @property
+    def output_format(self):
+        return CONFIG.get_field("api.output_format", CONFIG.config)
+
+    @output_format.setter
+    def output_format(self, value):
+        CONFIG.set_option("api.output_format", value)
         
 
     @staticmethod
