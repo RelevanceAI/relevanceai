@@ -120,6 +120,8 @@ class Search(Base):
             Whether to scale up the metric by 100
         search_history_id: string
             Search history ID, only used for storing search histories.
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/vector",
@@ -170,7 +172,7 @@ class Search(Base):
         asc=False,
         keep_search_history=False,
         hundred_scale = False,
-        search_history_id = None
+        search_history_id = None,
     ):
         """ 
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -453,6 +455,8 @@ class Search(Base):
             Number of iterations in each run
         return_as_clusters: bool
             If True, return as clusters as opposed to results list
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/diversity",
@@ -643,6 +647,8 @@ class Search(Base):
             Whether to store the history into VecDB. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
+        query: string
+            What to store as the query name in the dashboard
         """
 
         return self.make_http_request(
@@ -752,6 +758,8 @@ class Search(Base):
             Page of the results
         first_step_page_size: int
             Size of each page of results
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/multistep_chunk",
@@ -853,6 +861,8 @@ class Search(Base):
             Include vectors in the search results
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/advanced_chunk",
@@ -973,7 +983,8 @@ class Search(Base):
             Include vectors in the search results
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
-
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/advanced_multistep_chunk",
