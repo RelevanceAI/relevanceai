@@ -33,7 +33,8 @@ class ClusterBase(LoguruLogger, DocUtils):
         vector_field: list,
         docs: list,
         alias: str="default",
-        cluster_field: str="_clusters_"
+        cluster_field: str="_clusters_",
+        return_only_clusters: bool=True
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -49,6 +50,9 @@ class ClusterBase(LoguruLogger, DocUtils):
             What the clusters can be called
         cluster_field: str
             What the cluster fields should be called
+        return_only_clusters: bool
+            If True, return only clusters, otherwise returns the original document
+
         """
         if len(vector_field) == 1:
             vectors = self.get_field_across_documents(vector_field[0], docs)
@@ -60,6 +64,8 @@ class ClusterBase(LoguruLogger, DocUtils):
         self.set_field_across_documents(
             f"{cluster_field}.{vector_field}.{alias}", cluster_labels, docs
         )
+        if return_only_clusters:
+            return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs]
         return docs
 
     def to_metadata(self):
