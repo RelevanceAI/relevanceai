@@ -62,7 +62,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
         self.set_field_across_documents(
-            f"{cluster_field}.{vector_field}.{alias}", cluster_labels, docs
+            f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
         )
         if return_only_clusters:
             return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs]
