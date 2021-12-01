@@ -32,7 +32,7 @@ def simple_doc():
     ]
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_client(test_project, test_api_key):
     return Client(test_project, test_api_key)
 
