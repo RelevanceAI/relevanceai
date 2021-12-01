@@ -19,7 +19,7 @@ class DimReductionBase(LoguruLogger):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
-    @abstractmethod
+    # @abstractmethod
     def fit_transform(self, 
             vectors: np.ndarray, 
             dr_args: Dict[Any, Any], 
