@@ -21,7 +21,8 @@ class Transport:
     api_key: str
     config: Config
     logger: AbstractLogger
-    _dashboard_url = "https://us-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest"
+    _dashboard_request_url = "https://us-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest"
+    _dashboard_url = "https://cloud.relevance.ai/sdk/search"
 
     @property
     def auth_header(self):
@@ -64,7 +65,7 @@ class Transport:
                     req = Request(
                         method=method.upper(),
                         # TODO: REMOVE HARDCORE
-                        url=self._dashboard_url,
+                        url=self._dashboard_request_url,
                         headers=self.auth_header,
                         json=parameters if method.upper() == "POST" else {},
                         params=parameters if method.upper() == "GET" else {},
@@ -93,7 +94,7 @@ class Transport:
                     elif output_format == 'status_code':
                         return response.status_code
                     elif output_format == "dashboard":
-                        print("You can now visit the dashboard at ")
+                        print(f"You can now visit the dashboard at {self._dashboard_url}")
                         return response.status_code
                     else:
                         return response
