@@ -42,7 +42,7 @@ def test_dataset_id():
     return "_sample_test_dataset" + RANDOM_STRING
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_docs = simple_doc * 1000
@@ -51,7 +51,7 @@ def test_sample_dataset(test_client, simple_doc, test_dataset_id):
     test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_docs = simple_doc * 1000
@@ -65,7 +65,7 @@ def error_doc():
     return [{"_id": 3, "value": np.nan}]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session")
 def sample_vector_docs():
     def _sample_vector_doc(doc_id: str):
         return {
@@ -82,7 +82,7 @@ def sample_vector_docs():
     return [_sample_vector_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample vector dataset"""
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
