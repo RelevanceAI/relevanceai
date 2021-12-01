@@ -21,12 +21,18 @@ class Transport:
     api_key: str
     config: Config
     logger: AbstractLogger
-    _dashboard_request_url = "https://us-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest"
-    _dashboard_url = "https://cloud.relevance.ai/sdk/search"
+
+    @property
+    def _dashboard_request_url(self):
+        return self.config.get_option("dashboard.dashboard_request_url")
 
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
+
+    @property
+    def _dashboard_url(self):
+        return self.config["dashboard.base_dashboard_url"] + self.config["search_dashboard_endpoint"]
 
     def make_http_request(
         self,
@@ -51,7 +57,10 @@ class Transport:
         if base_url is None:
             base_url = self.config.get_option("api.base_url")
         if output_format is None:
-            output_format = self.config.get_option("api.output_format")
+            if "search" in endpoint and self.output_format is None:
+                output_format = "dashboard"
+            else:
+                output_format = self.config.get_option("api.output_format")
 
         retries = int(self.config.get_option("retries.number_of_retries"))
         seconds_between_retries = int(self.config.get_option("retries.seconds_between_retries"))
@@ -65,7 +74,7 @@ class Transport:
                     req = Request(
                         method=method.upper(),
                         # TODO: REMOVE HARDCORE
-                        url=self.config.get_option("dashboard.dashboard_request_url"),
+                        url=self._dashboard_url,
                         headers=self.auth_header,
                         json=parameters if method.upper() == "POST" else {},
                         params=parameters if method.upper() == "GET" else {},
@@ -94,7 +103,7 @@ class Transport:
                     elif output_format == 'status_code':
                         return response.status_code
                     elif output_format == "dashboard":
-                        print(f"You can now visit the dashboard at {self.config.get_option("dashboard.dashboard_url")}")
+                        print(f"You can now visit the dashboard at {self.config.get_option('dashboard.dashboard_url')}")
                         return response.status_code
                     else:
                         return response
