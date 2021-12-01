@@ -47,4 +47,4 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pip install pytest-rerunfailures
-          python -m pytest --cov=relevanceai -vv -rs -x --reruns 5
+          python -m pytest --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 1
