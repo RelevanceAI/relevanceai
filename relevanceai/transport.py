@@ -31,7 +31,7 @@ class Transport:
         return {"Authorization": self.project + ":" + self.api_key}
 
     @property
-    def _dashboard_url(self):
+    def _search_dashboard_url(self):
         return self.config["dashboard.base_dashboard_url"][1:-1] + \
             self.config["dashboard.search_dashboard_endpoint"][1:-1]
 
@@ -76,13 +76,16 @@ class Transport:
                 "URL you are trying to access:" + base_url + endpoint)
             try:
                 if output_format == "dashboard":
+                    url = self.config.get_option('api.base_url')[:-2]
+                    version = self.config.get_option('api.base_url')[-2:]
                     search_body = {
                         "multivector_search": {
                             "body": parameters, 
-                            "url": self.config.get_option('api.base_url') + "/",
+                            "url": url,
+                            "version": version,
                             "endpoint": endpoint[1:],
                             "metadata": {},
-                            "query": "test",
+                            "query": "test2",
                         },
                     }
                     req = Request(
@@ -117,7 +120,8 @@ class Transport:
                     elif output_format == 'status_code':
                         return response.status_code
                     elif output_format == "dashboard":
-                        print(f"You can now visit the dashboard at {self.config.get_option('dashboard.base_dashboard_url')}")
+                        print(f"You can now visit the dashboard at {self._search_dashboard_url}")
+                        print("If you want to be able to get the JSON instead, change the output_format property.")
                         return response.status_code
                     else:
                         return response
