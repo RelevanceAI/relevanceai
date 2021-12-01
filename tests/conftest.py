@@ -26,6 +26,7 @@ def simple_doc():
         {
             "_id": uuid.uuid4().__str__(),
             "value": random.randint(0, 1000),
+            "sample_1_vector_": generate_random_vector(N=100),
         }
     ]
 
