@@ -43,17 +43,23 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
-        if self.check_auth():
-            if verbose: self.logger.success(self.WELCOME_MESSAGE)
-        else:
-            raise APIError(self.FAIL_MESSAGE)
+        # if self.check_auth():
+        #     if verbose: self.logger.success(self.WELCOME_MESSAGE)
+        # else:
+        #     raise APIError(self.FAIL_MESSAGE)
 
         if vis_requirements:
             self.projector = Projector(project, api_key)
 
         self.vector_tools = VectorTools(project, api_key)
 
-        
+    @property
+    def output_format(self):
+        return CONFIG.get_field("api.output_format", CONFIG.config)
+
+    @output_format.setter
+    def output_format(self, value):
+        CONFIG.set_option("api.output_format", value)
 
     @staticmethod
     def token_to_auth(verbose=True):
@@ -85,9 +91,10 @@ class Client(BatchAPIClient, DocUtils):
         return self.services.search.make_suggestion() 
 
     def check_auth(self):
+        """TODO: Add a proper way to check authentication based on pinging.
+        """
         response = self.datasets.list()
         try:
             return response.status_code == 200    
         except:
-            return 'datasets' in response
-
+            raise Exception("Invalid auth details.")

@@ -69,6 +69,6 @@ class TestPullUpdatePush:
         assert len(response["failed_documents"]) == 0, "Failed to insert docs"
 
 
-class TestCleanUp:
-    def test_clean_up(self, test_client, test_dataset_id):
-        assert test_client.datasets.delete(test_dataset_id)
+# class TestCleanUp:
+#     def test_clean_up(self, test_client, test_dataset_id):
+#         assert test_client.datasets.delete(test_dataset_id)
