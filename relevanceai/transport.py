@@ -32,7 +32,9 @@ class Transport:
 
     @property
     def _dashboard_url(self):
-        return self.config["dashboard.base_dashboard_url"] + self.config["search_dashboard_endpoint"]
+        print(self.config["dashboard.base_dashboard_url"])
+        print(self.config["dashboard.search_dashboard_endpoint"])
+        return self.config["dashboard.base_dashboard_url"] + self.config["dashboard.search_dashboard_endpoint"]
 
     def make_http_request(
         self,

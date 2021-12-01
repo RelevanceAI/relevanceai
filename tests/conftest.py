@@ -11,23 +11,22 @@ from utils import generate_random_string, generate_random_vector
 
 RANDOM_STRING = str(random.randint(0, 999))
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_project():
     # test projects
     return os.getenv("TEST_PROJECT")
 
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_api_key():
     return os.getenv("TEST_API_KEY")
 
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def simple_doc():
     return [
         {
             "_id": uuid.uuid4().__str__(),
             "value": random.randint(0, 1000),
+            "sample_1_vector_": generate_random_vector(N=100),
         }
     ]
 
@@ -37,7 +36,7 @@ def test_client(test_project, test_api_key):
     return Client(test_project, test_api_key)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_dataset_id():
     return "_sample_test_dataset" + RANDOM_STRING
 
@@ -60,7 +59,7 @@ def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
     test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def error_doc():
     return [{"_id": 3, "value": np.nan}]
 

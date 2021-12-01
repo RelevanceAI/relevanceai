@@ -1,9 +1,9 @@
 import pytest
 import random
 
-def test_search_vector(test_client, test_sample_dataset):
+def test_search_vector(test_client, test_sample_vector_dataset):
     results = test_client.services.search.vector(
-        test_sample_dataset,
+        test_sample_vector_dataset,
         multivector_query=[
             {
                 "vector": [random.randint(0, 1000) for _ in range(100)],
@@ -13,9 +13,9 @@ def test_search_vector(test_client, test_sample_dataset):
     )
     assert "results" in results
 
-def test_suggestion(test_client, test_sample_dataset):
+def test_suggestion(test_client, test_sample_vector_dataset):
     results = test_client.services.search.vector(
-        test_sample_dataset,
+        test_sample_vector_dataset,
         multivector_query=[
             {
                 "vector": [random.randint(0, 1000) for _ in range(100)],
