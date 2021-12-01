@@ -57,7 +57,7 @@ class Transport:
         if base_url is None:
             base_url = self.config.get_option("api.base_url")
         if output_format is None:
-            if "search" in endpoint and self.output_format is None:
+            if "search" in endpoint and not hasattr(self, "output_format"):
                 output_format = "dashboard"
             else:
                 output_format = self.config.get_option("api.output_format")
