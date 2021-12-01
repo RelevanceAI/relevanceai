@@ -84,8 +84,8 @@ class Transport:
                             "url": url,
                             "version": version,
                             "endpoint": endpoint[1:],
-                            "metadata": {},
-                            "query": "test2",
+                            "metadata": parameters,
+                            "query": parameters.get("query"),
                         },
                     }
                     req = Request(
