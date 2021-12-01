@@ -21,6 +21,7 @@ class Transport:
     api_key: str
     config: Config
     logger: AbstractLogger
+    _dashboard_url = "https://us-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest"
 
     @property
     def auth_header(self):
@@ -59,13 +60,23 @@ class Transport:
             self.logger.info(
                 "URL you are trying to access:" + base_url + endpoint)
             try:
-                req = Request(
-                    method=method.upper(),
-                    url=base_url + endpoint,
-                    headers=self.auth_header,
-                    json=parameters if method.upper() == "POST" else {},
-                    params=parameters if method.upper() == "GET" else {},
-                ).prepare()
+                if output_format == "dashboard":
+                    req = Request(
+                        method=method.upper(),
+                        # TODO: REMOVE HARDCORE
+                        url=self._dashboard_url,
+                        headers=self.auth_header,
+                        json=parameters if method.upper() == "POST" else {},
+                        params=parameters if method.upper() == "GET" else {},
+                    ).prepare()
+                else:
+                    req = Request(
+                        method=method.upper(),
+                        url=base_url + endpoint,
+                        headers=self.auth_header,
+                        json=parameters if method.upper() == "POST" else {},
+                        params=parameters if method.upper() == "GET" else {},
+                    ).prepare()
 
                 with requests.Session() as s:
                     response = s.send(req)
@@ -80,6 +91,9 @@ class Transport:
                     elif output_format == 'content':
                         return response.content
                     elif output_format == 'status_code':
+                        return response.status_code
+                    elif output_format == "dashboard":
+                        print("You can now visit the dashboard at ")
                         return response.status_code
                     else:
                         return response
