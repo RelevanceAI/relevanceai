@@ -21,7 +21,7 @@ def test_output_format(test_client, test_sample_dataset):
     assert isinstance(results, expected_output_type)
 
 # @pytest.mark.parametrize("output_format, expected_output_type", [("json", dict)])
-def test_output_format_json(test_client, test_sample_dataset, output_format, expected_output_type):
+def test_output_format_json(test_client, test_sample_dataset):
     output_format = "json"
     expected_output_type = dict
     test_client.output_format = output_format
