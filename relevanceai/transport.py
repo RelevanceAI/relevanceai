@@ -24,7 +24,7 @@ class Transport:
 
     @property
     def _dashboard_request_url(self):
-        return self.config.get_option("dashboard.dashboard_request_url")
+        return self.config.get_option("dashboard.dashboard_request_url")[1:-1]
 
     @property
     def auth_header(self):
@@ -32,9 +32,8 @@ class Transport:
 
     @property
     def _dashboard_url(self):
-        print(self.config["dashboard.base_dashboard_url"])
-        print(self.config["dashboard.search_dashboard_endpoint"])
-        return self.config["dashboard.base_dashboard_url"] + self.config["dashboard.search_dashboard_endpoint"]
+        return self.config["dashboard.base_dashboard_url"][1:-1] + \
+            self.config["dashboard.search_dashboard_endpoint"][1:-1]
 
     def make_http_request(
         self,
@@ -57,7 +56,11 @@ class Transport:
         start_time = time.perf_counter()
 
         if base_url is None:
-            base_url = self.config.get_option("api.base_url")
+            if "search" in endpoint and not hasattr(self, "output_format"):
+                base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
+            else:
+                base_url = self.config.get_option("api.base_url")
+
         if output_format is None:
             if "search" in endpoint and not hasattr(self, "output_format"):
                 output_format = "dashboard"
@@ -73,13 +76,22 @@ class Transport:
                 "URL you are trying to access:" + base_url + endpoint)
             try:
                 if output_format == "dashboard":
+                    search_body = {
+                        "multivector_search": {
+                            "body": parameters, 
+                            "url": self.config.get_option('api.base_url') + "/",
+                            "endpoint": endpoint[1:],
+                            "metadata": {},
+                            "query": "test",
+                        },
+                    }
                     req = Request(
                         method=method.upper(),
                         # TODO: REMOVE HARDCORE
-                        url=self._dashboard_url,
+                        url=self._dashboard_request_url,
                         headers=self.auth_header,
-                        json=parameters if method.upper() == "POST" else {},
-                        params=parameters if method.upper() == "GET" else {},
+                        json=search_body,
+                        # params=parameters if method.upper() == "GET" else {},
                     ).prepare()
                 else:
                     req = Request(
@@ -105,7 +117,7 @@ class Transport:
                     elif output_format == 'status_code':
                         return response.status_code
                     elif output_format == "dashboard":
-                        print(f"You can now visit the dashboard at {self.config.get_option('dashboard.dashboard_url')}")
+                        print(f"You can now visit the dashboard at {self.config.get_option('dashboard.base_dashboard_url')}")
                         return response.status_code
                     else:
                         return response
