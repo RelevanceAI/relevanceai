@@ -2,7 +2,6 @@ def test_client_smoke():
     """Simple test to ensure there are no breaking installations."""
     # Import the client
     from relevanceai import Client
-
     assert True
 
 
