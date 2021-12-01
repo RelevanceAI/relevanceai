@@ -64,7 +64,7 @@ class Client(BatchAPIClient, DocUtils):
     @staticmethod
     def token_to_auth(verbose=True):
         if verbose:
-            Oprint("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
+            print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
             print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
         token = getpass.getpass("Authorization token (you can find it here: https://cloud.relevance.ai/sdk/api")
         project = token.split(":")[0]

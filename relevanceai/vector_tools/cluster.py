@@ -168,7 +168,7 @@ class KMeans(CentroidCluster):
         if not hasattr(self, "km"):
             self._init_model()
         self.km.fit(vectors)
-        cluster_labels = self.km.labels_
+        cluster_labels = self.km.labels_.tolist()
         # cluster_centroids = km.cluster_centers_
         return cluster_labels
 
