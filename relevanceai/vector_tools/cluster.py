@@ -226,7 +226,7 @@ class KMeans(MiniBatchKMeans):
         self.tol = tol
         self.verbose = verbose
         self.random_state = random_state
-        self.copy_x = self.copy_x
+        self.copy_x = copy_x
         self.algorithm = algorithm
         self.n_clusters = k
 
