@@ -38,8 +38,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../relevanceai.visualise.html">Visualisations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
@@ -70,7 +70,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for relevanceai</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">relevanceai.http_client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span></span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">vector_tools</span>
+<span class="kn">from</span> <span class="nn">relevanceai.http_client</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="c1"># Import useful utility if possible as well</span>
 <span class="k">try</span><span class="p">:</span>
@@ -78,7 +79,7 @@
 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
     <span class="k">pass</span>
 
-<div class="viewcode-block" id="__version__"><a class="viewcode-back" href="../autoapi/relevanceai/index.html#relevanceai.__version__">[docs]</a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.17.0&quot;</span></div>
+<div class="viewcode-block" id="__version__"><a class="viewcode-back" href="../autoapi/relevanceai/index.html#relevanceai.__version__">[docs]</a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.18.6&quot;</span></div>
 </pre></div>
 
            </div>

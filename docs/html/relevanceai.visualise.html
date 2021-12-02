@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Python Utilities" href="features.html" />
-    <link rel="prev" title="Batch Processing" href="relevanceai.batch.html" /> 
+    <link rel="prev" title="Core Endpoints" href="relevanceai.api.endpoints.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,134 +41,22 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Visualisations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster">CentroidCluster</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.get_centers">get_centers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs">get_centroid_docs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase">ClusterBase</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.fit_documents">fit_documents</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.to_metadata">to_metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster">DensityCluster</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN">HDBSCAN</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.HDBSCAN.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans">KMeans</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.get_centers">get_centers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.to_metadata">to_metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.cluster.KMeans.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.cluster.cluster">cluster</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase">DimReductionBase</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis">Ivis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.Ivis.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA">PCA</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.PCA.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE">TSNE</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.TSNE.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP">UMAP</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.critical">critical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.debug">debug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.error">error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.fit_transform">fit_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.info">info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.success">success</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.warn">warn</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.UMAP.warning">warning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.dim_reduction.dim_reduce">dim_reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.projector.Projector">Projector</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.api_key">api_key</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.base_url">base_url</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.config">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.info">info</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.plot_from_docs">plot_from_docs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.project">project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.warning">warning</a></li>
 </ul>
 </li>
 </ul>
@@ -201,591 +89,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-relevanceai.visualise.cluster">
-<span id="visualisations"></span><h1>Visualisations<a class="headerlink" href="#module-relevanceai.visualise.cluster" title="Permalink to this headline"></a></h1>
+  <section id="module-relevanceai.visualise.projector">
+<span id="visualisations"></span><h1>Visualisations<a class="headerlink" href="#module-relevanceai.visualise.projector" title="Permalink to this headline"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">CentroidCluster</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase" title="relevanceai.visualise.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.cluster.ClusterBase</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.fit_transform">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.get_centers">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.get_centers" title="Permalink to this definition"></a></dt>
-<dd><p>Get centers for the centroid-based clusters</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs">
-<span class="sig-name descname"><span class="pre">get_centroid_docs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.get_centroid_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.get_centroid_docs" title="Permalink to this definition"></a></dt>
-<dd><p>Get the centroid documents to store.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.CentroidCluster.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#CentroidCluster.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.CentroidCluster.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">ClusterBase</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="autoapi/relevanceai/logger/index.html#relevanceai.logger.LoguruLogger" title="relevanceai.logger.LoguruLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.logger.LoguruLogger</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.fit_documents">
-<span class="sig-name descname"><span class="pre">fit_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_clusters_'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.fit_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.fit_documents" title="Permalink to this definition"></a></dt>
-<dd><p>Train clustering algorithm on documents and then store the labels
-inside the documents.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>vector_field</strong> (<em>list</em>) – The vector field of the documents</p></li>
-<li><p><strong>docs</strong> (<em>list</em>) – List of documents to run clustering on</p></li>
-<li><p><strong>alias</strong> (<em>str</em>) – What the clusters can be called</p></li>
-<li><p><strong>cluster_field</strong> (<em>str</em>) – What the cluster fields should be called</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.fit_transform">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.to_metadata">
-<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.to_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>You can also store the metadata of this clustering algorithm</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.ClusterBase.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#ClusterBase.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.ClusterBase.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">DensityCluster</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.cluster.ClusterBase" title="relevanceai.visualise.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.cluster.ClusterBase</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.DensityCluster.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#DensityCluster.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.DensityCluster.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">HDBSCAN</span></span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.cluster.DensityCluster" title="relevanceai.visualise.cluster.DensityCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.cluster.DensityCluster</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'algorithm':</span> <span class="pre">'best',</span> <span class="pre">'alpha':</span> <span class="pre">1.0,</span> <span class="pre">'approx_min_span_tree':</span> <span class="pre">True,</span> <span class="pre">'gen_min_span_tree':</span> <span class="pre">False,</span> <span class="pre">'leaf_size':</span> <span class="pre">40,</span> <span class="pre">'memory':</span> <span class="pre">Memory(location=None),</span> <span class="pre">'metric':</span> <span class="pre">'euclidean',</span> <span class="pre">'min_samples':</span> <span class="pre">None,</span> <span class="pre">'p':</span> <span class="pre">None}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.HDBSCAN.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#HDBSCAN.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.HDBSCAN.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_no_improvement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.cluster.CentroidCluster" title="relevanceai.visualise.cluster.CentroidCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.cluster.CentroidCluster</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Fit and transform transform the vectors</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.get_centers">
-<span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.get_centers" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a numpy array of clusters</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.to_metadata">
-<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.to_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Editing the metadata of the function</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.KMeans.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#KMeans.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.KMeans.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="relevanceai.visualise.cluster.cluster">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.cluster.</span></span><span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/cluster.html#cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.cluster.cluster" title="Permalink to this definition"></a></dt>
-<dd><p>Cluster vectors</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<span class="target" id="module-relevanceai.visualise.constants"></span><span class="target" id="module-relevanceai.visualise.dim_reduction"></span><dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">DimReductionBase</span></span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="autoapi/relevanceai/logger/index.html#relevanceai.logger.LoguruLogger" title="relevanceai.logger.LoguruLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.logger.LoguruLogger</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.fit_transform">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.DimReductionBase.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#DimReductionBase.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.DimReductionBase.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">Ivis</span></span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase" title="relevanceai.visualise.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.dim_reduction.DimReductionBase</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'init':</span> <span class="pre">'pca',</span> <span class="pre">'learning_rate':</span> <span class="pre">100,</span> <span class="pre">'n_iter':</span> <span class="pre">500,</span> <span class="pre">'perplexity':</span> <span class="pre">30,</span> <span class="pre">'random_state':</span> <span class="pre">42}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.Ivis.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#Ivis.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.Ivis.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase" title="relevanceai.visualise.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.dim_reduction.DimReductionBase</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'random_state':</span> <span class="pre">42,</span> <span class="pre">'svd_solver':</span> <span class="pre">'auto'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.PCA.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#PCA.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.PCA.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">TSNE</span></span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase" title="relevanceai.visualise.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.dim_reduction.DimReductionBase</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'init':</span> <span class="pre">'pca',</span> <span class="pre">'learning_rate':</span> <span class="pre">100,</span> <span class="pre">'n_iter':</span> <span class="pre">500,</span> <span class="pre">'perplexity':</span> <span class="pre">30,</span> <span class="pre">'random_state':</span> <span class="pre">42}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.TSNE.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#TSNE.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.TSNE.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">UMAP</span></span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.visualise.dim_reduction.DimReductionBase" title="relevanceai.visualise.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.visualise.dim_reduction.DimReductionBase</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.critical">
-<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.critical" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.debug">
-<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.debug" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.error">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.error" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'min_dist':</span> <span class="pre">0.1,</span> <span class="pre">'n_neighbors':</span> <span class="pre">10,</span> <span class="pre">'random_state':</span> <span class="pre">42,</span> <span class="pre">'transform_seed':</span> <span class="pre">42}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.success">
-<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.success" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.warn">
-<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.warn" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.UMAP.warning">
-<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#UMAP.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.UMAP.warning" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="relevanceai.visualise.dim_reduction.dim_reduce">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">dim_reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/dim_reduction.html#dim_reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.dim_reduction.dim_reduce" title="Permalink to this definition"></a></dt>
-<dd><p>Dimensionality reduction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<span class="target" id="module-relevanceai.visualise.projector"></span><dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.projector.</span></span><span class="sig-name descname"><span class="pre">Projector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="core_api.html#relevanceai.api.client.APIClient" title="relevanceai.api.client.APIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.api.client.APIClient</span></code></a>, <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.projector.</span></span><span class="sig-name descname"><span class="pre">Projector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.api.client.BatchAPIClient</span></code></a>, <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
 <p>Projector class.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -808,13 +117,28 @@ inside the documents.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.base_url">
-<span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.base_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.base_url" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.config">
+<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config"><span class="pre">relevanceai.config.Config</span></a></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.config" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.config">
-<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config"><span class="pre">relevanceai.config.Config</span></a></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.config" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.critical">
+<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.critical" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.debug" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.error" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.info" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -857,6 +181,21 @@ class CustomDimReduction(DimReductionBase):</p>
 <span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.project" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.success">
+<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.success" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.warn">
+<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.warn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.warning">
+<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/visualise/projector.html#Projector.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.visualise.projector.Projector.warning" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-relevanceai.visualise"></span></section>
@@ -865,7 +204,7 @@ class CustomDimReduction(DimReductionBase):</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="relevanceai.batch.html" class="btn btn-neutral float-left" title="Batch Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="relevanceai.api.endpoints.html" class="btn btn-neutral float-left" title="Core Endpoints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="features.html" class="btn btn-neutral float-right" title="Python Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

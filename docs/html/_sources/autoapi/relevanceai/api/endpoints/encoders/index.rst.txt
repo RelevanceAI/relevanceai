@@ -1,0 +1,66 @@
+:py:mod:`relevanceai.api.endpoints.encoders`
+============================================
+
+.. py:module:: relevanceai.api.endpoints.encoders
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.api.endpoints.encoders.Encoders
+
+
+
+
+.. py:class:: Encoders(project: str, api_key: str)
+
+   Bases: :py:obj:`relevanceai.base.Base`
+
+   Base class for all relevanceai utilities
+
+   .. py:method:: textimage(self, text: str)
+
+      Encode text to make searchable with images
+
+      :param text: Text to encode
+      :type text: string
+
+
+   .. py:method:: text(self, text: str)
+
+      Encode text
+
+      :param text: Text to encode
+      :type text: string
+
+
+   .. py:method:: multi_text(self, text)
+
+      Encode multilingual text
+
+      :param text: Text to encode
+      :type text: string
+
+
+   .. py:method:: image(self, image)
+
+      Encode an image
+
+      :param image: URL of image to encode
+      :type image: string
+
+
+   .. py:method:: imagetext(self, image)
+
+      Encode an image to make searchable with text
+
+      :param image: URL of image to encode
+      :type image: string
+
+
+

@@ -56,7 +56,8 @@ Attributes
       :type config_path: string
 
 
-   .. py:method:: view_options(self)
+   .. py:method:: options(self)
+      :property:
 
       View all current config settings
 
@@ -86,6 +87,16 @@ Attributes
 
    .. py:method:: _create_default()
       :staticmethod:
+
+
+   .. py:method:: __getitem__(self, key)
+
+      Get teh config using client.config["api.base_url"]
+
+
+   .. py:method:: __setitem__(self, key: str, value: str)
+
+      Set the config using client.config["api.base_url"] = "https://..."
 
 
 

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.api.batch.batch_retrieve &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.batch.batch_retrieve</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/relevanceai/api/batch/batch_retrieve/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.api.batch.batch_retrieve">
+<span id="relevanceai-api-batch-batch-retrieve"></span><h1><a class="reference internal" href="../../../../../relevanceai.api.batch.html#module-relevanceai.api.batch.batch_retrieve" title="relevanceai.api.batch.batch_retrieve"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.batch.batch_retrieve</span></code></a><a class="headerlink" href="#module-relevanceai.api.batch.batch_retrieve" title="Permalink to this headline"></a></h1>
+<p>Batch Retrieve</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve" title="relevanceai.api.batch.batch_retrieve.BatchRetrieve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BatchRetrieve</span></code></a></p></td>
+<td><p>API Client</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.api.batch.batch_retrieve.BYTE_TO_MB" title="relevanceai.api.batch.batch_retrieve.BYTE_TO_MB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BYTE_TO_MB</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#relevanceai.api.batch.batch_retrieve.LIST_SIZE_MULTIPLIER" title="relevanceai.api.batch.batch_retrieve.LIST_SIZE_MULTIPLIER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LIST_SIZE_MULTIPLIER</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.api.batch.batch_retrieve.BYTE_TO_MB">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.api.batch.batch_retrieve.</span></span><span class="sig-name descname"><span class="pre">BYTE_TO_MB</span></span><a class="reference internal" href="../../../../../_modules/relevanceai/api/batch/batch_retrieve.html#BYTE_TO_MB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.batch.batch_retrieve.BYTE_TO_MB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.api.batch.batch_retrieve.LIST_SIZE_MULTIPLIER">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.api.batch.batch_retrieve.</span></span><span class="sig-name descname"><span class="pre">LIST_SIZE_MULTIPLIER</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">3</span></em><a class="reference internal" href="../../../../../_modules/relevanceai/api/batch/batch_retrieve.html#LIST_SIZE_MULTIPLIER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.batch.batch_retrieve.LIST_SIZE_MULTIPLIER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.api.batch.batch_retrieve.BatchRetrieve">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.batch.batch_retrieve.</span></span><span class="sig-name descname"><span class="pre">BatchRetrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/batch/batch_retrieve.html#BatchRetrieve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.batch.batch_retrieve.BatchRetrieve" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.client.APIClient" title="relevanceai.api.endpoints.client.APIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.endpoints.client.APIClient</span></code></a>, <a class="reference internal" href="../../../../../relevanceai.api.batch.html#relevanceai.api.batch.chunk.Chunker" title="relevanceai.api.batch.chunk.Chunker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.batch.chunk.Chunker</span></code></a></p>
+<p>API Client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.batch.batch_retrieve.BatchRetrieve.get_documents">
+<span class="sig-name descname"><span class="pre">get_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/batch/batch_retrieve.html#BatchRetrieve.get_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.batch.batch_retrieve.BatchRetrieve.get_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched.</p>
+<p>If you are looking to combine your filters with multiple ORs, simply add the following inside the query {“strict”:”must_or”}.
+:param dataset_id: Unique name of dataset
+:type dataset_id: string
+:param number_of_documents: Number of documents to retrieve
+:type number_of_documents: int
+:param select_fields: Fields to include in the search results, empty array/list means all fields.
+:type select_fields: list
+:param cursor: Cursor to paginate the document retrieval
+:type cursor: string
+:param batch_size: Number of documents to retrieve per iteration
+:type batch_size: int
+:param include_vector: Include vectors in the search results
+:type include_vector: bool
+:param sort: Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+:type sort: list
+:param filters: Query for filtering the search results
+:type filters: list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.batch.batch_retrieve.BatchRetrieve.get_all_documents">
+<span class="sig-name descname"><span class="pre">get_all_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/batch/batch_retrieve.html#BatchRetrieve.get_all_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.batch.batch_retrieve.BatchRetrieve.get_all_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>chunk_size</strong> (<em>list</em>) – Number of documents to retrieve per retrieval</p></li>
+<li><p><strong>include_vector</strong> (<em>bool</em>) – Include vectors in the search results</p></li>
+<li><p><strong>sort</strong> (<em>list</em>) – Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – Query for filtering the search results</p></li>
+<li><p><strong>select_fields</strong> (<em>list</em>) – Fields to include in the search results, empty array/list means all fields.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
