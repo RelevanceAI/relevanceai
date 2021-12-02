@@ -244,6 +244,17 @@ class KMeans(MiniBatchKMeans):
         )
         return
 
+    def to_metadata(self):
+        """Editing the metadata of the function
+        """
+        return {
+            "n_clusters": self.n_clusters,
+            "init": self.init,
+            "verbose": self.verbose,
+            "compute_labels": self.compute_labels,
+            "max_no_improvement": self.max_no_improvement
+        }
+
 class HDBSCAN(DensityCluster):
     def fit_transform(self, 
         vectors: np.ndarray, 
