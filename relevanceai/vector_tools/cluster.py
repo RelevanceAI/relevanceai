@@ -210,7 +210,7 @@ class MiniBatchKMeans(CentroidCluster):
 class KMeans(MiniBatchKMeans):
     def __init__(
         self, 
-        n_clusters=10,
+        k=10,
         init="k-means++",
         n_init=10,
         max_iter=300,
@@ -220,7 +220,6 @@ class KMeans(MiniBatchKMeans):
         copy_x=True,
         algorithm="auto", 
     ):
-        self.n_clusters = n_clusters,
         self.init = init
         self.n_init = n_init
         self.max_iter = max_iter
@@ -229,6 +228,7 @@ class KMeans(MiniBatchKMeans):
         self.random_state = random_state
         self.copy_x = self.copy_x
         self.algorithm = algorithm
+        self.n_clusters = k
 
     def _init_model(self):
         from sklearn.cluster import KMeans
