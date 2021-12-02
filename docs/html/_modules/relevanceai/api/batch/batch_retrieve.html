@@ -170,7 +170,13 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.</span>
-<span class="sd">        </span>
+
+<span class="sd">        Example</span>
+<span class="sd">        ---------</span>
+
+<span class="sd">        &gt;&gt;&gt; client = Client()</span>
+<span class="sd">        &gt;&gt;&gt; client.get_all_documents(dataset_id=&quot;sample_dataset&quot;&quot;)</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>

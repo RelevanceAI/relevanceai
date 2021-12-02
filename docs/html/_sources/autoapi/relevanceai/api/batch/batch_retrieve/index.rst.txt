@@ -74,6 +74,11 @@ Attributes
 
       Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
+      .. rubric:: Example
+
+      >>> client = Client()
+      >>> client.get_all_documents(dataset_id="sample_dataset"")
+
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
       :param chunk_size: Number of documents to retrieve per retrieval
