@@ -36,11 +36,6 @@ Classes
 
       
 
-   .. py:attribute:: base_url
-      :annotation: :str
-
-      
-
    .. py:attribute:: config
       :annotation: :relevanceai.config.Config
 
@@ -55,7 +50,7 @@ Classes
       :property:
 
 
-   .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, base_url: str = None)
+   .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, base_url: str = None, output_format=None)
 
       Make the HTTP request
       :param endpoint: The endpoint from the documentation to use

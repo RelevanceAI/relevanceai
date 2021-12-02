@@ -28,7 +28,7 @@ Functions
 .. py:function:: str2bool(v)
 
 
-.. py:class:: Base(project: str, api_key: str, base_url: str)
+.. py:class:: Base(project: str, api_key: str)
 
    Bases: :py:obj:`relevanceai.transport.Transport`, :py:obj:`relevanceai.logger.LoguruLogger`
 

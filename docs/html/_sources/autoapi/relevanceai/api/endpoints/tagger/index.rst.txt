@@ -1,0 +1,111 @@
+:py:mod:`relevanceai.api.endpoints.tagger`
+==========================================
+
+.. py:module:: relevanceai.api.endpoints.tagger
+
+.. autoapi-nested-parse::
+
+   Tagger services
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.api.endpoints.tagger.Tagger
+
+
+
+
+.. py:class:: Tagger(project, api_key)
+
+   Bases: :py:obj:`relevanceai.base.Base`
+
+   Base class for all relevanceai utilities
+
+   .. py:method:: tag(self, data: str, tag_dataset_id: str, encoder: str, tag_field: str = None, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], min_score: float = 0, include_search_relevance: bool = False, search_relevance_cutoff_aggressiveness: int = 1, asc: bool = False, include_score: bool = False)
+
+      Tag documents or vectors
+
+      :param data: Image Url or text or any data suited for the encoder
+      :type data: string
+      :param tag_dataset_id: Name of the dataset you want to tag
+      :type tag_dataset_id: string
+      :param encoder: Which encoder to use.
+      :type encoder: string
+      :param tag_field: The field used to tag in a dataset. If None, automatically uses the one stated in the encoder.
+      :type tag_field: string
+      :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+      :type approximation_depth: int
+      :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
+      :type sum_fields: bool
+      :param page_size: Size of each page of results
+      :type page_size: int
+      :param page: Page of the results
+      :type page: int
+      :param similarity_metric: Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+      :type similarity_metric: string
+      :param filters: Query for filtering the search results
+      :type filters: list
+      :param min_score: Minimum score for similarity metric
+      :type min_score: int
+      :param include_search_relevance: Whether to calculate a search_relevance cutoff score to flag relevant and less relevant results
+      :type include_search_relevance: bool
+      :param search_relevance_cutoff_aggressiveness: How aggressive the search_relevance cutoff score is (higher value the less results will be relevant)
+      :type search_relevance_cutoff_aggressiveness: int
+      :param asc: Whether to sort results by ascending or descending order
+      :type asc: bool
+      :param include_score: Whether to include score
+      :type include_score: bool
+
+
+   .. py:method:: diversity(self, data: str, tag_dataset_id: str, encoder: str, cluster_vector_field: str, n_clusters: int, tag_field: str = None, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], min_score: float = 0, include_search_relevance: bool = False, search_relevance_cutoff_aggressiveness: int = 1, asc: bool = False, include_score: bool = False, n_init: int = 5, n_iter: int = 10)
+
+      Tagging and then clustering the tags and returning one from each cluster (starting from the closest tag)
+
+      :param data: Image Url or text or any data suited for the encoder
+      :type data: string
+      :param tag_dataset_id: Name of the dataset you want to tag
+      :type tag_dataset_id: string
+      :param encoder: Which encoder to use.
+      :type encoder: string
+      :param cluster_vector_field: The field to cluster on.
+      :type cluster_vector_field: str
+      :param n_clusters: Number of clusters to be specified.
+      :type n_clusters: int
+      :param tag_field: The field used to tag in a dataset. If None, automatically uses the one stated in the encoder.
+      :type tag_field: string
+      :param approximation_depth: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate.
+      :type approximation_depth: int
+      :param sum_fields: Whether to sum the multiple vectors similarity search score as 1 or seperate
+      :type sum_fields: bool
+      :param page_size: Size of each page of results
+      :type page_size: int
+      :param page: Page of the results
+      :type page: int
+      :param similarity_metric: Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+      :type similarity_metric: string
+      :param filters: Query for filtering the search results
+      :type filters: list
+      :param min_score: Minimum score for similarity metric
+      :type min_score: int
+      :param include_search_relevance: Whether to calculate a search_relevance cutoff score to flag relevant and less relevant results
+      :type include_search_relevance: bool
+      :param search_relevance_cutoff_aggressiveness: How aggressive the search_relevance cutoff score is (higher value the less results will be relevant)
+      :type search_relevance_cutoff_aggressiveness: int
+      :param asc: Whether to sort results by ascending or descending order
+      :type asc: bool
+      :param include_score: Whether to include score
+      :type include_score: bool
+      :param n_init: Number of runs to run with different centroid seeds
+      :type n_init: int
+      :param n_iter: Number of iterations in each run
+      :type n_iter: int
+
+
+
