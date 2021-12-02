@@ -233,7 +233,7 @@ class KMeans(MiniBatchKMeans):
     def _init_model(self):
         from sklearn.cluster import KMeans
         self.km = KMeans(
-            n_clusters=self.k, 
+            n_clusters=self.n_clusters,
             init=self.init,
             verbose=self.verbose,
             max_iter=self.max_iter,
