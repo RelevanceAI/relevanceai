@@ -9,6 +9,7 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
+from relevanceai.vector_tools.cluster import KMeans
 
 vis_requirements = False
 try:
@@ -100,3 +101,32 @@ class Client(BatchAPIClient, DocUtils):
             return response.status_code == 200    
         except:
             raise Exception("Invalid auth details.")
+
+    def kmeans_cluster(self, dataset_id, vector_fields, k = 10, update_dataset = True):
+        # load the documents
+        # ToDo: tqdm for loading data
+        docs = []
+        batch = self.datasets.documents.list(dataset_id, select_fields = vector_fields)
+        cursor = batch['cursor']
+        while batch:
+            docs.extend(batch['documents'])
+            batch = self.datasets.documents.list(dataset_id, select_fields = vector_fields, cursor = cursor)
+
+        # Cluster
+        clusterer = KMeans(k=k)
+        clustered_docs = clusterer.fit_documents(vector_fields, docs, return_only_clusters=True)
+
+        # Write back the results
+        if update_dataset:
+            for i, doc in enumerate(docs):
+                doc['_clusters_'] = clustered_docs[i]['_cluster_']
+            self.update_documents(dataset_id, docs)
+
+        # Update the centroid collection
+        centers = clusterer.get_centroid_docs()
+        self.services.cluster.centroids.insert(
+            dataset_id = dataset_id,
+            cluster_centers=centers,
+            vector_field=vector_fields[0],
+            alias= 'default'
+        )
