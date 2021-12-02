@@ -185,7 +185,8 @@ class MiniBatchKMeans(CentroidCluster):
             "init": self.init,
             "verbose": self.verbose,
             "compute_labels": self.compute_labels,
-            "max_no_improvement": self.max_no_improvement
+            "max_no_improvement": self.max_no_improvement,
+            "number_of_clusters": self.k
         }
 
 # class KMedoids(CentroidCluster):
