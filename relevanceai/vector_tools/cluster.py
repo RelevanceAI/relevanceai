@@ -248,11 +248,13 @@ class KMeans(MiniBatchKMeans):
         """Editing the metadata of the function
         """
         return {
-            "n_clusters": self.n_clusters,
-            "init": self.init,
-            "verbose": self.verbose,
-            "compute_labels": self.compute_labels,
-            "max_no_improvement": self.max_no_improvement
+            "n_clusters":self.n_clusters,
+            "init":self.init,
+            "max_iter":self.max_iter,
+            "tol":self.tol,
+            "random_state":self.random_state,
+            "copy_x":self.copy_x,
+            "algorithm":self.algorithm,
         }
 
 class HDBSCAN(DensityCluster):
