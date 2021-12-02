@@ -31,8 +31,8 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     "kmeans": {
         "init": "k-means++",
         "verbose": 1,
-        "compute_labels": True,
-        "max_no_improvement": 2,
+        # "compute_labels": True,
+        # "max_no_improvement": 2,
     },
     "kmedoids": {
         "metric": "euclidean",
