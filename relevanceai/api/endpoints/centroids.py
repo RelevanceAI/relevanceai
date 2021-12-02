@@ -235,7 +235,7 @@ class Centroids(Base):
         filters: list = [ ],
         facets: list = [ ],
         min_score: int = 0,
-        include_vectors: bool = False,
+        include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False
     ):
@@ -295,7 +295,7 @@ class Centroids(Base):
                 "filters": filters,
                 "facets": facets,
                 "min_score": min_score,
-                "include_vector": include_vectors,
+                "include_vector": include_vector,
                 "include_count": include_count,
                 "include_facets": include_facets
             }
@@ -316,7 +316,7 @@ class Centroids(Base):
         filters: list = [ ],
         facets: list = [ ],
         min_score: int = 0,
-        include_vectors: bool = False,
+        include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False
     ):
@@ -376,7 +376,7 @@ class Centroids(Base):
                 "filters": filters,
                 "facets": facets,
                 "min_score": min_score,
-                "include_vector": include_vectors,
+                "include_vector": include_vector,
                 "include_count": include_count,
                 "include_facets": include_facets
             }

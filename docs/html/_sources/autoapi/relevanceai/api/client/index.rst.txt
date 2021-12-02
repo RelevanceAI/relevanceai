@@ -5,7 +5,7 @@
 
 .. autoapi-nested-parse::
 
-   API Client
+   Batch client to allow for batch insertions/retrieval and encoding
 
 
 
@@ -17,26 +17,23 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.client.APIClient
+   relevanceai.api.client.BatchAPIClient
 
 
 
-Functions
-~~~~~~~~~
 
-.. autoapisummary::
+.. py:class:: BatchAPIClient(project: str, api_key: str)
 
-   relevanceai.api.client.str2bool
+   Bases: :py:obj:`relevanceai.api.batch.batch_insert.BatchInsert`, :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieve`, :py:obj:`relevanceai.api.endpoints.client.APIClient`
 
+   Batch API client
 
-
-.. py:function:: str2bool(v)
+   .. py:method:: batch_insert(self)
 
 
-.. py:class:: APIClient(project: str, api_key: str, base_url: str)
+   .. py:method:: batch_get_and_edit(self, dataset_id: str, chunk_size: int, bulk_edit: Callable)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+      Batch get the documents and return the documents
 
-   API Client
 
 

@@ -36,9 +36,9 @@ Attributes
 
    
 
-.. py:class:: Projector(project, api_key, base_url)
+.. py:class:: Projector(project, api_key)
 
-   Bases: :py:obj:`relevanceai.api.client.APIClient`, :py:obj:`relevanceai.base.Base`, :py:obj:`doc_utils.DocUtils`
+   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`relevanceai.base.Base`, :py:obj:`doc_utils.DocUtils`
 
    Projector class.
 
@@ -57,7 +57,7 @@ Attributes
            cluster, cluster_args,
            )
 
-   .. py:method:: plot(self, dataset_id: str, vector_field: str, number_of_points_to_render: relevanceai.visualise.constants.Optional[int] = 1000, random_state: int = 0, dr: relevanceai.visualise.constants.Union[relevanceai.visualise.constants.DIM_REDUCTION, relevanceai.visualise.dim_reduction.DimReductionBase] = 'pca', dr_args: relevanceai.visualise.constants.Union[None, relevanceai.visualise.constants.Dict] = None, dims: relevanceai.visualise.constants.Literal[2, 3] = 3, vector_label: relevanceai.visualise.constants.Union[None, str] = None, vector_label_char_length: relevanceai.visualise.constants.Union[None, int] = 50, colour_label: relevanceai.visualise.constants.Union[None, str] = None, colour_label_char_length: relevanceai.visualise.constants.Union[None, int] = 20, hover_label: relevanceai.visualise.constants.List[str] = [], cluster: relevanceai.visualise.constants.Union[relevanceai.visualise.constants.CLUSTER, relevanceai.visualise.cluster.ClusterBase] = None, cluster_args: relevanceai.visualise.constants.Union[None, relevanceai.visualise.constants.Dict] = None, num_clusters: relevanceai.visualise.constants.Union[None, int] = 10, marker_colour: str = RELEVANCEAI_BLUE, marker_size: int = MARKER_SIZE)
+   .. py:method:: plot(self, dataset_id: str, vector_field: str, number_of_points_to_render: int = 1000, random_state: int = 0, dr: Union[relevanceai.vector_tools.constants.DIM_REDUCTION, relevanceai.vector_tools.dim_reduction.DimReductionBase] = 'pca', dr_args: Union[None, Dict] = None, dims: typing_extensions.Literal[2, 3] = 3, vector_label: Union[None, str] = None, vector_label_char_length: Union[None, int] = 50, colour_label: Union[None, str] = None, colour_label_char_length: Union[None, int] = 20, hover_label: List[str] = [], cluster: Union[relevanceai.vector_tools.constants.CLUSTER, relevanceai.vector_tools.cluster.ClusterBase] = None, cluster_args: Union[None, Dict] = None, num_clusters: Union[None, int] = 10, marker_colour: str = RELEVANCEAI_BLUE, marker_size: int = MARKER_SIZE)
 
       Plot function for Embedding Projector class
 
@@ -83,10 +83,10 @@ Attributes
               )
 
 
-   .. py:method:: plot_from_docs(self, docs: relevanceai.visualise.constants.List[relevanceai.visualise.constants.Dict[str, relevanceai.visualise.constants.Any]], dims: int, marker_size: int, marker_colour: str, *args, **kwargs)
+   .. py:method:: plot_from_docs(self, docs: List[Dict[str, Any]], dims: int, marker_size: int, marker_colour: str, *args, **kwargs)
 
 
-   .. py:method:: _get_vector_fields(self) -> relevanceai.visualise.constants.List[str]
+   .. py:method:: _get_vector_fields(self) -> List[str]
 
       Returns list of valid vector fields from dataset schema
 
@@ -101,22 +101,17 @@ Attributes
       Check vector label name is valid. Checks that it is either numeric or text
 
 
-   .. py:method:: _remove_empty_vector_fields(self, vector_field: str) -> relevanceai.visualise.constants.List[relevanceai.visualise.constants.Dict]
+   .. py:method:: _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]
 
       Remove documents with empty vector fields
 
 
-   .. py:method:: _retrieve_documents(self, dataset_id: str, fields: relevanceai.visualise.constants.List[str], number_of_documents: relevanceai.visualise.constants.Optional[int] = 1000, page_size: int = 1000, filters=[]) -> relevanceai.visualise.constants.List[relevanceai.visualise.constants.Dict]
-
-      Retrieve all documents from dataset
-
-
-   .. py:method:: _generate_fig(self, embedding_df: pandas.DataFrame, marker_size: int, marker_colour: str, legend: relevanceai.visualise.constants.Union[None, str]) -> plotly.graph_objs.Figure
+   .. py:method:: _generate_fig(self, embedding_df: pandas.DataFrame, marker_size: int, marker_colour: str, legend: Union[None, str]) -> plotly.graph_objs.Figure
 
       Generates the Scatter plot
 
 
-   .. py:method:: _generate_hover_template(self, df: pandas.DataFrame, dims: int) -> relevanceai.visualise.constants.Tuple[relevanceai.visualise.constants.Optional[pandas.DataFrame], relevanceai.visualise.constants.Optional[str]]
+   .. py:method:: _generate_hover_template(self, df: pandas.DataFrame, dims: int) -> Tuple[Optional[pandas.DataFrame], Optional[str]]
 
       Generating hover template
 

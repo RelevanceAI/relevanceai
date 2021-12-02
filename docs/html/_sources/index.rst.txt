@@ -17,8 +17,8 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Contents
 
-   core_api
-   relevanceai.batch
+   relevanceai.api.batch
+   relevanceai.api.endpoints
    relevanceai.visualise
    features
    

@@ -1,0 +1,91 @@
+:py:mod:`relevanceai.vector_tools.dim_reduction`
+================================================
+
+.. py:module:: relevanceai.vector_tools.dim_reduction
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.vector_tools.dim_reduction.DimReductionBase
+   relevanceai.vector_tools.dim_reduction.PCA
+   relevanceai.vector_tools.dim_reduction.TSNE
+   relevanceai.vector_tools.dim_reduction.UMAP
+   relevanceai.vector_tools.dim_reduction.Ivis
+   relevanceai.vector_tools.dim_reduction.DimReduction
+
+
+
+
+.. py:class:: DimReductionBase
+
+   Bases: :py:obj:`relevanceai.logger.LoguruLogger`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: __call__(self, *args, **kwargs)
+
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, dr_args: Dict[Any, Any], dims: int) -> numpy.ndarray
+      :abstractmethod:
+
+
+
+.. py:class:: PCA
+
+   Bases: :py:obj:`DimReductionBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['pca'], dims: int = 3) -> numpy.ndarray
+
+
+
+.. py:class:: TSNE
+
+   Bases: :py:obj:`DimReductionBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], dims: int = 3) -> numpy.ndarray
+
+
+
+.. py:class:: UMAP
+
+   Bases: :py:obj:`DimReductionBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['umap'], dims: int = 3) -> numpy.ndarray
+
+
+
+.. py:class:: Ivis
+
+   Bases: :py:obj:`DimReductionBase`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray, dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], dims: int = 3) -> numpy.ndarray
+
+
+
+.. py:class:: DimReduction(project, api_key)
+
+   Bases: :py:obj:`relevanceai.base.Base`, :py:obj:`DimReductionBase`
+
+   Base class for all relevanceai utilities
+
+   .. py:method:: dim_reduce(vectors: numpy.ndarray, dr: Union[relevanceai.vector_tools.constants.DIM_REDUCTION, DimReductionBase], dr_args: Union[None, dict], dims: typing_extensions.Literal[2, 3]) -> numpy.ndarray
+      :staticmethod:
+
+      Dimensionality reduction
+
+
+
