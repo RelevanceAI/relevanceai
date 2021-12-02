@@ -33,7 +33,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         vector_field: list,
         docs: list,
         alias: str="default",
-        cluster_field: str="_clusters_",
+        cluster_field: str="_cluster_",
         return_only_clusters: bool=True
     ):
         """
