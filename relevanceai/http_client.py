@@ -116,7 +116,8 @@ class Client(BatchAPIClient, DocUtils):
         random_state = None,
         copy_x: bool = True,
         algorithm: str ="auto",
-        alias: str = "default"
+        alias: str = "default",
+        cluster_field: str="_cluster_"
     ):
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
@@ -134,9 +135,12 @@ class Client(BatchAPIClient, DocUtils):
             algorithm = algorithm)
         clustered_docs = clusterer.fit_documents(vector_fields, docs, return_only_clusters=True)
 
-        # Write back the results
-        for i, doc in enumerate(docs):
-            doc['_clusters_'] = clustered_docs[i]['_cluster_']
+        self.set_field_across_documents(
+            f"{cluster_field}.{vector_fields[0]}.{alias}",
+            [clustered_doc[cluster_field][vector_fields[0]][alias] for clustered_doc in clustered_docs],
+            docs
+        )
+
         self.update_documents(dataset_id, docs)
 
         # Update the centroid collection
@@ -147,3 +151,5 @@ class Client(BatchAPIClient, DocUtils):
             vector_field=vector_fields[0],
             alias= alias
         )
+
+        return centers
