@@ -2,13 +2,15 @@
 """
 import getpass
 import os
-from typing import Optional
+from typing import Optional, List, Union
 
 from doc_utils.doc_utils import DocUtils
 
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.api.batch.batch_retrieve import BatchRetrieve
 from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
+from relevanceai.vector_tools.cluster import KMeans
 
 vis_requirements = False
 try:
@@ -100,3 +102,48 @@ class Client(BatchAPIClient, DocUtils):
             return response.status_code == 200    
         except:
             raise Exception("Invalid auth details.")
+
+    def kmeans_cluster(self,
+        dataset_id: str,
+        vector_fields: list,
+        filters: List = [],
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        n_init: int = 10,
+        max_iter: int = 300,
+        tol: float = 1e-4,
+        verbose: bool = True,
+        random_state = None,
+        copy_x: bool = True,
+        algorithm: str ="auto",
+        alias: str = "default"
+    ):
+        # load the documents
+        docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
+
+        # Cluster
+        clusterer = KMeans(
+            k = k,
+            init = init,
+            n_init = n_init,
+            max_iter= max_iter,
+            tol= tol,
+            verbose = verbose,
+            random_state = random_state,
+            copy_x = copy_x,
+            algorithm = algorithm)
+        clustered_docs = clusterer.fit_documents(vector_fields, docs, return_only_clusters=True)
+
+        # Write back the results
+        for i, doc in enumerate(docs):
+            doc['_clusters_'] = clustered_docs[i]['_cluster_']
+        self.update_documents(dataset_id, docs)
+
+        # Update the centroid collection
+        centers = clusterer.get_centroid_docs()
+        self.services.cluster.centroids.insert(
+            dataset_id = dataset_id,
+            cluster_centers=centers,
+            vector_field=vector_fields[0],
+            alias= alias
+        )
