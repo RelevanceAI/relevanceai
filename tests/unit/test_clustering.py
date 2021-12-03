@@ -1,7 +1,6 @@
 import pytest
 import random
 
-@pytest.fixture(scope="session")
 def test_kmeans(test_client, test_sample_vector_dataset):
     test_client.kmeans_cluster(
         dataset_id= test_sample_vector_dataset,
