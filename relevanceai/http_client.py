@@ -119,6 +119,33 @@ class Client(BatchAPIClient, DocUtils):
         alias: str = "default",
         cluster_field: str="_cluster_"
     ):
+        """
+        This function performs all the steps required for Kmeans clustering:
+        1- Loads the data
+        2- Clusters the data
+        3- Updates the data with clustering info
+        4- Adds the centroid to the hidden centroid collection
+
+        input parameters:
+        dataset_id: name of the dataser
+        vector_fields: a list containing the vector field to be used for clustering
+        filters: a list to filter documents of the dataset,
+        k: K in Kmeans,
+        init: "k-means++" -> Kmeans algorithm parameter ,
+        n_init: number of reinitialization for the kmeans algorithm,
+        max_iter: max iteration in the kmeans algorithm,
+        tol: tol in the kmeans algorithm,,
+        verbose: bool = True,
+        random_state = None,
+        copy_x: bool = True,
+        algorithm: str ="auto",
+        alias: str = "default", string to be used in naming of the field showing the clustering results
+        cluster_field: str="_cluster_"
+
+        returns:
+        a list containing the calculated centroids
+
+        """
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
 
