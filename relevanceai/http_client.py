@@ -2,12 +2,12 @@
 """
 import getpass
 import os
+import sys
 from typing import Optional, List, Union
 
 from doc_utils.doc_utils import DocUtils
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.api.batch.batch_retrieve import BatchRetrieve
 from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
 from relevanceai.vector_tools.cluster import KMeans
@@ -67,8 +67,8 @@ class Client(BatchAPIClient, DocUtils):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
         #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
-        SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
-        # SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
+        # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
+        SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         token = getpass.getpass(f"Authorization token (you can find it here: {SIGNUP_URL}")
         project = token.split(":")[0]
         api_key = token.split(":")[1]
@@ -116,7 +116,8 @@ class Client(BatchAPIClient, DocUtils):
         copy_x: bool = True,
         algorithm: str ="auto",
         alias: str = "default",
-        cluster_field: str="_cluster_"
+        cluster_field: str="_cluster_",
+        overwrite: bool = False
     ):
         """
         This function performs all the steps required for Kmeans clustering:
@@ -125,26 +126,43 @@ class Client(BatchAPIClient, DocUtils):
         3- Updates the data with clustering info
         4- Adds the centroid to the hidden centroid collection
 
-        input parameters:
-        dataset_id: name of the dataser
-        vector_fields: a list containing the vector field to be used for clustering
-        filters: a list to filter documents of the dataset,
-        k: K in Kmeans,
-        init: "k-means++" -> Kmeans algorithm parameter ,
-        n_init: number of reinitialization for the kmeans algorithm,
-        max_iter: max iteration in the kmeans algorithm,
-        tol: tol in the kmeans algorithm,,
-        verbose: bool = True,
-        random_state = None,
-        copy_x: bool = True,
-        algorithm: str ="auto",
-        alias: str = "default", string to be used in naming of the field showing the clustering results
-        cluster_field: str="_cluster_"
-
-        returns:
-        a list containing the calculated centroids
+        Parameters:
+        dataset_id : string
+            name of the dataser
+        vector_fields : list
+            a list containing the vector field to be used for clustering
+        filters : list
+            a list to filter documents of the dataset,
+        k : int
+            K in Kmeans
+        init : string
+            "k-means++" -> Kmeans algorithm parameter
+        n_init : int
+            number of reinitialization for the kmeans algorithm
+        max_iter : int
+            max iteration in the kmeans algorithm
+        tol : int
+            tol in the kmeans algorithm
+        verbose : bool
+            True by default
+        random_state = None
+            None by default -> Kmeans algorithm parameter
+        copy_x : bool
+            True bydefault
+        algorithm : string
+            "auto" by default
+        alias : string
+            "default", string to be used in naming of the field showing the clustering results
+        cluster_field: string
+            "_cluster_", string to name the main cluster field
+        overwrite : bool
+            False by default, To overwite an existing clusering result
 
         """
+        if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
+            self.logger.error("Clustering results already exist.")
+            sys.exit(1)
+
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
 
@@ -161,21 +179,24 @@ class Client(BatchAPIClient, DocUtils):
             algorithm = algorithm)
         clustered_docs = clusterer.fit_documents(vector_fields, docs, return_only_clusters=True)
 
-        self.set_field_across_documents(
-            f"{cluster_field}.{vector_fields[0]}.{alias}",
-            [clustered_doc[cluster_field][vector_fields[0]][alias] for clustered_doc in clustered_docs],
-            docs
-        )
-
-        self.update_documents(dataset_id, docs)
+        # Updating the db
+        try:
+            results = self.update_documents(dataset_id, clustered_docs)
+        except Exception as e:
+            self.logger.error(e)
+        self.logger.info(results)
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
-        self.services.cluster.centroids.insert(
-            dataset_id = dataset_id,
-            cluster_centers=centers,
-            vector_field=vector_fields[0],
-            alias= alias
-        )
+        try:
+            results = self.services.cluster.centroids.insert(
+                dataset_id = dataset_id,
+                cluster_centers=centers,
+                vector_field=vector_fields[0],
+                alias= alias
+            )
+        except Exception as e:
+            self.logger.error(e)
+        self.logger.info(results)
 
         return centers
