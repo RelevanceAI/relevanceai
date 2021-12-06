@@ -177,7 +177,7 @@ class Client(BatchAPIClient, DocUtils):
             random_state = random_state,
             copy_x = copy_x,
             algorithm = algorithm)
-        clustered_docs = clusterer.fit_documents(vector_fields, docs, return_only_clusters=True)
+        clustered_docs = clusterer.fit_documents(vector_fields, docs, alias = alias, cluster_field = cluster_field, return_only_clusters=True)
 
         # Updating the db
         try:
