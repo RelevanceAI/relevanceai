@@ -29,7 +29,8 @@ class Search(Base):
         asc=False,
         keep_search_history=False,
         hundred_scale = False,
-        search_history_id = None
+        search_history_id = None,
+        query: str=None,
     ):
         """ 
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
@@ -119,6 +120,8 @@ class Search(Base):
             Whether to scale up the metric by 100
         search_history_id: string
             Search history ID, only used for storing search histories.
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/vector",
@@ -143,7 +146,8 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "hundred_scale": hundred_scale,
-                "search_history_id": search_history_id
+                "search_history_id": search_history_id,
+                "query": query
             }
         )
 
@@ -168,7 +172,7 @@ class Search(Base):
         asc=False,
         keep_search_history=False,
         hundred_scale = False,
-        search_history_id = None
+        search_history_id = None,
     ):
         """ 
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -255,6 +259,7 @@ class Search(Base):
                 "edit_distance": edit_distance,
                 "ignore_spaces": ignore_spaces,
                 "traditional_weight": traditional_weight,
+                "query": text
             }
         )
 
@@ -345,6 +350,7 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "hundred_scale": hundred_scale,
+                "query": text
             }
         )
 
@@ -374,7 +380,8 @@ class Search(Base):
         search_history_id: str = None,
         n_init: int = 5,
         n_iter: int = 10,
-        return_as_clusters: bool = False
+        return_as_clusters: bool = False,
+        query: str=None
     ):
         """ 
         This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:
@@ -448,6 +455,8 @@ class Search(Base):
             Number of iterations in each run
         return_as_clusters: bool
             If True, return as clusters as opposed to results list
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/diversity",
@@ -478,6 +487,7 @@ class Search(Base):
                 "n_init": n_init,
                 "n_iter": n_iter,
                 "return_as_clusters": return_as_clusters,
+                "query": query
             }
         )
 
@@ -552,6 +562,7 @@ class Search(Base):
                 "asc": asc,
                 "keep_search_history": keep_search_history,
                 "search_history_id": search_history_id,
+                "query": "text"
             }
         )
 
@@ -575,7 +586,8 @@ class Search(Base):
         include_count: bool = True,
         asc: bool = False,
         keep_search_history: bool = False,
-        hundred_scale: bool = False
+        hundred_scale: bool = False,
+        query: str=None,
     ):
 
         """ 
@@ -635,6 +647,8 @@ class Search(Base):
             Whether to store the history into VecDB. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
+        query: string
+            What to store as the query name in the dashboard
         """
 
         return self.make_http_request(
@@ -659,7 +673,8 @@ class Search(Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
-                "hundred_scale": hundred_scale
+                "hundred_scale": hundred_scale,
+                "query": query
             }
         )
 
@@ -686,7 +701,8 @@ class Search(Base):
         keep_search_history: bool = False,
         hundred_scale: bool = False,
         first_step_page: int = 1,
-        first_step_page_size: int = 20
+        first_step_page_size: int = 20,
+        query: str=None
     ):
 
         """ 
@@ -742,6 +758,8 @@ class Search(Base):
             Page of the results
         first_step_page_size: int
             Size of each page of results
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/multistep_chunk",
@@ -769,6 +787,7 @@ class Search(Base):
                 "first_step_multivector_query": first_step_multivector_query,
                 "first_step_page": first_step_page,
                 "first_step_page_size": first_step_page_size,
+                "query": query
             }
         )
 
@@ -779,7 +798,8 @@ class Search(Base):
         min_score: int = None,
         page_size: int = 20,
         include_vector: bool = False,
-        select_fields: list = []
+        select_fields: list = [],
+        query: str=None
     ):
         """ 
         A more advanced chunk search to be able to combine vector search and chunk search in many different ways. \n
@@ -841,6 +861,8 @@ class Search(Base):
             Include vectors in the search results
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/advanced_chunk",
@@ -852,6 +874,7 @@ class Search(Base):
                 "min_score": min_score,
                 "include_vector": include_vector,
                 "select_fields": select_fields,
+                "query": query
             }
         )
 
@@ -873,7 +896,8 @@ class Search(Base):
         min_score: int = 0,
         page_size: int = 20,
         include_vector: bool = False,
-        select_fields: list = []
+        select_fields: list = [],
+        query: str=None
     ):
         """ 
         Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set. \n
@@ -959,7 +983,8 @@ class Search(Base):
             Include vectors in the search results
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
-
+        query: string
+            What to store as the query name in the dashboard
         """
         return self.make_http_request(
             "/services/search/advanced_multistep_chunk",
@@ -982,6 +1007,7 @@ class Search(Base):
                 "page_size": page_size,
                 "include_vector": include_vector,
                 "select_fields": select_fields,
+                "query": query
             }
         )
 
