@@ -33,7 +33,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         vector_field: list,
         docs: list,
         alias: str="default",
-        cluster_field: str="_clusters_",
+        cluster_field: str="_cluster_",
         return_only_clusters: bool=True
     ):
         """
@@ -62,7 +62,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
         self.set_field_across_documents(
-            f"{cluster_field}.{vector_field}.{alias}", cluster_labels, docs
+            f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
         )
         if return_only_clusters:
             return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs]
@@ -116,7 +116,7 @@ class DensityCluster(ClusterBase):
         raise NotImplementedError
 
 
-class KMeans(CentroidCluster):
+class MiniBatchKMeans(CentroidCluster):
     def __init__(
         self,
         k: Union[None, int] = 10,
@@ -185,7 +185,8 @@ class KMeans(CentroidCluster):
             "init": self.init,
             "verbose": self.verbose,
             "compute_labels": self.compute_labels,
-            "max_no_improvement": self.max_no_improvement
+            "max_no_improvement": self.max_no_improvement,
+            "number_of_clusters": self.k
         }
 
 # class KMedoids(CentroidCluster):
@@ -207,6 +208,55 @@ class KMeans(CentroidCluster):
 #         # cluster_centroids = km.cluster_centers_
 #         return cluster_labels
 
+class KMeans(MiniBatchKMeans):
+    def __init__(
+        self, 
+        k=10,
+        init="k-means++",
+        n_init=10,
+        max_iter=300,
+        tol=1e-4,
+        verbose=0,
+        random_state=None,
+        copy_x=True,
+        algorithm="auto", 
+    ):
+        self.init = init
+        self.n_init = n_init
+        self.max_iter = max_iter
+        self.tol = tol
+        self.verbose = verbose
+        self.random_state = random_state
+        self.copy_x = copy_x
+        self.algorithm = algorithm
+        self.n_clusters = k
+
+    def _init_model(self):
+        from sklearn.cluster import KMeans
+        self.km = KMeans(
+            n_clusters=self.n_clusters,
+            init=self.init,
+            verbose=self.verbose,
+            max_iter=self.max_iter,
+            tol=self.tol,
+            random_state=self.random_state,
+            copy_x=self.copy_x,
+            algorithm=self.algorithm
+        )
+        return
+
+    def to_metadata(self):
+        """Editing the metadata of the function
+        """
+        return {
+            "n_clusters":self.n_clusters,
+            "init":self.init,
+            "max_iter":self.max_iter,
+            "tol":self.tol,
+            "random_state":self.random_state,
+            "copy_x":self.copy_x,
+            "algorithm":self.algorithm,
+        }
 
 class HDBSCAN(DensityCluster):
     def fit_transform(self, 

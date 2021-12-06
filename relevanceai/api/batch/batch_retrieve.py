@@ -97,7 +97,13 @@ class BatchRetrieve(APIClient, Chunker):
     ):
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
-        
+
+        Example
+        ---------
+
+        >>> client = Client()
+        >>> client.get_all_documents(dataset_id="sample_dataset"")
+
         Parameters
         ----------
         dataset_id : string

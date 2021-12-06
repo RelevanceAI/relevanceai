@@ -221,7 +221,7 @@ class Centroids(Base):
             )
 
     def list_closest_to_center(
-        self, 
+        self,
         dataset_id: str,
         vector_field: str,
         cluster_ids: list,
@@ -235,7 +235,7 @@ class Centroids(Base):
         filters: list = [ ],
         facets: list = [ ],
         min_score: int = 0,
-        include_vectors: bool = False,
+        include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False
     ):
@@ -295,7 +295,88 @@ class Centroids(Base):
                 "filters": filters,
                 "facets": facets,
                 "min_score": min_score,
-                "include_vector": include_vectors,
+                "include_vector": include_vector,
+                "include_count": include_count,
+                "include_facets": include_facets
+            }
+        )
+
+    def list_furthest_from_center(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        cluster_ids: list,
+        alias: str = "default",
+        select_fields: list = [ ],
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 20,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: list = [ ],
+        facets: list = [ ],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        include_facets: bool = False
+    ):
+        """
+        List of documents closest from the centre.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_field: string
+            The vector field where a clustering task was run.
+        cluster_ids: lsit
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+
+        """
+        return self.make_http_request(
+            "/services/cluster/centroids/list_furthest_from_center",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+                "cluster_ids": cluster_ids,
+                "select_fields": select_fields,
+                "approx": approx,
+                "sum_fields": sum_fields,
+                "page_size": page_size,
+                "page": page,
+                "similarity_metric": similarity_metric,
+                "filters": filters,
+                "facets": facets,
+                "min_score": min_score,
+                "include_vector": include_vector,
                 "include_count": include_count,
                 "include_facets": include_facets
             }

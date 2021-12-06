@@ -1,3 +1,4 @@
+from relevanceai import vector_tools
 from relevanceai.http_client import Client
 
 # Import useful utility if possible as well
@@ -6,4 +7,4 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "0.18.0"
+__version__ = "0.18.7"

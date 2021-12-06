@@ -39,8 +39,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
@@ -135,8 +135,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.config.Config.view_options">
-<span class="sig-name descname"><span class="pre">view_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config.view_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.view_options" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="relevanceai.config.Config.options">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config.options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.options" title="Permalink to this definition"></a></dt>
 <dd><p>View all current config settings</p>
 </dd></dl>
 
@@ -175,6 +175,18 @@
 <dt class="sig sig-object py" id="relevanceai.config.Config._create_default">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_create_default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config._create_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config._create_default" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.config.Config.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.__getitem__" title="Permalink to this definition"></a></dt>
+<dd><p>Get teh config using client.config[“api.base_url”]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.config.Config.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.__setitem__" title="Permalink to this definition"></a></dt>
+<dd><p>Set the config using client.config[“api.base_url”] = “<a class="reference external" href="https://">https://</a>…”</p>
+</dd></dl>
 
 </dd></dl>
 
