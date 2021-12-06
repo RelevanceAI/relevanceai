@@ -181,7 +181,7 @@ class Client(BatchAPIClient, DocUtils):
 
         # Updating the db
         try:
-            results = self.update_documents(dataset_id, clustered_docs)
+            results = self.update_documents(dataset_id, clustered_docs, chunksize = 50)
         except Exception as e:
             self.logger.error(e)
         self.logger.info(results)
