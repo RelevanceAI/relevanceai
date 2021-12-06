@@ -131,8 +131,14 @@ class Projector(BatchAPIClient, Base, DocUtils):
         if hover_label:
             labels += hover_label
         fields = [label for label in labels if label]
+        filters = [{'field' : f,
+            'filter_type' : 'exists',
+            "condition":"==",
+            "condition_value":""}
+            for f in fields
+        ]
         self.docs = self.get_documents(
-            dataset_id, number_of_documents=number_of_documents, batch_size=1000, select_fields=fields
+            dataset_id, number_of_documents=number_of_documents, batch_size=1000, select_fields=fields, filters=filters
         )
         self._remove_empty_vector_fields(vector_field)
 
