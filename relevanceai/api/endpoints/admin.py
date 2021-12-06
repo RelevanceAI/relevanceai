@@ -63,3 +63,43 @@ class Admin(Base):
                 # "filters": filters
             },
         )
+    
+    def send_dataset(
+        self, 
+        dataset_id: str,
+        receiver_project: str,
+        receiver_api_key: str,
+    ):
+        """
+        Send an individual a dataset.
+        
+        Parameters
+        -----------
+
+        dataset_id: str
+            The name of the dataset 
+        receiver_project: str
+            The project name that will receive the dataset
+        receiver_api_key: str
+            The project API key that will receive the dataset
+
+        >>> client.admin.send_dataset(
+            dataset_id="research",
+            receiver_project="...",
+            receiver_api_key="..."
+        )
+
+        """
+        return self.make_http_request(
+            "/admin/copy_foreign_dataset",
+            method="POST",
+            parameters={
+                "project": receiver_project,
+                "api_key": receiver_api_key,
+                "dataset_id": dataset_id,
+                "source_dataset_id": dataset_id,
+                "source_project": self.project,
+                "source_api_key": self.api_key,
+                # "filters": filters
+            },
+        )
