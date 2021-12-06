@@ -55,6 +55,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         """
         if len(vector_field) == 1:
+            docs = [doc for doc in docs if vector_field[0] in doc.keys()]
             vectors = self.get_field_across_documents(vector_field[0], docs)
         else:
             raise ValueError("We currently do not support more than 1 vector field yet. This will be supported in the future.")
