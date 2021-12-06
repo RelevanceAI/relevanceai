@@ -7,6 +7,7 @@ from typing import Union
 from relevanceai.config import Config
 from json.decoder import JSONDecodeError
 from relevanceai.logger import AbstractLogger
+from urllib.parse import urlparse
 
 import requests
 from requests import Request
@@ -35,6 +36,13 @@ class Transport:
         return self.config["dashboard.base_dashboard_url"][1:-1] + \
             self.config["dashboard.search_dashboard_endpoint"][1:-1]
 
+    @staticmethod
+    def is_search_in_path(url: str):
+        if url is None:
+            return False
+        result = urlparse(url)
+        return "search" in result.path.split("/")
+
     def make_http_request(
         self,
         endpoint: str,
@@ -56,26 +64,24 @@ class Transport:
         start_time = time.perf_counter()
 
         if base_url is None:
-            if "search" in endpoint and not hasattr(self, "output_format"):
-                base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
-            else:
-                base_url = self.config.get_option("api.base_url")
+            # if Transport.is_search_in_path(base_url) and not hasattr(self, "output_format"):
+            #     base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
+            # else:
+            base_url = self.config.get_option("api.base_url")
 
         if output_format is None:
-            if "search" in endpoint and not hasattr(self, "output_format"):
-                output_format = "dashboard"
-            else:
-                output_format = self.config.get_option("api.output_format")
+            output_format = self.config.get_option("api.output_format")
 
         retries = int(self.config.get_option("retries.number_of_retries"))
-        seconds_between_retries = int(self.config.get_option("retries.seconds_between_retries"))
-
+        seconds_between_retries = int(self.config.get_option(
+            "retries.seconds_between_retries"))
+        request_url = base_url + endpoint
         for _ in range(retries):
 
             self.logger.info(
-                "URL you are trying to access:" + base_url + endpoint)
+                "URL you are trying to access:" + request_url)
             try:
-                if output_format == "dashboard":
+                if Transport.is_search_in_path(request_url):
                     url = self.config.get_option('api.base_url')[:-2]
                     version = self.config.get_option('api.base_url')[-2:]
                     search_body = {
@@ -90,20 +96,21 @@ class Transport:
                     }
                     req = Request(
                         method=method.upper(),
-                        # TODO: REMOVE HARDCORE
                         url=self._dashboard_request_url,
                         headers=self.auth_header,
                         json=search_body,
                         # params=parameters if method.upper() == "GET" else {},
                     ).prepare()
-                else:
-                    req = Request(
-                        method=method.upper(),
-                        url=base_url + endpoint,
-                        headers=self.auth_header,
-                        json=parameters if method.upper() == "POST" else {},
-                        params=parameters if method.upper() == "GET" else {},
-                    ).prepare()
+                    with requests.Session() as s:
+                        response = s.send(req)
+
+                req = Request(
+                    method=method.upper(),
+                    url=request_url,
+                    headers=self.auth_header,
+                    json=parameters if method.upper() == "POST" else {},
+                    params=parameters if method.upper() == "GET" else {},
+                ).prepare()
 
                 with requests.Session() as s:
                     response = s.send(req)
@@ -114,14 +121,12 @@ class Transport:
                     self._log_response_time(base_url, endpoint, time.perf_counter() - start_time)
 
                     if output_format == 'json':
+                        if Transport.is_search_in_path(request_url):
+                            print(f"You can now visit the dashboard at {self._search_dashboard_url}")
                         return response.json()
                     elif output_format == 'content':
                         return response.content
                     elif output_format == 'status_code':
-                        return response.status_code
-                    elif output_format == "dashboard":
-                        print(f"You can now visit the dashboard at {self._search_dashboard_url}")
-                        print("If you want to be able to get the JSON instead, change the output_format property.")
                         return response.status_code
                     else:
                         return response
