@@ -11,38 +11,37 @@ from utils import generate_random_string, generate_random_vector
 
 RANDOM_STRING = str(random.randint(0, 999))
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_project():
     # test projects
     return os.getenv("TEST_PROJECT")
 
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_api_key():
     return os.getenv("TEST_API_KEY")
 
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def simple_doc():
     return [
         {
             "_id": uuid.uuid4().__str__(),
             "value": random.randint(0, 1000),
+            "sample_1_vector_": generate_random_vector(N=100),
         }
     ]
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_client(test_project, test_api_key):
     return Client(test_project, test_api_key)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_dataset_id():
     return "_sample_test_dataset" + RANDOM_STRING
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_docs = simple_doc * 1000
@@ -51,7 +50,7 @@ def test_sample_dataset(test_client, simple_doc, test_dataset_id):
     test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_docs = simple_doc * 1000
@@ -60,12 +59,12 @@ def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
     test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def error_doc():
     return [{"_id": 3, "value": np.nan}]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session")
 def sample_vector_docs():
     def _sample_vector_doc(doc_id: str):
         return {
@@ -82,7 +81,7 @@ def sample_vector_docs():
     return [_sample_vector_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample vector dataset"""
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)

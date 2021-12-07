@@ -38,10 +38,11 @@ def cause_some_error(docs):
 
 class TestPullUpdatePush:
     """Testing Pull Update Push"""
-
     def test_pull_update_push_simple(self, test_client, test_sample_dataset):
         """Simple test for pull update push"""
-        results = test_client.pull_update_push(test_sample_dataset, do_nothing)
+        results = test_client.pull_update_push(
+            test_sample_dataset, do_nothing
+        )
         assert len(results["failed_documents"]) == 0
 
     def test_pull_update_push_with_errors(self, test_client, test_sample_dataset):
@@ -69,6 +70,6 @@ class TestPullUpdatePush:
         assert len(response["failed_documents"]) == 0, "Failed to insert docs"
 
 
-class TestCleanUp:
-    def test_clean_up(self, test_client, test_dataset_id):
-        assert test_client.datasets.delete(test_dataset_id)
+# class TestCleanUp:
+#     def test_clean_up(self, test_client, test_dataset_id):
+#         assert test_client.datasets.delete(test_dataset_id)

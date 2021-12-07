@@ -39,8 +39,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
@@ -78,43 +78,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.html">relevanceai.api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="relevanceai.api.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.api.html#module-relevanceai.api.tasks">relevanceai.api.tasks module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.api.html#module-relevanceai.api">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks">Tasks</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create">create</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create_cluster_task">create_cluster_task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create_encode_categories_task">create_encode_categories_task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create_encode_imagetext_task">create_encode_imagetext_task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create_encode_text_task">create_encode_text_task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create_encode_textimage_task">create_encode_textimage_task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.create_numeric_encoder_task">create_numeric_encoder_task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.list">list</a></li>
-<li class="toctree-l4"><a class="reference internal" href="relevanceai.api.html#relevanceai.api.tasks.Tasks.status">status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.api.html#relevanceai-api-tasks-module">relevanceai.api.tasks module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relevanceai.api.html#module-relevanceai.api">Module contents</a></li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert">BatchInsert</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_df">insert_df</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.insert_documents">insert_documents</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push">pull_update_push</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">pull_update_push_to_cloud</a></li>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.batch_insert.BatchInsert.update_documents">update_documents</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.chunk.Chunker">Chunker</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.chunk.Chunker.chunk">chunk</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.client.BatchAPIClient">BatchAPIClient</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="relevanceai.batch.html#relevanceai.batch.client.BatchAPIClient.batch_get_and_edit">batch_get_and_edit</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a></li>
 </ul>
 </div>
 </section>
@@ -125,7 +93,7 @@
 <span id="relevanceai-base-module"></span><h2>relevanceai.base module<a class="headerlink" href="#module-relevanceai.base" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.base.Base">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.base.</span></span><span class="sig-name descname"><span class="pre">Base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/base.html#Base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.base.Base" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.base.</span></span><span class="sig-name descname"><span class="pre">Base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/base.html#Base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.base.Base" title="Permalink to this definition"></a></dt>
 <dd><p>Base class for all relevanceai utilities</p>
 </dd></dl>
 
@@ -150,6 +118,12 @@
 <dd class="field-odd"><p><strong>option</strong> (<em>string</em>) – Setting key</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="relevanceai.config.Config.options">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">options</span></span><a class="reference internal" href="_modules/relevanceai/config.html#Config.options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.options" title="Permalink to this definition"></a></dt>
+<dd><p>View all current config settings</p>
 </dd></dl>
 
 <dl class="py method">
@@ -181,12 +155,6 @@
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.config.Config.view_options">
-<span class="sig-name descname"><span class="pre">view_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/config.html#Config.view_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.view_options" title="Permalink to this definition"></a></dt>
-<dd><p>View all current config settings</p>
 </dd></dl>
 
 </dd></dl>
@@ -281,7 +249,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="relevanceai.datasets.get_ecommerce_2_dataset">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_2_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/datasets.html#get_ecommerce_2_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_2_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_ecommerce_2_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['_id',</span> <span class="pre">'product_image',</span> <span class="pre">'product_link',</span> <span class="pre">'product_title',</span> <span class="pre">'product_price',</span> <span class="pre">'query',</span> <span class="pre">'source']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/datasets.html#get_ecommerce_2_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_ecommerce_2_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Download an example e-commerce dataset</p>
 <p>Total Len: 739</p>
 <p>Sample document:</p>
@@ -588,7 +556,7 @@ Sample document:
 
 <dl class="py function">
 <dt class="sig sig-object py" id="relevanceai.datasets.get_sample_ecommerce_dataset">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_sample_ecommerce_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/datasets.html#get_sample_ecommerce_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_sample_ecommerce_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">relevanceai.datasets.</span></span><span class="sig-name descname"><span class="pre">get_sample_ecommerce_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_documents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['_id',</span> <span class="pre">'product_image',</span> <span class="pre">'product_link',</span> <span class="pre">'product_title',</span> <span class="pre">'product_price',</span> <span class="pre">'query',</span> <span class="pre">'source']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/datasets.html#get_sample_ecommerce_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.datasets.get_sample_ecommerce_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Download an example e-commerce dataset</p>
 <p>Total Len: 739</p>
 <p>Sample document:</p>
@@ -646,11 +614,17 @@ Sample document:
 <p>access the client via this class</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.http_client.Client">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.http_client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jacky-wong'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OEt0NmluWUJ0M1l0bEZIYWxRaXk6ZzkxaUhtOHZRVi1RRC1BcnhoVjVkQQ'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://gateway-api-aueast.relevance.ai/v1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.http_client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OEt0NmluWUJ0M1l0bEZIYWxRaXk6ZzkxaUhtOHZRVi1RRC1BcnhoVjVkQQ'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client" title="Permalink to this definition"></a></dt>
 <dd><p>Python Client for Relevance AI’s relevanceai</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.http_client.Client.check_auth">
+<span class="sig-name descname"><span class="pre">check_auth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client.check_auth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client.check_auth" title="Permalink to this definition"></a></dt>
+<dd><p>TODO: Add a proper way to check authentication based on pinging.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.http_client.Client.login">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://gateway-api-aueast.relevance.ai/v1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client.login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client.login" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client.login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client.login" title="Permalink to this definition"></a></dt>
 <dd><p>Preferred login method for demos and interactive usage.</p>
 </dd></dl>
 
@@ -683,7 +657,7 @@ with cm:</p>
 <dd><p>Base class for all relevanceai objects</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.transport.Transport.make_http_request">
-<span class="sig-name descname"><span class="pre">make_http_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GET'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/transport.html#Transport.make_http_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport.make_http_request" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">make_http_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GET'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/transport.html#Transport.make_http_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport.make_http_request" title="Permalink to this definition"></a></dt>
 <dd><p>Make the HTTP request
 :type endpoint: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param endpoint: The endpoint from the documentation to use

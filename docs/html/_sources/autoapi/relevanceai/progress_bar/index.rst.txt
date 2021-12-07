@@ -31,14 +31,6 @@ Functions
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.progress_bar.x
-
-
 .. py:class:: ProgressBar
 
    .. py:method:: __call__(self, iterable)
@@ -88,9 +80,4 @@ Attributes
 
 .. py:function:: progress_bar(iterable, show_progress_bar: bool = False)
 
-
-.. py:data:: x
-   :annotation: = 0
-
-   
 

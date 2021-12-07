@@ -39,8 +39,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
@@ -72,7 +72,7 @@
              
   <section id="module-relevanceai.api.client">
 <span id="relevanceai-api-client"></span><h1><a class="reference internal" href="../../../../core_api.html#module-relevanceai.api.client" title="relevanceai.api.client"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.api.client</span></code></a><a class="headerlink" href="#module-relevanceai.api.client" title="Permalink to this headline"></a></h1>
-<p>API Client</p>
+<p>Batch client to allow for batch insertions/retrieval and encoding</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 <section id="classes">
@@ -83,35 +83,27 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../../../core_api.html#relevanceai.api.client.APIClient" title="relevanceai.api.client.APIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">APIClient</span></code></a></p></td>
-<td><p>API Client</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BatchAPIClient</span></code></a></p></td>
+<td><p>Batch API client</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.api.client.str2bool" title="relevanceai.api.client.str2bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str2bool</span></code></a>(v)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py function">
-<dt class="sig sig-object py" id="relevanceai.api.client.str2bool">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.api.client.</span></span><span class="sig-name descname"><span class="pre">str2bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/client.html#str2bool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.client.str2bool" title="Permalink to this definition"></a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.api.client.BatchAPIClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.client.</span></span><span class="sig-name descname"><span class="pre">BatchAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/client.html#BatchAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.client.BatchAPIClient" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert" title="relevanceai.api.batch.batch_insert.BatchInsert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.batch.batch_insert.BatchInsert</span></code></a>, <a class="reference internal" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve" title="relevanceai.api.batch.batch_retrieve.BatchRetrieve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.batch.batch_retrieve.BatchRetrieve</span></code></a>, <a class="reference internal" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.client.APIClient" title="relevanceai.api.endpoints.client.APIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.endpoints.client.APIClient</span></code></a></p>
+<p>Batch API client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.client.BatchAPIClient.batch_insert">
+<span class="sig-name descname"><span class="pre">batch_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/client.html#BatchAPIClient.batch_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.client.BatchAPIClient.batch_insert" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.api.client.APIClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.client.</span></span><span class="sig-name descname"><span class="pre">APIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/client.html#APIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.client.APIClient" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../../../relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a></p>
-<p>API Client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.client.BatchAPIClient.batch_get_and_edit">
+<span class="sig-name descname"><span class="pre">batch_get_and_edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_edit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/api/client.html#BatchAPIClient.batch_get_and_edit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.client.BatchAPIClient.batch_get_and_edit" title="Permalink to this definition"></a></dt>
+<dd><p>Batch get the documents and return the documents</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

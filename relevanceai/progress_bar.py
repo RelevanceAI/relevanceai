@@ -79,12 +79,3 @@ def progress_bar(iterable, show_progress_bar: bool = False):
         pass
     return NullProgressBar(iterable)
 
-
-if __name__ == "__main__":
-
-    x = 0
-    for i in progress_bar(range(5), show_progress_bar=False):
-        x += 1
-        print(i)
-        if x > 10:
-            break

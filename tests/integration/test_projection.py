@@ -7,8 +7,8 @@ from pprint import pprint
 import typing
 from typing_extensions import get_args
 
-from relevanceai.visualise.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-from relevanceai.visualise.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
+from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 
 
 @pytest.fixture(
@@ -73,3 +73,4 @@ def fixture_cluster_args(request):
 # def test_projector_plot_fast(test_client, test_sample_vector_dataset):
 #     test_client.projector.plot(test_sample_vector_dataset, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
 #     assert True
+

@@ -11,7 +11,7 @@ Subpackages
    :maxdepth: 3
 
    api/index.rst
-   batch/index.rst
+   vector_tools/index.rst
    visualise/index.rst
 
 
@@ -53,9 +53,9 @@ Attributes
    relevanceai.__version__
 
 
-.. py:class:: Client(project: Optional[str] = os.getenv('VDB_PROJECT', None), api_key: Optional[str] = os.getenv('VDB_API_KEY', None), base_url: Optional[str] = 'https://gateway-api-aueast.relevance.ai/v1', verbose: bool = True)
+.. py:class:: Client(project=os.getenv('VDB_PROJECT', None), api_key=os.getenv('VDB_API_KEY', None), verbose: bool = True)
 
-   Bases: :py:obj:`relevanceai.batch.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
+   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
 
    Python Client for Relevance AI's relevanceai
 
@@ -69,11 +69,15 @@ Attributes
 
       
 
+   .. py:method:: output_format(self)
+      :property:
+
+
    .. py:method:: token_to_auth(verbose=True)
       :staticmethod:
 
 
-   .. py:method:: login(base_url: str = 'https://gateway-api-aueast.relevance.ai/v1', verbose: bool = True)
+   .. py:method:: login(verbose: bool = True)
       :staticmethod:
 
       Preferred login method for demos and interactive usage.
@@ -86,9 +90,15 @@ Attributes
    .. py:method:: make_search_suggestion(self)
 
 
+   .. py:method:: check_auth(self)
+
+      TODO: Add a proper way to check authentication based on pinging.
+
+
+
 
 .. py:data:: __version__
-   :annotation: = 0.17.0
+   :annotation: = 0.18.6
 
    
 

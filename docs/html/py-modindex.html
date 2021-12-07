@@ -41,8 +41,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="core_api.html">Core Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="relevanceai.batch.html">Batch Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
@@ -96,17 +96,27 @@
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.admin"><code class="xref">relevanceai.api.admin</code></a></td><td>
+       <a href="relevanceai.api.batch.html#module-relevanceai.api.batch"><code class="xref">relevanceai.api.batch</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.aggregate"><code class="xref">relevanceai.api.aggregate</code></a></td><td>
+       <a href="relevanceai.api.batch.html#module-relevanceai.api.batch.batch_insert"><code class="xref">relevanceai.api.batch.batch_insert</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.centroids"><code class="xref">relevanceai.api.centroids</code></a></td><td>
+       <a href="relevanceai.api.batch.html#module-relevanceai.api.batch.batch_retrieve"><code class="xref">relevanceai.api.batch.batch_retrieve</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.batch.html#module-relevanceai.api.batch.chunk"><code class="xref">relevanceai.api.batch.chunk</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.batch.html#module-relevanceai.api.batch.local_logger"><code class="xref">relevanceai.api.batch.local_logger</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -116,67 +126,92 @@
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.cluster"><code class="xref">relevanceai.api.cluster</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints"><code class="xref">relevanceai.api.endpoints</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="autoapi/relevanceai/api/datasets/index.html#module-relevanceai.api.datasets"><code class="xref">relevanceai.api.datasets</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.admin"><code class="xref">relevanceai.api.endpoints.admin</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.documents"><code class="xref">relevanceai.api.documents</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.aggregate"><code class="xref">relevanceai.api.endpoints.aggregate</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.encoders"><code class="xref">relevanceai.api.encoders</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.centroids"><code class="xref">relevanceai.api.endpoints.centroids</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.monitor"><code class="xref">relevanceai.api.monitor</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.client"><code class="xref">relevanceai.api.endpoints.client</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="autoapi/relevanceai/api/prediction/index.html#module-relevanceai.api.prediction"><code class="xref">relevanceai.api.prediction</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.cluster"><code class="xref">relevanceai.api.endpoints.cluster</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.recommend"><code class="xref">relevanceai.api.recommend</code></a></td><td>
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.datasets"><code class="xref">relevanceai.api.endpoints.datasets</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.documents"><code class="xref">relevanceai.api.endpoints.documents</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.encoders"><code class="xref">relevanceai.api.endpoints.encoders</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.monitor"><code class="xref">relevanceai.api.endpoints.monitor</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.prediction"><code class="xref">relevanceai.api.endpoints.prediction</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.recommend"><code class="xref">relevanceai.api.endpoints.recommend</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.search"><code class="xref">relevanceai.api.endpoints.search</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.services"><code class="xref">relevanceai.api.endpoints.services</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.tagger"><code class="xref">relevanceai.api.endpoints.tagger</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.tasks"><code class="xref">relevanceai.api.endpoints.tasks</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.wordclouds"><code class="xref">relevanceai.api.endpoints.wordclouds</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="core_api.html#module-relevanceai.api.requests_config"><code class="xref">relevanceai.api.requests_config</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="core_api.html#module-relevanceai.api.search"><code class="xref">relevanceai.api.search</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="autoapi/relevanceai/api/services/index.html#module-relevanceai.api.services"><code class="xref">relevanceai.api.services</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="autoapi/relevanceai/api/tagger/index.html#module-relevanceai.api.tagger"><code class="xref">relevanceai.api.tagger</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.api.html#module-relevanceai.api.tasks"><code class="xref">relevanceai.api.tasks</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="autoapi/relevanceai/api/wordclouds/index.html#module-relevanceai.api.wordclouds"><code class="xref">relevanceai.api.wordclouds</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -187,26 +222,6 @@
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="relevanceai.batch.html#module-relevanceai.batch"><code class="xref">relevanceai.batch</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.batch.html#module-relevanceai.batch.batch_insert"><code class="xref">relevanceai.batch.batch_insert</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.batch.html#module-relevanceai.batch.chunk"><code class="xref">relevanceai.batch.chunk</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.batch.html#module-relevanceai.batch.client"><code class="xref">relevanceai.batch.client</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="autoapi/relevanceai/batch/local_logger/index.html#module-relevanceai.batch.local_logger"><code class="xref">relevanceai.batch.local_logger</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -251,22 +266,32 @@
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
+       <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools"><code class="xref">relevanceai.vector_tools</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.client"><code class="xref">relevanceai.vector_tools.client</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.cluster"><code class="xref">relevanceai.vector_tools.cluster</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.constants"><code class="xref">relevanceai.vector_tools.constants</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.dim_reduction"><code class="xref">relevanceai.vector_tools.dim_reduction</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
        <a href="relevanceai.visualise.html#module-relevanceai.visualise"><code class="xref">relevanceai.visualise</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.visualise.html#module-relevanceai.visualise.cluster"><code class="xref">relevanceai.visualise.cluster</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.visualise.html#module-relevanceai.visualise.constants"><code class="xref">relevanceai.visualise.constants</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="relevanceai.visualise.html#module-relevanceai.visualise.dim_reduction"><code class="xref">relevanceai.visualise.dim_reduction</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
