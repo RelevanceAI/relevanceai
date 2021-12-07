@@ -9,7 +9,7 @@ from doc_utils.doc_utils import DocUtils
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.config import CONFIG
-from relevanceai.errors import APIError
+from relevanceai.errors import APIError, ClusteringResultsAlredyExistsError
 from relevanceai.vector_tools.cluster import KMeans
 
 vis_requirements = False
@@ -31,6 +31,7 @@ class Client(BatchAPIClient, DocUtils):
 
     WELCOME_MESSAGE = """Welcome to the RelevanceAI Python SDK"""
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
+    EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
 
     def __init__(
         self,
@@ -162,8 +163,7 @@ class Client(BatchAPIClient, DocUtils):
 
         """
         if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
-            self.logger.error("Clustering results already exist.")
-            sys.exit(1)
+            raise ClusteringResultsAlredyExistsError(self.EXISTING_CLUSTER_MESSAGE)
 
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)

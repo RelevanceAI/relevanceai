@@ -8,3 +8,8 @@ class MissingFieldError(Exception):
 
 class APIError(Exception):
     """Error related to API"""
+
+class ClusteringResultsAlredyExistsError(Exception):
+    """Error is raised when the clustering dataset already exists
+    """
+    pass
