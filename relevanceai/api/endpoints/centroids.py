@@ -301,6 +301,8 @@ class Centroids(Base):
             }
         )
 
+    docs_closest_to_center = self.list_closest_to_center
+
     def list_furthest_from_center(
         self,
         dataset_id: str,
@@ -381,3 +383,5 @@ class Centroids(Base):
                 "include_facets": include_facets
             }
         )
+    
+    docs_furthest_from_center = self.list_furthest_from_center
