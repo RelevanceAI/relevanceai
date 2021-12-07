@@ -117,6 +117,7 @@ class Client(BatchAPIClient, DocUtils):
         algorithm: str ="auto",
         alias: str = "default",
         cluster_field: str="_cluster_",
+        update_documents_chunksize: int = 50,
         overwrite: bool = False
     ):
         """
@@ -126,7 +127,8 @@ class Client(BatchAPIClient, DocUtils):
         3- Updates the data with clustering info
         4- Adds the centroid to the hidden centroid collection
 
-        Parameters:
+        Parameters
+        ----------
         dataset_id : string
             name of the dataser
         vector_fields : list
@@ -181,7 +183,7 @@ class Client(BatchAPIClient, DocUtils):
 
         # Updating the db
         try:
-            results = self.update_documents(dataset_id, clustered_docs, chunksize = 50)
+            results = self.update_documents(dataset_id, clustered_docs, chunksize = update_documents_chunksize)
         except Exception as e:
             self.logger.error(e)
         self.logger.info(results)
