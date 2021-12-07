@@ -24,8 +24,6 @@ DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
     "ivis": {"k": 15, "model": "maaten", "n_epochs_without_progress": 2},
 }
 
-
-# CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprototypes", None]
 CLUSTER = Literal["kmeans", "kmedoids", "hdbscan"]
 CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     "kmeans": {
@@ -64,3 +62,5 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
         "p": None,
     },
 }
+
+NEAREST_NEIGHBOURS = Literal["cosine", "l2"]

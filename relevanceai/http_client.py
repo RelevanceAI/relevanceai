@@ -11,12 +11,13 @@ from relevanceai.config import CONFIG
 from relevanceai.errors import APIError
 
 vis_requirements = False
-try:
-    from relevanceai.visualise.projector import Projector
+from relevanceai.visualise.projector import Projector
+# try:
+#     from relevanceai.visualise.projector import Projector
 
-    vis_requirements = True
-except ModuleNotFoundError as e:
-    pass
+#     vis_requirements = True
+# except ModuleNotFoundError as e:
+#     pass
 
 from relevanceai.vector_tools.client import VectorTools
 
@@ -47,9 +48,11 @@ class Client(BatchAPIClient, DocUtils):
         # else:
         #     raise APIError(self.FAIL_MESSAGE)
 
-        if vis_requirements:
-            self.projector = Projector(project, api_key)
-
+        # if vis_requirements:
+        #     self.projector = Projector(project, api_key)
+        # else:
+        #     self.logger.info('You do not have visualisation requirements installed.')
+        self.projector = Projector(project, api_key)
         self.vector_tools = VectorTools(project, api_key)
 
     @property

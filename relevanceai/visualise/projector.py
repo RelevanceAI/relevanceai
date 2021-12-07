@@ -12,7 +12,9 @@ from typeguard import typechecked
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.base import Base
-from relevanceai.vector_tools.constants import DIM_REDUCTION, CLUSTER
+from relevanceai.vector_tools.constants import *
+from relevanceai.visualise.dash_components.app import create_dash_graph
+
 
 from relevanceai.vector_tools.cluster import Cluster, ClusterBase
 from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
@@ -114,6 +116,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         self.dr_args = dr_args
         self.dims = dims
         self.cluster_args = cluster_args
+        self.schema = self.datasets.schema(self.dataset_id)
 
         if (vector_label is None) and (colour_label is None):
             warnings.warn(
@@ -125,7 +128,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
             )
 
         number_of_documents = number_of_points_to_render
-        self.vector_fields = self._get_vector_fields()
+        self.vector_fields = self.get_vector_fields(self.dataset_id)
+        self.vector_dim = self.get_vector_dimension(self.dataset_id, self.vector_field)
 
         labels = ["_id", vector_field, vector_label, colour_label]
         if hover_label:
@@ -182,16 +186,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 self.embedding_df[self.colour_label] = self.labels
                 self.legend = "labels"
 
-            # TODO: refactor Cluster
             if self.cluster:
-                # _cluster = Cluster(
-                #     **self.base_args,
-                #     vectors=self.vectors,
-                #     cluster=self.cluster,
-                #     cluster_args=self.cluster_args,
-                #     k=self.num_clusters,
-                # )
-                # self.cluster_labels = _cluster.cluster_labels
                 self.cluster_labels = Cluster.cluster(
                     vectors=self.vectors,
                     cluster=self.cluster,
@@ -201,17 +196,11 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 self.legend = "cluster_labels"
 
             self.embedding_df.index = self.embedding_df["_id"]
-            return self._generate_fig(
-                embedding_df=self.embedding_df, legend=self.legend, marker_size=marker_size, marker_colour=marker_colour
+            data, layout =  self._generate_fig(
+                embedding_df=self.embedding_df, legend=self.legend, marker_size = marker_size, marker_colour = marker_colour
             )
-
-    def _get_vector_fields(self) -> List[str]:
-        """
-        Returns list of valid vector fields from dataset schema
-        """
-        self.schema = self.datasets.schema(self.dataset_id)
-        self.vector_dim = self.schema[self.vector_field]["vector"]
-        return [k for k in self.schema.keys() if k.endswith("_vector_")]
+            create_dash_graph(data, layout)
+            return
 
     def _is_valid_vector_name(self, vector_name: str) -> bool:
         """
@@ -431,27 +420,29 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 "</b>",
                 f"<b>Cluster Method: {self.cluster}<br>Num Clusters: {self.num_clusters}</b>",
             )
-        fig = go.Figure(data=data, layout=layout)
-        fig.update_layout(
-            title={
-                "text": plot_title,
-                "y": 0.1,
-                "x": 0.1,
-                "xanchor": "left",
-                "yanchor": "bottom",
-                "font": {"size": 10},
-            },
-        )
-        if legend and self.colour_label:
-            fig.update_layout(
-                legend={
-                    "title": {"text": self.colour_label, "font": {"size": 12}},
-                    "font": {"size": 10},
-                    "itemwidth": 30,
-                    "tracegroupgap": 1,
-                }
-            )
-        return fig
+        return data, layout
+
+        # fig = go.Figure(data=data, layout=layout)
+        # fig.update_layout(
+        #     title={
+        #         "text": plot_title,
+        #         "y": 0.1,
+        #         "x": 0.1,
+        #         "xanchor": "left",
+        #         "yanchor": "bottom",
+        #         "font": {"size": 10},
+        #     },
+        # )
+        # if legend and self.colour_label:
+        #     fig.update_layout(
+        #         legend={
+        #             "title": {"text": self.colour_label, "font": {"size": 12}},
+        #             "font": {"size": 10},
+        #             "itemwidth": 30,
+        #             "tracegroupgap": 1,
+        #         }
+        #     )
+        # return fig
 
     def _generate_hover_template(
         self, df: pd.DataFrame, dims: int
