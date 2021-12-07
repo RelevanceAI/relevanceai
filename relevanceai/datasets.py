@@ -51,15 +51,11 @@ class ExampleDatasets:
             project,
             api_key,
         )
-        response = client.datasets.documents.get_where(
+        docs = client.get_documents(
             db_name,
-            page_size=number_of_documents,
+            number_of_documents=number_of_documents,
             select_fields=select_fields
         )
-        if "message" in response:
-            import warnings
-            warnings.warn(response["message"])
-        docs = response["documents"]
         return docs
 
     @staticmethod

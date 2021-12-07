@@ -62,7 +62,7 @@ class Config(DocUtils):
     @staticmethod
     def _create_default():
         config = configparser.ConfigParser()
-        config["retries"] = {"number_of_retries": 1,
+        config["retries"] = {"number_of_retries": 3,
                              "seconds_between_retries": 2}
         config["logging"] = {"log_to_file": False, "logging_level": "ERROR",
                              'enable_logging': True, "log_file_name": "relevanceai"}

@@ -7,6 +7,7 @@ from typing import Union
 from relevanceai.config import Config
 from json.decoder import JSONDecodeError
 from relevanceai.logger import AbstractLogger
+from urllib.parse import urlparse
 
 import requests
 from requests import Request
@@ -23,8 +24,24 @@ class Transport:
     logger: AbstractLogger
 
     @property
+    def _dashboard_request_url(self):
+        return self.config.get_option("dashboard.dashboard_request_url")[1:-1]
+
+    @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
+
+    @property
+    def _search_dashboard_url(self):
+        return self.config["dashboard.base_dashboard_url"][1:-1] + \
+            self.config["dashboard.search_dashboard_endpoint"][1:-1]
+
+    @staticmethod
+    def is_search_in_path(url: str):
+        if url is None:
+            return False
+        result = urlparse(url)
+        return "search" in result.path.split("/")
 
     def make_http_request(
         self,
@@ -47,21 +64,49 @@ class Transport:
         start_time = time.perf_counter()
 
         if base_url is None:
+            # if Transport.is_search_in_path(base_url) and not hasattr(self, "output_format"):
+            #     base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
+            # else:
             base_url = self.config.get_option("api.base_url")
+
         if output_format is None:
             output_format = self.config.get_option("api.output_format")
 
         retries = int(self.config.get_option("retries.number_of_retries"))
-        seconds_between_retries = int(self.config.get_option("retries.seconds_between_retries"))
-
+        seconds_between_retries = int(self.config.get_option(
+            "retries.seconds_between_retries"))
+        request_url = base_url + endpoint
         for _ in range(retries):
 
             self.logger.info(
-                "URL you are trying to access:" + base_url + endpoint)
+                "URL you are trying to access:" + request_url)
             try:
+                if Transport.is_search_in_path(request_url):
+                    url = self.config.get_option('api.base_url')[:-2]
+                    version = self.config.get_option('api.base_url')[-2:]
+                    search_body = {
+                        "multivector_search": {
+                            "body": parameters, 
+                            "url": url,
+                            "version": version,
+                            "endpoint": endpoint[1:],
+                            "metadata": parameters,
+                            "query": parameters.get("query"),
+                        },
+                    }
+                    req = Request(
+                        method=method.upper(),
+                        url=self._dashboard_request_url,
+                        headers=self.auth_header,
+                        json=search_body,
+                        # params=parameters if method.upper() == "GET" else {},
+                    ).prepare()
+                    with requests.Session() as s:
+                        response = s.send(req)
+
                 req = Request(
                     method=method.upper(),
-                    url=base_url + endpoint,
+                    url=request_url,
                     headers=self.auth_header,
                     json=parameters if method.upper() == "POST" else {},
                     params=parameters if method.upper() == "GET" else {},
@@ -76,6 +121,8 @@ class Transport:
                     self._log_response_time(base_url, endpoint, time.perf_counter() - start_time)
 
                     if output_format == 'json':
+                        if Transport.is_search_in_path(request_url):
+                            print(f"You can now visit the dashboard at {self._search_dashboard_url}")
                         return response.json()
                     elif output_format == 'content':
                         return response.content

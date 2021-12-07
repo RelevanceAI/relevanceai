@@ -321,7 +321,7 @@ class Centroids(Base):
         include_facets: bool = False
     ):
         """
-        List of documents closest from the centre.
+        List of documents furthest from the centre.
 
         Parameters
         ----------

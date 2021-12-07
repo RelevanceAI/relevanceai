@@ -24,7 +24,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
     @abstractmethod
     def fit_transform(self, vectors):
-        """Return the 
+        """
         """
         raise NotImplementedError
     
