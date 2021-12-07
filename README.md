@@ -12,8 +12,6 @@ The easiest way is to install this package is to run `pip install --upgrade rele
 
 ## How to use the RelevanceAI client
 
-For the relevanceai client, we want to ensure the SDK mirrors the API client.
-
 For example:
 
 ```python
