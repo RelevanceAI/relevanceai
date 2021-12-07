@@ -251,7 +251,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         """
         Remove documents with empty vector fields
         """
-        self.docs = [d for d in self.docs if d.get(vector_field)]
+        self.docs = [d for d in self.docs if vector_field in DocUtils.list_doc_fields(d)]
         return self.docs
 
     def _generate_fig(
