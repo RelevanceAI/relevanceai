@@ -301,7 +301,7 @@ class Centroids(Base):
             }
         )
 
-    docs_closest_to_center = self.list_closest_to_center
+    docs_closest_to_center = list_closest_to_center
 
     def list_furthest_from_center(
         self,
@@ -384,4 +384,4 @@ class Centroids(Base):
             }
         )
     
-    docs_furthest_from_center = self.list_furthest_from_center
+    docs_furthest_from_center = list_furthest_from_center
