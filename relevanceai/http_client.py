@@ -49,6 +49,8 @@ class Client(BatchAPIClient, DocUtils):
 
         if vis_requirements:
             self.projector = Projector(project, api_key)
+        else:
+            raise ModuleNotFoundError('You do not have visualisation requirements installed.')
 
         self.vector_tools = VectorTools(project, api_key)
 

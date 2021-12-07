@@ -143,3 +143,27 @@ class BatchRetrieve(APIClient, Chunker):
             if length > 0:
                 full_data += x["documents"]
         return full_data
+
+    def get_vector_fields(self, dataset_id):
+        """
+        Returns list of valid vector fields in dataset
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        """
+        schema = self.datasets.schema(dataset_id)
+        return [k for k in schema.keys() if k.endswith("_vector_")]
+
+    def get_vector_dimension(self, dataset_id, vector_field):
+        """
+        Returns dimension of vector field
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field : string
+            Unique name of vector field
+        """
+        schema = self.datasets.schema(dataset_id)
+        self.vector_dim = schema[vector_field]["vector"]

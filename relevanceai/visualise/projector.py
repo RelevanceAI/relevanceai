@@ -127,7 +127,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
             )
 
         number_of_documents = number_of_points_to_render
-        self.vector_fields = self._get_vector_fields()
+        self.vector_fields = self.get_vector_fields()
+        self.vector_dim = self.get_vector_dimension(self.dataset_id, self.vector_field)
 
         labels = ["_id", vector_field, vector_label, colour_label]
         if hover_label:
@@ -184,16 +185,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 self.embedding_df[self.colour_label] = self.labels
                 self.legend = "labels"
 
-            # TODO: refactor Cluster
             if self.cluster:
-                # _cluster = Cluster(
-                #     **self.base_args,
-                #     vectors=self.vectors,
-                #     cluster=self.cluster,
-                #     cluster_args=self.cluster_args,
-                #     k=self.num_clusters,
-                # )
-                # self.cluster_labels = _cluster.cluster_labels
                 self.cluster_labels = Cluster.cluster(
                     vectors=self.vectors,
                     cluster=self.cluster,
@@ -208,14 +200,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
             )
             create_dash_graph(data, layout)
             return
-
-    def _get_vector_fields(self) -> List[str]:
-        """
-        Returns list of valid vector fields from dataset schema
-        """
-        self.schema = self.datasets.schema(self.dataset_id)
-        self.vector_dim = self.schema[self.vector_field]["vector"]
-        return [k for k in self.schema.keys() if k.endswith("_vector_")]
 
     def _is_valid_vector_name(self, vector_name: str) -> bool:
         """
