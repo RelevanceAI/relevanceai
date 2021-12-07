@@ -229,7 +229,7 @@ class Centroids(Base):
         select_fields: list = [ ],
         approx: int = 0,
         sum_fields: bool = True,
-        page_size: int = 20,
+        page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: list = [ ],
@@ -301,6 +301,8 @@ class Centroids(Base):
             }
         )
 
+    docs_closest_to_center = list_closest_to_center
+
     def list_furthest_from_center(
         self,
         dataset_id: str,
@@ -310,7 +312,7 @@ class Centroids(Base):
         select_fields: list = [ ],
         approx: int = 0,
         sum_fields: bool = True,
-        page_size: int = 20,
+        page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: list = [ ],
@@ -381,3 +383,5 @@ class Centroids(Base):
                 "include_facets": include_facets
             }
         )
+    
+    docs_furthest_from_center = list_furthest_from_center
