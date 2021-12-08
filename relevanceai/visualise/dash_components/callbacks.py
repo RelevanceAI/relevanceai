@@ -1,11 +1,9 @@
-from dash import html
-from PIL import Image
-import numpy as np
-import requests
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
-import json
 from dash import dcc
+
+import plotly.express as px
+from skimage import io
 
 import numpy as np
 from relevanceai.visualise.dash_components.utility.image_utility import resize, numpy_to_b64
@@ -21,7 +19,7 @@ def image_callbacks(app):
 
     @app.callback(Output('div-plot-click-message', 'children'), Input('graph-plot-tsne', 'clickData'))
     def print_image_message(clickData):
-        return json.dumps(clickData)
+        return clickData['points'][0]['customdata'][1]
 
     @app.callback(Output('div-plot-click-image', 'children'), Input('graph-plot-tsne', 'clickData'))
     def show_image(clickData):
@@ -29,14 +27,31 @@ def image_callbacks(app):
             image_url = clickData['points'][0]['customdata'][1]
         except TypeError:
             return None
-        image_vector = np.array(Image.open(
-            requests.get(image_url, stream=True).raw))
-        image_vector = resize(image_vector, height=MAX_SIZE)
-        image_b64 = numpy_to_b64(image_vector, scalar=False)
-        return html.Img(
-            src='data:image/png;base64, ' + image_b64,
-            style={'height': '25vh', 'display': 'block', 'margin': 'auto'},
+        img = io.imread(image_url)
+        fig = px.imshow(img)
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            margin=dict(t=20, b=0, l=0, r=0),
+            xaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                linewidth=0
+            ),
+            yaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                linewidth=0
+            ),
+            hovermode=False
         )
+
+        return dcc.Graph(
+                        figure=fig,
+                        config={'displayModeBar': True},
+                    )
+
+
 
 def neighbour_callbacks(app, docs, field, vector_field, distance_measure_mode = 'cosine'):
     @app.callback(Output('div-plot-click-neighbours', 'children'), Input('graph-plot-tsne', 'clickData'))

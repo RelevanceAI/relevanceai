@@ -60,7 +60,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         number_of_points_to_render: int = 1000,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 50,
+        vector_label_char_length: Union[None, int] = 10000,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 2,
@@ -124,7 +124,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         vector_field: str,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 50,
+        vector_label_char_length: Union[None, int] = 10000,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,

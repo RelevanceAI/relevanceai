@@ -12,8 +12,8 @@ class BatchRetrieve(APIClient, Chunker):
     def get_documents(
         self,
         dataset_id: str,
-        filters: list = [],
         number_of_documents: int = 20,
+        filters: list = [],
         cursor: str = None,
         batch_size: int = 1000,
         sort: list = [],
