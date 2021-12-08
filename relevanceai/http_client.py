@@ -8,8 +8,9 @@ from typing import Optional, List, Union
 from doc_utils.doc_utils import DocUtils
 
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.api.endpoints.cluster import Cluster
 from relevanceai.config import CONFIG
-from relevanceai.errors import APIError, ClusteringResultsAlredyExistsError
+from relevanceai.errors import APIError, ClusteringResultsAlreadyExistsError
 from relevanceai.vector_tools.cluster import KMeans
 
 vis_requirements = False
@@ -113,7 +114,7 @@ class Client(BatchAPIClient, DocUtils):
         max_iter: int = 300,
         tol: float = 1e-4,
         verbose: bool = True,
-        random_state = None,
+        random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str ="auto",
         alias: str = "default",
@@ -163,23 +164,29 @@ class Client(BatchAPIClient, DocUtils):
 
         """
         if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
-            raise ClusteringResultsAlredyExistsError(self.EXISTING_CLUSTER_MESSAGE)
+            raise ClusteringResultsAlreadyExistsError(self.EXISTING_CLUSTER_MESSAGE)
 
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
 
         # Cluster
         clusterer = KMeans(
-            k = k,
-            init = init,
-            n_init = n_init,
-            max_iter= max_iter,
-            tol= tol,
-            verbose = verbose,
-            random_state = random_state,
-            copy_x = copy_x,
-            algorithm = algorithm)
-        clustered_docs = clusterer.fit_documents(vector_fields, docs, alias = alias, cluster_field = cluster_field, return_only_clusters=True)
+            k=k,
+            init=init,
+            n_init=n_init,
+            max_iter=max_iter,
+            tol=tol,
+            verbose=verbose,
+            random_state=random_state,
+            copy_x=copy_x,
+            algorithm=algorithm
+        )
+        clustered_docs = clusterer.fit_documents(
+            vector_fields,
+            docs,
+            alias=alias, 
+            cluster_field=cluster_field, 
+            return_only_clusters=True)
 
         # Updating the db
         try:
@@ -200,5 +207,4 @@ class Client(BatchAPIClient, DocUtils):
         except Exception as e:
             self.logger.error(e)
         self.logger.info(results)
-
         return centers

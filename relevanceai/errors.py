@@ -1,9 +1,5 @@
 """Missing field error
 """
-
-import relevanceai
-
-
 class RelevanceAIError(Exception):
     """base class for all errors
     """
