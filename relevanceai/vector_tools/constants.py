@@ -64,3 +64,5 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
         "p": None,
     },
 }
+
+NEAREST_NEIGHBOURS = Literal["cosine", "l2"]
