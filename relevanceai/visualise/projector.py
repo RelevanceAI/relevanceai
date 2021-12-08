@@ -60,7 +60,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         number_of_points_to_render: int = 1000,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 10000,
+        vector_label_char_length: Union[None, int] = 50,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 2,
@@ -69,6 +69,9 @@ class Projector(BatchAPIClient, Base, DocUtils):
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
         cluster_args: Union[None, Dict] = None,
+        # Decoration args
+        hover_label: list = [],
+        show_image: bool = False,
         marker_size: int = 5
     ):
         """
@@ -94,29 +97,27 @@ class Projector(BatchAPIClient, Base, DocUtils):
                     cluster, cluster_args,
                     )
         """
-        plot_title = f"<b>{dims}D Embedding Projector Plot<br>Dataset Id: {dataset_id} - {number_of_points_to_render} points<br>Vector Field: {vector_field}<br></b>"
-
-        if (vector_label is None):
-            warnings.warn(
-                f"A vector_label has not been specified.")
-
-        if number_of_points_to_render and number_of_points_to_render > 1000:
-            warnings.warn(
-                f"You are rendering over 1000 points, this may take some time ..."
-            )
-
+        # Check vector field
         self._is_valid_vector_name(dataset_id, vector_field)
-        self._is_valid_label_name(dataset_id, vector_label)
+
+        # Check vector label field
+        if vector_label is None:
+            self.logger.warning("A vector_label has not been specified.")
+        else:
+            self._is_valid_label_name(dataset_id, vector_label)
+
+        # Check hover label field
+        [self._is_valid_label_name(dataset_id, label) for label in hover_label];
 
         docs = self.get_documents(
-            dataset_id, number_of_documents=number_of_points_to_render, batch_size=1000, select_fields=["_id", vector_field, vector_label]
+            dataset_id, number_of_documents=number_of_points_to_render, batch_size=1000, select_fields=["_id", vector_field, vector_label] + hover_label
         )
         docs = self._remove_empty_vector_fields(docs, vector_field)
 
         return self.plot_from_docs(docs, vector_field=vector_field, vector_label=vector_label,
                                    vector_label_char_length=vector_label_char_length, dr=dr,
                                    dims=dims, dr_args=dr_args, cluster=cluster,
-                                   num_clusters=num_clusters, cluster_args=cluster_args, marker_size=marker_size)
+                                   num_clusters=num_clusters, cluster_args=cluster_args, hover_label=hover_label, show_image=show_image, marker_size=marker_size)
 
     def plot_from_docs(
         self,
@@ -124,7 +125,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         vector_field: str,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 10000,
+        vector_label_char_length: Union[None, int] = 50,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,
@@ -133,6 +134,9 @@ class Projector(BatchAPIClient, Base, DocUtils):
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
         cluster_args: Union[None, Dict] = None,
+        # Decoration args
+        hover_label: list = [],
+        show_image: bool = False,
         marker_size: int = 5):
 
         # Dimension reduce vectors
@@ -156,7 +160,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
         labels = self.get_field_across_documents(
             field=vector_label, docs=docs
         )
-        labels = [i[:vector_label_char_length] for i in labels]
+        if show_image is False:
+            labels = [i[:vector_label_char_length] + '...' for i in labels]
         embedding_df[vector_label] = labels
 
         # Cluster vectors
@@ -172,13 +177,14 @@ class Projector(BatchAPIClient, Base, DocUtils):
         embedding_df.index = embedding_df["_id"]
 
         # Set hover labels
-        hover_label = ["_id", vector_label]
+        hover_label = ["_id", vector_label] + hover_label
 
         plot_data, layout = self._generate_fig(
             embedding_df=embedding_df, hover_label=hover_label, dims=dims, marker_size=marker_size, cluster=cluster
         )
 
-        create_dash_graph(plot_data, layout, docs, vector_label, vector_field)
+        create_dash_graph(plot_data=plot_data, layout=layout, show_image=show_image,
+                          docs=docs, vector_label=vector_label, vector_field=vector_field)
         return
 
     def _generate_fig(
@@ -220,8 +226,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
     def _generate_plot_info(self, embedding_df, hover_label, dims, marker_size):
 
         custom_data, hovertemplate = self._generate_hover_template(
-                df=embedding_df, dims=dims, hover_label=hover_label
-            )
+            df=embedding_df, dims=dims, hover_label=hover_label
+        )
 
         scatter_args = (
             {

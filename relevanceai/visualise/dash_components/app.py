@@ -8,7 +8,7 @@ from relevanceai.visualise.dash_components.callbacks import image_callbacks, nei
 from jupyter_dash import JupyterDash
 
 
-def create_dash_graph(plot_data, layout, docs, field, vector_field):
+def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_field):
 
     app = JupyterDash(__name__)
 
@@ -39,8 +39,8 @@ def create_dash_graph(plot_data, layout, docs, field, vector_field):
         )
 
     app.layout= create_layout(app)
-    image_callbacks(app)
-    #neighbour_callbacks(app, docs, field, vector_field)
+    image_callbacks(app, show_image)
+    neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
     app.run_server(mode='inline')
 
 
