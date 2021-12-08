@@ -14,15 +14,11 @@ doc_utils = DocUtils()
 MAX_SIZE = 200
 
 
-def image_callbacks(app, show_image):
-
-    @app.callback(Output('div-plot-click-message', 'children'), Input('graph-plot-tsne', 'clickData'))
-    def print_image_message(clickData):
-        return clickData['points'][0]['customdata'][1]
+def display_callbacks(app, show_image):
 
     if show_image:
         @app.callback(Output('div-plot-click-image', 'children'), Input('graph-plot-tsne', 'clickData'))
-        def show_image(clickData):
+        def display_image(clickData):
             try:
                 image_url = clickData['points'][0]['customdata'][1]
             except TypeError:
@@ -38,6 +34,13 @@ def image_callbacks(app, show_image):
                             config={'displayModeBar': False},
                         )
 
+    else:
+        @app.callback(Output('div-plot-click-message', 'children'), Input('graph-plot-tsne', 'clickData'))
+        def display_text(clickData):
+            try: 
+                return clickData['points'][0]['customdata'][1]
+            except TypeError:
+                return None
 
 
 def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, distance_measure_mode = 'cosine'):
@@ -50,13 +53,12 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
         click_doc = [i for i in docs if i['_id'] == click_id][0]
 
         click_vec = click_doc[vector_field]
-        click_value = click_doc[vector_label]
-
         nearest_neighbors = NearestNeighbours.get_nearest_neighbours(docs, click_vec, vector_field, distance_measure_mode)[:10]
         nearest_neighbor_values = doc_utils.get_field_across_documents(vector_label, nearest_neighbors)
         nearest_neighbor_index = doc_utils.get_field_across_documents('nearest_neighbour_distance', nearest_neighbors)
+        nearest_neighbor_index = [round(i, 2) for i in nearest_neighbor_index]
 
-        return {'click_value': click_value, 'nearest_neighbor_values': nearest_neighbor_values, 'nearest_neighbor_index':nearest_neighbor_index}
+        return {'nearest_neighbor_values': nearest_neighbor_values, 'nearest_neighbor_index':nearest_neighbor_index}
 
     if show_image:
         @app.callback(Output('div-plot-image-neighbours', 'children'), Input('graph-plot-tsne', 'clickData'))
@@ -64,11 +66,13 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
 
             neighbour_info = _get_neighbours(clickData)
 
-            fig = make_subplots(rows=5, cols=2)
+            fig = make_subplots(rows=5, cols=2, subplot_titles=neighbour_info['nearest_neighbor_index'])
             for n, image in enumerate(neighbour_info['nearest_neighbor_values']):
                 fig.add_trace(px.imshow(io.imread(image)).data[0], row=int(n/2)+1, col=n%2+1)
                 fig.update_yaxes(showgrid=False,showticklabels=False,linewidth=0)
                 fig.update_xaxes(showgrid=False,showticklabels=False,linewidth=0)
+
+            fig.update_layout(title="Nearest Neighbours")
 
             return dcc.Graph(
                             figure=fig,
@@ -83,14 +87,13 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
             neighbour_info = _get_neighbours(clickData)
 
             trace = go.Bar(
-            x=neighbour_info['nearest_neighbor_index'],
-            y=neighbour_info['nearest_neighbor_values'],
+            x=neighbour_info['nearest_neighbor_index'][::-1],
+            y=neighbour_info['nearest_neighbor_values'][::-1],
             orientation='h',
-            marker=dict(color='rgb(24,84,255)'),
+            marker=dict(color='rgb(24,84,255)')
             )
-
             layout = go.Layout(
-            title=f"{neighbour_info['click_value']} Nearest Neighbours",
+            title="Nearest Neighbours",
             xaxis=dict(title=f'{distance_measure_mode} Distance'),
             margin=go.layout.Margin(l=60, r=60, t=35, b=35),
             )

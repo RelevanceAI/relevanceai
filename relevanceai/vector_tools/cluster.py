@@ -121,7 +121,7 @@ class MiniBatchKMeans(CentroidCluster):
         self,
         k: Union[None, int] = 10,
         init: str = "k-means++",
-        verbose: bool = True,
+        verbose: bool = False,
         compute_labels: bool = True,
         max_no_improvement: int=2
      ):
@@ -296,7 +296,6 @@ class Cluster(Base, ClusterBase):
         Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)
         where a is penalty factor of num_clusters
         """
-        warnings.warn("This method is not implemented yet k=10")
         return 10
 
 

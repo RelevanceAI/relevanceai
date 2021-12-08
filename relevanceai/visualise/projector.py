@@ -139,6 +139,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
         show_image: bool = False,
         marker_size: int = 5):
 
+        # Prepare vector labels
+        if show_image is False:
+            self.set_field_across_documents(vector_label, [i[vector_label][:vector_label_char_length] + '...' for i in docs], docs)
+
         # Dimension reduce vectors
         vectors = np.array(
             self.get_field_across_documents(vector_field, docs)
@@ -148,22 +152,15 @@ class Projector(BatchAPIClient, Base, DocUtils):
         )
         points = {
             "x": vectors_dr[:, 0],
-            "y": vectors_dr[:, 1],
-            "_id": self.get_field_across_documents("_id", docs),
+            "y": vectors_dr[:, 1]
         }
         if dims == 3:
             points["z"] = vectors_dr[:, 2]
 
         embedding_df = pd.DataFrame(points)
+        embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
 
-        # Prepare vector labels
-        labels = self.get_field_across_documents(
-            field=vector_label, docs=docs
-        )
-        if show_image is False:
-            labels = [i[:vector_label_char_length] + '...' for i in labels]
-        embedding_df[vector_label] = labels
-
+    
         # Cluster vectors
         if cluster:
             cluster_labels = Cluster.cluster(
@@ -218,7 +215,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         }
         layout = go.Layout(
             margin={"l": 0, "r": 0, "b": 0, "t": 0},
-            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes},
+            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes}
         )
 
         return data, layout

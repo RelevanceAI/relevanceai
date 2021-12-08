@@ -4,7 +4,7 @@ from relevanceai.visualise.dash_components.sections.header import build_header
 from relevanceai.visualise.dash_components.sections.control_panel import build_control_panel
 from relevanceai.visualise.dash_components.sections.display_panel import build_display_panel
 from relevanceai.visualise.dash_components.sections.graph import build_graph
-from relevanceai.visualise.dash_components.callbacks import image_callbacks, neighbour_callbacks
+from relevanceai.visualise.dash_components.callbacks import display_callbacks, neighbour_callbacks
 from jupyter_dash import JupyterDash
 
 
@@ -39,7 +39,7 @@ def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_
         )
 
     app.layout= create_layout(app)
-    image_callbacks(app, show_image)
+    display_callbacks(app, show_image)
     neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
     app.run_server(mode='inline')
 
