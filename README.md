@@ -2,7 +2,7 @@
 
 For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
-If you are looking for an SDK reference, you can find that [here](https://youthful-leakey-ab1977.netlify.app/index.html).
+If you are looking for an SDK reference, you can find that [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).
 
 Built mainly for users looking to experiment with vectors/embeddings.
 
@@ -47,7 +47,7 @@ mypy relevanceai
 
 ## Config
 
-The config contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://youthful-leakey-ab1977.netlify.app/index.html).  
+The config contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).  
 
 To view setting options, run the following:
 
