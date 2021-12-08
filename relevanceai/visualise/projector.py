@@ -107,7 +107,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             self._is_valid_label_name(dataset_id, vector_label)
 
         # Check hover label field
-        [self._is_valid_label_name(dataset_id, label) for label in hover_label];
+        [self._is_valid_label_name(dataset_id, label) for label in hover_label]
 
         docs = self.get_documents(
             dataset_id, number_of_documents=number_of_points_to_render, batch_size=1000, select_fields=["_id", vector_field, vector_label] + hover_label
@@ -117,7 +117,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
         return self.plot_from_docs(docs, vector_field=vector_field, vector_label=vector_label,
                                    vector_label_char_length=vector_label_char_length, dr=dr,
                                    dims=dims, dr_args=dr_args, cluster=cluster,
-                                   num_clusters=num_clusters, cluster_args=cluster_args, hover_label=hover_label, show_image=show_image, marker_size=marker_size)
+                                   num_clusters=num_clusters, cluster_args=cluster_args, hover_label=hover_label, show_image=show_image, 
+                                   marker_size=marker_size, dataset_name=dataset_id)
 
     def plot_from_docs(
         self,
@@ -137,11 +138,13 @@ class Projector(BatchAPIClient, Base, DocUtils):
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
-        marker_size: int = 5):
+        marker_size: int = 5,
+            dataset_name: Union[None, str] = None):
 
         # Prepare vector labels
         if show_image is False:
-            self.set_field_across_documents(vector_label, [i[vector_label][:vector_label_char_length] + '...' for i in docs], docs)
+            self.set_field_across_documents(vector_label, [
+                                            i[vector_label][:vector_label_char_length] + '...' for i in docs], docs)
 
         # Dimension reduce vectors
         vectors = np.array(
@@ -160,7 +163,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
         embedding_df = pd.DataFrame(points)
         embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
 
-    
         # Cluster vectors
         if cluster:
             cluster_labels = Cluster.cluster(
@@ -176,8 +178,12 @@ class Projector(BatchAPIClient, Base, DocUtils):
         # Set hover labels
         hover_label = ["_id", vector_label] + hover_label
 
+        # Generate plot title
+        plot_title = self._generate_plot_title(dims, dataset_name, len(
+            embedding_df), vector_field, vector_label, vector_label_char_length)
+
         plot_data, layout = self._generate_fig(
-            embedding_df=embedding_df, hover_label=hover_label, dims=dims, marker_size=marker_size, cluster=cluster
+            embedding_df=embedding_df, hover_label=hover_label, plot_title=plot_title, dims=dims, marker_size=marker_size, cluster=cluster
         )
 
         create_dash_graph(plot_data=plot_data, layout=layout, show_image=show_image,
@@ -187,6 +193,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
     def _generate_fig(
         self,
         embedding_df: pd.DataFrame,
+        plot_title: str,
         hover_label: str,
         dims: int,
         marker_size: int,
@@ -215,7 +222,15 @@ class Projector(BatchAPIClient, Base, DocUtils):
         }
         layout = go.Layout(
             margin={"l": 0, "r": 0, "b": 0, "t": 0},
-            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes}
+            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes},
+            title={
+                "text": plot_title,
+                "y": 0.1,
+                "x": 0.1,
+                "xanchor": "left",
+                "yanchor": "bottom",
+                "font": {"size": 10},
+            }
         )
 
         return data, layout
@@ -316,3 +331,14 @@ class Projector(BatchAPIClient, Base, DocUtils):
         Remove documents with empty vector fields
         """
         return [d for d in docs if d.get(vector_field)]
+
+    def _generate_plot_title(self, dims, dataset_name, number_of_points, vector_field, vector_label, vector_label_char_length):
+        title = "</b>"
+        title += f"{dims}D Embedding Projector Plot<br>"
+        if dataset_name:
+            title += f"Dataset Name: {dataset_name}<br>"
+        title += f"Points: {number_of_points} points<br>"
+        title += f"Vector Field: {vector_field}<br>"
+        title += f"Vector Label: {vector_label}  Char Length: {vector_label_char_length}<br>"
+        title += "</b>"
+        return title

@@ -66,19 +66,22 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
 
             neighbour_info = _get_neighbours(clickData)
 
-            fig = make_subplots(rows=5, cols=2, subplot_titles=neighbour_info['nearest_neighbor_index'])
-            for n, image in enumerate(neighbour_info['nearest_neighbor_values']):
-                fig.add_trace(px.imshow(io.imread(image)).data[0], row=int(n/2)+1, col=n%2+1)
-                fig.update_yaxes(showgrid=False,showticklabels=False,linewidth=0)
-                fig.update_xaxes(showgrid=False,showticklabels=False,linewidth=0)
+            if neighbour_info:
+                fig = make_subplots(rows=5, cols=2, subplot_titles=neighbour_info['nearest_neighbor_index'])
+                for n, image in enumerate(neighbour_info['nearest_neighbor_values']):
+                    fig.add_trace(px.imshow(io.imread(image)).data[0], row=int(n/2)+1, col=n%2+1)
+                    fig.update_yaxes(showgrid=False,showticklabels=False,linewidth=0)
+                    fig.update_xaxes(showgrid=False,showticklabels=False,linewidth=0)
 
-            fig.update_layout(title="Nearest Neighbours")
+                fig.update_layout(title="Nearest Neighbours")
 
-            return dcc.Graph(
-                            figure=fig,
-                            style={'height': '125vh','width': '75vh', 'text-align': 'center',},
-                            config={'displayModeBar': False},
-                        )
+                return dcc.Graph(
+                                figure=fig,
+                                style={'height': '125vh','width': '75vh', 'text-align': 'center',},
+                                config={'displayModeBar': False},
+                            )
+            else:
+                return None
 
     else:
         @app.callback(Output('div-plot-text-neighbours', 'children'), Input('graph-plot-tsne', 'clickData'))
@@ -86,23 +89,25 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
 
             neighbour_info = _get_neighbours(clickData)
 
-            trace = go.Bar(
-            x=neighbour_info['nearest_neighbor_index'][::-1],
-            y=neighbour_info['nearest_neighbor_values'][::-1],
-            orientation='h',
-            marker=dict(color='rgb(24,84,255)')
-            )
-            layout = go.Layout(
-            title="Nearest Neighbours",
-            xaxis=dict(title=f'{distance_measure_mode} Distance'),
-            margin=go.layout.Margin(l=60, r=60, t=35, b=35),
-            )
-            fig = go.Figure(data=[trace], layout=layout)
+            if neighbour_info:
+                trace = go.Bar(
+                x=neighbour_info['nearest_neighbor_index'][::-1],
+                y=neighbour_info['nearest_neighbor_values'][::-1],
+                orientation='h',
+                marker=dict(color='rgb(24,84,255)')
+                )
+                layout = go.Layout(
+                title="Nearest Neighbours",
+                xaxis=dict(title=f'{distance_measure_mode} Distance'),
+                margin=go.layout.Margin(l=60, r=60, t=35, b=35),
+                )
+                fig = go.Figure(data=[trace], layout=layout)
 
-            return dcc.Graph(
-                            figure=fig,
-                            style={'height': '125vh','width': '75vh', 'text-align': 'center',},
-                            config={'displayModeBar': False},
-                        )
+                return dcc.Graph(
+                                figure=fig,
+                                style={'height': '125vh','width': '75vh', 'text-align': 'center',},
+                                config={'displayModeBar': False},
+                            )
 
+            return None
     
