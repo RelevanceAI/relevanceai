@@ -25,8 +25,6 @@ from typing_extensions import Literal
 from doc_utils import DocUtils
 
 RELEVANCEAI_BLUE = "#1854FF"
-MARKER_SIZE = 5
-
 
 @dataclass
 class Projector(BatchAPIClient, Base, DocUtils):
@@ -64,14 +62,14 @@ class Projector(BatchAPIClient, Base, DocUtils):
         vector_label_char_length: Union[None, int] = 50,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
+        dims: Literal[2, 3] = 2,
         dr_args: Union[None, Dict] = None,
-        dims: Literal[2, 3] = 3,
         # Cluster args
         cluster: Union[CLUSTER, ClusterBase] = None,
-        cluster_args: Union[None, Dict] = None,
         num_clusters: Union[None, int] = 10,
-        marker_colour: str = RELEVANCEAI_BLUE,
-        marker_size: int = MARKER_SIZE
+        cluster_args: Union[None, Dict] = None,
+        #marker_colour: str = RELEVANCEAI_BLUE,
+        marker_size: int = 5
     ):
         """
         Plot function for Embedding Projector class
@@ -96,7 +94,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
                     cluster, cluster_args,
                     )
         """
-        self.dataset_id = dataset_id
         self.vector_label = vector_label
         self.vector_field = vector_field
         self.vector_label_char_length = vector_label_char_length
@@ -107,6 +104,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
         self.dims = dims
         self.cluster_args = cluster_args
 
+        plot_title = f"<b>{self.dims}D Embedding Projector Plot<br>Dataset Id: {dataset_id} - {number_of_points_to_render} points<br>Vector Field: {vector_field}<br></b>"
+
         if (vector_label is None):
             warnings.warn(
                 f"A vector_label has not been specified.")
@@ -116,80 +115,85 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 f"You are rendering over 1000 points, this may take some time ..."
             )
 
-        self._is_valid_vector_name(self.vector_field)
-        self._is_valid_label_name(self.vector_label)
+        self._is_valid_vector_name(dataset_id, vector_field)
+        self._is_valid_label_name(dataset_id, vector_label)
 
-
-        labels = ["_id", vector_field, vector_label]
-        fields = [label for label in labels if label]
-        self.docs = self.get_documents(
-            dataset_id, number_of_documents=number_of_points_to_render, batch_size=1000, select_fields=fields
+        docs = self.get_documents(
+            dataset_id, number_of_documents=number_of_points_to_render, batch_size=1000, select_fields=["_id", vector_field, vector_label]
         )
-        self._remove_empty_vector_fields(vector_field)
+        docs = self._remove_empty_vector_fields(docs, vector_field)
 
-        return self.plot_from_docs(self.docs, self.dims, marker_size, marker_colour)
+        return self.plot_from_docs(docs, self.dims, marker_size)
 
-    def plot_from_docs(self, docs: List[Dict[str, Any]], dims: int, marker_size: int, marker_colour: str):
 
-        self.vectors = np.array(
-            self.get_field_across_documents(self.vector_field, docs)
+    def plot_from_docs(
+        self,
+        docs: List[Dict[str, Any]], 
+        vector_field: str,
+        # Plot rendering args
+        vector_label: Union[None, str] = None,
+        vector_label_char_length: Union[None, int] = 50,
+        # Dimensionality reduction args
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
+        dr_args: Union[None, Dict] = None,
+        dims: Literal[2, 3] = 3,
+        # Cluster args
+        cluster: Union[CLUSTER, ClusterBase] = None,
+        cluster_args: Union[None, Dict] = None,
+        num_clusters: Union[None, int] = 10,
+        #marker_colour: str = RELEVANCEAI_BLUE,
+        marker_size: int = 5):
+
+        vectors = np.array(
+            self.get_field_across_documents(vector_field, docs)
         )
-        self.vectors_dr = DimReduction.dim_reduce(
-            vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims
+        vectors_dr = DimReduction.dim_reduce(
+            vectors=vectors, dr=dr, dr_args=dr_args, dims=dims
         )
         points = {
-            "x": self.vectors_dr[:, 0],
-            "y": self.vectors_dr[:, 1],
+            "x": vectors_dr[:, 0],
+            "y": vectors_dr[:, 1],
             "_id": self.get_field_across_documents("_id", docs),
         }
         if dims == 3:
-            points["z"] = self.vectors_dr[:, 2]
+            points["z"] = vectors_dr[:, 2]
 
-        self.embedding_df = pd.DataFrame(points)
+        embedding_df = pd.DataFrame(points)
 
-        self.labels = self.get_field_across_documents(
-            field=self.vector_label, docs=docs
+        labels = self.get_field_across_documents(
+            field=vector_label, docs=docs
         )
-        self.embedding_df[self.vector_label] = self.labels
+        embedding_df[vector_label] = labels
 
-        if self.cluster:
-            self.cluster_labels = Cluster.cluster(
-                vectors=self.vectors,
-                cluster=self.cluster,
-                cluster_args=self.cluster_args,
+        if cluster:
+            cluster_labels = Cluster.cluster(
+                vectors=vectors,
+                cluster=cluster,
+                cluster_args=cluster_args,
             )
-            self.embedding_df["cluster_labels"] = self.cluster_labels
+            embedding_df["cluster_labels"] = cluster_labels
 
-        self.embedding_df.index = self.embedding_df["_id"]
+        embedding_df.index = embedding_df["_id"]
         plot_data, layout =  self._generate_fig(
-            embedding_df=self.embedding_df, marker_size = marker_size, marker_colour = marker_colour
+            embedding_df=embedding_df, marker_size = marker_size, cluster = cluster
         )
 
-        create_dash_graph(plot_data, layout, docs, self.vector_label, self.vector_field)
+        create_dash_graph(plot_data, layout, docs, vector_label, vector_field)
         return
 
     def _generate_fig(
         self,
         embedding_df: pd.DataFrame,
         marker_size: int,
-        marker_colour: str
+        cluster: bool
     ) -> go.Figure:
         """
         """
     
-        plot_title = f"<b>{self.dims}D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
         self.hover_label = ["_id", self.vector_label]
 
-        
-        if self.vector_label:
-            data = []
-            custom_data, hovertemplate = self._generate_hover_template(
-                df=embedding_df, dims=self.dims
-            )
-            data.append(self._generate_plot_info(embedding_df, self.dims, custom_data, hovertemplate, marker_size))
-
-    
-        if self.cluster:
+ 
+        if cluster:
             data = []
             groups = embedding_df.groupby("cluster_labels")
             for idx, val in groups:
@@ -198,9 +202,14 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 )
                 data.append(self._generate_plot_info(val, self.dims, custom_data, hovertemplate, marker_size))
 
-        """
-        Generating figure
-        """
+        else: 
+            data = []
+            custom_data, hovertemplate = self._generate_hover_template(
+                df=embedding_df, dims=self.dims
+            )
+            data.append(self._generate_plot_info(embedding_df, self.dims, custom_data, hovertemplate, marker_size))
+
+
         axes = {
             "title": "",
             "showgrid": True,
@@ -277,12 +286,12 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
         return custom_data, hovertemplate
 
-    def _is_valid_vector_name(self, vector_name: str) -> bool:
+    def _is_valid_vector_name(self, dataset_id, vector_name: str) -> bool:
         """
         Check vector field name is valid
         """
-        vector_fields = self.get_vector_fields(self.dataset_id)
-        schema = self.datasets.schema(self.dataset_id)
+        vector_fields = self.get_vector_fields(dataset_id)
+        schema = self.datasets.schema(dataset_id)
         if vector_name in schema.keys():
             if vector_name in vector_fields:
                 return True
@@ -290,13 +299,13 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 raise ValueError(f"{vector_name} is not a valid vector name")
         else:
             raise ValueError(
-                f"{vector_name} is not in the {self.dataset_id} schema")
+                f"{vector_name} is not in the {dataset_id} schema")
 
-    def _is_valid_label_name(self, label_name: str) -> bool:
+    def _is_valid_label_name(self, dataset_id, label_name: str) -> bool:
         """
         Check vector label name is valid. Checks that it is either numeric or text
         """
-        schema = self.datasets.schema(self.dataset_id)
+        schema = self.datasets.schema(dataset_id)
         if label_name == "_id":
             return True
         if label_name in list(schema.keys()):
@@ -306,11 +315,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 raise ValueError(f"{label_name} is not a valid label name")
         else:
             raise ValueError(
-                f"{label_name} is not in the {self.dataset_id} schema")
+                f"{label_name} is not in the {dataset_id} schema")
 
-    def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
+    def _remove_empty_vector_fields(self, docs, vector_field: str) -> List[Dict]:
         """
         Remove documents with empty vector fields
         """
-        self.docs = [d for d in self.docs if d.get(vector_field)]
-        return self.docs
+        return [d for d in docs if d.get(vector_field)]
