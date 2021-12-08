@@ -13,13 +13,27 @@ def build_display_panel(app: dash.Dash) -> html.Div:
         children=[
                 Card(
                     style={'padding': '5px'},
-                    children=[
+                    children=[html.Div(
+                            id='div-plot-click-message',
+                            style={
+                                'text-align': 'center',
+                                'margin-bottom': '7px',
+                                'font-weight': 'bold',
+                            },
+                        ),
                         html.Div(id='div-plot-click-image',
                                  style={
                                     'text-align': 'center',
                                     # 'display': 'inline-block',
                                  }),
                     ],
-                ),   
+                ), 
+
+                Card(
+                    style={'width': '98vh', 'textwd-align': 'center'},
+                    children=[
+                        html.Div(id='div-plot-click-neighbours')
+                    ],
+                )  
             ],
     )

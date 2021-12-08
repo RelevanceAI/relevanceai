@@ -282,6 +282,7 @@ class Cluster(Base, ClusterBase):
 
     def __init__(self, project, api_key):
         self.project = project
+        self.api_key = api_key
         super().__init__(project, api_key)
 
     @staticmethod

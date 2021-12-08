@@ -196,46 +196,12 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 self.legend = "cluster_labels"
 
             self.embedding_df.index = self.embedding_df["_id"]
-            data, layout =  self._generate_fig(
+            plot_data, layout =  self._generate_fig(
                 embedding_df=self.embedding_df, legend=self.legend, marker_size = marker_size, marker_colour = marker_colour
             )
-            create_dash_graph(data, layout)
+
+            create_dash_graph(plot_data, layout, docs, self.colour_label, self.vector_field)
             return
-
-    def _is_valid_vector_name(self, vector_name: str) -> bool:
-        """
-        Check vector field name is valid
-        """
-        if vector_name in self.schema.keys():
-            if vector_name in self.vector_fields:
-                return True
-            else:
-                raise ValueError(f"{vector_name} is not a valid vector name")
-        else:
-            raise ValueError(
-                f"{vector_name} is not in the {self.dataset_id} schema")
-
-    def _is_valid_label_name(self, label_name: str) -> bool:
-        """
-        Check vector label name is valid. Checks that it is either numeric or text
-        """
-        if label_name == "_id":
-            return True
-        if label_name in list(self.schema.keys()):
-            if self.schema[label_name] in ["numeric", "text"]:
-                return True
-            else:
-                raise ValueError(f"{label_name} is not a valid label name")
-        else:
-            raise ValueError(
-                f"{label_name} is not in the {self.dataset_id} schema")
-
-    def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
-        """
-        Remove documents with empty vector fields
-        """
-        self.docs = [d for d in self.docs if d.get(vector_field)]
-        return self.docs
 
     def _generate_fig(
         self,
@@ -273,30 +239,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
             self.hover_label.insert(1, self.vector_label)
 
-            # self.hover_label = [self.vector_label] + self.hover_label
-            # self.hover_label = list(set(self.hover_label))
-
-            # TODO: We can change this later to show top 100 neighbours of a selected word
-            #  # Regular displays the full scatter plot with only circles
-            # if wordemb_display_mode == 'regular':
-            #     plot_mode = 'markers'
-            # # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
-            # elif wordemb_display_mode == 'neighbors':
-            #     if not selected_word:
-            #         return go.Figure()
-            #     plot_mode = 'text'
-            #     # Get the nearest neighbors indices
-            #     dataset = data_dict[dataset_name].set_index('0')
-            #     selected_vec = dataset.loc[selected_word]
-
-            #     nearest_neighbours = get_nearest_neighbours(
-            #                             dataset=dataset,
-            #                             selected_vec=selected_vec,
-            #                             distance_measure_mode=distance_measure_mode,
-            #                             )
-
-            #     neighbors_idx = nearest_neighbours[:100].index
-            #     embedding_df =  embedding_df.loc[neighbors_idx]
 
         custom_data, hovertemplate = self._generate_hover_template(
             df=embedding_df, dims=self.dims
@@ -353,27 +295,12 @@ class Projector(BatchAPIClient, Base, DocUtils):
             data = []
             groups = embedding_df.groupby(legend)
             for idx, val in groups:
-                # if self.vector_label:
-                #     plot_mode = "text+markers"
-                #     text_labels = val["labels"]
-                #     if self.vector_label_char_length and not self.cluster:
-                #         plot_title = plot_title.replace(
-                #             "<br></b>",
-                #             f"  Char Length: {self.vector_label_char_length}<br></b>",
-                #         )
-                #         text_labels = val["labels"].apply(
-                #             lambda x: x[: self.vector_label_char_length] + "..."
-                #         )
-
-                #     self.hover_label = [self.vector_label] + self.hover_label
-                #     self.hover_label = list(set(self.hover_label))
-
                 custom_data, hovertemplate = self._generate_hover_template(
                     df=val, dims=self.dims
                 )
 
                 colour_label_scatter_args = (
-                    {  # text:[ idx for _ in range(val["x"].shape[0]) ],
+                    {
                         "text": text_labels,
                         "textposition": "top center",
                         "showlegend": False,
@@ -422,27 +349,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
             )
         return data, layout
 
-        # fig = go.Figure(data=data, layout=layout)
-        # fig.update_layout(
-        #     title={
-        #         "text": plot_title,
-        #         "y": 0.1,
-        #         "x": 0.1,
-        #         "xanchor": "left",
-        #         "yanchor": "bottom",
-        #         "font": {"size": 10},
-        #     },
-        # )
-        # if legend and self.colour_label:
-        #     fig.update_layout(
-        #         legend={
-        #             "title": {"text": self.colour_label, "font": {"size": 12}},
-        #             "font": {"size": 10},
-        #             "itemwidth": 30,
-        #             "tracegroupgap": 1,
-        #         }
-        #     )
-        # return fig
 
     def _generate_hover_template(
         self, df: pd.DataFrame, dims: int
@@ -474,3 +380,38 @@ class Projector(BatchAPIClient, Base, DocUtils):
         )
 
         return custom_data, hovertemplate
+
+    def _is_valid_vector_name(self, vector_name: str) -> bool:
+        """
+        Check vector field name is valid
+        """
+        if vector_name in self.schema.keys():
+            if vector_name in self.vector_fields:
+                return True
+            else:
+                raise ValueError(f"{vector_name} is not a valid vector name")
+        else:
+            raise ValueError(
+                f"{vector_name} is not in the {self.dataset_id} schema")
+
+    def _is_valid_label_name(self, label_name: str) -> bool:
+        """
+        Check vector label name is valid. Checks that it is either numeric or text
+        """
+        if label_name == "_id":
+            return True
+        if label_name in list(self.schema.keys()):
+            if self.schema[label_name] in ["numeric", "text"]:
+                return True
+            else:
+                raise ValueError(f"{label_name} is not a valid label name")
+        else:
+            raise ValueError(
+                f"{label_name} is not in the {self.dataset_id} schema")
+
+    def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
+        """
+        Remove documents with empty vector fields
+        """
+        self.docs = [d for d in self.docs if d.get(vector_field)]
+        return self.docs
