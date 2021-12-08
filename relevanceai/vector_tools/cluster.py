@@ -318,7 +318,7 @@ class Cluster(Base, ClusterBase):
                     or ("n_clusters" not in cluster_args.keys()):
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
-                    return KMeans(**cluster_args).fit_transform(vectors=vectors)
+                    return KMeans(k=k, **cluster_args).fit_transform(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
                     # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
