@@ -12,7 +12,7 @@ from typeguard import typechecked
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.base import Base
-from relevanceai.visualise.constants import *
+from relevanceai.vector_tools.constants import *
 from relevanceai.visualise.dash_components.app import create_dash_graph
 
 
@@ -116,6 +116,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         self.dr_args = dr_args
         self.dims = dims
         self.cluster_args = cluster_args
+        self.schema = self.datasets.schema(self.dataset_id)
 
         if (vector_label is None) and (colour_label is None):
             warnings.warn(
@@ -127,7 +128,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             )
 
         number_of_documents = number_of_points_to_render
-        self.vector_fields = self.get_vector_fields()
+        self.vector_fields = self.get_vector_fields(self.dataset_id)
         self.vector_dim = self.get_vector_dimension(self.dataset_id, self.vector_field)
 
         labels = ["_id", vector_field, vector_label, colour_label]
