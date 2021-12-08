@@ -103,6 +103,7 @@ Attributes
 
    .. py:method:: _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]
 
+      s
       Remove documents with empty vector fields
 
 

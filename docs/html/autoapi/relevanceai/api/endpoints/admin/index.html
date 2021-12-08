@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">API Reference</a></li>
 </ul>
@@ -117,6 +118,25 @@
 <li><p><strong>source_api_key</strong> – The original API key of the project</p></li>
 <li><p><strong>project</strong> – The original project</p></li>
 <li><p><strong>api_key</strong> – The original API key</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.api.endpoints.admin.Admin.send_dataset">
+<span class="sig-name descname"><span class="pre">send_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/endpoints/admin.html#Admin.send_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.endpoints.admin.Admin.send_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Send an individual a dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>str</em>) – The name of the dataset</p></li>
+<li><p><strong>receiver_project</strong> (<em>str</em>) – The project name that will receive the dataset</p></li>
+<li><p><strong>receiver_api_key</strong> (<em>str</em>) – The project API key that will receive the dataset</p></li>
+<li><p><strong>client.admin.send_dataset</strong><strong>(</strong> (<em>&gt;&gt;&gt;</em>) – dataset_id=”research”,
+receiver_project=”…”,
+receiver_api_key=”…”</p></li>
+<li><p><strong>)</strong> – </p></li>
 </ul>
 </dd>
 </dl>

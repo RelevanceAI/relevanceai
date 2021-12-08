@@ -1,4 +1,4 @@
-relevanceai.api package
+Core API Reference
 =======================
 
 Submodules
@@ -14,4 +14,3 @@ Module contents
 ---------------
 
 .. automodule:: relevanceai.api
-   :members:

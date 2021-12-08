@@ -52,7 +52,7 @@ Attributes
 .. py:function:: str2bool(v)
 
 
-.. py:class:: Client(project=os.getenv('VDB_PROJECT', None), api_key=os.getenv('VDB_API_KEY', None), verbose: bool = True)
+.. py:class:: Client(project=os.getenv('RELEVANCE_PROJECT'), api_key=os.getenv('RELEVANCE_API_KEY'), verbose: bool = True)
 
    Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
 

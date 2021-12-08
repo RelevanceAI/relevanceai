@@ -20,6 +20,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    relevanceai.api.batch
    relevanceai.api.endpoints
    relevanceai.visualise
+   vectortools
    features
    
 

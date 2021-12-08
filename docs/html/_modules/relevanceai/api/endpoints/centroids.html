@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -90,10 +91,10 @@
         <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://gateway-api-aueast.relevance.ai/latest&quot;</span><span class="p">,</span>
-<div class="viewcode-block" id="Centroids.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.project">[docs]</a>    <span class="p">):</span></div>
-<div class="viewcode-block" id="Centroids.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.api_key">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div>
-<div class="viewcode-block" id="Centroids.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.config">[docs]</a><span class="sd">        Retrieve the cluster centroid</span></div>
-
+    <span class="p">):</span>
+<div class="viewcode-block" id="Centroids.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.project">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="Centroids.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.api_key">[docs]</a><span class="sd">        Retrieve the cluster centroid</span></div>
+<div class="viewcode-block" id="Centroids.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.config">[docs]</a></div>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -302,13 +303,13 @@
         <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
         <span class="n">approx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">sum_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">similarity_metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span>
         <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
         <span class="n">facets</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">include_vectors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_facets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
@@ -368,11 +369,13 @@
                 <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
                 <span class="s2">&quot;facets&quot;</span><span class="p">:</span> <span class="n">facets</span><span class="p">,</span>
                 <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
-                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vectors</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;include_facets&quot;</span><span class="p">:</span> <span class="n">include_facets</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.docs_closest_to_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.docs_closest_to_center">[docs]</a>    <span class="n">docs_closest_to_center</span> <span class="o">=</span> <span class="n">list_closest_to_center</span></div>
 
 <div class="viewcode-block" id="Centroids.list_furthest_from_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.list_furthest_from_center">[docs]</a>    <span class="k">def</span> <span class="nf">list_furthest_from_center</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -383,18 +386,18 @@
         <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
         <span class="n">approx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">sum_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">similarity_metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span>
         <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
         <span class="n">facets</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">include_vectors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_facets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        List of documents closest from the centre.</span>
+<span class="sd">        List of documents furthest from the centre.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -449,11 +452,13 @@
                 <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
                 <span class="s2">&quot;facets&quot;</span><span class="p">:</span> <span class="n">facets</span><span class="p">,</span>
                 <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
-                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vectors</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
-                <span class="s2">&quot;include_facets&quot;</span><span class="p">:</span> <span class="n">include_facets</span></div></div>
+                <span class="s2">&quot;include_facets&quot;</span><span class="p">:</span> <span class="n">include_facets</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
+    
+<div class="viewcode-block" id="Centroids.docs_furthest_from_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.docs_furthest_from_center">[docs]</a>    <span class="n">docs_furthest_from_center</span> <span class="o">=</span> <span class="n">list_furthest_from_center</span></div></div>
 </pre></div>
 
            </div>

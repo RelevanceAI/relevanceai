@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -90,10 +91,10 @@
         <span class="n">vector_operation</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
         <span class="n">approximation_depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">sum_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<div class="viewcode-block" id="Search.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.project">[docs]</a>        <span class="n">page_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Search.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.api_key">[docs]</a>        <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Search.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.config">[docs]</a>        <span class="n">similarity_metric</span><span class="o">=</span><span class="s2">&quot;cosine&quot;</span><span class="p">,</span></div>
-        <span class="n">facets</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">page_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<div class="viewcode-block" id="Search.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.project">[docs]</a>        <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span></div>
+<div class="viewcode-block" id="Search.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.api_key">[docs]</a>        <span class="n">similarity_metric</span><span class="o">=</span><span class="s2">&quot;cosine&quot;</span><span class="p">,</span></div>
+<div class="viewcode-block" id="Search.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.config">[docs]</a>        <span class="n">facets</span><span class="o">=</span><span class="p">[],</span></div>
         <span class="n">filters</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">min_score</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">select_fields</span><span class="o">=</span><span class="p">[],</span>
@@ -102,7 +103,8 @@
         <span class="n">asc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">hundred_scale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:</span>
@@ -192,6 +194,8 @@
 <span class="sd">            Whether to scale up the metric by 100</span>
 <span class="sd">        search_history_id: string</span>
 <span class="sd">            Search history ID, only used for storing search histories.</span>
+<span class="sd">        query: string</span>
+<span class="sd">            What to store as the query name in the dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="s2">&quot;/services/search/vector&quot;</span><span class="p">,</span>
@@ -216,7 +220,8 @@
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
                 <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
-                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span></div>
+                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -241,7 +246,7 @@
         <span class="n">asc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">hundred_scale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">search_history_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n</span>
@@ -327,7 +332,8 @@
                 <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span>
                 <span class="s2">&quot;edit_distance&quot;</span><span class="p">:</span> <span class="n">edit_distance</span><span class="p">,</span>
                 <span class="s2">&quot;ignore_spaces&quot;</span><span class="p">:</span> <span class="n">ignore_spaces</span><span class="p">,</span>
-                <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="n">traditional_weight</span><span class="p">,</span></div>
+                <span class="s2">&quot;traditional_weight&quot;</span><span class="p">:</span> <span class="n">traditional_weight</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">text</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -417,7 +423,8 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span></div>
+                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">text</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -447,7 +454,8 @@
         <span class="n">search_history_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_init</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">return_as_clusters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">return_as_clusters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        This will first perform an advanced search and then cluster the top X (page_size) search results. Results are returned as such: Once you have the clusters:</span>
@@ -521,6 +529,8 @@
 <span class="sd">            Number of iterations in each run</span>
 <span class="sd">        return_as_clusters: bool</span>
 <span class="sd">            If True, return as clusters as opposed to results list</span>
+<span class="sd">        query: string</span>
+<span class="sd">            What to store as the query name in the dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="s2">&quot;/services/search/diversity&quot;</span><span class="p">,</span>
@@ -550,7 +560,8 @@
                 <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span> <span class="n">n_clusters</span><span class="p">,</span>
                 <span class="s2">&quot;n_init&quot;</span><span class="p">:</span> <span class="n">n_init</span><span class="p">,</span>
                 <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="n">n_iter</span><span class="p">,</span>
-                <span class="s2">&quot;return_as_clusters&quot;</span><span class="p">:</span> <span class="n">return_as_clusters</span><span class="p">,</span></div>
+                <span class="s2">&quot;return_as_clusters&quot;</span><span class="p">:</span> <span class="n">return_as_clusters</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -624,7 +635,8 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span></div>
+                <span class="s2">&quot;search_history_id&quot;</span><span class="p">:</span> <span class="n">search_history_id</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -648,7 +660,8 @@
         <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">keep_search_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">hundred_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">hundred_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; </span>
@@ -708,6 +721,8 @@
 <span class="sd">            Whether to store the history into VecDB. This will increase the storage costs over time.</span>
 <span class="sd">        hundred_scale: bool</span>
 <span class="sd">            Whether to scale up the metric by 100</span>
+<span class="sd">        query: string</span>
+<span class="sd">            What to store as the query name in the dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
@@ -732,7 +747,8 @@
                 <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;keep_search_history&quot;</span><span class="p">:</span> <span class="n">keep_search_history</span><span class="p">,</span>
-                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span></div>
+                <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -759,7 +775,8 @@
         <span class="n">keep_search_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">hundred_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">first_step_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">first_step_page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">first_step_page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; </span>
@@ -815,6 +832,8 @@
 <span class="sd">            Page of the results</span>
 <span class="sd">        first_step_page_size: int</span>
 <span class="sd">            Size of each page of results</span>
+<span class="sd">        query: string</span>
+<span class="sd">            What to store as the query name in the dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="s2">&quot;/services/search/multistep_chunk&quot;</span><span class="p">,</span>
@@ -841,7 +860,8 @@
                 <span class="s2">&quot;hundred_scale&quot;</span><span class="p">:</span> <span class="n">hundred_scale</span><span class="p">,</span>
                 <span class="s2">&quot;first_step_multivector_query&quot;</span><span class="p">:</span> <span class="n">first_step_multivector_query</span><span class="p">,</span>
                 <span class="s2">&quot;first_step_page&quot;</span><span class="p">:</span> <span class="n">first_step_page</span><span class="p">,</span>
-                <span class="s2">&quot;first_step_page_size&quot;</span><span class="p">:</span> <span class="n">first_step_page_size</span><span class="p">,</span></div>
+                <span class="s2">&quot;first_step_page_size&quot;</span><span class="p">:</span> <span class="n">first_step_page_size</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -852,7 +872,8 @@
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        A more advanced chunk search to be able to combine vector search and chunk search in many different ways. \n</span>
@@ -914,6 +935,8 @@
 <span class="sd">            Include vectors in the search results</span>
 <span class="sd">        select_fields: list</span>
 <span class="sd">            Fields to include in the search results, empty array/list means all fields.</span>
+<span class="sd">        query: string</span>
+<span class="sd">            What to store as the query name in the dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="s2">&quot;/services/search/advanced_chunk&quot;</span><span class="p">,</span>
@@ -924,7 +947,8 @@
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
-                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span></div>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -946,7 +970,8 @@
         <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Performs a vector hybrid search and then an advanced chunk search. Chunk Search allows one to search through chunks inside a document. The major difference between chunk search and normal search in Vector AI is that it relies on the chunkvector field. Chunk Vector Search. Search with a multiple chunkvectors for the most similar documents. Chunk search also supports filtering to only search through filtered results and facets to get the overview of products available when a minimum score is set. \n</span>
@@ -1032,7 +1057,8 @@
 <span class="sd">            Include vectors in the search results</span>
 <span class="sd">        select_fields: list</span>
 <span class="sd">            Fields to include in the search results, empty array/list means all fields.</span>
-
+<span class="sd">        query: string</span>
+<span class="sd">            What to store as the query name in the dashboard</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="s2">&quot;/services/search/advanced_multistep_chunk&quot;</span><span class="p">,</span>
@@ -1054,7 +1080,8 @@
                 <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
-                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span></div>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span></div>
             <span class="p">}</span>
         <span class="p">)</span>
 

@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -90,10 +91,10 @@
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<div class="viewcode-block" id="Monitor.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.monitor.Monitor.project">[docs]</a><span class="sd">        dataset_id : string</span></div>
-<div class="viewcode-block" id="Monitor.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.monitor.Monitor.api_key">[docs]</a><span class="sd">            Unique name of dataset</span></div>
-<div class="viewcode-block" id="Monitor.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.monitor.Monitor.config">[docs]</a><span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+<span class="sd">        dataset_id : string</span>
+<div class="viewcode-block" id="Monitor.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.monitor.Monitor.project">[docs]</a><span class="sd">            Unique name of dataset</span></div>
+<div class="viewcode-block" id="Monitor.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.monitor.Monitor.api_key">[docs]</a><span class="sd">        &quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="Monitor.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.monitor.Monitor.config">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span></div>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/monitor/health&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
         <span class="p">)</span>

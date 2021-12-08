@@ -1,0 +1,33 @@
+:py:mod:`relevanceai.utils`
+===========================
+
+.. py:module:: relevanceai.utils
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.utils.NoteBookUtils
+
+
+
+
+.. py:class:: NoteBookUtils
+
+   .. py:method:: is_in_ipython()
+      :staticmethod:
+
+      Determines if current code is executed within an ipython session.
+
+
+   .. py:method:: is_in_notebook(self) -> bool
+
+      Determines if current code is executed from an ipython notebook.
+
+
+

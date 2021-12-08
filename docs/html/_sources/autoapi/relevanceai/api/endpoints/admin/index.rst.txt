@@ -47,4 +47,20 @@ Classes
       :param api_key: The original API key
 
 
+   .. py:method:: send_dataset(self, dataset_id: str, receiver_project: str, receiver_api_key: str)
+
+      Send an individual a dataset.
+
+      :param dataset_id: The name of the dataset
+      :type dataset_id: str
+      :param receiver_project: The project name that will receive the dataset
+      :type receiver_project: str
+      :param receiver_api_key: The project API key that will receive the dataset
+      :type receiver_api_key: str
+      :param >>> client.admin.send_dataset(: dataset_id="research",
+                                             receiver_project="...",
+                                             receiver_api_key="..."
+      :param ):
+
+
 
