@@ -383,7 +383,14 @@ class Cluster(BatchAPIClient, ClusterBase):
             "_cluster_", string to name the main cluster field
         overwrite : bool
             False by default, To overwite an existing clusering result
+        
+        Example
+        -------------
 
+        >>> client.vector_tools.cluster.kmeans_cluster(
+            dataset_id="sample_dataset",
+            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+        )
         """
 
         EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
