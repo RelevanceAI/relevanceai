@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
@@ -129,6 +130,8 @@
 </li>
       <li><a href="autoapi/relevanceai/config/index.html#relevanceai.config.Config._create_default">_create_default() (relevanceai.config.Config static method)</a>
 </li>
+      <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._dashboard_request_url">_dashboard_request_url (relevanceai.transport.Transport property)</a>
+</li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector._generate_fig">_generate_fig() (relevanceai.visualise.projector.Projector method)</a>
 </li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector._generate_hover_template">_generate_hover_template() (relevanceai.visualise.projector.Projector method)</a>
@@ -137,10 +140,10 @@
 </li>
       <li><a href="autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_dummy_dataset">_get_dummy_dataset() (relevanceai.datasets.ExampleDatasets static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/relevanceai/api/endpoints/documents/index.html#relevanceai.api.endpoints.documents.Documents._get_number_of_documents">_get_number_of_documents() (relevanceai.api.endpoints.documents.Documents method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_online_dataset">_get_online_dataset() (relevanceai.datasets.ExampleDatasets static method)</a>
 </li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector._get_vector_fields">_get_vector_fields() (relevanceai.visualise.projector.Projector method)</a>
@@ -150,7 +153,11 @@
       <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.LoguruLogger._init_logger">_init_logger() (relevanceai.logger.LoguruLogger method)</a>
 </li>
       <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans._init_model">_init_model() (relevanceai.vector_tools.cluster.KMeans method)</a>
+
+      <ul>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans._init_model">(relevanceai.vector_tools.cluster.MiniBatchKMeans method)</a>
 </li>
+      </ul></li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector._is_valid_label_name">_is_valid_label_name() (relevanceai.visualise.projector.Projector method)</a>
 </li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector._is_valid_vector_name">_is_valid_vector_name() (relevanceai.visualise.projector.Projector method)</a>
@@ -171,7 +178,11 @@
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/tasks/index.html#relevanceai.api.endpoints.tasks.Tasks._loop_status_until_finish">_loop_status_until_finish() (relevanceai.api.endpoints.tasks.Tasks method)</a>
 </li>
+      <li><a href="autoapi/relevanceai/config/index.html#relevanceai.config.Config._read_config">_read_config() (relevanceai.config.Config method)</a>
+</li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector._remove_empty_vector_fields">_remove_empty_vector_fields() (relevanceai.visualise.projector.Projector method)</a>
+</li>
+      <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._search_dashboard_url">_search_dashboard_url (relevanceai.transport.Transport property)</a>
 </li>
       <li><a href="autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.BatchInsert._write_documents">_write_documents() (relevanceai.api.batch.batch_insert.BatchInsert method)</a>
 </li>
@@ -236,11 +247,11 @@
 </li>
         <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.api_key">(relevanceai.transport.Transport attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools.api_key">(relevanceai.vector_tools.client.VectorTools attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools.api_key">(relevanceai.vector_tools.client.VectorTools attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.api_key">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.api_key">(relevanceai.vector_tools.cluster.Cluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.api_key">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.api_key">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.api_key">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.api_key">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.api_key">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.api_key">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -299,7 +310,7 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster">CentroidCluster (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster">CentroidCluster (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/centroids/index.html#relevanceai.api.endpoints.centroids.Centroids">Centroids (class in relevanceai.api.endpoints.centroids)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids">[1]</a>
 </li>
@@ -332,16 +343,18 @@
       <li><a href="autoapi/relevanceai/api/endpoints/cluster/index.html#relevanceai.api.endpoints.cluster.Cluster">Cluster (class in relevanceai.api.endpoints.cluster)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster">[1]</a>
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster">(class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster">(class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster">[2]</a>
 </li>
       </ul></li>
       <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.CLUSTER">CLUSTER (in module relevanceai.vector_tools.constants)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster.cluster">cluster() (relevanceai.vector_tools.cluster.Cluster static method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.cluster">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster.cluster">cluster() (relevanceai.vector_tools.cluster.Cluster static method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.cluster">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.cluster">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.CLUSTER_DEFAULT_ARGS">CLUSTER_DEFAULT_ARGS (in module relevanceai.vector_tools.constants)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase">ClusterBase (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase">ClusterBase (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase">[2]</a>
+</li>
+      <li><a href="autoapi/relevanceai/errors/index.html#relevanceai.errors.ClusteringResultsAlreadyExistsError">ClusteringResultsAlreadyExistsError</a>, <a href="relevanceai.html#relevanceai.errors.ClusteringResultsAlreadyExistsError">[1]</a>
 </li>
       <li><a href="autoapi/relevanceai/config/index.html#relevanceai.config.Config">Config (class in relevanceai.config)</a>, <a href="relevanceai.html#relevanceai.config.Config">[1]</a>
 </li>
@@ -386,11 +399,11 @@
 </li>
         <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.config">(relevanceai.transport.Transport attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools.config">(relevanceai.vector_tools.client.VectorTools attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools.config">(relevanceai.vector_tools.client.VectorTools attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.config">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.config">(relevanceai.vector_tools.cluster.Cluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.config">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.config">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.config">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.config">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.config">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.config">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -426,25 +439,33 @@
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.critical">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.critical">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.critical">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.critical">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.critical">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.critical">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.critical">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.critical">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.critical">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.critical">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.critical">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.critical">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.critical">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.critical">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.critical">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.critical">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.critical">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.critical">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.critical">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.critical">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.critical">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.critical">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.critical">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.critical">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.critical">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.critical">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.critical">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.critical">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.critical">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.critical">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.critical">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.critical">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -464,25 +485,33 @@
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.debug">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.debug">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.debug">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.debug">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.debug">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.debug">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.debug">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.debug">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.debug">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.debug">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.debug">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.debug">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.debug">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.debug">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.debug">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.debug">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.debug">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.debug">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.debug">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.debug">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.debug">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.debug">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.debug">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.debug">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.debug">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.debug">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.debug">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.debug">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.debug">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.debug">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.debug">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.debug">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -501,19 +530,19 @@
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/documents/index.html#relevanceai.api.endpoints.documents.Documents.delete_where">delete_where() (relevanceai.api.endpoints.documents.Documents method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.documents.Documents.delete_where">[1]</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster">DensityCluster (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster">DensityCluster (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.dict">dict (in module relevanceai.vector_tools.constants)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReduction.dim_reduce">dim_reduce() (relevanceai.vector_tools.dim_reduction.DimReduction static method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.dim_reduce">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReduction.dim_reduce">dim_reduce() (relevanceai.vector_tools.dim_reduction.DimReduction static method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.dim_reduce">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.dim_reduce">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.DIM_REDUCTION">DIM_REDUCTION (in module relevanceai.vector_tools.constants)</a>
 </li>
       <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.DIM_REDUCTION_DEFAULT_ARGS">DIM_REDUCTION_DEFAULT_ARGS (in module relevanceai.vector_tools.constants)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReduction">DimReduction (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReduction">DimReduction (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction">[2]</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReductionBase">DimReductionBase (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReductionBase">DimReductionBase (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/recommend/index.html#relevanceai.api.endpoints.recommend.Recommend.diversity">diversity() (relevanceai.api.endpoints.recommend.Recommend method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.recommend.Recommend.diversity">[1]</a>
 
@@ -523,6 +552,14 @@
         <li><a href="autoapi/relevanceai/api/endpoints/tagger/index.html#relevanceai.api.endpoints.tagger.Tagger.diversity">(relevanceai.api.endpoints.tagger.Tagger method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.tagger.Tagger.diversity">[1]</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/relevanceai/api/endpoints/centroids/index.html#relevanceai.api.endpoints.centroids.Centroids.docs_closest_to_center">docs_closest_to_center (relevanceai.api.endpoints.centroids.Centroids attribute)</a>
+</li>
+      <li><a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.docs_closest_to_center">docs_closest_to_center() (relevanceai.api.endpoints.centroids.Centroids method)</a>
+</li>
+      <li><a href="autoapi/relevanceai/api/endpoints/centroids/index.html#relevanceai.api.endpoints.centroids.Centroids.docs_furthest_from_center">docs_furthest_from_center (relevanceai.api.endpoints.centroids.Centroids attribute)</a>
+</li>
+      <li><a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.docs_furthest_from_center">docs_furthest_from_center() (relevanceai.api.endpoints.centroids.Centroids method)</a>
+</li>
       <li><a href="autoapi/relevanceai/api/endpoints/services/index.html#relevanceai.api.endpoints.services.Services.document_diff">document_diff() (relevanceai.api.endpoints.services.Services method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.services.Services.document_diff">[1]</a>
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/documents/index.html#relevanceai.api.endpoints.documents.Documents">Documents (class in relevanceai.api.endpoints.documents)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.documents.Documents">[1]</a>
@@ -542,25 +579,33 @@
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.error">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.error">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.error">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.error">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.error">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.error">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.error">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.error">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.error">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.error">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.error">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.error">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.error">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.error">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.error">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.error">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.error">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.error">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.error">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.error">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.error">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.error">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.error">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.error">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.error">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.error">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.error">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.error">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.error">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.error">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.error">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.error">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -587,28 +632,28 @@
         <li><a href="autoapi/relevanceai/http_client/index.html#relevanceai.http_client.Client.FAIL_MESSAGE">(relevanceai.http_client.Client attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">fit_documents() (relevanceai.vector_tools.cluster.ClusterBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">fit_documents() (relevanceai.vector_tools.cluster.ClusterBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">[2]</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">fit_transform() (relevanceai.vector_tools.cluster.CentroidCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">fit_transform() (relevanceai.vector_tools.cluster.CentroidCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">[2]</a>
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">(relevanceai.vector_tools.cluster.ClusterBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">(relevanceai.vector_tools.cluster.ClusterBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">(relevanceai.vector_tools.cluster.DensityCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">(relevanceai.vector_tools.cluster.DensityCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">(relevanceai.vector_tools.cluster.HDBSCAN method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">(relevanceai.vector_tools.cluster.HDBSCAN method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans.fit_transform">(relevanceai.vector_tools.cluster.KMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">(relevanceai.vector_tools.cluster.MiniBatchKMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.fit_transform">(relevanceai.vector_tools.dim_reduction.DimReductionBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.fit_transform">(relevanceai.vector_tools.dim_reduction.DimReductionBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.Ivis.fit_transform">(relevanceai.vector_tools.dim_reduction.Ivis method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.Ivis.fit_transform">(relevanceai.vector_tools.dim_reduction.Ivis method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.PCA.fit_transform">(relevanceai.vector_tools.dim_reduction.PCA method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.PCA.fit_transform">(relevanceai.vector_tools.dim_reduction.PCA method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.TSNE.fit_transform">(relevanceai.vector_tools.dim_reduction.TSNE method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.TSNE.fit_transform">(relevanceai.vector_tools.dim_reduction.TSNE method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.fit_transform">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.UMAP.fit_transform">(relevanceai.vector_tools.dim_reduction.UMAP method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.fit_transform">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.UMAP.fit_transform">(relevanceai.vector_tools.dim_reduction.UMAP method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.fit_transform">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.fit_transform">[2]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -627,13 +672,13 @@
 </li>
       <li><a href="autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.get_bar">get_bar() (relevanceai.progress_bar.ProgressBar method)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">get_centers() (relevanceai.vector_tools.cluster.CentroidCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">get_centers() (relevanceai.vector_tools.cluster.CentroidCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">[2]</a>
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans.get_centers">(relevanceai.vector_tools.cluster.KMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.get_centers">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">(relevanceai.vector_tools.cluster.MiniBatchKMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">[2]</a>
 </li>
       </ul></li>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">get_centroid_docs() (relevanceai.vector_tools.cluster.CentroidCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">get_centroid_docs() (relevanceai.vector_tools.cluster.CentroidCluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets.get_dataset">get_dataset() (relevanceai.datasets.ExampleDatasets method)</a>
 </li>
@@ -685,7 +730,7 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.HDBSCAN">HDBSCAN (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.HDBSCAN">HDBSCAN (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN">[2]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -708,25 +753,33 @@
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.info">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.info">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.info">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.info">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.info">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.info">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.info">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.info">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.info">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.info">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.info">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.info">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.info">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.info">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.info">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.info">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.info">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.info">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.info">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.info">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.info">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.info">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.info">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.info">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.info">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.info">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.info">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.info">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.info">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.info">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.info">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.info">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -744,10 +797,20 @@
       <li><a href="autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.BatchInsert.insert_documents">insert_documents() (relevanceai.api.batch.batch_insert.BatchInsert method)</a>, <a href="relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.insert_documents">[1]</a>
 </li>
       <li><a href="autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.is_in_ipython">is_in_ipython() (relevanceai.progress_bar.ProgressBar static method)</a>
+
+      <ul>
+        <li><a href="autoapi/relevanceai/utils/index.html#relevanceai.utils.NoteBookUtils.is_in_ipython">(relevanceai.utils.NoteBookUtils static method)</a>
 </li>
+      </ul></li>
       <li><a href="autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.ProgressBar.is_in_notebook">is_in_notebook() (relevanceai.progress_bar.ProgressBar method)</a>
+
+      <ul>
+        <li><a href="autoapi/relevanceai/utils/index.html#relevanceai.utils.NoteBookUtils.is_in_notebook">(relevanceai.utils.NoteBookUtils method)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.Ivis">Ivis (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis">[1]</a>
+      </ul></li>
+      <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.is_search_in_path">is_search_in_path() (relevanceai.transport.Transport static method)</a>
+</li>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.Ivis">Ivis (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis">[2]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -755,7 +818,9 @@
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans">KMeans (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans">KMeans (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans">[2]</a>
+</li>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">kmeans_cluster() (relevanceai.vector_tools.cluster.Cluster method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">[2]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -835,6 +900,8 @@
         <li><a href="autoapi/relevanceai/api/endpoints/datasets/index.html#relevanceai.api.endpoints.datasets.Datasets.metadata">(relevanceai.api.endpoints.datasets.Datasets method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.metadata">[1]</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans">MiniBatchKMeans (class in relevanceai.vector_tools.cluster)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans">[2]</a>
+</li>
       <li><a href="autoapi/relevanceai/errors/index.html#relevanceai.errors.MissingFieldError">MissingFieldError</a>, <a href="relevanceai.html#relevanceai.errors.MissingFieldError">[1]</a>
 </li>
       <li>
@@ -913,15 +980,17 @@
 </li>
         <li><a href="autoapi/relevanceai/transport/index.html#module-relevanceai.transport">relevanceai.transport</a>, <a href="relevanceai.html#module-relevanceai.transport">[1]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/index.html#module-relevanceai.vector_tools">relevanceai.vector_tools</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools">[1]</a>
+        <li><a href="autoapi/relevanceai/utils/index.html#module-relevanceai.utils">relevanceai.utils</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/client/index.html#module-relevanceai.vector_tools.client">relevanceai.vector_tools.client</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.client">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/index.html#module-relevanceai.vector_tools">relevanceai.vector_tools</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#module-relevanceai.vector_tools.cluster">relevanceai.vector_tools.cluster</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.cluster">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/client/index.html#module-relevanceai.vector_tools.client">relevanceai.vector_tools.client</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.client">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.client">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#module-relevanceai.vector_tools.constants">relevanceai.vector_tools.constants</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.constants">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#module-relevanceai.vector_tools.cluster">relevanceai.vector_tools.cluster</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.cluster">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.cluster">[2]</a>
 </li>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#module-relevanceai.vector_tools.dim_reduction">relevanceai.vector_tools.dim_reduction</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.dim_reduction">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#module-relevanceai.vector_tools.constants">relevanceai.vector_tools.constants</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.constants">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.constants">[2]</a>
+</li>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#module-relevanceai.vector_tools.dim_reduction">relevanceai.vector_tools.dim_reduction</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.dim_reduction">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.dim_reduction">[2]</a>
 </li>
         <li><a href="autoapi/relevanceai/visualise/index.html#module-relevanceai.visualise">relevanceai.visualise</a>, <a href="relevanceai.visualise.html#module-relevanceai.visualise">[1]</a>
 </li>
@@ -945,6 +1014,10 @@
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/relevanceai/utils/index.html#relevanceai.utils.NoteBookUtils">NoteBookUtils (class in relevanceai.utils)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/relevanceai/progress_bar/index.html#relevanceai.progress_bar.NullProgressBar">NullProgressBar (class in relevanceai.progress_bar)</a>, <a href="relevanceai.html#relevanceai.progress_bar.NullProgressBar">[1]</a>
 </li>
@@ -974,7 +1047,7 @@
 </li>
       <li><a href="autoapi/relevanceai/config/index.html#relevanceai.config.PATH">PATH (in module relevanceai.config)</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.PCA">PCA (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.PCA">PCA (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.Projector.plot">plot() (relevanceai.visualise.projector.Projector method)</a>, <a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.plot">[1]</a>
 </li>
@@ -1025,11 +1098,11 @@
 </li>
         <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.project">(relevanceai.transport.Transport attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools.project">(relevanceai.vector_tools.client.VectorTools attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools.project">(relevanceai.vector_tools.client.VectorTools attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.project">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.project">(relevanceai.vector_tools.cluster.Cluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.project">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.project">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.project">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReduction.project">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.project">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.project">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -1050,8 +1123,6 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/relevanceai/config/index.html#relevanceai.config.Config.read_config">read_config() (relevanceai.config.Config method)</a>, <a href="relevanceai.html#relevanceai.config.Config.read_config">[1]</a>
-</li>
       <li><a href="autoapi/relevanceai/api/endpoints/recommend/index.html#relevanceai.api.endpoints.recommend.Recommend">Recommend (class in relevanceai.api.endpoints.recommend)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.recommend.Recommend">[1]</a>
 </li>
       <li>
@@ -1208,8 +1279,6 @@
         <li><a href="autoapi/relevanceai/api/endpoints/services/index.html#module-relevanceai.api.endpoints.services">module</a>, <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.services">[1]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     relevanceai.api.endpoints.tagger
 
@@ -1217,6 +1286,8 @@
         <li><a href="autoapi/relevanceai/api/endpoints/tagger/index.html#module-relevanceai.api.endpoints.tagger">module</a>, <a href="relevanceai.api.endpoints.html#module-relevanceai.api.endpoints.tagger">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     relevanceai.api.endpoints.tasks
 
@@ -1309,38 +1380,45 @@
 </li>
       </ul></li>
       <li>
+    relevanceai.utils
+
+      <ul>
+        <li><a href="autoapi/relevanceai/utils/index.html#module-relevanceai.utils">module</a>
+</li>
+      </ul></li>
+      <li>
     relevanceai.vector_tools
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/index.html#module-relevanceai.vector_tools">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/index.html#module-relevanceai.vector_tools">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools">[2]</a>
 </li>
       </ul></li>
       <li>
     relevanceai.vector_tools.client
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/client/index.html#module-relevanceai.vector_tools.client">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.client">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/client/index.html#module-relevanceai.vector_tools.client">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.client">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.client">[2]</a>
 </li>
       </ul></li>
       <li>
     relevanceai.vector_tools.cluster
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#module-relevanceai.vector_tools.cluster">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.cluster">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#module-relevanceai.vector_tools.cluster">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.cluster">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.cluster">[2]</a>
 </li>
       </ul></li>
       <li>
     relevanceai.vector_tools.constants
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#module-relevanceai.vector_tools.constants">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.constants">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/constants/index.html#module-relevanceai.vector_tools.constants">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.constants">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.constants">[2]</a>
 </li>
       </ul></li>
       <li>
     relevanceai.vector_tools.dim_reduction
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#module-relevanceai.vector_tools.dim_reduction">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.dim_reduction">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#module-relevanceai.vector_tools.dim_reduction">module</a>, <a href="relevanceai.vector_tools.html#module-relevanceai.vector_tools.dim_reduction">[1]</a>, <a href="vectortools.html#module-relevanceai.vector_tools.dim_reduction">[2]</a>
 </li>
       </ul></li>
       <li>
@@ -1358,6 +1436,8 @@
 </li>
       </ul></li>
       <li><a href="autoapi/relevanceai/visualise/projector/index.html#relevanceai.visualise.projector.RELEVANCEAI_BLUE">RELEVANCEAI_BLUE (in module relevanceai.visualise.projector)</a>
+</li>
+      <li><a href="autoapi/relevanceai/errors/index.html#relevanceai.errors.RelevanceAIError">RelevanceAIError</a>, <a href="relevanceai.html#relevanceai.errors.RelevanceAIError">[1]</a>
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/admin/index.html#relevanceai.api.endpoints.admin.Admin.request_read_api_key">request_read_api_key() (relevanceai.api.endpoints.admin.Admin method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.request_read_api_key">[1]</a>
 </li>
@@ -1379,6 +1459,8 @@
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/search/index.html#relevanceai.api.endpoints.search.Search.semantic">semantic() (relevanceai.api.endpoints.search.Search method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.search.Search.semantic">[1]</a>
 </li>
+      <li><a href="autoapi/relevanceai/api/endpoints/admin/index.html#relevanceai.api.endpoints.admin.Admin.send_dataset">send_dataset() (relevanceai.api.endpoints.admin.Admin method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.send_dataset">[1]</a>
+</li>
       <li><a href="autoapi/relevanceai/api/endpoints/services/index.html#relevanceai.api.endpoints.services.Services">Services (class in relevanceai.api.endpoints.services)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.services.Services">[1]</a>
 </li>
       <li><a href="autoapi/relevanceai/config/index.html#relevanceai.config.Config.set_option">set_option() (relevanceai.config.Config method)</a>, <a href="relevanceai.html#relevanceai.config.Config.set_option">[1]</a>
@@ -1397,32 +1479,38 @@
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.str2bool">(in module relevanceai.logger)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="relevanceai.api.batch.html#relevanceai.api.batch.local_logger.PullUpdatePushLocalLogger.success">success (relevanceai.api.batch.local_logger.PullUpdatePushLocalLogger attribute)</a>
 
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.success">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.success">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.success">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.success">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.success">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.success">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.success">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.success">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.success">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.success">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.success">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.success">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.success">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.success">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.success">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.success">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.success">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.success">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.success">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.success">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.success">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.success">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.success">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.success">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.success">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.success">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.success">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.success">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.success">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.success">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.success">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.success">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -1449,10 +1537,12 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">to_metadata() (relevanceai.vector_tools.cluster.ClusterBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">to_metadata() (relevanceai.vector_tools.cluster.ClusterBase method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">[2]</a>
 
       <ul>
-        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">(relevanceai.vector_tools.cluster.KMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">[1]</a>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">(relevanceai.vector_tools.cluster.KMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">[2]</a>
+</li>
+        <li><a href="autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">(relevanceai.vector_tools.cluster.MiniBatchKMeans method)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">[2]</a>
 </li>
       </ul></li>
       <li><a href="autoapi/relevanceai/index.html#relevanceai.Client.token_to_auth">token_to_auth() (relevanceai.Client static method)</a>
@@ -1465,7 +1555,7 @@
 </li>
       <li><a href="autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport">Transport (class in relevanceai.transport)</a>, <a href="relevanceai.html#relevanceai.transport.Transport">[1]</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.TSNE">TSNE (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.TSNE">TSNE (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE">[2]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1473,7 +1563,7 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.UMAP">UMAP (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/dim_reduction/index.html#relevanceai.vector_tools.dim_reduction.UMAP">UMAP (class in relevanceai.vector_tools.dim_reduction)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/api/endpoints/documents/index.html#relevanceai.api.endpoints.documents.Documents.update">update() (relevanceai.api.endpoints.documents.Documents method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.documents.Documents.update">[1]</a>
 </li>
@@ -1501,7 +1591,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/relevanceai/api/endpoints/datasets/index.html#relevanceai.api.endpoints.datasets.Datasets.vectorize">vectorize() (relevanceai.api.endpoints.datasets.Datasets method)</a>, <a href="relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.vectorize">[1]</a>
 </li>
-      <li><a href="autoapi/relevanceai/vector_tools/client/index.html#relevanceai.vector_tools.client.VectorTools">VectorTools (class in relevanceai.vector_tools.client)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools">[1]</a>
+      <li><a href="autoapi/relevanceai/vector_tools/client/index.html#relevanceai.vector_tools.client.VectorTools">VectorTools (class in relevanceai.vector_tools.client)</a>, <a href="relevanceai.vector_tools.html#relevanceai.vector_tools.client.VectorTools">[1]</a>, <a href="vectortools.html#relevanceai.vector_tools.client.VectorTools">[2]</a>
 </li>
       <li><a href="autoapi/relevanceai/http_client/index.html#id0">vis_requirements (in module relevanceai.http_client)</a>, <a href="autoapi/relevanceai/http_client/index.html#relevanceai.http_client.vis_requirements">[1]</a>
 </li>
@@ -1516,25 +1606,33 @@
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.warn">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.warn">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.warn">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.warn">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.warn">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.warn">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.warn">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.warn">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.warn">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.warn">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.warn">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.warn">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.warn">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.warn">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.warn">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.warn">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.warn">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.warn">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.warn">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.warn">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.warn">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.warn">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.warn">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.warn">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.warn">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.warn">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.warn">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.warn">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.warn">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.warn">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.warn">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.warn">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>
@@ -1544,25 +1642,33 @@
       <ul>
         <li><a href="autoapi/relevanceai/logger/index.html#relevanceai.logger.AbstractLogger.warning">(relevanceai.logger.AbstractLogger attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.warning">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.client.VectorTools.warning">(relevanceai.vector_tools.client.VectorTools attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.warning">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.CentroidCluster.warning">(relevanceai.vector_tools.cluster.CentroidCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.warning">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.Cluster.warning">(relevanceai.vector_tools.cluster.Cluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.Cluster.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.warning">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.ClusterBase.warning">(relevanceai.vector_tools.cluster.ClusterBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.warning">(relevanceai.vector_tools.cluster.KMeans attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.DensityCluster.warning">(relevanceai.vector_tools.cluster.DensityCluster attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.warning">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.HDBSCAN.warning">(relevanceai.vector_tools.cluster.HDBSCAN attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.warning">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.KMeans.warning">(relevanceai.vector_tools.cluster.KMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.KMeans.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.warning">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.warning">(relevanceai.vector_tools.cluster.MiniBatchKMeans attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.warning">[1]</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.warning">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>
+        <li><a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReduction.warning">(relevanceai.vector_tools.dim_reduction.DimReduction attribute)</a>
 </li>
-        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.warning">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.warning">(relevanceai.vector_tools.dim_reduction.DimReductionBase attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase.warning">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.Ivis.warning">(relevanceai.vector_tools.dim_reduction.Ivis attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.Ivis.warning">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.PCA.warning">(relevanceai.vector_tools.dim_reduction.PCA attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.PCA.warning">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.TSNE.warning">(relevanceai.vector_tools.dim_reduction.TSNE attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.TSNE.warning">[1]</a>
+</li>
+        <li><a href="relevanceai.vector_tools.html#relevanceai.vector_tools.dim_reduction.UMAP.warning">(relevanceai.vector_tools.dim_reduction.UMAP attribute)</a>, <a href="vectortools.html#relevanceai.vector_tools.dim_reduction.UMAP.warning">[1]</a>
 </li>
         <li><a href="relevanceai.visualise.html#relevanceai.visualise.projector.Projector.warning">(relevanceai.visualise.projector.Projector attribute)</a>
 </li>

@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">API Reference</a></li>
 </ul>
@@ -134,6 +135,7 @@
 <li class="toctree-l1"><a class="reference internal" href="logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.logger</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="progress_bar/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.progress_bar</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="transport/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.transport</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.utils</span></code></a></li>
 </ul>
 </div>
 </section>
@@ -168,7 +170,7 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.Client">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">os.getenv('VDB_PROJECT',</span> <span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">os.getenv('VDB_API_KEY',</span> <span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/relevanceai/http_client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.Client" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">os.getenv('RELEVANCE_PROJECT')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">os.getenv('RELEVANCE_API_KEY')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/relevanceai/http_client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.Client" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.client.BatchAPIClient</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
 <p>Python Client for Relevance AI’s relevanceai</p>
 <dl class="py attribute">
@@ -217,7 +219,7 @@
 
 <dl class="py data">
 <dt class="sig sig-object py" id="relevanceai.__version__">
-<span class="sig-prename descclassname"><span class="pre">relevanceai.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">0.18.6</span></em><a class="reference internal" href="../../_modules/relevanceai.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.__version__" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">relevanceai.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">0.19.2</span></em><a class="reference internal" href="../../_modules/relevanceai.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.__version__" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

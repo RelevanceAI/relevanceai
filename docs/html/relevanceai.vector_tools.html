@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
@@ -105,7 +106,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">CentroidCluster</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#CentroidCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.ClusterBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.ClusterBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#CentroidCluster.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster.critical" title="Permalink to this definition"></a></dt>
@@ -124,8 +125,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#CentroidCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.get_centers">
@@ -174,7 +174,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">Cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <a class="reference internal" href="#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.ClusterBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.api.client.BatchAPIClient</span></code></a>, <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.ClusterBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.api_key">
 <span class="sig-name descname"><span class="pre">api_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.api_key" title="Permalink to this definition"></a></dt>
@@ -197,8 +197,81 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.critical">
+<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.critical" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.debug" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.error" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">
+<span class="sig-name descname"><span class="pre">kmeans_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_cluster_'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_documents_chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.kmeans_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster" title="Permalink to this definition"></a></dt>
+<dd><p>This function performs all the steps required for Kmeans clustering:
+1- Loads the data
+2- Clusters the data
+3- Updates the data with clustering info
+4- Adds the centroid to the hidden centroid collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – name of the dataser</p></li>
+<li><p><strong>vector_fields</strong> (<em>list</em>) – a list containing the vector field to be used for clustering</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – a list to filter documents of the dataset,</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – K in Kmeans</p></li>
+<li><p><strong>init</strong> (<em>string</em>) – “k-means++” -&gt; Kmeans algorithm parameter</p></li>
+<li><p><strong>n_init</strong> (<em>int</em>) – number of reinitialization for the kmeans algorithm</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em>) – max iteration in the kmeans algorithm</p></li>
+<li><p><strong>tol</strong> (<em>int</em>) – tol in the kmeans algorithm</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – True by default</p></li>
+<li><p><strong>None</strong> (<em>random_state =</em>) – None by default -&gt; Kmeans algorithm parameter</p></li>
+<li><p><strong>copy_x</strong> (<em>bool</em>) – True bydefault</p></li>
+<li><p><strong>algorithm</strong> (<em>string</em>) – “auto” by default</p></li>
+<li><p><strong>alias</strong> (<em>string</em>) – “default”, string to be used in naming of the field showing the clustering results</p></li>
+<li><p><strong>cluster_field</strong> (<em>string</em>) – “_cluster_”, string to name the main cluster field</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – False by default, To overwite an existing clusering result</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">vector_tools</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">kmeans_cluster</span><span class="p">(</span>
+<span class="go">    dataset_id=&quot;sample_dataset&quot;,</span>
+<span class="go">    vector_fields=[&quot;sample_1_vector_&quot;] # Only 1 vector field is supported for now</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.project">
 <span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.project" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.success">
+<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.success" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.warn">
+<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.warn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.warning">
+<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#Cluster.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.warning" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -243,8 +316,7 @@ inside the documents.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase.fit_transform">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#ClusterBase.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase.info">
@@ -277,7 +349,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">DensityCluster</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#DensityCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.DensityCluster" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.ClusterBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.ClusterBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#DensityCluster.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.DensityCluster.critical" title="Permalink to this definition"></a></dt>
@@ -296,8 +368,7 @@ inside the documents.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster.fit_transform">
 <span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#DensityCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.DensityCluster.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster.info">
@@ -324,7 +395,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.HDBSCAN">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">HDBSCAN</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#HDBSCAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.HDBSCAN" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.cluster.DensityCluster" title="relevanceai.vector_tools.cluster.DensityCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.DensityCluster</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.cluster.DensityCluster" title="relevanceai.vector_tools.cluster.DensityCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.DensityCluster</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.HDBSCAN.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#HDBSCAN.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.HDBSCAN.critical" title="Permalink to this definition"></a></dt>
@@ -343,8 +414,7 @@ inside the documents.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">
 <span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'algorithm':</span> <span class="pre">'best',</span> <span class="pre">'alpha':</span> <span class="pre">1.0,</span> <span class="pre">'approx_min_span_tree':</span> <span class="pre">True,</span> <span class="pre">'gen_min_span_tree':</span> <span class="pre">False,</span> <span class="pre">'leaf_size':</span> <span class="pre">40,</span> <span class="pre">'memory':</span> <span class="pre">Memory(location=None),</span> <span class="pre">'metric':</span> <span class="pre">'euclidean',</span> <span class="pre">'min_samples':</span> <span class="pre">None,</span> <span class="pre">'p':</span> <span class="pre">None}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#HDBSCAN.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Return the</p>
-<dl class="field-list simple">
+<dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
 </dd>
@@ -375,8 +445,8 @@ inside the documents.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_no_improvement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#KMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.cluster.CentroidCluster" title="relevanceai.vector_tools.cluster.CentroidCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.CentroidCluster</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#KMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans" title="relevanceai.vector_tools.cluster.MiniBatchKMeans"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.MiniBatchKMeans</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#KMeans.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans.critical" title="Permalink to this definition"></a></dt>
@@ -391,18 +461,6 @@ inside the documents.</p>
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans.error">
 <span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#KMeans.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans.error" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#KMeans.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans.fit_transform" title="Permalink to this definition"></a></dt>
-<dd><p>Fit and transform transform the vectors</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans.get_centers">
-<span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#KMeans.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans.get_centers" title="Permalink to this definition"></a></dt>
-<dd><p>Returns centroids of clusters</p>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans.info">
@@ -432,6 +490,65 @@ inside the documents.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">MiniBatchKMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_no_improvement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster" title="relevanceai.vector_tools.cluster.CentroidCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster.CentroidCluster</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.critical">
+<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.critical" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.debug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.debug" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.error" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Fit and transform transform the vectors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">
+<span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Returns centroids of clusters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.success">
+<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.success" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">
+<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Editing the metadata of the function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.warn">
+<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.warn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.warning">
+<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.warning" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-relevanceai.vector_tools.constants">
 <span id="relevanceai-vector-tools-constants-module"></span><h2>relevanceai.vector_tools.constants module<a class="headerlink" href="#module-relevanceai.vector_tools.constants" title="Permalink to this headline"></a></h2>
@@ -441,7 +558,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.DimReduction">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">DimReduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#DimReduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.DimReduction" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <a class="reference internal" href="#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="relevanceai.html#relevanceai.base.Base" title="relevanceai.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base.Base</span></code></a>, <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.DimReduction.api_key">
 <span class="sig-name descname"><span class="pre">api_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#DimReduction.api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.DimReduction.api_key" title="Permalink to this definition"></a></dt>
@@ -524,7 +641,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.Ivis">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">Ivis</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#Ivis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.Ivis" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.Ivis.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#Ivis.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.Ivis.critical" title="Permalink to this definition"></a></dt>
@@ -575,7 +692,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.PCA">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#PCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.PCA" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.PCA.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#PCA.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.PCA.critical" title="Permalink to this definition"></a></dt>
@@ -626,7 +743,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.TSNE">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">TSNE</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#TSNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.TSNE" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.TSNE.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#TSNE.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.TSNE.critical" title="Permalink to this definition"></a></dt>
@@ -677,7 +794,7 @@ inside the documents.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.UMAP">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.dim_reduction.</span></span><span class="sig-name descname"><span class="pre">UMAP</span></span><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#UMAP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.UMAP" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="vectortools.html#relevanceai.vector_tools.dim_reduction.DimReductionBase" title="relevanceai.vector_tools.dim_reduction.DimReductionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.vector_tools.dim_reduction.DimReductionBase</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="relevanceai.vector_tools.dim_reduction.UMAP.critical">
 <span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="reference internal" href="_modules/relevanceai/vector_tools/dim_reduction.html#UMAP.critical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.dim_reduction.UMAP.critical" title="Permalink to this definition"></a></dt>

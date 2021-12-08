@@ -1,9 +1,6 @@
 Core Endpoints
 =================================
 
-Submodules
-----------
-
 .. automodule:: relevanceai.api.endpoints.admin
    :members:
    :undoc-members:

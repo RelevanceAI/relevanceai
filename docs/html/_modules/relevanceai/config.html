@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -82,13 +83,35 @@
 
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">DocUtils</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set and change configuration settings&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set and change configuration settings</span>
+<span class="sd">    </span>
+<span class="sd">    - Retries - Set the behaviour of retries for failed responses from the API</span>
+<span class="sd">        - number_of_retries - Number of retries to attempt</span>
+<span class="sd">        - seconds_between_retries - Seconds to wait between retries</span>
+
+<span class="sd">    - Logging - Set the behaviour of logging</span>
+<span class="sd">         - enable_logging - Whether to log</span>
+<span class="sd">         - log_to_file - Whether to log to file</span>
+<span class="sd">         - log_file_name - The name of the file to log to, if logging to file</span>
+<span class="sd">         - logging_level - Minimum level to log</span>
+
+<span class="sd">    - Upload - Set the behaviour of uploads to RelevanceAI</span>
+<span class="sd">        - target_chunk_mb - Maximum upload size per request</span>
+
+<span class="sd">    - API - Set the behaviour of API requests</span>
+<span class="sd">        - base_url - The base url to access</span>
+<span class="sd">        - output_format - The format of API responses</span>
+
+<span class="sd">    - Dashboard - URLS to various things</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_config</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Config.read_config"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config.read_config">[docs]</a>    <span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">):</span>
+<div class="viewcode-block" id="Config._read_config"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config._read_config">[docs]</a>    <span class="k">def</span> <span class="nf">_read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Set up custom config by reading in a file</span>
 <span class="sd">        </span>
@@ -130,12 +153,12 @@
 
 <div class="viewcode-block" id="Config.reset_to_default"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config.reset_to_default">[docs]</a>    <span class="k">def</span> <span class="nf">reset_to_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Reset config to default&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_config</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="Config._create_default"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config._create_default">[docs]</a>    <span class="k">def</span> <span class="nf">_create_default</span><span class="p">():</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;retries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;number_of_retries&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;retries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;number_of_retries&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
                              <span class="s2">&quot;seconds_between_retries&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;log_to_file&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;logging_level&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
                              <span class="s1">&#39;enable_logging&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;log_file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;relevanceai&quot;</span><span class="p">}</span>
