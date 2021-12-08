@@ -248,10 +248,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 f"{label_name} is not in the {self.dataset_id} schema")
 
     def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
-        """
+        """s
         Remove documents with empty vector fields
         """
-        self.docs = [d for d in self.docs if vector_field in DocUtils.list_doc_fields(d)]
+        self.docs = list(filter(DocUtils.list_doc_fields, self.docs))
         return self.docs
 
     def _generate_fig(
