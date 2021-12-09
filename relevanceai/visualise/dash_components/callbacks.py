@@ -28,8 +28,9 @@ def display_callbacks(app, show_image, docs, vector_label):
        
             img = io.imread(image_url)
             fig = px.imshow(img)
-            fig.update_yaxes(showgrid=False,showticklabels=False,linewidth=0)
-            fig.update_xaxes(showgrid=False,showticklabels=False,linewidth=0)
+            fig.update_yaxes(visible=False)
+            fig.update_xaxes(visible=False)
+            fig.update_traces(hoverinfo='skip', hovertemplate=None)
             fig.update_layout(title="Current Selection")
 
             return dcc.Graph(
@@ -78,8 +79,9 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
                 fig = make_subplots(rows=5, cols=2, subplot_titles=neighbour_info['nearest_neighbor_index'])
                 for n, image in enumerate(neighbour_info['nearest_neighbor_values']):
                     fig.add_trace(px.imshow(io.imread(image)).data[0], row=int(n/2)+1, col=n%2+1)
-                    fig.update_yaxes(showgrid=False,showticklabels=False,linewidth=0)
-                    fig.update_xaxes(showgrid=False,showticklabels=False,linewidth=0)
+                    fig.update_yaxes(visible=False)
+                    fig.update_xaxes(visible=False)
+                    fig.update_traces(hoverinfo='skip', hovertemplate=None)
 
                 fig.update_layout(title=f"Nearest Neighbours ({distance_measure_mode})")
 
@@ -98,20 +100,19 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
             neighbour_info = _get_neighbours(clickData)
 
             if neighbour_info:
-                trace = go.Bar(
-                x=neighbour_info['nearest_neighbor_index'][::-1],
-                y=neighbour_info['nearest_neighbor_values'][::-1],
-                text = neighbour_info['nearest_neighbor_index'][::-1],
-                orientation='h',
-                marker=dict(color='rgb(24,84,255)')
-                )
-                layout = go.Layout(
-                title=f"Nearest Neighbours ({distance_measure_mode})",
-                xaxis={"visible": False},
-                margin=go.layout.Margin(l=60, r=60, t=35, b=35),
-                plot_bgcolor="#FFF",
-                )
-                fig = go.Figure(data=[trace], layout=layout)
+
+                fig = px.bar(x=neighbour_info['nearest_neighbor_index'][::-1],
+                                y=neighbour_info['nearest_neighbor_values'][::-1],
+                                color = neighbour_info['nearest_neighbor_index'][::-1],
+                                text = neighbour_info['nearest_neighbor_index'][::-1],
+                                orientation='h',
+                                title=f"Nearest Neighbours ({distance_measure_mode})")
+                fig.update_yaxes(title='')
+                fig.update_xaxes(visible=False)
+                fig.update_coloraxes(showscale=False)
+                fig.update_traces(hoverinfo='skip', hovertemplate=None)
+                fig.update_layout({"plot_bgcolor": "#ffffff","paper_bgcolor": "#ffffff",})
+
 
                 return dcc.Graph(
                                 figure=fig,

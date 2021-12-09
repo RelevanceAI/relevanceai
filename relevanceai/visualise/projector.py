@@ -144,6 +144,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
         marker_size: int = 5,
         dataset_name: Union[None, str] = None):
 
+        # Adjust vector label
+        if show_image is False:
+            self.set_field_across_documents(vector_label, [i[vector_label][:label_char_length] + '...' for i in docs], docs)
+
 
         # Dimension reduce vectors
         vectors = np.array(
@@ -295,6 +299,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         Generating hover template
         """
         custom_data = df[hover_label]
+        custom_data = custom_data.loc[:,~custom_data.columns.duplicated()]
 
         for label in hover_label:
             try:
