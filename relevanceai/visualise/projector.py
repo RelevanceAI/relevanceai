@@ -123,7 +123,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
     def plot_from_docs(
         self,
-        docs: List[Dict[str, Any]],
+        docs: List[Dict],
         vector_field: str,
         # Plot rendering args
         vector_label: Union[None, str] = None,
