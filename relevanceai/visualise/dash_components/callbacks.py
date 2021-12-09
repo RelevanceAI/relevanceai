@@ -13,7 +13,6 @@ doc_utils = DocUtils()
 
 MAX_SIZE = 200
 
-
 def display_callbacks(app, show_image):
 
     if show_image:

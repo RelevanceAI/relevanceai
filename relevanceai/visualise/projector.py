@@ -165,6 +165,9 @@ class Projector(BatchAPIClient, Base, DocUtils):
         embedding_df = pd.DataFrame(points)
         embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
 
+        # Set hover labels
+        hover_label = ["_id", vector_label] + hover_label
+
         # Cluster vectors
         if cluster:
             if cluster_on_dr:
@@ -179,11 +182,11 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 k=num_clusters
             )
             embedding_df["cluster_labels"] = cluster_labels
+            hover_label = hover_label + ["cluster_labels"]
 
         embedding_df.index = embedding_df["_id"]
 
-        # Set hover labels
-        hover_label = ["_id", vector_label] + hover_label
+        
 
         # Generate plot title
         plot_title = self._generate_plot_title(dims, dataset_name, len(
@@ -230,11 +233,11 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
         axes_2d = {
             "title": "",
-            "visible": True,
+            "visible": False,
             "showticklabels": False,
-            "showline": True,
-            "linewidth": 2,
-            "linecolor": "#000000"
+            # "showline": True,
+            # "linewidth": 2,
+            # "linecolor": "#000000"
         }
 
         layout = go.Layout(
@@ -266,7 +269,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             {
                 "showlegend": False,
                 "mode": "markers",
-                "marker": {"size": marker_size, "symbol": "circle"},
+                "marker": {"size": marker_size, "symbol": "circle", "opacity": 0.75},
                 "customdata": custom_data,
                 "hovertemplate": hovertemplate,
             }
