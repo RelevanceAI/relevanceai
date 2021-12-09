@@ -63,9 +63,13 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
         nearest_neighbor_index = doc_utils.get_field_across_documents('nearest_neighbour_distance', nearest_neighbors)
         nearest_neighbor_index = [round(i, 2) for i in nearest_neighbor_index]
 
+        nearest_neighbor_values, nearest_neighbor_index  = remove_duplicates(nearest_neighbor_values, nearest_neighbor_index)
+
         if distance_measure_mode != 'cosine': 
             nearest_neighbor_index = nearest_neighbor_index[::-1]
             nearest_neighbor_values = nearest_neighbor_values[::-1]
+
+        
 
         return {'nearest_neighbor_values': nearest_neighbor_values, 'nearest_neighbor_index':nearest_neighbor_index}
 
@@ -112,7 +116,7 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
                 fig.update_yaxes(title='')
                 fig.update_xaxes(visible=False)
                 fig.update_coloraxes(showscale=False)
-                fig.update_traces(hoverinfo='skip', hovertemplate=None, textposition='outside', cliponaxis = False)
+                fig.update_traces(hoverinfo='skip', hovertemplate=None, textposition='outside', cliponaxis = False, width=0.2)
                 fig.update_layout({"plot_bgcolor": "#ffffff","paper_bgcolor": "#ffffff"})
 
 
@@ -124,3 +128,8 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
 
             return None
     
+
+
+def remove_duplicates(value,index):
+    temp_dict = {i:j for i,j in zip(value,index)}
+    return list(temp_dict.keys()), list(temp_dict.values())
