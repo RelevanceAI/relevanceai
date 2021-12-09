@@ -29,7 +29,8 @@ class ClusterBase(LoguruLogger, DocUtils):
         docs: list,
         alias: str="default",
         cluster_field: str="_cluster_",
-        return_only_clusters: bool=True
+        return_only_clusters: bool=True,
+        inplace: bool=True
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -47,6 +48,8 @@ class ClusterBase(LoguruLogger, DocUtils):
             What the cluster fields should be called
         return_only_clusters: bool
             If True, return only clusters, otherwise returns the original document
+        inplace: bool
+            If True, the documents are edited inplace otherwise, a copy is made first
 
         """
         if len(vector_field) == 1:
@@ -58,11 +61,25 @@ class ClusterBase(LoguruLogger, DocUtils):
         cluster_labels = self.fit_transform(vectors)
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
+
+        if inplace:
+            self.set_field_across_documents(
+                f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
+            )
+            if return_only_clusters:
+                return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs]
+            return docs
+
+        new_docs = docs.copy()
+
         self.set_field_across_documents(
-            f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
+            f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, new_docs
         )
+
         if return_only_clusters:
-            return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs]
+            return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                for d in new_docs]
+
         return docs
 
     def to_metadata(self):
