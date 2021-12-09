@@ -12,8 +12,7 @@ from urllib.parse import urlparse
 import requests
 from requests import Request
 
-from relevanceai.errors import APIError
-
+from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
 
 class Transport:
     """Base class for all relevanceai objects"""
@@ -37,11 +36,76 @@ class Transport:
             self.config["dashboard.search_dashboard_endpoint"][1:-1]
 
     @staticmethod
-    def is_search_in_path(url: str):
+    def _is_search_in_path(url: str):
         if url is None:
             return False
         result = urlparse(url)
         return "search" in result.path.split("/")
+
+    DASHBOARD_TYPES = [
+        "multivector_search", 
+        "cluster_centroids_closest",
+        "cluster_centroids_furthest"
+    ]
+
+    def _log_to_dashboard(
+        self, 
+        method: str,
+        parameters: dict, 
+        endpoint: str,
+        dashboard_type: str,
+        verbose: bool=True
+    ):
+        """Log search to dashboard
+        """
+        # Needs to be a supported dashboard type
+        if dashboard_type not in self.DASHBOARD_TYPES:
+            return
+        url = self.config.get_option('api.base_url')[:-2]
+        version = self.config.get_option('api.base_url')[-2:]
+        request_body = {
+            dashboard_type: {
+                "body": parameters,
+                "url": url,
+                "version": version,
+                "endpoint": endpoint[1:],
+                "metadata": parameters,
+                "query": parameters.get("query"),
+            },
+        }
+        req = Request(
+            method=method.upper(),
+            url=self._dashboard_request_url,
+            headers=self.auth_header,
+            json=request_body,
+            # params=parameters if method.upper() == "GET" else {},
+        ).prepare()
+        with requests.Session() as s:
+            response = s.send(req)
+
+        if verbose:
+            dashboard_url = self.config["dashboard.base_dashboard_url"][1:-1] + \
+                DASHBOARD_MAPPINGS[dashboard_type]
+            self.print_dashboard_url(dashboard_url)
+        return response
+
+    def _log_search_to_dashboard(
+        self,
+        method: str,
+        parameters: dict, 
+        endpoint: str
+    ):
+        """Log search to dashboard
+        """
+        return self._log_to_dashboard(
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="multivector_search"
+        )
+
+    def print_dashboard_url(self, dashboard_url):
+        print(f"You can now visit the dashboard at {dashboard_url}")
 
     def make_http_request(
         self,
@@ -81,28 +145,13 @@ class Transport:
             self.logger.info(
                 "URL you are trying to access:" + request_url)
             try:
-                if Transport.is_search_in_path(request_url):
-                    url = self.config.get_option('api.base_url')[:-2]
-                    version = self.config.get_option('api.base_url')[-2:]
-                    search_body = {
-                        "multivector_search": {
-                            "body": parameters, 
-                            "url": url,
-                            "version": version,
-                            "endpoint": endpoint[1:],
-                            "metadata": parameters,
-                            "query": parameters.get("query"),
-                        },
-                    }
-                    req = Request(
-                        method=method.upper(),
-                        url=self._dashboard_request_url,
-                        headers=self.auth_header,
-                        json=search_body,
-                        # params=parameters if method.upper() == "GET" else {},
-                    ).prepare()
-                    with requests.Session() as s:
-                        response = s.send(req)
+                if Transport._is_search_in_path(request_url):
+                    self._log_search_to_dashboard(
+                        method=method,
+                        parameters=parameters,
+                        endpoint=endpoint
+                    )
+                # TODO: Add other endpoints in here too
 
                 req = Request(
                     method=method.upper(),
@@ -121,7 +170,7 @@ class Transport:
                     self._log_response_time(base_url, endpoint, time.perf_counter() - start_time)
 
                     if output_format == 'json':
-                        if Transport.is_search_in_path(request_url):
+                        if Transport._is_search_in_path(request_url):
                             print(f"You can now visit the dashboard at {self._search_dashboard_url}")
                         return response.json()
                     elif output_format == 'content':
