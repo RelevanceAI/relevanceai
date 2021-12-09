@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
 </ul>
@@ -76,17 +77,31 @@
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 <dl class="py exception">
+<dt class="sig sig-object py" id="relevanceai.errors.RelevanceAIError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">RelevanceAIError</span></span><a class="reference internal" href="../../../_modules/relevanceai/errors.html#RelevanceAIError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.RelevanceAIError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>base class for all errors</p>
+</dd></dl>
+
+<dl class="py exception">
 <dt class="sig sig-object py" id="relevanceai.errors.MissingFieldError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">MissingFieldError</span></span><a class="reference internal" href="../../../_modules/relevanceai/errors.html#MissingFieldError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.MissingFieldError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="../../../relevanceai.html#relevanceai.errors.RelevanceAIError" title="relevanceai.errors.RelevanceAIError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RelevanceAIError</span></code></a></p>
 <p>Error handling for missing fields</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="relevanceai.errors.APIError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">APIError</span></span><a class="reference internal" href="../../../_modules/relevanceai/errors.html#APIError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.APIError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="../../../relevanceai.html#relevanceai.errors.RelevanceAIError" title="relevanceai.errors.RelevanceAIError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RelevanceAIError</span></code></a></p>
 <p>Error related to API</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="relevanceai.errors.ClusteringResultsAlreadyExistsError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">ClusteringResultsAlreadyExistsError</span></span><a class="reference internal" href="../../../_modules/relevanceai/errors.html#ClusteringResultsAlreadyExistsError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.ClusteringResultsAlreadyExistsError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../relevanceai.html#relevanceai.errors.RelevanceAIError" title="relevanceai.errors.RelevanceAIError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RelevanceAIError</span></code></a></p>
+<p>Error is raised when the clustering dataset already exists</p>
 </dd></dl>
 
 </section>

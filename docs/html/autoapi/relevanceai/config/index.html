@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
 </ul>
@@ -123,9 +124,45 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
 <p>Set and change configuration settings</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Retries - Set the behaviour of retries for failed responses from the API</dt><dd><ul>
+<li><p>number_of_retries - Number of retries to attempt</p></li>
+<li><p>seconds_between_retries - Seconds to wait between retries</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Logging - Set the behaviour of logging</dt><dd><ul>
+<li><p>enable_logging - Whether to log</p></li>
+<li><p>log_to_file - Whether to log to file</p></li>
+<li><p>log_file_name - The name of the file to log to, if logging to file</p></li>
+<li><p>logging_level - Minimum level to log</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Upload - Set the behaviour of uploads to RelevanceAI</dt><dd><ul>
+<li><p>target_chunk_mb - Maximum upload size per request</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>API - Set the behaviour of API requests</dt><dd><ul>
+<li><p>base_url - The base url to access</p></li>
+<li><p>output_format - The format of API responses</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Dashboard - URLS to various things</p></li>
+</ul>
 <dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.config.Config.read_config">
-<span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config.read_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config.read_config" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="relevanceai.config.Config._read_config">
+<span class="sig-name descname"><span class="pre">_read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/config.html#Config._read_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.config.Config._read_config" title="Permalink to this definition"></a></dt>
 <dd><p>Set up custom config by reading in a file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

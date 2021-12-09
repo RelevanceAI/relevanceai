@@ -46,8 +46,20 @@ Classes
 
       
 
+   .. py:method:: _dashboard_request_url(self)
+      :property:
+
+
    .. py:method:: auth_header(self)
       :property:
+
+
+   .. py:method:: _search_dashboard_url(self)
+      :property:
+
+
+   .. py:method:: is_search_in_path(url: str)
+      :staticmethod:
 
 
    .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, base_url: str = None, output_format=None)

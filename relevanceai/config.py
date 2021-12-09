@@ -9,13 +9,35 @@ CONFIG_PATH = os.path.join(PATH, "config.ini")
 
 
 class Config(DocUtils):
-    """Set and change configuration settings"""
+    """
+    Set and change configuration settings
+    
+    - Retries - Set the behaviour of retries for failed responses from the API
+        - number_of_retries - Number of retries to attempt
+        - seconds_between_retries - Seconds to wait between retries
+
+    - Logging - Set the behaviour of logging
+         - enable_logging - Whether to log
+         - log_to_file - Whether to log to file
+         - log_file_name - The name of the file to log to, if logging to file
+         - logging_level - Minimum level to log
+
+    - Upload - Set the behaviour of uploads to RelevanceAI
+        - target_chunk_mb - Maximum upload size per request
+
+    - API - Set the behaviour of API requests
+        - base_url - The base url to access
+        - output_format - The format of API responses
+
+    - Dashboard - URLS to various things
+
+    """
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.read_config(CONFIG_PATH)
+        self._read_config(CONFIG_PATH)
         super().__init__()
 
-    def read_config(self, config_path):
+    def _read_config(self, config_path):
         """ 
         Set up custom config by reading in a file
         
@@ -57,7 +79,7 @@ class Config(DocUtils):
 
     def reset_to_default(self):
         """Reset config to default"""
-        self.read_config(CONFIG_PATH)
+        self._read_config(CONFIG_PATH)
 
     @staticmethod
     def _create_default():

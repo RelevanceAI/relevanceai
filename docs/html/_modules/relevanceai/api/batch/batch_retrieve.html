@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -90,10 +91,10 @@
         <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">sort</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-<div class="viewcode-block" id="BatchRetrieve.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.project">[docs]</a>        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span></div>
-<div class="viewcode-block" id="BatchRetrieve.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.api_key">[docs]</a>        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span></div>
-<div class="viewcode-block" id="BatchRetrieve.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.config">[docs]</a>        </div>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+<div class="viewcode-block" id="BatchRetrieve.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.project">[docs]</a>        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span></div>
+<div class="viewcode-block" id="BatchRetrieve.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.api_key">[docs]</a>        </div>
+<div class="viewcode-block" id="BatchRetrieve.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.config">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div>
 <span class="sd">        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n</span>
 <span class="sd">        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {&quot;strict&quot;:&quot;must_or&quot;}.</span>
 <span class="sd">        Parameters</span>

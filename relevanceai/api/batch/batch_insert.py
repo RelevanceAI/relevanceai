@@ -506,7 +506,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
 
         # Get one document to test the size
         if len(docs) == 0:
-            self.logger.warn("No document is detected")
+            self.logger.warning("No document is detected")
             return {
                 "inserted": 0,
                 "failed_documents": [],
