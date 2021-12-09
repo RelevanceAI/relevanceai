@@ -202,10 +202,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
         self,
         embedding_df: pd.DataFrame,
         plot_title: str,
-        hover_label: str,
+        hover_label: List[Optional[str]],
         dims: int,
         marker_size: int,
-        cluster: bool
+        cluster: Union[Literal['kmeans'], Literal['kmedoids'], Literal['hdbscan'], ClusterBase, None]
     ) -> go.Figure:
         """
         """
