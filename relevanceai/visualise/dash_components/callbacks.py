@@ -58,6 +58,10 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
         nearest_neighbor_index = doc_utils.get_field_across_documents('nearest_neighbour_distance', nearest_neighbors)
         nearest_neighbor_index = [round(i, 2) for i in nearest_neighbor_index]
 
+        if distance_measure_mode != 'cosine': 
+            nearest_neighbor_index = nearest_neighbor_index[::-1]
+            nearest_neighbor_values = nearest_neighbor_values[::-1]
+
         return {'nearest_neighbor_values': nearest_neighbor_values, 'nearest_neighbor_index':nearest_neighbor_index}
 
     if show_image:
