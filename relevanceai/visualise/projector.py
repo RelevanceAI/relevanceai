@@ -237,9 +237,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
             "title": "",
             "visible": False,
             "showticklabels": False,
-            # "showline": True,
-            # "linewidth": 2,
-            # "linecolor": "#000000"
         }
 
         layout = go.Layout(

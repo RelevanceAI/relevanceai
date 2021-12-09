@@ -35,7 +35,7 @@ def display_callbacks(app, show_image, docs, vector_label):
 
             return dcc.Graph(
                             figure=fig,
-                            style={'height': '50vh','width': '75', 'text-align': 'center'},
+                            style={'height': '50vh','width': '100vh', 'text-align': 'center'},
                             config={'displayModeBar': False},
                         )
 
@@ -87,7 +87,7 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
 
                 return dcc.Graph(
                                 figure=fig,
-                                style={'height': '125vh','width': '75vh', 'text-align': 'center',},
+                                style={'height': '125vh','width': '100vh', 'text-align': 'center',},
                                 config={'displayModeBar': False},
                             )
             else:
@@ -97,6 +97,7 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
         @app.callback(Output('div-plot-text-neighbours', 'children'), Input('graph-plot-tsne', 'clickData'))
         def text_neighbours(clickData):
 
+            # Need to remove duplicates later
             neighbour_info = _get_neighbours(clickData)
 
             if neighbour_info:
@@ -105,18 +106,19 @@ def neighbour_callbacks(app, show_image, docs, vector_label, vector_field, dista
                                 y=neighbour_info['nearest_neighbor_values'][::-1],
                                 color = neighbour_info['nearest_neighbor_index'][::-1],
                                 text = neighbour_info['nearest_neighbor_index'][::-1],
+                                color_continuous_scale='blues',
                                 orientation='h',
                                 title=f"Nearest Neighbours ({distance_measure_mode})")
                 fig.update_yaxes(title='')
                 fig.update_xaxes(visible=False)
                 fig.update_coloraxes(showscale=False)
-                fig.update_traces(hoverinfo='skip', hovertemplate=None)
-                fig.update_layout({"plot_bgcolor": "#ffffff","paper_bgcolor": "#ffffff",})
+                fig.update_traces(hoverinfo='skip', hovertemplate=None, textposition='outside', cliponaxis = False)
+                fig.update_layout({"plot_bgcolor": "#ffffff","paper_bgcolor": "#ffffff"})
 
 
                 return dcc.Graph(
                                 figure=fig,
-                                style={'height': '125vh','width': '75vh', 'text-align': 'center',},
+                                style={'height': '125vh','width': '100vh', 'text-align': 'center',},
                                 config={'displayModeBar': False},
                             )
 

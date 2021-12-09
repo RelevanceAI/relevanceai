@@ -17,7 +17,7 @@ def build_display_panel(app: dash.Dash) -> html.Div:
                             id='div-plot-click-message',
                             style={
                                 'text-align': 'left',
-                                'width': '100%',
+                                'width': '100vh',
                                 'margin-bottom': '7px',
                                 'font-weight': 'bold',
                             },

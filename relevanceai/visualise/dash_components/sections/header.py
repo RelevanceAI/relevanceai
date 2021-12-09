@@ -15,7 +15,7 @@ def build_header(app: dash.Dash) -> html.Div:
                         html.Div(
                             [
                                 html.H3(
-                                    "Vector Explorer",
+                                    "Vector Projector",
                                     className="header_title",
                                     id="app-title",
                                 )
