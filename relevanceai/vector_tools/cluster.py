@@ -13,8 +13,6 @@ from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.errors import ClusteringResultsAlreadyExistsError
 
-EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
-
 class ClusterBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
@@ -395,8 +393,8 @@ class Cluster(BatchAPIClient, ClusterBase):
         )
         """
 
-        if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
-            raise ClusteringResultsAlreadyExistsError(EXISTING_CLUSTER_MESSAGE)
+        if '.'.join([cluster_field, vector_fields[0], alias+'_'+str(k)]) in self.datasets.schema(dataset_id) and not overwrite:
+            raise ClusteringResultsAlreadyExistsError('.'.join([cluster_field, vector_fields[0], alias+'_'+str(k)]))
 
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
@@ -416,7 +414,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         clustered_docs = clusterer.fit_documents(
             vector_fields,
             docs,
-            alias=alias, 
+            alias=alias+'_'+str(k),
             cluster_field=cluster_field, 
             return_only_clusters=True)
 
@@ -434,7 +432,7 @@ class Cluster(BatchAPIClient, ClusterBase):
                 dataset_id = dataset_id,
                 cluster_centers=centers,
                 vector_field=vector_fields[0],
-                alias= alias
+                alias= alias+'_'+str(k)
             )
             self.logger.info(results)
         except Exception as e:
@@ -514,8 +512,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         """
 
         if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
-            raise ClusteringResultsAlreadyExistsError(EXISTING_CLUSTER_MESSAGE)
-
+            raise ClusteringResultsAlreadyExistsError('.'.join([cluster_field, vector_fields[0], alias]))
         # load the documents
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
 
