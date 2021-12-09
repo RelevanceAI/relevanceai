@@ -15,6 +15,7 @@ Classes
    relevanceai.vector_tools.cluster.ClusterBase
    relevanceai.vector_tools.cluster.CentroidCluster
    relevanceai.vector_tools.cluster.DensityCluster
+   relevanceai.vector_tools.cluster.MiniBatchKMeans
    relevanceai.vector_tools.cluster.KMeans
    relevanceai.vector_tools.cluster.HDBSCAN
    relevanceai.vector_tools.cluster.Cluster
@@ -34,8 +35,7 @@ Classes
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
 
-      Return the
-
+      
 
 
    .. py:method:: fit_documents(self, vector_field: list, docs: list, alias: str = 'default', cluster_field: str = '_cluster_', return_only_clusters: bool = True)
@@ -81,8 +81,7 @@ Classes
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
 
-      Return the
-
+      
 
 
    .. py:method:: get_centers(self) -> Union[numpy.ndarray, List[list]]
@@ -111,12 +110,11 @@ Classes
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
 
-      Return the
+      
 
 
 
-
-.. py:class:: KMeans(k: Union[None, int] = 10, init: str = 'k-means++', verbose: bool = True, compute_labels: bool = True, max_no_improvement: int = 2)
+.. py:class:: MiniBatchKMeans(k: Union[None, int] = 10, init: str = 'k-means++', verbose: bool = True, compute_labels: bool = True, max_no_improvement: int = 2)
 
    Bases: :py:obj:`CentroidCluster`
 
@@ -143,6 +141,22 @@ Classes
 
 
 
+.. py:class:: KMeans(k=10, init='k-means++', n_init=10, max_iter=300, tol=0.0001, verbose=0, random_state=None, copy_x=True, algorithm='auto')
+
+   Bases: :py:obj:`MiniBatchKMeans`
+
+   Using verbose loguru as base logger for now
+
+   .. py:method:: _init_model(self)
+
+
+   .. py:method:: to_metadata(self)
+
+      Editing the metadata of the function
+
+
+
+
 .. py:class:: HDBSCAN
 
    Bases: :py:obj:`DensityCluster`
@@ -151,16 +165,15 @@ Classes
 
    .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['hdbscan'], min_cluster_size: Union[None, int] = 10) -> numpy.ndarray
 
-      Return the
-
+      
 
 
 
 .. py:class:: Cluster(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`, :py:obj:`ClusterBase`
+   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`ClusterBase`
 
-   Base class for all relevanceai utilities
+   Batch API client
 
    .. py:method:: _choose_k(vectors: numpy.ndarray)
       :staticmethod:
@@ -173,6 +186,52 @@ Classes
       :staticmethod:
 
       Cluster vectors
+
+
+   .. py:method:: kmeans_cluster(self, dataset_id: str, vector_fields: list, filters: List = [], k: Union[None, int] = 10, init: str = 'k-means++', n_init: int = 10, max_iter: int = 300, tol: float = 0.0001, verbose: bool = True, random_state: Optional[int] = None, copy_x: bool = True, algorithm: str = 'auto', alias: str = 'default', cluster_field: str = '_cluster_', update_documents_chunksize: int = 50, overwrite: bool = False)
+
+      This function performs all the steps required for Kmeans clustering:
+      1- Loads the data
+      2- Clusters the data
+      3- Updates the data with clustering info
+      4- Adds the centroid to the hidden centroid collection
+
+      :param dataset_id: name of the dataser
+      :type dataset_id: string
+      :param vector_fields: a list containing the vector field to be used for clustering
+      :type vector_fields: list
+      :param filters: a list to filter documents of the dataset,
+      :type filters: list
+      :param k: K in Kmeans
+      :type k: int
+      :param init: "k-means++" -> Kmeans algorithm parameter
+      :type init: string
+      :param n_init: number of reinitialization for the kmeans algorithm
+      :type n_init: int
+      :param max_iter: max iteration in the kmeans algorithm
+      :type max_iter: int
+      :param tol: tol in the kmeans algorithm
+      :type tol: int
+      :param verbose: True by default
+      :type verbose: bool
+      :param random_state = None: None by default -> Kmeans algorithm parameter
+      :param copy_x: True bydefault
+      :type copy_x: bool
+      :param algorithm: "auto" by default
+      :type algorithm: string
+      :param alias: "default", string to be used in naming of the field showing the clustering results
+      :type alias: string
+      :param cluster_field: "_cluster_", string to name the main cluster field
+      :type cluster_field: string
+      :param overwrite: False by default, To overwite an existing clusering result
+      :type overwrite: bool
+
+      .. rubric:: Example
+
+      >>> client.vector_tools.cluster.kmeans_cluster(
+          dataset_id="sample_dataset",
+          vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+      )
 
 
 

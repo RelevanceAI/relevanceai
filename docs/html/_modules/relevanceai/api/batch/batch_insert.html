@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -90,10 +91,10 @@
 <div class="viewcode-block" id="BYTE_TO_MB"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.BYTE_TO_MB">[docs]</a><span class="n">BYTE_TO_MB</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span></div>
 <div class="viewcode-block" id="LIST_SIZE_MULTIPLIER"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.LIST_SIZE_MULTIPLIER">[docs]</a><span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">=</span> <span class="mi">3</span></div>
 
-<div class="viewcode-block" id="BatchInsert.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.project">[docs]</a></div>
-<div class="viewcode-block" id="BatchInsert.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.api_key">[docs]</a><div class="viewcode-block" id="BatchInsert"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert">[docs]</a><span class="k">class</span> <span class="nc">BatchInsert</span><span class="p">(</span><span class="n">BatchRetrieve</span><span class="p">,</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span></div>
-<div class="viewcode-block" id="BatchInsert.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.config">[docs]</a><div class="viewcode-block" id="BatchInsert.insert_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.insert_documents">[docs]</a>    <span class="k">def</span> <span class="nf">insert_documents</span><span class="p">(</span></div>
-        <span class="bp">self</span><span class="p">,</span>
+
+<div class="viewcode-block" id="BatchInsert.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.project">[docs]</a><div class="viewcode-block" id="BatchInsert"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert">[docs]</a><span class="k">class</span> <span class="nc">BatchInsert</span><span class="p">(</span><span class="n">BatchRetrieve</span><span class="p">,</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span></div>
+<div class="viewcode-block" id="BatchInsert.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.api_key">[docs]</a><div class="viewcode-block" id="BatchInsert.insert_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.insert_documents">[docs]</a>    <span class="k">def</span> <span class="nf">insert_documents</span><span class="p">(</span></div>
+<div class="viewcode-block" id="BatchInsert.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.config">[docs]</a>        <span class="bp">self</span><span class="p">,</span></div>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -579,7 +580,7 @@
 
         <span class="c1"># Get one document to test the size</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No document is detected&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No document is detected&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;inserted&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="p">[],</span>

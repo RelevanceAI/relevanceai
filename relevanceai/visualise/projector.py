@@ -364,3 +364,4 @@ class Projector(BatchAPIClient, Base, DocUtils):
         title += f"Vector Label: {vector_label}  Char Length: {vector_label_char_length}<br>"
         title += "</b>"
         return title
+

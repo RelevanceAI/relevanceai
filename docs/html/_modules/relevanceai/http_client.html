@@ -41,6 +41,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
@@ -75,13 +76,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">getpass</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">doc_utils.doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
 
 <span class="kn">from</span> <span class="nn">relevanceai.api.client</span> <span class="kn">import</span> <span class="n">BatchAPIClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.cluster</span> <span class="kn">import</span> <span class="n">Cluster</span>
 <span class="kn">from</span> <span class="nn">relevanceai.config</span> <span class="kn">import</span> <span class="n">CONFIG</span>
-<span class="kn">from</span> <span class="nn">relevanceai.errors</span> <span class="kn">import</span> <span class="n">APIError</span>
+<span class="kn">from</span> <span class="nn">relevanceai.vector_tools.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
 
 <span class="n">vis_requirements</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
@@ -105,10 +108,9 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">project</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;VDB_PROJECT&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;VDB_API_KEY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;RELEVANCE_PROJECT&quot;</span><span class="p">),</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;RELEVANCE_API_KEY&quot;</span><span class="p">),</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span>
-
     <span class="p">):</span>
 
         <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -139,13 +141,13 @@
         <span class="c1"># if verbose:</span>
         <span class="c1">#     print(&quot;You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api&quot;)</span>
         <span class="c1">#     print(&quot;Once you have signed up, click on the value under `Authorization token` and paste it here:&quot;)</span>
-        <span class="n">SIGNUP_URL</span> <span class="o">=</span> <span class="s2">&quot;https://auth.relevance.ai/signup/?callback=https%3A</span><span class="si">%2F%2F</span><span class="s2">cloud.relevance.ai</span><span class="si">%2F</span><span class="s2">login</span><span class="si">%3F</span><span class="s2">redirect%3Dcli-api&quot;</span>
-        <span class="c1"># SIGNUP_URL = &quot;https://cloud.relevance.ai/sdk/api&quot;</span>
-        <span class="n">token</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authorization token (you can find it here: </span><span class="si">{</span><span class="n">SIGNUP_URL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># SIGNUP_URL = &quot;https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api&quot;</span>
+        <span class="n">SIGNUP_URL</span> <span class="o">=</span> <span class="s2">&quot;https://cloud.relevance.ai/sdk/api&quot;</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authorization token (you can find it here: </span><span class="si">{</span><span class="n">SIGNUP_URL</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
         <span class="n">project</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;VDB_PROJECT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;VDB_API_KEY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RELEVANCE_PROJECT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RELEVANCE_API_KEY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="k">return</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span></div>
 
     <span class="nd">@staticmethod</span>

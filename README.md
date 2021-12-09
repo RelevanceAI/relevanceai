@@ -2,7 +2,7 @@
 
 For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
-If you are looking for an SDK reference, you can find that [here](https://youthful-leakey-ab1977.netlify.app/index.html).
+If you are looking for an SDK reference, you can find that [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).
 
 Built mainly for users looking to experiment with vectors/embeddings.
 
@@ -43,4 +43,26 @@ export TEST_API_KEY = xxx
 ```python
 python -m pytest
 mypy relevanceai
+```
+
+## Config
+
+The config contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).  
+
+To view setting options, run the following:
+
+```python
+client.config.options
+```
+
+The syntax for selecting an option is *section.key*. For example, to disable logging, run the following to modify *logging.enable_logging*:
+
+```python
+client.config.set_option('logging.enable_logging', False)
+```
+
+To restore all options to their default, run the following:
+
+```python
+client.config.reset_to_default()
 ```

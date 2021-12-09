@@ -23,6 +23,16 @@ Classes
 
    Base class for all relevanceai utilities
 
+   .. py:attribute:: docs_closest_to_center
+      
+
+      
+
+   .. py:attribute:: docs_furthest_from_center
+      
+
+      
+
    .. py:method:: list(self, dataset_id: str, vector_field: str, alias: str = 'default', page_size: int = 5, cursor: str = None, include_vector: bool = False, base_url='https://gateway-api-aueast.relevance.ai/latest')
 
       Retrieve the cluster centroid
@@ -112,7 +122,7 @@ Classes
       :type metadata: Optional[dict]
 
 
-   .. py:method:: list_closest_to_center(self, dataset_id: str, vector_field: str, cluster_ids: list, alias: str = 'default', select_fields: list = [], approx: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], facets: list = [], min_score: int = 0, include_vectors: bool = False, include_count: bool = True, include_facets: bool = False)
+   .. py:method:: list_closest_to_center(self, dataset_id: str, vector_field: str, cluster_ids: list, alias: str = 'default', select_fields: list = [], approx: int = 0, sum_fields: bool = True, page_size: int = 1, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], facets: list = [], min_score: int = 0, include_vector: bool = False, include_count: bool = True, include_facets: bool = False)
 
       List of documents closest from the centre.
 
@@ -150,9 +160,9 @@ Classes
       :type include_facets: bool
 
 
-   .. py:method:: list_furthest_from_center(self, dataset_id: str, vector_field: str, cluster_ids: list, alias: str = 'default', select_fields: list = [], approx: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], facets: list = [], min_score: int = 0, include_vectors: bool = False, include_count: bool = True, include_facets: bool = False)
+   .. py:method:: list_furthest_from_center(self, dataset_id: str, vector_field: str, cluster_ids: list, alias: str = 'default', select_fields: list = [], approx: int = 0, sum_fields: bool = True, page_size: int = 1, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], facets: list = [], min_score: int = 0, include_vector: bool = False, include_count: bool = True, include_facets: bool = False)
 
-      List of documents closest from the centre.
+      List of documents furthest from the centre.
 
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
