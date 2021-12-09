@@ -339,7 +339,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str ="auto",
-        alias: str = "default",
+        alias: str = "kmeans",
         cluster_field: str="_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False
@@ -378,7 +378,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         algorithm : string
             "auto" by default
         alias : string
-            "default", string to be used in naming of the field showing the clustering results
+            "kmeans", string to be used in naming of the field showing the clustering results
         cluster_field: string
             "_cluster_", string to name the main cluster field
         overwrite : bool
@@ -423,9 +423,9 @@ class Cluster(BatchAPIClient, ClusterBase):
         # Updating the db
         try:
             results = self.update_documents(dataset_id, clustered_docs, chunksize = update_documents_chunksize)
+            self.logger.info(results)
         except Exception as e:
             self.logger.error(e)
-        self.logger.info(results)
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
@@ -436,7 +436,91 @@ class Cluster(BatchAPIClient, ClusterBase):
                 vector_field=vector_fields[0],
                 alias= alias
             )
+            self.logger.info(results)
         except Exception as e:
             self.logger.error(e)
-        self.logger.info(results)
+
         return centers
+
+    def hdbscan_cluster(
+        self,
+        dataset_id: str,
+        vector_fields: list,
+        filters: List = [],
+        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['hdbscan'],
+        min_cluster_size: Union[None, int] = 10,
+        alias: str = "hdbscan",
+        cluster_field: str="_cluster_",
+        update_documents_chunksize: int = 50,
+        overwrite: bool = False
+    ):
+        """
+        This function performs all the steps required for hdbscan clustering:
+        1- Loads the data
+        2- Clusters the data
+        3- Updates the data with clustering info
+        4- Adds the centroid to the hidden centroid collection
+
+        Parameters
+        ----------
+        dataset_id : string
+            name of the dataser
+        vector_fields : list
+            a list containing the vector field to be used for clustering
+        filters : list
+            a list to filter documents of the dataset
+        cluster_args :
+            HDBScan parameter, CLUSTER_DEFAULT_ARGS['hdbscan'] by default
+        min_cluster_size:
+            minimum cluster size, 10 by default
+        alias : string
+            "hdbscan", string to be used in naming of the field showing the clustering results
+        cluster_field: string
+            "_cluster_", string to name the main cluster field
+        overwrite : bool
+            False by default, To overwite an existing clusering result
+
+        Example
+        -------------
+
+        >>> client.vector_tools.cluster.hdbscan_cluster(
+            dataset_id="sample_dataset",
+            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+        )
+        """
+
+        EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
+
+        if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
+            raise ClusteringResultsAlreadyExistsError(EXISTING_CLUSTER_MESSAGE)
+
+        # load the documents
+        docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
+
+        # get vectors
+        if len(vector_fields) == 1:
+            # filtering out entries not containing the specified vector
+            docs = list(filter(DocUtils.list_doc_fields, docs))
+            vectors = self.get_field_across_documents(vector_fields[0], docs)
+        else:
+            raise ValueError("We currently do not support more than 1 vector field yet. This will be supported in the future.")
+
+        # Cluster
+        clusterer = HDBSCAN()
+        clustered_docs = clusterer.fit_transform(
+            vectors= vectors,
+            cluster_args = cluster_args,
+            min_cluster_size = min_cluster_size).tolist()
+
+        # Updating the db
+        try:
+            formatted_clustered_docs = [
+                {cluster_field:{vector_fields[0]:{alias:res}},
+                '_id':docs[i]['_id']}
+                for i,res in enumerate(clustered_docs)]
+            results = self.update_documents(dataset_id, formatted_clustered_docs, chunksize = update_documents_chunksize)
+            self.logger.info(results)
+        except Exception as e:
+            self.logger.error(e)
+
+        return clustered_docs
