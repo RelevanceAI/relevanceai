@@ -5,13 +5,15 @@ import numpy as np
 import warnings
 
 from typing import List, Union, Dict, Any, Optional
-
 from doc_utils import DocUtils
+from joblib.memory import Memory
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.errors import ClusteringResultsAlreadyExistsError
+
+EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
 
 class ClusterBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
@@ -393,8 +395,6 @@ class Cluster(BatchAPIClient, ClusterBase):
         )
         """
 
-        EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
-
         if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
             raise ClusteringResultsAlreadyExistsError(EXISTING_CLUSTER_MESSAGE)
 
@@ -447,7 +447,15 @@ class Cluster(BatchAPIClient, ClusterBase):
         dataset_id: str,
         vector_fields: list,
         filters: List = [],
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['hdbscan'],
+        algorithm: str = "best",
+        alpha: float = 1.0,
+        approx_min_span_tree: bool = True,
+        gen_min_span_tree: bool = False,
+        leaf_size: int = 40,
+        memory = Memory(cachedir=None),
+        metric: str = "euclidean",
+        min_samples = None,
+        p = None,
         min_cluster_size: Union[None, int] = 10,
         alias: str = "hdbscan",
         cluster_field: str="_cluster_",
@@ -469,8 +477,24 @@ class Cluster(BatchAPIClient, ClusterBase):
             a list containing the vector field to be used for clustering
         filters : list
             a list to filter documents of the dataset
-        cluster_args :
-            HDBScan parameter, CLUSTER_DEFAULT_ARGS['hdbscan'] by default
+        algorithm : str
+            hdbscan configuration parameter default to "best"
+        alpha: float
+            hdbscan configuration parameter default to 1.0
+        approx_min_span_tree: bool
+            hdbscan configuration parameter default to True
+        gen_min_span_tree: bool
+            hdbscan configuration parameter default to False
+        leaf_size: int
+            hdbscan configuration parameter default to 40
+        memory = Memory(cachedir=None)
+            hdbscan configuration parameter on memory management
+        metric: str = "euclidean"
+            hdbscan configuration parameter default to "euclidean"
+        min_samples = None
+            hdbscan configuration parameter default to None
+        p = None
+            hdbscan configuration parameter default to None
         min_cluster_size:
             minimum cluster size, 10 by default
         alias : string
@@ -488,8 +512,6 @@ class Cluster(BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
-
-        EXISTING_CLUSTER_MESSAGE = """Clustering results already exist"""
 
         if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
             raise ClusteringResultsAlreadyExistsError(EXISTING_CLUSTER_MESSAGE)
@@ -509,7 +531,17 @@ class Cluster(BatchAPIClient, ClusterBase):
         clusterer = HDBSCAN()
         clustered_docs = clusterer.fit_transform(
             vectors= vectors,
-            cluster_args = cluster_args,
+            cluster_args = {
+                "algorithm": algorithm,
+                "alpha": alpha,
+                "approx_min_span_tree": approx_min_span_tree,
+                "gen_min_span_tree": gen_min_span_tree,
+                "leaf_size": leaf_size,
+                "memory": memory,
+                "metric": metric,
+                "min_samples": min_samples,
+                "p": p,
+            },
             min_cluster_size = min_cluster_size).tolist()
 
         # Updating the db
