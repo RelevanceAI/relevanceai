@@ -71,7 +71,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
-        label_char_length: Union[None, int] = 50,
+        label_char_length: int = 50,
         marker_size: int = 5
     ):
         """
@@ -140,7 +140,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
-        label_char_length: Union[None, int] = 50,
+        label_char_length: int = 50,
         marker_size: int = 5,
         dataset_name: Union[None, str] = None):
 
