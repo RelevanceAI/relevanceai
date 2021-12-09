@@ -2,8 +2,7 @@
 
 import numpy as np
 import pandas as pd
-import json
-import warnings
+pd.options.mode.chained_assignment = None
 
 import plotly.graph_objs as go
 
@@ -40,7 +39,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         >>> client.projector.plot(
                 dataset_id, vector_field, number_of_points_to_render, random_state,
                 dr, dr_args, dims,
-                vector_label, vector_label_char_length,
+                vector_label, label_char_length,
                 color_label, colour_label_char_length,
                 hover_label,
                 cluster, cluster_args,
@@ -60,7 +59,6 @@ class Projector(BatchAPIClient, Base, DocUtils):
         number_of_points_to_render: int = 1000,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 50,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 2,
@@ -73,6 +71,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
+        label_char_length: Union[None, int] = 50,
         marker_size: int = 5
     ):
         """
@@ -92,7 +91,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             >>> client.projector.plot(
                     dataset_id, vector_field, number_of_points_to_render, random_state,
                     dr, dr_args, dims,
-                    vector_label, vector_label_char_length,
+                    vector_label, label_char_length,
                     color_label, colour_label_char_length,
                     hover_label,
                     cluster, cluster_args,
@@ -116,7 +115,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         docs = self._remove_empty_vector_fields(docs, vector_field)
 
         return self.plot_from_docs(docs, vector_field=vector_field, vector_label=vector_label,
-                                   vector_label_char_length=vector_label_char_length, dr=dr,
+                                   label_char_length=label_char_length, dr=dr,
                                    dims=dims, dr_args=dr_args, cluster=cluster,
                                    num_clusters=num_clusters, cluster_args=cluster_args, cluster_on_dr=cluster_on_dr , 
                                    hover_label=hover_label, show_image=show_image,
@@ -128,7 +127,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         vector_field: str,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 50,
+        
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,
@@ -141,12 +140,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
+        label_char_length: Union[None, int] = 50,
         marker_size: int = 5,
-            dataset_name: Union[None, str] = None):
+        dataset_name: Union[None, str] = None):
 
-        # Prepare vector labels
-        if show_image is False:
-            self.set_field_across_documents(vector_label, [i[vector_label][:vector_label_char_length] + '...' for i in docs], docs)
 
         # Dimension reduce vectors
         vectors = np.array(
@@ -190,10 +187,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
         # Generate plot title
         plot_title = self._generate_plot_title(dims, dataset_name, len(
-            embedding_df), vector_field, vector_label, vector_label_char_length)
+            embedding_df), vector_field, vector_label, label_char_length)
 
         plot_data, layout = self._generate_fig(
-            embedding_df=embedding_df, hover_label=hover_label, plot_title=plot_title, dims=dims, marker_size=marker_size, cluster=cluster
+            embedding_df=embedding_df, hover_label=hover_label, plot_title=plot_title, dims=dims, marker_size=marker_size, cluster=cluster,label_char_length=label_char_length
         )
 
         create_dash_graph(plot_data=plot_data, layout=layout, show_image=show_image,
@@ -207,7 +204,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
         hover_label: List[Optional[str]],
         dims: int,
         marker_size: int,
-        cluster: Union[Literal['kmeans'], Literal['kmedoids'], Literal['hdbscan'], ClusterBase, None]
+        cluster: Union[Literal['kmeans'], Literal['kmedoids'], Literal['hdbscan'], ClusterBase, None],
+        label_char_length: int
     ) -> go.Figure:
         """
         """
@@ -217,12 +215,12 @@ class Projector(BatchAPIClient, Base, DocUtils):
             groups = embedding_df.groupby("cluster_labels")
             for idx, val in groups:
                 data.append(self._generate_plot_info(
-                    embedding_df=val, hover_label=hover_label, dims=dims, marker_size=marker_size))
+                    embedding_df=val, hover_label=hover_label, dims=dims, marker_size=marker_size, label_char_length=label_char_length))
 
         else:
             data = []
             data.append(self._generate_plot_info(
-                embedding_df=embedding_df, hover_label=hover_label,  dims=dims, marker_size=marker_size))
+                embedding_df=embedding_df, hover_label=hover_label,  dims=dims, marker_size=marker_size, label_char_length=label_char_length))
 
         axes_3d = {
             "title": "",
@@ -259,10 +257,10 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
         return data, layout
 
-    def _generate_plot_info(self, embedding_df, hover_label, dims, marker_size):
+    def _generate_plot_info(self, embedding_df, hover_label, dims, marker_size, label_char_length):
 
         custom_data, hovertemplate = self._generate_hover_template(
-            df=embedding_df, dims=dims, hover_label=hover_label
+            df=embedding_df, dims=dims, hover_label=hover_label, label_char_length=label_char_length
         )
 
         scatter_args = (
@@ -291,12 +289,20 @@ class Projector(BatchAPIClient, Base, DocUtils):
         return scatter
 
     def _generate_hover_template(
-        self, df: pd.DataFrame, dims: int, hover_label: list
+        self, df: pd.DataFrame, dims: int, hover_label: list, label_char_length: int
     ) -> Tuple[Optional[pd.DataFrame], Optional[str]]:
         """
         Generating hover template
         """
         custom_data = df[hover_label]
+
+        for label in hover_label:
+            try:
+                if label != '_id':
+                    custom_data.loc[:,label] = [i[:label_char_length] + '...' for i in custom_data.loc[:,label]]
+            except:
+                pass
+
         custom_data_hover = [
             f"{c}: %{{customdata[{i}]}}"
             for i, c in enumerate(hover_label)
@@ -356,14 +362,14 @@ class Projector(BatchAPIClient, Base, DocUtils):
         """
         return [d for d in docs if d.get(vector_field)]
 
-    def _generate_plot_title(self, dims, dataset_name, number_of_points, vector_field, vector_label, vector_label_char_length):
+    def _generate_plot_title(self, dims, dataset_name, number_of_points, vector_field, vector_label, label_char_length):
         title = "</b>"
         title += f"{dims}D Embedding Projector Plot<br>"
         if dataset_name:
             title += f"Dataset Name: {dataset_name}<br>"
         title += f"Points: {number_of_points} points<br>"
         title += f"Vector Field: {vector_field}<br>"
-        title += f"Vector Label: {vector_label}  Char Length: {vector_label_char_length}<br>"
+        title += f"Vector Label: {vector_label}  Char Length: {label_char_length}<br>"
         title += "</b>"
         return title
 

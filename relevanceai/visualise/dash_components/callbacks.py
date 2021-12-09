@@ -13,15 +13,19 @@ doc_utils = DocUtils()
 
 MAX_SIZE = 200
 
-def display_callbacks(app, show_image):
+def display_callbacks(app, show_image, docs, vector_label):
 
     if show_image:
         @app.callback(Output('div-plot-click-image', 'children'), Input('graph-plot-tsne', 'clickData'))
         def display_image(clickData):
             try:
-                image_url = clickData['points'][0]['customdata'][1]
+                click_id = clickData['points'][0]['customdata'][0]
             except TypeError:
-                return None
+                return None  
+
+            click_doc = [i for i in docs if i['_id'] == click_id][0]
+            image_url = click_doc[vector_label]
+       
             img = io.imread(image_url)
             fig = px.imshow(img)
             fig.update_yaxes(showgrid=False,showticklabels=False,linewidth=0)

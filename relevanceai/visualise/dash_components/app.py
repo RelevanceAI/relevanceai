@@ -37,7 +37,7 @@ def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_
         )
 
     app.layout= create_layout(app)
-    display_callbacks(app, show_image)
+    display_callbacks(app, show_image, docs, vector_label)
     neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
     app.run_server(mode='inline')
 
