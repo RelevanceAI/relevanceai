@@ -146,8 +146,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
         # Prepare vector labels
         if show_image is False:
-            self.set_field_across_documents(vector_label, [
-                                            i[vector_label][:vector_label_char_length] + '...' for i in docs], docs)
+            self.set_field_across_documents(vector_label, [i[vector_label][:vector_label_char_length] + '...' for i in docs], docs)
 
         # Dimension reduce vectors
         vectors = np.array(
