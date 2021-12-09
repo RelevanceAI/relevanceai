@@ -1,7 +1,7 @@
 """Missing field error
 """
 class RelevanceAIError(Exception):
-    """base class for all errors
+    """Base class for all errors
     """
 
 class MissingFieldError(RelevanceAIError):
