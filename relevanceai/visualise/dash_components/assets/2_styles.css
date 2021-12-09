@@ -15,10 +15,16 @@
 .header_title {
   /* font-family: "verdana"; */
   font-weight: bold;
-  color: #1854FF;
-  text-align: right;
+  color: #ffffff;
+  text-align: left;
   margin: 0 !important;
 }
+
+.row_header{
+  background-color: #0F172A;
+  margin-bottom: 16px;
+}
+
 /* 
 .blue: {
   50: "#EFF6FF",
@@ -40,9 +46,10 @@
 }
 
 .background {
-  background-color: #f2f3f4;
+  background-color: #ffffff;
   padding: 0px 0px;
 }
+
 
 .rc-slider-track {
   position: absolute;
@@ -103,7 +110,7 @@ body {
   font-weight: 400;
   /* font-family: "Arimo", "Helvetica Light", "Helvetica Neue", Helvetica,
     "Helvetica 55 Roman"; */
-  color: #6c7182;
+  color: #f8f9fc;
 }
 
 #demo-explanation > div > div:nth-child(2) > div > p:nth-child(11) > img {
@@ -137,7 +144,7 @@ body {
 }
 
 #react-select-2--value-item {
-  color: #6c7182;
+  color: #f5f6f7;
 }
 
 #graph-3d-plot-tsne
@@ -147,7 +154,7 @@ body {
   > g.infolayer
   > g.legend
   > rect.bg {
-  stroke: #6c7182 !important;
+  stroke: #ebecf0 !important;
   fill: #f2f3f4 !important;
 }
 

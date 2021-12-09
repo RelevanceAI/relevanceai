@@ -1,7 +1,6 @@
 import dash
 from dash import html
 from relevanceai.visualise.dash_components.sections.header import build_header
-from relevanceai.visualise.dash_components.sections.control_panel import build_control_panel
 from relevanceai.visualise.dash_components.sections.display_panel import build_display_panel
 from relevanceai.visualise.dash_components.sections.graph import build_graph
 from relevanceai.visualise.dash_components.callbacks import display_callbacks, neighbour_callbacks
@@ -30,7 +29,6 @@ def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_
                     className="row background",
                     style={"padding": "0px"},
                     children=[
-                        #build_control_panel(app),
                         build_graph(app, plot_data, layout),
                         build_display_panel(app)
                     ], 

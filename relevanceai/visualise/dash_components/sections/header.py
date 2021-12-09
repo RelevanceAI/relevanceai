@@ -9,7 +9,7 @@ def build_header(app: dash.Dash) -> html.Div:
     return html.Div(
                     className="row header",
                     id="app-header",
-                    style={"background-color": "#f9f9f9"},
+                    style={"background-color": "#0F172A", "margin-bottom":"16px"},
                     children=[
 
                         html.Div(

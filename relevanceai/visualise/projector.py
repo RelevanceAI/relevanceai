@@ -69,6 +69,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
         cluster_args: Union[None, Dict] = None,
+        cluster_on_dr: bool = False,
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
@@ -117,7 +118,8 @@ class Projector(BatchAPIClient, Base, DocUtils):
         return self.plot_from_docs(docs, vector_field=vector_field, vector_label=vector_label,
                                    vector_label_char_length=vector_label_char_length, dr=dr,
                                    dims=dims, dr_args=dr_args, cluster=cluster,
-                                   num_clusters=num_clusters, cluster_args=cluster_args, hover_label=hover_label, show_image=show_image, 
+                                   num_clusters=num_clusters, cluster_args=cluster_args, cluster_on_dr=cluster_on_dr , 
+                                   hover_label=hover_label, show_image=show_image,
                                    marker_size=marker_size, dataset_name=dataset_id)
 
     def plot_from_docs(
@@ -135,6 +137,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
         cluster_args: Union[None, Dict] = None,
+        cluster_on_dr: bool = False,
         # Decoration args
         hover_label: list = [],
         show_image: bool = False,
@@ -165,8 +168,13 @@ class Projector(BatchAPIClient, Base, DocUtils):
 
         # Cluster vectors
         if cluster:
+            if cluster_on_dr:
+                cluster_vec = vectors_dr
+            else:
+                cluster_vec = vectors
+
             cluster_labels = Cluster.cluster(
-                vectors=vectors,
+                vectors=cluster_vec,
                 cluster=cluster,
                 cluster_args=cluster_args,
                 k=num_clusters
@@ -214,15 +222,25 @@ class Projector(BatchAPIClient, Base, DocUtils):
             data.append(self._generate_plot_info(
                 embedding_df=embedding_df, hover_label=hover_label,  dims=dims, marker_size=marker_size))
 
-        axes = {
+        axes_3d = {
             "title": "",
-            "showgrid": True,
-            "zeroline": False,
+            "backgroundcolor": "#ffffff",
+            "showgrid": False,
             "showticklabels": False,
         }
+
+        axes_2d = {
+            "title": "",
+            "visible": True,
+            "showticklabels": False,
+            "showline": True,
+            "linewidth": 2,
+            "linecolor": "#000000"
+        }
+
         layout = go.Layout(
             margin={"l": 0, "r": 0, "b": 0, "t": 0},
-            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes},
+            scene={"xaxis": axes_3d, "yaxis": axes_3d, "zaxis": axes_3d},
             title={
                 "text": plot_title,
                 "y": 0.1,
@@ -230,7 +248,11 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 "xanchor": "left",
                 "yanchor": "bottom",
                 "font": {"size": 10},
-            }
+            },
+            plot_bgcolor="#FFF",
+            xaxis = axes_2d, 
+            yaxis= axes_2d
+            
         )
 
         return data, layout

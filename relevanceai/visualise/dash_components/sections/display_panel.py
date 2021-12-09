@@ -16,7 +16,8 @@ def build_display_panel(app: dash.Dash) -> html.Div:
                     children=[html.Div(
                             id='div-plot-click-message',
                             style={
-                                'text-align': 'center',
+                                'text-align': 'left',
+                                'width': '100%',
                                 'margin-bottom': '7px',
                                 'font-weight': 'bold',
                             },
@@ -24,7 +25,6 @@ def build_display_panel(app: dash.Dash) -> html.Div:
                         html.Div(id='div-plot-click-image',
                                  style={
                                     'text-align': 'center',
-                                    # 'display': 'inline-block',
                                  }),
                     ],
                 ), 

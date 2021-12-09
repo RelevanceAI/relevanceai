@@ -1,7 +1,7 @@
 ._dash-loading-callback {
   font-family: sans-serif;
   padding-top: 50px;
-  color: rgb(90, 90, 90);
+  color: rgb(252, 250, 250);
 
   -webkit-animation: fadein 0.5s ease-in 7s forwards; /* Safari, Chrome and Opera > 12.1 */
   -moz-animation: fadein 0.5s; /* Firefox < 16 */
