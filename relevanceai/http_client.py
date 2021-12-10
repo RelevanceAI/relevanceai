@@ -37,7 +37,7 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project = os.getenv("RELEVANCE_PROJECT"),
         api_key = os.getenv("RELEVANCE_API_KEY"),
-        verbose: bool = True,
+        authenticate: bool = True,
     ):
 
         if project is None or api_key is None:
@@ -45,10 +45,11 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
-        if self.check_auth():
-            if verbose: print(self.WELCOME_MESSAGE)
-        else:
-            raise APIError(self.FAIL_MESSAGE)
+        if authenticate: 
+            if self.check_auth():
+                print(self.WELCOME_MESSAGE)
+            else:
+                raise APIError(self.FAIL_MESSAGE)
 
         if vis_requirements:
             self.projector = Projector(project, api_key)
