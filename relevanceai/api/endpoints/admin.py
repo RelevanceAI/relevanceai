@@ -103,3 +103,9 @@ class Admin(Base):
                 # "filters": filters
             },
         )
+
+    def _ping(self):
+        return self.make_http_request(
+            "/admin/ping",
+            method="GET"
+        )
