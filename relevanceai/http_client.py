@@ -37,7 +37,7 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project = os.getenv("RELEVANCE_PROJECT"),
         api_key = os.getenv("RELEVANCE_API_KEY"),
-        authenticate: bool = True,
+        authenticate: bool = False,
     ):
 
         if project is None or api_key is None:
