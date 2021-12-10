@@ -3,7 +3,6 @@
 from typing import List
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
-from tqdm.notebook import tqdm
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -129,11 +128,7 @@ class BatchRetrieve(APIClient, Chunker):
 
         # While there is still data to fetch, fetch it at the latest cursor
 
-        def generator():
-            while length > 0:
-                yield
-
-        for _ in tqdm(generator()):
+        while length > 0:
             x = self.datasets.documents.get_where(
                 dataset_id,
                 filters=filters,
