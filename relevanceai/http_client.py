@@ -58,13 +58,21 @@ class Client(BatchAPIClient, DocUtils):
 
         self.vector_tools = VectorTools(project, api_key)
 
-    @property
-    def output_format(self):
-        return CONFIG.get_field("api.output_format", CONFIG.config)
+    # @property
+    # def output_format(self):
+    #     return CONFIG.get_field("api.output_format", CONFIG.config)
 
-    @output_format.setter
-    def output_format(self, value):
-        CONFIG.set_option("api.output_format", value)
+    # @output_format.setter
+    # def output_format(self, value):
+    #     CONFIG.set_option("api.output_format", value)
+    
+    @property
+    def base_url(self):
+        return CONFIG.get_field("api.base_url", CONFIG.config)
+    
+    @base_url.setter
+    def base_url(self, value):
+        CONFIG.set_option("api.base_url", value)
 
     @staticmethod
     def token_to_auth():
