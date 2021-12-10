@@ -30,6 +30,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         alias: str = "default",
         cluster_field: str = "_cluster_",
         return_only_clusters: bool = True,
+        inplace: bool = True
     ):
         """
         Train clustering algorithm on documents and then store the labels
