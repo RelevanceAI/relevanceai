@@ -419,24 +419,18 @@ class Cluster(BatchAPIClient, ClusterBase):
             return_only_clusters=True)
 
         # Updating the db
-        try:
-            results = self.update_documents(dataset_id, clustered_docs, chunksize = update_documents_chunksize)
-            self.logger.info(results)
-        except Exception as e:
-            self.logger.error(e)
+        results = self.update_documents(dataset_id, clustered_docs, chunksize = update_documents_chunksize)
+        self.logger.info(results)
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
-        try:
-            results = self.services.cluster.centroids.insert(
-                dataset_id = dataset_id,
-                cluster_centers=centers,
-                vector_field=vector_fields[0],
-                alias= alias+'_'+str(k)
-            )
-            self.logger.info(results)
-        except Exception as e:
-            self.logger.error(e)
+        results = self.services.cluster.centroids.insert(
+            dataset_id = dataset_id,
+            cluster_centers=centers,
+            vector_field=vector_fields[0],
+            alias= alias+'_'+str(k)
+        )
+        self.logger.info(results)
 
         return centers
 
@@ -542,14 +536,11 @@ class Cluster(BatchAPIClient, ClusterBase):
             min_cluster_size = min_cluster_size).tolist()
 
         # Updating the db
-        try:
-            formatted_clustered_docs = [
-                {cluster_field:{vector_fields[0]:{alias:res}},
-                '_id':docs[i]['_id']}
-                for i,res in enumerate(clustered_docs)]
-            results = self.update_documents(dataset_id, formatted_clustered_docs, chunksize = update_documents_chunksize)
-            self.logger.info(results)
-        except Exception as e:
-            self.logger.error(e)
+        formatted_clustered_docs = [
+            {cluster_field:{vector_fields[0]:{alias:res}},
+            '_id':docs[i]['_id']}
+            for i,res in enumerate(clustered_docs)]
+        results = self.update_documents(dataset_id, formatted_clustered_docs, chunksize = update_documents_chunksize)
+        self.logger.info(results)
 
         return clustered_docs
