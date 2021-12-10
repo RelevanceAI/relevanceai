@@ -159,3 +159,14 @@ class BatchRetrieve(APIClient, Chunker):
             Filters to select documents
         """
         return self.datasets.documents.get_where(dataset_id, page_size=1, filters=filters)["count"]
+
+    def get_vector_fields(self, dataset_id):
+        """
+        Returns list of valid vector fields in dataset
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        """
+        schema = self.datasets.schema(dataset_id)
+        return [k for k in schema.keys() if k.endswith("_vector_")]
