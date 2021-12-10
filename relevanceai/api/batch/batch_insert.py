@@ -212,7 +212,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
 
         # Trust the process
         # Get document lengths to calculate iterations
-        original_length = self.datasets.documents._get_number_of_documents(
+        original_length = self.get_number_of_documents(
             original_collection, filters
         )
 
@@ -350,10 +350,10 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
 
             # Get document lengths to calculate iterations
-            original_length = self.datasets.documents._get_number_of_documents(
+            original_length = self.get_number_of_documents(
                 original_collection, filters
             )
-            completed_length = self.datasets.documents._get_number_of_documents(
+            completed_length = self.get_number_of_documents(
                 logging_collection
             )
             remaining_length = original_length - completed_length

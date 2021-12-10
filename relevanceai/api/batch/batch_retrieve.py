@@ -7,6 +7,7 @@ from relevanceai.api.batch.chunk import Chunker
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
+# ADD SUPPORT FOR SAVING TO JSON
 
 class BatchRetrieve(APIClient, Chunker):
     def get_documents(
@@ -90,7 +91,7 @@ class BatchRetrieve(APIClient, Chunker):
     def get_all_documents(
         self,
         dataset_id: str,
-        chunk_size: int = 10000,
+        chunk_size: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
@@ -127,6 +128,7 @@ class BatchRetrieve(APIClient, Chunker):
         full_data = []
 
         # While there is still data to fetch, fetch it at the latest cursor
+
         while length > 0:
             x = self.datasets.documents.get_where(
                 dataset_id,
@@ -145,26 +147,15 @@ class BatchRetrieve(APIClient, Chunker):
                 full_data += x["documents"]
         return full_data
 
-    def get_vector_fields(self, dataset_id):
-        """
-        Returns list of valid vector fields in dataset
+    def get_number_of_documents(self, dataset_id, filters=[]):
+        """ 
+        Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        
         Parameters
         ----------
-        dataset_id : string
-            Unique name of dataset
+        dataset_ids: list
+            Unique names of datasets
+        filters: list 
+            Filters to select documents
         """
-        schema = self.datasets.schema(dataset_id)
-        return [k for k in schema.keys() if k.endswith("_vector_")]
-
-    def get_vector_dimension(self, dataset_id, vector_field):
-        """
-        Returns dimension of vector field
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        vector_field : string
-            Unique name of vector field
-        """
-        schema = self.datasets.schema(dataset_id)
-        self.vector_dim = schema[vector_field]["vector"]
+        return self.datasets.documents.get_where(dataset_id, page_size=1, filters=filters)["count"]
