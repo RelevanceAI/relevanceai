@@ -7,6 +7,7 @@ from relevanceai.api.batch.chunk import Chunker
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
+# ADD SUPPORT FOR SAVING TO JSON
 
 class BatchRetrieve(APIClient, Chunker):
     def get_documents(
@@ -89,7 +90,7 @@ class BatchRetrieve(APIClient, Chunker):
     def get_all_documents(
         self,
         dataset_id: str,
-        chunk_size: int = 10000,
+        chunk_size: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
@@ -126,6 +127,7 @@ class BatchRetrieve(APIClient, Chunker):
         full_data = []
 
         # While there is still data to fetch, fetch it at the latest cursor
+
         while length > 0:
             x = self.datasets.documents.get_where(
                 dataset_id,
@@ -143,3 +145,16 @@ class BatchRetrieve(APIClient, Chunker):
             if length > 0:
                 full_data += x["documents"]
         return full_data
+
+    def get_number_of_documents(self, dataset_id, filters=[]):
+        """ 
+        Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        
+        Parameters
+        ----------
+        dataset_ids: list
+            Unique names of datasets
+        filters: list 
+            Filters to select documents
+        """
+        return self.datasets.documents.get_where(dataset_id, page_size=1, filters=filters)["count"]

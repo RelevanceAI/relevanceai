@@ -37,7 +37,7 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project = os.getenv("RELEVANCE_PROJECT"),
         api_key = os.getenv("RELEVANCE_API_KEY"),
-        verbose: bool = True,
+        authenticate: bool = False,
     ):
 
         if project is None or api_key is None:
@@ -45,10 +45,11 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
-        if self.check_auth():
-            if verbose: print(self.WELCOME_MESSAGE)
-        else:
-            raise APIError(self.FAIL_MESSAGE)
+        if authenticate: 
+            if self.check_auth():
+                print(self.WELCOME_MESSAGE)
+            else:
+                raise APIError(self.FAIL_MESSAGE)
 
         if vis_requirements:
             self.projector = Projector(project, api_key)
@@ -57,13 +58,21 @@ class Client(BatchAPIClient, DocUtils):
 
         self.vector_tools = VectorTools(project, api_key)
 
-    @property
-    def output_format(self):
-        return CONFIG.get_field("api.output_format", CONFIG.config)
+    # @property
+    # def output_format(self):
+    #     return CONFIG.get_field("api.output_format", CONFIG.config)
 
-    @output_format.setter
-    def output_format(self, value):
-        CONFIG.set_option("api.output_format", value)
+    # @output_format.setter
+    # def output_format(self, value):
+    #     CONFIG.set_option("api.output_format", value)
+    
+    @property
+    def base_url(self):
+        return CONFIG.get_field("api.base_url", CONFIG.config)
+    
+    @base_url.setter
+    def base_url(self, value):
+        CONFIG.set_option("api.base_url", value)
 
     @staticmethod
     def token_to_auth():
@@ -82,12 +91,12 @@ class Client(BatchAPIClient, DocUtils):
 
     @staticmethod
     def login(
-        verbose: bool = True,
+        authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = Client.token_to_auth()
         return Client(
-            project=project, api_key=api_key, verbose=verbose
+            project=project, api_key=api_key, authenticate=authenticate
         )
 
     @property
