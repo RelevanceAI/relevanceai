@@ -22,6 +22,7 @@ except ModuleNotFoundError as e:
 
 from relevanceai.vector_tools.client import VectorTools
 
+
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
@@ -34,9 +35,9 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project = os.getenv("RELEVANCE_PROJECT"),
-        api_key = os.getenv("RELEVANCE_API_KEY"),
-        verbose: bool=True
+        project=os.getenv("RELEVANCE_PROJECT"),
+        api_key=os.getenv("RELEVANCE_API_KEY"),
+        verbose: bool = True,
     ):
 
         if project is None or api_key is None:
@@ -52,7 +53,9 @@ class Client(BatchAPIClient, DocUtils):
         if vis_requirements:
             self.projector = Projector(project, api_key)
         else:
-            self.logger.error('Projector not loaded. You do not have visualisation requirements installed.')
+            self.logger.error(
+                "Projector not loaded. You do not have visualisation requirements installed."
+            )
 
         self.vector_tools = VectorTools(project, api_key)
 
@@ -71,7 +74,9 @@ class Client(BatchAPIClient, DocUtils):
         #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
         # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        token = getpass.getpass(f"Authorization token (you can find it here: {SIGNUP_URL})")
+        token = getpass.getpass(
+            f"Authorization token (you can find it here: {SIGNUP_URL})"
+        )
         project = token.split(":")[0]
         api_key = token.split(":")[1]
         os.environ["RELEVANCE_PROJECT"] = project
@@ -84,22 +89,19 @@ class Client(BatchAPIClient, DocUtils):
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = Client.token_to_auth()
-        return Client(
-            project=project, api_key=api_key, verbose=verbose
-        )
+        return Client(project=project, api_key=api_key, verbose=verbose)
 
     @property
     def auth_header(self):
         return {"Authorization": self.project + ":" + self.api_key}
 
     def make_search_suggestion(self):
-        return self.services.search.make_suggestion() 
+        return self.services.search.make_suggestion()
 
     def check_auth(self):
-        """TODO: Add a proper way to check authentication based on pinging.
-        """
+        """TODO: Add a proper way to check authentication based on pinging."""
         response = self.datasets.list()
         try:
-            return response.status_code == 200    
+            return response.status_code == 200
         except:
             raise Exception("Invalid auth details.")

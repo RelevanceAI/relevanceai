@@ -2,6 +2,7 @@
 """
 from relevanceai.base import Base
 
+
 class Tagger(Base):
     def __init__(self, project, api_key):
         self.project = project
@@ -27,7 +28,7 @@ class Tagger(Base):
         include_score: bool = False,
     ):
 
-        """ 
+        """
         Tag documents or vectors
 
         Parameters
@@ -82,8 +83,8 @@ class Tagger(Base):
                 "include_search_relevance": include_search_relevance,
                 "search_relevance_cutoff_aggressiveness": search_relevance_cutoff_aggressiveness,
                 "asc": asc,
-                "include_score": include_score
-            }
+                "include_score": include_score,
+            },
         )
 
     def diversity(
@@ -109,7 +110,7 @@ class Tagger(Base):
         n_iter: int = 10,
     ):
 
-        """ 
+        """
         Tagging and then clustering the tags and returning one from each cluster (starting from the closest tag)
 
         Parameters
@@ -176,8 +177,6 @@ class Tagger(Base):
                 "cluster_vector_field": cluster_vector_field,
                 "n_clusters": n_clusters,
                 "n_init": n_init,
-                "n_iter": n_iter
+                "n_iter": n_iter,
             },
         )
-
-

@@ -18,8 +18,9 @@ class BatchRetrieve(APIClient, Chunker):
         batch_size: int = 1000,
         sort: list = [],
         select_fields: list = [],
-        include_vector: bool = True):
-        
+        include_vector: bool = True,
+    ):
+
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
         If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
@@ -43,18 +44,18 @@ class BatchRetrieve(APIClient, Chunker):
             Query for filtering the search results
         """
         if batch_size > number_of_documents:
-            batch_size = number_of_documents 
+            batch_size = number_of_documents
 
         resp = self.datasets.documents.get_where(
             dataset_id=dataset_id,
             select_fields=select_fields,
             include_vector=include_vector,
             page_size=batch_size,
-            sort = sort,
+            sort=sort,
             is_random=False,
             random_state=0,
             filters=filters,
-            cursor=cursor
+            cursor=cursor,
         )
         data = resp["documents"]
 
@@ -68,11 +69,11 @@ class BatchRetrieve(APIClient, Chunker):
                     select_fields=select_fields,
                     include_vector=include_vector,
                     page_size=batch_size,
-                    sort = sort,
+                    sort=sort,
                     is_random=False,
                     random_state=0,
                     filters=filters,
-                    cursor=_cursor
+                    cursor=_cursor,
                 )
                 _data = resp["documents"]
                 _cursor = resp["cursor"]
@@ -85,7 +86,7 @@ class BatchRetrieve(APIClient, Chunker):
             data = data[:number_of_documents]
 
         return data
-    
+
     def get_all_documents(
         self,
         dataset_id: str,
@@ -93,7 +94,7 @@ class BatchRetrieve(APIClient, Chunker):
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
-        include_vector: bool = True
+        include_vector: bool = True,
     ):
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
@@ -134,7 +135,7 @@ class BatchRetrieve(APIClient, Chunker):
                 page_size=chunk_size,
                 sort=sort,
                 select_fields=select_fields,
-                include_vector=include_vector
+                include_vector=include_vector,
             )
             length = len(x["documents"])
             cursor = x["cursor"]

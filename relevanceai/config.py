@@ -11,7 +11,7 @@ CONFIG_PATH = os.path.join(PATH, "config.ini")
 class Config(DocUtils):
     """
     Set and change configuration settings
-    
+
     - Retries - Set the behaviour of retries for failed responses from the API
         - number_of_retries - Number of retries to attempt
         - seconds_between_retries - Seconds to wait between retries
@@ -32,15 +32,16 @@ class Config(DocUtils):
     - Dashboard - URLS to various things
 
     """
+
     def __init__(self):
         self.config = configparser.ConfigParser()
         self._read_config(CONFIG_PATH)
         super().__init__()
 
     def _read_config(self, config_path):
-        """ 
+        """
         Set up custom config by reading in a file
-        
+
         Parameters
         ----------
         config_path : string
@@ -54,7 +55,7 @@ class Config(DocUtils):
         return self.config._sections
 
     def get_option(self, option):
-        """ 
+        """
         View current config settings
 
         Parameters
@@ -65,7 +66,7 @@ class Config(DocUtils):
         return self.get_field(option, self.config)
 
     def set_option(self, option, value):
-        """ 
+        """
         Change a config settings
 
         Parameters
@@ -84,21 +85,27 @@ class Config(DocUtils):
     @staticmethod
     def _create_default():
         config = configparser.ConfigParser()
-        config["retries"] = {"number_of_retries": 3,
-                             "seconds_between_retries": 2}
-        config["logging"] = {"log_to_file": False, "logging_level": "ERROR",
-                             'enable_logging': True, "log_file_name": "relevanceai"}
+        config["retries"] = {"number_of_retries": 3, "seconds_between_retries": 2}
+        config["logging"] = {
+            "log_to_file": False,
+            "logging_level": "ERROR",
+            "enable_logging": True,
+            "log_file_name": "relevanceai",
+        }
         config["upload"] = {"target_chunk_mb": 100}
-        config["api"] = {"base_url": "https://gateway-api-aueast.relevance.ai/v1", "output_format": "json"}
+        config["api"] = {
+            "base_url": "https://gateway-api-aueast.relevance.ai/v1",
+            "output_format": "json",
+        }
         with open(CONFIG_PATH, "w") as configfile:
             config.write(configfile)
-    
+
     def __getitem__(self, key):
         """
         Get teh config using client.config["api.base_url"]
         """
         return self.get_option(key)
-    
+
     def __setitem__(self, key: str, value: str):
         """
         Set the config using client.config["api.base_url"] = "https://..."

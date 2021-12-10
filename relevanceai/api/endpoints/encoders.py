@@ -8,7 +8,7 @@ class Encoders(Base):
         super().__init__(project, api_key)
 
     def textimage(self, text: str):
-        """ 
+        """
         Encode text to make searchable with images
 
         Parameters
@@ -21,7 +21,7 @@ class Encoders(Base):
         )
 
     def text(self, text: str):
-        """ 
+        """
         Encode text
 
         Parameters
@@ -62,7 +62,7 @@ class Encoders(Base):
     def imagetext(self, image):
         """
         Encode an image to make searchable with text
-        
+
         Parameters
         ----------
         image: string

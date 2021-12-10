@@ -40,8 +40,7 @@ def display_callbacks(app, show_image, docs, vector_label):
 
             return dcc.Graph(
                 figure=fig,
-                style={"height": "50vh", "width": "100vh",
-                       "text-align": "center"},
+                style={"height": "50vh", "width": "100vh", "text-align": "center"},
                 config={"displayModeBar": False},
             )
 
@@ -120,8 +119,7 @@ def neighbour_callbacks(
                     fig.update_xaxes(visible=False)
                     fig.update_traces(hoverinfo="skip", hovertemplate=None)
 
-                fig.update_layout(
-                    title=f"Nearest Neighbours ({distance_measure_mode})")
+                fig.update_layout(title=f"Nearest Neighbours ({distance_measure_mode})")
 
                 return dcc.Graph(
                     figure=fig,

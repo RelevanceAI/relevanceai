@@ -38,11 +38,10 @@ def cause_some_error(docs):
 
 class TestPullUpdatePush:
     """Testing Pull Update Push"""
+
     def test_pull_update_push_simple(self, test_client, test_sample_dataset):
         """Simple test for pull update push"""
-        results = test_client.pull_update_push(
-            test_sample_dataset, do_nothing
-        )
+        results = test_client.pull_update_push(test_sample_dataset, do_nothing)
         assert len(results["failed_documents"]) == 0
 
     def test_pull_update_push_with_errors(self, test_client, test_sample_dataset):

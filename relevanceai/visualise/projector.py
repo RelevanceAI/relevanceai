@@ -240,8 +240,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         ],
         label_char_length: int,
     ):
-        """
-        """
+        """ """
 
         if cluster:
             data = []
@@ -358,7 +357,13 @@ class Projector(BatchAPIClient, Base, DocUtils):
             coord_info = "X: %{x}   Y: %{y}   Z: %{z}"
 
         hovertemplate = (
-            "<br>".join([coord_info, ] + custom_data_hover) + "<extra></extra>"
+            "<br>".join(
+                [
+                    coord_info,
+                ]
+                + custom_data_hover
+            )
+            + "<extra></extra>"
         )
 
         return custom_data, hovertemplate
@@ -394,8 +399,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             else:
                 raise ValueError(f"{vector_name} is not a valid vector name")
         else:
-            raise ValueError(
-                f"{vector_name} is not in the {dataset_id} schema")
+            raise ValueError(f"{vector_name} is not in the {dataset_id} schema")
 
     def _is_valid_label_name(self, dataset_id, label_name: str) -> bool:
         """

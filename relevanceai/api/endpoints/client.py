@@ -13,6 +13,7 @@ def str2bool(v):
 
 class APIClient(Base):
     """API Client"""
+
     def __init__(self, project: str, api_key: str):
         self.datasets = Datasets(project=project, api_key=api_key)
         self.services = Services(project=project, api_key=api_key)

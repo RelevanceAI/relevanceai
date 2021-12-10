@@ -12,9 +12,9 @@ class Tasks(Base):
         super().__init__(project, api_key)
 
     def create(self, dataset_id, task_name, task_parameters):
-        """ 
+        """
         Tasks unlock the power of VecDb AI by adding a lot more new functionality with a flexible way of searching.
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -31,9 +31,9 @@ class Tasks(Base):
         )
 
     def status(self, dataset_id: str, task_id: str):
-        """ 
+        """
         Get status of a collection level job. Whether its starting, running, failed or finished.
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -42,14 +42,13 @@ class Tasks(Base):
             Unique name of task
         """
         return self.make_http_request(
-            endpoint=f"/datasets/{dataset_id}/tasks/{task_id}/status",
-            method="GET"
+            endpoint=f"/datasets/{dataset_id}/tasks/{task_id}/status", method="GET"
         )
-    
+
     def list(self, dataset_id: str, show_active_only: bool = True):
-        """ 
+        """
         List and get a history of all the jobs and its job_id, parameters, start time, etc.
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -62,7 +61,7 @@ class Tasks(Base):
             method="GET",
             parameters={
                 "show_active_only": show_active_only,
-            }
+            },
         )
 
     def _loop_status_until_finish(
@@ -132,7 +131,7 @@ class Tasks(Base):
         time_between_ping: int = 10,
     ):
 
-        """ 
+        """
         Start a task which creates clusters for a dataset based on a vector field
         Parameters
         ----------
@@ -151,7 +150,7 @@ class Tasks(Base):
         refresh: bool
             Whether to rerun task on the whole dataset or just the ones missing the output
         """
-        
+
         task = self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
@@ -162,7 +161,7 @@ class Tasks(Base):
                 "alias": alias,
                 "refresh": refresh,
                 "n_iter": n_iter,
-                "n_init": n_init
+                "n_init": n_init,
             },
         )
 
@@ -208,7 +207,11 @@ class Tasks(Base):
         task = self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
-            parameters={"task_name": "NumericEncoder", "fields": fields, "vector_name": vector_name},
+            parameters={
+                "task_name": "NumericEncoder",
+                "fields": fields,
+                "vector_name": vector_name,
+            },
         )
 
         output = self._check_status_until_finish(
@@ -240,7 +243,7 @@ class Tasks(Base):
         >>> | 1      | 0        | 0      | 1       | 1     |
         >>> document 1 array vector: {"movie_categories_vector_": [1, 1, 1, 0, 0]}
         >>> document 2 array vector: {"movie_categories_vector_": [1, 0, 0, 1, 1]}
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -273,7 +276,7 @@ class Tasks(Base):
         verbose: bool = True,
         time_between_ping: int = 10,
     ):
-        """ 
+        """
         Start a task which encodes a text field
         Parameters
         ----------
@@ -318,7 +321,7 @@ class Tasks(Base):
         verbose: bool = True,
         time_between_ping: int = 10,
     ):
-        """ 
+        """
         Start a task which encodes a text field for image representation
         Parameters
         ----------
@@ -362,7 +365,7 @@ class Tasks(Base):
         verbose: bool = True,
         time_between_ping: int = 10,
     ):
-        """ 
+        """
         Start a task which encodes an image field for text representation
         Parameters
         ----------

@@ -26,12 +26,23 @@ requirements = [
     "loguru>=0.5.3",
     "document-utils>=1.3.0",
     "requests>=2.0.0",
-    "numpy>=1.19.0"
+    "numpy>=1.19.0",
 ]
 
 excel_requirements = ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
-vis_requirements = ["scikit-learn", "plotly>=5.3.1", "typing-extensions", "typeguard", "dash", "pillow", "opencv-python", "jupyter_dash", "joblib", "scikit-image"]
+vis_requirements = [
+    "scikit-learn",
+    "plotly>=5.3.1",
+    "typing-extensions",
+    "typeguard",
+    "dash",
+    "pillow",
+    "opencv-python",
+    "jupyter_dash",
+    "joblib",
+    "scikit-image",
+]
 
 umap = ["umap-learn>=0.5.2"]
 ivis_cpu = ["ivis[cpu]>=2.0.6"]
@@ -65,15 +76,20 @@ dev_vis_requirements = (
 )
 
 from pathlib import Path
+
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 name = "RelevanceAI"
-version=get_version("relevanceai/__init__.py")
+version = get_version("relevanceai/__init__.py")
 
 if os.getenv("_IS_DEV"):
     name = "RelevanceAI-dev"
-    version = version + '.' + datetime.now().__str__().replace('-', '.').replace(" ", ".").replace(":", ".")
+    version = (
+        version
+        + "."
+        + datetime.now().__str__().replace("-", ".").replace(" ", ".").replace(":", ".")
+    )
 
 setup(
     name=name,
@@ -82,7 +98,7 @@ setup(
     author="Relevance AI",
     author_email="dev@relevance.ai",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     packages=find_packages(),
     setup_requires=["wheel"],
     install_requires=requirements,

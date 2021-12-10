@@ -22,8 +22,7 @@ def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_
         """
         return html.Div(
             className="row",
-            style={"max-width": "100%",
-                   "font-size": "1.5rem", "padding": "0px 0px"},
+            style={"max-width": "100%", "font-size": "1.5rem", "padding": "0px 0px"},
             children=[
                 ## --- Header --- ##
                 build_header(app),

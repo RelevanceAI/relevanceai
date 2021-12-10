@@ -23,7 +23,7 @@ class Aggregate(Base):
     ):
         """
         Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
-        
+
         >>> {
         >>>        "groupby" : [
         >>>            {"name": <alias>, "field": <field in the collection>, "agg": "category"},
@@ -55,13 +55,13 @@ class Aggregate(Base):
             - numeric: groupby a field that is a numeric
 
         "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
-            
+
             - "avg", "max", "min", "sum", "cardinality"
 
         The response returned has the following in descending order. \n
 
         If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
-        
+
         >>>    {
         >>>    'groupby':[
         >>>        {'name':'Manufacturer','field':'manufacturer','agg':'category',
@@ -73,16 +73,16 @@ class Aggregate(Base):
         >>>    }
         >>>
         >>>    {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
-        
+
         For array-aggregations, you can add "agg": "array" into the aggregation query.
-        
+
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
         metrics: list
             Fields and metrics you want to calculate
-        groupby: list 
+        groupby: list
             Fields you want to split the data into
         filters: list
             Query for filtering the search results

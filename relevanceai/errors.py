@@ -1,8 +1,10 @@
 """Missing field error
 """
+
+
 class RelevanceAIError(Exception):
-    """Base class for all errors
-    """
+    """Base class for all errors"""
+
 
 class MissingFieldError(RelevanceAIError):
     """Error handling for missing fields"""
@@ -11,7 +13,8 @@ class MissingFieldError(RelevanceAIError):
 class APIError(RelevanceAIError):
     """Error related to API"""
 
+
 class ClusteringResultsAlreadyExistsError(RelevanceAIError):
-    """Error is raised when the clustering dataset already exists
-    """
+    """Error is raised when the clustering dataset already exists"""
+
     pass

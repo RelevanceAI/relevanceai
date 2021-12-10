@@ -57,17 +57,17 @@ class Centroids(Base):
         vector_field: str,
         alias: str = "default",
         page_size: int = 5,
-        cursor: str = None
+        cursor: str = None,
     ):
         """
         Retrieve the cluster centroids by IDs
-        
+
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
         cluster_ids : list
-            List of cluster IDs    
+            List of cluster IDs
         vector_field: string
             The vector field where a clustering task was run.
         alias: string
@@ -87,7 +87,7 @@ class Centroids(Base):
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
-            }
+            },
         )
 
     def insert(
@@ -95,7 +95,7 @@ class Centroids(Base):
         dataset_id: str,
         cluster_centers: list,
         vector_field: str,
-        alias: str = "default"
+        alias: str = "default",
     ):
         """
         Insert your own cluster centroids for it to be used in approximate search settings and cluster aggregations.
@@ -118,7 +118,7 @@ class Centroids(Base):
                 "cluster_centers": cluster_centers,
                 "vector_field": vector_field,
                 "alias": alias,
-            }
+            },
         )
 
     def documents(
@@ -131,7 +131,7 @@ class Centroids(Base):
         cursor: str = None,
         page: int = 1,
         include_vector: bool = False,
-        similarity_metric: str = "cosine"
+        similarity_metric: str = "cosine",
     ):
         """
         Retrieve the cluster centroids by IDs
@@ -141,7 +141,7 @@ class Centroids(Base):
         dataset_id : string
             Unique name of dataset
         cluster_ids : list
-            List of cluster IDs    
+            List of cluster IDs
         vector_field: string
             The vector field where a clustering task was run.
         alias: string
@@ -175,10 +175,10 @@ class Centroids(Base):
         )
 
     def metadata(
-        self, 
-        dataset_id: str, 
+        self,
+        dataset_id: str,
         vector_field: str,
-        alias: str="default",
+        alias: str = "default",
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """
@@ -205,7 +205,7 @@ class Centroids(Base):
                 parameters={
                     "dataset_id": dataset_id,
                     "vector_field": vector_field,
-                    "alias": alias
+                    "alias": alias,
                 },
             )
         else:
@@ -216,7 +216,7 @@ class Centroids(Base):
                     "dataset_id": dataset_id,
                     "vector_field": vector_field,
                     "alias": alias,
-                    "metadata": metadata
+                    "metadata": metadata,
                 },
             )
 
@@ -226,18 +226,18 @@ class Centroids(Base):
         vector_field: str,
         cluster_ids: list,
         alias: str = "default",
-        select_fields: list = [ ],
+        select_fields: list = [],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [ ],
-        facets: list = [ ],
+        filters: list = [],
+        facets: list = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False
+        include_facets: bool = False,
     ):
         """
         List of documents closest from the centre.
@@ -297,8 +297,8 @@ class Centroids(Base):
                 "min_score": min_score,
                 "include_vector": include_vector,
                 "include_count": include_count,
-                "include_facets": include_facets
-            }
+                "include_facets": include_facets,
+            },
         )
 
     docs_closest_to_center = list_closest_to_center
@@ -309,18 +309,18 @@ class Centroids(Base):
         vector_field: str,
         cluster_ids: list,
         alias: str = "default",
-        select_fields: list = [ ],
+        select_fields: list = [],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [ ],
-        facets: list = [ ],
+        filters: list = [],
+        facets: list = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False
+        include_facets: bool = False,
     ):
         """
         List of documents furthest from the centre.
@@ -380,8 +380,8 @@ class Centroids(Base):
                 "min_score": min_score,
                 "include_vector": include_vector,
                 "include_count": include_count,
-                "include_facets": include_facets
-            }
+                "include_facets": include_facets,
+            },
         )
-    
+
     docs_furthest_from_center = list_furthest_from_center

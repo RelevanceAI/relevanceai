@@ -11,6 +11,7 @@ from relevanceai.api.endpoints.tagger import Tagger
 from relevanceai.api.endpoints.prediction import Prediction
 from relevanceai.api.endpoints.wordclouds import Wordclouds
 
+
 class Services(Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
@@ -25,8 +26,10 @@ class Services(Base):
         self.wordclouds = Wordclouds(project=project, api_key=api_key)
         super().__init__(project, api_key)
 
-    def document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = []):
-        """ 
+    def document_diff(
+        self, doc: dict, docs_to_compare: list, difference_fields: list = []
+    ):
+        """
         Find differences between documents
 
         Parameters
@@ -37,7 +40,7 @@ class Services(Base):
             Other documents to compare against the main document.
         difference_fields: list
             Fields to compare. Defaults to [], which compares all fields.
-    
+
         """
         return self.make_http_request(
             endpoint=f"/services/document_diff",
@@ -46,6 +49,5 @@ class Services(Base):
                 "doc": doc,
                 "docs_to_compare": docs_to_compare,
                 "difference_fields": difference_fields,
-            }
+            },
         )
-

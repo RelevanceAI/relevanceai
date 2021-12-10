@@ -8,12 +8,21 @@ import pandas as pd
 import requests
 
 THIS_MODULE = sys.modules[__name__]
-DATASETS = ['games', 'ecommerce_1', 'ecommerce_2', 'ecommerce_3',
-            'online_retail', 'news', 'flipkart', 'realestate']
+DATASETS = [
+    "games",
+    "ecommerce_1",
+    "ecommerce_2",
+    "ecommerce_3",
+    "online_retail",
+    "news",
+    "flipkart",
+    "realestate",
+]
 
 
 def select_fields_from_json(json, select_fields):
     return [{key: i[key] for key in select_fields} for i in json]
+
 
 class ExampleDatasets:
     def __init__(self):
@@ -36,13 +45,16 @@ class ExampleDatasets:
             Fields to include in the dataset, empty array/list means all fields.
         """
         if name in self.datasets:
-            return getattr(THIS_MODULE, f'get_{name}_dataset')(number_of_documents, select_fields)
+            return getattr(THIS_MODULE, f"get_{name}_dataset")(
+                number_of_documents, select_fields
+            )
         else:
-            raise ValueError('Not a valid dataset')
+            raise ValueError("Not a valid dataset")
 
     @staticmethod
     def _get_dummy_dataset(db_name, number_of_documents, select_fields=[]):
         from .http_client import Client
+
         project = "dummy-collections"
         api_key = (
             "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
@@ -54,15 +66,18 @@ class ExampleDatasets:
         docs = client.get_documents(
             db_name,
             number_of_documents=number_of_documents,
-            select_fields=select_fields
+            select_fields=select_fields,
         )
         return docs
 
     @staticmethod
-    def _get_online_dataset(url, number_of_documents, select_fields=[], encoding=None, csv=True):
+    def _get_online_dataset(
+        url, number_of_documents, select_fields=[], encoding=None, csv=True
+    ):
         if csv:
             data = pd.read_csv(url, index_col=0, encoding=encoding).to_dict(
-                orient="records")
+                orient="records"
+            )
         else:
             data = pd.read_excel(url, index_col=0).to_dict(orient="records")
         if number_of_documents:
@@ -81,7 +96,9 @@ class ExampleDatasets:
         return data
 
 
-def get_games_dataset(number_of_documents: Union[None, int] = 365, select_fields: list = []) -> List:
+def get_games_dataset(
+    number_of_documents: Union[None, int] = 365, select_fields: list = []
+) -> List:
     """
     Download an example games dataset (https://www.freetogame.com/) \n
     Total Len: 365 \n
@@ -110,18 +127,19 @@ def get_games_dataset(number_of_documents: Union[None, int] = 365, select_fields
     if number_of_documents is None:
         number_of_documents = 365
 
-    return ExampleDatasets._get_api_dataset("https://www.freetogame.com/api/games", number_of_documents, select_fields)
+    return ExampleDatasets._get_api_dataset(
+        "https://www.freetogame.com/api/games", number_of_documents, select_fields
+    )
 
 
 def get_ecommerce_1_dataset(
-    number_of_documents: int = 1000, 
-    select_fields: list = []
+    number_of_documents: int = 1000, select_fields: list = []
 ) -> List[Dict[Any, Any]]:
     """
     Download an example e-commerce dataset \n
-    Total Len: 14058 \n 
+    Total Len: 14058 \n
     Sample document:
-    
+
     >>> {'_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
     >>> 'uniq_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
     >>> 'crawl_timestamp': '2016-04-24 18:34:50 +0000',
@@ -140,8 +158,8 @@ def get_ecommerce_1_dataset(
     >>> 'product_specifications': '{"product_specification"=>[{"key"=>"Sleeve", "value"=>"Half Sleeve"}, {"key"=>"Number of Contents in Sales Package", "value"=>"Pack of 2"}, {"key"=>"Fabric", "value"=>"Cotton"}, {"key"=>"Type", "value"=>"Romper"}, {"key"=>"Neck", "value"=>"Round Neck"}, {"key"=>"Pattern", "value"=>"Printed"}, {"key"=>"Ideal For", "value"=>"Baby Boy\'s"}, {"value"=>"Wash with Similar Colors, Use Detergent for Colors"}]}',
     >>> 'image_first': 'http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg',
     >>> 'category': 'Baby Care ',
-    >>> 'insert_date_': '2021-08-13T11:38:52.110Z' 
-    >>>  ... 
+    >>> 'insert_date_': '2021-08-13T11:38:52.110Z'
+    >>>  ...
     >>>  }
 
     Parameters
@@ -153,11 +171,22 @@ def get_ecommerce_1_dataset(
     """
     if number_of_documents is None:
         number_of_documents = 1000
-    return ExampleDatasets._get_dummy_dataset("ecommerce-5", number_of_documents, select_fields)
+    return ExampleDatasets._get_dummy_dataset(
+        "ecommerce-5", number_of_documents, select_fields
+    )
 
 
 def get_ecommerce_2_dataset(
-    number_of_documents: int = 1000, select_fields: list = ["_id", "product_image", "product_link", "product_title", "product_price", "query", "source"]
+    number_of_documents: int = 1000,
+    select_fields: list = [
+        "_id",
+        "product_image",
+        "product_link",
+        "product_title",
+        "product_price",
+        "query",
+        "source",
+    ],
 ):
     """
     Download an example e-commerce dataset \n
@@ -176,7 +205,7 @@ def get_ecommerce_2_dataset(
     >>> 'rank': 23,
     >>> 'source': 'eBay',
     >>> 'url': 'https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=steel%20necklace',
-    >>> 'product_description': 'eBay item number:321567405391\n\n\n\tSeller assumes all responsibility for this listing 
+    >>> 'product_description': 'eBay item number:321567405391\n\n\n\tSeller assumes all responsibility for this listing
     >>> ...
     >>> }
 
@@ -190,14 +219,17 @@ def get_ecommerce_2_dataset(
     if number_of_documents is None:
         number_of_documents = 1000
     docs = ExampleDatasets._get_dummy_dataset(
-        "quickstart_data_sample", number_of_documents, select_fields)
+        "quickstart_data_sample", number_of_documents, select_fields
+    )
     for d in docs:
         if "image_first" in d:
             d["image"] = d.pop("image_first")
     return docs
 
 
-def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000, select_fields: list = []) -> List:
+def get_online_retail_dataset(
+    number_of_documents: Union[None, int] = 1000, select_fields: list = []
+) -> List:
     """
     Download an example online retail dataset from UCI machine learning \n
     Total Len: 541909 \n
@@ -222,17 +254,24 @@ def get_online_retail_dataset(number_of_documents: Union[None, int] = 1000, sele
     """
     if number_of_documents is None:
         number_of_documents = 1000
-    return ExampleDatasets._get_online_dataset("https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx", number_of_documents, select_fields, csv=False)
+    return ExampleDatasets._get_online_dataset(
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx",
+        number_of_documents,
+        select_fields,
+        csv=False,
+    )
 
 
-def get_news_dataset(number_of_documents: Union[None, int] = 250, select_fields: list = []) -> List:
+def get_news_dataset(
+    number_of_documents: Union[None, int] = 250, select_fields: list = []
+) -> List:
     """
     Download an example news dataset \n
     Total Len: 250 \n
     Sample document:
 
     >>> {'authors': 'Ruth Harris',
-    >>> 'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others. 
+    >>> 'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.
     >>> 'domain': 'awm.com',
     >>> 'id': 141,
     >>> 'inserted_at': '2018-02-02 01:19:41.756632',
@@ -256,10 +295,16 @@ def get_news_dataset(number_of_documents: Union[None, int] = 250, select_fields:
     """
     if number_of_documents is None:
         number_of_documents = 250
-    return ExampleDatasets._get_online_dataset("https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv", number_of_documents, select_fields)
+    return ExampleDatasets._get_online_dataset(
+        "https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv",
+        number_of_documents,
+        select_fields,
+    )
 
 
-def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select_fields: list =[]) -> List:
+def get_ecommerce_3_dataset(
+    number_of_documents: Union[None, int] = 1000, select_fields: list = []
+) -> List:
     """
     Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance) \n
     Total Len: 15528 \n
@@ -293,14 +338,16 @@ def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select
     if number_of_documents is None:
         number_of_documents = 1000
     df = ExampleDatasets._get_online_dataset(
-        "https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft", number_of_documents, select_fields, encoding="ISO-8859-1")
+        "https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft",
+        number_of_documents,
+        select_fields,
+        encoding="ISO-8859-1",
+    )
     df = pd.DataFrame(df)
     if "product_image" in df.columns:
-        df["product_image"] = df["product_image"].str.replace(
-            "http://", "https://")
+        df["product_image"] = df["product_image"].str.replace("http://", "https://")
     if "product_link" in df.columns:
-        df["product_link"] = df["product_link"].str.replace(
-            "http://", "https://")
+        df["product_link"] = df["product_link"].str.replace("http://", "https://")
     if "url" in df.columns:
         df["url"] = df["url"].str.replace("http://", "https://")
     if "_unit_id" in df.columns:
@@ -313,12 +360,11 @@ def get_ecommerce_3_dataset(number_of_documents: Union[None, int] = 1000, select
 
 
 def get_flipkart_dataset(
-    number_of_documents: Union[None, int] = 19920, 
-    select_fields: list =[]
-    ) -> List:
+    number_of_documents: Union[None, int] = 19920, select_fields: list = []
+) -> List:
     """
     Download an example flipkart ecommerce dataset \n
-    Total Len: 19920 \n 
+    Total Len: 19920 \n
     Sample document:
 
     >>> {'_id': 0,
@@ -335,13 +381,14 @@ def get_flipkart_dataset(
     """
     if number_of_documents is None:
         number_of_documents = 19920
-    return ExampleDatasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv", number_of_documents, select_fields)
+    return ExampleDatasets._get_online_dataset(
+        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv",
+        number_of_documents,
+        select_fields,
+    )
 
 
-def get_realestate_dataset(
-    number_of_documents: int = 50,
-    select_fields: list =[]
-):
+def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = []):
     """
     Download an example real-estate dataset \n
     Total Len: 5885 \n
@@ -387,11 +434,13 @@ def get_realestate_dataset(
     """
     if number_of_documents is None:
         number_of_documents = 50
-    return ExampleDatasets._get_dummy_dataset('realestate', number_of_documents, select_fields)
+    return ExampleDatasets._get_dummy_dataset(
+        "realestate", number_of_documents, select_fields
+    )
+
 
 def get_mission_statements_dataset(
-    number_of_documents: Union[None, int] = 1433,
-    select_fields: list =[]
+    number_of_documents: Union[None, int] = 1433, select_fields: list = []
 ) -> List:
     """Function to download a sample company mission statement dataset.
     Total Len: 1433
@@ -421,12 +470,17 @@ def get_mission_statements_dataset(
     """
     if number_of_documents is None:
         number_of_documents = 514330
-    return ExampleDatasets._get_online_dataset("https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv", number_of_documents, select_fields)
+    return ExampleDatasets._get_online_dataset(
+        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv",
+        number_of_documents,
+        select_fields,
+    )
 
 
 def get_machine_learning_research_dataset():
     """Here we get our Machine Learning research dataset."""
     raise NotImplementedError
+
 
 get_dummy_ecommerce_dataset = get_ecommerce_1_dataset
 get_sample_ecommerce_dataset = get_ecommerce_2_dataset
