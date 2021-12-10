@@ -83,12 +83,12 @@ class Client(BatchAPIClient, DocUtils):
 
     @staticmethod
     def login(
-        verbose: bool = True,
+        authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = Client.token_to_auth()
         return Client(
-            project=project, api_key=api_key, verbose=verbose
+            project=project, api_key=api_key, authenticate=authenticate
         )
 
     @property
