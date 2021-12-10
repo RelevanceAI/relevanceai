@@ -3,6 +3,7 @@
 from typing import List
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
+from tqdm.notebook import tqdm
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -90,7 +91,7 @@ class BatchRetrieve(APIClient, Chunker):
     def get_all_documents(
         self,
         dataset_id: str,
-        chunk_size: int = 10000,
+        chunk_size: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
@@ -127,7 +128,12 @@ class BatchRetrieve(APIClient, Chunker):
         full_data = []
 
         # While there is still data to fetch, fetch it at the latest cursor
-        while length > 0:
+
+        def generator():
+            while length > 0:
+                yield
+
+        for _ in tqdm(generator()):
             x = self.datasets.documents.get_where(
                 dataset_id,
                 filters=filters,
@@ -145,28 +151,7 @@ class BatchRetrieve(APIClient, Chunker):
                 full_data += x["documents"]
         return full_data
 
-    def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
-        """ 
-        Get number of documents in a multiple different dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
-        
-        Parameters
-        ----------
-        dataset_ids: list
-            Unique names of datasets
-        list_of_filters: list 
-            List of list of filters to select documents in the same order of the dataset_ids list
-
-        """
-
-        if list_of_filters is None:
-            list_of_filters = [[] for _ in range(len(dataset_ids))]
-
-        return {
-            dataset_id: self.datasets.documents._get_number_of_documents(dataset_id, filters)
-            for dataset_id, filters in zip(dataset_ids, list_of_filters)
-        }
-
-    def _get_number_of_documents(self, dataset_id, filters=[]):
+    def get_number_of_documents(self, dataset_id, filters=[]):
         """ 
         Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
         
