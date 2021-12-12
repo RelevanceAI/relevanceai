@@ -68,6 +68,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         show_image: bool = False,
         label_char_length: int = 50,
         marker_size: int = 5,
+        interactive: bool = False
     ):
         """
         Plot function for Embedding Projector class
@@ -128,6 +129,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             show_image=show_image,
             marker_size=marker_size,
             dataset_name=dataset_id,
+            interactive=interactive
         )
 
     def plot_from_docs(
@@ -151,6 +153,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         label_char_length: int = 50,
         marker_size: int = 5,
         dataset_name: Union[None, str] = None,
+        interactive: bool = False
     ):
 
         # Adjust vector label
@@ -222,6 +225,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
             docs=docs,
             vector_label=vector_label,
             vector_field=vector_field,
+            interactive=interactive
         )
         return
 

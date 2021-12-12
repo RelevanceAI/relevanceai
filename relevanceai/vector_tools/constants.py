@@ -1,5 +1,5 @@
 from typing import List, Sequence, Union, Dict, Any, Tuple, Optional
-from typing_extensions import Literal, get_args
+from typing_extensions import Literal
 
 from joblib.memory import Memory
 

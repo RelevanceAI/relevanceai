@@ -19,6 +19,7 @@ try:
 
     vis_requirements = True
 except ModuleNotFoundError as e:
+    print(e)
     pass
 
 from relevanceai.vector_tools.client import VectorTools
