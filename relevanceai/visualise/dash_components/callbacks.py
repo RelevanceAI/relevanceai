@@ -31,7 +31,8 @@ def display_callbacks(app, show_image, docs, vector_label):
 
             click_doc = [i for i in docs if i["_id"] == click_id][0]
             image_url = click_doc[vector_label]
-            return dash.html.Img(src=image_url, height=height)
+
+            return [dash.html.P("currently selected item"), dash.html.Img(src=image_url, height=height)]
 
     else:
 
@@ -98,14 +99,13 @@ def neighbour_callbacks(
                     card = dbc.Card(
                         dbc.CardBody(
                             [
-                                dash.html.P(f"rank: {rank}, score: {score}", id="card-title"),
+                                dash.html.P(f"rank: {rank} | score: {score}", id="card-title"),
                                 dash.html.Img(src=img, id="card-value", width=image_width, height=image_height),
-                                # dash.html.P("Description", id="card-description")
                             ]
-                        )
+                        ),
                     )
                     return card
-
+                # Attempt to create a grid layout
                 layout = []
                 layout_row = []
                 for n, image in enumerate(neighbour_info["nearest_neighbor_values"]):
@@ -115,8 +115,9 @@ def neighbour_callbacks(
                     col = dbc.Col([card])
                     layout_row.append(col)
                     if n % 2 == 1:
-                        rows = dbc.Row(layout_row.copy())
+                        rows = dbc.Row(layout_row.copy(), className="mb-4")
                         layout.append(rows)
+                        del layout_row
                         layout_row = []
                 return layout
     else:
