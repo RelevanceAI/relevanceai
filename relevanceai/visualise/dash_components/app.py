@@ -12,7 +12,7 @@ from relevanceai.visualise.dash_components.callbacks import (
 from jupyter_dash import JupyterDash
 
 
-def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_field):
+def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_field, interactive: bool=True):
 
     app = JupyterDash(__name__)
 
@@ -41,5 +41,6 @@ def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_
 
     app.layout = create_layout(app)
     # display_callbacks(app, show_image, docs, vector_label)
-    neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
+    if interactive:
+        neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
     app.run_server(mode="inline")

@@ -173,6 +173,8 @@ def neighbour_callbacks(
 
             return None
 
+def update_graph():
+    pass
 
 def remove_duplicates(value, index):
     temp_dict = {i: j for i, j in zip(value, index)}
