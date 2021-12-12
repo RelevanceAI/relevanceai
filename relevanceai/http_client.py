@@ -45,7 +45,7 @@ class Client(BatchAPIClient, DocUtils):
     ):
 
         if project is None or api_key is None:
-            project, api_key = Client._token_to_auth()
+            project, api_key = self._token_to_auth()
 
         super().__init__(project, api_key)
 
@@ -107,12 +107,11 @@ class Client(BatchAPIClient, DocUtils):
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
 
-    @staticmethod
     def login(
-        authenticate: bool = True,
+        self, authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
-        project, api_key = Client._token_to_auth()
+        project, api_key = self._token_to_auth()
         return Client(
             project=project, api_key=api_key, authenticate=authenticate
         )
