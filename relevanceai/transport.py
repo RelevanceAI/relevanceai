@@ -4,15 +4,18 @@ import time
 import traceback
 import json
 from typing import Union
-from relevanceai.config import Config
 from json.decoder import JSONDecodeError
-from relevanceai.logger import AbstractLogger
+
 from urllib.parse import urlparse
 
 import requests
 from requests import Request
 
+from relevanceai.config import Config
+from relevanceai.logger import AbstractLogger
 from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
+from relevanceai.errors import APIError
+
 
 class Transport:
     """Base class for all relevanceai objects"""
@@ -32,8 +35,10 @@ class Transport:
 
     @property
     def _search_dashboard_url(self):
-        return self.config["dashboard.base_dashboard_url"][1:-1] + \
-            self.config["dashboard.search_dashboard_endpoint"][1:-1]
+        return (
+            self.config["dashboard.base_dashboard_url"][1:-1]
+            + self.config["dashboard.search_dashboard_endpoint"][1:-1]
+        )
 
     @staticmethod
     def _is_search_in_path(url: str):
@@ -111,7 +116,7 @@ class Transport:
         method: str = "GET",
         parameters: dict = {},
         base_url: str = None,
-        output_format = None
+        output_format=None,
     ):
         """
         Make the HTTP request
@@ -135,13 +140,13 @@ class Transport:
             output_format = self.config.get_option("api.output_format")
 
         retries = int(self.config.get_option("retries.number_of_retries"))
-        seconds_between_retries = int(self.config.get_option(
-            "retries.seconds_between_retries"))
+        seconds_between_retries = int(
+            self.config.get_option("retries.seconds_between_retries")
+        )
         request_url = base_url + endpoint
         for _ in range(retries):
 
-            self.logger.info(
-                "URL you are trying to access:" + request_url)
+            self.logger.info("URL you are trying to access:" + request_url)
             try:
                 if Transport._is_search_in_path(request_url):
                     self._log_search_to_dashboard(
@@ -165,27 +170,39 @@ class Transport:
                 # Successful response
                 if response.status_code == 200:
                     self._log_response_success(base_url, endpoint)
-                    self._log_response_time(base_url, endpoint, time.perf_counter() - start_time)
+                    self._log_response_time(
+                        base_url, endpoint, time.perf_counter() - start_time
+                    )
 
                     if output_format == 'json':
                         if Transport._is_search_in_path(request_url):
                             print(f"You can now visit the dashboard at {self._search_dashboard_url}")
                         return response.json()
-                    elif output_format == 'content':
+                    elif output_format == "content":
                         return response.content
-                    elif output_format == 'status_code':
+                    elif output_format == "status_code":
                         return response.status_code
                     else:
                         return response
 
                 # Cancel bad URLs
                 elif response.status_code == 404:
-                    self._log_response_fail(base_url, endpoint, response.status_code, response.content.decode())
+                    self._log_response_fail(
+                        base_url,
+                        endpoint,
+                        response.status_code,
+                        response.content.decode(),
+                    )
                     raise APIError(response.content.decode())
 
                 # Retry other errors
                 else:
-                    self._log_response_fail(base_url, endpoint, response.status_code, response.content.decode())
+                    self._log_response_fail(
+                        base_url,
+                        endpoint,
+                        response.status_code,
+                        response.content.decode(),
+                    )
                     continue
 
             except (ConnectionError) as error:
@@ -208,12 +225,14 @@ class Transport:
         self.logger.debug(f"Request ran in {time} seconds ({base_url + endpoint})")
 
     def _log_response_fail(self, base_url, endpoint, status_code, content):
-        self.logger.error(f"Response failed ({base_url + endpoint}) (Status: {status_code} Response: {content})")
+        self.logger.error(
+            f"Response failed ({base_url + endpoint}) (Status: {status_code} Response: {content})"
+        )
 
     def _log_connection_error(self, base_url, endpoint):
         self.logger.error(f"Connection error but re-trying. ({base_url + endpoint})")
 
     def _log_no_json(self, base_url, endpoint, status_code, content):
-        self.logger.error(f"No JSON Available ({base_url + endpoint}) (Status: {status_code} Response: {content})")
-
-
+        self.logger.error(
+            f"No JSON Available ({base_url + endpoint}) (Status: {status_code} Response: {content})"
+        )

@@ -7,19 +7,21 @@ from relevanceai.api.batch.chunk import Chunker
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
+# ADD SUPPORT FOR SAVING TO JSON
 
-class BatchRetrieve(APIClient, Chunker):
+class BatchRetrieveClient(APIClient, Chunker):
     def get_documents(
         self,
         dataset_id: str,
-        filters: list = [],
         number_of_documents: int = 20,
+        filters: list = [],
         cursor: str = None,
         batch_size: int = 1000,
         sort: list = [],
         select_fields: list = [],
-        include_vector: bool = True):
-        
+        include_vector: bool = True,
+    ):
+
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
         If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
@@ -43,18 +45,18 @@ class BatchRetrieve(APIClient, Chunker):
             Query for filtering the search results
         """
         if batch_size > number_of_documents:
-            batch_size = number_of_documents 
+            batch_size = number_of_documents
 
         resp = self.datasets.documents.get_where(
             dataset_id=dataset_id,
             select_fields=select_fields,
             include_vector=include_vector,
             page_size=batch_size,
-            sort = sort,
+            sort=sort,
             is_random=False,
             random_state=0,
             filters=filters,
-            cursor=cursor
+            cursor=cursor,
         )
         data = resp["documents"]
 
@@ -68,11 +70,11 @@ class BatchRetrieve(APIClient, Chunker):
                     select_fields=select_fields,
                     include_vector=include_vector,
                     page_size=batch_size,
-                    sort = sort,
+                    sort=sort,
                     is_random=False,
                     random_state=0,
                     filters=filters,
-                    cursor=_cursor
+                    cursor=_cursor,
                 )
                 _data = resp["documents"]
                 _cursor = resp["cursor"]
@@ -85,15 +87,15 @@ class BatchRetrieve(APIClient, Chunker):
             data = data[:number_of_documents]
 
         return data
-    
+
     def get_all_documents(
         self,
         dataset_id: str,
-        chunk_size: int = 10000,
+        chunk_size: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
-        include_vector: bool = True
+        include_vector: bool = True,
     ):
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
@@ -126,6 +128,7 @@ class BatchRetrieve(APIClient, Chunker):
         full_data = []
 
         # While there is still data to fetch, fetch it at the latest cursor
+
         while length > 0:
             x = self.datasets.documents.get_where(
                 dataset_id,
@@ -134,7 +137,7 @@ class BatchRetrieve(APIClient, Chunker):
                 page_size=chunk_size,
                 sort=sort,
                 select_fields=select_fields,
-                include_vector=include_vector
+                include_vector=include_vector,
             )
             length = len(x["documents"])
             cursor = x["cursor"]
@@ -143,3 +146,27 @@ class BatchRetrieve(APIClient, Chunker):
             if length > 0:
                 full_data += x["documents"]
         return full_data
+
+    def get_number_of_documents(self, dataset_id, filters=[]):
+        """ 
+        Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+        
+        Parameters
+        ----------
+        dataset_ids: list
+            Unique names of datasets
+        filters: list 
+            Filters to select documents
+        """
+        return self.datasets.documents.get_where(dataset_id, page_size=1, filters=filters)["count"]
+
+    def get_vector_fields(self, dataset_id):
+        """
+        Returns list of valid vector fields in dataset
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        """
+        schema = self.datasets.schema(dataset_id)
+        return [k for k in schema.keys() if k.endswith("_vector_")]

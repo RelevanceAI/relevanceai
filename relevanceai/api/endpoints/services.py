@@ -1,32 +1,34 @@
 """Services class
 """
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
-from relevanceai.api.endpoints.encoders import Encoders
-from relevanceai.api.endpoints.cluster import Cluster
-from relevanceai.api.endpoints.search import Search
-from relevanceai.api.endpoints.aggregate import Aggregate
-from relevanceai.api.endpoints.recommend import Recommend
-from relevanceai.api.endpoints.tagger import Tagger
-from relevanceai.api.endpoints.prediction import Prediction
-from relevanceai.api.endpoints.wordclouds import Wordclouds
+from relevanceai.api.endpoints.encoders import EncodersClient
+from relevanceai.api.endpoints.cluster import ClusterClient
+from relevanceai.api.endpoints.search import SearchClient
+from relevanceai.api.endpoints.aggregate import AggregateClient
+from relevanceai.api.endpoints.recommend import RecommendClient
+from relevanceai.api.endpoints.tagger import TaggerClient
+from relevanceai.api.endpoints.prediction import PredictionClient
+from relevanceai.api.endpoints.wordclouds import WordcloudsClient
 
-class Services(Base):
+class ServicesClient(_Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
-        self.encoders = Encoders(project=project, api_key=api_key)
-        self.cluster = Cluster(project=project, api_key=api_key)
-        self.search = Search(project=project, api_key=api_key)
-        self.aggregate = Aggregate(project=project, api_key=api_key)
-        self.recommend = Recommend(project=project, api_key=api_key)
-        self.tagger = Tagger(project=project, api_key=api_key)
-        self.prediction = Prediction(project=project, api_key=api_key)
-        self.wordclouds = Wordclouds(project=project, api_key=api_key)
+        self.encoders = EncodersClient(project=project, api_key=api_key)
+        self.cluster = ClusterClient(project=project, api_key=api_key)
+        self.search = SearchClient(project=project, api_key=api_key)
+        self.aggregate = AggregateClient(project=project, api_key=api_key)
+        self.recommend = RecommendClient(project=project, api_key=api_key)
+        self.tagger = TaggerClient(project=project, api_key=api_key)
+        self.prediction = PredictionClient(project=project, api_key=api_key)
+        self.wordclouds = WordcloudsClient(project=project, api_key=api_key)
         super().__init__(project, api_key)
 
-    def document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = []):
-        """ 
+    def document_diff(
+        self, doc: dict, docs_to_compare: list, difference_fields: list = []
+    ):
+        """
         Find differences between documents
 
         Parameters
@@ -37,7 +39,7 @@ class Services(Base):
             Other documents to compare against the main document.
         difference_fields: list
             Fields to compare. Defaults to [], which compares all fields.
-    
+
         """
         return self.make_http_request(
             endpoint=f"/services/document_diff",
@@ -46,6 +48,5 @@ class Services(Base):
                 "doc": doc,
                 "docs_to_compare": docs_to_compare,
                 "difference_fields": difference_fields,
-            }
+            },
         )
-

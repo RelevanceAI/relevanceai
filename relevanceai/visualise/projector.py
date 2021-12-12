@@ -1,33 +1,28 @@
 # -*- coding: utf-8 -*-
 
+from doc_utils import DocUtils
+from typing_extensions import Literal
+from typing import List, Union, Dict, Any, Tuple, Optional
+from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
+from relevanceai.vector_tools.cluster import Cluster, ClusterBase
+from relevanceai.visualise.dash_components.app import create_dash_graph
+from relevanceai.vector_tools.constants import *
+from relevanceai.base import _Base
+from relevanceai.api.client import BatchAPIClient
+from typeguard import typechecked
+from dataclasses import dataclass
+import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-import json
-import warnings
 
-import plotly.graph_objs as go
+pd.options.mode.chained_assignment = None
 
-from dataclasses import dataclass
-from typeguard import typechecked
-
-from relevanceai.api.client import BatchAPIClient
-from relevanceai.base import Base
-from relevanceai.vector_tools.constants import DIM_REDUCTION, CLUSTER
-
-from relevanceai.vector_tools.cluster import Cluster, ClusterBase
-from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
-
-from typing import List, Union, Dict, Any, Tuple, Optional
-from typing_extensions import Literal
-
-from doc_utils import DocUtils
 
 RELEVANCEAI_BLUE = "#1854FF"
-MARKER_SIZE = 5
 
 
 @dataclass
-class Projector(BatchAPIClient, Base, DocUtils):
+class Projector(BatchAPIClient, _Base, DocUtils):
     """
     Projector class.
 
@@ -39,7 +34,7 @@ class Projector(BatchAPIClient, Base, DocUtils):
         >>> client.projector.plot(
                 dataset_id, vector_field, number_of_points_to_render, random_state,
                 dr, dr_args, dims,
-                vector_label, vector_label_char_length,
+                vector_label, label_char_length,
                 color_label, colour_label_char_length,
                 hover_label,
                 cluster, cluster_args,
@@ -57,24 +52,23 @@ class Projector(BatchAPIClient, Base, DocUtils):
         dataset_id: str,
         vector_field: str,
         number_of_points_to_render: int = 1000,
-        random_state: int = 0,
-        # Dimensionality reduction args
-        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
-        dr_args: Union[None, Dict] = None,
-        # TODO: Add support for 2
-        dims: Literal[2, 3] = 3,
         # Plot rendering args
         vector_label: Union[None, str] = None,
-        vector_label_char_length: Union[None, int] = 50,
-        colour_label: Union[None, str] = None,
-        colour_label_char_length: Union[None, int] = 20,
-        hover_label: List[str] = [],
+        # Dimensionality reduction args
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
+        dims: Literal[2, 3] = 3,
+        dr_args: Union[None, Dict] = None,
         # Cluster args
         cluster: Union[CLUSTER, ClusterBase] = None,
-        cluster_args: Union[None, Dict] = None,
         num_clusters: Union[None, int] = 10,
-        marker_colour: str = RELEVANCEAI_BLUE,
-        marker_size: int = MARKER_SIZE
+        cluster_args: Union[None, Dict] = None,
+        cluster_on_dr: bool = False,
+        # Decoration args
+        hover_label: list = [],
+        show_image: bool = False,
+        label_char_length: int = 50,
+        marker_size: int = 5,
+        interactive: bool = False
     ):
         """
         Plot function for Embedding Projector class
@@ -93,352 +87,207 @@ class Projector(BatchAPIClient, Base, DocUtils):
             >>> client.projector.plot(
                     dataset_id, vector_field, number_of_points_to_render, random_state,
                     dr, dr_args, dims,
-                    vector_label, vector_label_char_length,
+                    vector_label, label_char_length,
                     color_label, colour_label_char_length,
                     hover_label,
                     cluster, cluster_args,
                     )
         """
-        self.dataset_id = dataset_id
-        self.vector_label = vector_label
-        self.vector_field = vector_field
-        self.number_of_points_to_render = number_of_points_to_render
-        self.random_state = random_state
-        self.vector_label_char_length = vector_label_char_length
-        self.colour_label = colour_label
-        self.colour_label_char_length = colour_label_char_length
-        self.hover_label = hover_label
-        self.cluster = cluster
-        self.num_clusters = num_clusters
-        self.dr = dr
-        self.dr_args = dr_args
-        self.dims = dims
-        self.cluster_args = cluster_args
+        # Check vector field
+        self._is_valid_vector_name(dataset_id, vector_field)
 
-        if (vector_label is None) and (colour_label is None):
-            warnings.warn(
-                f"A vector_label or colour_label has not been specified.")
+        # Check vector label field
+        if vector_label is None:
+            self.logger.warning("A vector_label has not been specified.")
+        else:
+            self._is_valid_label_name(dataset_id, vector_label)
 
-        if number_of_points_to_render and number_of_points_to_render > 1000:
-            warnings.warn(
-                f"You are rendering over 1000 points, this may take some time ..."
-            )
+        # Check hover label field
+        [self._is_valid_label_name(dataset_id, label) for label in hover_label]
 
-        number_of_documents = number_of_points_to_render
-        self.vector_fields = self._get_vector_fields()
-
-        labels = ["_id", vector_field, vector_label, colour_label]
-        if hover_label:
-            labels += hover_label
-        fields = [label for label in labels if label]
-        filters = [{'field' : f,
-            'filter_type' : 'exists',
-            "condition":"==",
-            "condition_value":""}
-            for f in fields
-        ]
-        self.docs = self.get_documents(
-            dataset_id, number_of_documents=number_of_documents, batch_size=1000, select_fields=fields, filters=filters
+        docs = self.get_documents(
+            dataset_id,
+            number_of_documents=number_of_points_to_render,
+            batch_size=1000,
+            select_fields=["_id", vector_field, vector_label] + hover_label,
         )
-        self._remove_empty_vector_fields(vector_field)
+        docs = self._remove_empty_vector_fields(docs, vector_field)
 
-        return self.plot_from_docs(self.docs, self.dims, marker_size, marker_colour)
+        return self.plot_from_docs(
+            docs,
+            vector_field=vector_field,
+            vector_label=vector_label,
+            label_char_length=label_char_length,
+            dr=dr,
+            dims=dims,
+            dr_args=dr_args,
+            cluster=cluster,
+            num_clusters=num_clusters,
+            cluster_args=cluster_args,
+            cluster_on_dr=cluster_on_dr,
+            hover_label=hover_label,
+            show_image=show_image,
+            marker_size=marker_size,
+            dataset_name=dataset_id,
+            interactive=interactive
+        )
 
-    def plot_from_docs(self, docs: List[Dict[str, Any]], dims: int, marker_size: int, marker_colour: str, *args, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+    def plot_from_docs(
+        self,
+        docs: List[Dict],
+        vector_field: str,
+        # Plot rendering args
+        vector_label: Union[None, str] = None,
+        # Dimensionality reduction args
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
+        dims: Literal[2, 3] = 3,
+        dr_args: Union[None, Dict] = None,
+        # Cluster args
+        cluster: Union[CLUSTER, ClusterBase] = None,
+        num_clusters: Union[None, int] = 10,
+        cluster_args: Union[None, Dict] = None,
+        cluster_on_dr: bool = False,
+        # Decoration args
+        hover_label: list = [],
+        show_image: bool = False,
+        label_char_length: int = 50,
+        marker_size: int = 5,
+        dataset_name: Union[None, str] = None,
+        interactive: bool = False
+    ):
 
-        if self._is_valid_vector_name(self.vector_field):
-
-            self.vectors = np.array(
-                self.get_field_across_documents(self.vector_field, docs)
-            )
-            self.vectors_dr = DimReduction.dim_reduce(
-                vectors=self.vectors, dr=self.dr, dr_args=self.dr_args, dims=self.dims
-            )
-            points = {
-                "x": self.vectors_dr[:, 0],
-                "y": self.vectors_dr[:, 1],
-                "_id": self.get_field_across_documents("_id", docs),
-            }
-            if dims == 3:
-                points["z"] = self.vectors_dr[:, 2]
-
-            self.embedding_df = pd.DataFrame(points)
-            if self.hover_label and all(
-                self._is_valid_label_name(l) for l in self.hover_label
-            ):
-                self.embedding_df = pd.concat(
-                    [self.embedding_df, pd.DataFrame(docs)], axis=1
-                )
-
-            if self.vector_label and self._is_valid_label_name(self.vector_label):
-                self.labels = self.get_field_across_documents(
-                    field=self.vector_label, docs=docs
-                )
-                self.embedding_df[self.vector_label] = self.labels
-                self.embedding_df["labels"] = self.labels
-
-            self.legend = None
-            if self.colour_label and self._is_valid_label_name(self.colour_label):
-                self.labels = self.get_field_across_documents(
-                    field=self.colour_label, docs=docs
-                )
-                self.embedding_df["labels"] = self.labels
-                self.embedding_df[self.colour_label] = self.labels
-                self.legend = "labels"
-
-            # TODO: refactor Cluster
-            if self.cluster:
-                # _cluster = Cluster(
-                #     **self.base_args,
-                #     vectors=self.vectors,
-                #     cluster=self.cluster,
-                #     cluster_args=self.cluster_args,
-                #     k=self.num_clusters,
-                # )
-                # self.cluster_labels = _cluster.cluster_labels
-                self.cluster_labels = Cluster.cluster(
-                    vectors=self.vectors,
-                    cluster=self.cluster,
-                    cluster_args=self.cluster_args,
-                )
-                self.embedding_df["cluster_labels"] = self.cluster_labels
-                self.legend = "cluster_labels"
-
-            self.embedding_df.index = self.embedding_df["_id"]
-            return self._generate_fig(
-                embedding_df=self.embedding_df, legend=self.legend, marker_size=marker_size, marker_colour=marker_colour
+        # Adjust vector label
+        if show_image is False:
+            self.set_field_across_documents(
+                vector_label,
+                [i[vector_label][:label_char_length] + "..." for i in docs],
+                docs,
             )
 
-    def _get_vector_fields(self) -> List[str]:
-        """
-        Returns list of valid vector fields from dataset schema
-        """
-        self.schema = self.datasets.schema(self.dataset_id)
-        self.vector_dim = self.schema[self.vector_field]["vector"]
-        return [k for k in self.schema.keys() if k.endswith("_vector_")]
+        # Dimension reduce vectors
+        vectors = np.array(self.get_field_across_documents(vector_field, docs))
+        vectors_dr = DimReduction.dim_reduce(
+            vectors=vectors, dr=dr, dr_args=dr_args, dims=dims
+        )
+        points = {"x": vectors_dr[:, 0], "y": vectors_dr[:, 1]}
+        if dims == 3:
+            points["z"] = vectors_dr[:, 2]
 
-    def _is_valid_vector_name(self, vector_name: str) -> bool:
-        """
-        Check vector field name is valid
-        """
-        if vector_name in self.schema.keys():
-            if vector_name in self.vector_fields:
-                return True
+        embedding_df = pd.DataFrame(points)
+        embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
+
+        # Set hover labels
+        hover_label = ["_id", vector_label] + hover_label
+
+        # Cluster vectors
+        if cluster:
+            if cluster_on_dr:
+                cluster_vec = vectors_dr
             else:
-                raise ValueError(f"{vector_name} is not a valid vector name")
-        else:
-            raise ValueError(
-                f"{vector_name} is not in the {self.dataset_id} schema")
+                cluster_vec = vectors
 
-    def _is_valid_label_name(self, label_name: str) -> bool:
-        """
-        Check vector label name is valid. Checks that it is either numeric or text
-        """
-        if label_name == "_id":
-            return True
-        if label_name in list(self.schema.keys()):
-            if self.schema[label_name] in ["numeric", "text"]:
-                return True
-            else:
-                raise ValueError(f"{label_name} is not a valid label name")
-        else:
-            raise ValueError(
-                f"{label_name} is not in the {self.dataset_id} schema")
+            cluster_labels = Cluster.cluster(
+                vectors=cluster_vec,
+                cluster=cluster,
+                cluster_args=cluster_args,
+                k=num_clusters,
+            )
+            embedding_df["cluster_labels"] = cluster_labels
+            hover_label = hover_label + ["cluster_labels"]
 
-    def _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]:
-        """s
-        Remove documents with empty vector fields
-        """
-        self.docs = list(filter(DocUtils.list_doc_fields, self.docs))
-        return self.docs
+        embedding_df.index = embedding_df["_id"]
 
-    def _generate_fig(
+        # Generate plot title
+        plot_title = self._generate_plot_title(
+            dims,
+            dataset_name,
+            len(embedding_df),
+            vector_field,
+            vector_label,
+            label_char_length,
+        )
+
+        plot_data = self._generate_plot_data(
+            embedding_df=embedding_df,
+            hover_label=hover_label,
+            dims=dims,
+            marker_size=marker_size,
+            cluster=cluster,
+            label_char_length=label_char_length,
+        )
+
+        layout = self._generate_layout(plot_title=plot_title)
+
+        create_dash_graph(
+            plot_data=plot_data,
+            layout=layout,
+            show_image=show_image,
+            docs=docs,
+            vector_label=vector_label,
+            vector_field=vector_field,
+            interactive=interactive
+        )
+        return
+
+    def _generate_plot_data(
         self,
         embedding_df: pd.DataFrame,
+        hover_label: List[Optional[str]],
+        dims: int,
         marker_size: int,
-        marker_colour: str,
-        legend: Union[None, str],
-    ) -> go.Figure:
-        """
-        Generates the Scatter plot
-        """
-        plot_title = f"<b>{self.dims}D Embedding Projector Plot<br>Dataset Id: {self.dataset_id} - {len(embedding_df)} points<br>Vector Field: {self.vector_field}<br></b>"
-        self.hover_label = ["_id"] + self.hover_label
-        text_labels = None
-        plot_mode = "markers"
+        cluster: Union[
+            Literal["kmeans"],
+            Literal["kmedoids"],
+            Literal["hdbscan"],
+            ClusterBase,
+            None,
+        ],
+        label_char_length: int,
+    ):
+        """ """
 
-        """
-        Generates data for word plot
-        If vector_label set, generates text_labels, otherwise shows points only
-        """
-        if self.vector_label:
-            plot_title = plot_title.replace(
-                "</b>", f"Vector Label: {self.vector_label}<br></b>"
-            )
-            plot_mode = "text+markers"
-            text_labels = embedding_df["labels"]
-            if self.vector_label_char_length and not self.cluster:
-                plot_title = plot_title.replace(
-                    "<br></b>",
-                    f"  Char Length: {self.vector_label_char_length}<br></b>",
+        if cluster:
+            data = []
+            groups = embedding_df.groupby("cluster_labels")
+            for idx, val in groups:
+                data.append(
+                    self._generate_plot_info(
+                        embedding_df=val,
+                        hover_label=hover_label,
+                        dims=dims,
+                        marker_size=marker_size,
+                        label_char_length=label_char_length,
+                    )
                 )
-                text_labels = embedding_df["labels"].apply(
-                    lambda x: x[: self.vector_label_char_length] + "..."
-                )
-
-            self.hover_label.insert(1, self.vector_label)
-
-            # self.hover_label = [self.vector_label] + self.hover_label
-            # self.hover_label = list(set(self.hover_label))
-
-            # TODO: We can change this later to show top 100 neighbours of a selected word
-            #  # Regular displays the full scatter plot with only circles
-            # if wordemb_display_mode == 'regular':
-            #     plot_mode = 'markers'
-            # # Nearest Neighbors displays only the 200 nearest neighbors of the selected_word, in text rather than circles
-            # elif wordemb_display_mode == 'neighbors':
-            #     if not selected_word:
-            #         return go.Figure()
-            #     plot_mode = 'text'
-            #     # Get the nearest neighbors indices
-            #     dataset = data_dict[dataset_name].set_index('0')
-            #     selected_vec = dataset.loc[selected_word]
-
-            #     nearest_neighbours = get_nearest_neighbours(
-            #                             dataset=dataset,
-            #                             selected_vec=selected_vec,
-            #                             distance_measure_mode=distance_measure_mode,
-            #                             )
-
-            #     neighbors_idx = nearest_neighbours[:100].index
-            #     embedding_df =  embedding_df.loc[neighbors_idx]
-
-        custom_data, hovertemplate = self._generate_hover_template(
-            df=embedding_df, dims=self.dims
-        )
-
-        vector_label_scatter_args = {
-            "text": text_labels,
-            "textposition": "middle center",
-            "showlegend": False,
-            "mode": plot_mode,
-            "marker": {
-                "size": marker_size,
-                "color": marker_colour,
-                "symbol": "circle",
-            },
-            "customdata": custom_data,
-            "hovertemplate": hovertemplate,
-        }
-
-        if self.dims == 3:
-            scatter = go.Scatter3d(
-                x=embedding_df["x"],
-                y=embedding_df["y"],
-                z=embedding_df["z"],
-                **vector_label_scatter_args,
-            )
 
         else:
-            scatter = go.Scatter(
-                x=embedding_df["x"], y=embedding_df["y"], **vector_label_scatter_args
-            )
-
-        data = [scatter]
-
-        """
-        Generates data for colour plot if selected
-        """
-        if self.colour_label:
-            plot_title = plot_title.replace(
-                "</b>", f"Colour Label: {self.colour_label}<br></b>"
-            )
-            if self.colour_label_char_length and not self.cluster:
-                plot_title = plot_title.replace(
-                    "<br></b>",
-                    f"  Char Length: {self.colour_label_char_length}<br></b>",
-                )
-                colour_labels = embedding_df["labels"].apply(
-                    lambda x: x[: self.colour_label_char_length] + "..."
-                )
-                embedding_df["labels"] = colour_labels
-
-            self.hover_label.insert(1, self.colour_label)
-
             data = []
-            groups = embedding_df.groupby(legend)
-            for idx, val in groups:
-                # if self.vector_label:
-                #     plot_mode = "text+markers"
-                #     text_labels = val["labels"]
-                #     if self.vector_label_char_length and not self.cluster:
-                #         plot_title = plot_title.replace(
-                #             "<br></b>",
-                #             f"  Char Length: {self.vector_label_char_length}<br></b>",
-                #         )
-                #         text_labels = val["labels"].apply(
-                #             lambda x: x[: self.vector_label_char_length] + "..."
-                #         )
-
-                #     self.hover_label = [self.vector_label] + self.hover_label
-                #     self.hover_label = list(set(self.hover_label))
-
-                custom_data, hovertemplate = self._generate_hover_template(
-                    df=val, dims=self.dims
+            data.append(
+                self._generate_plot_info(
+                    embedding_df=embedding_df,
+                    hover_label=hover_label,
+                    dims=dims,
+                    marker_size=marker_size,
+                    label_char_length=label_char_length,
                 )
+            )
 
-                colour_label_scatter_args = (
-                    {  # text:[ idx for _ in range(val["x"].shape[0]) ],
-                        "text": text_labels,
-                        "textposition": "top center",
-                        "showlegend": False,
-                        "mode": plot_mode,
-                        "marker": {"size": marker_size, "symbol": "circle"},
-                        "customdata": custom_data,
-                        "hovertemplate": hovertemplate,
-                    }
-                )
+        return data
 
-                if self.dims == 3:
-                    scatter = go.Scatter3d(
-                        name=idx,
-                        x=val["x"],
-                        y=val["y"],
-                        z=val["z"],
-                        **colour_label_scatter_args,
-                    )
+    def _generate_layout(self, plot_title):
 
-                else:
-
-                    scatter = go.Scatter(
-                        name=idx, x=val["x"], y=val["y"], **colour_label_scatter_args
-                    )
-
-                data.append(scatter)
-
-        """
-        Generating figure
-        """
-        axes = {
+        axes_3d = {
             "title": "",
-            "showgrid": True,
-            "zeroline": False,
+            "backgroundcolor": "#ffffff",
+            "showgrid": False,
             "showticklabels": False,
         }
+
+        axes_2d = {"title": "", "visible": False, "showticklabels": False}
+
         layout = go.Layout(
             margin={"l": 0, "r": 0, "b": 0, "t": 0},
-            scene={"xaxis": axes, "yaxis": axes, "zaxis": axes},
-        )
-
-        if self.cluster:
-            plot_title = plot_title.replace(
-                "</b>",
-                f"<b>Cluster Method: {self.cluster}<br>Num Clusters: {self.num_clusters}</b>",
-            )
-        fig = go.Figure(data=data, layout=layout)
-        fig.update_layout(
+            scene={"xaxis": axes_3d, "yaxis": axes_3d, "zaxis": axes_3d},
             title={
                 "text": plot_title,
                 "y": 0.1,
@@ -447,30 +296,63 @@ class Projector(BatchAPIClient, Base, DocUtils):
                 "yanchor": "bottom",
                 "font": {"size": 10},
             },
+            plot_bgcolor="#FFF",
+            xaxis=axes_2d,
+            yaxis=axes_2d,
         )
-        if legend and self.colour_label:
-            fig.update_layout(
-                legend={
-                    "title": {"text": self.colour_label, "font": {"size": 12}},
-                    "font": {"size": 10},
-                    "itemwidth": 30,
-                    "tracegroupgap": 1,
-                }
-            )
-        return fig
+
+        return layout
+
+    def _generate_plot_info(
+        self, embedding_df, hover_label, dims, marker_size, label_char_length
+    ):
+
+        custom_data, hovertemplate = self._generate_hover_template(
+            df=embedding_df,
+            dims=dims,
+            hover_label=hover_label,
+            label_char_length=label_char_length,
+        )
+
+        scatter_args = {
+            "x": embedding_df["x"],
+            "y": embedding_df["y"],
+            "showlegend": False,
+            "mode": "markers",
+            "marker": {"size": marker_size, "symbol": "circle", "opacity": 0.75},
+            "customdata": custom_data,
+            "hovertemplate": hovertemplate,
+        }
+
+        if dims == 2:
+            scatter = go.Scatter(**scatter_args)
+
+        else:
+            scatter_args["z"] = embedding_df["z"]
+            scatter = go.Scatter3d(**scatter_args)
+
+        return scatter
 
     def _generate_hover_template(
-        self, df: pd.DataFrame, dims: int
-    ) -> Tuple[Optional[pd.DataFrame], Optional[str]]:
+        self, df: pd.DataFrame, dims: int, hover_label: list, label_char_length: int
+    ):
         """
         Generating hover template
         """
-        self.hover_label = list(sorted(set(self.hover_label)))
-        custom_data = df[self.hover_label]
+        custom_data = df[hover_label]
+        custom_data = custom_data.loc[:, ~custom_data.columns.duplicated()]
+
+        for label in hover_label:
+            try:
+                if label != "_id":
+                    custom_data.loc[:, label] = [
+                        i[:label_char_length] + "..." for i in custom_data.loc[:, label]
+                    ]
+            except:
+                pass
+
         custom_data_hover = [
-            f"{c}: %{{customdata[{i}]}}"
-            for i, c in enumerate(self.hover_label)
-            if self._is_valid_label_name(c)
+            f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)
         ]
 
         if dims == 2:
@@ -489,3 +371,58 @@ class Projector(BatchAPIClient, Base, DocUtils):
         )
 
         return custom_data, hovertemplate
+
+    def _generate_plot_title(
+        self,
+        dims,
+        dataset_name,
+        number_of_points,
+        vector_field,
+        vector_label,
+        label_char_length,
+    ):
+        title = "</b>"
+        title += f"{dims}D Embedding Projector Plot<br>"
+        if dataset_name:
+            title += f"Dataset Name: {dataset_name}<br>"
+        title += f"Points: {number_of_points} points<br>"
+        title += f"Vector Field: {vector_field}<br>"
+        title += f"Vector Label: {vector_label}  Char Length: {label_char_length}<br>"
+        title += "</b>"
+        return title
+
+    def _is_valid_vector_name(self, dataset_id, vector_name: str) -> bool:
+        """
+        Check vector field name is valid
+        """
+        vector_fields = self.get_vector_fields(dataset_id)
+        schema = self.datasets.schema(dataset_id)
+        if vector_name in schema.keys():
+            if vector_name in vector_fields:
+                return True
+            else:
+                raise ValueError(f"{vector_name} is not a valid vector name")
+        else:
+            raise ValueError(f"{vector_name} is not in the {dataset_id} schema")
+
+    def _is_valid_label_name(self, dataset_id, label_name: str) -> bool:
+        """
+        Check vector label name is valid. Checks that it is either numeric or text
+        """
+        schema = self.datasets.schema(dataset_id)
+        if label_name == "_id":
+            return True
+        if label_name in list(schema.keys()):
+            if schema[label_name] in ["numeric", "text"]:
+                return True
+            else:
+                raise ValueError(f"{label_name} is not a valid label name")
+        else:
+            raise ValueError(f"{label_name} is not in the {dataset_id} schema")
+
+    def _remove_empty_vector_fields(self, docs, vector_field: str) -> List[Dict]:
+        """
+        Remove documents with empty vector fields
+        """
+        return [d for d in docs if d.get(vector_field)]
+

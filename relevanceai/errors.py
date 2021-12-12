@@ -1,8 +1,10 @@
 """Missing field error
 """
+
+
 class RelevanceAIError(Exception):
-    """base class for all errors
-    """
+    """Base class for all errors"""
+
 
 class MissingFieldError(RelevanceAIError):
     """Error handling for missing fields"""
@@ -11,7 +13,18 @@ class MissingFieldError(RelevanceAIError):
 class APIError(RelevanceAIError):
     """Error related to API"""
 
+
 class ClusteringResultsAlreadyExistsError(RelevanceAIError):
-    """Error is raised when the clustering dataset already exists
+    """Exception raised for existing clustering results
+
+    Attributes:
+        message -- explanation of the error
     """
-    pass
+
+    def __init__(self, field_name, message="""Clustering results for %s already exist"""):
+        self.field_name = field_name
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return (self.message%(self.field_name))

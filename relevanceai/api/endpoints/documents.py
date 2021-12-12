@@ -1,8 +1,8 @@
 from typing import List
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
 
-class Documents(Base):
+class DocumentsClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -11,21 +11,21 @@ class Documents(Base):
     def list(
         self,
         dataset_id: str,
-        select_fields = [],
+        select_fields=[],
         cursor: str = None,
         page_size: int = 20,
         include_vector: bool = True,
-        random_state: int = 0
+        random_state: int = 0,
     ):
         """
-        Retrieve documents from a specified dataset. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the dataset. 
-        
+        Retrieve documents from a specified dataset. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the dataset.
+
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
         select_fields : list
-            Fields to include in the search results, empty array/list means all fields. 
+            Fields to include in the search results, empty array/list means all fields.
         page_size: int
             Size of each page of results
         cursor: string
@@ -45,19 +45,14 @@ class Documents(Base):
                 "page_size": page_size,
                 "include_vector": include_vector,
                 "random_state": random_state,
-            }
+            },
         )
 
-    def get(
-        self,
-        dataset_id: str,
-        id: str,
-        include_vector: bool = True
-    ):
+    def get(self, dataset_id: str, id: str, include_vector: bool = True):
 
         """
-        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field. 
-        
+        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+
         Parameters
         ----------
         dataset_id : string
@@ -73,7 +68,7 @@ class Documents(Base):
             parameters={
                 "id": id,
                 "include_vector": include_vector,
-            }
+            },
         )
 
     def bulk_get(
@@ -81,7 +76,7 @@ class Documents(Base):
         dataset_id: str,
         ids: str,
         include_vector: bool = True,
-        select_fields: list = []
+        select_fields: list = [],
     ):
 
         """
@@ -97,7 +92,7 @@ class Documents(Base):
         include_vector: bool
             Include vectors in the search results
         select_fields: list
-            Fields to include in the search results, empty array/list means all fields. 
+            Fields to include in the search results, empty array/list means all fields.
         """
 
         return self.make_http_request(
@@ -105,10 +100,9 @@ class Documents(Base):
             parameters={
                 "id": ids,
                 "include_vector": include_vector,
-                "select_fields": select_fields
-            }
+                "select_fields": select_fields,
+            },
         )
-
 
     def get_where(
         self,
@@ -120,10 +114,10 @@ class Documents(Base):
         select_fields: list = [],
         include_vector: bool = True,
         random_state: int = 0,
-        is_random: bool = False
+        is_random: bool = False,
     ):
 
-        """ 
+        """
         Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
 
         The filters query is a json body that follows the schema of:
@@ -170,7 +164,7 @@ class Documents(Base):
         These are the available conditions:
 
         >>> "==", "!=", ">=", ">", "<", "<="
-        
+
         If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
 
         Parameters
@@ -207,7 +201,7 @@ class Documents(Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
-            }
+            },
         )
 
     def paginate(
@@ -216,7 +210,7 @@ class Documents(Base):
         page: int = 1,
         page_size: int = 20,
         include_vector: bool = True,
-        select_fields: list = []
+        select_fields: list = [],
     ):
 
         """
@@ -234,7 +228,7 @@ class Documents(Base):
         include_vector: bool
             Include vectors in the search results
         select_fields: list
-            Fields to include in the search results, empty array/list means all fields. 
+            Fields to include in the search results, empty array/list means all fields.
         """
 
         return self.make_http_request(
@@ -243,18 +237,13 @@ class Documents(Base):
                 "page": page,
                 "page_size": page_size,
                 "include_vector": include_vector,
-                "select_fields": select_fields
-            }
+                "select_fields": select_fields,
+            },
         )
 
-    def update(
-        self,
-        dataset_id: str,
-        update: dict,
-        insert_date: bool = True
-    ):
+    def update(self, dataset_id: str, update: dict, insert_date: bool = True):
 
-        """ 
+        """
         Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents. \n
         For update multiple documents refer to datasets.documents.bulk_update
 
@@ -270,19 +259,14 @@ class Documents(Base):
         """
 
         return self.make_http_request(
-                endpoint=f"/datasets/{dataset_id}/documents/update",
-                method="POST",
-                parameters={"update": update, "insert_date": insert_date}
-            )
+            endpoint=f"/datasets/{dataset_id}/documents/update",
+            method="POST",
+            parameters={"update": update, "insert_date": insert_date},
+        )
 
-    def update_where(
-        self,
-        dataset_id: str,
-        update: dict,
-        filters: list = []
-    ):
+    def update_where(self, dataset_id: str, update: dict, filters: list = []):
 
-        """ 
+        """
         Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
         For more information about filters refer to datasets.documents.get_where.
 
@@ -298,10 +282,10 @@ class Documents(Base):
         """
 
         return self.make_http_request(
-                endpoint=f"/datasets/{dataset_id}/documents/update_where",
-                method="POST",
-                parameters={"update": update, "filters": filters}
-            )
+            endpoint=f"/datasets/{dataset_id}/documents/update_where",
+            method="POST",
+            parameters={"update": update, "filters": filters},
+        )
 
     def bulk_update(
         self,
@@ -309,10 +293,10 @@ class Documents(Base):
         updates: list,
         insert_date: bool = True,
         return_documents: bool = False,
-        base_url="https://ingest-api-dev-aueast.relevance.ai/latest"
+        base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
 
-        """ 
+        """
         Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
 
         Parameters
@@ -325,7 +309,7 @@ class Documents(Base):
             Whether to include insert date as a field 'insert_date_'.
         include_updated_ids	: bool
             Include the inserted IDs in the response
-    
+
         """
 
         if return_documents is False:
@@ -354,13 +338,9 @@ class Documents(Base):
                 "status_code": status_code,
             }
 
-    def delete(
-        self,
-        dataset_id: str,
-        id: str
-    ):
+    def delete(self, dataset_id: str, id: str):
 
-        """ 
+        """
         Delete a document by ID. \n
         For deleting multiple documents refer to datasets.documents.bulk_delete
 
@@ -375,16 +355,12 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/delete",
             method="POST",
-            parameters={"id": id}
+            parameters={"id": id},
         )
 
-    def delete_where(
-        self,
-        dataset_id: str,
-        filters: list
-    ):
+    def delete_where(self, dataset_id: str, filters: list):
 
-        """ 
+        """
         Delete a document by filters. \n
         For more information about filters refer to datasets.documents.get_where.
 
@@ -399,19 +375,13 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/delete_where",
             method="POST",
-            parameters={"filters": filters}
+            parameters={"filters": filters},
         )
 
+    def bulk_delete(self, dataset_id: str, ids: list = []):
 
-
-    def bulk_delete(
-        self,
-        dataset_id: str,
-        ids: list = []
-    ):
-
-        """ 
-        Delete a list of documents by their IDs. 
+        """
+        Delete a list of documents by their IDs.
 
         Parameters
         ----------
@@ -424,17 +394,12 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_delete",
             method="POST",
-            parameters={"ids": ids}
+            parameters={"ids": ids},
         )
 
-    def delete_fields(
-        self,
-        dataset_id: str,
-        id: str,
-        fields: list
-    ):
+    def delete_fields(self, dataset_id: str, id: str, fields: list):
 
-        """ 
+        """
         Delete fields in a document in a dataset by its id
 
         Parameters
@@ -450,39 +415,5 @@ class Documents(Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/delete_fields",
             method="POST",
-            parameters={"id": id, "fields": fields}
+            parameters={"id": id, "fields": fields},
         )
-
-    def get_number_of_documents(self, dataset_ids: List[str], list_of_filters=None):
-        """ 
-        Get number of documents in a multiple different dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
-        
-        Parameters
-        ----------
-        dataset_ids: list
-            Unique names of datasets
-        list_of_filters: list 
-            List of list of filters to select documents in the same order of the dataset_ids list
-
-        """
-
-        if list_of_filters is None:
-            list_of_filters = [[] for _ in range(len(dataset_ids))]
-
-        return {
-            dataset_id: self._get_number_of_documents(dataset_id, filters)
-            for dataset_id, filters in zip(dataset_ids, list_of_filters)
-        }
-
-    def _get_number_of_documents(self, dataset_id, filters=[]):
-        """ 
-        Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
-        
-        Parameters
-        ----------
-        dataset_ids: list
-            Unique names of datasets
-        filters: list 
-            Filters to select documents
-        """
-        return self.get_where(dataset_id, page_size=1, filters=filters)["count"]

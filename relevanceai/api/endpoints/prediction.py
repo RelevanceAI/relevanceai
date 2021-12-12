@@ -1,8 +1,8 @@
 """Prediction services
 """
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
-class Prediction(Base):
+class PredictionClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -21,7 +21,7 @@ class Prediction(Base):
         include_search_results: bool = True,
     ):
 
-        """ 
+        """
         Predict using KNN regression.
 
         Parameters
@@ -58,8 +58,8 @@ class Prediction(Base):
                 "weighting": weighting,
                 "impute_value": impute_value,
                 "predict_operation": predict_operation,
-                "include_search_results": include_search_results
-            }
+                "include_search_results": include_search_results,
+            },
         )
 
     def KNN_from_results(
@@ -67,10 +67,10 @@ class Prediction(Base):
         field: str,
         results: list,
         impute_value: int = 0,
-        predict_operation: str = "most_frequent"
+        predict_operation: str = "most_frequent",
     ):
 
-        """ 
+        """
         Predict using KNN regression from search results
 
         Parameters
@@ -94,8 +94,6 @@ class Prediction(Base):
                 "field": field,
                 "results": results,
                 "impute_value": impute_value,
-                "predict_operation": predict_operation
-            }
+                "predict_operation": predict_operation,
+            },
         )
-
-

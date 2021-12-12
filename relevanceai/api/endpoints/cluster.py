@@ -1,12 +1,12 @@
-from relevanceai.base import Base
-from relevanceai.api.endpoints.centroids import Centroids
+from relevanceai.base import _Base
+from relevanceai.api.endpoints.centroids import CentroidsClient
 
 
-class Cluster(Base):
+class ClusterClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
-        self.centroids = Centroids(project=project, api_key=api_key)
+        self.centroids = CentroidsClient(project=project, api_key=api_key)
         super().__init__(project, api_key)
 
     def aggregate(
@@ -20,13 +20,13 @@ class Cluster(Base):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        alias: str = "default"
+        alias: str = "default",
     ):
-        """ 
+        """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
 
-        For more information about aggregations check out services.aggregate.aggregate. 
+        For more information about aggregations check out services.aggregate.aggregate.
 
         Parameters
         ----------
@@ -36,7 +36,7 @@ class Cluster(Base):
             The vector field that was clustered on
         metrics: list
             Fields and metrics you want to calculate
-        groupby: list 
+        groupby: list
             Fields you want to split the data into
         filters: list
             Query for filtering the search results
@@ -82,9 +82,9 @@ class Cluster(Base):
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
-        date_interval: str = "monthly"
+        date_interval: str = "monthly",
     ):
-        """ 
+        """
         Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them. \n
         Only can be used after a vector field has been clustered.
 
@@ -113,5 +113,5 @@ class Cluster(Base):
                 "page": page,
                 "asc": asc,
                 "date_interval": date_interval,
-            }
+            },
         )

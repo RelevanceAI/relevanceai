@@ -1,9 +1,9 @@
 """Wordclouds services
 """
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
 
-class Wordclouds(Base):
+class WordcloudsClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -19,9 +19,9 @@ class Wordclouds(Base):
         select_fields: list = [],
         include_vector: bool = False,
         filters: list = [],
-        additional_stopwords: list = []
+        additional_stopwords: list = [],
     ):
-        """ 
+        """
         Get frequency n-gram frequency counter from the wordcloud.
 
         Parameters
@@ -58,6 +58,6 @@ class Wordclouds(Base):
                 "select_fields": select_fields,
                 "include_vector": include_vector,
                 "filters": filters,
-                "additional_stopwords": additional_stopwords
+                "additional_stopwords": additional_stopwords,
             },
         )

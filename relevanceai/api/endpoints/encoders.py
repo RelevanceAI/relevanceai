@@ -1,14 +1,14 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
 
-class Encoders(Base):
+class EncodersClient(_Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
         super().__init__(project, api_key)
 
     def textimage(self, text: str):
-        """ 
+        """
         Encode text to make searchable with images
 
         Parameters
@@ -21,7 +21,7 @@ class Encoders(Base):
         )
 
     def text(self, text: str):
-        """ 
+        """
         Encode text
 
         Parameters
@@ -62,7 +62,7 @@ class Encoders(Base):
     def imagetext(self, image):
         """
         Encode an image to make searchable with text
-        
+
         Parameters
         ----------
         image: string

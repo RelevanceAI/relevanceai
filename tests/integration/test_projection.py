@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding:utf-8 -*-
-#####
-# Author: Charlene Leong charleneleong84@gmail.com
-# Created Date: Monday, November 8th 2021, 8:15:18 pm
-# Last Modified: Wednesday, November 17th 2021,8:53:50 am
-#####
-
 from pathlib import Path
 import ivis
 import pytest
@@ -73,16 +65,12 @@ def fixture_cluster_args(request):
     return request.param
 
 
-# @pytest.mark.skip(reason="too slow")
+# @pytest.mark.skip(reason = 'Slow')
 # def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
 #     """Testing vector label with cluster"""
 #     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
 #     assert True
 
-def test_projector_plot_fast(test_client, test_sample_vector_dataset):
-    test_client.projector.plot(test_sample_vector_dataset, "sample_1_vector_", 
-        colour_label="sample_1_label", 
-        cluster='kmeans', 
-        dims=2, 
-        number_of_points_to_render=100)
-    assert True
+# def test_projector_plot_fast(test_client, test_sample_vector_dataset):
+#     test_client.projector.plot(test_sample_vector_dataset, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
+#     assert True
