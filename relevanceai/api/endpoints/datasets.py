@@ -8,7 +8,7 @@ from relevanceai.api.endpoints.monitor import MonitorClient
 from relevanceai.api.endpoints.tasks import TasksClient
 
 
-class Datasets(_Base):
+class DatasetsClient(_Base):
     """All dataset-related functions"""
 
     def __init__(self, project: str, api_key: str):
