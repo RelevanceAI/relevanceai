@@ -3,6 +3,7 @@
 import getpass
 import os
 import sys
+import warnings
 from typing import Optional, List, Union
 
 from doc_utils.doc_utils import DocUtils
@@ -19,7 +20,7 @@ try:
 
     vis_requirements = True
 except ModuleNotFoundError as e:
-    print(e)
+    warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
     pass
 
 from relevanceai.vector_tools.client import VectorTools
