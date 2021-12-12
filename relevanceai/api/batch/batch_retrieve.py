@@ -9,7 +9,7 @@ LIST_SIZE_MULTIPLIER = 3
 
 # ADD SUPPORT FOR SAVING TO JSON
 
-class BatchRetrieve(APIClient, Chunker):
+class BatchRetrieveClient(APIClient, Chunker):
     def get_documents(
         self,
         dataset_id: str,

@@ -1,8 +1,8 @@
 """Prediction services
 """
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
-class Prediction(Base):
+class PredictionClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key

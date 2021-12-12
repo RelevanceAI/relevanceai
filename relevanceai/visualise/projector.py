@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typeguard import typechecked
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from relevanceai.vector_tools.constants import DIM_REDUCTION, CLUSTER
 
 from relevanceai.vector_tools.cluster import Cluster, ClusterBase
@@ -27,7 +27,7 @@ MARKER_SIZE = 5
 
 
 @dataclass
-class Projector(BatchAPIClient, Base, DocUtils):
+class Projector(BatchAPIClient, _Base, DocUtils):
     """
     Projector class.
 

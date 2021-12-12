@@ -1,8 +1,8 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from typing import Optional, Dict, Any
 
 
-class Centroids(Base):
+class CentroidsClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key

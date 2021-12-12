@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
 from relevanceai.api.endpoints.client import APIClient
-from relevanceai.api.batch.batch_retrieve import BatchRetrieve
+from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
@@ -18,7 +18,7 @@ BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
 
-class BatchInsert(BatchRetrieve, APIClient, Chunker):
+class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
         self,
         dataset_id: str,
