@@ -1,4 +1,4 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from typing import Optional, Dict, Any
 
 

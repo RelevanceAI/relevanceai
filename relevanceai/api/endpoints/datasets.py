@@ -2,7 +2,7 @@
 """
 from typing import Union, Optional
 
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from relevanceai.api.endpoints.documents import DocumentsClient
 from relevanceai.api.endpoints.monitor import MonitorClient
 from relevanceai.api.endpoints.tasks import TasksClient

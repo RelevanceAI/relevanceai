@@ -1,4 +1,4 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from relevanceai.vector_tools.cluster import Cluster
 from relevanceai.vector_tools.dim_reduction import DimReduction
 
