@@ -19,9 +19,9 @@ class WordcloudsClient(_Base):
         select_fields: list = [],
         include_vector: bool = False,
         filters: list = [],
-        additional_stopwords: list = []
+        additional_stopwords: list = [],
     ):
-        """ 
+        """
         Get frequency n-gram frequency counter from the wordcloud.
 
         Parameters
@@ -58,6 +58,6 @@ class WordcloudsClient(_Base):
                 "select_fields": select_fields,
                 "include_vector": include_vector,
                 "filters": filters,
-                "additional_stopwords": additional_stopwords
+                "additional_stopwords": additional_stopwords,
             },
         )

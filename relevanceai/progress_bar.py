@@ -78,4 +78,3 @@ def progress_bar(iterable, show_progress_bar: bool = False):
     except Exception as e:
         pass
     return NullProgressBar(iterable)
-

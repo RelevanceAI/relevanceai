@@ -1,5 +1,5 @@
 from typing import List, Sequence, Union, Dict, Any, Tuple, Optional
-from typing_extensions import Literal, get_args
+from typing_extensions import Literal
 
 from joblib.memory import Memory
 
@@ -30,7 +30,7 @@ CLUSTER = Literal["kmeans", "kmedoids", "hdbscan"]
 CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     "kmeans": {
         "init": "k-means++",
-        "verbose": 1,
+        "verbose": 0,
         # "compute_labels": True,
         # "max_no_improvement": 2,
     },
@@ -42,13 +42,13 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     },
     # 'kmodes': {
     #     "init": "Huang",
-    #     "verbose": 1,
+    #     "verbose": 0,
     #     "random_state": 42,
     #     "n_jobs": -1
     # },
     # 'kprototypes': {
     #     "init": "Huang",
-    #     "verbose": 1,
+    #     "verbose": 0,
     #     "random_state": 42,
     #     "n_jobs": -1
     # },
@@ -64,3 +64,5 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
         "p": None,
     },
 }
+
+NEAREST_NEIGHBOURS = Literal["cosine", "l2"]

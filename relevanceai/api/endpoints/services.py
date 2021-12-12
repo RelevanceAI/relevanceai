@@ -25,8 +25,10 @@ class ServicesClient(_Base):
         self.wordclouds = WordcloudsClient(project=project, api_key=api_key)
         super().__init__(project, api_key)
 
-    def document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = []):
-        """ 
+    def document_diff(
+        self, doc: dict, docs_to_compare: list, difference_fields: list = []
+    ):
+        """
         Find differences between documents
 
         Parameters
@@ -37,7 +39,7 @@ class ServicesClient(_Base):
             Other documents to compare against the main document.
         difference_fields: list
             Fields to compare. Defaults to [], which compares all fields.
-    
+
         """
         return self.make_http_request(
             endpoint=f"/services/document_diff",
@@ -46,6 +48,5 @@ class ServicesClient(_Base):
                 "doc": doc,
                 "docs_to_compare": docs_to_compare,
                 "difference_fields": difference_fields,
-            }
+            },
         )
-

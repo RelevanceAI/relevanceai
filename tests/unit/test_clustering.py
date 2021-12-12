@@ -1,6 +1,7 @@
 import pytest
 import random
 
+
 def test_kmeans(test_client, test_sample_vector_dataset):
     test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id= test_sample_vector_dataset,

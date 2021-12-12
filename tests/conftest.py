@@ -11,14 +11,17 @@ from utils import generate_random_string, generate_random_vector
 
 RANDOM_STRING = str(random.randint(0, 999))
 
+
 @pytest.fixture(scope="session")
 def test_project():
     # test projects
     return os.getenv("TEST_PROJECT")
 
+
 @pytest.fixture(scope="session")
 def test_api_key():
     return os.getenv("TEST_API_KEY")
+
 
 @pytest.fixture(scope="session")
 def simple_doc():

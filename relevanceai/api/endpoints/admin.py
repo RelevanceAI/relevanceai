@@ -29,8 +29,8 @@ class AdminClient(_Base):
         source_dataset_id: str,
         source_project: str,
         source_api_key: str,
-        project: str=None,
-        api_key: str=None,
+        project: str = None,
+        api_key: str = None,
     ):
         """Copy a dataset from another user's projects into your project.
 
@@ -62,21 +62,21 @@ class AdminClient(_Base):
                 # "filters": filters
             },
         )
-    
+
     def send_dataset(
-        self, 
+        self,
         dataset_id: str,
         receiver_project: str,
         receiver_api_key: str,
     ):
         """
         Send an individual a dataset.
-        
+
         Parameters
         -----------
 
         dataset_id: str
-            The name of the dataset 
+            The name of the dataset
         receiver_project: str
             The project name that will receive the dataset
         receiver_api_key: str

@@ -19,9 +19,11 @@ try:
 
     vis_requirements = True
 except ModuleNotFoundError as e:
+    print(e)
     pass
 
 from relevanceai.vector_tools.client import VectorTools
+
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -55,7 +57,6 @@ class Client(BatchAPIClient, DocUtils):
             self.projector = Projector(project, api_key)
         else:
             self.logger.warning('Projector not loaded. You do not have visualisation requirements installed.')
-
         self.vector_tools = VectorTools(project, api_key)
 
     # @property
@@ -104,7 +105,7 @@ class Client(BatchAPIClient, DocUtils):
         return {"Authorization": self.project + ":" + self.api_key}
 
     def make_search_suggestion(self):
-        return self.services.search.make_suggestion() 
+        return self.services.search.make_suggestion()
 
     def check_auth(self):
         return self.admin._ping()

@@ -32,7 +32,7 @@ class RecommendClient(_Base):
         hundred_scale: bool = False,
     ):
 
-        """ 
+        """
         Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations. \n
         Here are a couple of different scenarios and what the queries would look like for those: \n
 
@@ -130,8 +130,8 @@ class RecommendClient(_Base):
                 "include_count": include_count,
                 "asc": asc,
                 "keep_search_history": keep_search_history,
-                "hundred_scale": hundred_scale
-            }
+                "hundred_scale": hundred_scale,
+            },
         )
 
     def diversity(
@@ -160,10 +160,10 @@ class RecommendClient(_Base):
         search_history_id: str = None,
         n_init: int = 5,
         n_iter: int = 10,
-        return_as_clusters: bool = False
+        return_as_clusters: bool = False,
     ):
 
-        """ 
+        """
         Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations. \n
         Diversity recommendation increases the variety within the recommendations via clustering. Search results are clustered and the top k items in each cluster are selected. The main clustering parameters are cluster_vector_field and n_clusters, the vector field on which to perform clustering and number of clusters respectively. \n
         Here are a couple of different scenarios and what the queries would look like for those: \n
@@ -280,7 +280,6 @@ class RecommendClient(_Base):
                 "n_clusters": n_clusters,
                 "n_init": n_init,
                 "n_iter": n_iter,
-                "return_as_clusters": return_as_clusters
-            }
+                "return_as_clusters": return_as_clusters,
+            },
         )
-

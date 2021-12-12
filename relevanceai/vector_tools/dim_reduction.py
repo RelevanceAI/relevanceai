@@ -20,35 +20,36 @@ class DimReductionBase(LoguruLogger):
         return self.fit_transform(*args, **kwargs)
 
     # @abstractmethod
-    def fit_transform(self, 
-            vectors: np.ndarray, 
-            dr_args: Dict[Any, Any], 
-            dims: int
+    def fit_transform(
+        self, vectors: np.ndarray, dr_args: Dict[Any, Any], dims: int
     ) -> np.ndarray:
         raise NotImplementedError
 
 
-
 class PCA(DimReductionBase):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['pca'], 
-        dims: int = 3
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
+        dims: int = 3,
     ) -> np.ndarray:
         from sklearn.decomposition import PCA
+
         self.logger.debug(f"{dr_args}")
         pca = PCA(n_components=min(dims, vectors.shape[1]), **dr_args)
         return pca.fit_transform(vectors)
 
 
 class TSNE(DimReductionBase):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], 
-        dims: int = 3
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["tsne"],
+        dims: int = 3,
     ) -> np.ndarray:
         from sklearn.decomposition import PCA
         from sklearn.manifold import TSNE
+
         pca = PCA(n_components=min(10, vectors.shape[1]))
         data_pca = pca.fit_transform(vectors)
         self.logger.debug(f"{dr_args}")
@@ -57,10 +58,11 @@ class TSNE(DimReductionBase):
 
 
 class UMAP(DimReductionBase):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['umap'], 
-        dims: int = 3 
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["umap"],
+        dims: int = 3,
     ) -> np.ndarray:
         try:
             from umap import UMAP
@@ -75,10 +77,11 @@ class UMAP(DimReductionBase):
 
 
 class Ivis(DimReductionBase):
-    def fit_transform(self, 
-        vectors: np.ndarray, 
-        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS['tsne'], 
-        dims: int = 3
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["tsne"],
+        dims: int = 3,
     ) -> np.ndarray:
         try:
             from ivis import Ivis
@@ -97,7 +100,6 @@ class Ivis(DimReductionBase):
 
 
 class DimReduction(_Base, DimReductionBase):
-
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -119,11 +121,11 @@ class DimReduction(_Base, DimReductionBase):
             if dr == "pca":
                 return PCA().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
             elif dr == "tsne":
-                return TSNE().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims) 
+                return TSNE().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
             elif dr == "umap":
                 return UMAP().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
             elif dr == "ivis":
                 return Ivis().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
 
         elif isinstance(dr, DimReductionBase):
-            return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims) 
+            return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
