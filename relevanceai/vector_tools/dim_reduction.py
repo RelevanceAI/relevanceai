@@ -10,7 +10,7 @@ from doc_utils.doc_utils import DocUtils
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 
@@ -99,7 +99,7 @@ class Ivis(DimReductionBase):
         return vectors_dr
 
 
-class DimReduction(Base, DimReductionBase):
+class DimReduction(_Base, DimReductionBase):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key

@@ -1,7 +1,7 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
 
-class Encoders(Base):
+class EncodersClient(_Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key

@@ -1,10 +1,9 @@
 """
 All admin-related tasks.
 """
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
-
-class Admin(Base):
+class AdminClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key

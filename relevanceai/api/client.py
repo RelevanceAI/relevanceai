@@ -2,13 +2,13 @@
 """
 from typing import Callable
 
-from relevanceai.api.batch.batch_insert import BatchInsert
-from relevanceai.api.batch.batch_retrieve import BatchRetrieve
+from relevanceai.api.batch.batch_insert import BatchInsertClient
+from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
 
 
-class BatchAPIClient(BatchInsert, BatchRetrieve, APIClient):
+class BatchAPIClient(BatchInsertClient, BatchRetrieveClient, APIClient):
     """Batch API client"""
 
     def batch_insert(self):

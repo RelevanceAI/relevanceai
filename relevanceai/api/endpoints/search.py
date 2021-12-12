@@ -1,8 +1,7 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from typing import List
 
-
-class Search(Base):
+class SearchClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key

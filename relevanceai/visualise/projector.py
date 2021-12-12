@@ -425,3 +425,4 @@ class Projector(BatchAPIClient, Base, DocUtils):
         Remove documents with empty vector fields
         """
         return [d for d in docs if d.get(vector_field)]
+

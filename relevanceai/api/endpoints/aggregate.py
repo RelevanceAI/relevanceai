@@ -1,7 +1,7 @@
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
 
-class Aggregate(Base):
+class AggregateClient(_Base):
     """Aggregate service"""
 
     def __init__(self, project, api_key):
