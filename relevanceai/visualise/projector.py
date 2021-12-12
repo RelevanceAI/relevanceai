@@ -7,7 +7,7 @@ from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBas
 from relevanceai.vector_tools.cluster import Cluster, ClusterBase
 from relevanceai.visualise.dash_components.app import create_dash_graph
 from relevanceai.vector_tools.constants import *
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
@@ -22,7 +22,7 @@ RELEVANCEAI_BLUE = "#1854FF"
 
 
 @dataclass
-class Projector(BatchAPIClient, Base, DocUtils):
+class Projector(BatchAPIClient, _Base, DocUtils):
     """
     Projector class.
 

@@ -1,12 +1,12 @@
 import scipy.spatial.distance as spatial_distance
-from relevanceai.base import Base
+from relevanceai.base import _Base
 from doc_utils.doc_utils import DocUtils
 from relevanceai.vector_tools.constants import NEAREST_NEIGHBOURS
 
 doc_utils = DocUtils()
 
 
-class NearestNeighbours(Base, DocUtils):
+class NearestNeighbours(_Base, DocUtils):
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
