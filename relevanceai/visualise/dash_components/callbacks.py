@@ -48,7 +48,8 @@ def display_callbacks(app, show_image, docs, vector_label):
 
 
 def neighbour_callbacks(
-    app, show_image, docs, vector_label, vector_field, distance_measure_mode="cosine"
+    app, show_image, docs, vector_label, vector_field, distance_measure_mode="cosine",
+    n=11
 ):
     def _get_neighbours(clickData):
         try:
@@ -61,7 +62,7 @@ def neighbour_callbacks(
         click_vec = click_doc[vector_field]
         nearest_neighbors = NearestNeighbours.get_nearest_neighbours(
             docs, click_vec, vector_field, distance_measure_mode
-        )[1:11]
+        )[:n]
         nearest_neighbor_values = doc_utils.get_field_across_documents(
             vector_label, nearest_neighbors
         )
@@ -96,17 +97,21 @@ def neighbour_callbacks(
             if neighbour_info:
                 COLS = 5
                 def generate_card(img=None, score: float=None, rank: int=None):
+                    if rank == 0:
+                        message = "Currently selected item"
+                    else:
+                        message = f"rank: {rank} | score: {score}"
                     card = dbc.Card(
                         dbc.CardBody(
                             [
-                                dash.html.P(f"rank: {rank} | score: {score}", id="card-title"),
+                                dash.html.P(message),
                                 dash.html.Img(src=img, id="card-value", width=image_width, height=image_height),
                             ]
                         ),
                     )
                     return card
                 # Attempt to create a grid layout
-                layout = []
+                layout = [dash.html.H5(f"Nearest Neighbours ({distance_measure_mode})")]
                 layout_row = []
                 for n, image in enumerate(neighbour_info["nearest_neighbor_values"]):
                     card = generate_card(img=image,
