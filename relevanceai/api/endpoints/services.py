@@ -11,7 +11,7 @@ from relevanceai.api.endpoints.tagger import TaggerClient
 from relevanceai.api.endpoints.prediction import PredictionClient
 from relevanceai.api.endpoints.wordclouds import WordcloudsClient
 
-class Services(_Base):
+class ServicesClient(_Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
