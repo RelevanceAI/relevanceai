@@ -3,9 +3,9 @@
 from typing import Union, Optional
 
 from relevanceai.base import Base
-from relevanceai.api.endpoints.documents import Documents
-from relevanceai.api.endpoints.monitor import Monitor
-from relevanceai.api.endpoints.tasks import Tasks
+from relevanceai.api.endpoints.documents import DocumentsClient
+from relevanceai.api.endpoints.monitor import MonitorClient
+from relevanceai.api.endpoints.tasks import TasksClient
 
 
 class Datasets(Base):
@@ -14,9 +14,9 @@ class Datasets(Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
-        self.tasks = Tasks(project=project, api_key=api_key)
-        self.documents = Documents(project=project, api_key=api_key)
-        self.monitor = Monitor(project=project, api_key=api_key)
+        self.tasks = TasksClient(project=project, api_key=api_key)
+        self.documents = DocumentsClient(project=project, api_key=api_key)
+        self.monitor = MonitorClient(project=project, api_key=api_key)
 
         super().__init__(project, api_key)
 

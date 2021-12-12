@@ -1,12 +1,12 @@
-from relevanceai.base import Base
-from relevanceai.api.endpoints.centroids import Centroids
+from relevanceai.base import _Base
+from relevanceai.api.endpoints.centroids import CentroidsClient
 
 
-class Cluster(Base):
+class ClusterClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
-        self.centroids = Centroids(project=project, api_key=api_key)
+        self.centroids = CentroidsClient(project=project, api_key=api_key)
         super().__init__(project, api_key)
 
     def aggregate(
