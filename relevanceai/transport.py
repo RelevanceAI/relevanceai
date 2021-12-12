@@ -42,11 +42,9 @@ class Transport:
         result = urlparse(url)
         return "search" in result.path.split("/")
 
-    DASHBOARD_TYPES = [
-        "multivector_search", 
-        "cluster_centroids_closest",
-        "cluster_centroids_furthest"
-    ]
+    @property
+    def DASHBOARD_TYPES(self):
+        return list(DASHBOARD_MAPPINGS.keys())
 
     def _log_to_dashboard(
         self, 
