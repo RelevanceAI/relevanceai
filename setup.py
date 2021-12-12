@@ -29,9 +29,9 @@ requirements = [
     "numpy>=1.19.0",
 ]
 
-excel_requirements = ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
+excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
-vis_requirements = [
+vis_requirements = requirements + [
     "scikit-learn",
     "plotly>=5.3.1",
     "typing-extensions",
@@ -42,6 +42,7 @@ vis_requirements = [
     "jupyter_dash",
     "joblib",
     "scikit-image",
+    "dash_bootstrap_components"
 ]
 
 umap = ["umap-learn>=0.5.2"]
