@@ -45,7 +45,7 @@ class Client(BatchAPIClient, DocUtils):
     ):
 
         if project is None or api_key is None:
-            project, api_key = Client.token_to_auth()
+            project, api_key = Client._token_to_auth()
 
         super().__init__(project, api_key)
 
@@ -79,7 +79,7 @@ class Client(BatchAPIClient, DocUtils):
     def base_url(self, value):
         CONFIG.set_option("api.base_url", value)
 
-    def token_to_auth(self):
+    def _token_to_auth(self):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
         #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
@@ -112,7 +112,7 @@ class Client(BatchAPIClient, DocUtils):
         authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
-        project, api_key = Client.token_to_auth()
+        project, api_key = Client._token_to_auth()
         return Client(
             project=project, api_key=api_key, authenticate=authenticate
         )
