@@ -96,7 +96,7 @@ class Ivis(DimReductionBase):
         return vectors_dr
 
 
-class DimReduction(Base, DimReductionBase):
+class DimReduction(_Base, DimReductionBase):
 
     def __init__(self, project, api_key):
         self.project = project

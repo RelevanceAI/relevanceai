@@ -27,7 +27,7 @@ MARKER_SIZE = 5
 
 
 @dataclass
-class Projector(BatchAPIClient, Base, DocUtils):
+class Projector(BatchAPIClient, _Base, DocUtils):
     """
     Projector class.
 
