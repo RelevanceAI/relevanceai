@@ -30,7 +30,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         alias: str = "default",
         cluster_field: str = "_cluster_",
         return_only_clusters: bool = True,
-        inplace: bool = True
+        inplace: bool = True,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -50,6 +50,8 @@ class ClusterBase(LoguruLogger, DocUtils):
             If True, return only clusters, otherwise returns the original document
         inplace: bool
             If True, the documents are edited inplace otherwise, a copy is made first
+        kwargs: dict
+            Any other keyword argument will go directly into the clustering algorithm
 
         """
         if len(vector_field) == 1:
@@ -88,6 +90,10 @@ class ClusterBase(LoguruLogger, DocUtils):
     def to_metadata(self):
         """You can also store the metadata of this clustering algorithm"""
         raise NotImplementedError
+    
+    @property
+    def metadata(self):
+        return self.to_metadata()
 
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):
@@ -271,12 +277,34 @@ class KMeans(MiniBatchKMeans):
         }
 
 
-class HDBSCAN(DensityCluster):
+class HDBSCANClusterer(DensityCluster):
+    def __init__(
+        self,
+        algorithm: str = "best",
+        alpha: float = 1.0,
+        approx_min_span_tree: bool = True,
+        gen_min_span_tree: bool = False,
+        leaf_size: int = 40,
+        memory = Memory(cachedir=None),
+        metric: str = "euclidean",
+        min_samples = None,
+        p = None,
+        min_cluster_size: Union[None, int] = 10,
+    ):
+        self.algorithm = algorithm
+        self.alpha = alpha
+        self.approx_min_span_tree = approx_min_span_tree
+        self.gen_min_span_tree = gen_min_span_tree
+        self.leaf_size = leaf_size
+        self.memory = memory
+        self.metric = metric
+        self.min_samples = min_samples
+        self.p = p
+        self.min_cluster_size = min_cluster_size
+
     def fit_transform(
         self,
         vectors: np.ndarray,
-        cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS["hdbscan"],
-        min_cluster_size: Union[None, int] = 10,
     ) -> np.ndarray:
         try:
             from hdbscan import HDBSCAN
@@ -285,12 +313,18 @@ class HDBSCAN(DensityCluster):
                 f"{e}\nInstall hdbscan\n \
                 pip install -U relevanceai[hdbscan]"
             )
-        self.logger.debug(f"{cluster_args}")
-        hdbscan = HDBSCAN(min_cluster_size=min_cluster_size, **cluster_args).fit(
-            vectors
-        )
+        hdbscan = HDBSCAN(
+            min_cluster_size=self.min_cluster_size,
+            algorithm=self.algorithm,
+            approx_min_span_tree=self.approx_min_span_tree,
+            gen_min_span_tree=self.gen_min_span_tree,
+            leaf_size=self.leaf_size,
+            memory=self.memory,
+            metric=self.metric,
+            min_samples=self.min_samples,
+            p=self.p,
+        ).fit(vectors)
         cluster_labels = hdbscan.labels_
-
         return cluster_labels
 
 
@@ -533,36 +567,37 @@ class Cluster(BatchAPIClient, ClusterBase):
         docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
 
         # get vectors
-        if len(vector_fields) == 1:
-            # filtering out entries not containing the specified vector
-            docs = list(filter(DocUtils.list_doc_fields, docs))
-            vectors = self.get_field_across_documents(vector_fields[0], docs)
-        else:
-            raise ValueError("We currently do not support more than 1 vector field yet. This will be supported in the future.")
+        if len(vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support more than 1 vector field yet. This will be supported in the future."
+            )
 
         # Cluster
-        clusterer = HDBSCAN()
-        clustered_docs = clusterer.fit_transform(
-            vectors= vectors,
-            cluster_args = {
-                "algorithm": algorithm,
-                "alpha": alpha,
-                "approx_min_span_tree": approx_min_span_tree,
-                "gen_min_span_tree": gen_min_span_tree,
-                "leaf_size": leaf_size,
-                "memory": memory,
-                "metric": metric,
-                "min_samples": min_samples,
-                "p": p,
-            },
-            min_cluster_size = min_cluster_size).tolist()
+        clusterer = HDBSCANClusterer(
+            algorithm=algorithm,
+            alpha=alpha,
+            approx_min_span_tree=approx_min_span_tree,
+            gen_min_span_tree=gen_min_span_tree,
+            leaf_size=leaf_size,
+            memory=memory,
+            metric=metric,
+            min_samples=min_samples,
+            p=p,
+            min_cluster_size=min_cluster_size
+        )
+        clustered_docs = clusterer.fit_documents(
+            vector_fields,
+            docs,
+            alias=alias,
+            return_only_clusters=True
+        )
 
         # Updating the db
-        formatted_clustered_docs = [
-            {cluster_field:{vector_fields[0]:{alias:res}},
-            '_id':docs[i]['_id']}
-            for i,res in enumerate(clustered_docs)]
-        results = self.update_documents(dataset_id, formatted_clustered_docs, chunksize = update_documents_chunksize)
+        # formatted_clustered_docs = [
+        #     {cluster_field:{vector_fields[0]:{alias:res}},
+        #     '_id':docs[i]['_id']}
+        #     for i,res in enumerate(clustered_docs)]
+        results = self.update_documents(dataset_id, clustered_docs,
+            chunksize=update_documents_chunksize)
         self.logger.info(results)
-
         return clustered_docs
