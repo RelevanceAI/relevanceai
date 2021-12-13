@@ -371,8 +371,8 @@ class Cluster(BatchAPIClient, ClusterBase):
                     raise NotImplementedError
                     # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
-                return HDBSCANClusterer().fit_transform(
-                    vectors=vectors, **cluster_args
+                return HDBSCANClusterer(**cluster_args).fit_transform(
+                    vectors=vectors
                 )
 
         elif isinstance(cluster, ClusterBase):
