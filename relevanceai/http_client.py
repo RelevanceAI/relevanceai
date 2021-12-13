@@ -125,4 +125,42 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         return self.admin._ping()
+
+    def kmeans_cluster(
+        self,
+        dataset_id: str,
+        vector_fields: list,
+        filters: List = [],
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        n_init: int = 10,
+        max_iter: int = 300,
+        tol: float = 1e-4,
+        verbose: bool = True,
+        random_state: Optional[int] = None,
+        copy_x: bool = True,
+        algorithm: str ="auto",
+        alias: str = "default",
+        cluster_field: str="_cluster_",
+        update_documents_chunksize: int = 50,
+        overwrite: bool = False
+        ):
+        return self.vector_tools.cluster.kmeans_cluster(
+            dataset_id = dataset_id,
+            vector_fields = vector_fields,
+            filters = filters,
+            k = k,
+            init = init,
+            n_init = n_init,
+            max_iter = max_iter,
+            tol = tol,
+            verbose = verbose,
+            random_state = random_state,
+            copy_x = copy_x,
+            algorithm = algorithm,
+            alias = alias,
+            cluster_field = cluster_field,
+            update_documents_chunksize = update_documents_chunksize,
+            overwrite = overwrite
+        )
    
