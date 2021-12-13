@@ -278,27 +278,37 @@ class CentroidsClient(_Base):
             Include facets in the search results
 
         """
+
+        parameters={
+            "dataset_id": dataset_id,
+            "vector_field": vector_field,
+            "alias": alias,
+            "cluster_ids": cluster_ids,
+            "select_fields": select_fields,
+            "approx": approx,
+            "sum_fields": sum_fields,
+            "page_size": page_size,
+            "page": page,
+            "similarity_metric": similarity_metric,
+            "filters": filters,
+            "facets": facets,
+            "min_score": min_score,
+            "include_vector": include_vector,
+            "include_count": include_count,
+            "include_facets": include_facets
+        }
+        endpoint = "/services/cluster/centroids/list_closest_to_center"
+        method = "POST"
+        self._log_to_dashboard(
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="cluster_centroids_closest"
+        )
         return self.make_http_request(
-            "/services/cluster/centroids/list_closest_to_center",
-            method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "vector_field": vector_field,
-                "alias": alias,
-                "cluster_ids": cluster_ids,
-                "select_fields": select_fields,
-                "approx": approx,
-                "sum_fields": sum_fields,
-                "page_size": page_size,
-                "page": page,
-                "similarity_metric": similarity_metric,
-                "filters": filters,
-                "facets": facets,
-                "min_score": min_score,
-                "include_vector": include_vector,
-                "include_count": include_count,
-                "include_facets": include_facets,
-            },
+            endpoint,
+            method=method,
+            parameters=parameters
         )
 
     docs_closest_to_center = list_closest_to_center
@@ -361,27 +371,37 @@ class CentroidsClient(_Base):
             Include facets in the search results
 
         """
-        return self.make_http_request(
-            "/services/cluster/centroids/list_furthest_from_center",
-            method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "vector_field": vector_field,
-                "alias": alias,
-                "cluster_ids": cluster_ids,
-                "select_fields": select_fields,
-                "approx": approx,
-                "sum_fields": sum_fields,
-                "page_size": page_size,
-                "page": page,
-                "similarity_metric": similarity_metric,
-                "filters": filters,
-                "facets": facets,
-                "min_score": min_score,
-                "include_vector": include_vector,
-                "include_count": include_count,
-                "include_facets": include_facets,
-            },
+
+        endpoint = "/services/cluster/centroids/list_furthest_from_center"
+        method="POST"
+        parameters={
+            "dataset_id": dataset_id,
+            "vector_field": vector_field,
+            "alias": alias,
+            "cluster_ids": cluster_ids,
+            "select_fields": select_fields,
+            "approx": approx,
+            "sum_fields": sum_fields,
+            "page_size": page_size,
+            "page": page,
+            "similarity_metric": similarity_metric,
+            "filters": filters,
+            "facets": facets,
+            "min_score": min_score,
+            "include_vector": include_vector,
+            "include_count": include_count,
+            "include_facets": include_facets
+        }
+        self._log_to_dashboard(
+            method=method, parameters=parameters,
+            endpoint=endpoint, 
+            dashboard_type="cluster_centroids_furthest"
         )
+        response = self.make_http_request(
+            endpoint,
+            method=method,
+            parameters=parameters
+        )
+        return response
 
     docs_furthest_from_center = list_furthest_from_center
