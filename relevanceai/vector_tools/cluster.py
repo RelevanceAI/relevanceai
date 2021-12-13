@@ -372,7 +372,7 @@ class Cluster(BatchAPIClient, ClusterBase):
                     # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
                 return HDBSCANClusterer().fit_transform(
-                    vectors=vectors, cluster_args=cluster_args
+                    vectors=vectors, **cluster_args
                 )
 
         elif isinstance(cluster, ClusterBase):
