@@ -12,7 +12,15 @@ from relevanceai.visualise.dash_components.callbacks import (
 from jupyter_dash import JupyterDash
 
 
-def create_dash_graph(plot_data, layout, show_image, docs, vector_label, vector_field, interactive: bool=True):
+def create_dash_graph(
+    plot_data,
+    layout,
+    show_image,
+    docs,
+    vector_label,
+    vector_field,
+    interactive: bool = True,
+):
 
     app = JupyterDash(__name__)
 

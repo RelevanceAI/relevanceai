@@ -19,6 +19,7 @@ MAX_SIZE = 200
 def display_callbacks(app, show_image, docs, vector_label):
 
     if show_image:
+
         @app.callback(
             Output("div-plot-click-image", "children"),
             Input("graph-plot-tsne", "clickData"),
@@ -32,7 +33,10 @@ def display_callbacks(app, show_image, docs, vector_label):
             click_doc = [i for i in docs if i["_id"] == click_id][0]
             image_url = click_doc[vector_label]
 
-            return [dash.html.P("currently selected item"), dash.html.Img(src=image_url, height=height)]
+            return [
+                dash.html.P("currently selected item"),
+                dash.html.Img(src=image_url, height=height),
+            ]
 
     else:
 
@@ -48,8 +52,13 @@ def display_callbacks(app, show_image, docs, vector_label):
 
 
 def neighbour_callbacks(
-    app, show_image, docs, vector_label, vector_field, distance_measure_mode="cosine",
-    n=11
+    app,
+    show_image,
+    docs,
+    vector_label,
+    vector_field,
+    distance_measure_mode="cosine",
+    n=11,
 ):
     def _get_neighbours(clickData):
         try:
@@ -86,6 +95,7 @@ def neighbour_callbacks(
         }
 
     if show_image:
+
         @app.callback(
             Output("div-plot-image-neighbours", "children"),
             Input("graph-plot-tsne", "clickData"),
@@ -96,7 +106,8 @@ def neighbour_callbacks(
             image_height = 50
             if neighbour_info:
                 COLS = 5
-                def generate_card(img=None, score: float=None, rank: int=None):
+
+                def generate_card(img=None, score: float = None, rank: int = None):
                     if rank == 0:
                         message = "Currently selected item"
                     else:
@@ -105,18 +116,26 @@ def neighbour_callbacks(
                         dbc.CardBody(
                             [
                                 dash.html.P(message),
-                                dash.html.Img(src=img, id="card-value", width=image_width, height=image_height),
+                                dash.html.Img(
+                                    src=img,
+                                    id="card-value",
+                                    width=image_width,
+                                    height=image_height,
+                                ),
                             ]
                         ),
                     )
                     return card
+
                 # Attempt to create a grid layout
                 layout = [dash.html.H5(f"Nearest Neighbours ({distance_measure_mode})")]
                 layout_row = []
                 for n, image in enumerate(neighbour_info["nearest_neighbor_values"]):
-                    card = generate_card(img=image,
-                        rank=n, 
-                        score=neighbour_info["nearest_neighbor_index"][n])
+                    card = generate_card(
+                        img=image,
+                        rank=n,
+                        score=neighbour_info["nearest_neighbor_index"][n],
+                    )
                     col = dbc.Col([card])
                     layout_row.append(col)
                     if n % 2 == 1:
@@ -125,6 +144,7 @@ def neighbour_callbacks(
                         del layout_row
                         layout_row = []
                 return layout
+
     else:
 
         @app.callback(
@@ -173,8 +193,10 @@ def neighbour_callbacks(
 
             return None
 
+
 def update_graph():
     pass
+
 
 def remove_duplicates(value, index):
     temp_dict = {i: j for i, j in zip(value, index)}

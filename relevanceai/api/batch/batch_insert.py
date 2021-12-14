@@ -212,9 +212,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
 
         # Trust the process
         # Get document lengths to calculate iterations
-        original_length = self.get_number_of_documents(
-            original_collection, filters
-        )
+        original_length = self.get_number_of_documents(original_collection, filters)
 
         # get the remaining number in case things break
         remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
@@ -350,12 +348,8 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
 
             # Get document lengths to calculate iterations
-            original_length = self.get_number_of_documents(
-                original_collection, filters
-            )
-            completed_length = self.get_number_of_documents(
-                logging_collection
-            )
+            original_length = self.get_number_of_documents(original_collection, filters)
+            completed_length = self.get_number_of_documents(logging_collection)
             remaining_length = original_length - completed_length
             iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 

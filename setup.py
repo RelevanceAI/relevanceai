@@ -42,7 +42,7 @@ vis_requirements = requirements + [
     "opencv-python",
     "jupyter_dash",
     "scikit-image",
-    "dash_bootstrap_components"
+    "dash_bootstrap_components",
 ]
 
 umap = ["umap-learn>=0.5.2"]

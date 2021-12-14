@@ -9,6 +9,7 @@ LIST_SIZE_MULTIPLIER = 3
 
 # ADD SUPPORT FOR SAVING TO JSON
 
+
 class BatchRetrieveClient(APIClient, Chunker):
     def get_documents(
         self,
@@ -148,17 +149,19 @@ class BatchRetrieveClient(APIClient, Chunker):
         return full_data
 
     def get_number_of_documents(self, dataset_id, filters=[]):
-        """ 
+        """
         Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
-        
+
         Parameters
         ----------
         dataset_ids: list
             Unique names of datasets
-        filters: list 
+        filters: list
             Filters to select documents
         """
-        return self.datasets.documents.get_where(dataset_id, page_size=1, filters=filters)["count"]
+        return self.datasets.documents.get_where(
+            dataset_id, page_size=1, filters=filters
+        )["count"]
 
     def get_vector_fields(self, dataset_id):
         """

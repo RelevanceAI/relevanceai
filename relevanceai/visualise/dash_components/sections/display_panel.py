@@ -8,7 +8,7 @@ def build_display_panel(app: dash.Dash, show_image: bool = True) -> html.Div:
     """
     Builds the display panel.
     """
-    if show_image: 
+    if show_image:
         children = Card(
             style={"width": "98vh", "textwd-align": "center"},
             children=[html.Div(id="div-plot-image-neighbours")],

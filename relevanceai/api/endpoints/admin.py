@@ -3,6 +3,7 @@ All admin-related tasks.
 """
 from relevanceai.base import _Base
 
+
 class AdminClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
@@ -104,7 +105,4 @@ class AdminClient(_Base):
         )
 
     def _ping(self):
-        return self.make_http_request(
-            "/admin/ping",
-            method="GET"
-        )
+        return self.make_http_request("/admin/ping", method="GET")
