@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
 from relevanceai.api.endpoints.client import APIClient
-from relevanceai.api.batch.batch_retrieve import BatchRetrieve
+from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
@@ -18,7 +18,7 @@ BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
 
-class BatchInsert(BatchRetrieve, APIClient, Chunker):
+class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
         self,
         dataset_id: str,
@@ -39,9 +39,9 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
         - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
         - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
-        
+
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -168,8 +168,8 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
-        These documents are then uploaded into either an updated collection, or back into the original collection. 
-        
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+
         Parameters
         ----------
         original_collection : string
@@ -196,8 +196,14 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
 
         # Check if a logging_collection has been supplied
         if log_file is None:
-            log_file = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push" + ".log"
-        
+            log_file = (
+                original_collection
+                + "_"
+                + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+                + "_pull_update_push"
+                + ".log"
+            )
+
         # Instantiate the logger to document the successful IDs
         PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
 
@@ -206,9 +212,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
 
         # Trust the process
         # Get document lengths to calculate iterations
-        original_length = self.datasets.documents._get_number_of_documents(
-            original_collection, filters
-        )
+        original_length = self.get_number_of_documents(original_collection, filters)
 
         # get the remaining number in case things break
         remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
@@ -234,7 +238,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
                 original_collection,
                 filters=retrieve_filters,
                 page_size=retrieve_chunk_size,
-                select_fields=select_fields
+                select_fields=select_fields,
             )
 
             documents = orig_json["documents"]
@@ -273,8 +277,8 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
                 f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
             )
 
-        self.logger.success(f"Pull, Update, Push is complete!") 
-        
+        self.logger.success(f"Pull, Update, Push is complete!")
+
         # if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:
         #     os.remove(log_file)
         return {
@@ -300,7 +304,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
         These documents are then uploaded into either an updated collection, or back into the original collection.
-        
+
         Parameters
         ----------
         original_collection : string
@@ -324,17 +328,18 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         """
         # Check if a logging_collection has been supplied
         if logging_collection is None:
-            logging_collection = original_collection + '_' + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + "_pull_update_push"
+            logging_collection = (
+                original_collection
+                + "_"
+                + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+                + "_pull_update_push"
+            )
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list()
         if logging_collection not in collection_list["datasets"]:
             self.logger.info("Creating a logging collection for you.")
-            self.logger.info(
-                self.datasets.create(
-                    logging_collection
-                )
-            )
+            self.logger.info(self.datasets.create(logging_collection))
 
         # Track failed documents
         failed_documents: List[Dict] = []
@@ -343,12 +348,8 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
 
             # Get document lengths to calculate iterations
-            original_length = self.datasets.documents._get_number_of_documents(
-                original_collection, filters
-            )
-            completed_length = self.datasets.documents._get_number_of_documents(
-                logging_collection
-            )
+            original_length = self.get_number_of_documents(original_collection, filters)
+            completed_length = self.get_number_of_documents(logging_collection)
             remaining_length = original_length - completed_length
             iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
@@ -369,9 +370,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
             ):
 
                 # Get completed documents
-                log_json = self.get_all_documents(
-                    logging_collection
-                )
+                log_json = self.get_all_documents(logging_collection)
                 completed_documents_list = [i["_id"] for i in log_json]
 
                 # Get incomplete documents from raw collection
@@ -388,7 +387,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
                     original_collection,
                     filters=retrieve_filters,
                     page_size=retrieve_chunk_size,
-                    select_fields=select_fields
+                    select_fields=select_fields,
                 )
 
                 documents = orig_json["documents"]
@@ -472,7 +471,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         ]
         return self.insert_documents(dataset_id, docs, *args, **kwargs)
 
-    def delete_pull_update_push_logs(self, dataset_id = False):
+    def delete_pull_update_push_logs(self, dataset_id=False):
 
         collection_list = self.datasets.list()["datasets"]
 
@@ -484,11 +483,7 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
             ]
 
         else:
-            log_collections = [
-                i
-                for i in collection_list
-                if ("pull_update_push" in i)
-            ]
+            log_collections = [i for i in collection_list if ("pull_update_push" in i)]
 
         [self.datasets.delete(i, confirm=False) for i in log_collections]
         return
@@ -518,8 +513,12 @@ class BatchInsert(BatchRetrieve, APIClient, Chunker):
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
-            chunksize = int(target_chunk_mb / doc_mb) + 1 if int(target_chunk_mb/ doc_mb) + 1 < len(docs) else len(docs)
-    
+            chunksize = (
+                int(target_chunk_mb / doc_mb) + 1
+                if int(target_chunk_mb / doc_mb) + 1 < len(docs)
+                else len(docs)
+            )
+
         # Initialise number of inserted documents
         inserted: List[str] = []
 

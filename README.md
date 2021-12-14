@@ -10,6 +10,8 @@ Built mainly for users looking to experiment with vectors/embeddings.
 
 The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
 
+You can also install on conda: `conda install -c relevance relevanceai`.
+
 ## How to use the RelevanceAI client
 
 For example:

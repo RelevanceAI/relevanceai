@@ -1,10 +1,10 @@
 """
 All admin-related tasks.
 """
-from relevanceai.base import Base
+from relevanceai.base import _Base
 
 
-class Admin(Base):
+class AdminClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -30,8 +30,8 @@ class Admin(Base):
         source_dataset_id: str,
         source_project: str,
         source_api_key: str,
-        project: str=None,
-        api_key: str=None,
+        project: str = None,
+        api_key: str = None,
     ):
         """Copy a dataset from another user's projects into your project.
 
@@ -63,21 +63,21 @@ class Admin(Base):
                 # "filters": filters
             },
         )
-    
+
     def send_dataset(
-        self, 
+        self,
         dataset_id: str,
         receiver_project: str,
         receiver_api_key: str,
     ):
         """
         Send an individual a dataset.
-        
+
         Parameters
         -----------
 
         dataset_id: str
-            The name of the dataset 
+            The name of the dataset
         receiver_project: str
             The project name that will receive the dataset
         receiver_api_key: str
@@ -105,7 +105,4 @@ class Admin(Base):
         )
 
     def _ping(self):
-        return self.make_http_request(
-            "/admin/ping",
-            method="GET"
-        )
+        return self.make_http_request("/admin/ping", method="GET")

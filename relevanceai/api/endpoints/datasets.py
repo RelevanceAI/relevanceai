@@ -2,44 +2,39 @@
 """
 from typing import Union, Optional
 
-from relevanceai.base import Base
-from relevanceai.api.endpoints.documents import Documents
-from relevanceai.api.endpoints.monitor import Monitor
-from relevanceai.api.endpoints.tasks import Tasks
+from relevanceai.base import _Base
+from relevanceai.api.endpoints.documents import DocumentsClient
+from relevanceai.api.endpoints.monitor import MonitorClient
+from relevanceai.api.endpoints.tasks import TasksClient
 
 
-class Datasets(Base):
+class DatasetsClient(_Base):
     """All dataset-related functions"""
 
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
-        self.tasks = Tasks(project=project, api_key=api_key)
-        self.documents = Documents(project=project, api_key=api_key)
-        self.monitor = Monitor(project=project, api_key=api_key)
+        self.tasks = TasksClient(project=project, api_key=api_key)
+        self.documents = DocumentsClient(project=project, api_key=api_key)
+        self.monitor = MonitorClient(project=project, api_key=api_key)
 
         super().__init__(project, api_key)
 
-    def schema(
-        self, dataset_id: str
-    ):
-        """ 
+    def schema(self, dataset_id: str):
+        """
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
-        
+
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
         """
         return self.make_http_request(
-            endpoint=f"/datasets/{dataset_id}/schema",
-            method="GET"
+            endpoint=f"/datasets/{dataset_id}/schema", method="GET"
         )
 
-    def metadata(
-        self, dataset_id: str
-    ):
-        """ 
+    def metadata(self, dataset_id: str):
+        """
         Retreives metadata about a dataset. Notably description, data source, etc
 
         Parameters
@@ -48,17 +43,12 @@ class Datasets(Base):
             Unique name of dataset
         """
         return self.make_http_request(
-            endpoint=f"/datasets/{dataset_id}/metadata",
-            method="GET"
+            endpoint=f"/datasets/{dataset_id}/metadata", method="GET"
         )
 
-    def create(
-        self,
-        dataset_id: str,
-        schema: dict = {}
-    ):
-        """ 
-        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch). 
+    def create(self, dataset_id: str, schema: dict = {}):
+        """
+        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
@@ -96,20 +86,17 @@ class Datasets(Base):
             Unique name of dataset
         schema : dict
             Schema for specifying the field that are vectors and its length
-    
+
         """
         return self.make_http_request(
             endpoint=f"/datasets/create",
             method="POST",
-            parameters={"id": dataset_id, "schema": schema}
+            parameters={"id": dataset_id, "schema": schema},
         )
 
     def list(self):
-        """ List all datasets in a project that you are authorized to read/write. """
-        return self.make_http_request(
-            endpoint="/datasets/list",
-            method="GET"
-        )
+        """List all datasets in a project that you are authorized to read/write."""
+        return self.make_http_request(endpoint="/datasets/list", method="GET")
 
     def list_all(
         self,
@@ -123,10 +110,10 @@ class Datasets(Base):
         sort_by_created_at_date: bool = False,
         asc: bool = False,
         page_size: int = 20,
-        page: int = 1
+        page: int = 1,
     ):
 
-        """ 
+        """
         Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
 
         - Schema - Data schema of a dataset (same as dataset.schema).
@@ -134,8 +121,8 @@ class Datasets(Base):
         - Stats - Statistics of number of documents and size of a dataset (same as dataset.stats).
         - Vector_health - Number of zero vectors stored (same as dataset.health).
         - Schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).
-        - Active_jobs - All active jobs/tasks on the dataset. 
-        
+        - Active_jobs - All active jobs/tasks on the dataset.
+
         Parameters
         ----------
         include_schema : bool
@@ -176,7 +163,7 @@ class Datasets(Base):
                 "asc": asc,
                 "page_size": page_size,
                 "page": page,
-            }
+            },
         )
 
     def facets(
@@ -186,11 +173,11 @@ class Datasets(Base):
         date_interval: str = "monthly",
         page_size: int = 5,
         page: int = 1,
-        asc: bool = False
+        asc: bool = False,
     ):
-        """ 
+        """
         Takes a high level aggregation of every field, return their unique values and frequencies. This is used to help create the filter bar for search.
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -205,7 +192,7 @@ class Datasets(Base):
             Page of the results
         asc: bool
             Whether to sort results by ascending or descending order
-    
+
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/facets",
@@ -216,16 +203,14 @@ class Datasets(Base):
                 "page_size": page_size,
                 "page": page,
                 "asc": asc,
-            }
+            },
         )
 
-    def check_missing_ids(
-        self, dataset_id, ids
-    ):
+    def check_missing_ids(self, dataset_id, ids):
 
-        """ 
+        """
         Look up in bulk if the ids exists in the dataset, returns all the missing one as a list.
-            
+
         Parameters
         ----------
         dataset_id : string
@@ -241,7 +226,7 @@ class Datasets(Base):
             return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/get_missing",
                 method="GET",
-                parameters={"ids": ids}
+                parameters={"ids": ids},
             )
 
         else:
@@ -254,7 +239,7 @@ class Datasets(Base):
         document: dict,
         insert_date: bool = True,
         overwrite: bool = True,
-        update_schema: bool = True
+        update_schema: bool = True,
     ):
         """
         Insert a single documents
@@ -266,8 +251,8 @@ class Datasets(Base):
 
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode \n
 
-        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n 
-        
+        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n
+
         Parameters
         ----------
         dataset_id : string
@@ -291,9 +276,8 @@ class Datasets(Base):
                 "insert_date": insert_date,
                 "overwrite": overwrite,
                 "update_schema": update_schema,
-            }
+            },
         )
-
 
     def bulk_insert(
         self,
@@ -308,13 +292,13 @@ class Datasets(Base):
     ):
         """
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
-        
+
         - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
         - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
         - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
         - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
         - Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -331,7 +315,7 @@ class Datasets(Base):
             Include the inserted IDs in the response
         field_transformers: list
             An example field_transformers object:
-            
+
             >>> {
             >>>    "field": "string",
             >>>    "output_field": "string",
@@ -350,7 +334,7 @@ class Datasets(Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
-                }
+                },
             )
 
         else:
@@ -364,7 +348,7 @@ class Datasets(Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
-                }
+                },
             )
 
             try:
@@ -378,11 +362,7 @@ class Datasets(Base):
                 "status_code": status_code,
             }
 
-    def delete(
-        self,
-        dataset_id: str,
-        confirm: bool = False
-    ):
+    def delete(self, dataset_id: str, confirm: bool = False):
         """
         Delete a dataset
 
@@ -403,7 +383,7 @@ class Datasets(Base):
             return self.make_http_request(
                 endpoint=f"/datasets/delete",
                 method="POST",
-                parameters={"dataset_id": dataset_id}
+                parameters={"dataset_id": dataset_id},
             )
 
         elif user_input.lower() in ("n", "no"):
@@ -421,11 +401,11 @@ class Datasets(Base):
         schema: dict = {},
         rename_fields: dict = {},
         remove_fields: list = [],
-        filters: list = []
+        filters: list = [],
     ):
         """
         Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.
-        
+
         Parameters
         ----------
         old_dataset : string
@@ -451,7 +431,7 @@ class Datasets(Base):
                 "rename_fields": rename_fields,
                 "remove_fields": remove_fields,
                 "filters": filters,
-            }
+            },
         )
 
     def search(
@@ -462,7 +442,7 @@ class Datasets(Base):
     ):
         """
         Search datasets by their names with a traditional keyword search.
-        
+
         Parameters
         ----------
         query : string
@@ -479,7 +459,7 @@ class Datasets(Base):
                 "query": query,
                 "sort_by_created_at_date": sort_by_created_at_date,
                 "asc": asc,
-            }
+            },
         )
 
     def vectorize(
@@ -491,11 +471,11 @@ class Datasets(Base):
         refresh: bool = False,
         alias: str = "default",
         chunksize: int = 20,
-        chunk_field: str = None
+        chunk_field: str = None,
     ):
         """
         Queue the encoding of a dataset using the method given by model_id.
-        
+
         Parameters
         ----------
         dataset_id : string
@@ -514,7 +494,7 @@ class Datasets(Base):
             Batch for each encoding. Change at your own risk.
         chunk_field : string
             The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.
-        
+
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/vectorize",
@@ -527,33 +507,25 @@ class Datasets(Base):
                 "alias": alias,
                 "chunksize": chunksize,
                 "chunk_field": chunk_field,
-            }
+            },
         )
 
-    def task_status(
-        self,
-        dataset_id: str,
-        task_id: str
-    ):
+    def task_status(self, dataset_id: str, task_id: str):
         """
         Check the status of an existing encoding task on the given dataset. \n
 
         The required task_id was returned in the original encoding request such as datasets.vectorize.
-        
+
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
         task_id : string
             The task ID of the earlier queued vectorize task
-        
+
         """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/task_status",
             method="GET",
-            parameters={
-                "task_id": task_id
-            }
+            parameters={"task_id": task_id},
         )
-
-

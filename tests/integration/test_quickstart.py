@@ -2,6 +2,7 @@
 """
 import time
 
+
 def test_quickstart(test_client):
     docs = [
         {"_id": "1", "example_vector_": [0.1, 0.1, 0.1]},
@@ -14,10 +15,10 @@ def test_quickstart(test_client):
     test_client.insert_documents(dataset_id="quickstart", docs=docs)
     time.sleep(2)
     results = test_client.services.search.vector(
-        dataset_id="quickstart", 
+        dataset_id="quickstart",
         multivector_query=[
             {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
         ],
-        page_size=3
+        page_size=3,
     )
-    assert len(results['results']) > 0, "Not inserting properly"
+    assert len(results["results"]) > 0, "Not inserting properly"
