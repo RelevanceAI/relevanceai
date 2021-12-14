@@ -51,9 +51,9 @@ class ClusterClient(_Base):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias}vector
         """
-        endpoint="/services/cluster/aggregate"
-        method="POST"
-        parameters={
+        endpoint = "/services/cluster/aggregate"
+        method = "POST"
+        parameters = {
             "dataset_id": dataset_id,
             "aggregation_query": {"groupby": groupby, "metrics": metrics},
             "filters": filters,
@@ -65,14 +65,13 @@ class ClusterClient(_Base):
             "alias": alias,
         }
         self._log_to_dashboard(
-            method=method, parameters=parameters,
-            endpoint=endpoint, 
-            dashboard_type="cluster_aggregation"
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="cluster_aggregation",
         )
         return self.make_http_request(
-            endpoint=endpoint,
-            method=method,
-            parameters=parameters
+            endpoint=endpoint, method=method, parameters=parameters
         )
 
     def facets(

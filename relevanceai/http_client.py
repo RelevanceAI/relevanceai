@@ -39,8 +39,8 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project = os.getenv("RELEVANCE_PROJECT"),
-        api_key = os.getenv("RELEVANCE_API_KEY"),
+        project=os.getenv("RELEVANCE_PROJECT"),
+        api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
     ):
 
@@ -49,7 +49,7 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
-        if authenticate: 
+        if authenticate:
             if self.check_auth():
 
                 WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
@@ -60,7 +60,9 @@ class Client(BatchAPIClient, DocUtils):
         if vis_requirements:
             self.projector = Projector(project, api_key)
         else:
-            self.logger.warning('Projector not loaded. You do not have visualisation requirements installed.')
+            self.logger.warning(
+                "Projector not loaded. You do not have visualisation requirements installed."
+            )
         self.vector_tools = VectorTools(project, api_key)
 
     # @property
@@ -70,11 +72,11 @@ class Client(BatchAPIClient, DocUtils):
     # @output_format.setter
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
-    
+
     @property
     def base_url(self):
         return CONFIG.get_field("api.base_url", CONFIG.config)
-    
+
     @base_url.setter
     def base_url(self, value):
         CONFIG.set_option("api.base_url", value)
@@ -87,34 +89,31 @@ class Client(BatchAPIClient, DocUtils):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         if not os.path.exists(self._cred_fn):
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(f"Authorization token (you can find it here: {SIGNUP_URL} )")
+            token = getpass.getpass(
+                f"Authorization token (you can find it here: {SIGNUP_URL} )"
+            )
             project = token.split(":")[0]
             api_key = token.split(":")[1]
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()
-            project = data['project']
-            api_key = data['api_key']
+            project = data["project"]
+            api_key = data["api_key"]
         return project, api_key
 
-    
     def _write_credentials(self, project, api_key):
-        json.dump({
-            "project": project,
-            "api_key": api_key
-        }, open(self._cred_fn, "w"))
-        
+        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
 
     def login(
-        self, authenticate: bool = True,
+        self,
+        authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = self._token_to_auth()
-        return Client(
-            project=project, api_key=api_key, authenticate=authenticate
-        )
+        return Client(project=project, api_key=api_key, authenticate=authenticate)
 
     @property
     def auth_header(self):
@@ -125,4 +124,3 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         return self.admin._ping()
-   

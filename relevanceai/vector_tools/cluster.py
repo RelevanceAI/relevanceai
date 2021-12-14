@@ -57,8 +57,9 @@ class ClusterBase(LoguruLogger, DocUtils):
         if len(vector_field) == 1:
             # filtering out entries not containing the specified vector
             docs = list(filter(DocUtils.list_doc_fields, docs))
-            vectors = self.get_field_across_documents(vector_field[0], docs, 
-                missing_treatment="skip")
+            vectors = self.get_field_across_documents(
+                vector_field[0], docs, missing_treatment="skip"
+            )
         else:
             raise ValueError(
                 "We currently do not support more than 1 vector field yet. This will be supported in the future."
@@ -72,7 +73,10 @@ class ClusterBase(LoguruLogger, DocUtils):
                 f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
             )
             if return_only_clusters:
-                return [{"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs]
+                return [
+                    {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                    for d in docs
+                ]
             return docs
 
         new_docs = docs.copy()
@@ -90,7 +94,7 @@ class ClusterBase(LoguruLogger, DocUtils):
     def to_metadata(self):
         """You can also store the metadata of this clustering algorithm"""
         raise NotImplementedError
-    
+
     @property
     def metadata(self):
         return self.to_metadata()
@@ -285,10 +289,10 @@ class HDBSCANClusterer(DensityCluster):
         approx_min_span_tree: bool = True,
         gen_min_span_tree: bool = False,
         leaf_size: int = 40,
-        memory = Memory(cachedir=None),
+        memory=Memory(cachedir=None),
         metric: str = "euclidean",
-        min_samples = None,
-        p = None,
+        min_samples=None,
+        p=None,
         min_cluster_size: Union[None, int] = 10,
     ):
         self.algorithm = algorithm
@@ -371,9 +375,7 @@ class Cluster(BatchAPIClient, ClusterBase):
                     raise NotImplementedError
                     # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
-                return HDBSCANClusterer(**cluster_args).fit_transform(
-                    vectors=vectors
-                )
+                return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
 
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
@@ -392,9 +394,9 @@ class Cluster(BatchAPIClient, ClusterBase):
         verbose: bool = True,
         random_state: Optional[int] = None,
         copy_x: bool = True,
-        algorithm: str ="auto",
+        algorithm: str = "auto",
         alias: str = "kmeans",
-        cluster_field: str="_cluster_",
+        cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
     ):
@@ -446,8 +448,14 @@ class Cluster(BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
-        if '.'.join([cluster_field, vector_fields[0], alias+'_'+str(k)]) in self.datasets.schema(dataset_id) and not overwrite:
-            raise ClusteringResultsAlreadyExistsError('.'.join([cluster_field, vector_fields[0], alias+'_'+str(k)]))
+        if (
+            ".".join([cluster_field, vector_fields[0], alias + "_" + str(k)])
+            in self.datasets.schema(dataset_id)
+            and not overwrite
+        ):
+            raise ClusteringResultsAlreadyExistsError(
+                ".".join([cluster_field, vector_fields[0], alias + "_" + str(k)])
+            )
 
         # load the documents
         docs = self.get_all_documents(
@@ -469,22 +477,24 @@ class Cluster(BatchAPIClient, ClusterBase):
         clustered_docs = clusterer.fit_documents(
             vector_fields,
             docs,
-
-            alias=alias+'_'+str(k),
-            cluster_field=cluster_field, 
-            return_only_clusters=True)
+            alias=alias + "_" + str(k),
+            cluster_field=cluster_field,
+            return_only_clusters=True,
+        )
 
         # Updating the db
-        results = self.update_documents(dataset_id, clustered_docs, chunksize = update_documents_chunksize)
+        results = self.update_documents(
+            dataset_id, clustered_docs, chunksize=update_documents_chunksize
+        )
         self.logger.info(results)
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
         results = self.services.cluster.centroids.insert(
-            dataset_id = dataset_id,
+            dataset_id=dataset_id,
             cluster_centers=centers,
             vector_field=vector_fields[0],
-            alias= alias+'_'+str(k)
+            alias=alias + "_" + str(k),
         )
         self.logger.info(results)
 
@@ -500,15 +510,15 @@ class Cluster(BatchAPIClient, ClusterBase):
         approx_min_span_tree: bool = True,
         gen_min_span_tree: bool = False,
         leaf_size: int = 40,
-        memory = Memory(cachedir=None),
+        memory=Memory(cachedir=None),
         metric: str = "euclidean",
-        min_samples = None,
-        p = None,
+        min_samples=None,
+        p=None,
         min_cluster_size: Union[None, int] = 10,
         alias: str = "hdbscan",
-        cluster_field: str="_cluster_",
+        cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
-        overwrite: bool = False
+        overwrite: bool = False,
     ):
         """
         This function performs all the steps required for hdbscan clustering:
@@ -561,10 +571,18 @@ class Cluster(BatchAPIClient, ClusterBase):
         )
         """
 
-        if '.'.join([cluster_field, vector_fields[0], alias]) in self.datasets.schema(dataset_id) and not overwrite:
-            raise ClusteringResultsAlreadyExistsError('.'.join([cluster_field, vector_fields[0], alias]))
+        if (
+            ".".join([cluster_field, vector_fields[0], alias])
+            in self.datasets.schema(dataset_id)
+            and not overwrite
+        ):
+            raise ClusteringResultsAlreadyExistsError(
+                ".".join([cluster_field, vector_fields[0], alias])
+            )
         # load the documents
-        docs = self.get_all_documents(dataset_id=dataset_id, filters=filters, select_fields=vector_fields)
+        docs = self.get_all_documents(
+            dataset_id=dataset_id, filters=filters, select_fields=vector_fields
+        )
 
         # get vectors
         if len(vector_fields) > 1:
@@ -583,13 +601,10 @@ class Cluster(BatchAPIClient, ClusterBase):
             metric=metric,
             min_samples=min_samples,
             p=p,
-            min_cluster_size=min_cluster_size
+            min_cluster_size=min_cluster_size,
         )
         clustered_docs = clusterer.fit_documents(
-            vector_fields,
-            docs,
-            alias=alias,
-            return_only_clusters=True
+            vector_fields, docs, alias=alias, return_only_clusters=True
         )
 
         # Updating the db
@@ -597,7 +612,8 @@ class Cluster(BatchAPIClient, ClusterBase):
         #     {cluster_field:{vector_fields[0]:{alias:res}},
         #     '_id':docs[i]['_id']}
         #     for i,res in enumerate(clustered_docs)]
-        results = self.update_documents(dataset_id, clustered_docs,
-            chunksize=update_documents_chunksize)
+        results = self.update_documents(
+            dataset_id, clustered_docs, chunksize=update_documents_chunksize
+        )
         self.logger.info(results)
         return clustered_docs

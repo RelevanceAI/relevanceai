@@ -279,7 +279,7 @@ class CentroidsClient(_Base):
 
         """
 
-        parameters={
+        parameters = {
             "dataset_id": dataset_id,
             "vector_field": vector_field,
             "alias": alias,
@@ -295,7 +295,7 @@ class CentroidsClient(_Base):
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
-            "include_facets": include_facets
+            "include_facets": include_facets,
         }
         endpoint = "/services/cluster/centroids/list_closest_to_center"
         method = "POST"
@@ -303,13 +303,9 @@ class CentroidsClient(_Base):
             method=method,
             parameters=parameters,
             endpoint=endpoint,
-            dashboard_type="cluster_centroids_closest"
+            dashboard_type="cluster_centroids_closest",
         )
-        return self.make_http_request(
-            endpoint,
-            method=method,
-            parameters=parameters
-        )
+        return self.make_http_request(endpoint, method=method, parameters=parameters)
 
     docs_closest_to_center = list_closest_to_center
 
@@ -373,8 +369,8 @@ class CentroidsClient(_Base):
         """
 
         endpoint = "/services/cluster/centroids/list_furthest_from_center"
-        method="POST"
-        parameters={
+        method = "POST"
+        parameters = {
             "dataset_id": dataset_id,
             "vector_field": vector_field,
             "alias": alias,
@@ -390,17 +386,16 @@ class CentroidsClient(_Base):
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
-            "include_facets": include_facets
+            "include_facets": include_facets,
         }
         self._log_to_dashboard(
-            method=method, parameters=parameters,
-            endpoint=endpoint, 
-            dashboard_type="cluster_centroids_furthest"
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="cluster_centroids_furthest",
         )
         response = self.make_http_request(
-            endpoint,
-            method=method,
-            parameters=parameters
+            endpoint, method=method, parameters=parameters
         )
         return response
 

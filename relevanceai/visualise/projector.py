@@ -68,7 +68,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         show_image: bool = False,
         label_char_length: int = 50,
         marker_size: int = 5,
-        interactive: bool = False
+        interactive: bool = False,
     ):
         """
         Plot function for Embedding Projector class
@@ -129,7 +129,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             show_image=show_image,
             marker_size=marker_size,
             dataset_name=dataset_id,
-            interactive=interactive
+            interactive=interactive,
         )
 
     def plot_from_docs(
@@ -153,7 +153,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         label_char_length: int = 50,
         marker_size: int = 5,
         dataset_name: Union[None, str] = None,
-        interactive: bool = False
+        interactive: bool = False,
     ):
 
         # Adjust vector label
@@ -225,7 +225,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             docs=docs,
             vector_label=vector_label,
             vector_field=vector_field,
-            interactive=interactive
+            interactive=interactive,
         )
         return
 
@@ -425,4 +425,3 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         Remove documents with empty vector fields
         """
         return [d for d in docs if d.get(vector_field)]
-
