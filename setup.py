@@ -27,6 +27,7 @@ requirements = [
     "document-utils>=1.5.0",
     "requests>=2.0.0",
     "numpy>=1.19.0",
+    "joblib>=1.0.0",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
@@ -40,7 +41,6 @@ vis_requirements = requirements + [
     "pillow",
     "opencv-python",
     "jupyter_dash",
-    "joblib",
     "scikit-image",
     "dash_bootstrap_components"
 ]
