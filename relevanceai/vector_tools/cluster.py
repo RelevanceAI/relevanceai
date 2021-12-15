@@ -303,11 +303,10 @@ class HDBSCAN(DensityCluster):
         return cluster_labels
 
 
-class Cluster(BatchAPIClient, ClusterBase):
+class Cluster(ClusterEvaluate,BatchAPIClient,  ClusterBase):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
-        self.evaluate = ClusterEvaluate(project, api_key)
         super().__init__(project, api_key)
 
     @staticmethod

@@ -10,34 +10,172 @@ import plotly.graph_objs as go
 import numpy as np
 
 from relevanceai.vector_tools.dim_reduction import DimReduction
+from relevanceai.base import _Base
+from relevanceai.api.client import BatchAPIClient
+from doc_utils import DocUtils
 
 
-SILHOUETTE_INFO = '''
+SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
-<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way'''
+<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
 
-RAND_INFO = '''Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
-<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs which have matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>'''
+RAND_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
+<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs which have matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>"""
 
-HOMOGENEITY_INFO = '''Good clusters only have elements from the same ground truth within the same cluster<br/>
-<b>Homogenity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect.'''
+HOMOGENEITY_INFO = """Good clusters only have elements from the same ground truth within the same cluster<br/>
+<b>Homogenity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
 
-COMPLETENESS_INFO = '''Good clusters have all elements from the same ground truth within the same cluster <br/>
-<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect.'''
+COMPLETENESS_INFO = """Good clusters have all elements from the same ground truth within the same cluster <br/>
+<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
 
-METRIC_DESCRIPTION = {'Silhouette Score': SILHOUETTE_INFO, 'Rand Score': RAND_INFO, 'Homogeneity': HOMOGENEITY_INFO, 'Completeness': COMPLETENESS_INFO}
+METRIC_DESCRIPTION = {
+    "Silhouette Score": SILHOUETTE_INFO,
+    "Rand Score": RAND_INFO,
+    "Homogeneity": HOMOGENEITY_INFO,
+    "Completeness": COMPLETENESS_INFO,
+}
 
-def sort_dict(dict, reverse: bool = True, cut_off = 0):
-    return {k:v for k,v in sorted(dict.items(), reverse=reverse, key=lambda item: item[1]) if v > cut_off}
+
+def sort_dict(dict, reverse: bool = True, cut_off=0):
+    return {
+        k: v
+        for k, v in sorted(dict.items(), reverse=reverse, key=lambda item: item[1])
+        if v > cut_off
+    }
 
 
-class ClusterEvaluate:
+class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
+        super().__init__(project, api_key)
 
-    def plot_clusters(dataset_id: str, vector_field: str, cluster_alias: str = 'default', ground_truth: str = None, description_fields: list = [], number_of_points_to_render: int = 1000):
+    def plot_clusters(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        cluster_alias: str = "default",
+        ground_truth_field: str = None,
+        description_fields: list = [],
+    ):
 
+        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            cluster_alias=cluster_alias,
+            ground_truth_field=ground_truth_field,
+            description_fields=description_fields,
+        )
+        self.plot_clusters_from_docs(
+            vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth, vector_description=vector_description
+        )
+        return
+
+    def cluster_metrics(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        cluster_alias: str = "default",
+        ground_truth_field: str = None,
+    ):
+
+        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            cluster_alias=cluster_alias,
+            ground_truth_field=ground_truth_field,
+        )
+        return self.cluster_metrics_from_docs(vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth)
+        
+    def cluster_sparsity(self,
+        dataset_id: str,
+        vector_field: str,
+        cluster_alias: str = "default"):
+
+        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+            dataset_id=dataset_id,
+            vector_field = vector_field,
+            cluster_alias=cluster_alias,
+            get_vectors = False
+        )
+
+        return self.label_sparsity_from_docs(cluster_labels)
+
+    def cluster_distribution(self,
+        dataset_id: str,
+        vector_field: str,
+        ground_truth_field: str,
+        cluster_alias: str = "default",
+        transpose = False):
+
+        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+            dataset_id=dataset_id,
+            vector_field = vector_field,
+            cluster_alias=cluster_alias,
+            ground_truth_field=ground_truth_field
+        )
+        
+        if transpose:
+            return self.label_distribution_from_docs(cluster_labels, ground_truth)
+        else:
+            return self.label_distribution_from_docs(ground_truth,cluster_labels)
+
+    def get_cluster_documents(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        cluster_alias: str = "default",
+        ground_truth_field: str = None,
+        description_fields: list = [],
+        get_vectors = True
+    ):
+
+        cluster_field = f"_cluster_.{vector_field}.{cluster_alias}"
+
+        if ground_truth_field:
+            ground_truth_select_field = [ground_truth_field]
+        else:
+            ground_truth_select_field = []
+
+        if get_vectors:
+            vector_select_field = [vector_field]
+        else:
+            vector_select_field = []
+
+        docs = self.get_all_documents(
+            dataset_id,
+            chunk_size=1000,
+            select_fields=["_id", cluster_field]
+            + vector_select_field
+            + ground_truth_select_field
+            + description_fields,
+        )
+
+        # Get cluster labels
+        cluster_labels = self.get_field_across_documents(cluster_field, docs)
+
+        # Get vectors
+        if get_vectors:
+            vectors = self.get_field_across_documents(vector_field, docs)
+        else:
+            vectors = None
+
+        # Get ground truth
+        if ground_truth_field:
+            ground_truth = self.get_field_across_documents(ground_truth_field, docs)
+        else:
+            ground_truth = None
+
+        # Get vector description
+        if len(description_fields) > 0:
+            vector_description = {
+                field: self.get_field_across_documents(field, docs)
+                for field in description_fields
+            }
+        else:
+            vector_description = None
+
+        return vectors, cluster_labels, ground_truth, vector_description
 
     @staticmethod
     def plot_clusters_from_docs(
@@ -47,14 +185,13 @@ class ClusterEvaluate:
         vector_description: dict = None,
     ):
 
-        # Support dr later maybe
         vector_dr = DimReduction.dim_reduce(
             vectors=np.array(vectors), dr="pca", dr_args=None, dims=3
         )
         embedding_df = pd.DataFrame(
             {"x": vector_dr[:, 0], "y": vector_dr[:, 1], "z": vector_dr[:, 2]}
         )
-        
+
         embedding_df = pd.concat(
             [
                 embedding_df,
@@ -115,37 +252,62 @@ class ClusterEvaluate:
     @staticmethod
     def cluster_metrics_from_docs(vectors, cluster_labels, ground_truth=None):
         metrics_list = []
-        metrics_list.append({"Metric":"Silhouette Score", "Value": ClusterEvaluate.silhouette_score(vectors, cluster_labels), "Description": METRIC_DESCRIPTION['Silhouette Score']})
+        metrics_list.append(
+            {
+                "Metric": "Silhouette Score",
+                "Value": ClusterEvaluate.silhouette_score(vectors, cluster_labels),
+                "Description": METRIC_DESCRIPTION["Silhouette Score"],
+            }
+        )
         if ground_truth:
-            metrics_list.append({"Metric":"Rand Score", "Value": ClusterEvaluate.adjusted_rand_score(ground_truth, cluster_labels), "Description": METRIC_DESCRIPTION['Rand Score']})
-            metrics_list.append({"Metric":"Homogeneity", "Value": ClusterEvaluate.homogeneity_score(ground_truth, cluster_labels), "Description": METRIC_DESCRIPTION['Homogeneity']})
-            metrics_list.append({"Metric":"Completeness", "Value": ClusterEvaluate.completeness_score(ground_truth, cluster_labels), "Description": METRIC_DESCRIPTION['Completeness']})
+            metrics_list.append(
+                {
+                    "Metric": "Rand Score",
+                    "Value": ClusterEvaluate.adjusted_rand_score(
+                        ground_truth, cluster_labels
+                    ),
+                    "Description": METRIC_DESCRIPTION["Rand Score"],
+                }
+            )
+            metrics_list.append(
+                {
+                    "Metric": "Homogeneity",
+                    "Value": ClusterEvaluate.homogeneity_score(
+                        ground_truth, cluster_labels
+                    ),
+                    "Description": METRIC_DESCRIPTION["Homogeneity"],
+                }
+            )
+            metrics_list.append(
+                {
+                    "Metric": "Completeness",
+                    "Value": ClusterEvaluate.completeness_score(
+                        ground_truth, cluster_labels
+                    ),
+                    "Description": METRIC_DESCRIPTION["Completeness"],
+                }
+            )
         return metrics_list
-        
+
     @staticmethod
     def label_sparsity_from_docs(label):
         label_sparsity = Counter(label)
         return dict(label_sparsity)
-        
+
     @staticmethod
     def label_distribution_from_docs(label_1, label_2):
         cluster_matches = {}
         for i in list(set(label_1)):
             matches = [j == i for j in label_1]
-            result = [
-                label for label, match in zip(label_2, matches) if match == True
-            ]
+            result = [label for label, match in zip(label_2, matches) if match == True]
             cluster_matches[i] = result
 
         label_distribution = {
-            k: {
-                i: len([j for j in v if j == i]) / len(v)
-                for i in list(set(label_2))
-            }
+            k: {i: len([j for j in v if j == i]) / len(v) for i in list(set(label_2))}
             for k, v in cluster_matches.items()
         }
 
-        label_distribution = {k: sort_dict(v) for k,v in label_distribution.items()}
+        label_distribution = {k: sort_dict(v) for k, v in label_distribution.items()}
 
         return label_distribution
 
