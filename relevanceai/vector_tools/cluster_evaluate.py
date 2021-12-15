@@ -54,8 +54,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str = "default",
         ground_truth_field: str = None,
+        cluster_alias: str = "default",
         description_fields: list = [],
     ):
 
@@ -76,7 +76,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             List of fields to use as additional labels on plot
         """
 
-        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+        vectors, cluster_labels, ground_truth, vector_description = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
             cluster_alias=cluster_alias,
@@ -92,8 +92,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str = "default",
         ground_truth_field: str = None,
+        cluster_alias: str = "default",
     ):
 
         """
@@ -112,7 +112,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         """
 
 
-        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+        vectors, cluster_labels, ground_truth, vector_description = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
             cluster_alias=cluster_alias,
@@ -123,10 +123,12 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
     def cluster_distribution(self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str = "default"):
+        ground_truth_field: str = None,
+        cluster_alias: str = "default", 
+        transpose = False):
 
         """
-        Determine the distribution of points 
+        Determine the distribution of clusters, optionally against the ground truth 
 
         Parameters
         ----------
@@ -138,37 +140,30 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             The alias of the clustered labels
         ground_truth_field: string
             The field to use as ground truth
+        transpose: bool
+            Whether to transpose cluster and ground truth perspectives
+
         """
 
-        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
+        vectors, cluster_labels, ground_truth, vector_description = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field = vector_field,
             cluster_alias=cluster_alias,
+            ground_truth_field=ground_truth_field,
             get_vectors = False
         )
 
-        return self.label_distribution_from_docs(cluster_labels)
+        if ground_truth_field:
+            if transpose:
+                return self.label_joint_distribution_from_docs(cluster_labels, ground_truth)
+            else:
+                return self.label_joint_distribution_from_docs(ground_truth,cluster_labels)
 
-    def cluster_ground_truth_distribution(self,
-        dataset_id: str,
-        vector_field: str,
-        ground_truth_field: str,
-        cluster_alias: str = "default",
-        transpose = False):
-
-        vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
-            dataset_id=dataset_id,
-            vector_field = vector_field,
-            cluster_alias=cluster_alias,
-            ground_truth_field=ground_truth_field
-        )
-        
-        if transpose:
-            return self.label_joint_distribution_from_docs(cluster_labels, ground_truth)
         else:
-            return self.label_joint_distribution_from_docs(ground_truth,cluster_labels)
+            return self.label_distribution_from_docs(cluster_labels)
 
-    def get_cluster_documents(
+
+    def _get_cluster_documents(
         self,
         dataset_id: str,
         vector_field: str,
@@ -177,6 +172,10 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         description_fields: list = [],
         get_vectors = True
     ):
+
+        """
+        Return vectors, cluster labels, ground truth labels and other fields
+        """
 
         cluster_field = f"_cluster_.{vector_field}.{cluster_alias}"
 
@@ -232,6 +231,22 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ground_truth: list = None,
         vector_description: dict = None,
     ):
+
+        """
+        Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels
+
+        Parameters
+        ----------
+        vectors : list
+            List of vectors which were clustered upon
+        cluster_labels: list
+            List of cluster labels corresponding to the vectors
+        ground_truth: list
+            List of ground truth labels for the vectors
+        vector_description : dict
+            Dictionary of fields and their values to describe the vectors
+        """
+
 
         vector_dr = DimReduction.dim_reduce(
             vectors=np.array(vectors), dr="pca", dr_args=None, dims=3
@@ -299,6 +314,18 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
     @staticmethod
     def cluster_metrics_from_docs(vectors, cluster_labels, ground_truth=None):
+        """
+        Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness
+
+        Parameters
+        ----------
+        vectors : list
+            List of vectors which were clustered upon
+        cluster_labels: list
+            List of cluster labels corresponding to the vectors
+        ground_truth: list
+            List of ground truth labels for the vectors
+        """
         metrics_list = []
         metrics_list.append(
             {
@@ -339,11 +366,30 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
     @staticmethod
     def label_distribution_from_docs(label):
+        """
+        Determine the distribution of a label
+
+        Parameters
+        ----------
+        label : list
+            List of labels
+        """
+
         label_sparsity = Counter(label)
         return dict(label_sparsity)
 
     @staticmethod
     def label_joint_distribution_from_docs(label_1, label_2):
+        """
+        Determine the distribution of a label against another label
+
+        Parameters
+        ----------
+        label_1 : list
+            List of labels
+        label_2 : list
+            List of labels
+        """
         cluster_matches = {}
         for i in list(set(label_1)):
             matches = [j == i for j in label_1]
