@@ -1,5 +1,3 @@
-https://github.com/RelevanceAI/RelevanceAI
-
 This library contains all the endpoints for the RelevanceAI API and gives you access to the latest vector-based technology on the market. 
 
 Get your free API key: https://development.qualitative-cloud.pages.dev/login
