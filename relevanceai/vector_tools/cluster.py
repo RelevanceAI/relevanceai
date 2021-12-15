@@ -448,6 +448,9 @@ class Cluster(BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
+        if alias is None:
+            alias = alias + "_" + str(k)
+
         if (
             ".".join([cluster_field, vector_fields[0], alias + "_" + str(k)])
             in self.datasets.schema(dataset_id)
@@ -499,8 +502,6 @@ class Cluster(BatchAPIClient, ClusterBase):
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
-        if alias is None:
-            alias = alias + "_" + str(k)
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
