@@ -451,14 +451,14 @@ class Cluster(BatchAPIClient, ClusterBase):
         if alias is None:
             alias = "kmeans_" + str(k)
 
+
+        EXPECTED_CLUSTER_OUTFIELD = ".".join([cluster_field, vector_fields[0], alias])
         if (
-            ".".join([cluster_field, vector_fields[0], alias + "_" + str(k)])
+            EXPECTED_CLUSTER_OUTFIELD
             in self.datasets.schema(dataset_id)
             and not overwrite
         ):
-            raise ClusteringResultsAlreadyExistsError(
-                ".".join([cluster_field, vector_fields[0], alias + "_" + str(k)])
-            )
+            raise ClusteringResultsAlreadyExistsError(EXPECTED_CLUSTER_OUTFIELD)
 
         filters = filters + [
             {
@@ -488,7 +488,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         clustered_docs = clusterer.fit_documents(
             vector_fields,
             docs,
-            alias=alias + "_" + str(k),
+            alias=alias,
             cluster_field=cluster_field,
             return_only_clusters=True,
             inplace=False,
