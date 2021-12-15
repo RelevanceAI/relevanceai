@@ -449,7 +449,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         )
         """
         if alias is None:
-            alias = alias + "_" + str(k)
+            alias = "kmeans_" + str(k)
 
         if (
             ".".join([cluster_field, vector_fields[0], alias + "_" + str(k)])
