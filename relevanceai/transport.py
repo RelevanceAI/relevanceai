@@ -168,10 +168,6 @@ class Transport:
                     )
 
                     if output_format == "json":
-                        if Transport._is_search_in_path(request_url):
-                            print(
-                                f"You can now visit the dashboard at {self._search_dashboard_url}"
-                            )
                         return response.json()
                     elif output_format == "content":
                         return response.content
