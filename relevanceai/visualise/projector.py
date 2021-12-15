@@ -71,7 +71,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         interactive: bool = False,
     ):
         """
-        Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours 
+        Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
         from relevanceai.visualise.dim_reduction import DimReductionBase
@@ -127,7 +127,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             Marker size of the plot
         interactive: bool
             Whether to include interactive features including nearest neighbours
-    
+
         """
 
         # Check vector field
