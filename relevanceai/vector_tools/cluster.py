@@ -101,7 +101,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):
-            return "cluster_" + str(label)
+            return "Cluster-" + str(label)
         return str(label)
 
     def _label_clusters(self, labels):
