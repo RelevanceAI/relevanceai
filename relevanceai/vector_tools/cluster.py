@@ -459,10 +459,11 @@ class Cluster(BatchAPIClient, ClusterBase):
 
         filters = filters + [
             {
-                'field' : vector_fields[0], 
-                'filter_type' : 'exists',
-                "condition":">=", 
-                "condition_value":" "}
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
         ]
         # load the documents
         docs = self.get_all_documents(
@@ -487,7 +488,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             alias=alias + "_" + str(k),
             cluster_field=cluster_field,
             return_only_clusters=True,
-            inplace=False
+            inplace=False,
         )
 
         # Updating the db
