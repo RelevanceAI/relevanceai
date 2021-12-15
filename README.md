@@ -14,7 +14,7 @@ You can also install on conda: `conda install -c relevance relevanceai`.
 
 ## How to use the RelevanceAI client
 
-For example:
+For example
 
 ```python
 ## To instantiate the client 
