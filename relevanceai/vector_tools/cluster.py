@@ -451,11 +451,9 @@ class Cluster(BatchAPIClient, ClusterBase):
         if alias is None:
             alias = "kmeans_" + str(k)
 
-
         EXPECTED_CLUSTER_OUTFIELD = ".".join([cluster_field, vector_fields[0], alias])
         if (
-            EXPECTED_CLUSTER_OUTFIELD
-            in self.datasets.schema(dataset_id)
+            EXPECTED_CLUSTER_OUTFIELD in self.datasets.schema(dataset_id)
             and not overwrite
         ):
             raise ClusteringResultsAlreadyExistsError(EXPECTED_CLUSTER_OUTFIELD)
