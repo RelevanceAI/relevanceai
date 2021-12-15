@@ -59,6 +59,23 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         description_fields: list = [],
     ):
 
+        """
+        Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: string
+            The vector field that was clustered upon
+        cluster_alias: string
+            The alias of the clustered labels
+        ground_truth_field: string
+            The field to use as ground truth
+        description_fields : list
+            List of fields to use as additional labels on plot
+        """
+
         vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
@@ -79,6 +96,22 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ground_truth_field: str = None,
     ):
 
+        """
+        Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: string
+            The vector field that was clustered upon
+        cluster_alias: string
+            The alias of the clustered labels
+        ground_truth_field: string
+            The field to use as ground truth
+        """
+
+
         vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
@@ -87,10 +120,25 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         )
         return self.cluster_metrics_from_docs(vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth)
         
-    def cluster_sparsity(self,
+    def cluster_distribution(self,
         dataset_id: str,
         vector_field: str,
         cluster_alias: str = "default"):
+
+        """
+        Determine the distribution of points 
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: string
+            The vector field that was clustered upon
+        cluster_alias: string
+            The alias of the clustered labels
+        ground_truth_field: string
+            The field to use as ground truth
+        """
 
         vectors, cluster_labels, ground_truth, vector_description = self.get_cluster_documents(
             dataset_id=dataset_id,
@@ -99,9 +147,9 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             get_vectors = False
         )
 
-        return self.label_sparsity_from_docs(cluster_labels)
+        return self.label_distribution_from_docs(cluster_labels)
 
-    def cluster_distribution(self,
+    def cluster_ground_truth_distribution(self,
         dataset_id: str,
         vector_field: str,
         ground_truth_field: str,
@@ -116,9 +164,9 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         )
         
         if transpose:
-            return self.label_distribution_from_docs(cluster_labels, ground_truth)
+            return self.label_joint_distribution_from_docs(cluster_labels, ground_truth)
         else:
-            return self.label_distribution_from_docs(ground_truth,cluster_labels)
+            return self.label_joint_distribution_from_docs(ground_truth,cluster_labels)
 
     def get_cluster_documents(
         self,
@@ -290,12 +338,12 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return metrics_list
 
     @staticmethod
-    def label_sparsity_from_docs(label):
+    def label_distribution_from_docs(label):
         label_sparsity = Counter(label)
         return dict(label_sparsity)
 
     @staticmethod
-    def label_distribution_from_docs(label_1, label_2):
+    def label_joint_distribution_from_docs(label_1, label_2):
         cluster_matches = {}
         for i in list(set(label_1)):
             matches = [j == i for j in label_1]
