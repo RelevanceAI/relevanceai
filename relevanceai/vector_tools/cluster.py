@@ -395,7 +395,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str = "auto",
-        alias: str = "kmeans",
+        alias: str = None,
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
@@ -499,11 +499,13 @@ class Cluster(BatchAPIClient, ClusterBase):
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
+        if alias is None:
+            alias = alias + "_" + str(k)
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
             vector_field=vector_fields[0],
-            alias=alias + "_" + str(k),
+            alias=alias,
         )
         self.logger.info(results)
 

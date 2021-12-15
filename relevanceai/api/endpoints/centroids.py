@@ -1,5 +1,5 @@
 from relevanceai.base import _Base
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 
 class CentroidsClient(_Base):
@@ -224,9 +224,9 @@ class CentroidsClient(_Base):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_ids: list,
-        alias: str = "default",
-        select_fields: list = [],
+        cluster_ids: List=[],
+        alias: str="default",
+        select_fields: list=[],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
@@ -313,16 +313,16 @@ class CentroidsClient(_Base):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_ids: list,
+        cluster_ids: List,
         alias: str = "default",
-        select_fields: list = [],
+        select_fields: List= [],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [],
-        facets: list = [],
+        filters: List= [],
+        facets: List= [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,

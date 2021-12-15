@@ -88,6 +88,7 @@ class Client(BatchAPIClient, DocUtils):
         # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         if not os.path.exists(self._cred_fn):
+            # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
             token = getpass.getpass(
                 f"Authorization token (you can find it here: {SIGNUP_URL} )"
