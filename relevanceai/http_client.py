@@ -1,8 +1,10 @@
 """access the client via this class
 """
 import getpass
+import json
 import os
 import sys
+import warnings
 from typing import Optional, List, Union
 
 from doc_utils.doc_utils import DocUtils
@@ -19,7 +21,7 @@ try:
 
     vis_requirements = True
 except ModuleNotFoundError as e:
-    print(e)
+    warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
     pass
 
 from relevanceai.vector_tools.client import VectorTools
@@ -32,8 +34,8 @@ def str2bool(v):
 class Client(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's relevanceai"""
 
-    WELCOME_MESSAGE = """Welcome to the RelevanceAI Python SDK"""
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
+    _cred_fn = ".creds.json"
 
     def __init__(
         self,
@@ -43,12 +45,14 @@ class Client(BatchAPIClient, DocUtils):
     ):
 
         if project is None or api_key is None:
-            project, api_key = Client.token_to_auth()
+            project, api_key = self._token_to_auth()
 
         super().__init__(project, api_key)
 
         if authenticate:
             if self.check_auth():
+
+                WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
                 print(self.WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
@@ -77,29 +81,39 @@ class Client(BatchAPIClient, DocUtils):
     def base_url(self, value):
         CONFIG.set_option("api.base_url", value)
 
-    @staticmethod
-    def token_to_auth():
+    def _token_to_auth(self):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
         #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
         # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        print(f"Authorization token (you can find it here: {SIGNUP_URL})")
-        token = getpass.getpass(
-            f"Authorization token (you can find it here: {SIGNUP_URL})"
-        )
-        project = token.split(":")[0]
-        api_key = token.split(":")[1]
-        os.environ["RELEVANCE_PROJECT"] = project
-        os.environ["RELEVANCE_API_KEY"] = api_key
+        if not os.path.exists(self._cred_fn):
+            # We repeat it twice because of different behaviours
+            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
+            token = getpass.getpass(
+                f"Authorization token (you can find it here: {SIGNUP_URL} )"
+            )
+            project = token.split(":")[0]
+            api_key = token.split(":")[1]
+            self._write_credentials(project, api_key)
+        else:
+            data = self._read_credentials()
+            project = data["project"]
+            api_key = data["api_key"]
         return project, api_key
 
-    @staticmethod
+    def _write_credentials(self, project, api_key):
+        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+
+    def _read_credentials(self):
+        return json.load(open(self._cred_fn))
+
     def login(
+        self,
         authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
-        project, api_key = Client.token_to_auth()
+        project, api_key = self._token_to_auth()
         return Client(project=project, api_key=api_key, authenticate=authenticate)
 
     @property

@@ -71,7 +71,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         interactive: bool = False,
     ):
         """
-        Plot function for Embedding Projector class
+        Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
         from relevanceai.visualise.dim_reduction import DimReductionBase
@@ -92,7 +92,44 @@ class Projector(BatchAPIClient, _Base, DocUtils):
                     hover_label,
                     cluster, cluster_args,
                     )
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field : list
+            Vector field to plot
+        number_of_points_to_render: int
+            Number of vector fields to plot
+        vector_label: string
+            Field to use as label to describe vector on plot
+        dr: string
+            Method of dimension reduction for vectors
+        dims: int
+            Number of dimensions to reduce to
+        dr_args: dict
+            Additional arguments for dimension reduction
+        cluster: string
+            Method of clustering for vectors
+        num_clusters: string
+            Number of clusters to create
+        cluster_args: dict
+            Additional arguments for clustering
+        cluster_on_dr: int
+            Whether to cluster on the dimension reduced or original vectors
+        hover_label: list
+            Additional labels to include as plot labels
+        show_image: bool
+            Whether vector labels are image urls
+        label_char_length: int
+            Maximum length of text for each hover label
+        marker_size: int
+            Marker size of the plot
+        interactive: bool
+            Whether to include interactive features including nearest neighbours
+
         """
+
         # Check vector field
         self._is_valid_vector_name(dataset_id, vector_field)
 

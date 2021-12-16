@@ -4,11 +4,13 @@ For guides, tutorials on how to use this package, visit https://docs.relevance.a
 
 If you are looking for an SDK reference, you can find that [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).
 
-Built mainly for users looking to experiment with vectors/embeddings.
+Built mainly for data scientists/engineers looking to experiment with vectors/embeddings.
 
 ## Installation 
 
 The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
+
+You can also install on conda: `conda install -c relevance relevanceai`.
 
 ## How to use the RelevanceAI client
 
