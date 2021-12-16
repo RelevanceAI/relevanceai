@@ -30,6 +30,12 @@ requirements = [
     "joblib>=1.0.0",
 ]
 
+spar_requirements = [
+    "rank_bm25",
+    "gensim",
+    "nltk",
+]
+
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
@@ -121,6 +127,7 @@ setup(
         "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
+        "spar": spar_requirements,
     },
     python_requires=">=3.6",
     classifiers=[
