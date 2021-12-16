@@ -9,8 +9,12 @@ def test_kmeans(test_client, test_sample_vector_dataset):
         overwrite = True
     )
     db_health = test_client.datasets.monitor.health(test_sample_vector_dataset)
+    test_client.vector_tools.cluster.plot_clusters(test_sample_vector_dataset, 'sample_1_vector_', ground_truth_field = 'sample_1_label')
+    metrics = test_client.vector_tools.cluster.cluster_metrics(test_sample_vector_dataset, 'sample_1_vector_', ground_truth_field = 'sample_1_label')
+    distribution = test_client.vector_tools.cluster.cluster_distribution('mr_bun_2', 'location_vector_', ground_truth_field = 'killer_name')
     assert '_cluster_' in db_health
     assert '_cluster_.sample_1_vector_.kmeans_10' in db_health
+    assert True    
 
 def test_hdbscan_cluster(test_client, test_sample_vector_dataset):
     test_client.vector_tools.cluster.hdbscan_cluster(

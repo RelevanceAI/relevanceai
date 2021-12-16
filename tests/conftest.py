@@ -7,7 +7,7 @@ import random
 import numpy as np
 from relevanceai import Client
 
-from utils import generate_random_string, generate_random_vector
+from utils import generate_random_string, generate_random_vector, generate_random_label
 
 RANDOM_STRING = str(random.randint(0, 999))
 
@@ -72,7 +72,7 @@ def sample_vector_docs():
     def _sample_vector_doc(doc_id: str):
         return {
             "_id": doc_id,
-            "sample_1_label": generate_random_string(),
+            "sample_1_label": generate_random_label(),
             "sample_2_label": generate_random_string(),
             "sample_3_label": generate_random_string(),
             "sample_1_vector_": generate_random_vector(N=100),
