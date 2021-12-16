@@ -1,6 +1,7 @@
 from relevanceai.base import _Base
 from typing import List
 
+
 class SearchClient(_Base):
     def __init__(self, project, api_key):
         self.project = project

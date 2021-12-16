@@ -37,8 +37,8 @@ class Client(BatchAPIClient, DocUtils):
 
     def __init__(
         self,
-        project = os.getenv("RELEVANCE_PROJECT"),
-        api_key = os.getenv("RELEVANCE_API_KEY"),
+        project=os.getenv("RELEVANCE_PROJECT"),
+        api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
     ):
 
@@ -47,7 +47,7 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
-        if authenticate: 
+        if authenticate:
             if self.check_auth():
                 print(self.WELCOME_MESSAGE)
             else:
@@ -56,7 +56,9 @@ class Client(BatchAPIClient, DocUtils):
         if vis_requirements:
             self.projector = Projector(project, api_key)
         else:
-            self.logger.warning('Projector not loaded. You do not have visualisation requirements installed.')
+            self.logger.warning(
+                "Projector not loaded. You do not have visualisation requirements installed."
+            )
         self.vector_tools = VectorTools(project, api_key)
 
     # @property
@@ -66,11 +68,11 @@ class Client(BatchAPIClient, DocUtils):
     # @output_format.setter
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
-    
+
     @property
     def base_url(self):
         return CONFIG.get_field("api.base_url", CONFIG.config)
-    
+
     @base_url.setter
     def base_url(self, value):
         CONFIG.set_option("api.base_url", value)
@@ -83,7 +85,9 @@ class Client(BatchAPIClient, DocUtils):
         # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         print(f"Authorization token (you can find it here: {SIGNUP_URL})")
-        token = getpass.getpass(f"Authorization token (you can find it here: {SIGNUP_URL})")
+        token = getpass.getpass(
+            f"Authorization token (you can find it here: {SIGNUP_URL})"
+        )
         project = token.split(":")[0]
         api_key = token.split(":")[1]
         os.environ["RELEVANCE_PROJECT"] = project
@@ -96,9 +100,7 @@ class Client(BatchAPIClient, DocUtils):
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = Client.token_to_auth()
-        return Client(
-            project=project, api_key=api_key, authenticate=authenticate
-        )
+        return Client(project=project, api_key=api_key, authenticate=authenticate)
 
     @property
     def auth_header(self):
@@ -109,4 +111,3 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         return self.admin._ping()
-   

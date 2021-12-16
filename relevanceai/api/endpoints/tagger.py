@@ -2,6 +2,7 @@
 """
 from relevanceai.base import _Base
 
+
 class TaggerClient(_Base):
     def __init__(self, project, api_key):
         self.project = project

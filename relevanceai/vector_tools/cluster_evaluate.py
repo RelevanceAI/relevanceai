@@ -76,7 +76,12 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             List of fields to use as additional labels on plot
         """
 
-        vectors, cluster_labels, ground_truth, vector_description = self._get_cluster_documents(
+        (
+            vectors,
+            cluster_labels,
+            ground_truth,
+            vector_description,
+        ) = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
             cluster_alias=cluster_alias,
@@ -84,7 +89,10 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             description_fields=description_fields,
         )
         self.plot_clusters_from_docs(
-            vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth, vector_description=vector_description
+            vectors=vectors,
+            cluster_labels=cluster_labels,
+            ground_truth=ground_truth,
+            vector_description=vector_description,
         )
         return
 
@@ -111,24 +119,32 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             The field to use as ground truth
         """
 
-
-        vectors, cluster_labels, ground_truth, vector_description = self._get_cluster_documents(
+        (
+            vectors,
+            cluster_labels,
+            ground_truth,
+            vector_description,
+        ) = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
             cluster_alias=cluster_alias,
             ground_truth_field=ground_truth_field,
         )
-        return self.cluster_metrics_from_docs(vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth)
-        
-    def cluster_distribution(self,
+        return self.cluster_metrics_from_docs(
+            vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
+        )
+
+    def cluster_distribution(
+        self,
         dataset_id: str,
         vector_field: str,
         ground_truth_field: str = None,
-        cluster_alias: str = "default", 
-        transpose = False):
+        cluster_alias: str = "default",
+        transpose=False,
+    ):
 
         """
-        Determine the distribution of clusters, optionally against the ground truth 
+        Determine the distribution of clusters, optionally against the ground truth
 
         Parameters
         ----------
@@ -145,23 +161,31 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         """
 
-        vectors, cluster_labels, ground_truth, vector_description = self._get_cluster_documents(
+        (
+            vectors,
+            cluster_labels,
+            ground_truth,
+            vector_description,
+        ) = self._get_cluster_documents(
             dataset_id=dataset_id,
-            vector_field = vector_field,
+            vector_field=vector_field,
             cluster_alias=cluster_alias,
             ground_truth_field=ground_truth_field,
-            get_vectors = False
+            get_vectors=False,
         )
 
         if ground_truth_field:
             if transpose:
-                return self.label_joint_distribution_from_docs(cluster_labels, ground_truth)
+                return self.label_joint_distribution_from_docs(
+                    cluster_labels, ground_truth
+                )
             else:
-                return self.label_joint_distribution_from_docs(ground_truth,cluster_labels)
+                return self.label_joint_distribution_from_docs(
+                    ground_truth, cluster_labels
+                )
 
         else:
             return self.label_distribution_from_docs(cluster_labels)
-
 
     def _get_cluster_documents(
         self,
@@ -170,7 +194,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_alias: str = "default",
         ground_truth_field: str = None,
         description_fields: list = [],
-        get_vectors = True
+        get_vectors=True,
     ):
 
         """
@@ -246,7 +270,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         vector_description : dict
             Dictionary of fields and their values to describe the vectors
         """
-
 
         vector_dr = DimReduction.dim_reduce(
             vectors=np.array(vectors), dr="pca", dr_args=None, dims=3

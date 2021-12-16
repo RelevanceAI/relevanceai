@@ -93,7 +93,7 @@ class ClusterBase(LoguruLogger, DocUtils):
     def to_metadata(self):
         """You can also store the metadata of this clustering algorithm"""
         raise NotImplementedError
-    
+
     @property
     def metadata(self):
         return self.to_metadata()
@@ -303,7 +303,7 @@ class HDBSCAN(DensityCluster):
         return cluster_labels
 
 
-class Cluster(ClusterEvaluate,BatchAPIClient,  ClusterBase):
+class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -596,5 +596,3 @@ class Cluster(ClusterEvaluate,BatchAPIClient,  ClusterBase):
         self.logger.info(results)
 
         return clustered_docs
-
-
