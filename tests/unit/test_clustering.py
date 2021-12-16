@@ -22,7 +22,10 @@ def test_kmeans(test_client, test_sample_vector_dataset):
         ground_truth_field="sample_1_label",
     )
     distribution = test_client.vector_tools.cluster.cluster_distribution(
-        test_sample_vector_dataset, "sample_1_vector_", "kmeans_10", ground_truth_field="sample_1_label"
+        test_sample_vector_dataset,
+        "sample_1_vector_",
+        "kmeans_10",
+        ground_truth_field="sample_1_label",
     )
     assert "_cluster_" in db_health
     assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
