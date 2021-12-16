@@ -365,9 +365,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             if cluster_args is None:
                 cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
             if cluster in ["kmeans", "kmedoids"]:
-                if (k is None and cluster_args is None) or (
-                    "n_clusters" not in cluster_args.keys()
-                ):
+                if k is None:
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
                     return KMeans(k=k, **cluster_args).fit_transform(vectors=vectors)
