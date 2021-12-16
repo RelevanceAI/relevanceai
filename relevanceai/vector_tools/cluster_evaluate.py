@@ -54,8 +54,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
+        cluster_alias: str,
         ground_truth_field: str = None,
-        cluster_alias: str = "default",
         description_fields: list = [],
     ):
 
@@ -100,8 +100,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
+        cluster_alias: str,
         ground_truth_field: str = None,
-        cluster_alias: str = "default",
     ):
 
         """
@@ -138,8 +138,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
+        cluster_alias: str,
         ground_truth_field: str = None,
-        cluster_alias: str = "default",
         transpose=False,
     ):
 
@@ -191,7 +191,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str = "default",
+        cluster_alias: str,
         ground_truth_field: str = None,
         description_fields: list = [],
         get_vectors=True,
@@ -467,13 +467,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ]
         coord_info = "X: %{x}   Y: %{y}   Z: %{z}"
         hovertemplate = (
-            "<br>".join(
-                [
-                    coord_info,
-                ]
-                + custom_data_hover
-            )
-            + "<extra></extra>"
+            "<br>".join([coord_info,] + custom_data_hover) + "<extra></extra>"
         )
         scatter_args = {
             "x": df["x"],

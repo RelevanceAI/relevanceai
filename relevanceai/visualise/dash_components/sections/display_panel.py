@@ -18,8 +18,4 @@ def build_display_panel(app: dash.Dash, show_image: bool = True) -> html.Div:
             style={"width": "98vh", "textwd-align": "center"},
             children=[html.Div(id="div-plot-text-neighbours")],
         )
-    return html.Div(
-        className="three columns",
-        id="display-panel",
-        children=[children],
-    )
+    return html.Div(className="three columns", id="display-panel", children=[children],)

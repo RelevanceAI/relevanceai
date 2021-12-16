@@ -307,10 +307,7 @@ class HDBSCANClusterer(DensityCluster):
         self.p = p
         self.min_cluster_size = min_cluster_size
 
-    def fit_transform(
-        self,
-        vectors: np.ndarray,
-    ) -> np.ndarray:
+    def fit_transform(self, vectors: np.ndarray,) -> np.ndarray:
         try:
             from hdbscan import HDBSCAN
         except ModuleNotFoundError as e:

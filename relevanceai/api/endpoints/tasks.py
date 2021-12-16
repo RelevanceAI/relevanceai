@@ -59,9 +59,7 @@ class TasksClient(_Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/tasks/list",
             method="GET",
-            parameters={
-                "show_active_only": show_active_only,
-            },
+            parameters={"show_active_only": show_active_only,},
         )
 
     def _loop_status_until_finish(

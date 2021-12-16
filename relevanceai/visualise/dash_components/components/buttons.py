@@ -16,12 +16,7 @@ def NamedSlider(name, short, min, max, step, val, marks=None):
                 style={"margin-left": "5px"},
                 children=[
                     dcc.Slider(
-                        id=short,
-                        min=min,
-                        max=max,
-                        marks=marks,
-                        step=step,
-                        value=val,
+                        id=short, min=min, max=max, marks=marks, step=step, value=val,
                     )
                 ],
             ),

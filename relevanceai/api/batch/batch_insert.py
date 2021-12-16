@@ -68,11 +68,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
-                dataset_id,
-                docs,
-                return_documents=True,
-                *args,
-                **kwargs,
+                dataset_id, docs, return_documents=True, *args, **kwargs,
             )
 
         return self._write_documents(
@@ -137,11 +133,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
-                dataset_id,
-                docs,
-                return_documents=True,
-                *args,
-                **kwargs,
+                dataset_id, docs, return_documents=True, *args, **kwargs,
             )
 
         return self._write_documents(
@@ -429,9 +421,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
                 upload_documents = [{"_id": i} for i in success_documents]
 
                 self.insert_documents(
-                    logging_collection,
-                    upload_documents,
-                    max_workers=max_workers,
+                    logging_collection, upload_documents, max_workers=max_workers,
                 )
 
                 # If fail, try to reduce retrieve chunk
