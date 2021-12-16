@@ -6,6 +6,21 @@ from rank_bm25 import BM25Okapi
 from nltk.tokenize import word_tokenize
 from gensim.parsing.preprocessing import STOPWORDS
 
+"""
+
+    Insert a list of strings to create a BM25 object.
+    The BM25 has a search method to find documents based on a string query
+    The search method has a k parameter to find the top k documents, defaulting to 50
+
+    Example
+    ----
+    corpus = ["I like dogs", "dogs are cool", "Felix is a cat"]
+    bm25 = BM25(corpus)
+    self.search("feline")
+    self.search("feline", k=10)
+
+"""
+
 
 class BM25:
     def __init__(self, corpus: list):
@@ -44,18 +59,3 @@ class BM25:
         tokenised_query = query.split(" ")
         results = self.bm25.get_top_n(tokenised_query, self.corpus, n=k)
         return results
-
-    """
-
-    Insert a list of strings to create a BM25 object.
-    The BM25 has a search method to find documents based on a string query
-    The search method has a k parameter to find the top k documents, defaulting to 50
-
-    Example
-    ----
-    corpus = ["I like dogs", "dogs are cool", "Felix is a cat"]
-    bm25 = BM25(corpus)
-    self.search("feline")
-    self.search("feline", k=10)
-
-    """
