@@ -67,6 +67,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             # In multifield clusering, we get all the vectors in each document
             # (skip if they are missing any of the vectors)
             # Then run clustering on the result
+            docs = list(self.filter_docs_for_fields(vector_fields, docs))
             all_vectors = self.get_fields_across_documents(
                 vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
@@ -79,7 +80,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         if inplace:
             self.set_field_across_documents(
-                f"{cluster_field}.{''.join(vector_fields)}.{alias}",
+                f"{cluster_field}.{'.'.join(vector_fields)}.{alias}",
                 cluster_labels,
                 docs,
             )
@@ -478,6 +479,9 @@ class Cluster(BatchAPIClient, ClusterBase):
             }
         ]
         # load the documents
+        warnings.warn(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
         docs = self.get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=vector_fields
         )
