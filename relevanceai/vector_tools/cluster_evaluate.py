@@ -467,7 +467,13 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ]
         coord_info = "X: %{x}   Y: %{y}   Z: %{z}"
         hovertemplate = (
-            "<br>".join([coord_info,] + custom_data_hover) + "<extra></extra>"
+            "<br>".join(
+                [
+                    coord_info,
+                ]
+                + custom_data_hover
+            )
+            + "<extra></extra>"
         )
         scatter_args = {
             "x": df["x"],

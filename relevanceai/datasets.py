@@ -59,7 +59,10 @@ class ExampleDatasets:
         api_key = (
             "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
         )
-        client = Client(project, api_key,)
+        client = Client(
+            project,
+            api_key,
+        )
         docs = client.get_documents(
             db_name,
             number_of_documents=number_of_documents,

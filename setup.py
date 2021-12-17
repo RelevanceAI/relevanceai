@@ -103,7 +103,11 @@ setup(
     packages=find_packages(),
     setup_requires=["wheel"],
     install_requires=requirements,
-    package_data={"": ["*.ini",]},
+    package_data={
+        "": [
+            "*.ini",
+        ]
+    },
     extras_require={
         "dev": dev_requirements,
         "dev-vis": dev_vis_requirements,

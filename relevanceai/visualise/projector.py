@@ -398,7 +398,13 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             coord_info = "X: %{x}   Y: %{y}   Z: %{z}"
 
         hovertemplate = (
-            "<br>".join([coord_info,] + custom_data_hover) + "<extra></extra>"
+            "<br>".join(
+                [
+                    coord_info,
+                ]
+                + custom_data_hover
+            )
+            + "<extra></extra>"
         )
 
         return custom_data, hovertemplate

@@ -65,7 +65,10 @@ class AdminClient(_Base):
         )
 
     def send_dataset(
-        self, dataset_id: str, receiver_project: str, receiver_api_key: str,
+        self,
+        dataset_id: str,
+        receiver_project: str,
+        receiver_api_key: str,
     ):
         """
         Send an individual a dataset.

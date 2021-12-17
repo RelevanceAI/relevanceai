@@ -109,7 +109,8 @@ class Client(BatchAPIClient, DocUtils):
         return json.load(open(self._cred_fn))
 
     def login(
-        self, authenticate: bool = True,
+        self,
+        authenticate: bool = True,
     ):
         """Preferred login method for demos and interactive usage."""
         project, api_key = self._token_to_auth()

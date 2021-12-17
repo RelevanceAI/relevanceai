@@ -435,7 +435,10 @@ class DatasetsClient(_Base):
         )
 
     def search(
-        self, query, sort_by_created_at_date: bool = False, asc: bool = False,
+        self,
+        query,
+        sort_by_created_at_date: bool = False,
+        asc: bool = False,
     ):
         """
         Search datasets by their names with a traditional keyword search.
