@@ -21,10 +21,9 @@ class ClusterBase(LoguruLogger, DocUtils):
     def fit_transform(self, vectors):
         """ """
         raise NotImplementedError
-    
+
     def _concat_vectors_from_list(self, list_of_vectors: list):
-        """Concatenate 2 vectors together in a pairwise fashion
-        """
+        """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
 
     def fit_documents(
@@ -65,11 +64,11 @@ class ClusterBase(LoguruLogger, DocUtils):
                 vector_fields[0], docs, missing_treatment="skip"
             )
         else:
-            # In multifield clusering, we get all the vectors in each document 
+            # In multifield clusering, we get all the vectors in each document
             # (skip if they are missing any of the vectors)
             # Then run clustering on the result
             all_vectors = self.get_fields_across_documents(
-                vector_fields, docs, missing_treatment='skip_if_any_missing'
+                vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
             vectors = self._concat_vectors_from_list(all_vectors)
 
@@ -80,7 +79,9 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         if inplace:
             self.set_field_across_documents(
-                f"{cluster_field}.{''.join(vector_fields)}.{alias}", cluster_labels, docs
+                f"{cluster_field}.{''.join(vector_fields)}.{alias}",
+                cluster_labels,
+                docs,
             )
             if return_only_clusters:
                 return [
