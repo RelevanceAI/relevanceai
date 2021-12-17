@@ -479,7 +479,9 @@ class Cluster(BatchAPIClient, ClusterBase):
             }
         ]
         # load the documents
-        warnings.warn("Retrieving documents... This can take a while if the dataset is large.")
+        warnings.warn(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
         docs = self.get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=vector_fields
         )
