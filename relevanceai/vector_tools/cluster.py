@@ -7,7 +7,6 @@ import warnings
 from typing import List, Union, Dict, Any, Optional
 from doc_utils import DocUtils
 from joblib.memory import Memory
-from more_itertools import ichunked
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
