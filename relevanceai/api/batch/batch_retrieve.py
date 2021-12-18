@@ -1,8 +1,10 @@
 """Batch Retrieve"""
 
 from typing import List
+import math
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
+from relevanceai.progress_bar import progress_bar
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -97,6 +99,7 @@ class BatchRetrieveClient(APIClient, Chunker):
         sort: List = [],
         select_fields: List = [],
         include_vector: bool = True,
+        show_progress_bar: bool = True
     ):
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
@@ -128,9 +131,13 @@ class BatchRetrieveClient(APIClient, Chunker):
         cursor = None
         full_data = []
 
+        # Find number of iterations 
+        number_of_documents = self.get_number_of_documents(dataset_id=dataset_id, filters=filters)
+        iterations_required = math.ceil(number_of_documents / chunk_size)
+
         # While there is still data to fetch, fetch it at the latest cursor
 
-        while length > 0:
+        for _ in progress_bar(range(iterations_required), show_progress_bar=show_progress_bar):
             x = self.datasets.documents.get_where(
                 dataset_id,
                 filters=filters,
