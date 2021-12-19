@@ -57,6 +57,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_alias: str,
         ground_truth_field: str = None,
         description_fields: list = [],
+        marker_size: int = 5
     ):
 
         """
@@ -74,6 +75,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             The field to use as ground truth
         description_fields : list
             List of fields to use as additional labels on plot
+        marker_size: int 
+            Size of scatterplot marker
         """
 
         (
@@ -93,6 +96,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             cluster_labels=cluster_labels,
             ground_truth=ground_truth,
             vector_description=vector_description,
+            marker_size=marker_size
         )
         return
 
@@ -254,6 +258,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_labels: list,
         ground_truth: list = None,
         vector_description: dict = None,
+        marker_size: int = 5
     ):
 
         """
@@ -269,6 +274,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             List of ground truth labels for the vectors
         vector_description : dict
             Dictionary of fields and their values to describe the vectors
+        marker_size: int 
+            Size of scatterplot marker
         """
 
         vector_dr = DimReduction.dim_reduce(
@@ -322,7 +329,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             ground_truth_groups = embedding_df.groupby("Ground Truth")
             for idx, val in ground_truth_groups:
                 ground_truth_data.append(
-                    ClusterEvaluate._generate_plot(val, hover_label)
+                    ClusterEvaluate._generate_plot(val, hover_label, marker_size)
                 )
 
             ground_truth_fig = go.Figure(
@@ -460,7 +467,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return layout
 
     @staticmethod
-    def _generate_plot(df, hover_label):
+    def _generate_plot(df, hover_label, marker_size):
         custom_data = df[hover_label]
         custom_data_hover = [
             f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)
@@ -481,7 +488,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             "z": df["z"],
             "showlegend": False,
             "mode": "markers",
-            "marker": {"size": 5, "symbol": "circle", "opacity": 0.75},
+            "marker": {"size": marker_size, "symbol": "circle", "opacity": 0.75},
             "customdata": custom_data,
             "hovertemplate": hovertemplate,
         }

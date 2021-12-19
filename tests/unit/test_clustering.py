@@ -29,7 +29,6 @@ def test_kmeans(test_client, test_sample_vector_dataset):
     )
     assert "_cluster_" in db_health
     assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
-    assert True
 
 
 def test_hdbscan_cluster(test_client, test_sample_vector_dataset):
