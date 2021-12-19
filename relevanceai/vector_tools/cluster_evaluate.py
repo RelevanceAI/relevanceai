@@ -315,7 +315,9 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_data = []
         cluster_groups = embedding_df.groupby("Predicted Cluster")
         for idx, val in cluster_groups:
-            cluster_data.append(ClusterEvaluate._generate_plot(val, hover_label))
+            cluster_data.append(
+                ClusterEvaluate._generate_plot(val, hover_label, marker_size)
+            )
 
         cluster_fig = go.Figure(
             data=cluster_data, layout=ClusterEvaluate._generate_layout()

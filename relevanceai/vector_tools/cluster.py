@@ -484,7 +484,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             }
         ]
         # load the documents
-        warnings.warn(
+        self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
         )
         docs = self.get_all_documents(
