@@ -57,7 +57,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_alias: str,
         ground_truth_field: str = None,
         description_fields: list = [],
-        marker_size: int = 5
+        marker_size: int = 5,
     ):
 
         """
@@ -75,7 +75,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             The field to use as ground truth
         description_fields : list
             List of fields to use as additional labels on plot
-        marker_size: int 
+        marker_size: int
             Size of scatterplot marker
         """
 
@@ -96,7 +96,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             cluster_labels=cluster_labels,
             ground_truth=ground_truth,
             vector_description=vector_description,
-            marker_size=marker_size
+            marker_size=marker_size,
         )
         return
 
@@ -258,7 +258,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_labels: list,
         ground_truth: list = None,
         vector_description: dict = None,
-        marker_size: int = 5
+        marker_size: int = 5,
     ):
 
         """
@@ -274,7 +274,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             List of ground truth labels for the vectors
         vector_description : dict
             Dictionary of fields and their values to describe the vectors
-        marker_size: int 
+        marker_size: int
             Size of scatterplot marker
         """
 
