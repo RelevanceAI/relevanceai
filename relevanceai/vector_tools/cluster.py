@@ -79,9 +79,12 @@ class ClusterBase(LoguruLogger, DocUtils):
         cluster_labels = self._label_clusters(cluster_labels)
 
         if isinstance(vector_fields, list):
-            set_cluster_field = f"{cluster_field}.{'.'.join(vector_fields)}.{alias}",
+            set_cluster_field = (f"{cluster_field}.{'.'.join(vector_fields)}.{alias}",)
         elif isinstance(vector_fields, str):
-            set_cluster_field = f"{cluster_field}.{vector_fields}.{alias}", cluster_labels
+            set_cluster_field = (
+                f"{cluster_field}.{vector_fields}.{alias}",
+                cluster_labels,
+            )
 
         if inplace:
             self.set_field_across_documents(
@@ -98,9 +101,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         new_docs = docs.copy()
 
-        self.set_field_across_documents(
-            set_cluster_field, cluster_labels, new_docs
-        )
+        self.set_field_across_documents(set_cluster_field, cluster_labels, new_docs)
 
         if return_only_clusters:
             return [
