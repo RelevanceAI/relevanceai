@@ -93,3 +93,14 @@ def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id)
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
+
+
+@pytest.fixture(scope="session")
+def test_clustered_dataset(test_client, test_sample_vector_dataset):
+    """Sample vector dataset"""
+    test_client.vector_tools.cluster.kmeans_cluster(
+        dataset_id=test_sample_vector_dataset,
+        vector_fields=["sample_1_vector_"],
+        overwrite=True,
+    )
+    yield test_sample_vector_dataset
