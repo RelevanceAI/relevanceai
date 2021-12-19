@@ -429,34 +429,6 @@ class CentroidsClient(_Base):
             },
         )
 
-    def delete(
-        self,
-        dataset_id: str,
-        vector_field: str,
-        alias: str = "default",
-    ):
-        """
-        Delete centroids by dataset ID, vector field and alias
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        vector_field: string
-            The vector field where a clustering task was run.
-        alias: string
-            Alias is used to name a cluster
-        """
-        return self.make_http_request(
-            "/services/cluster/centroids/delete",
-            method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "vector_field": vector_field,
-                "alias": alias,
-            },
-        )
-
     def update(
         self,
         dataset_id: str,
