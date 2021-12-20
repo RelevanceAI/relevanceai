@@ -93,6 +93,19 @@ class Transport:
             self.print_dashboard_url(dashboard_url)
         return response
 
+    def _link_to_dataset_dashboard(self, dataset_id: str, suburl: str=None):
+        """Link to a monitoring dashboard
+        Suburl must be one of 
+        - "monitor"
+        - "lookups"
+        - "monitor/schema"
+        """
+        MESSAGE = "You can view your dashboard at: "
+        if suburl is None:
+            print(MESSAGE + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/")
+        else:
+            print(MESSAGE + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/{suburl}")
+
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
         return self._log_to_dashboard(
