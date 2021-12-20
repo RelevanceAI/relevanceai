@@ -31,9 +31,7 @@ def multithread(
                 next(progress_iterator)
             if show_progress_bar is True:
                 progress_tracker.update(1)
-        progress_tracker.update(1)
         return results
-
 
 def multiprocess(
     func,
