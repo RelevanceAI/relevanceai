@@ -15,8 +15,7 @@ from relevanceai.api.client import BatchAPIClient
 from doc_utils import DocUtils
 
 
-SILHOUETTE_INFO = """
-Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
+SILHOUETTE_INFO = """Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
 <b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
 
 RAND_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
