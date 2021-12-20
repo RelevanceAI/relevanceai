@@ -50,7 +50,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self.api_key = api_key
         super().__init__(project, api_key)
 
-    def plot_clusters(
+    def plot(
         self,
         dataset_id: str,
         vector_field: str,
@@ -91,7 +91,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             ground_truth_field=ground_truth_field,
             description_fields=description_fields,
         )
-        self.plot_clusters_from_docs(
+        self.plot_from_docs(
             vectors=vectors,
             cluster_labels=cluster_labels,
             ground_truth=ground_truth,
@@ -100,7 +100,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         )
         return
 
-    def cluster_metrics(
+    def metrics(
         self,
         dataset_id: str,
         vector_field: str,
@@ -134,11 +134,11 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             cluster_alias=cluster_alias,
             ground_truth_field=ground_truth_field,
         )
-        return self.cluster_metrics_from_docs(
+        return self.metrics_from_docs(
             vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
         )
 
-    def cluster_distribution(
+    def distribution(
         self,
         dataset_id: str,
         vector_field: str,
@@ -253,7 +253,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return vectors, cluster_labels, ground_truth, vector_description
 
     @staticmethod
-    def plot_clusters_from_docs(
+    def plot_from_docs(
         vectors: list,
         cluster_labels: list,
         ground_truth: list = None,
@@ -345,7 +345,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return
 
     @staticmethod
-    def cluster_metrics_from_docs(vectors, cluster_labels, ground_truth=None):
+    def metrics_from_docs(vectors, cluster_labels, ground_truth=None):
         """
         Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness
 
