@@ -338,7 +338,7 @@ class HierarchicalClusterer(DensityCluster):
         n_clusters: Union[int, None] = None,
         affinity: str = 'euclidean',
         memory = Memory(cachedir=None),
-        compute_full_tree: Union[str, bool] ='auto',
+        compute_full_tree: Union[str, bool] = True,
         linkage: str = 'ward',
         distance_threshold: Union[float, None] = None,
         compute_distances: bool = True,
@@ -347,10 +347,7 @@ class HierarchicalClusterer(DensityCluster):
         self.n_clusters = n_clusters
         self.affinity = affinity
         self.memory = memory
-        if self.n_clusters is not None:
-            self.compute_full_tree = compute_full_tree
-        else:
-            self.compute_full_tree = False
+        self.compute_full_tree = compute_full_tree
         self.linkage = linkage
         self.distance_threshold = distance_threshold
         self.compute_distances = compute_distances
@@ -382,6 +379,10 @@ class HierarchicalClusterer(DensityCluster):
         cluster_labels = agg.labels_
 
         if self.dendrogram_plot_args is not None:
+            if 'color_threshold' not in self.dendrogram_plot_args and self.n_clusters is not None:
+                import warnings
+                warnings.warn('cluster colours will not be same as n_clusters by default, set color_threshold to customise this')
+
             if 'plot_backend' not in self.dendrogram_plot_args:
                 self.dendrogram_plot_args['plot_backend'] = 'matplotlib'
 
@@ -419,11 +420,14 @@ class HierarchicalClusterer(DensityCluster):
             )
 
         vectors = np.array(vectors)
-        width = kwargs.pop('width')
-        height = kwargs.pop('height')
-        
+
+        if 'layout_args' in kwargs:
+            layout_args = kwargs.pop('layout_args')
+        else:
+            layout_args = {}
+
         fig = ff.create_dendrogram(vectors, **kwargs)
-        fig.update_layout(width=width, height=height)
+        fig.update_layout(**layout_args)
         fig.show()
         return fig
 
@@ -452,10 +456,6 @@ class HierarchicalClusterer(DensityCluster):
         linkage_matrix = np.column_stack(
             [model.children_, model.distances_, counts]
         ).astype(float)
-
-        if 'color_threshold' not in kwargs:
-            import warnings
-            warnings.warn('cluster colours will not be same as n_clusters by default, set color_threshold to customise this')
 
         # Plot the corresponding dendrogram
         dendrogram(linkage_matrix, **kwargs)
@@ -763,7 +763,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         n_clusters: Union[int, None] = None,
         affinity: str = 'euclidean',
         memory = Memory(cachedir=None),
-        compute_full_tree: Union[str, bool] ='auto',
+        compute_full_tree: Union[str, bool] = True,
         linkage: str = 'ward',
         distance_threshold: Union[float, None] = None,
         compute_distances: bool = True,
