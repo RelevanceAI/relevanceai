@@ -388,7 +388,7 @@ def get_flipkart_dataset(
     )
 
 
-def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = []):
+def get_realestate_dataset(number_of_documents: int = 500, select_fields: list = []):
     """
     Download an example real-estate dataset \n
     Total Len: 5885 \n
@@ -485,3 +485,4 @@ def get_machine_learning_research_dataset():
 get_dummy_ecommerce_dataset = get_ecommerce_1_dataset
 get_sample_ecommerce_dataset = get_ecommerce_2_dataset
 get_ecommerce_dataset = get_ecommerce_3_dataset
+get_realestate_dataset = get_realestate_dataset
