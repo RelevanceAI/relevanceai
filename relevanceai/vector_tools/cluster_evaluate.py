@@ -13,7 +13,7 @@ from relevanceai.vector_tools.dim_reduction import DimReduction
 from relevanceai.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from doc_utils import DocUtils
-
+from typing import Optional, Dict
 
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
@@ -243,7 +243,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         # Get vector description
         if len(description_fields) > 0:
-            vector_description = {
+            vector_description: Optional[Dict] = {
                 field: self.get_field_across_documents(field, docs)
                 for field in description_fields
             }

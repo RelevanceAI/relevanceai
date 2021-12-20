@@ -307,8 +307,8 @@ class HDBSCANClusterer(DensityCluster):
         leaf_size: int = 40,
         memory=Memory(cachedir=None),
         metric: str = "euclidean",
-        min_samples=None,
-        p=None,
+        min_samples: int = None,
+        p: float = None,
         min_cluster_size: Union[None, int] = 10,
     ):
         self.algorithm = algorithm
@@ -371,28 +371,24 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Union[None, dict],
+        cluster_args: Dict = {},
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
         Cluster vectors
         """
         if isinstance(cluster, str):
-            if cluster_args is None:
+            if cluster_args == {}:
                 cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
             if cluster in ["kmeans", "kmedoids"]:
-                if (k is None and cluster_args is None) or (
-                    "n_clusters" not in cluster_args.keys()
-                ):
+                if k is None and cluster_args is None:
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
                     return KMeans(k=k, **cluster_args).fit_transform(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
-                    # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
                 return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
-
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
         raise ValueError("Not valid cluster input.")
