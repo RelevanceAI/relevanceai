@@ -48,6 +48,8 @@ vis_requirements = requirements + [
 umap = ["umap-learn>=0.5.2"]
 ivis_cpu = ["ivis[cpu]>=2.0.6"]
 ivis_gpu = ["ivis[gpu]>=2.0.6"]
+kmeans = ["scikit-learn>=1.0.1"]
+hierarchical = ["scikit-learn>=1.0.1"]
 kmedoids = ["scikit-learn-extra>=0.2.0"]
 hdbscan = ["hdbscan>=0.8.27"]
 

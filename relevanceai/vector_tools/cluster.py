@@ -332,6 +332,112 @@ class HDBSCANClusterer(DensityCluster):
         return cluster_labels
 
 
+class HierarchicalClusterer(DensityCluster):
+    def __init__(
+        self,
+        n_clusters: Union[int, None] = None,
+        affinity: str = 'euclidean',
+        memory = Memory(cachedir=None),
+        compute_full_tree: Union[str, bool] ='auto',
+        linkage: str = 'ward',
+        distance_threshold: Union[float, None] = None,
+        compute_distances: bool = False,
+        dendrogram_plot_args: Union[dict, None] = None,
+    ):
+        self.n_clusters = n_clusters
+        self.affinity = affinity
+        self.memory = memory
+        self.compute_full_tree = compute_full_tree
+        self.linkage = linkage
+        self.distance_threshold = distance_threshold
+        self.compute_distances = compute_distances
+        self.dendrogram_plot_args = dendrogram_plot_args
+
+    def fit_transform(
+        self,
+        vectors: np.ndarray
+    ) -> np.ndarray:
+        try:
+            from sklearn.cluster import AgglomerativeClustering
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall Hierarchical Clustering\n \
+                pip install -U relevanceai[hierarchical]"
+            )
+
+        agg = AgglomerativeClustering(
+            n_clusters=self.n_clusters,
+            affinity=self.affinity,
+            memory=self.memory,
+            compute_full_tree=self.compute_full_tree,
+            linkage=self.linkage,
+            distance_threshold=self.distance_threshold,
+            compute_distances=self.compute_distances,
+        ).fit(vectors)
+        cluster_labels = agg.labels_
+
+        if self.dendrogram_plot_args is not None:
+            if 'plot_backend' not in self.dendrogram_plot_args:
+                self.dendrogram_plot_args['plot_backend'] = 'matplotlib'
+
+            plot_backend = self.dendrogram_plot_args['plot_backend']
+            self.dendrogram_plot_args.pop('plot_backend')
+
+            if plot_backend == 'plotly':
+                if self.affinity == 'euclidean':
+                    from scipy.spatial.distance import pdist
+                    self.dendrogram_plot_args['distfun'] = pdist
+                elif self.affinity == 'cosine':
+                    from scipy.spatial.distance import cosine
+                    self.dendrogram_plot_args['distfun'] = cosine
+                elif self.affinity == 'manhattan':
+                    from scipy.spatial.distance import cityblock
+                    self.dendrogram_plot_args['distfun'] = cityblock
+
+                from scipy.cluster.hierarchy import linkage
+                self.dendrogram_plot_args['linkagefun'] = lambda x: linkage(vectors, method=self.linkage, metric=self.affinity)
+
+                self.plot_dendrogram_plotly(vectors, **self.dendrogram_plot_args)
+            elif plot_backend == 'matplotlib':
+                self.plot_dendrogram_matplotlib(vectors, **self.dendrogram_plot_args)
+
+        return cluster_labels
+
+    def plot_dendrogram_plotly(self, vectors, **kwargs):
+        try:
+            import plotly.figure_factory as ff
+
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall Hierarchical Clustering\n \
+                pip install -U relevanceai[hierarchical]"
+            )
+
+        vectors = np.array(vectors)
+        width = kwargs['width']
+        height = kwargs['height']
+        kwargs.pop('width')
+        kwargs.pop('height')
+        fig = ff.create_dendrogram(vectors, **kwargs)
+        fig.update_layout(width=width, height=height)
+        fig.show()
+
+    def plot_dendrogram_matplotlib(self, vectors, **kwargs):
+        try:
+            from scipy.cluster import hierarchy
+            import matplotlib.pyplot as plt
+
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall Hierarchical Clustering\n \
+                pip install -U relevanceai[hierarchical]"
+            )
+
+        Z = hierarchy.linkage(vectors, self.linkage)
+        dend = hierarchy.dendrogram(Z, **kwargs)
+        plt.show()
+
+
 class Cluster(BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
         self.project = project
@@ -624,4 +730,131 @@ class Cluster(BatchAPIClient, ClusterBase):
             dataset_id, clustered_docs, chunksize=update_documents_chunksize
         )
         self.logger.info(results)
+        return clustered_docs
+        
+    def hierarchical_cluster(
+        self,
+        dataset_id: str,
+        vector_fields: list,
+        filters: List = [],
+        n_clusters: Union[int, None] = None,
+        affinity: str = 'euclidean',
+        memory = Memory(cachedir=None),
+        compute_full_tree: Union[str, bool] ='auto',
+        linkage: str = 'ward',
+        distance_threshold: Union[float, None] = None,
+        compute_distances: bool = False,
+        alias: str = "hierarchical",
+        cluster_field: str = "_cluster_",
+        update_documents_chunksize: int = 50,
+        overwrite: bool = False, 
+        dendrogram_plot_args: Union[dict, None] = None,
+    ):
+        """
+        This function performs all the steps required for hierarchical clustering:
+        1- Loads the data
+        2- Clusters the data
+        3- Updates the data with clustering info
+        4- Adds the centroid to the hidden centroid collection
+
+        Parameters
+        ----------
+        dataset_id : string
+            name of the dataser
+
+        vector_fields : list
+            a list containing the vector field to be used for clustering
+
+        filters : list
+            a list to filter documents of the dataset,
+
+        n_clusters : int
+            Number of clusters expected in the data
+
+        affinity : str or callable, default='euclidean'
+            The distance metric used to compute the distance between vectors in dataset
+
+        memory : Memory(cachedir=None)
+            hierarchical configuration parameter on memory management
+
+        compute_full_tree: str = 'auto' or bool
+            parameter for early stopping to avoid compute the entire dendrogram
+
+        linkage : str = 'ward'
+            specifiy the type of linkage between observations in each cluster.
+            choose from {'ward', 'complete', 'average', 'single'}
+
+        distance_threshold : float
+            The maximum distance for which clusters can be to not be merged together
+
+        compute_distances : bool
+            Computes distances between clusters even if distance_threshold is not used. 
+            This can be used to make dendrogram visualization, but introduces a computational and memory overhead.
+
+        alias : string
+            "hierarchical", string to be used in naming of the field showing the clustering results
+
+        cluster_field: string
+            "_cluster_", string to name the main cluster field
+
+        overwrite : bool
+            False by default, To overwite an existing clusering result
+
+        Example
+        -------------
+
+        >>> client.vector_tools.cluster.hierarchical_cluster(
+            dataset_id="sample_dataset",
+            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+        )
+        """
+
+        if (
+            ".".join([cluster_field, vector_fields[0], alias])
+            in self.datasets.schema(dataset_id)
+            and not overwrite
+        ):
+            raise ClusteringResultsAlreadyExistsError(
+                ".".join([cluster_field, vector_fields[0], alias])
+            )
+        # load the documents
+        docs = self.get_all_documents(
+            dataset_id=dataset_id, filters=filters
+        )
+
+        # get vectors
+        if len(vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support more than 1 vector field yet. This will be supported in the future."
+            )
+
+        if n_clusters is None and distance_threshold is None:
+            distance_threshold = 1
+        elif n_clusters is not None and distance_threshold is not None:
+            n_clusters = 10
+            distance_threshold = None
+
+        if 'labels' in dendrogram_plot_args:
+            dendrogram_plot_args['labels'] = [sample[dendrogram_plot_args['labels']] for sample in docs]
+
+        # Cluster
+        clusterer = HierarchicalClusterer(
+            n_clusters=n_clusters,
+            affinity=affinity,
+            memory=memory,
+            compute_full_tree=compute_full_tree,
+            linkage=linkage,
+            distance_threshold=distance_threshold,
+            compute_distances=compute_distances,
+            dendrogram_plot_args=dendrogram_plot_args
+        )
+        clustered_docs = clusterer.fit_documents(
+            vector_fields, docs, alias=alias, return_only_clusters=True
+        )
+
+        results = self.update_documents(
+            dataset_id, clustered_docs, chunksize=update_documents_chunksize
+        )
+        self.logger.info(results)
+
         return clustered_docs
