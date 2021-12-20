@@ -36,6 +36,12 @@ class CentroidsClient(_Base):
         include_vector: bool
             Include vectors in the search results
         """
+
+        # Check base url
+        special_base = self.config.get_option("api.base_url") != "https://gateway-api-aueast.relevance.ai/v1"
+        if special_base:
+            base_url = self.config.get_option("api.base_url")
+
         return self.make_http_request(
             "/services/cluster/centroids/list",
             method="GET",
