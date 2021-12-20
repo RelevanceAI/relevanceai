@@ -291,8 +291,8 @@ class HDBSCANClusterer(DensityCluster):
         leaf_size: int = 40,
         memory=Memory(cachedir=None),
         metric: str = "euclidean",
-        min_samples=None,
-        p=None,
+        min_samples: int=None,
+        p: float=None,
         min_cluster_size: Union[None, int] = 10,
     ):
         self.algorithm = algorithm
@@ -355,7 +355,7 @@ class Cluster(BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Union[None, dict],
+        cluster_args: Optional[Dict]=None,
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
@@ -374,7 +374,6 @@ class Cluster(BatchAPIClient, ClusterBase):
                     # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
                 return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
-
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
         raise ValueError("Not valid cluster input.")
