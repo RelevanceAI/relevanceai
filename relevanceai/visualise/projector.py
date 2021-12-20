@@ -274,7 +274,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
     def _generate_plot_data(
         self,
         embedding_df: pd.DataFrame,
-        hover_label: List[Optional[str]],
+        hover_label: List[str],
         dims: int,
         marker_size: int,
         cluster: Union[
