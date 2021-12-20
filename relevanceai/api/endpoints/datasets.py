@@ -325,7 +325,10 @@ class DatasetsClient(_Base):
         """
 
         # Check base url
-        special_base = self.config.get_option("api.base_url") != "https://gateway-api-aueast.relevance.ai/v1"
+        special_base = (
+            self.config.get_option("api.base_url")
+            != "https://gateway-api-aueast.relevance.ai/v1"
+        )
         if special_base:
             base_url = self.config.get_option("api.base_url")
 
