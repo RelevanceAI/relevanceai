@@ -2,7 +2,6 @@
 
 from abc import abstractmethod
 import numpy as np
-import warnings
 
 from typing import List, Union, Dict, Any, Optional
 from doc_utils import DocUtils
@@ -381,8 +380,7 @@ class HierarchicalClusterer(DensityCluster):
 
         if self.dendrogram_plot_args is not None:
             if 'color_threshold' not in self.dendrogram_plot_args and self.n_clusters is not None:
-                import warnings
-                warnings.warn('cluster colours will not be same as n_clusters by default, set color_threshold to customise this')
+                self.logger.warning('cluster colours will not be same as n_clusters by default, set color_threshold to customise this')
 
             if 'plot_backend' not in self.dendrogram_plot_args:
                 self.dendrogram_plot_args['plot_backend'] = 'matplotlib'
@@ -862,12 +860,10 @@ class Cluster(BatchAPIClient, ClusterBase):
             )
 
         if n_clusters is None and distance_threshold is None:
-            import warnings
-            warnings.warn('setting distance_threshold=0')
+            self.logger.warning('setting distance_threshold=0')
             distance_threshold = 0
         elif n_clusters is not None and distance_threshold is not None:
-            import warnings
-            warnings.warn('setting n_clusters=10')
+            self.logger.warning('setting n_clusters=10')
             n_clusters = 10
             distance_threshold = None
 
