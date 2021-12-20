@@ -2,7 +2,6 @@
 
 from abc import abstractmethod
 import numpy as np
-import warnings
 
 from typing import List, Union, Dict, Any, Optional
 from doc_utils import DocUtils
@@ -12,6 +11,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.errors import ClusteringResultsAlreadyExistsError
+from relevanceai.vector_tools.cluster_evaluate import ClusterEvaluate
 
 
 class ClusterBase(LoguruLogger, DocUtils):
@@ -23,9 +23,13 @@ class ClusterBase(LoguruLogger, DocUtils):
         """ """
         raise NotImplementedError
 
+    def _concat_vectors_from_list(self, list_of_vectors: list):
+        """Concatenate 2 vectors together in a pairwise fashion"""
+        return [np.concatenate(x) for x in list_of_vectors]
+
     def fit_documents(
         self,
-        vector_field: list,
+        vector_fields: list,
         docs: list,
         alias: str = "default",
         cluster_field: str = "_cluster_",
@@ -54,23 +58,37 @@ class ClusterBase(LoguruLogger, DocUtils):
             Any other keyword argument will go directly into the clustering algorithm
 
         """
-        if len(vector_field) == 1:
+        if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             docs = list(filter(DocUtils.list_doc_fields, docs))
             vectors = self.get_field_across_documents(
-                vector_field[0], docs, missing_treatment="skip"
+                vector_fields[0], docs, missing_treatment="skip"
             )
         else:
-            raise ValueError(
-                "We currently do not support more than 1 vector field yet. This will be supported in the future."
+            # In multifield clusering, we get all the vectors in each document
+            # (skip if they are missing any of the vectors)
+            # Then run clustering on the result
+            docs = list(self.filter_docs_for_fields(vector_fields, docs))
+            all_vectors = self.get_fields_across_documents(
+                vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
+            vectors = self._concat_vectors_from_list(all_vectors)
+
         cluster_labels = self.fit_transform(vectors)
+
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
 
+        if isinstance(vector_fields, list):
+            set_cluster_field = f"{cluster_field}.{'.'.join(vector_fields)}.{alias}"
+        elif isinstance(vector_fields, str):
+            set_cluster_field = f"{cluster_field}.{vector_fields}.{alias}"
+
         if inplace:
             self.set_field_across_documents(
-                f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, docs
+                set_cluster_field,
+                cluster_labels,
+                docs,
             )
             if return_only_clusters:
                 return [
@@ -81,9 +99,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         new_docs = docs.copy()
 
-        self.set_field_across_documents(
-            f"{cluster_field}.{vector_field[0]}.{alias}", cluster_labels, new_docs
-        )
+        self.set_field_across_documents(set_cluster_field, cluster_labels, new_docs)
 
         if return_only_clusters:
             return [
@@ -332,7 +348,7 @@ class HDBSCANClusterer(DensityCluster):
         return cluster_labels
 
 
-class Cluster(BatchAPIClient, ClusterBase):
+class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -445,6 +461,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
+
         if alias is None:
             alias = "kmeans_" + str(k)
 
@@ -464,6 +481,9 @@ class Cluster(BatchAPIClient, ClusterBase):
             }
         ]
         # load the documents
+        self.logger.warning(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
         docs = self.get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=vector_fields
         )

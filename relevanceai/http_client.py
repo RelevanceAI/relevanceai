@@ -90,9 +90,7 @@ class Client(BatchAPIClient, DocUtils):
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(
-                f"Authorization token (you can find it here: {SIGNUP_URL} )"
-            )
+            token = getpass.getpass(f"Auth token:")
             project = token.split(":")[0]
             api_key = token.split(":")[1]
             self._write_credentials(project, api_key)
