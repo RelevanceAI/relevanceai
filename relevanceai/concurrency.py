@@ -4,7 +4,7 @@ import math
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from typing import Callable
 
-from relevanceai.progress_bar import progress_bar
+from relevanceai.progress_bar import NullProgressBar, progress_bar
 
 
 def chunk(iterables, n=20):
@@ -32,6 +32,7 @@ def multithread(
             if show_progress_bar is True:
                 progress_tracker.update(1)
         return results
+
 
 def multiprocess(
     func,
