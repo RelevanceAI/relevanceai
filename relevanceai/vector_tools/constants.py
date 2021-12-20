@@ -26,7 +26,7 @@ DIM_REDUCTION_DEFAULT_ARGS: Dict[Any, Any] = {
 
 
 # CLUSTER = Literal["kmeans", "kmedoids", "kmodes", "kprototypes", None]
-CLUSTER = Literal["kmeans", "kmedoids", "hdbscan"]
+CLUSTER = Literal["kmeans", "kmedoids", "hdbscan", "hierarchical"]
 CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     "kmeans": {
         "init": "k-means++",
@@ -63,6 +63,10 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
         "min_samples": None,
         "p": None,
     },
+    "hierarchical": {
+        "memory": Memory(cachedir=None),
+        "metric": "euclidean",
+    }
 }
 
 NEAREST_NEIGHBOURS = Literal["cosine", "l2"]

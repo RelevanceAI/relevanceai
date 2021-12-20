@@ -365,6 +365,7 @@ class HierarchicalClusterer(DensityCluster):
                 pip install -U relevanceai[hierarchical]"
             )
 
+        self.vectors = np.array(vectors)
         agg = AgglomerativeClustering(
             n_clusters=self.n_clusters,
             affinity=self.affinity,
@@ -408,6 +409,13 @@ class HierarchicalClusterer(DensityCluster):
                 self.plot_dendrogram_matplotlib(agg, **self.dendrogram_plot_args)
 
         return cluster_labels
+
+    def get_centroids(self):
+        centroids = {
+            label: np.mean(self.vectors[np.argwhere(self.agg.labels_ == label)], axis=0)[0] 
+            for label in np.unique(self.agg.labels_)
+        }
+        return centroids
 
     def plot_dendrogram_plotly(self, vectors, **kwargs):
         try:
@@ -503,6 +511,8 @@ class Cluster(BatchAPIClient, ClusterBase):
                     # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
                 return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
+            elif cluster == "hierarchical":
+                return HierarchicalClusterer(**cluster_args).fit_transform(vectors=vectors)
 
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
@@ -861,7 +871,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             n_clusters = 10
             distance_threshold = None
 
-        if 'labels' in dendrogram_plot_args:
+        if dendrogram_plot_args is not None and 'labels' in dendrogram_plot_args:
             dendrogram_plot_args['labels'] = [sample[dendrogram_plot_args['labels']] for sample in docs]
 
         # Cluster
@@ -884,4 +894,4 @@ class Cluster(BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
 
-        return clustered_docs
+        return clusterer
