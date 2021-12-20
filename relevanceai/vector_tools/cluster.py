@@ -307,8 +307,8 @@ class HDBSCANClusterer(DensityCluster):
         leaf_size: int = 40,
         memory=Memory(cachedir=None),
         metric: str = "euclidean",
-        min_samples: int=None,
-        p: float=None,
+        min_samples: int = None,
+        p: float = None,
         min_cluster_size: Union[None, int] = 10,
     ):
         self.algorithm = algorithm
@@ -371,7 +371,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Dict={},
+        cluster_args: Dict = {},
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
