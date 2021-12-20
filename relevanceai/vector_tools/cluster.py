@@ -371,14 +371,14 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Optional[Dict]=None,
+        cluster_args: Dict={},
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
         Cluster vectors
         """
         if isinstance(cluster, str):
-            if cluster_args is None:
+            if cluster_args == {}:
                 cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
             if cluster in ["kmeans", "kmedoids"]:
                 if k is None and cluster_args is None:
@@ -387,7 +387,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                     return KMeans(k=k, **cluster_args).fit_transform(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
-                    # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
                 return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
         elif isinstance(cluster, ClusterBase):

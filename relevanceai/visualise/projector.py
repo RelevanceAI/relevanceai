@@ -61,7 +61,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Cluster args
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
-        cluster_args: Union[None, Dict] = None,
+        cluster_args: Dict = {},
         cluster_on_dr: bool = False,
         # Decoration args
         hover_label: list = [],
@@ -182,7 +182,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Cluster args
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
-        cluster_args: Union[None, Dict] = None,
+        cluster_args: Dict = {},
         cluster_on_dr: bool = False,
         # Decoration args
         hover_label: list = [],
