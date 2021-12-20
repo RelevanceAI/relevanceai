@@ -9,7 +9,7 @@ def test_kmeans(test_client, test_clustered_dataset):
 
 
 def test_cluster_plot(test_client, test_clustered_dataset):
-    test_client.vector_tools.cluster.plot_clusters(
+    test_client.vector_tools.cluster.plot(
         test_clustered_dataset,
         "sample_1_vector_",
         "kmeans_10",
@@ -19,7 +19,7 @@ def test_cluster_plot(test_client, test_clustered_dataset):
 
 
 def test_cluster_metrics(test_client, test_clustered_dataset):
-    metrics = test_client.vector_tools.cluster.cluster_metrics(
+    metrics = test_client.vector_tools.cluster.metrics(
         test_clustered_dataset,
         "sample_1_vector_",
         "kmeans_10",
@@ -29,7 +29,7 @@ def test_cluster_metrics(test_client, test_clustered_dataset):
 
 
 def test_cluster_distribution(test_client, test_clustered_dataset):
-    distribution = test_client.vector_tools.cluster.cluster_distribution(
+    distribution = test_client.vector_tools.cluster.distribution(
         test_clustered_dataset,
         "sample_1_vector_",
         "kmeans_10",
