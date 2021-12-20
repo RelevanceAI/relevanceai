@@ -2,15 +2,16 @@
 
 from abc import abstractmethod
 import numpy as np
-import warnings
 
 from typing import List, Union, Dict, Any, Optional
 from doc_utils import DocUtils
 from joblib.memory import Memory
+
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.errors import ClusteringResultsAlreadyExistsError
+from relevanceai.vector_tools.cluster_evaluate import ClusterEvaluate
 
 
 class ClusterBase(LoguruLogger, DocUtils):
@@ -347,7 +348,7 @@ class HDBSCANClusterer(DensityCluster):
         return cluster_labels
 
 
-class Cluster(BatchAPIClient, ClusterBase):
+class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -463,6 +464,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
+
         if alias is None:
             alias = "kmeans_" + str(k)
 
@@ -482,7 +484,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             }
         ]
         # load the documents
-        warnings.warn(
+        self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
         )
         docs = self.get_all_documents(
