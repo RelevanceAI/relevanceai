@@ -516,15 +516,19 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
+
+        # Change centroids insertion
+        vector_field_name = ".".join(vector_fields)
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
-            vector_field=vector_fields[0],
+            vector_field=vector_field_name,
             alias=alias,
         )
         self.logger.info(results)
-
-        return centers
+        self.services.cluster.centroids.list_closest_to_center(
+            dataset_id, vector_field=vector_field_name, alias=alias
+        )
 
     def hdbscan_cluster(
         self,
