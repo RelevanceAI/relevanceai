@@ -51,9 +51,8 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
+        vector_label: Union[None, str],
         number_of_points_to_render: int = 1000,
-        # Plot rendering args
-        vector_label: Union[None, str] = None,
         # Dimensionality reduction args
         dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,
