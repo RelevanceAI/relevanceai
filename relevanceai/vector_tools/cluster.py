@@ -341,13 +341,16 @@ class HierarchicalClusterer(DensityCluster):
         compute_full_tree: Union[str, bool] ='auto',
         linkage: str = 'ward',
         distance_threshold: Union[float, None] = None,
-        compute_distances: bool = False,
+        compute_distances: bool = True,
         dendrogram_plot_args: Union[dict, None] = None,
     ):
         self.n_clusters = n_clusters
         self.affinity = affinity
         self.memory = memory
-        self.compute_full_tree = compute_full_tree
+        if self.n_clusters is not None:
+            self.compute_full_tree = compute_full_tree
+        else:
+            self.compute_full_tree = False
         self.linkage = linkage
         self.distance_threshold = distance_threshold
         self.compute_distances = compute_distances
@@ -374,6 +377,8 @@ class HierarchicalClusterer(DensityCluster):
             distance_threshold=self.distance_threshold,
             compute_distances=self.compute_distances,
         ).fit(vectors)
+        self.agg = agg
+
         cluster_labels = agg.labels_
 
         if self.dendrogram_plot_args is not None:
@@ -399,7 +404,7 @@ class HierarchicalClusterer(DensityCluster):
 
                 self.plot_dendrogram_plotly(vectors, **self.dendrogram_plot_args)
             elif plot_backend == 'matplotlib':
-                self.plot_dendrogram_matplotlib(vectors, **self.dendrogram_plot_args)
+                self.plot_dendrogram_matplotlib(agg, **self.dendrogram_plot_args)
 
         return cluster_labels
 
@@ -414,17 +419,17 @@ class HierarchicalClusterer(DensityCluster):
             )
 
         vectors = np.array(vectors)
-        width = kwargs['width']
-        height = kwargs['height']
-        kwargs.pop('width')
-        kwargs.pop('height')
+        width = kwargs.pop('width')
+        height = kwargs.pop('height')
+        
         fig = ff.create_dendrogram(vectors, **kwargs)
         fig.update_layout(width=width, height=height)
         fig.show()
+        return fig
 
-    def plot_dendrogram_matplotlib(self, vectors, **kwargs):
+    def plot_dendrogram_matplotlib(self, model, **kwargs):
         try:
-            from scipy.cluster import hierarchy
+            from scipy.cluster.hierarchy import dendrogram
             import matplotlib.pyplot as plt
 
         except ModuleNotFoundError as e:
@@ -433,10 +438,28 @@ class HierarchicalClusterer(DensityCluster):
                 pip install -U relevanceai[hierarchical]"
             )
 
-        Z = hierarchy.linkage(vectors, self.linkage)
-        dend = hierarchy.dendrogram(Z, **kwargs)
-        plt.show()
+        counts = np.zeros(model.children_.shape[0])
+        n_samples = len(model.labels_)
+        for i, merge in enumerate(model.children_):
+            current_count = 0
+            for child_idx in merge:
+                if child_idx < n_samples:
+                    current_count += 1  # leaf node
+                else:
+                    current_count += counts[child_idx - n_samples]
+            counts[i] = current_count
 
+        linkage_matrix = np.column_stack(
+            [model.children_, model.distances_, counts]
+        ).astype(float)
+
+        if 'color_threshold' not in kwargs:
+            import warnings
+            warnings.warn('cluster colours will not be same as n_clusters by default, set color_threshold to customise this')
+
+        # Plot the corresponding dendrogram
+        dendrogram(linkage_matrix, **kwargs)
+        plt.show()
 
 class Cluster(BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
@@ -743,7 +766,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         compute_full_tree: Union[str, bool] ='auto',
         linkage: str = 'ward',
         distance_threshold: Union[float, None] = None,
-        compute_distances: bool = False,
+        compute_distances: bool = True,
         alias: str = "hierarchical",
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
@@ -805,7 +828,7 @@ class Cluster(BatchAPIClient, ClusterBase):
 
         >>> client.vector_tools.cluster.hierarchical_cluster(
             dataset_id="sample_dataset",
-            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+            vector_fields=["sample_1_vector_"]
         )
         """
 
@@ -829,8 +852,12 @@ class Cluster(BatchAPIClient, ClusterBase):
             )
 
         if n_clusters is None and distance_threshold is None:
-            distance_threshold = 1
+            import warnings
+            warnings.warn('setting distance_threshold=0')
+            distance_threshold = 0
         elif n_clusters is not None and distance_threshold is not None:
+            import warnings
+            warnings.warn('setting n_clusters=10')
             n_clusters = 10
             distance_threshold = None
 
