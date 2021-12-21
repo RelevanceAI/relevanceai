@@ -150,6 +150,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
             bulk_fn,
             max_workers,
             retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
             chunksize=chunksize,
         )
 
