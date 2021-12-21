@@ -114,3 +114,128 @@ class ClusterClient(_Base):
                 "date_interval": date_interval,
             },
         )
+
+    def list(
+        self,
+        dataset_id: str,
+        vector_field: list,
+        alias: str = 'default',
+    ):
+        """
+        List clusters
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field : str or list
+            It can either be an array of strings (automatically equally weighted) (e.g. ['check_vector_', 'yellow_vector_']).
+        alias: str
+            alias is used to name a cluster
+        """
+        return self.make_http_request(
+            endpoint="/services/cluster/list",
+            method="GET",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+            },
+        )
+
+    def delete_centroids(
+        self,
+        dataset_id: str,
+        vector_field: list,
+        alias: str = 'default',
+    ):
+        """
+        delete centroid
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field : str or list
+            It can either be an array of strings (automatically equally weighted) (e.g. ['check_vector_', 'yellow_vector_']).
+        alias: str
+            alias is used to name a cluster
+        """
+        return self.make_http_request(
+            endpoint="/services/cluster/centroids/delete",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+            },
+        )
+
+    def delete_centroid(
+        self,
+        centroid_id: str,
+        dataset_id: str,
+        vector_field: list,
+        alias: str = 'default',
+    ):
+        """
+        delete centroid
+
+        Parameters
+        ----------
+        centroid_id : string
+            centroid_id
+        dataset_id : string
+            Unique name of dataset
+        vector_field : str or list
+            It can either be an array of strings (automatically equally weighted) (e.g. ['check_vector_', 'yellow_vector_']).
+        alias: str
+            alias is used to name a cluster
+        """
+        return self.make_http_request(
+            endpoint=f"/services/cluster/centroids/{centroid_id}/delete",
+            method="GET",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+            },
+        )
+
+    def update_centroid(
+        self,
+        id: str,
+        update: dict,
+        dataset_id: str,
+        vector_field: list,
+        alias: str = 'default',
+    ):
+        """
+        delete centroid
+
+        Parameters
+        ----------
+        id : string
+            id
+        dataset_id : string
+            Unique name of dataset
+        vector_field : str or list
+            It can either be an array of strings (automatically equally weighted) (e.g. ['check_vector_', 'yellow_vector_']).
+        alias: str
+            alias is used to name a cluster
+        """
+        return self.make_http_request(
+            endpoint="/services/cluster/centroids/update",
+            method="POST",
+            parameters={
+                "id": id,
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+                "update": update,
+            },
+        )
+
+    
+
+    

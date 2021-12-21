@@ -870,8 +870,11 @@ class Cluster(BatchAPIClient, ClusterBase):
         if dendrogram_plot_args is not None and 'labels' in dendrogram_plot_args:
             dendrogram_plot_args['labels'] = [sample[dendrogram_plot_args['labels']] for sample in docs]
 
+        if dendrogram_plot_args is not None and 'hovertext' in dendrogram_plot_args:
+            dendrogram_plot_args['hovertext'] = [sample[dendrogram_plot_args['labels']] for sample in docs]
+
         # Cluster
-        clusterer = HierarchicalClusterer(
+        self.clusterer = HierarchicalClusterer(
             n_clusters=n_clusters,
             affinity=affinity,
             memory=memory,
@@ -881,7 +884,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             compute_distances=compute_distances,
             dendrogram_plot_args=dendrogram_plot_args
         )
-        clustered_docs = clusterer.fit_documents(
+        clustered_docs = self.clusterer.fit_documents(
             vector_fields, docs, alias=alias, return_only_clusters=True
         )
 
@@ -890,4 +893,4 @@ class Cluster(BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
 
-        return clusterer
+        return self.clusterer

@@ -1,0 +1,4 @@
+/services/cluster/centroids/update
+/services/cluster/centroids/{centroid_id}/delete
+/services/cluster/centroids/delete
+/services/cluster/list

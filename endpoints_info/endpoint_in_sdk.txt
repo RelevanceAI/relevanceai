@@ -5,6 +5,9 @@
 /services/cluster/centroids/get
 /services/cluster/centroids/insert
 /services/cluster/centroids/documents
+/services/cluster/centroids/metadata
+/services/cluster/centroids/list_closest_to_center
+/services/cluster/centroids/list_furthest_from_center
 /services/cluster/aggregate
 /services/cluster/facets
 /datasets/{dataset_id}/schema

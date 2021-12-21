@@ -4,9 +4,22 @@ import requests
 
 ENDPOINT_INFO_PATH = os.path.dirname(os.path.abspath(__file__))
 ROOT_PATH = os.path.abspath(os.path.join(ENDPOINT_INFO_PATH, ".."))
-API_PATH = os.path.join(ROOT_PATH, "relevanceai/api")
-MODULES = os.listdir(API_PATH)
-MODULES.remove("__pycache__")
+API_PATH = os.path.join(ROOT_PATH, "relevanceai\\api")
+MODULE_PATHS = []
+for root, dirs, files in os.walk(API_PATH):
+    path = root.split(os.sep)
+    for file in files:
+        if file.endswith('.py'):
+            path = os.path.join(os.path.join(API_PATH, file))
+            if os.path.exists(path):
+                MODULE_PATHS.append(path)
+    for dir in dirs:
+        for root, dirs, files in os.walk(os.path.join(API_PATH, dir)):
+            for file in files:
+                if file.endswith('.py'):
+                    path = os.path.join(os.path.join(API_PATH, dir, file))
+                    if os.path.exists(path):
+                        MODULE_PATHS.append(path)
 
 ENDPOINTS = list(
     requests.get("https://gateway-api-aueast.relevance.ai/latest/openapi.json")
@@ -36,8 +49,8 @@ endpoint_in_sdk = []
 endpoint_not_in_sdk = [
     endpoint for endpoint in ENDPOINTS if endpoint not in NOT_NEEDED_ENDPOINTS
 ]
-for module in MODULES:
-    with open(os.path.join(API_PATH, module)) as f:
+for module_path in MODULE_PATHS:
+    with open(os.path.join(module_path), 'r') as f:
         lines = f.readlines()
         for line in lines:
             for endpoint in endpoint_not_in_sdk:
