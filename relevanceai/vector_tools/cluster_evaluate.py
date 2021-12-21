@@ -106,6 +106,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         vector_field: str,
         cluster_alias: str,
         ground_truth_field: str = None,
+        description: bool = False,
     ):
 
         """
@@ -121,6 +122,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             The alias of the clustered labels
         ground_truth_field: string
             The field to use as ground truth
+        description: bool
+            Whether to include description of metrics
         """
 
         (
@@ -135,7 +138,10 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             ground_truth_field=ground_truth_field,
         )
         return self.metrics_from_docs(
-            vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
+            vectors=vectors,
+            cluster_labels=cluster_labels,
+            ground_truth=ground_truth,
+            description=description,
         )
 
     def distribution(
@@ -345,7 +351,9 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return
 
     @staticmethod
-    def metrics_from_docs(vectors, cluster_labels, ground_truth=None):
+    def metrics_from_docs(
+        vectors, cluster_labels, ground_truth=None, description: bool = False
+    ):
         """
         Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness
 
@@ -357,44 +365,57 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             List of cluster labels corresponding to the vectors
         ground_truth: list
             List of ground truth labels for the vectors
+        description: bool
+            Whether to include description of metrics
         """
-        metrics_list = []
-        metrics_list.append(
-            {
-                "Metric": "Silhouette Score",
-                "Value": ClusterEvaluate.silhouette_score(vectors, cluster_labels),
-                "Description": METRIC_DESCRIPTION["Silhouette Score"],
+        if description:
+            metrics_list = []
+            metrics_list.append(
+                {
+                    "Metric": "Silhouette Score",
+                    "Value": ClusterEvaluate.silhouette_score(vectors, cluster_labels),
+                    "Description": METRIC_DESCRIPTION["Silhouette Score"],
+                }
+            )
+            if ground_truth:
+                metrics_list.append(
+                    {
+                        "Metric": "Rand Score",
+                        "Value": ClusterEvaluate.adjusted_rand_score(
+                            ground_truth, cluster_labels
+                        ),
+                        "Description": METRIC_DESCRIPTION["Rand Score"],
+                    }
+                )
+                # metrics_list.append(
+                #     {
+                #         "Metric": "Homogeneity",
+                #         "Value": ClusterEvaluate.homogeneity_score(
+                #             ground_truth, cluster_labels
+                #         ),
+                #         "Description": METRIC_DESCRIPTION["Homogeneity"],
+                #     }
+                # )
+                # metrics_list.append(
+                #     {
+                #         "Metric": "Completeness",
+                #         "Value": ClusterEvaluate.completeness_score(
+                #             ground_truth, cluster_labels
+                #         ),
+                #         "Description": METRIC_DESCRIPTION["Completeness"],
+                #     }
+                # )
+            return metrics_list
+
+        else:
+            return {
+                "Silhouette Score": ClusterEvaluate.silhouette_score(
+                    vectors, cluster_labels
+                ),
+                "Rand Score": ClusterEvaluate.adjusted_rand_score(
+                    ground_truth, cluster_labels
+                ),
             }
-        )
-        if ground_truth:
-            metrics_list.append(
-                {
-                    "Metric": "Rand Score",
-                    "Value": ClusterEvaluate.adjusted_rand_score(
-                        ground_truth, cluster_labels
-                    ),
-                    "Description": METRIC_DESCRIPTION["Rand Score"],
-                }
-            )
-            metrics_list.append(
-                {
-                    "Metric": "Homogeneity",
-                    "Value": ClusterEvaluate.homogeneity_score(
-                        ground_truth, cluster_labels
-                    ),
-                    "Description": METRIC_DESCRIPTION["Homogeneity"],
-                }
-            )
-            metrics_list.append(
-                {
-                    "Metric": "Completeness",
-                    "Value": ClusterEvaluate.completeness_score(
-                        ground_truth, cluster_labels
-                    ),
-                    "Description": METRIC_DESCRIPTION["Completeness"],
-                }
-            )
-        return metrics_list
 
     @staticmethod
     def label_distribution_from_docs(label):

@@ -403,7 +403,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         n_init: int = 10,
         max_iter: int = 300,
         tol: float = 1e-4,
-        verbose: bool = True,
+        verbose: bool = False,
         random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str = "auto",
