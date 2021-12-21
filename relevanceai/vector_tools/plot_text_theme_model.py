@@ -214,7 +214,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         cluster_data = {}
         for i, doc in tqdm(enumerate(docs)):
             cluster_name = doc["_".join([self.cluster_field, vector_field, alias])]
-            cluster_name = cluster_name.replace('-', '_').lower()
+            cluster_name = cluster_name.replace("-", "_").lower()
             if cluster_name not in cluster_data:
                 cluster_data[cluster_name] = {"data": []}
             text = self.normalize_text(
