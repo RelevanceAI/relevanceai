@@ -92,7 +92,7 @@ class Config(DocUtils):
             "enable_logging": True,
             "log_file_name": "relevanceai",
         }
-        config["upload"] = {"target_chunk_mb": 100}
+        config["upload"] = {"target_chunk_mb": 100, "max_chunk_size": 10000}
         config["api"] = {
             "base_url": "https://gateway-api-aueast.relevance.ai/v1",
             "base_ingest_url": "https://ingest-api-dev-aueast.relevance.ai/latest",
