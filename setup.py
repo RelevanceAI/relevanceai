@@ -28,7 +28,7 @@ requirements = [
     "numpy>=1.19.0",
     "joblib>=1.0.0",
     "matplotlib>=3.2.2",
-    "nltk>=3.2.5"
+    "nltk>=3.2.5",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
