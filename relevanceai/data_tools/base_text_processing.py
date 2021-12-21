@@ -31,7 +31,7 @@ class BaseTextProcessing:
 
     @staticmethod
     def get_word_frequency(
-        str_list: str = List[str],
+        str_list: List[str],
         remove_stop_words: bool = True,
         additional_stop_words: List[str] = [],
         language="english",

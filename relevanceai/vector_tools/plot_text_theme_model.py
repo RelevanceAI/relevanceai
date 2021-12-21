@@ -177,7 +177,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         )
 
     def _kmeans_clustering(
-        self, docs, vector_field=str, k: int = 10, alias: str = "kmeans"
+        self, docs: List[dict], vector_field=str, k: int = 10, alias: str = "kmeans"
     ):
         self.logger.info(" * Kmeans Clustering")
         clusterer = KMeans(k=k)
@@ -211,7 +211,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         remove_punct: bool = True,
     ):
         self.logger.info(" * Extracting cluster info")
-        cluster_data = {}
+        cluster_data: dict = {}
         for i, doc in tqdm(enumerate(docs)):
             cluster_name = doc["_".join([self.cluster_field, vector_field, alias])]
             cluster_name = cluster_name.replace("-", "_").lower()
