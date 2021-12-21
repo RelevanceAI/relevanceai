@@ -1,0 +1,29 @@
+{% set name = "RelevanceAI" %}
+{% set version = "0.22.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 03eeed2bc2366ecfe36a29248a7c149e34cb409fe111a43d259c09dea0d37816
+
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+
+about:
+  home: https://relevance.ai
+  license: BSD
+  license_family: BSD
+  summary: Experimentation first vector database
+ 

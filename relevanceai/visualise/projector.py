@@ -61,7 +61,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Cluster args
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
-        cluster_args: Union[None, Dict] = None,
+        cluster_args: Dict = {},
         cluster_on_dr: bool = False,
         # Decoration args
         hover_label: list = [],
@@ -71,7 +71,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         interactive: bool = False,
     ):
         """
-        Plot function for Embedding Projector class
+        Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
         from relevanceai.visualise.dim_reduction import DimReductionBase
@@ -92,15 +92,54 @@ class Projector(BatchAPIClient, _Base, DocUtils):
                     hover_label,
                     cluster, cluster_args,
                     )
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field : list
+            Vector field to plot
+        number_of_points_to_render: int
+            Number of vector fields to plot
+        vector_label: string
+            Field to use as label to describe vector on plot
+        dr: string
+            Method of dimension reduction for vectors
+        dims: int
+            Number of dimensions to reduce to
+        dr_args: dict
+            Additional arguments for dimension reduction
+        cluster: string
+            Method of clustering for vectors
+        num_clusters: string
+            Number of clusters to create
+        cluster_args: dict
+            Additional arguments for clustering
+        cluster_on_dr: int
+            Whether to cluster on the dimension reduced or original vectors
+        hover_label: list
+            Additional labels to include as plot labels
+        show_image: bool
+            Whether vector labels are image urls
+        label_char_length: int
+            Maximum length of text for each hover label
+        marker_size: int
+            Marker size of the plot
+        interactive: bool
+            Whether to include interactive features including nearest neighbours
+
         """
+
         # Check vector field
         self._is_valid_vector_name(dataset_id, vector_field)
 
         # Check vector label field
         if vector_label is None:
             self.logger.warning("A vector_label has not been specified.")
+            vector_label_field = []
         else:
             self._is_valid_label_name(dataset_id, vector_label)
+            vector_label_field = [vector_label]
 
         # Check hover label field
         [self._is_valid_label_name(dataset_id, label) for label in hover_label]
@@ -109,7 +148,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             dataset_id,
             number_of_documents=number_of_points_to_render,
             batch_size=1000,
-            select_fields=["_id", vector_field, vector_label] + hover_label,
+            select_fields=["_id", vector_field] + vector_label_field + hover_label,
         )
         docs = self._remove_empty_vector_fields(docs, vector_field)
 
@@ -145,7 +184,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Cluster args
         cluster: Union[CLUSTER, ClusterBase] = None,
         num_clusters: Union[None, int] = 10,
-        cluster_args: Union[None, Dict] = None,
+        cluster_args: Dict = {},
         cluster_on_dr: bool = False,
         # Decoration args
         hover_label: list = [],
@@ -157,7 +196,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
     ):
 
         # Adjust vector label
-        if show_image is False:
+        if show_image is False and vector_label:
             self.set_field_across_documents(
                 vector_label,
                 [i[vector_label][:label_char_length] + "..." for i in docs],
@@ -177,7 +216,10 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
 
         # Set hover labels
-        hover_label = ["_id", vector_label] + hover_label
+        if vector_label:
+            hover_label = ["_id", vector_label] + hover_label
+        else:
+            hover_label = ["_id"] + hover_label
 
         # Cluster vectors
         if cluster:
@@ -232,7 +274,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
     def _generate_plot_data(
         self,
         embedding_df: pd.DataFrame,
-        hover_label: List[Optional[str]],
+        hover_label: List[str],
         dims: int,
         marker_size: int,
         cluster: Union[

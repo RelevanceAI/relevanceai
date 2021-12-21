@@ -1,5 +1,5 @@
 from relevanceai.base import _Base
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 
 class CentroidsClient(_Base):
@@ -11,7 +11,7 @@ class CentroidsClient(_Base):
     def list(
         self,
         dataset_id: str,
-        vector_field: str,
+        vector_fields: List,
         alias: str = "default",
         page_size: int = 5,
         cursor: str = None,
@@ -25,7 +25,7 @@ class CentroidsClient(_Base):
         ----------
         dataset_id : string
             Unique name of dataset
-        vector_field: string
+        vector_fields: list
             The vector field where a clustering task was run.
         alias: string
             Alias is used to name a cluster
@@ -38,10 +38,10 @@ class CentroidsClient(_Base):
         """
         return self.make_http_request(
             "/services/cluster/centroids/list",
-            method="GET",
+            method="POST",
             parameters={
                 "dataset_id": dataset_id,
-                "vector_field": vector_field,
+                "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
@@ -53,8 +53,8 @@ class CentroidsClient(_Base):
     def get(
         self,
         dataset_id: str,
-        cluster_ids: list,
-        vector_field: str,
+        cluster_ids: List,
+        vector_fields: List,
         alias: str = "default",
         page_size: int = 5,
         cursor: str = None,
@@ -83,7 +83,7 @@ class CentroidsClient(_Base):
             parameters={
                 "dataset_id": dataset_id,
                 "cluster_ids": cluster_ids,
-                "vector_field": vector_field,
+                "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
@@ -93,8 +93,8 @@ class CentroidsClient(_Base):
     def insert(
         self,
         dataset_id: str,
-        cluster_centers: list,
-        vector_field: str,
+        cluster_centers: List,
+        vector_fields: List,
         alias: str = "default",
     ):
         """
@@ -116,7 +116,7 @@ class CentroidsClient(_Base):
             parameters={
                 "dataset_id": dataset_id,
                 "cluster_centers": cluster_centers,
-                "vector_field": vector_field,
+                "vector_fields": vector_fields,
                 "alias": alias,
             },
         )
@@ -124,8 +124,8 @@ class CentroidsClient(_Base):
     def documents(
         self,
         dataset_id: str,
-        cluster_ids: list,
-        vector_field: str,
+        cluster_ids: List,
+        vector_fields: List,
         alias: str = "default",
         page_size: int = 5,
         cursor: str = None,
@@ -142,7 +142,7 @@ class CentroidsClient(_Base):
             Unique name of dataset
         cluster_ids : list
             List of cluster IDs
-        vector_field: string
+        vector_fields: list
             The vector field where a clustering task was run.
         alias: string
             Alias is used to name a cluster
@@ -164,7 +164,7 @@ class CentroidsClient(_Base):
             parameters={
                 "dataset_id": dataset_id,
                 "cluster_ids": cluster_ids,
-                "vector_field": vector_field,
+                "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
@@ -177,7 +177,7 @@ class CentroidsClient(_Base):
     def metadata(
         self,
         dataset_id: str,
-        vector_field: str,
+        vector_fields: List,
         alias: str = "default",
         metadata: Optional[Dict[str, Any]] = None,
     ):
@@ -204,7 +204,7 @@ class CentroidsClient(_Base):
                 method="GET",
                 parameters={
                     "dataset_id": dataset_id,
-                    "vector_field": vector_field,
+                    "vector_fields": vector_fields,
                     "alias": alias,
                 },
             )
@@ -214,7 +214,7 @@ class CentroidsClient(_Base):
                 method="POST",
                 parameters={
                     "dataset_id": dataset_id,
-                    "vector_field": vector_field,
+                    "vector_fields": vector_fields,
                     "alias": alias,
                     "metadata": metadata,
                 },
@@ -223,8 +223,8 @@ class CentroidsClient(_Base):
     def list_closest_to_center(
         self,
         dataset_id: str,
-        vector_field: str,
-        cluster_ids: list,
+        vector_fields: List,
+        cluster_ids: List = [],
         alias: str = "default",
         select_fields: list = [],
         approx: int = 0,
@@ -281,7 +281,7 @@ class CentroidsClient(_Base):
 
         parameters = {
             "dataset_id": dataset_id,
-            "vector_field": vector_field,
+            "vector_fields": vector_fields,
             "alias": alias,
             "cluster_ids": cluster_ids,
             "select_fields": select_fields,
@@ -312,17 +312,17 @@ class CentroidsClient(_Base):
     def list_furthest_from_center(
         self,
         dataset_id: str,
-        vector_field: str,
-        cluster_ids: list,
+        vector_fields: str,
+        cluster_ids: List = [],
         alias: str = "default",
-        select_fields: list = [],
+        select_fields: List = [],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [],
-        facets: list = [],
+        filters: List = [],
+        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -335,9 +335,9 @@ class CentroidsClient(_Base):
         ----------
         dataset_id: string
             Unique name of dataset
-        vector_field: string
+        vector_fields: list
             The vector field where a clustering task was run.
-        cluster_ids: lsit
+        cluster_ids: list
             Any of the cluster ids
         alias: string
             Alias is used to name a cluster
@@ -372,7 +372,7 @@ class CentroidsClient(_Base):
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,
-            "vector_field": vector_field,
+            "vector_fields": vector_fields,
             "alias": alias,
             "cluster_ids": cluster_ids,
             "select_fields": select_fields,
@@ -400,3 +400,67 @@ class CentroidsClient(_Base):
         return response
 
     docs_furthest_from_center = list_furthest_from_center
+
+    def delete(
+        self,
+        dataset_id: str,
+        vector_fields: List,
+        alias: str = "default",
+    ):
+        """
+        Delete centroids by dataset ID, vector field and alias
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: string
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+        """
+        return self.make_http_request(
+            "/services/cluster/centroids/delete",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_fields,
+                "alias": alias,
+            },
+        )
+
+    def update(
+        self,
+        dataset_id: str,
+        vector_fields: List,
+        id: str,
+        update: dict = {},
+        alias: str = "default",
+    ):
+        """
+        Delete centroids by dataset ID, vector field and alias
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: List
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+        id: string
+            The centroid ID
+        update: dict
+            The update to be applied to the document
+        """
+        return self.make_http_request(
+            "/services/cluster/centroids/update",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_fields": vector_fields,
+                "alias": alias,
+                "id": id,
+                "update": update,
+            },
+        )

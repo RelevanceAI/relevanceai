@@ -13,3 +13,7 @@ def generate_random_string(N: int = 5) -> str:
 def generate_random_vector(N: int = 512) -> List[float]:
     """Generate a random list of floats"""
     return [random.random() for _ in range(N)]
+
+
+def generate_random_label(N: int = 5) -> str:
+    return f"label_{random.randint(0, N)}"
