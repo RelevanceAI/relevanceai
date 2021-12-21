@@ -11,7 +11,6 @@ from relevanceai.logger import LoguruLogger
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.data_tools.base_text_processing import BaseTextProcessing
-from relevanceai.vector_tools.dim_reduction import Ivis
 from ivis import Ivis
 
 
@@ -41,7 +40,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         self.language = language
         super().__init__(project, api_key)
 
-    def build_and_plot_clusters(
+    def _build_and_plot_clusters(
         self,
         vector_field: str,
         text_field: str,
@@ -60,13 +59,13 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         alpha: float = 0.2,
     ):
         # get documents
-        docs = self.get_documents(
+        docs = self._get_documents(
             vector_field=vector_field, text_field=text_field, max_doc_num=max_doc_num
         )
 
         # perform kmeans clustering
         alias = alias + "_" + str(k)
-        centers, clustered_docs = self.kmeans_clustering(
+        centers, clustered_docs = self._kmeans_clustering(
             docs=docs, vector_field=vector_field, k=k, alias=alias
         )
         for i, cl_doc in enumerate(tqdm(clustered_docs)):
@@ -75,7 +74,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             ][vector_field][alias]
 
         # get cluster data
-        cluster_data = self.get_cluster_datafield(
+        cluster_data = self._get_cluster_datafield(
             docs=docs,
             vector_field=vector_field,
             text_field=text_field,
@@ -84,7 +83,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             remove_digit=remove_digit,
             remove_punct=remove_punct,
         )
-        clusters_top_n_words = self.get_cluster_word_freq(
+        clusters_top_n_words = self._get_cluster_word_freq(
             cluster_data=cluster_data,
             remove_stop_words=remove_stop_words,
             additional_stop_words=additional_stop_words,
@@ -96,7 +95,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         # dimensionality reduction
         # 1) Fit the model and reduce vector size
         vectors = self.get_field_across_documents(vector_field, docs)
-        dr_docs = self.dim_reduction(
+        dr_docs = self._dim_reduction(
             vector_data=vectors,
             embedding_dims=self.embedding_dims,
             k=self.dim_red_k,
@@ -106,7 +105,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             docs[i][vector_field + "_dr_vector_"] = dr.tolist()
         # 2) reduce center vector size
         vectors = [c["centroid_vector_"] for c in centers]
-        dr_centers = self.dim_reduction(
+        dr_centers = self._dim_reduction(
             vector_data=vectors,
             embedding_dims=self.embedding_dims,
             k=self.dim_red_k,
@@ -117,7 +116,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             c["centroid_dr_vector_"] = dr_centers[i]
 
         # plot
-        self.plot_clusters(
+        self._plot_clusters(
             docs,
             dr_docs,
             centers,
@@ -131,7 +130,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             alpha=alpha,
         )
 
-    def get_documents(
+    def _get_documents(
         self, vector_field: str, text_field: str, max_doc_num: int = None
     ):
         self.logger.info(" * Loading documents")
@@ -146,13 +145,13 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         fields = [vector_field, text_field]
         if max_doc_num:
             page_size = 200 if max_doc_num > 200 else max_doc_num
-            batch_doc = self.batch_load_docs(
+            batch_doc = self._batch_load_docs(
                 fields=fields, filters=filters, page_size=page_size
             )
             docs = batch_doc["documents"]
             cursor = batch_doc["cursor"]
             while batch_doc["documents"] != [] and len(docs) > max_doc_num - page_size:
-                batch_doc = self.batch_load_docs(
+                batch_doc = self._batch_load_docs(
                     fields=fields, filters=filters, page_size=page_size, cursor=cursor
                 )
                 docs.extend(batch_doc["documents"])
@@ -162,7 +161,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             )
         return docs
 
-    def batch_load_docs(
+    def _batch_load_docs(
         self,
         fields: List[str],
         filters: List[dict] = [],
@@ -177,7 +176,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             cursor=cursor,
         )
 
-    def kmeans_clustering(
+    def _kmeans_clustering(
         self, docs, vector_field=str, k: int = 10, alias: str = "kmeans"
     ):
         self.logger.info(" * Kmeans Clustering")
@@ -196,12 +195,12 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         return centers, clustered_docs
 
     @staticmethod
-    def get_field_value_by_id(docs: List[dict], id: str, field: str):
+    def _get_field_value_by_id(docs: List[dict], id: str, field: str):
         for doc in docs:
             if doc["_id"] == id:
                 return DocUtils.get_field(field, doc)
 
-    def get_cluster_datafield(
+    def _get_cluster_datafield(
         self,
         docs: List[dict],
         vector_field: str,
@@ -215,10 +214,11 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         cluster_data = {}
         for i, doc in tqdm(enumerate(docs)):
             cluster_name = doc["_".join([self.cluster_field, vector_field, alias])]
+            cluster_name = cluster_name.replace('-', '_').lower()
             if cluster_name not in cluster_data:
                 cluster_data[cluster_name] = {"data": []}
             text = self.normalize_text(
-                txt=self.get_field_value_by_id(docs, id=doc["_id"], field=text_field),
+                txt=self._get_field_value_by_id(docs, id=doc["_id"], field=text_field),
                 lower=lower,
                 remove_digit=remove_digit,
                 remove_punct=remove_punct,
@@ -227,12 +227,12 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         return cluster_data
 
     @staticmethod
-    def get_cluster_population(cluster_data: dict):
+    def _get_cluster_population(cluster_data: dict):
         return [
             (cluster_name, len(v["data"])) for cluster_name, v in cluster_data.items()
         ]
 
-    def get_cluster_word_freq(
+    def _get_cluster_word_freq(
         self,
         cluster_data: dict,
         remove_stop_words: bool = True,
@@ -251,7 +251,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             for c in cluster_data
         }
 
-    def dim_reduction(
+    def _dim_reduction(
         self,
         vector_data: List,
         embedding_dims=2,
@@ -272,7 +272,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             dr_docs = self.dr_model.transform(vector_data)
         return dr_docs
 
-    def plot_clusters(
+    def _plot_clusters(
         self,
         docs: List[dict],
         dr_docs: List,
@@ -352,7 +352,7 @@ def build_and_plot_clusters(
         n_epochs_without_progress=n_epochs_without_progress,
         language=language,
     )
-    return model.build_and_plot_clusters(
+    return model._build_and_plot_clusters(
         vector_field=vector_field,
         text_field=text_field,
         max_doc_num=max_doc_num,
