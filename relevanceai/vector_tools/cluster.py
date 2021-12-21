@@ -519,7 +519,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
-            vector_field=vector_fields[0],
+            vector_fields=vector_fields,
             alias=alias,
         )
         self.logger.info(results)
