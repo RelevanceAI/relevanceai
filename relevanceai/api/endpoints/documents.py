@@ -293,7 +293,6 @@ class DocumentsClient(_Base):
         updates: list,
         insert_date: bool = True,
         return_documents: bool = False,
-        base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
 
         """
@@ -311,6 +310,8 @@ class DocumentsClient(_Base):
             Include the inserted IDs in the response
 
         """
+
+        base_url = self.config.get_option("api.ingest_url")
 
         if return_documents is False:
             return self.make_http_request(
