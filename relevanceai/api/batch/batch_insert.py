@@ -26,7 +26,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
-        show_progress_bar: bool = True,
+        show_progress_bar: bool = False,
         chunksize=0,
         *args,
         **kwargs,
@@ -93,7 +93,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
-        show_progress_bar=True,
+        show_progress_bar=False,
         *args,
         **kwargs,
     ):
