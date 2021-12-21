@@ -136,8 +136,10 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Check vector label field
         if vector_label is None:
             self.logger.warning("A vector_label has not been specified.")
+            vector_label_field = []
         else:
             self._is_valid_label_name(dataset_id, vector_label)
+            vector_label_field = [vector_label]
 
         # Check hover label field
         [self._is_valid_label_name(dataset_id, label) for label in hover_label]
@@ -146,7 +148,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             dataset_id,
             number_of_documents=number_of_points_to_render,
             batch_size=1000,
-            select_fields=["_id", vector_field, vector_label] + hover_label,
+            select_fields=["_id", vector_field] + vector_label_field + hover_label,
         )
         docs = self._remove_empty_vector_fields(docs, vector_field)
 
@@ -194,7 +196,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
     ):
 
         # Adjust vector label
-        if show_image is False:
+        if show_image is False and vector_label:
             self.set_field_across_documents(
                 vector_label,
                 [i[vector_label][:label_char_length] + "..." for i in docs],
@@ -214,7 +216,10 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
 
         # Set hover labels
-        hover_label = ["_id", vector_label] + hover_label
+        if vector_label:
+            hover_label = ["_id", vector_label] + hover_label
+        else:
+            hover_label = ["_id"] + hover_label
 
         # Cluster vectors
         if cluster:
@@ -269,7 +274,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
     def _generate_plot_data(
         self,
         embedding_df: pd.DataFrame,
-        hover_label: List[Optional[str]],
+        hover_label: List[str],
         dims: int,
         marker_size: int,
         cluster: Union[
