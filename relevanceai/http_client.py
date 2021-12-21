@@ -81,6 +81,14 @@ class Client(BatchAPIClient, DocUtils):
     def base_url(self, value):
         CONFIG.set_option("api.base_url", value)
 
+    @property
+    def base_ingest_url(self):
+        return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
+
+    @base_ingest_url.setter
+    def base_ingest_url(self, value):
+        CONFIG.set_option("api.base_ingest_url", value)
+
     def _token_to_auth(self):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")

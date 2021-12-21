@@ -288,7 +288,6 @@ class DatasetsClient(_Base):
         update_schema: bool = True,
         field_transformers=[],
         return_documents: bool = False,
-        base_url="https://ingest-api-dev-aueast.relevance.ai/latest",
     ):
         """
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
@@ -323,6 +322,9 @@ class DatasetsClient(_Base):
             >>>    "split_sentences": true
             >>> }
         """
+
+        base_url = self.config.get_option("api.base_ingest_url")
+
         if return_documents is False:
             return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
