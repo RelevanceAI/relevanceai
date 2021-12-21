@@ -323,7 +323,7 @@ class DatasetsClient(_Base):
             >>> }
         """
 
-        base_url = self.config.get_option("api.ingest_url")
+        base_url = self.config.get_option("api.base_ingest_url")
 
         if return_documents is False:
             return self.make_http_request(
