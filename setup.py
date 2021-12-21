@@ -1,5 +1,4 @@
 import os
-import uuid
 from datetime import datetime
 from setuptools import find_packages, setup
 
@@ -24,7 +23,7 @@ requirements = [
     "tqdm>=4.49.0",
     "pandas>=1.0.0",
     "loguru>=0.5.3",
-    "document-utils>=1.5.0",
+    "document-utils>=1.6.1",
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",

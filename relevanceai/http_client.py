@@ -81,6 +81,14 @@ class Client(BatchAPIClient, DocUtils):
     def base_url(self, value):
         CONFIG.set_option("api.base_url", value)
 
+    @property
+    def base_ingest_url(self):
+        return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
+
+    @base_ingest_url.setter
+    def base_ingest_url(self, value):
+        CONFIG.set_option("api.base_ingest_url", value)
+
     def _token_to_auth(self):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
@@ -90,9 +98,7 @@ class Client(BatchAPIClient, DocUtils):
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(
-                f"Authorization token (you can find it here: {SIGNUP_URL} )"
-            )
+            token = getpass.getpass(f"Auth token:")
             project = token.split(":")[0]
             api_key = token.split(":")[1]
             self._write_credentials(project, api_key)
