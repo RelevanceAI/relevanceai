@@ -205,6 +205,15 @@ class Transport:
                     )
                     raise APIError(response.content.decode())
 
+                # Input error
+                elif response.status_code == 422:
+                    self._log_response_fail(
+                        base_url,
+                        endpoint,
+                        response.status_code,
+                        response.content.decode(),
+                    )
+                    raise APIError(response.content.decode())
                 # Retry other errors
                 else:
                     self._log_response_fail(
