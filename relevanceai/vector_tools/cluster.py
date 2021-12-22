@@ -334,6 +334,9 @@ class HDBSCANClusterer(DensityCluster):
 class HierarchicalClusterer(DensityCluster):
     def __init__(
         self,
+        instance=None,
+        dataset_id=None,
+        vector_field=None,
         n_clusters: Union[int, None] = None,
         affinity: str = 'euclidean',
         memory = Memory(cachedir=None),
@@ -343,6 +346,9 @@ class HierarchicalClusterer(DensityCluster):
         compute_distances: bool = True,
         dendrogram_plot_args: Union[dict, None] = None,
     ):
+        self.instance = instance
+        self.dataset_id = dataset_id
+        self.vector_field = vector_field
         self.n_clusters = n_clusters
         self.affinity = affinity
         self.memory = memory
@@ -418,7 +424,7 @@ class HierarchicalClusterer(DensityCluster):
     def plot_dendrogram_plotly(self, vectors, **kwargs):
         try:
             import plotly.figure_factory as ff
-
+            from ..visualise.dendrogram import Dendrogram
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
                 f"{e}\nInstall Hierarchical Clustering\n \
@@ -432,15 +438,17 @@ class HierarchicalClusterer(DensityCluster):
         else:
             layout_args = {}
 
-        fig = ff.create_dendrogram(vectors, **kwargs)
-        fig.update_layout(**layout_args)
-        fig.show()
-        return fig
+        fig = Dendrogram(vectors, self.instance, self.dataset_id, self.vector_field, **kwargs)
+
+        graph = fig.get()
+        
+        return graph
 
     def plot_dendrogram_matplotlib(self, model, **kwargs):
         try:
             from scipy.cluster.hierarchy import dendrogram
             import matplotlib.pyplot as plt
+            from matplotlib.backend_bases import MouseButton
 
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
@@ -458,13 +466,53 @@ class HierarchicalClusterer(DensityCluster):
                 else:
                     current_count += counts[child_idx - n_samples]
             counts[i] = current_count
-
+        
         linkage_matrix = np.column_stack(
             [model.children_, model.distances_, counts]
         ).astype(float)
 
         # Plot the corresponding dendrogram
         dendrogram(linkage_matrix, **kwargs)
+
+
+        from matplotlib.patches import Rectangle
+        class Annotate(object):
+            def __init__(self, model, linkage_matrix):
+                self.ax = plt.gca()
+                self.rect = Rectangle((0,0), 1, 1)
+
+                self.model = model
+                self.linkage_matrix = linkage_matrix
+
+                self.x0 = None
+                self.y0 = None
+                self.x1 = None
+                self.y1 = None
+                self.ax.add_patch(self.rect)
+                self.ax.figure.canvas.mpl_connect('button_press_event', self.on_press)
+                self.ax.figure.canvas.mpl_connect('button_release_event', self.on_release)
+                binding_id = self.ax.figure.canvas.mpl_connect('motion_notify_event', self.on_move)
+
+            def on_press(self, event):
+                print('press')
+                self.x0 = event.xdata
+                self.y0 = event.ydata
+
+            def on_release(self, event):
+                print('release')
+                self.x1 = event.xdata
+                self.y1 = event.ydata
+
+                width = self.x1 - self.x0
+                self.rect.set_width(width)
+
+                height = self.y1 - self.y0
+                self.rect.set_height(height)
+
+                self.rect.set_xy((self.x0, self.y0))
+                self.ax.figure.canvas.draw()
+            
+        a = Annotate(model, linkage_matrix)
         plt.show()
 
 class Cluster(BatchAPIClient, ClusterBase):
@@ -779,7 +827,6 @@ class Cluster(BatchAPIClient, ClusterBase):
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False, 
-        dendrogram_plot_args: Union[dict, None] = None,
     ):
         """
         This function performs all the steps required for hierarchical clustering:
@@ -867,12 +914,6 @@ class Cluster(BatchAPIClient, ClusterBase):
             n_clusters = 10
             distance_threshold = None
 
-        if dendrogram_plot_args is not None and 'labels' in dendrogram_plot_args:
-            dendrogram_plot_args['labels'] = [sample[dendrogram_plot_args['labels']] for sample in docs]
-
-        if dendrogram_plot_args is not None and 'hovertext' in dendrogram_plot_args:
-            dendrogram_plot_args['hovertext'] = [sample[dendrogram_plot_args['labels']] for sample in docs]
-
         # Cluster
         self.clusterer = HierarchicalClusterer(
             n_clusters=n_clusters,
@@ -882,7 +923,6 @@ class Cluster(BatchAPIClient, ClusterBase):
             linkage=linkage,
             distance_threshold=distance_threshold,
             compute_distances=compute_distances,
-            dendrogram_plot_args=dendrogram_plot_args
         )
         clustered_docs = self.clusterer.fit_documents(
             vector_fields, docs, alias=alias, return_only_clusters=True

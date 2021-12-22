@@ -1,5 +1,11 @@
+import json
+from traceback import print_tb
+
 import dash
 from dash import html
+from dash import dcc
+from dash.dependencies import Input, Output
+
 from relevanceai.visualise.dash_components.sections.header import build_header
 from relevanceai.visualise.dash_components.sections.display_panel import (
     build_display_panel,
@@ -52,3 +58,44 @@ def create_dash_graph(
     if interactive:
         neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
     app.run_server(mode="inline")
+
+
+def create_dendrogram_tree(
+    fig,
+    services,
+    dataset_id,
+    field_name,
+    node_label
+):
+    app = JupyterDash(__name__)
+
+    app.layout = html.Div([
+        dcc.Graph(
+            id='dendrogram',
+            figure=fig,
+        ),
+        html.H1(
+            id='body-div',
+            style={
+                'textAlign': 'center'
+            }
+        )
+    ])
+
+    @app.callback(
+        Output('body-div', 'children'),
+        [Input('dendrogram', 'hoverData')])
+    def display_hover_data(hoverData):
+        if hoverData is not None:
+            x = hoverData['points'][0]['x']
+            y = hoverData['points'][0]['y']
+            index = [index for index, node in enumerate(fig.data) if node['x'][0] == x and node['y'][0] == y][0]
+            text = fig.data[index].text
+            if text is not None:
+                mean_vec = json.loads(text)
+                mean_vec = [value for value in mean_vec.values()]
+                mvq = {'vector': mean_vec, 'fields': field_name}
+                search = services.search.vector(dataset_id, [mvq], page_size=1)
+        return search['results'][0][node_label]
+
+    app.run_server(debug=True)
