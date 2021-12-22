@@ -53,7 +53,7 @@ class Client(BatchAPIClient, DocUtils):
             if self.check_auth():
 
                 WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
-                print(self.WELCOME_MESSAGE)
+                print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
