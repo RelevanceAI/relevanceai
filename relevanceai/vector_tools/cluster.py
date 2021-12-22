@@ -2,15 +2,16 @@
 
 from abc import abstractmethod
 import numpy as np
-import warnings
 
 from typing import List, Union, Dict, Any, Optional
 from doc_utils import DocUtils
 from joblib.memory import Memory
+
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.errors import ClusteringResultsAlreadyExistsError
+from relevanceai.vector_tools.cluster_evaluate import ClusterEvaluate
 
 
 class ClusterBase(LoguruLogger, DocUtils):
@@ -142,7 +143,7 @@ class CentroidCluster(ClusterBase):
         if isinstance(self.centers, np.ndarray):
             self.centers = self.centers.tolist()
         return [
-            {"_id": f"cluster_{i}", "centroid_vector_": self.centers[i]}
+            {"_id": self._label_cluster(i), "centroid_vector_": self.centers[i]}
             for i in range(len(self.centers))
         ]
 
@@ -306,8 +307,8 @@ class HDBSCANClusterer(DensityCluster):
         leaf_size: int = 40,
         memory=Memory(cachedir=None),
         metric: str = "euclidean",
-        min_samples=None,
-        p=None,
+        min_samples: int = None,
+        p: float = None,
         min_cluster_size: Union[None, int] = 10,
     ):
         self.algorithm = algorithm
@@ -347,7 +348,7 @@ class HDBSCANClusterer(DensityCluster):
         return cluster_labels
 
 
-class Cluster(BatchAPIClient, ClusterBase):
+class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -370,28 +371,24 @@ class Cluster(BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Union[None, dict],
+        cluster_args: Dict = {},
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
         Cluster vectors
         """
         if isinstance(cluster, str):
-            if cluster_args is None:
+            if cluster_args == {}:
                 cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
             if cluster in ["kmeans", "kmedoids"]:
-                if (k is None and cluster_args is None) or (
-                    "n_clusters" not in cluster_args.keys()
-                ):
+                if k is None and cluster_args is None:
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
                     return KMeans(k=k, **cluster_args).fit_transform(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
-                    # return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)
             elif cluster == "hdbscan":
                 return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
-
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
         raise ValueError("Not valid cluster input.")
@@ -463,6 +460,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
+
         if alias is None:
             alias = "kmeans_" + str(k)
 
@@ -482,7 +480,7 @@ class Cluster(BatchAPIClient, ClusterBase):
             }
         ]
         # load the documents
-        warnings.warn(
+        self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
         )
         docs = self.get_all_documents(
@@ -521,7 +519,7 @@ class Cluster(BatchAPIClient, ClusterBase):
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
-            vector_field=vector_fields[0],
+            vector_fields=vector_fields,
             alias=alias,
         )
         self.logger.info(results)

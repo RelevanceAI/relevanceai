@@ -22,7 +22,7 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     cluster_centers = cluster.get_centroid_docs()
     test_client.services.cluster.centroids.insert(
         test_sample_vector_dataset,
-        vector_field=VECTOR_FIELD,
+        vector_fields=[VECTOR_FIELD],
         alias=ALIAS,
         cluster_centers=cluster_centers,
     )
