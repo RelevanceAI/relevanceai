@@ -18,6 +18,7 @@ from relevanceai.vector_tools.cluster import KMeans
 vis_requirements = False
 try:
     from relevanceai.visualise.projector import Projector
+
     vis_requirements = True
 except ModuleNotFoundError as e:
     # warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
