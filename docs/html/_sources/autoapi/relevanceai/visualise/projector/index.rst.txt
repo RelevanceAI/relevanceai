@@ -22,23 +22,23 @@ Attributes
 
 .. autoapisummary::
 
+   relevanceai.visualise.projector.chained_assignment
    relevanceai.visualise.projector.RELEVANCEAI_BLUE
-   relevanceai.visualise.projector.MARKER_SIZE
 
+
+.. py:data:: chained_assignment
+   
+
+   
 
 .. py:data:: RELEVANCEAI_BLUE
    :annotation: = #1854FF
 
    
 
-.. py:data:: MARKER_SIZE
-   :annotation: = 5
-
-   
-
 .. py:class:: Projector(project, api_key)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`relevanceai.base.Base`, :py:obj:`doc_utils.DocUtils`
+   Bases: :py:obj:`relevanceai.utils.Utils`, :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`relevanceai.base._Base`, :py:obj:`doc_utils.DocUtils`
 
    Projector class.
 
@@ -51,15 +51,15 @@ Attributes
    >>> client.projector.plot(
            dataset_id, vector_field, number_of_points_to_render, random_state,
            dr, dr_args, dims,
-           vector_label, vector_label_char_length,
+           vector_label, label_char_length,
            color_label, colour_label_char_length,
            hover_label,
            cluster, cluster_args,
            )
 
-   .. py:method:: plot(self, dataset_id: str, vector_field: str, number_of_points_to_render: int = 1000, random_state: int = 0, dr: Union[relevanceai.vector_tools.constants.DIM_REDUCTION, relevanceai.vector_tools.dim_reduction.DimReductionBase] = 'pca', dr_args: Union[None, Dict] = None, dims: typing_extensions.Literal[2, 3] = 3, vector_label: Union[None, str] = None, vector_label_char_length: Union[None, int] = 50, colour_label: Union[None, str] = None, colour_label_char_length: Union[None, int] = 20, hover_label: List[str] = [], cluster: Union[relevanceai.vector_tools.constants.CLUSTER, relevanceai.vector_tools.cluster.ClusterBase] = None, cluster_args: Union[None, Dict] = None, num_clusters: Union[None, int] = 10, marker_colour: str = RELEVANCEAI_BLUE, marker_size: int = MARKER_SIZE)
+   .. py:method:: plot(self, dataset_id: str, vector_field: str, number_of_points_to_render: int = 1000, vector_label: relevanceai.vector_tools.constants.Union[None, str] = None, dr: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.DIM_REDUCTION, relevanceai.vector_tools.dim_reduction.DimReductionBase] = 'pca', dims: relevanceai.vector_tools.constants.Literal[2, 3] = 3, dr_args: relevanceai.vector_tools.constants.Union[None, relevanceai.vector_tools.constants.Dict] = None, cluster: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.CLUSTER, relevanceai.vector_tools.cluster.ClusterBase] = None, num_clusters: relevanceai.vector_tools.constants.Union[None, int] = 10, cluster_args: relevanceai.vector_tools.constants.Dict = {}, cluster_on_dr: bool = False, hover_label: list = [], show_image: bool = False, label_char_length: int = 50, marker_size: int = 5, interactive: bool = False)
 
-      Plot function for Embedding Projector class
+      Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours
 
       To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
       from relevanceai.visualise.dim_reduction import DimReductionBase
@@ -76,45 +76,64 @@ Attributes
       >>> client.projector.plot(
               dataset_id, vector_field, number_of_points_to_render, random_state,
               dr, dr_args, dims,
-              vector_label, vector_label_char_length,
+              vector_label, label_char_length,
               color_label, colour_label_char_length,
               hover_label,
               cluster, cluster_args,
               )
 
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param vector_field: Vector field to plot
+      :type vector_field: list
+      :param number_of_points_to_render: Number of vector fields to plot
+      :type number_of_points_to_render: int
+      :param vector_label: Field to use as label to describe vector on plot
+      :type vector_label: string
+      :param dr: Method of dimension reduction for vectors
+      :type dr: string
+      :param dims: Number of dimensions to reduce to
+      :type dims: int
+      :param dr_args: Additional arguments for dimension reduction
+      :type dr_args: dict
+      :param cluster: Method of clustering for vectors
+      :type cluster: string
+      :param num_clusters: Number of clusters to create
+      :type num_clusters: string
+      :param cluster_args: Additional arguments for clustering
+      :type cluster_args: dict
+      :param cluster_on_dr: Whether to cluster on the dimension reduced or original vectors
+      :type cluster_on_dr: int
+      :param hover_label: Additional labels to include as plot labels
+      :type hover_label: list
+      :param show_image: Whether vector labels are image urls
+      :type show_image: bool
+      :param label_char_length: Maximum length of text for each hover label
+      :type label_char_length: int
+      :param marker_size: Marker size of the plot
+      :type marker_size: int
+      :param interactive: Whether to include interactive features including nearest neighbours
+      :type interactive: bool
 
-   .. py:method:: plot_from_docs(self, docs: List[Dict[str, Any]], dims: int, marker_size: int, marker_colour: str, *args, **kwargs)
+
+   .. py:method:: plot_from_docs(self, docs: relevanceai.vector_tools.constants.List[relevanceai.vector_tools.constants.Dict], vector_field: str, vector_label: relevanceai.vector_tools.constants.Union[None, str] = None, dr: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.DIM_REDUCTION, relevanceai.vector_tools.dim_reduction.DimReductionBase] = 'pca', dims: relevanceai.vector_tools.constants.Literal[2, 3] = 3, dr_args: relevanceai.vector_tools.constants.Union[None, relevanceai.vector_tools.constants.Dict] = None, cluster: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.CLUSTER, relevanceai.vector_tools.cluster.ClusterBase] = None, num_clusters: relevanceai.vector_tools.constants.Union[None, int] = 10, cluster_args: relevanceai.vector_tools.constants.Dict = {}, cluster_on_dr: bool = False, hover_label: list = [], show_image: bool = False, label_char_length: int = 50, marker_size: int = 5, dataset_name: relevanceai.vector_tools.constants.Union[None, str] = None, interactive: bool = False)
 
 
-   .. py:method:: _get_vector_fields(self) -> List[str]
-
-      Returns list of valid vector fields from dataset schema
+   .. py:method:: _generate_plot_data(self, embedding_df: pandas.DataFrame, hover_label: relevanceai.vector_tools.constants.List[str], dims: int, marker_size: int, cluster: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.Literal[kmeans], relevanceai.vector_tools.constants.Literal[kmedoids], relevanceai.vector_tools.constants.Literal[hdbscan], relevanceai.vector_tools.cluster.ClusterBase, None], label_char_length: int)
 
 
-   .. py:method:: _is_valid_vector_name(self, vector_name: str) -> bool
-
-      Check vector field name is valid
+   .. py:method:: _generate_layout(self, plot_title)
 
 
-   .. py:method:: _is_valid_label_name(self, label_name: str) -> bool
-
-      Check vector label name is valid. Checks that it is either numeric or text
+   .. py:method:: _generate_plot_info(self, embedding_df, hover_label, dims, marker_size, label_char_length)
 
 
-   .. py:method:: _remove_empty_vector_fields(self, vector_field: str) -> List[Dict]
-
-      s
-      Remove documents with empty vector fields
-
-
-   .. py:method:: _generate_fig(self, embedding_df: pandas.DataFrame, marker_size: int, marker_colour: str, legend: Union[None, str]) -> plotly.graph_objs.Figure
-
-      Generates the Scatter plot
-
-
-   .. py:method:: _generate_hover_template(self, df: pandas.DataFrame, dims: int) -> Tuple[Optional[pandas.DataFrame], Optional[str]]
+   .. py:method:: _generate_hover_template(self, df: pandas.DataFrame, dims: int, hover_label: list, label_char_length: int)
 
       Generating hover template
+
+
+   .. py:method:: _generate_plot_title(self, dims, dataset_name, number_of_points, vector_field, vector_label, label_char_length)
 
 
 

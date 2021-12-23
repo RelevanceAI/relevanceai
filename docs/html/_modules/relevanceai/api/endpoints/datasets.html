@@ -76,44 +76,39 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.documents</span> <span class="kn">import</span> <span class="n">Documents</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.monitor</span> <span class="kn">import</span> <span class="n">Monitor</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
+<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.documents</span> <span class="kn">import</span> <span class="n">DocumentsClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.monitor</span> <span class="kn">import</span> <span class="n">MonitorClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.tasks</span> <span class="kn">import</span> <span class="n">TasksClient</span>
 
 
-<div class="viewcode-block" id="Datasets"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets">[docs]</a><span class="k">class</span> <span class="nc">Datasets</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="DatasetsClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient">[docs]</a><span class="k">class</span> <span class="nc">DatasetsClient</span><span class="p">(</span><span class="n">_Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;All dataset-related functions&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="n">Tasks</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">documents</span> <span class="o">=</span> <span class="n">Documents</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="n">TasksClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documents</span> <span class="o">=</span> <span class="n">DocumentsClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">MonitorClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.project">[docs]</a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span></div>
-<div class="viewcode-block" id="Datasets.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.api_key">[docs]</a></div>
-<div class="viewcode-block" id="Datasets.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.config">[docs]</a><div class="viewcode-block" id="Datasets.schema"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span></div>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DatasetsClient.schema"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DatasetsClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.project">[docs]</a><span class="sd">        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.</span></div>
+<div class="viewcode-block" id="DatasetsClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.api_key">[docs]</a></div>
+<div class="viewcode-block" id="DatasetsClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.config">[docs]</a><span class="sd">        Parameters</span></div>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
 <span class="sd">            Unique name of dataset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/schema&quot;</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/schema&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.metadata"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+<div class="viewcode-block" id="DatasetsClient.metadata"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retreives metadata about a dataset. Notably description, data source, etc</span>
 
 <span class="sd">        Parameters</span>
@@ -122,17 +117,12 @@
 <span class="sd">            Unique name of dataset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/metadata&quot;</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
+            <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/metadata&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.create"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch). </span>
+<div class="viewcode-block" id="DatasetsClient.create"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).</span>
 <span class="sd">        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) &quot;_vector_&quot; for the field name, and specify the length of the vector in dataset_schema. \n</span>
 
 <span class="sd">        For example:</span>
@@ -170,22 +160,19 @@
 <span class="sd">            Unique name of dataset</span>
 <span class="sd">        schema : dict</span>
 <span class="sd">            Schema for specifying the field that are vectors and its length</span>
-<span class="sd">    </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/create&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="p">}</span></div>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="p">},</span></div>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.list"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; List all datasets in a project that you are authorized to read/write. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/datasets/list&quot;</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span></div>
-        <span class="p">)</span>
+<div class="viewcode-block" id="DatasetsClient.list"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List all datasets in a project that you are authorized to read/write.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/datasets/list&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Datasets.list_all"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.list_all">[docs]</a>    <span class="k">def</span> <span class="nf">list_all</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.list_all"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.list_all">[docs]</a>    <span class="k">def</span> <span class="nf">list_all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">include_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -197,10 +184,10 @@
         <span class="n">sort_by_created_at_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
-        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a page of datasets and in detail the dataset&#39;s associated information that you are authorized to read/write. The information includes:</span>
 
 <span class="sd">        - Schema - Data schema of a dataset (same as dataset.schema).</span>
@@ -208,8 +195,8 @@
 <span class="sd">        - Stats - Statistics of number of documents and size of a dataset (same as dataset.stats).</span>
 <span class="sd">        - Vector_health - Number of zero vectors stored (same as dataset.health).</span>
 <span class="sd">        - Schema_stats - Fields and number of documents missing/not missing for that field (same as dataset.stats).</span>
-<span class="sd">        - Active_jobs - All active jobs/tasks on the dataset. </span>
-<span class="sd">        </span>
+<span class="sd">        - Active_jobs - All active jobs/tasks on the dataset.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        include_schema : bool</span>
@@ -250,21 +237,21 @@
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.facets"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.facets"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">,</span>
         <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">date_interval</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a high level aggregation of every field, return their unique values and frequencies. This is used to help create the filter bar for search.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -279,7 +266,7 @@
 <span class="sd">            Page of the results</span>
 <span class="sd">        asc: bool</span>
 <span class="sd">            Whether to sort results by ascending or descending order</span>
-<span class="sd">    </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/facets&quot;</span><span class="p">,</span>
@@ -290,16 +277,14 @@
                 <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
                 <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.check_missing_ids"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.check_missing_ids">[docs]</a>    <span class="k">def</span> <span class="nf">check_missing_ids</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">ids</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="DatasetsClient.check_missing_ids"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.check_missing_ids">[docs]</a>    <span class="k">def</span> <span class="nf">check_missing_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Look up in bulk if the ids exists in the dataset, returns all the missing one as a list.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -315,20 +300,20 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
                 <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/get_missing&quot;</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
-                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="n">ids</span><span class="p">}</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="n">ids</span><span class="p">},</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataset does not exist&quot;</span><span class="p">)</span>
             <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Datasets.insert"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.insert"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">document</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">insert_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">update_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">update_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert a single documents</span>
@@ -340,8 +325,8 @@
 
 <span class="sd">        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode \n</span>
 
-<span class="sd">        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n </span>
-<span class="sd">        </span>
+<span class="sd">        Try to keep each batch of documents to insert under 200mb to avoid the insert timing out. \n</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -365,11 +350,10 @@
                 <span class="s2">&quot;insert_date&quot;</span><span class="p">:</span> <span class="n">insert_date</span><span class="p">,</span>
                 <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
                 <span class="s2">&quot;update_schema&quot;</span><span class="p">:</span> <span class="n">update_schema</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
-
-<div class="viewcode-block" id="Datasets.bulk_insert"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.bulk_insert">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.bulk_insert"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.bulk_insert">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">documents</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -378,17 +362,16 @@
         <span class="n">update_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">field_transformers</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">return_documents</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://ingest-api-dev-aueast.relevance.ai/latest&quot;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</span>
-<span class="sd">        </span>
+
 <span class="sd">        - When inserting the document you can optionally specify your own id for a document by using the field name &quot;_id&quot;, if not specified a random id is assigned.</span>
 <span class="sd">        - When inserting or specifying vectors in a document use the suffix (ends with) &quot;_vector_&quot; for the field name. e.g. &quot;product_description_vector_&quot;.</span>
 <span class="sd">        - When inserting or specifying chunks in a document the suffix (ends with) &quot;_chunk_&quot; for the field name. e.g. &quot;products_chunk_&quot;.</span>
 <span class="sd">        - When inserting or specifying chunk vectors in a document&#39;s chunks use the suffix (ends with) &quot;_chunkvector_&quot; for the field name. e.g. &quot;products_chunk_.product_description_chunkvector_&quot;.</span>
 <span class="sd">        - Try to keep each batch of documents to insert under 200mb to avoid the insert timing out.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -405,7 +388,7 @@
 <span class="sd">            Include the inserted IDs in the response</span>
 <span class="sd">        field_transformers: list</span>
 <span class="sd">            An example field_transformers object:</span>
-<span class="sd">            </span>
+
 <span class="sd">            &gt;&gt;&gt; {</span>
 <span class="sd">            &gt;&gt;&gt;    &quot;field&quot;: &quot;string&quot;,</span>
 <span class="sd">            &gt;&gt;&gt;    &quot;output_field&quot;: &quot;string&quot;,</span>
@@ -413,6 +396,9 @@
 <span class="sd">            &gt;&gt;&gt;    &quot;split_sentences&quot;: true</span>
 <span class="sd">            &gt;&gt;&gt; }</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">base_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;api.base_ingest_url&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">return_documents</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
                 <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/documents/bulk_insert&quot;</span><span class="p">,</span>
@@ -424,7 +410,7 @@
                     <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
                     <span class="s2">&quot;update_schema&quot;</span><span class="p">:</span> <span class="n">update_schema</span><span class="p">,</span>
                     <span class="s2">&quot;field_transformers&quot;</span><span class="p">:</span> <span class="n">field_transformers</span><span class="p">,</span>
-                <span class="p">}</span>
+                <span class="p">},</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -438,7 +424,7 @@
                     <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
                     <span class="s2">&quot;update_schema&quot;</span><span class="p">:</span> <span class="n">update_schema</span><span class="p">,</span>
                     <span class="s2">&quot;field_transformers&quot;</span><span class="p">:</span> <span class="n">field_transformers</span><span class="p">,</span>
-                <span class="p">}</span>
+                <span class="p">},</span>
             <span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -452,11 +438,7 @@
                 <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">status_code</span><span class="p">,</span></div>
             <span class="p">}</span>
 
-<div class="viewcode-block" id="Datasets.delete"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">confirm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="DatasetsClient.delete"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">confirm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete a dataset</span>
 
@@ -477,7 +459,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
                 <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/delete&quot;</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">}</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">},</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">user_input</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">):</span>
@@ -488,18 +470,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Input </span><span class="si">{</span><span class="n">user_input</span><span class="si">}</span><span class="s2"> unrecognised.&quot;</span><span class="p">)</span>
             <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Datasets.clone"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.clone"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">old_dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">new_dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">rename_fields</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">remove_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        old_dataset : string</span>
@@ -525,10 +507,10 @@
                 <span class="s2">&quot;rename_fields&quot;</span><span class="p">:</span> <span class="n">rename_fields</span><span class="p">,</span>
                 <span class="s2">&quot;remove_fields&quot;</span><span class="p">:</span> <span class="n">remove_fields</span><span class="p">,</span>
                 <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.search"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.search"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">,</span>
         <span class="n">sort_by_created_at_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -536,7 +518,7 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search datasets by their names with a traditional keyword search.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        query : string</span>
@@ -553,10 +535,10 @@
                 <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
                 <span class="s2">&quot;sort_by_created_at_date&quot;</span><span class="p">:</span> <span class="n">sort_by_created_at_date</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.vectorize"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.vectorize">[docs]</a>    <span class="k">def</span> <span class="nf">vectorize</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetsClient.vectorize"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.vectorize">[docs]</a>    <span class="k">def</span> <span class="nf">vectorize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -565,11 +547,11 @@
         <span class="n">refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
-        <span class="n">chunk_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">chunk_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Queue the encoding of a dataset using the method given by model_id.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -588,7 +570,7 @@
 <span class="sd">            Batch for each encoding. Change at your own risk.</span>
 <span class="sd">        chunk_field : string</span>
 <span class="sd">            The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/vectorize&quot;</span><span class="p">,</span>
@@ -601,36 +583,28 @@
                 <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
                 <span class="s2">&quot;chunksize&quot;</span><span class="p">:</span> <span class="n">chunksize</span><span class="p">,</span>
                 <span class="s2">&quot;chunk_field&quot;</span><span class="p">:</span> <span class="n">chunk_field</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Datasets.task_status"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.Datasets.task_status">[docs]</a>    <span class="k">def</span> <span class="nf">task_status</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="DatasetsClient.task_status"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.datasets.DatasetsClient.task_status">[docs]</a>    <span class="k">def</span> <span class="nf">task_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the status of an existing encoding task on the given dataset. \n</span>
 
 <span class="sd">        The required task_id was returned in the original encoding request such as datasets.vectorize.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
 <span class="sd">            Unique name of dataset</span>
 <span class="sd">        task_id : string</span>
 <span class="sd">            The task ID of the earlier queued vectorize task</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/datasets/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/task_status&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span></div></div>
-            <span class="p">}</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">},</span></div></div>
         <span class="p">)</span>
-
-
 </pre></div>
 
            </div>

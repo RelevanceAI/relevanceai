@@ -32,3 +32,8 @@ Module Contents
 
    
 
+.. py:data:: NEAREST_NEIGHBOURS
+   
+
+   
+

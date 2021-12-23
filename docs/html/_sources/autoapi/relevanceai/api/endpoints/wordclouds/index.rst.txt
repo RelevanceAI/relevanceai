@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.wordclouds.Wordclouds
+   relevanceai.api.endpoints.wordclouds.WordcloudsClient
 
 
 
 
-.. py:class:: Wordclouds(project, api_key)
+.. py:class:: WordcloudsClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: wordclouds(self, dataset_id: str, fields: list, n: int = 2, most_common: int = 5, page_size: int = 20, select_fields: list = [], include_vector: bool = False, filters: list = [], additional_stopwords: list = [])
 

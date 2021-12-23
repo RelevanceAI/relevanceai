@@ -72,45 +72,45 @@
            <div itemprop="articleBody">
              
   <h1>Source code for relevanceai.api.endpoints.cluster</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.centroids</span> <span class="kn">import</span> <span class="n">Centroids</span>
+<span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.centroids</span> <span class="kn">import</span> <span class="n">CentroidsClient</span>
 
 
-<div class="viewcode-block" id="Cluster"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster">[docs]</a><span class="k">class</span> <span class="nc">Cluster</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.ClusterClient">[docs]</a><span class="k">class</span> <span class="nc">ClusterClient</span><span class="p">(</span><span class="n">_Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centroids</span> <span class="o">=</span> <span class="n">Centroids</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroids</span> <span class="o">=</span> <span class="n">CentroidsClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Cluster.aggregate"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
+<div class="viewcode-block" id="ClusterClient.aggregate"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.ClusterClient.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">groupby</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<div class="viewcode-block" id="Cluster.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster.project">[docs]</a>        <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Cluster.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster.api_key">[docs]</a>        <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Cluster.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster.config">[docs]</a>        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span></div>
+        <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.</span>
-<span class="sd">        It can only can be used after a vector field has been clustered. \n</span>
+<div class="viewcode-block" id="ClusterClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.ClusterClient.project">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="ClusterClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.ClusterClient.api_key">[docs]</a><span class="sd">        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.</span></div>
+<div class="viewcode-block" id="ClusterClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.ClusterClient.config">[docs]</a><span class="sd">        It can only can be used after a vector field has been clustered. \n</span></div>
 
-<span class="sd">        For more information about aggregations check out services.aggregate.aggregate. </span>
+<span class="sd">        For more information about aggregations check out services.aggregate.aggregate.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
 <span class="sd">            Unique name of dataset</span>
-<span class="sd">        vector_field : string</span>
+<span class="sd">        vector_fields : list</span>
 <span class="sd">            The vector field that was clustered on</span>
 <span class="sd">        metrics: list</span>
 <span class="sd">            Fields and metrics you want to calculate</span>
-<span class="sd">        groupby: list </span>
+<span class="sd">        groupby: list</span>
 <span class="sd">            Fields you want to split the data into</span>
 <span class="sd">        filters: list</span>
 <span class="sd">            Query for filtering the search results</span>
@@ -125,32 +125,39 @@
 <span class="sd">        alias: string</span>
 <span class="sd">            Alias used to name a vector field. Belongs in field_{alias}vector</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="s2">&quot;/services/cluster/aggregate&quot;</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;POST&quot;</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+            <span class="s2">&quot;aggregation_query&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;groupby&quot;</span><span class="p">:</span> <span class="n">groupby</span><span class="p">,</span> <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">},</span>
+            <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
+            <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+            <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+            <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
+            <span class="s2">&quot;flatten&quot;</span><span class="p">:</span> <span class="n">flatten</span><span class="p">,</span>
+            <span class="s2">&quot;vector_fields&quot;</span><span class="p">:</span> <span class="n">vector_fields</span><span class="p">,</span>
+            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_to_dashboard</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">dashboard_type</span><span class="o">=</span><span class="s2">&quot;cluster_aggregation&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
-            <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/services/cluster/aggregate&quot;</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
-                <span class="s2">&quot;aggregation_query&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;groupby&quot;</span><span class="p">:</span> <span class="n">groupby</span><span class="p">,</span> <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">},</span>
-                <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
-                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
-                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
-                <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
-                <span class="s2">&quot;flatten&quot;</span><span class="p">:</span> <span class="n">flatten</span><span class="p">,</span>
-                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
-                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span></div>
-            <span class="p">}</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span></div>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Cluster.facets"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.Cluster.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
+<div class="viewcode-block" id="ClusterClient.facets"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.cluster.ClusterClient.facets">[docs]</a>    <span class="k">def</span> <span class="nf">facets</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">facets_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">date_interval</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span>
+        <span class="n">date_interval</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a high level aggregation of every field and every cluster in a collection. This helps you interpret each cluster and what is in them. \n</span>
 <span class="sd">        Only can be used after a vector field has been clustered.</span>
 
@@ -179,7 +186,7 @@
                 <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;date_interval&quot;</span><span class="p">:</span> <span class="n">date_interval</span><span class="p">,</span></div></div>
-            <span class="p">}</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 </pre></div>
 

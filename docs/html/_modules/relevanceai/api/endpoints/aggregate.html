@@ -72,10 +72,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for relevanceai.api.endpoints.aggregate</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
 
 
-<div class="viewcode-block" id="Aggregate"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.Aggregate">[docs]</a><span class="k">class</span> <span class="nc">Aggregate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="AggregateClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.AggregateClient">[docs]</a><span class="k">class</span> <span class="nc">AggregateClient</span><span class="p">(</span><span class="n">_Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Aggregate service&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
@@ -83,7 +83,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Aggregate.aggregate"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.Aggregate.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
+<div class="viewcode-block" id="AggregateClient.aggregate"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.AggregateClient.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
@@ -92,13 +92,13 @@
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">asc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<div class="viewcode-block" id="Aggregate.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.Aggregate.project">[docs]</a>        <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Aggregate.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.Aggregate.api_key">[docs]</a>        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Aggregate.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.Aggregate.config">[docs]</a>    <span class="p">):</span></div>
+        <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:</span>
-<span class="sd">        </span>
-<span class="sd">        &gt;&gt;&gt; {</span>
+<div class="viewcode-block" id="AggregateClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.AggregateClient.project">[docs]</a><span class="sd">        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:</span></div>
+<div class="viewcode-block" id="AggregateClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.AggregateClient.api_key">[docs]</a></div>
+<div class="viewcode-block" id="AggregateClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.aggregate.AggregateClient.config">[docs]</a><span class="sd">        &gt;&gt;&gt; {</span></div>
 <span class="sd">        &gt;&gt;&gt;        &quot;groupby&quot; : [</span>
 <span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &lt;alias&gt;, &quot;field&quot;: &lt;field in the collection&gt;, &quot;agg&quot;: &quot;category&quot;},</span>
 <span class="sd">        &gt;&gt;&gt;            {&quot;name&quot;: &lt;alias&gt;, &quot;field&quot;: &lt;another groupby field in the collection&gt;, &quot;agg&quot;: &quot;numeric&quot;}</span>
@@ -129,13 +129,13 @@
 <span class="sd">            - numeric: groupby a field that is a numeric</span>
 
 <span class="sd">        &quot;metrics&quot; is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:</span>
-<span class="sd">            </span>
+
 <span class="sd">            - &quot;avg&quot;, &quot;max&quot;, &quot;min&quot;, &quot;sum&quot;, &quot;cardinality&quot;</span>
 
 <span class="sd">        The response returned has the following in descending order. \n</span>
 
 <span class="sd">        If you want to return documents, specify a &quot;group_size&quot; parameter and a &quot;select_fields&quot; parameter if you want to limit the specific fields chosen. This looks as such:</span>
-<span class="sd">        </span>
+
 <span class="sd">        &gt;&gt;&gt;    {</span>
 <span class="sd">        &gt;&gt;&gt;    &#39;groupby&#39;:[</span>
 <span class="sd">        &gt;&gt;&gt;        {&#39;name&#39;:&#39;Manufacturer&#39;,&#39;field&#39;:&#39;manufacturer&#39;,&#39;agg&#39;:&#39;category&#39;,</span>
@@ -147,16 +147,16 @@
 <span class="sd">        &gt;&gt;&gt;    }</span>
 <span class="sd">        &gt;&gt;&gt;</span>
 <span class="sd">        &gt;&gt;&gt;    {&quot;title&quot;: {&quot;title&quot;: &quot;books&quot;, &quot;frequency&quot;: 200, &quot;documents&quot;: [{...}, {...}]}, {&quot;title&quot;: &quot;books&quot;, &quot;frequency&quot;: 100, &quot;documents&quot;: [{...}, {...}]}}</span>
-<span class="sd">        </span>
+
 <span class="sd">        For array-aggregations, you can add &quot;agg&quot;: &quot;array&quot; into the aggregation query.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
 <span class="sd">            Unique name of dataset</span>
 <span class="sd">        metrics: list</span>
 <span class="sd">            Fields and metrics you want to calculate</span>
-<span class="sd">        groupby: list </span>
+<span class="sd">        groupby: list</span>
 <span class="sd">            Fields you want to split the data into</span>
 <span class="sd">        filters: list</span>
 <span class="sd">            Query for filtering the search results</span>
@@ -182,8 +182,9 @@
                 <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
                 <span class="s2">&quot;asc&quot;</span><span class="p">:</span> <span class="n">asc</span><span class="p">,</span>
                 <span class="s2">&quot;flatten&quot;</span><span class="p">:</span> <span class="n">flatten</span><span class="p">,</span>
-                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span></div></div>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
             <span class="p">},</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://gateway-api-aueast.relevance.ai/v1&quot;</span><span class="p">,</span></div></div>
         <span class="p">)</span>
 </pre></div>
 

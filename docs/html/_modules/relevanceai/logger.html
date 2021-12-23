@@ -117,17 +117,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CONFIG</span>
         <span class="n">logging_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;logging.logging_level&quot;</span><span class="p">)</span>
         <span class="n">log_to_file</span> <span class="o">=</span> <span class="n">str2bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;logging.log_to_file&quot;</span><span class="p">))</span>
-        <span class="n">log_file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;logging.log_file_name&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.log&#39;</span>
-        <span class="n">enable_logging</span> <span class="o">=</span> <span class="n">str2bool</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;logging.enable_logging&quot;</span><span class="p">))</span>
+        <span class="n">log_file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;logging.log_file_name&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
+        <span class="n">enable_logging</span> <span class="o">=</span> <span class="n">str2bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;logging.enable_logging&quot;</span><span class="p">))</span>
 
         <span class="n">logger</span> <span class="o">=</span> <span class="n">loguru_logger</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">enable_logging</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging_level</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">log_to_file</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging_level</span><span class="p">,</span>
-                           <span class="n">rotation</span><span class="o">=</span><span class="s2">&quot;100 MB&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging_level</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s2">&quot;100 MB&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span></div></div>
 </pre></div>
 

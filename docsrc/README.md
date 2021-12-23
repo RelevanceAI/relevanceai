@@ -1,10 +1,5 @@
 # How to build docs
 
-On Unix/Linux systems, run:
-
-```
-make build_docs
-```
 
 For questions, contact Jacky Wong.
 
@@ -13,7 +8,13 @@ For questions, contact Jacky Wong.
 Run:
 
 ```
-pip install -e .. && pip install sphinx sphinx-rtd-theme && python -m pip install sphinx-autoapi
+pip install -e .. && pip install sphinx sphinx-rtd-theme && python -m pip install sphinx-autoapi & pip install sphinx-autodoc-typehints
+```
+
+On Unix/Linux systems, then run:
+
+```
+make build_docs
 ```
 
 ## Re-creating docs

@@ -12,7 +12,9 @@ Submodules
 
    client/index.rst
    cluster/index.rst
+   cluster_evaluate/index.rst
    constants/index.rst
    dim_reduction/index.rst
+   nearest_neighbours/index.rst
 
 

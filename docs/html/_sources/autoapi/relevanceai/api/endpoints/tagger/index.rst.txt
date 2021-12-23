@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.tagger.Tagger
+   relevanceai.api.endpoints.tagger.TaggerClient
 
 
 
 
-.. py:class:: Tagger(project, api_key)
+.. py:class:: TaggerClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: tag(self, data: str, tag_dataset_id: str, encoder: str, tag_field: str = None, approximation_depth: int = 0, sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], min_score: float = 0, include_search_relevance: bool = False, search_relevance_cutoff_aggressiveness: int = 1, asc: bool = False, include_score: bool = False)
 

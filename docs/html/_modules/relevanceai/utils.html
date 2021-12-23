@@ -72,35 +72,52 @@
            <div itemprop="articleBody">
              
   <h1>Source code for relevanceai.utils</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="NoteBookUtils"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.NoteBookUtils">[docs]</a><span></span><span class="k">class</span> <span class="nc">NoteBookUtils</span><span class="p">:</span>
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="NoteBookUtils.is_in_ipython"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.NoteBookUtils.is_in_ipython">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_ipython</span><span class="p">():</span>
+<span></span><span class="kn">from</span> <span class="nn">doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
+<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.client</span> <span class="kn">import</span> <span class="n">BatchAPIClient</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+
+<div class="viewcode-block" id="Utils"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.Utils">[docs]</a><span class="k">class</span> <span class="nc">Utils</span><span class="p">(</span><span class="n">BatchAPIClient</span><span class="p">,</span> <span class="n">_Base</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Utils._is_valid_vector_name"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.Utils._is_valid_vector_name">[docs]</a>    <span class="k">def</span> <span class="nf">_is_valid_vector_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">vector_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determines if current code is executed within an ipython session.</span>
+<span class="sd">        Check vector field name is valid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">is_in_ipython</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># Check if the runtime is within an interactive environment, i.e., ipython.</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">get_ipython</span>  <span class="c1"># pylint: disable=import-error</span>
+        <span class="n">vector_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vector_fields</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vector_name</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">vector_name</span> <span class="ow">in</span> <span class="n">vector_fields</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vector_name</span><span class="si">}</span><span class="s2"> is not a valid vector name&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vector_name</span><span class="si">}</span><span class="s2"> is not in the </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2"> schema&quot;</span><span class="p">)</span></div>
 
-            <span class="k">if</span> <span class="n">get_ipython</span><span class="p">():</span>
-                <span class="n">is_in_ipython</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="k">pass</span>  <span class="c1"># If dependencies are not available, then not interactive for sure.</span>
-        <span class="k">return</span> <span class="n">is_in_ipython</span></div>
-
-<div class="viewcode-block" id="NoteBookUtils.is_in_notebook"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.NoteBookUtils.is_in_notebook">[docs]</a>    <span class="k">def</span> <span class="nf">is_in_notebook</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Utils._is_valid_label_name"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.Utils._is_valid_label_name">[docs]</a>    <span class="k">def</span> <span class="nf">_is_valid_label_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">label_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determines if current code is executed from an ipython notebook.</span>
+<span class="sd">        Check vector label name is valid. Checks that it is either numeric or text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">is_in_notebook</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_in_ipython</span><span class="p">():</span>
-            <span class="c1"># The import and usage must be valid under the execution path.</span>
-            <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">get_ipython</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label_name</span> <span class="o">==</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">label_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">schema</span><span class="p">[</span><span class="n">label_name</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label_name</span><span class="si">}</span><span class="s2"> is not a valid label name&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label_name</span><span class="si">}</span><span class="s2"> is not in the </span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2"> schema&quot;</span><span class="p">)</span></div>
 
-            <span class="k">if</span> <span class="s2">&quot;IPKernelApp&quot;</span> <span class="ow">in</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
-                <span class="n">is_in_notebook</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="n">is_in_notebook</span> \</div></div>
+<div class="viewcode-block" id="Utils._remove_empty_vector_fields"><a class="viewcode-back" href="../../autoapi/relevanceai/utils/index.html#relevanceai.utils.Utils._remove_empty_vector_fields">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_empty_vector_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove documents with empty vector fields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vector_field</span><span class="p">)]</span></div></div>
 </pre></div>
 
            </div>

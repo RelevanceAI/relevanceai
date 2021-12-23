@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.tasks.Tasks
+   relevanceai.api.endpoints.tasks.TasksClient
 
 
 
 
-.. py:class:: Tasks(project: str, api_key: str)
+.. py:class:: TasksClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: create(self, dataset_id, task_name, task_parameters)
 

@@ -76,39 +76,44 @@
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-
 <span class="kn">from</span> <span class="nn">doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
+<span class="kn">from</span> <span class="nn">joblib.memory</span> <span class="kn">import</span> <span class="n">Memory</span>
 
 <span class="kn">from</span> <span class="nn">relevanceai.api.client</span> <span class="kn">import</span> <span class="n">BatchAPIClient</span>
 <span class="kn">from</span> <span class="nn">relevanceai.logger</span> <span class="kn">import</span> <span class="n">LoguruLogger</span>
 <span class="kn">from</span> <span class="nn">relevanceai.vector_tools.constants</span> <span class="kn">import</span> <span class="n">CLUSTER</span><span class="p">,</span> <span class="n">CLUSTER_DEFAULT_ARGS</span>
 <span class="kn">from</span> <span class="nn">relevanceai.errors</span> <span class="kn">import</span> <span class="n">ClusteringResultsAlreadyExistsError</span>
+<span class="kn">from</span> <span class="nn">relevanceai.vector_tools.cluster_evaluate</span> <span class="kn">import</span> <span class="n">ClusterEvaluate</span>
 
-<div class="viewcode-block" id="MiniBatchKMeans.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.info">[docs]</a><div class="viewcode-block" id="KMeans.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.info">[docs]</a><div class="viewcode-block" id="HDBSCAN.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.info">[docs]</a><div class="viewcode-block" id="DensityCluster.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.info">[docs]</a><div class="viewcode-block" id="ClusterBase.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.info">[docs]</a><div class="viewcode-block" id="Cluster.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.info">[docs]</a><div class="viewcode-block" id="CentroidCluster.info"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.info">[docs]</a><div class="viewcode-block" id="ClusterBase"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase">[docs]</a><span class="k">class</span> <span class="nc">ClusterBase</span><span class="p">(</span><span class="n">LoguruLogger</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="MiniBatchKMeans.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.error">[docs]</a><div class="viewcode-block" id="KMeans.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.error">[docs]</a><div class="viewcode-block" id="HDBSCAN.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.error">[docs]</a><div class="viewcode-block" id="DensityCluster.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.error">[docs]</a><div class="viewcode-block" id="ClusterBase.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.error">[docs]</a><div class="viewcode-block" id="Cluster.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.error">[docs]</a><div class="viewcode-block" id="CentroidCluster.error"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.error">[docs]</a><div class="viewcode-block" id="ClusterBase.__call__"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="MiniBatchKMeans.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.success">[docs]</a><div class="viewcode-block" id="KMeans.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.success">[docs]</a><div class="viewcode-block" id="HDBSCAN.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.success">[docs]</a><div class="viewcode-block" id="DensityCluster.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.success">[docs]</a><div class="viewcode-block" id="ClusterBase.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.success">[docs]</a><div class="viewcode-block" id="Cluster.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.success">[docs]</a><div class="viewcode-block" id="CentroidCluster.success"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.success">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="MiniBatchKMeans.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.debug">[docs]</a><div class="viewcode-block" id="KMeans.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.debug">[docs]</a><div class="viewcode-block" id="HDBSCAN.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.debug">[docs]</a><div class="viewcode-block" id="DensityCluster.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.debug">[docs]</a><div class="viewcode-block" id="ClusterBase.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.debug">[docs]</a><div class="viewcode-block" id="Cluster.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.debug">[docs]</a><div class="viewcode-block" id="CentroidCluster.debug"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.debug">[docs]</a></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="MiniBatchKMeans.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.warning">[docs]</a><div class="viewcode-block" id="KMeans.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.warning">[docs]</a><div class="viewcode-block" id="HDBSCAN.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.warning">[docs]</a><div class="viewcode-block" id="DensityCluster.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.warning">[docs]</a><div class="viewcode-block" id="ClusterBase.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.warning">[docs]</a><div class="viewcode-block" id="Cluster.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.warning">[docs]</a><div class="viewcode-block" id="CentroidCluster.warning"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.warning">[docs]</a>    <span class="nd">@abstractmethod</span></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="MiniBatchKMeans.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.critical">[docs]</a><div class="viewcode-block" id="KMeans.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.critical">[docs]</a><div class="viewcode-block" id="HDBSCAN.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.critical">[docs]</a><div class="viewcode-block" id="DensityCluster.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.critical">[docs]</a><div class="viewcode-block" id="ClusterBase.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.critical">[docs]</a><div class="viewcode-block" id="Cluster.project"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.project">[docs]</a><div class="viewcode-block" id="Cluster.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.critical">[docs]</a><div class="viewcode-block" id="CentroidCluster.critical"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.critical">[docs]</a><div class="viewcode-block" id="ClusterBase.fit_transform"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span></div></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="MiniBatchKMeans.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.warn">[docs]</a><div class="viewcode-block" id="KMeans.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.warn">[docs]</a><div class="viewcode-block" id="HDBSCAN.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.warn">[docs]</a><div class="viewcode-block" id="DensityCluster.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.warn">[docs]</a><div class="viewcode-block" id="ClusterBase.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.warn">[docs]</a><div class="viewcode-block" id="Cluster.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.warn">[docs]</a><div class="viewcode-block" id="Cluster.api_key"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.api_key">[docs]</a><div class="viewcode-block" id="CentroidCluster.warn"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.warn">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div></div></div></div></div></div></div></div>
-<div class="viewcode-block" id="Cluster.config"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.config">[docs]</a><span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="ClusterBase"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase">[docs]</a><span class="k">class</span> <span class="nc">ClusterBase</span><span class="p">(</span><span class="n">LoguruLogger</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterBase.__call__"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="ClusterBase.fit_transform"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-    
-<div class="viewcode-block" id="ClusterBase.fit_documents"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">[docs]</a>    <span class="k">def</span> <span class="nf">fit_documents</span><span class="p">(</span>
+
+<div class="viewcode-block" id="ClusterBase._concat_vectors_from_list"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase._concat_vectors_from_list">[docs]</a>    <span class="k">def</span> <span class="nf">_concat_vectors_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Concatenate 2 vectors together in a pairwise fashion&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list_of_vectors</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ClusterBase.fit_documents"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.fit_documents">[docs]</a>    <span class="k">def</span> <span class="nf">fit_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">vector_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
-        <span class="n">cluster_field</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;_cluster_&quot;</span><span class="p">,</span>
-        <span class="n">return_only_clusters</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">cluster_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_cluster_&quot;</span><span class="p">,</span>
+        <span class="n">return_only_clusters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Train clustering algorithm on documents and then store the labels</span>
 <span class="sd">        inside the documents.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 <span class="sd">        vector_field: list</span>
@@ -121,81 +126,119 @@
 <span class="sd">            What the cluster fields should be called</span>
 <span class="sd">        return_only_clusters: bool</span>
 <span class="sd">            If True, return only clusters, otherwise returns the original document</span>
+<span class="sd">        inplace: bool</span>
+<span class="sd">            If True, the documents are edited inplace otherwise, a copy is made first</span>
+<span class="sd">        kwargs: dict</span>
+<span class="sd">            Any other keyword argument will go directly into the clustering algorithm</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector_field</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector_fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># filtering out entries not containing the specified vector</span>
             <span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">DocUtils</span><span class="o">.</span><span class="n">list_doc_fields</span><span class="p">,</span> <span class="n">docs</span><span class="p">))</span>
-            <span class="n">vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_across_documents</span><span class="p">(</span><span class="n">vector_field</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs</span><span class="p">)</span>
+            <span class="n">vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_across_documents</span><span class="p">(</span>
+                <span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs</span><span class="p">,</span> <span class="n">missing_treatment</span><span class="o">=</span><span class="s2">&quot;skip&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;We currently do not support more than 1 vector field yet. This will be supported in the future.&quot;</span><span class="p">)</span>
+            <span class="c1"># In multifield clusering, we get all the vectors in each document</span>
+            <span class="c1"># (skip if they are missing any of the vectors)</span>
+            <span class="c1"># Then run clustering on the result</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_docs_for_fields</span><span class="p">(</span><span class="n">vector_fields</span><span class="p">,</span> <span class="n">docs</span><span class="p">))</span>
+            <span class="n">all_vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fields_across_documents</span><span class="p">(</span>
+                <span class="n">vector_fields</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">missing_treatment</span><span class="o">=</span><span class="s2">&quot;skip_if_any_missing&quot;</span>
+            <span class="p">)</span>
+            <span class="n">vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_concat_vectors_from_list</span><span class="p">(</span><span class="n">all_vectors</span><span class="p">)</span>
+
         <span class="n">cluster_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+
         <span class="c1"># Label the clusters</span>
         <span class="n">cluster_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_clusters</span><span class="p">(</span><span class="n">cluster_labels</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_field_across_documents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cluster_field</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">vector_field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">docs</span>
-        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector_fields</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">set_cluster_field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cluster_field</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vector_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector_fields</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">set_cluster_field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cluster_field</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">vector_fields</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_field_across_documents</span><span class="p">(</span>
+                <span class="n">set_cluster_field</span><span class="p">,</span>
+                <span class="n">cluster_labels</span><span class="p">,</span>
+                <span class="n">docs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">return_only_clusters</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">),</span> <span class="n">cluster_field</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cluster_field</span><span class="p">)}</span>
+                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span>
+                <span class="p">]</span>
+            <span class="k">return</span> <span class="n">docs</span>
+
+        <span class="n">new_docs</span> <span class="o">=</span> <span class="n">docs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_field_across_documents</span><span class="p">(</span><span class="n">set_cluster_field</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">new_docs</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">return_only_clusters</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">),</span> <span class="n">cluster_field</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cluster_field</span><span class="p">)}</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">),</span> <span class="n">cluster_field</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cluster_field</span><span class="p">)}</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span>
+            <span class="p">]</span>
         <span class="k">return</span> <span class="n">docs</span></div>
 
-<div class="viewcode-block" id="ClusterBase.to_metadata"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">to_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;You can also store the metadata of this clustering algorithm</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ClusterBase.to_metadata"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.to_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">to_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;You can also store the metadata of this clustering algorithm&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-    
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ClusterBase.metadata"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_metadata</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="ClusterBase._label_cluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase._label_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">_label_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="s2">&quot;cluster_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Cluster-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ClusterBase._label_clusters"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.ClusterBase._label_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">_label_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_cluster</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span></div></div>
 
-<div class="viewcode-block" id="CentroidCluster"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster">[docs]</a><span class="k">class</span> <span class="nc">CentroidCluster</span><span class="p">(</span><span class="n">ClusterBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CentroidCluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster">[docs]</a><span class="k">class</span> <span class="nc">CentroidCluster</span><span class="p">(</span><span class="n">ClusterBase</span><span class="p">):</span>
 <div class="viewcode-block" id="CentroidCluster.__call__"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="CentroidCluster.fit_transform"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+<div class="viewcode-block" id="CentroidCluster.fit_transform"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-    
+
     <span class="nd">@abstractmethod</span>
-<div class="viewcode-block" id="CentroidCluster.get_centers"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">[docs]</a>    <span class="k">def</span> <span class="nf">get_centers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">list</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Get centers for the centroid-based clusters</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CentroidCluster.get_centers"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centers">[docs]</a>    <span class="k">def</span> <span class="nf">get_centers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">list</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Get centers for the centroid-based clusters&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-    
-<div class="viewcode-block" id="CentroidCluster.get_centroid_docs"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_centroid_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the centroid documents to store.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CentroidCluster.get_centroid_docs"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_centroid_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the centroid documents to store.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_centers</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;cluster_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;centroid_vector_&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">))</span></div></div>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_cluster</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;centroid_vector_&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">[</span><span class="n">i</span><span class="p">]}</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">))</span></div></div>
         <span class="p">]</span>
 
-<div class="viewcode-block" id="DensityCluster"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster">[docs]</a><span class="k">class</span> <span class="nc">DensityCluster</span><span class="p">(</span><span class="n">ClusterBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DensityCluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster">[docs]</a><span class="k">class</span> <span class="nc">DensityCluster</span><span class="p">(</span><span class="n">ClusterBase</span><span class="p">):</span>
 <div class="viewcode-block" id="DensityCluster.__call__"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DensityCluster.fit_transform"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+<div class="viewcode-block" id="DensityCluster.fit_transform"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.DensityCluster.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="MiniBatchKMeans"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans">[docs]</a><span class="k">class</span> <span class="nc">MiniBatchKMeans</span><span class="p">(</span><span class="n">CentroidCluster</span><span class="p">):</span>
+<div class="viewcode-block" id="MiniBatchKMeans"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans">[docs]</a><span class="k">class</span> <span class="nc">MiniBatchKMeans</span><span class="p">(</span><span class="n">CentroidCluster</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">k</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;k-means++&quot;</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">compute_labels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">max_no_improvement</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">2</span>
-     <span class="p">):</span>
+        <span class="n">max_no_improvement</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kmeans Centroid Clustering</span>
 
@@ -206,9 +249,9 @@
 <span class="sd">        init: str</span>
 <span class="sd">            The optional parameter to be clustering</span>
 <span class="sd">        verbose: bool</span>
-<span class="sd">            If True, will print what is happening </span>
+<span class="sd">            If True, will print what is happening</span>
 <span class="sd">        compute_labels: bool</span>
-<span class="sd">            If True, computes the labels of the cluster </span>
+<span class="sd">            If True, computes the labels of the cluster</span>
 <span class="sd">        max_no_improvement: int</span>
 <span class="sd">            The maximum number of improvemnets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -220,19 +263,17 @@
 
 <div class="viewcode-block" id="MiniBatchKMeans._init_model"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans._init_model">[docs]</a>    <span class="k">def</span> <span class="nf">_init_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">km</span> <span class="o">=</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span>
-            <span class="n">n_clusters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> 
+            <span class="n">n_clusters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">compute_labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_labels</span><span class="p">,</span>
-            <span class="n">max_no_improvement</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_no_improvement</span>
+            <span class="n">max_no_improvement</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_no_improvement</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="MiniBatchKMeans.fit_transform"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">vectors</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">]</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="MiniBatchKMeans.fit_transform"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit and transform transform the vectors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -243,27 +284,26 @@
         <span class="c1"># cluster_centroids = km.cluster_centers_</span>
         <span class="k">return</span> <span class="n">cluster_labels</span></div>
 
-<div class="viewcode-block" id="MiniBatchKMeans.get_centers"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">[docs]</a>    <span class="k">def</span> <span class="nf">get_centers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns centroids of clusters</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MiniBatchKMeans.get_centers"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">[docs]</a>    <span class="k">def</span> <span class="nf">get_centers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns centroids of clusters&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">km</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MiniBatchKMeans.to_metadata"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">to_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Editing the metadata of the function</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MiniBatchKMeans.to_metadata"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">to_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Editing the metadata of the function&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span>
             <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
             <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
             <span class="s2">&quot;compute_labels&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_labels</span><span class="p">,</span>
             <span class="s2">&quot;max_no_improvement&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_no_improvement</span><span class="p">,</span>
-            <span class="s2">&quot;number_of_clusters&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span></div></div>
+            <span class="s2">&quot;number_of_clusters&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span></div></div>
         <span class="p">}</span>
 
+
 <span class="c1"># class KMedoids(CentroidCluster):</span>
-<span class="c1">#     def fit_transform(self, </span>
-<span class="c1">#         vectors: np.ndarray, </span>
-<span class="c1">#         cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS[&#39;kmedoids&#39;], </span>
+<span class="c1">#     def fit_transform(self,</span>
+<span class="c1">#         vectors: np.ndarray,</span>
+<span class="c1">#         cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS[&#39;kmedoids&#39;],</span>
 <span class="c1">#         k: Union[None, int] = 10,</span>
 <span class="c1">#     ) -&gt; np.ndarray:</span>
 <span class="c1">#         try:</span>
@@ -279,9 +319,10 @@
 <span class="c1">#         # cluster_centroids = km.cluster_centers_</span>
 <span class="c1">#         return cluster_labels</span>
 
-<div class="viewcode-block" id="KMeans"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans">[docs]</a><span class="k">class</span> <span class="nc">KMeans</span><span class="p">(</span><span class="n">MiniBatchKMeans</span><span class="p">):</span>
+
+<div class="viewcode-block" id="KMeans"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans">[docs]</a><span class="k">class</span> <span class="nc">KMeans</span><span class="p">(</span><span class="n">MiniBatchKMeans</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="n">init</span><span class="o">=</span><span class="s2">&quot;k-means++&quot;</span><span class="p">,</span>
         <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -290,7 +331,7 @@
         <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">copy_x</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> 
+        <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_init</span> <span class="o">=</span> <span class="n">n_init</span>
@@ -304,6 +345,7 @@
 
 <div class="viewcode-block" id="KMeans._init_model"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans._init_model">[docs]</a>    <span class="k">def</span> <span class="nf">_init_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span>
             <span class="n">n_clusters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
@@ -312,28 +354,51 @@
             <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">copy_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_x</span><span class="p">,</span>
-            <span class="n">algorithm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="KMeans.to_metadata"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">to_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Editing the metadata of the function</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="KMeans.to_metadata"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.KMeans.to_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">to_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Editing the metadata of the function&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">,</span>
-            <span class="s2">&quot;init&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
-            <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
-            <span class="s2">&quot;tol&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
-            <span class="s2">&quot;random_state&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="s2">&quot;copy_x&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_x</span><span class="p">,</span>
-            <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span></div></div>
+            <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">,</span>
+            <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
+            <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
+            <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="s2">&quot;copy_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_x</span><span class="p">,</span>
+            <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span></div></div>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="HDBSCAN"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN">[docs]</a><span class="k">class</span> <span class="nc">HDBSCAN</span><span class="p">(</span><span class="n">DensityCluster</span><span class="p">):</span>
-<div class="viewcode-block" id="HDBSCAN.fit_transform"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-        <span class="n">vectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
-        <span class="n">cluster_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">CLUSTER_DEFAULT_ARGS</span><span class="p">[</span><span class="s1">&#39;hdbscan&#39;</span><span class="p">],</span> 
+
+<div class="viewcode-block" id="HDBSCANClusterer"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.HDBSCANClusterer">[docs]</a><span class="k">class</span> <span class="nc">HDBSCANClusterer</span><span class="p">(</span><span class="n">DensityCluster</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;best&quot;</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">approx_min_span_tree</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">gen_min_span_tree</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">leaf_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="n">memory</span><span class="o">=</span><span class="n">Memory</span><span class="p">(</span><span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">min_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">min_cluster_size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">algorithm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">approx_min_span_tree</span> <span class="o">=</span> <span class="n">approx_min_span_tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gen_min_span_tree</span> <span class="o">=</span> <span class="n">gen_min_span_tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span> <span class="o">=</span> <span class="n">leaf_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="n">memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_samples</span> <span class="o">=</span> <span class="n">min_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_cluster_size</span> <span class="o">=</span> <span class="n">min_cluster_size</span>
+
+<div class="viewcode-block" id="HDBSCANClusterer.fit_transform"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.HDBSCANClusterer.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">vectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">hdbscan</span> <span class="kn">import</span> <span class="n">HDBSCAN</span>
@@ -342,17 +407,25 @@
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s2">Install hdbscan</span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
 <span class="s2">                pip install -U relevanceai[hdbscan]&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cluster_args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">hdbscan</span> <span class="o">=</span> <span class="n">HDBSCAN</span><span class="p">(</span><span class="n">min_cluster_size</span><span class="o">=</span><span class="n">min_cluster_size</span><span class="p">,</span> <span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+        <span class="n">hdbscan</span> <span class="o">=</span> <span class="n">HDBSCAN</span><span class="p">(</span>
+            <span class="n">min_cluster_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span>
+            <span class="n">approx_min_span_tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">approx_min_span_tree</span><span class="p">,</span>
+            <span class="n">gen_min_span_tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_min_span_tree</span><span class="p">,</span>
+            <span class="n">leaf_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">min_samples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_samples</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
         <span class="n">cluster_labels</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">labels_</span>
-  
         <span class="k">return</span> <span class="n">cluster_labels</span></div></div>
 
 
-<div class="viewcode-block" id="Cluster"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster">[docs]</a><span class="k">class</span> <span class="nc">Cluster</span><span class="p">(</span><span class="n">BatchAPIClient</span><span class="p">,</span> <span class="n">ClusterBase</span><span class="p">):</span>
-
+<div class="viewcode-block" id="Cluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster">[docs]</a><span class="k">class</span> <span class="nc">Cluster</span><span class="p">(</span><span class="n">ClusterEvaluate</span><span class="p">,</span> <span class="n">BatchAPIClient</span><span class="p">,</span> <span class="n">ClusterBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -366,40 +439,35 @@
 <span class="sd">        Scaled_inertia = inertia(k)/inertia(k=1) + (a * K)</span>
 <span class="sd">        where a is penalty factor of num_clusters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;This method is not implemented yet k=10&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">10</span></div>
 
-
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Cluster.cluster"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.cluster">[docs]</a>    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span>
+<div class="viewcode-block" id="Cluster.cluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster.cluster">[docs]</a>    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span>
         <span class="n">vectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">cluster</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">CLUSTER</span><span class="p">,</span> <span class="n">ClusterBase</span><span class="p">],</span>
-        <span class="n">cluster_args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span>
+        <span class="n">cluster_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">k</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cluster vectors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cluster</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">cluster_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cluster_args</span> <span class="o">==</span> <span class="p">{}:</span>
                 <span class="n">cluster_args</span> <span class="o">=</span> <span class="n">CLUSTER_DEFAULT_ARGS</span><span class="p">[</span><span class="n">cluster</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;kmeans&#39;</span><span class="p">,</span> <span class="s1">&#39;kmedoids&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cluster_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> \
-                    <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;n_clusters&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cluster_args</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span> <span class="s2">&quot;kmedoids&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cluster_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">k</span> <span class="o">=</span> <span class="n">Cluster</span><span class="o">.</span><span class="n">_choose_k</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">cluster</span> <span class="o">==</span> <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">KMeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">cluster</span> <span class="o">==</span> <span class="s2">&quot;kmedoids&quot;</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-                    <span class="c1"># return KMedioids().fit_transform(vectors=vectors, cluster_args=cluster_args)</span>
             <span class="k">elif</span> <span class="n">cluster</span> <span class="o">==</span> <span class="s2">&quot;hdbscan&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">HDBSCAN</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_args</span><span class="o">=</span><span class="n">cluster_args</span><span class="p">)</span>
-            
+                <span class="k">return</span> <span class="n">HDBSCANClusterer</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cluster</span><span class="p">,</span> <span class="n">ClusterBase</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">cluster</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_args</span><span class="o">=</span><span class="n">cluster_args</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not valid cluster input.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cluster.kmeans_cluster"><a class="viewcode-back" href="../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">kmeans_cluster</span><span class="p">(</span>
+<div class="viewcode-block" id="Cluster.kmeans_cluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">kmeans_cluster</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">vector_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -412,11 +480,11 @@
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy_x</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
-        <span class="n">cluster_field</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;_cluster_&quot;</span><span class="p">,</span>
+        <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cluster_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_cluster_&quot;</span><span class="p">,</span>
         <span class="n">update_documents_chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function performs all the steps required for Kmeans clustering:</span>
@@ -452,12 +520,12 @@
 <span class="sd">        algorithm : string</span>
 <span class="sd">            &quot;auto&quot; by default</span>
 <span class="sd">        alias : string</span>
-<span class="sd">            &quot;default&quot;, string to be used in naming of the field showing the clustering results</span>
+<span class="sd">            &quot;kmeans&quot;, string to be used in naming of the field showing the clustering results</span>
 <span class="sd">        cluster_field: string</span>
 <span class="sd">            &quot;_cluster_&quot;, string to name the main cluster field</span>
 <span class="sd">        overwrite : bool</span>
 <span class="sd">            False by default, To overwite an existing clusering result</span>
-<span class="sd">        </span>
+
 <span class="sd">        Example</span>
 <span class="sd">        -------------</span>
 
@@ -467,13 +535,31 @@
 <span class="sd">        )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">EXISTING_CLUSTER_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Clustering results already exist&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">alias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;kmeans_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cluster_field</span><span class="p">,</span> <span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">alias</span><span class="p">])</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ClusteringResultsAlreadyExistsError</span><span class="p">(</span><span class="n">EXISTING_CLUSTER_MESSAGE</span><span class="p">)</span>
+        <span class="n">EXPECTED_CLUSTER_OUTFIELD</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cluster_field</span><span class="p">,</span> <span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">alias</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">EXPECTED_CLUSTER_OUTFIELD</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ClusteringResultsAlreadyExistsError</span><span class="p">(</span><span class="n">EXPECTED_CLUSTER_OUTFIELD</span><span class="p">)</span>
 
+        <span class="n">filters</span> <span class="o">=</span> <span class="n">filters</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;filter_type&quot;</span><span class="p">:</span> <span class="s2">&quot;exists&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;condition_value&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
         <span class="c1"># load the documents</span>
-        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_documents</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="n">vector_fields</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Retrieving documents... This can take a while if the dataset is large.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="n">vector_fields</span>
+        <span class="p">)</span>
 
         <span class="c1"># Cluster</span>
         <span class="n">clusterer</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span>
@@ -485,35 +571,156 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">copy_x</span><span class="o">=</span><span class="n">copy_x</span><span class="p">,</span>
-            <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">clustered_docs</span> <span class="o">=</span> <span class="n">clusterer</span><span class="o">.</span><span class="n">fit_documents</span><span class="p">(</span>
             <span class="n">vector_fields</span><span class="p">,</span>
             <span class="n">docs</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> 
-            <span class="n">cluster_field</span><span class="o">=</span><span class="n">cluster_field</span><span class="p">,</span> 
-            <span class="n">return_only_clusters</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+            <span class="n">cluster_field</span><span class="o">=</span><span class="n">cluster_field</span><span class="p">,</span>
+            <span class="n">return_only_clusters</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># Updating the db</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">clustered_docs</span><span class="p">,</span> <span class="n">chunksize</span> <span class="o">=</span> <span class="n">update_documents_chunksize</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="p">,</span> <span class="n">clustered_docs</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">update_documents_chunksize</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
         <span class="c1"># Update the centroid collection</span>
         <span class="n">centers</span> <span class="o">=</span> <span class="n">clusterer</span><span class="o">.</span><span class="n">get_centroid_docs</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">centroids</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-                <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">dataset_id</span><span class="p">,</span>
-                <span class="n">cluster_centers</span><span class="o">=</span><span class="n">centers</span><span class="p">,</span>
-                <span class="n">vector_field</span><span class="o">=</span><span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">alias</span><span class="o">=</span> <span class="n">alias</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="c1"># Change centroids insertion</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">centroids</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
+            <span class="n">cluster_centers</span><span class="o">=</span><span class="n">centers</span><span class="p">,</span>
+            <span class="n">vector_fields</span><span class="o">=</span><span class="n">vector_fields</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">centers</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished clustering. The cluster alias is `</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">`.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">centroids</span><span class="o">.</span><span class="n">list_closest_to_center</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="p">,</span> <span class="n">vector_fields</span><span class="o">=</span><span class="n">vector_fields</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Cluster.hdbscan_cluster"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster/index.html#relevanceai.vector_tools.cluster.Cluster.hdbscan_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">hdbscan_cluster</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;best&quot;</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">approx_min_span_tree</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">gen_min_span_tree</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">leaf_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="n">memory</span><span class="o">=</span><span class="n">Memory</span><span class="p">(</span><span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">min_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">min_cluster_size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hdbscan&quot;</span><span class="p">,</span>
+        <span class="n">cluster_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_cluster_&quot;</span><span class="p">,</span>
+        <span class="n">update_documents_chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function performs all the steps required for hdbscan clustering:</span>
+<span class="sd">        1- Loads the data</span>
+<span class="sd">        2- Clusters the data</span>
+<span class="sd">        3- Updates the data with clustering info</span>
+<span class="sd">        4- Adds the centroid to the hidden centroid collection</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            name of the dataser</span>
+<span class="sd">        vector_fields : list</span>
+<span class="sd">            a list containing the vector field to be used for clustering</span>
+<span class="sd">        filters : list</span>
+<span class="sd">            a list to filter documents of the dataset</span>
+<span class="sd">        algorithm : str</span>
+<span class="sd">            hdbscan configuration parameter default to &quot;best&quot;</span>
+<span class="sd">        alpha: float</span>
+<span class="sd">            hdbscan configuration parameter default to 1.0</span>
+<span class="sd">        approx_min_span_tree: bool</span>
+<span class="sd">            hdbscan configuration parameter default to True</span>
+<span class="sd">        gen_min_span_tree: bool</span>
+<span class="sd">            hdbscan configuration parameter default to False</span>
+<span class="sd">        leaf_size: int</span>
+<span class="sd">            hdbscan configuration parameter default to 40</span>
+<span class="sd">        memory = Memory(cachedir=None)</span>
+<span class="sd">            hdbscan configuration parameter on memory management</span>
+<span class="sd">        metric: str = &quot;euclidean&quot;</span>
+<span class="sd">            hdbscan configuration parameter default to &quot;euclidean&quot;</span>
+<span class="sd">        min_samples = None</span>
+<span class="sd">            hdbscan configuration parameter default to None</span>
+<span class="sd">        p = None</span>
+<span class="sd">            hdbscan configuration parameter default to None</span>
+<span class="sd">        min_cluster_size:</span>
+<span class="sd">            minimum cluster size, 10 by default</span>
+<span class="sd">        alias : string</span>
+<span class="sd">            &quot;hdbscan&quot;, string to be used in naming of the field showing the clustering results</span>
+<span class="sd">        cluster_field: string</span>
+<span class="sd">            &quot;_cluster_&quot;, string to name the main cluster field</span>
+<span class="sd">        overwrite : bool</span>
+<span class="sd">            False by default, To overwite an existing clusering result</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------------</span>
+
+<span class="sd">        &gt;&gt;&gt; client.vector_tools.cluster.hdbscan_cluster(</span>
+<span class="sd">            dataset_id=&quot;sample_dataset&quot;,</span>
+<span class="sd">            vector_fields=[&quot;sample_1_vector_&quot;] # Only 1 vector field is supported for now</span>
+<span class="sd">        )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cluster_field</span><span class="p">,</span> <span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">alias</span><span class="p">])</span>
+            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ClusteringResultsAlreadyExistsError</span><span class="p">(</span>
+                <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cluster_field</span><span class="p">,</span> <span class="n">vector_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">alias</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="c1"># load the documents</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="n">vector_fields</span>
+        <span class="p">)</span>
+
+        <span class="c1"># get vectors</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;We currently do not support more than 1 vector field yet. This will be supported in the future.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Cluster</span>
+        <span class="n">clusterer</span> <span class="o">=</span> <span class="n">HDBSCANClusterer</span><span class="p">(</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">approx_min_span_tree</span><span class="o">=</span><span class="n">approx_min_span_tree</span><span class="p">,</span>
+            <span class="n">gen_min_span_tree</span><span class="o">=</span><span class="n">gen_min_span_tree</span><span class="p">,</span>
+            <span class="n">leaf_size</span><span class="o">=</span><span class="n">leaf_size</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="n">memory</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">min_samples</span><span class="o">=</span><span class="n">min_samples</span><span class="p">,</span>
+            <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+            <span class="n">min_cluster_size</span><span class="o">=</span><span class="n">min_cluster_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">clustered_docs</span> <span class="o">=</span> <span class="n">clusterer</span><span class="o">.</span><span class="n">fit_documents</span><span class="p">(</span>
+            <span class="n">vector_fields</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">return_only_clusters</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Updating the db</span>
+        <span class="c1"># formatted_clustered_docs = [</span>
+        <span class="c1">#     {cluster_field:{vector_fields[0]:{alias:res}},</span>
+        <span class="c1">#     &#39;_id&#39;:docs[i][&#39;_id&#39;]}</span>
+        <span class="c1">#     for i,res in enumerate(clustered_docs)]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="p">,</span> <span class="n">clustered_docs</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">update_documents_chunksize</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clustered_docs</span></div></div>
 </pre></div>
 
            </div>

@@ -79,9 +79,11 @@
 
 <span class="kn">from</span> <span class="nn">relevanceai.progress_bar</span> <span class="kn">import</span> <span class="n">progress_bar</span>
 
+
 <div class="viewcode-block" id="Chunker"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.chunk.Chunker">[docs]</a><span class="k">class</span> <span class="nc">Chunker</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Update the chunk Mixins&quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Chunker.chunk"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.chunk.Chunker.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span> <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Chunker.chunk"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.chunk.Chunker.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span> <span class="n">chunksize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Chunk an iterable object in Python. \n</span>
 <span class="sd">        Example:</span>

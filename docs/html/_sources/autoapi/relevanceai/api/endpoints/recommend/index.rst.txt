@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.recommend.Recommend
+   relevanceai.api.endpoints.recommend.RecommendClient
 
 
 
 
-.. py:class:: Recommend(project, api_key)
+.. py:class:: RecommendClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: vector(self, dataset_id: str, positive_document_ids: dict = {}, negative_document_ids: dict = {}, vector_fields=[], approximation_depth: int = 0, vector_operation: str = 'sum', sum_fields: bool = True, page_size: int = 20, page: int = 1, similarity_metric: str = 'cosine', facets: list = [], filters: list = [], min_score: float = 0, select_fields: list = [], include_vector: bool = False, include_count: bool = True, asc: bool = False, keep_search_history: bool = False, hundred_scale: bool = False)
 

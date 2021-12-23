@@ -12,16 +12,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.encoders.Encoders
+   relevanceai.api.endpoints.encoders.EncodersClient
 
 
 
 
-.. py:class:: Encoders(project: str, api_key: str)
+.. py:class:: EncodersClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: textimage(self, text: str)
 

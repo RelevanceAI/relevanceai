@@ -78,9 +78,9 @@ Classes
 
 .. py:class:: DimReduction(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`, :py:obj:`DimReductionBase`
+   Bases: :py:obj:`relevanceai.base._Base`, :py:obj:`DimReductionBase`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: dim_reduce(vectors: numpy.ndarray, dr: Union[relevanceai.vector_tools.constants.DIM_REDUCTION, DimReductionBase], dr_args: Union[None, dict], dims: typing_extensions.Literal[2, 3]) -> numpy.ndarray
       :staticmethod:

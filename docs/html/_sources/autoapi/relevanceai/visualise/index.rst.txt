@@ -4,6 +4,15 @@
 .. py:module:: relevanceai.visualise
 
 
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   dash_components/index.rst
+
+
 Submodules
 ----------
 .. toctree::

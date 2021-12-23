@@ -78,15 +78,19 @@
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">relevanceai.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">json.decoder</span> <span class="kn">import</span> <span class="n">JSONDecodeError</span>
-<span class="kn">from</span> <span class="nn">relevanceai.logger</span> <span class="kn">import</span> <span class="n">AbstractLogger</span>
+
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Request</span>
 
+<span class="kn">from</span> <span class="nn">relevanceai.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">relevanceai.logger</span> <span class="kn">import</span> <span class="n">AbstractLogger</span>
+<span class="kn">from</span> <span class="nn">relevanceai.dashboard_mappings</span> <span class="kn">import</span> <span class="n">DASHBOARD_MAPPINGS</span>
 <span class="kn">from</span> <span class="nn">relevanceai.errors</span> <span class="kn">import</span> <span class="n">APIError</span>
+
+<div class="viewcode-block" id="DO_NOT_REPEAT_STATUS_CODES"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES">[docs]</a><span class="n">DO_NOT_REPEAT_STATUS_CODES</span> <span class="o">=</span> <span class="p">{</span><span class="mi">404</span><span class="p">,</span> <span class="mi">422</span><span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="Transport"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.transport.Transport">[docs]</a><span class="k">class</span> <span class="nc">Transport</span><span class="p">:</span>
@@ -107,15 +111,94 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Transport._search_dashboard_url"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._search_dashboard_url">[docs]</a>    <span class="k">def</span> <span class="nf">_search_dashboard_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dashboard.base_dashboard_url&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> \
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dashboard.search_dashboard_endpoint&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dashboard.base_dashboard_url&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dashboard.search_dashboard_endpoint&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+        <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Transport.is_search_in_path"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.is_search_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">is_search_in_path</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Transport._is_search_in_path"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._is_search_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">_is_search_in_path</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;search&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Transport.DASHBOARD_TYPES"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.DASHBOARD_TYPES">[docs]</a>    <span class="k">def</span> <span class="nf">DASHBOARD_TYPES</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">DASHBOARD_MAPPINGS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Transport._log_to_dashboard"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._log_to_dashboard">[docs]</a>    <span class="k">def</span> <span class="nf">_log_to_dashboard</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dashboard_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Log search to dashboard&quot;&quot;&quot;</span>
+        <span class="c1"># Needs to be a supported dashboard type</span>
+        <span class="k">if</span> <span class="n">dashboard_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DASHBOARD_TYPES</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;api.base_url&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;api.base_url&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">request_body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">dashboard_type</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
+                <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span>
+                <span class="s2">&quot;endpoint&quot;</span><span class="p">:</span> <span class="n">endpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dashboard_request_url</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">request_body</span><span class="p">,</span>
+            <span class="c1"># params=parameters if method.upper() == &quot;GET&quot; else {},</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">dashboard_url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dashboard.base_dashboard_url&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">DASHBOARD_MAPPINGS</span><span class="p">[</span><span class="n">dashboard_type</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_dashboard_url</span><span class="p">(</span><span class="n">dashboard_url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="Transport._link_to_dataset_dashboard"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._link_to_dataset_dashboard">[docs]</a>    <span class="k">def</span> <span class="nf">_link_to_dataset_dashboard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">suburl</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link to a monitoring dashboard</span>
+<span class="sd">        Suburl must be one of</span>
+<span class="sd">        - &quot;monitor&quot;</span>
+<span class="sd">        - &quot;lookups&quot;</span>
+<span class="sd">        - &quot;monitor/schema&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;You can view your dashboard at: &quot;</span>
+        <span class="k">if</span> <span class="n">suburl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">MESSAGE</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;https://cloud.relevance.ai/dataset/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/dashboard/monitor/&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">MESSAGE</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;https://cloud.relevance.ai/dataset/</span><span class="si">{</span><span class="n">dataset_id</span><span class="si">}</span><span class="s2">/dashboard/</span><span class="si">{</span><span class="n">suburl</span><span class="si">}</span><span class="s2">&quot;</span></div>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Transport._log_search_to_dashboard"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._log_search_to_dashboard">[docs]</a>    <span class="k">def</span> <span class="nf">_log_search_to_dashboard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Log search to dashboard&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_to_dashboard</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">dashboard_type</span><span class="o">=</span><span class="s2">&quot;multivector_search&quot;</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Transport.print_dashboard_url"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport.print_dashboard_url">[docs]</a>    <span class="k">def</span> <span class="nf">print_dashboard_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dashboard_url</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can now visit the dashboard at </span><span class="si">{</span><span class="n">dashboard_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport.make_http_request"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.transport.Transport.make_http_request">[docs]</a>    <span class="k">def</span> <span class="nf">make_http_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -123,7 +206,7 @@
         <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">output_format</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">output_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make the HTTP request</span>
@@ -147,36 +230,19 @@
             <span class="n">output_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;api.output_format&quot;</span><span class="p">)</span>
 
         <span class="n">retries</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;retries.number_of_retries&quot;</span><span class="p">))</span>
-        <span class="n">seconds_between_retries</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span>
-            <span class="s2">&quot;retries.seconds_between_retries&quot;</span><span class="p">))</span>
+        <span class="n">seconds_between_retries</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;retries.seconds_between_retries&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">request_url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span><span class="p">):</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s2">&quot;URL you are trying to access:&quot;</span> <span class="o">+</span> <span class="n">request_url</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;URL you are trying to access:&quot;</span> <span class="o">+</span> <span class="n">request_url</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">Transport</span><span class="o">.</span><span class="n">is_search_in_path</span><span class="p">(</span><span class="n">request_url</span><span class="p">):</span>
-                    <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s1">&#39;api.base_url&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-                    <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s1">&#39;api.base_url&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
-                    <span class="n">search_body</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s2">&quot;multivector_search&quot;</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span> 
-                            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
-                            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span>
-                            <span class="s2">&quot;endpoint&quot;</span><span class="p">:</span> <span class="n">endpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
-                            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
-                            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">),</span>
-                        <span class="p">},</span>
-                    <span class="p">}</span>
-                    <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
-                        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
-                        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dashboard_request_url</span><span class="p">,</span>
-                        <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_header</span><span class="p">,</span>
-                        <span class="n">json</span><span class="o">=</span><span class="n">search_body</span><span class="p">,</span>
-                        <span class="c1"># params=parameters if method.upper() == &quot;GET&quot; else {},</span>
-                    <span class="p">)</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
-                    <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-                        <span class="n">response</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">Transport</span><span class="o">.</span><span class="n">_is_search_in_path</span><span class="p">(</span><span class="n">request_url</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_search_to_dashboard</span><span class="p">(</span>
+                        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span>
+                    <span class="p">)</span>
+                <span class="c1"># TODO: Add other endpoints in here too</span>
 
                 <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
                     <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
@@ -192,27 +258,38 @@
                 <span class="c1"># Successful response</span>
                 <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_success</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_time</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_time</span><span class="p">(</span>
+                        <span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+                    <span class="p">)</span>
 
-                    <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">Transport</span><span class="o">.</span><span class="n">is_search_in_path</span><span class="p">(</span><span class="n">request_url</span><span class="p">):</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can now visit the dashboard at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_dashboard_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                    <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span>
-                    <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s1">&#39;status_code&#39;</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;status_code&quot;</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">response</span>
 
                 <span class="c1"># Cancel bad URLs</span>
-                <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_fail</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+                <span class="c1"># Logged status codes</span>
+                <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="n">DO_NOT_REPEAT_STATUS_CODES</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_fail</span><span class="p">(</span>
+                        <span class="n">base_url</span><span class="p">,</span>
+                        <span class="n">endpoint</span><span class="p">,</span>
+                        <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                        <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
+                    <span class="p">)</span>
                     <span class="k">raise</span> <span class="n">APIError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
 
                 <span class="c1"># Retry other errors</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_fail</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_response_fail</span><span class="p">(</span>
+                        <span class="n">base_url</span><span class="p">,</span>
+                        <span class="n">endpoint</span><span class="p">,</span>
+                        <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                        <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
+                    <span class="p">)</span>
                     <span class="k">continue</span>
 
             <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -235,15 +312,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request ran in </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2"> seconds (</span><span class="si">{</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport._log_response_fail"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._log_response_fail">[docs]</a>    <span class="k">def</span> <span class="nf">_log_response_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response failed (</span><span class="si">{</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span><span class="si">}</span><span class="s2">) (Status: </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> Response: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Response failed (</span><span class="si">{</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span><span class="si">}</span><span class="s2">) (Status: </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> Response: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Transport._log_connection_error"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._log_connection_error">[docs]</a>    <span class="k">def</span> <span class="nf">_log_connection_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection error but re-trying. (</span><span class="si">{</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport._log_no_json"><a class="viewcode-back" href="../../autoapi/relevanceai/transport/index.html#relevanceai.transport.Transport._log_no_json">[docs]</a>    <span class="k">def</span> <span class="nf">_log_no_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No JSON Available (</span><span class="si">{</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span><span class="si">}</span><span class="s2">) (Status: </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> Response: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div></div>
-
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No JSON Available (</span><span class="si">{</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">endpoint</span><span class="si">}</span><span class="s2">) (Status: </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> Response: </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">)&quot;</span></div></div>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

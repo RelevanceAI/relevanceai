@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.vector_tools.cluster_evaluate &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vectortools.html">Vector Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../relevanceai.html">relevanceai</a> &raquo;</li>
+      <li>relevanceai.vector_tools.cluster_evaluate</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for relevanceai.vector_tools.cluster_evaluate</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">silhouette_score</span><span class="p">,</span>
+    <span class="n">adjusted_rand_score</span><span class="p">,</span>
+    <span class="n">completeness_score</span><span class="p">,</span>
+    <span class="n">homogeneity_score</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objs</span> <span class="k">as</span> <span class="nn">go</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">relevanceai.vector_tools.dim_reduction</span> <span class="kn">import</span> <span class="n">DimReduction</span>
+<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.client</span> <span class="kn">import</span> <span class="n">BatchAPIClient</span>
+<span class="kn">from</span> <span class="nn">doc_utils</span> <span class="kn">import</span> <span class="n">DocUtils</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
+
+<div class="viewcode-block" id="SILHOUETTE_INFO"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.SILHOUETTE_INFO">[docs]</a><span class="n">SILHOUETTE_INFO</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Good clusters have clusters which are highly seperated and elements within which are highly cohesive. &lt;br/&gt;</span>
+<span class="s2">&lt;b&gt;Silohuette Score&lt;/b&gt; is a metric from &lt;b&gt;-1 to 1&lt;/b&gt; that calculates the average cohesion and seperation of each element, with &lt;b&gt;1&lt;/b&gt; being clustered perfectly, &lt;b&gt;0&lt;/b&gt; being indifferent and &lt;b&gt;-1&lt;/b&gt; being clustered the wrong way&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="RAND_INFO"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.RAND_INFO">[docs]</a><span class="n">RAND_INFO</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. &lt;br/&gt;</span>
+<span class="s2">&lt;b&gt;Rand Index&lt;/b&gt; is a metric from &lt;b&gt;0 to 1&lt;/b&gt; that represents the percentage of element pairs that have a matching cluster and ground truth labels with &lt;b&gt;1&lt;/b&gt; matching perfect and &lt;b&gt;0&lt;/b&gt; matching randomly. &lt;br/&gt; &lt;i&gt;Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.&lt;/i&gt;&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="HOMOGENEITY_INFO"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.HOMOGENEITY_INFO">[docs]</a><span class="n">HOMOGENEITY_INFO</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Good clusters only have elements from the same ground truth within the same cluster&lt;br/&gt;</span>
+<span class="s2">&lt;b&gt;Homogeneity&lt;/b&gt; is a metric from &lt;b&gt;0 to 1&lt;/b&gt; that represents whether clusters contain only elements in the same ground truth with &lt;b&gt;1&lt;/b&gt; being perfect and &lt;b&gt;0&lt;/b&gt; being absolutely incorrect.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="COMPLETENESS_INFO"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.COMPLETENESS_INFO">[docs]</a><span class="n">COMPLETENESS_INFO</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Good clusters have all elements from the same ground truth within the same cluster &lt;br/&gt;</span>
+<span class="s2">&lt;b&gt;Completeness&lt;/b&gt; is a metric from &lt;b&gt;0 to 1&lt;/b&gt; that represents whether clusters contain all elements in the same ground truth with &lt;b&gt;1&lt;/b&gt; being perfect and &lt;b&gt;0&lt;/b&gt; being absolutely incorrect.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="METRIC_DESCRIPTION"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.METRIC_DESCRIPTION">[docs]</a><span class="n">METRIC_DESCRIPTION</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Silhouette Score&quot;</span><span class="p">:</span> <span class="n">SILHOUETTE_INFO</span><span class="p">,</span>
+    <span class="s2">&quot;Rand Score&quot;</span><span class="p">:</span> <span class="n">RAND_INFO</span><span class="p">,</span>
+    <span class="s2">&quot;Homogeneity&quot;</span><span class="p">:</span> <span class="n">HOMOGENEITY_INFO</span><span class="p">,</span>
+    <span class="s2">&quot;Completeness&quot;</span><span class="p">:</span> <span class="n">COMPLETENESS_INFO</span><span class="p">,</span></div>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="sort_dict"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.sort_dict">[docs]</a><span class="k">def</span> <span class="nf">sort_dict</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">cut_off</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="n">cut_off</span></div>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="ClusterEvaluate"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate">[docs]</a><span class="k">class</span> <span class="nc">ClusterEvaluate</span><span class="p">(</span><span class="n">BatchAPIClient</span><span class="p">,</span> <span class="n">_Base</span><span class="p">,</span> <span class="n">DocUtils</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ClusterEvaluate.plot"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ground_truth_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">marker_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field that was clustered upon</span>
+<span class="sd">        cluster_alias: string</span>
+<span class="sd">            The alias of the clustered labels</span>
+<span class="sd">        ground_truth_field: string</span>
+<span class="sd">            The field to use as ground truth</span>
+<span class="sd">        description_fields : list</span>
+<span class="sd">            List of fields to use as additional labels on plot</span>
+<span class="sd">        marker_size: int</span>
+<span class="sd">            Size of scatterplot marker</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="p">(</span>
+            <span class="n">vectors</span><span class="p">,</span>
+            <span class="n">cluster_labels</span><span class="p">,</span>
+            <span class="n">ground_truth</span><span class="p">,</span>
+            <span class="n">vector_description</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cluster_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
+            <span class="n">vector_field</span><span class="o">=</span><span class="n">vector_field</span><span class="p">,</span>
+            <span class="n">cluster_alias</span><span class="o">=</span><span class="n">cluster_alias</span><span class="p">,</span>
+            <span class="n">ground_truth_field</span><span class="o">=</span><span class="n">ground_truth_field</span><span class="p">,</span>
+            <span class="n">description_fields</span><span class="o">=</span><span class="n">description_fields</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_from_docs</span><span class="p">(</span>
+            <span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">,</span>
+            <span class="n">cluster_labels</span><span class="o">=</span><span class="n">cluster_labels</span><span class="p">,</span>
+            <span class="n">ground_truth</span><span class="o">=</span><span class="n">ground_truth</span><span class="p">,</span>
+            <span class="n">vector_description</span><span class="o">=</span><span class="n">vector_description</span><span class="p">,</span>
+            <span class="n">marker_size</span><span class="o">=</span><span class="n">marker_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="ClusterEvaluate.metrics"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.metrics">[docs]</a>    <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ground_truth_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field that was clustered upon</span>
+<span class="sd">        cluster_alias: string</span>
+<span class="sd">            The alias of the clustered labels</span>
+<span class="sd">        ground_truth_field: string</span>
+<span class="sd">            The field to use as ground truth</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="p">(</span>
+            <span class="n">vectors</span><span class="p">,</span>
+            <span class="n">cluster_labels</span><span class="p">,</span>
+            <span class="n">ground_truth</span><span class="p">,</span>
+            <span class="n">vector_description</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cluster_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
+            <span class="n">vector_field</span><span class="o">=</span><span class="n">vector_field</span><span class="p">,</span>
+            <span class="n">cluster_alias</span><span class="o">=</span><span class="n">cluster_alias</span><span class="p">,</span>
+            <span class="n">ground_truth_field</span><span class="o">=</span><span class="n">ground_truth_field</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_from_docs</span><span class="p">(</span>
+            <span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="o">=</span><span class="n">cluster_labels</span><span class="p">,</span> <span class="n">ground_truth</span><span class="o">=</span><span class="n">ground_truth</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="ClusterEvaluate.distribution"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.distribution">[docs]</a>    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ground_truth_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">transpose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the distribution of clusters, optionally against the ground truth</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field that was clustered upon</span>
+<span class="sd">        cluster_alias: string</span>
+<span class="sd">            The alias of the clustered labels</span>
+<span class="sd">        ground_truth_field: string</span>
+<span class="sd">            The field to use as ground truth</span>
+<span class="sd">        transpose: bool</span>
+<span class="sd">            Whether to transpose cluster and ground truth perspectives</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="p">(</span>
+            <span class="n">vectors</span><span class="p">,</span>
+            <span class="n">cluster_labels</span><span class="p">,</span>
+            <span class="n">ground_truth</span><span class="p">,</span>
+            <span class="n">vector_description</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cluster_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
+            <span class="n">vector_field</span><span class="o">=</span><span class="n">vector_field</span><span class="p">,</span>
+            <span class="n">cluster_alias</span><span class="o">=</span><span class="n">cluster_alias</span><span class="p">,</span>
+            <span class="n">ground_truth_field</span><span class="o">=</span><span class="n">ground_truth_field</span><span class="p">,</span>
+            <span class="n">get_vectors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ground_truth_field</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">transpose</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_joint_distribution_from_docs</span><span class="p">(</span>
+                    <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">ground_truth</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_joint_distribution_from_docs</span><span class="p">(</span>
+                    <span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span>
+                <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_distribution_from_docs</span><span class="p">(</span><span class="n">cluster_labels</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClusterEvaluate._get_cluster_documents"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._get_cluster_documents">[docs]</a>    <span class="k">def</span> <span class="nf">_get_cluster_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ground_truth_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">get_vectors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return vectors, cluster labels, ground truth labels and other fields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cluster_field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_cluster_.</span><span class="si">{</span><span class="n">vector_field</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">cluster_alias</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">ground_truth_field</span><span class="p">:</span>
+            <span class="n">ground_truth_select_field</span> <span class="o">=</span> <span class="p">[</span><span class="n">ground_truth_field</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ground_truth_select_field</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">get_vectors</span><span class="p">:</span>
+            <span class="n">vector_select_field</span> <span class="o">=</span> <span class="p">[</span><span class="n">vector_field</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vector_select_field</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="p">,</span>
+            <span class="n">chunk_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">select_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="n">cluster_field</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">vector_select_field</span>
+            <span class="o">+</span> <span class="n">ground_truth_select_field</span>
+            <span class="o">+</span> <span class="n">description_fields</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Get cluster labels</span>
+        <span class="n">cluster_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_across_documents</span><span class="p">(</span><span class="n">cluster_field</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+
+        <span class="c1"># Get vectors</span>
+        <span class="k">if</span> <span class="n">get_vectors</span><span class="p">:</span>
+            <span class="n">vectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_across_documents</span><span class="p">(</span><span class="n">vector_field</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vectors</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Get ground truth</span>
+        <span class="k">if</span> <span class="n">ground_truth_field</span><span class="p">:</span>
+            <span class="n">ground_truth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_across_documents</span><span class="p">(</span><span class="n">ground_truth_field</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ground_truth</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Get vector description</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">description_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">vector_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_across_documents</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">description_fields</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vector_description</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">,</span> <span class="n">vector_description</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.plot_from_docs"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.plot_from_docs">[docs]</a>    <span class="k">def</span> <span class="nf">plot_from_docs</span><span class="p">(</span>
+        <span class="n">vectors</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">cluster_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">ground_truth</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">vector_description</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">marker_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors : list</span>
+<span class="sd">            List of vectors which were clustered upon</span>
+<span class="sd">        cluster_labels: list</span>
+<span class="sd">            List of cluster labels corresponding to the vectors</span>
+<span class="sd">        ground_truth: list</span>
+<span class="sd">            List of ground truth labels for the vectors</span>
+<span class="sd">        vector_description : dict</span>
+<span class="sd">            Dictionary of fields and their values to describe the vectors</span>
+<span class="sd">        marker_size: int</span>
+<span class="sd">            Size of scatterplot marker</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">vector_dr</span> <span class="o">=</span> <span class="n">DimReduction</span><span class="o">.</span><span class="n">dim_reduce</span><span class="p">(</span>
+            <span class="n">vectors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vectors</span><span class="p">),</span> <span class="n">dr</span><span class="o">=</span><span class="s2">&quot;pca&quot;</span><span class="p">,</span> <span class="n">dr_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="mi">3</span>
+        <span class="p">)</span>
+        <span class="n">embedding_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">vector_dr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">vector_dr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">vector_dr</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]}</span>
+        <span class="p">)</span>
+
+        <span class="n">embedding_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">embedding_df</span><span class="p">,</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">&quot;Predicted Cluster&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cluster_labels</span><span class="p">]),</span>
+            <span class="p">],</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">hover_label</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Predicted Cluster&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">ground_truth</span><span class="p">:</span>
+            <span class="n">embedding_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">embedding_df</span><span class="p">,</span>
+                    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">&quot;Ground Truth&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ground_truth</span><span class="p">]),</span>
+                <span class="p">],</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">hover_label</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;Ground Truth&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">vector_description</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vector_description</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">embedding_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">embedding_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="n">k</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">])],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="n">hover_label</span> <span class="o">+=</span> <span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="c1"># Plot Cluster</span>
+        <span class="n">cluster_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cluster_groups</span> <span class="o">=</span> <span class="n">embedding_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Predicted Cluster&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">cluster_groups</span><span class="p">:</span>
+            <span class="n">cluster_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">_generate_plot</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">hover_label</span><span class="p">,</span> <span class="n">marker_size</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">cluster_fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">cluster_data</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">_generate_layout</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">cluster_fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Cluster&quot;</span><span class="p">,</span> <span class="s2">&quot;font&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}})</span>
+        <span class="n">cluster_fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="c1"># Plot Ground Truth</span>
+        <span class="k">if</span> <span class="n">ground_truth</span><span class="p">:</span>
+            <span class="n">ground_truth_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">ground_truth_groups</span> <span class="o">=</span> <span class="n">embedding_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Ground Truth&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">ground_truth_groups</span><span class="p">:</span>
+                <span class="n">ground_truth_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">_generate_plot</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">hover_label</span><span class="p">,</span> <span class="n">marker_size</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="n">ground_truth_fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">ground_truth_data</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">_generate_layout</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">ground_truth_fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Ground Truth&quot;</span><span class="p">,</span> <span class="s2">&quot;font&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}}</span>
+            <span class="p">)</span>
+            <span class="n">ground_truth_fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">return</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.metrics_from_docs"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.metrics_from_docs">[docs]</a>    <span class="k">def</span> <span class="nf">metrics_from_docs</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">,</span> <span class="n">ground_truth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors : list</span>
+<span class="sd">            List of vectors which were clustered upon</span>
+<span class="sd">        cluster_labels: list</span>
+<span class="sd">            List of cluster labels corresponding to the vectors</span>
+<span class="sd">        ground_truth: list</span>
+<span class="sd">            List of ground truth labels for the vectors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metrics_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">metrics_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Metric&quot;</span><span class="p">:</span> <span class="s2">&quot;Silhouette Score&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">silhouette_score</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">),</span>
+                <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">METRIC_DESCRIPTION</span><span class="p">[</span><span class="s2">&quot;Silhouette Score&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ground_truth</span><span class="p">:</span>
+            <span class="n">metrics_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Metric&quot;</span><span class="p">:</span> <span class="s2">&quot;Rand Score&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span>
+                        <span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">METRIC_DESCRIPTION</span><span class="p">[</span><span class="s2">&quot;Rand Score&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">metrics_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Metric&quot;</span><span class="p">:</span> <span class="s2">&quot;Homogeneity&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">homogeneity_score</span><span class="p">(</span>
+                        <span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">METRIC_DESCRIPTION</span><span class="p">[</span><span class="s2">&quot;Homogeneity&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">metrics_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Metric&quot;</span><span class="p">:</span> <span class="s2">&quot;Completeness&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="n">ClusterEvaluate</span><span class="o">.</span><span class="n">completeness_score</span><span class="p">(</span>
+                        <span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">METRIC_DESCRIPTION</span><span class="p">[</span><span class="s2">&quot;Completeness&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">metrics_list</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.label_distribution_from_docs"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.label_distribution_from_docs">[docs]</a>    <span class="k">def</span> <span class="nf">label_distribution_from_docs</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the distribution of a label</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : list</span>
+<span class="sd">            List of labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">label_sparsity</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">label_sparsity</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.label_joint_distribution_from_docs"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.label_joint_distribution_from_docs">[docs]</a>    <span class="k">def</span> <span class="nf">label_joint_distribution_from_docs</span><span class="p">(</span><span class="n">label_1</span><span class="p">,</span> <span class="n">label_2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the distribution of a label against another label</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label_1 : list</span>
+<span class="sd">            List of labels</span>
+<span class="sd">        label_2 : list</span>
+<span class="sd">            List of labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cluster_matches</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">label_1</span><span class="p">)):</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="o">==</span> <span class="n">i</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">label_1</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">label_2</span><span class="p">,</span> <span class="n">matches</span><span class="p">)</span> <span class="k">if</span> <span class="n">match</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
+            <span class="n">cluster_matches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+        <span class="n">label_distribution</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="nb">len</span><span class="p">([</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">v</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">label_2</span><span class="p">))}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cluster_matches</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="n">label_distribution</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">sort_dict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">label_distribution</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="k">return</span> <span class="n">label_distribution</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.silhouette_score"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.silhouette_score">[docs]</a>    <span class="k">def</span> <span class="nf">silhouette_score</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">silhouette_score</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.adjusted_rand_score"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.adjusted_rand_score">[docs]</a>    <span class="k">def</span> <span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.completeness_score"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.completeness_score">[docs]</a>    <span class="k">def</span> <span class="nf">completeness_score</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">completeness_score</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate.homogeneity_score"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.homogeneity_score">[docs]</a>    <span class="k">def</span> <span class="nf">homogeneity_score</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">homogeneity_score</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate._generate_layout"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._generate_layout">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_layout</span><span class="p">():</span>
+        <span class="n">axes_3d</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;backgroundcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;showgrid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;showticklabels&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+            <span class="n">scene</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;xaxis&quot;</span><span class="p">:</span> <span class="n">axes_3d</span><span class="p">,</span> <span class="s2">&quot;yaxis&quot;</span><span class="p">:</span> <span class="n">axes_3d</span><span class="p">,</span> <span class="s2">&quot;zaxis&quot;</span><span class="p">:</span> <span class="n">axes_3d</span><span class="p">},</span>
+            <span class="n">plot_bgcolor</span><span class="o">=</span><span class="s2">&quot;#FFF&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">layout</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ClusterEvaluate._generate_plot"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/cluster_evaluate/index.html#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._generate_plot">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">hover_label</span><span class="p">,</span> <span class="n">marker_size</span><span class="p">):</span>
+        <span class="n">custom_data</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">hover_label</span><span class="p">]</span>
+        <span class="n">custom_data_hover</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">: %</span><span class="se">{{</span><span class="s2">customdata[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]</span><span class="se">}}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hover_label</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">coord_info</span> <span class="o">=</span> <span class="s2">&quot;X: %</span><span class="si">{x}</span><span class="s2">   Y: %</span><span class="si">{y}</span><span class="s2">   Z: %</span><span class="si">{z}</span><span class="s2">&quot;</span>
+        <span class="n">hovertemplate</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">coord_info</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="o">+</span> <span class="n">custom_data_hover</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;&lt;extra&gt;&lt;/extra&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">scatter_args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;showlegend&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;markers&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">marker_size</span><span class="p">,</span> <span class="s2">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">,</span> <span class="s2">&quot;opacity&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">},</span>
+            <span class="s2">&quot;customdata&quot;</span><span class="p">:</span> <span class="n">custom_data</span><span class="p">,</span>
+            <span class="s2">&quot;hovertemplate&quot;</span><span class="p">:</span> <span class="n">hovertemplate</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">scatter</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter3d</span><span class="p">(</span><span class="o">**</span><span class="n">scatter_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scatter</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

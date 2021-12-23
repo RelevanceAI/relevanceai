@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.vector_tools.cluster_evaluate &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster_evaluate</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/relevanceai/vector_tools/cluster_evaluate/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.vector_tools.cluster_evaluate">
+<span id="relevanceai-vector-tools-cluster-evaluate"></span><h1><a class="reference internal" href="#module-relevanceai.vector_tools.cluster_evaluate" title="relevanceai.vector_tools.cluster_evaluate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster_evaluate</span></code></a><a class="headerlink" href="#module-relevanceai.vector_tools.cluster_evaluate" title="Permalink to this headline"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate" title="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterEvaluate</span></code></a></p></td>
+<td><p>Batch API client</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.sort_dict" title="relevanceai.vector_tools.cluster_evaluate.sort_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_dict</span></code></a>(dict, reverse: bool = True, cut_off=0)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.SILHOUETTE_INFO" title="relevanceai.vector_tools.cluster_evaluate.SILHOUETTE_INFO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SILHOUETTE_INFO</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.RAND_INFO" title="relevanceai.vector_tools.cluster_evaluate.RAND_INFO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RAND_INFO</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.HOMOGENEITY_INFO" title="relevanceai.vector_tools.cluster_evaluate.HOMOGENEITY_INFO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HOMOGENEITY_INFO</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.COMPLETENESS_INFO" title="relevanceai.vector_tools.cluster_evaluate.COMPLETENESS_INFO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COMPLETENESS_INFO</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.vector_tools.cluster_evaluate.METRIC_DESCRIPTION" title="relevanceai.vector_tools.cluster_evaluate.METRIC_DESCRIPTION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">METRIC_DESCRIPTION</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.SILHOUETTE_INFO">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">SILHOUETTE_INFO</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">Multiline-String</span></em><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#SILHOUETTE_INFO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.SILHOUETTE_INFO" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><details><summary>Show Value</summary><div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Good clusters have clusters which are highly seperated and elements within which are highly cohesive. &lt;br/&gt;
+<span class="linenos">2</span>&lt;b&gt;Silohuette Score&lt;/b&gt; is a metric from &lt;b&gt;-1 to 1&lt;/b&gt; that calculates the average cohesion and seperation of each element, with &lt;b&gt;1&lt;/b&gt; being clustered perfectly, &lt;b&gt;0&lt;/b&gt; being indifferent and &lt;b&gt;-1&lt;/b&gt; being clustered the wrong way
+</pre></div>
+</div>
+</details></div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.RAND_INFO">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">RAND_INFO</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">Multiline-String</span></em><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#RAND_INFO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.RAND_INFO" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><details><summary>Show Value</summary><div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. &lt;br/&gt;
+<span class="linenos">2</span>&lt;b&gt;Rand Index&lt;/b&gt; is a metric from &lt;b&gt;0 to 1&lt;/b&gt; that represents the percentage of element pairs that have a matching cluster and ground truth labels with &lt;b&gt;1&lt;/b&gt; matching perfect and &lt;b&gt;0&lt;/b&gt; matching randomly. &lt;br/&gt; &lt;i&gt;Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.&lt;/i&gt;
+</pre></div>
+</div>
+</details></div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.HOMOGENEITY_INFO">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">HOMOGENEITY_INFO</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">Multiline-String</span></em><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#HOMOGENEITY_INFO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.HOMOGENEITY_INFO" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><details><summary>Show Value</summary><div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Good clusters only have elements from the same ground truth within the same cluster&lt;br/&gt;
+<span class="linenos">2</span>&lt;b&gt;Homogeneity&lt;/b&gt; is a metric from &lt;b&gt;0 to 1&lt;/b&gt; that represents whether clusters contain only elements in the same ground truth with &lt;b&gt;1&lt;/b&gt; being perfect and &lt;b&gt;0&lt;/b&gt; being absolutely incorrect.
+</pre></div>
+</div>
+</details></div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.COMPLETENESS_INFO">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">COMPLETENESS_INFO</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">Multiline-String</span></em><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#COMPLETENESS_INFO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.COMPLETENESS_INFO" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><details><summary>Show Value</summary><div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Good clusters have all elements from the same ground truth within the same cluster &lt;br/&gt;
+<span class="linenos">2</span>&lt;b&gt;Completeness&lt;/b&gt; is a metric from &lt;b&gt;0 to 1&lt;/b&gt; that represents whether clusters contain all elements in the same ground truth with &lt;b&gt;1&lt;/b&gt; being perfect and &lt;b&gt;0&lt;/b&gt; being absolutely incorrect.
+</pre></div>
+</div>
+</details></div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.METRIC_DESCRIPTION">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">METRIC_DESCRIPTION</span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#METRIC_DESCRIPTION"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.METRIC_DESCRIPTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.sort_dict">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">sort_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_off</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#sort_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.sort_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster_evaluate.</span></span><span class="sig-name descname"><span class="pre">ClusterEvaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.client.BatchAPIClient</span></code></a>, <a class="reference internal" href="../../base/index.html#relevanceai.base._Base" title="relevanceai.base._Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.base._Base</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">doc_utils.DocUtils</span></code></p>
+<p>Batch API client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>vector_field</strong> (<em>string</em>) – The vector field that was clustered upon</p></li>
+<li><p><strong>cluster_alias</strong> (<em>string</em>) – The alias of the clustered labels</p></li>
+<li><p><strong>ground_truth_field</strong> (<em>string</em>) – The field to use as ground truth</p></li>
+<li><p><strong>description_fields</strong> (<em>list</em>) – List of fields to use as additional labels on plot</p></li>
+<li><p><strong>marker_size</strong> (<em>int</em>) – Size of scatterplot marker</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.metrics">
+<span class="sig-name descname"><span class="pre">metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.metrics" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>vector_field</strong> (<em>string</em>) – The vector field that was clustered upon</p></li>
+<li><p><strong>cluster_alias</strong> (<em>string</em>) – The alias of the clustered labels</p></li>
+<li><p><strong>ground_truth_field</strong> (<em>string</em>) – The field to use as ground truth</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transpose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.distribution" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the distribution of clusters, optionally against the ground truth</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>vector_field</strong> (<em>string</em>) – The vector field that was clustered upon</p></li>
+<li><p><strong>cluster_alias</strong> (<em>string</em>) – The alias of the clustered labels</p></li>
+<li><p><strong>ground_truth_field</strong> (<em>string</em>) – The field to use as ground truth</p></li>
+<li><p><strong>transpose</strong> (<em>bool</em>) – Whether to transpose cluster and ground truth perspectives</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._get_cluster_documents">
+<span class="sig-name descname"><span class="pre">_get_cluster_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_vectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate._get_cluster_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._get_cluster_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Return vectors, cluster labels, ground truth labels and other fields</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.plot_from_docs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.plot_from_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.plot_from_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vectors</strong> (<em>list</em>) – List of vectors which were clustered upon</p></li>
+<li><p><strong>cluster_labels</strong> (<em>list</em>) – List of cluster labels corresponding to the vectors</p></li>
+<li><p><strong>ground_truth</strong> (<em>list</em>) – List of ground truth labels for the vectors</p></li>
+<li><p><strong>vector_description</strong> (<em>dict</em>) – Dictionary of fields and their values to describe the vectors</p></li>
+<li><p><strong>marker_size</strong> (<em>int</em>) – Size of scatterplot marker</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.metrics_from_docs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metrics_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.metrics_from_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.metrics_from_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vectors</strong> (<em>list</em>) – List of vectors which were clustered upon</p></li>
+<li><p><strong>cluster_labels</strong> (<em>list</em>) – List of cluster labels corresponding to the vectors</p></li>
+<li><p><strong>ground_truth</strong> (<em>list</em>) – List of ground truth labels for the vectors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.label_distribution_from_docs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label_distribution_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.label_distribution_from_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.label_distribution_from_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the distribution of a label</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>list</em>) – List of labels</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.label_joint_distribution_from_docs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label_joint_distribution_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.label_joint_distribution_from_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.label_joint_distribution_from_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the distribution of a label against another label</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label_1</strong> (<em>list</em>) – List of labels</p></li>
+<li><p><strong>label_2</strong> (<em>list</em>) – List of labels</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.silhouette_score">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">silhouette_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.silhouette_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.silhouette_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.adjusted_rand_score">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjusted_rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.adjusted_rand_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.adjusted_rand_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.completeness_score">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">completeness_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.completeness_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.completeness_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.homogeneity_score">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">homogeneity_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate.homogeneity_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate.homogeneity_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._generate_layout">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_generate_layout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate._generate_layout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._generate_layout" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._generate_plot">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_generate_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster_evaluate.html#ClusterEvaluate._generate_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate._generate_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

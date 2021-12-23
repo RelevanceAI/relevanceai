@@ -74,9 +74,11 @@
   <h1>Source code for relevanceai.errors</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Missing field error</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
+
 <div class="viewcode-block" id="RelevanceAIError"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.errors.RelevanceAIError">[docs]</a><span class="k">class</span> <span class="nc">RelevanceAIError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></div>
-    <span class="sd">&quot;&quot;&quot;base class for all errors</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all errors&quot;&quot;&quot;</span>
+
 
 <div class="viewcode-block" id="MissingFieldError"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.errors.MissingFieldError">[docs]</a><span class="k">class</span> <span class="nc">MissingFieldError</span><span class="p">(</span><span class="n">RelevanceAIError</span><span class="p">):</span></div>
     <span class="sd">&quot;&quot;&quot;Error handling for missing fields&quot;&quot;&quot;</span>
@@ -85,10 +87,23 @@
 <div class="viewcode-block" id="APIError"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.errors.APIError">[docs]</a><span class="k">class</span> <span class="nc">APIError</span><span class="p">(</span><span class="n">RelevanceAIError</span><span class="p">):</span></div>
     <span class="sd">&quot;&quot;&quot;Error related to API&quot;&quot;&quot;</span>
 
+
 <div class="viewcode-block" id="ClusteringResultsAlreadyExistsError"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.errors.ClusteringResultsAlreadyExistsError">[docs]</a><span class="k">class</span> <span class="nc">ClusteringResultsAlreadyExistsError</span><span class="p">(</span><span class="n">RelevanceAIError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Error is raised when the clustering dataset already exists</span>
+    <span class="sd">&quot;&quot;&quot;Exception raised for existing clustering results</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        message -- explanation of the error</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Clustering results for </span><span class="si">%s</span><span class="s2"> already exist&quot;&quot;&quot;</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span> <span class="o">=</span> <span class="n">field_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ClusteringResultsAlreadyExistsError.__str__"><a class="viewcode-back" href="../../autoapi/relevanceai/errors/index.html#relevanceai.errors.ClusteringResultsAlreadyExistsError.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

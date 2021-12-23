@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.services.Services
+   relevanceai.api.endpoints.services.ServicesClient
 
 
 
 
-.. py:class:: Services(project: str, api_key: str)
+.. py:class:: ServicesClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: document_diff(self, doc: dict, docs_to_compare: list, difference_fields: list = [])
 

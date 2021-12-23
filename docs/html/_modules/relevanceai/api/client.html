@@ -76,13 +76,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">relevanceai.api.batch.batch_insert</span> <span class="kn">import</span> <span class="n">BatchInsert</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.batch.batch_retrieve</span> <span class="kn">import</span> <span class="n">BatchRetrieve</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.batch.batch_insert</span> <span class="kn">import</span> <span class="n">BatchInsertClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.batch.batch_retrieve</span> <span class="kn">import</span> <span class="n">BatchRetrieveClient</span>
 <span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.client</span> <span class="kn">import</span> <span class="n">APIClient</span>
 <span class="kn">from</span> <span class="nn">relevanceai.api.batch.chunk</span> <span class="kn">import</span> <span class="n">Chunker</span>
 
 
-<div class="viewcode-block" id="BatchAPIClient"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.client.BatchAPIClient">[docs]</a><span class="k">class</span> <span class="nc">BatchAPIClient</span><span class="p">(</span><span class="n">BatchInsert</span><span class="p">,</span> <span class="n">BatchRetrieve</span><span class="p">,</span> <span class="n">APIClient</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchAPIClient"><a class="viewcode-back" href="../../../core_api.html#relevanceai.api.client.BatchAPIClient">[docs]</a><span class="k">class</span> <span class="nc">BatchAPIClient</span><span class="p">(</span><span class="n">BatchInsertClient</span><span class="p">,</span> <span class="n">BatchRetrieveClient</span><span class="p">,</span> <span class="n">APIClient</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Batch API client&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BatchAPIClient.batch_insert"><a class="viewcode-back" href="../../../autoapi/relevanceai/api/client/index.html#relevanceai.api.client.BatchAPIClient.batch_insert">[docs]</a>    <span class="k">def</span> <span class="nf">batch_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
