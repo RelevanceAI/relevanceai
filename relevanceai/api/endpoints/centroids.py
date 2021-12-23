@@ -201,7 +201,7 @@ class CentroidsClient(_Base):
         if metadata is None:
             return self.make_http_request(
                 "/services/cluster/centroids/metadata",
-                method="GET",
+                method="POST",
                 parameters={
                     "dataset_id": dataset_id,
                     "vector_fields": vector_fields,

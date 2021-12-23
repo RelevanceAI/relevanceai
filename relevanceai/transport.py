@@ -47,7 +47,8 @@ class Transport:
         if url is None:
             return False
         result = urlparse(url)
-        return "search" in result.path.split("/")
+        split_path = result.path.split("/")
+        return "search" in split_path and "services" in split_path
 
     @property
     def DASHBOARD_TYPES(self):
