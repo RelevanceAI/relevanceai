@@ -79,6 +79,8 @@ class Client(BatchAPIClient, DocUtils):
 
     @base_url.setter
     def base_url(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
         CONFIG.set_option("api.base_url", value)
 
     @property
@@ -87,6 +89,8 @@ class Client(BatchAPIClient, DocUtils):
 
     @base_ingest_url.setter
     def base_ingest_url(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
 
     def _token_to_auth(self):
