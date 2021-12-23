@@ -68,3 +68,17 @@ To restore all options to their default, run the following:
 ```python
 client.config.reset_to_default()
 ```
+
+## Changing Base URL 
+
+You can change the base URL as such: 
+
+```
+client.base_url = "https://.../latest"
+```
+
+You can also update the ingest base URL: 
+
+```
+client.ingest_base_url = "https://.../latest
+```
