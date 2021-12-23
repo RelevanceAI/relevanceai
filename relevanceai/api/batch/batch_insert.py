@@ -624,9 +624,9 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         creating a new field using the provided mapping
         These documents are then uploaded into either an updated collection, or back into the original collection.
 
-        Example:
-        rename_fields(dataset_id,field_mappings = {'a.b.d':'a.b.c'})  => doc['a']['b']['d'] => doc['a']['b']['c']
-        rename_fields(dataset_id,field_mappings = {'a.b':'a.c'})  => doc['a']['b'] => doc['a']['c']
+        Example
+        client.rename_fields(dataset_id,field_mappings = {'a.b.d':'a.b.c'})  => doc['a']['b']['d'] => doc['a']['b']['c']
+        client.rename_fields(dataset_id,field_mappings = {'a.b':'a.c'})  => doc['a']['b'] => doc['a']['c']
 
         Parameters
         ----------
