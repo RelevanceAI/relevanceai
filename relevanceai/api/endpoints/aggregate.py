@@ -110,5 +110,5 @@ class AggregateClient(_Base):
                 "flatten": flatten,
                 "alias": alias,
             },
-            base_url = "https://gateway-api-aueast.relevance.ai/v1"
+            base_url="https://gateway-api-aueast.relevance.ai/v1",
         )
