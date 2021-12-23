@@ -42,8 +42,8 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
     def _build_and_plot_clusters(
         self,
-        vector_field: str,
-        text_field: str,
+        vector_fields: List[str],
+        text_fields: List[str],
         max_doc_num: int = None,
         k: int = 10,
         alias: str = "kmeans",
@@ -60,24 +60,30 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
     ):
         # get documents
         docs = self._get_documents(
-            vector_field=vector_field, text_field=text_field, max_doc_num=max_doc_num
+            vector_fields=vector_fields,
+            text_fields=text_fields,
+            max_doc_num=max_doc_num,
         )
 
         # perform kmeans clustering
         alias = alias + "_" + str(k)
         centers, clustered_docs = self._kmeans_clustering(
-            docs=docs, vector_field=vector_field, k=k, alias=alias
+            docs=docs, vector_fields=vector_fields, k=k, alias=alias
+        )
+
+        clustering_results = self.get_field_across_documents(
+            ".".join([self.cluster_field, ".".join(vector_fields), alias]), docs
         )
         for i, cl_doc in enumerate(tqdm(clustered_docs)):
-            docs[i]["_".join([self.cluster_field, vector_field, alias])] = cl_doc[
-                self.cluster_field
-            ][vector_field][alias]
+            docs[i][
+                "_".join([self.cluster_field, "".join(vector_fields), alias])
+            ] = clustering_results[i]
 
         # get cluster data
         cluster_data = self._get_cluster_datafield(
             docs=docs,
-            vector_field=vector_field,
-            text_field=text_field,
+            vector_fields=vector_fields,
+            text_fields=text_fields,
             alias=alias,
             lower=lower,
             remove_digit=remove_digit,
@@ -94,7 +100,10 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
         # dimensionality reduction
         # 1) Fit the model and reduce vector size
-        vectors = self.get_field_across_documents(vector_field, docs)
+        vectors = [[] for _ in docs]
+        for vector_field in vector_fields:
+            t = self.get_field_across_documents(vector_field, docs)
+            vectors = [i + j for i, j in zip(vectors, t)]  # concatenate vectors
         dr_docs = self._dim_reduction(
             vector_data=vectors,
             embedding_dims=self.embedding_dims,
@@ -121,7 +130,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             dr_docs,
             centers,
             cluster_data,
-            vector_field,
+            vector_fields,
             alias,
             cluster_representative_cnt,
             plot_axis=plot_axis,
@@ -131,7 +140,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         )
 
     def _get_documents(
-        self, vector_field: str, text_field: str, max_doc_num: int = None
+        self, vector_fields: List[str], text_fields: List[str], max_doc_num: int = None
     ):
         self.logger.info(" * Loading documents")
         filters = [
@@ -141,8 +150,9 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
                 "condition": "==",
                 "condition_value": " ",
             }
+            for vector_field in vector_fields
         ]
-        fields = [vector_field, text_field]
+        fields = vector_fields + text_fields
         if max_doc_num:
             page_size = 200 if max_doc_num > 200 else max_doc_num
             batch_doc = self._batch_load_docs(
@@ -177,11 +187,15 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         )
 
     def _kmeans_clustering(
-        self, docs: List[dict], vector_field=str, k: int = 10, alias: str = "kmeans"
+        self,
+        docs: List[dict],
+        vector_fields: List[str],
+        k: int = 10,
+        alias: str = "kmeans",
     ):
         self.logger.info(" * Kmeans Clustering")
         clusterer = KMeans(k=k)
-        clustered_docs = clusterer.fit_documents([vector_field], docs, alias=alias)
+        clustered_docs = clusterer.fit_documents(vector_fields, docs, alias=alias)
         res = self.update_documents(
             self.dataset_id, clustered_docs, chunksize=self.upload_chunksize
         )
@@ -189,22 +203,25 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         self.services.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=centers,
-            vector_field=vector_field,
+            vector_fields=vector_fields,
             alias=alias,
         )
         return centers, clustered_docs
 
     @staticmethod
-    def _get_field_value_by_id(docs: List[dict], id: str, field: str):
+    def _get_fields_value_by_id(docs: List[dict], id: str, fields: List[str]):
+        vals = {}
         for doc in docs:
             if doc["_id"] == id:
-                return DocUtils.get_field(field, doc)
+                for field in fields:
+                    vals[field] = DocUtils.get_field(field, doc) + " "
+        return vals
 
     def _get_cluster_datafield(
         self,
         docs: List[dict],
-        vector_field: str,
-        text_field: str,
+        vector_fields: List[str],
+        text_fields: List[str],
         alias: str,
         lower: bool = True,
         remove_digit: bool = True,
@@ -213,12 +230,16 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         self.logger.info(" * Extracting cluster info")
         cluster_data: dict = {}
         for i, doc in tqdm(enumerate(docs)):
-            cluster_name = doc["_".join([self.cluster_field, vector_field, alias])]
-            cluster_name = cluster_name.replace("-", "_").lower()
+            cluster_name = doc[
+                "_".join([self.cluster_field, "".join(vector_fields), alias])
+            ]
             if cluster_name not in cluster_data:
                 cluster_data[cluster_name] = {"data": []}
+            values = self._get_fields_value_by_id(
+                docs, id=doc["_id"], fields=text_fields
+            )
             text = self.normalize_text(
-                txt=self._get_field_value_by_id(docs, id=doc["_id"], field=text_field),
+                txt=" ".join([v for k, v in values.items()]),
                 lower=lower,
                 remove_digit=remove_digit,
                 remove_punct=remove_punct,
@@ -270,6 +291,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             dr_docs = self.dr_model.fit_transform(vector_data)
         else:
             dr_docs = self.dr_model.transform(vector_data)
+
         return dr_docs
 
     def _plot_clusters(
@@ -278,7 +300,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         dr_docs: List,
         centers: List[dict],
         cluster_data: dict,
-        vector_field: str,
+        vector_fields: List[str],
         alias: str,
         cluster_representative_cnt: int,
         plot_axis: str = "off",
@@ -286,7 +308,10 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         cmap: str = "plasma",
         alpha: float = 0.2,
     ):
-        group = [x["_".join([self.cluster_field, vector_field, alias])] for x in docs]
+        group = [
+            x["_".join([self.cluster_field, "".join(vector_fields), alias])]
+            for x in docs
+        ]
         le = preprocessing.LabelEncoder()
         color = le.fit_transform(group)
 
@@ -317,8 +342,8 @@ def build_and_plot_clusters(
     project: str,
     api_key: str,
     dataset_id: str,
-    vector_field: str,
-    text_field: str,
+    vector_fields: List[str],
+    text_fields: List[str],
     upload_chunksize: int = 50,
     cluster_field: str = "_cluster_",
     embedding_dims: int = 2,
@@ -353,8 +378,8 @@ def build_and_plot_clusters(
         language=language,
     )
     return model._build_and_plot_clusters(
-        vector_field=vector_field,
-        text_field=text_field,
+        vector_fields=vector_fields,
+        text_fields=text_fields,
         max_doc_num=max_doc_num,
         k=k,
         alias=alias,
