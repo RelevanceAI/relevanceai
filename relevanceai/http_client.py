@@ -7,6 +7,7 @@ import sys
 import warnings
 from typing import Optional, List, Union
 
+from appdirs import user_cache_dir
 from doc_utils.doc_utils import DocUtils
 
 from relevanceai.errors import APIError
@@ -35,7 +36,7 @@ class Client(BatchAPIClient, DocUtils):
     """Python Client for Relevance AI's relevanceai"""
 
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
-    _cred_fn = ".creds.json"
+    _cred_fn = user_cache_dir("relevanceai", ".creds.json")
 
     def __init__(
         self,
