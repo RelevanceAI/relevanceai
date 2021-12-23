@@ -530,6 +530,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self.services.cluster.centroids.list_closest_to_center(
             dataset_id, vector_field=vector_field_name, alias=alias
         )
+        print(f"Finished clustering. The cluster alias is `{alias}`.")
 
     def hdbscan_cluster(
         self,
