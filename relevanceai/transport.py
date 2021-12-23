@@ -16,6 +16,8 @@ from relevanceai.logger import AbstractLogger
 from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.errors import APIError
 
+DO_NOT_REPEAT_STATUS_CODES = {404, 422}
+
 
 class Transport:
     """Base class for all relevanceai objects"""
@@ -196,7 +198,8 @@ class Transport:
                         return response
 
                 # Cancel bad URLs
-                elif response.status_code == 404:
+                # Logged status codes
+                elif response.status_code in DO_NOT_REPEAT_STATUS_CODES:
                     self._log_response_fail(
                         base_url,
                         endpoint,

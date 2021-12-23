@@ -53,7 +53,7 @@ class Client(BatchAPIClient, DocUtils):
             if self.check_auth():
 
                 WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
-                print(self.WELCOME_MESSAGE)
+                print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
@@ -79,6 +79,8 @@ class Client(BatchAPIClient, DocUtils):
 
     @base_url.setter
     def base_url(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
         CONFIG.set_option("api.base_url", value)
 
     @property
@@ -87,6 +89,8 @@ class Client(BatchAPIClient, DocUtils):
 
     @base_ingest_url.setter
     def base_ingest_url(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
 
     def _token_to_auth(self):

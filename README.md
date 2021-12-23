@@ -10,7 +10,7 @@ Built mainly for data scientists/engineers looking to experiment with vectors/em
 
 The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
 
-You can also install on conda: `conda install -c relevance relevanceai`.
+You can also install on conda (only available on Linux environments at the moment): `conda install -c relevance relevanceai`.
 
 ## How to use the RelevanceAI client
 
@@ -67,4 +67,18 @@ To restore all options to their default, run the following:
 
 ```python
 client.config.reset_to_default()
+```
+
+## Changing Base URL 
+
+You can change the base URL as such: 
+
+```
+client.base_url = "https://.../latest"
+```
+
+You can also update the ingest base URL: 
+
+```
+client.ingest_base_url = "https://.../latest
 ```
