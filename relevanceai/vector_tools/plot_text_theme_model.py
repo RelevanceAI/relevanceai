@@ -100,7 +100,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
         # dimensionality reduction
         # 1) Fit the model and reduce vector size
-        vectors = [[] for _ in docs]
+        vectors: List = [[] for _ in docs]
         for vector_field in vector_fields:
             t = self.get_field_across_documents(vector_field, docs)
             vectors = [i + j for i, j in zip(vectors, t)]  # concatenate vectors
