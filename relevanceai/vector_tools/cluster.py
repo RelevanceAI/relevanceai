@@ -143,7 +143,7 @@ class CentroidCluster(ClusterBase):
         if isinstance(self.centers, np.ndarray):
             self.centers = self.centers.tolist()
         return [
-            {"_id": f"cluster_{i}", "centroid_vector_": self.centers[i]}
+            {"_id": self._label_cluster(i), "centroid_vector_": self.centers[i]}
             for i in range(len(self.centers))
         ]
 
@@ -525,6 +525,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             alias=alias,
         )
         self.logger.info(results)
+        print(f"Finished clustering. The cluster alias is `{alias}`.")
         self.services.cluster.centroids.list_closest_to_center(
             dataset_id, vector_fields=vector_fields, alias=alias
         )
