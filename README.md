@@ -1,10 +1,13 @@
+
+
 This library contains all the endpoints for the RelevanceAI API and gives you access to the latest vector-based technology on the market. 
 
-Get your free API key: https://development.qualitative-cloud.pages.dev/login
+Get your free API key: https://cloud.relevance.ai/sdk/api/
 
 # Main Features
+
 The most in-demand features of the library include:
-- Quick vector search on Big Data
+- Quick vector search on large amounts of data
 - Vector Clustering
 - Transformers encoding for text and images
 - Multi-vector search
@@ -19,8 +22,7 @@ The most in-demand features of the library include:
 
 ## login into your project space
 
-    from relevanceai import Client 
-
+    from relevanceai import Client
     client = relevanceai.Client(<project_name>, <api_key>)
 
 This is a data example in the right format to be uploaded to relevanceai. Every document you upload should:
@@ -67,7 +69,7 @@ There are two ways of interacting with the API:
 ## Getting Started
 To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
 
-    python -m pip install pytest mypy
+    python -m pip install RelevanceAi[dev]
 
 Then run testing using:
 
@@ -94,3 +96,5 @@ The syntax for selecting an option is section.key. For example, to disable loggi
 To restore all options to their default, run the following:
 
     client.config.reset_to_default()
+
+
