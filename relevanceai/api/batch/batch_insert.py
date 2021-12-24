@@ -22,7 +22,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
         self,
         dataset_id: str,
-        docs: list,
+        documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
@@ -46,7 +46,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         ----------
         dataset_id : string
             Unique name of dataset
-        docs : list
+        documents : list
             A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         bulk_fn : callable
             Function to apply to documents before uploading
@@ -66,10 +66,10 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        def bulk_insert_func(docs):
+        def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
                 dataset_id,
-                docs,
+                documents,
                 return_documents=True,
                 *args,
                 **kwargs,
@@ -77,7 +77,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
 
         return self._write_documents(
             bulk_insert_func,
-            docs,
+            documents,
             bulk_fn,
             max_workers,
             retry_chunk_mult,
@@ -88,7 +88,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
     def update_documents(
         self,
         dataset_id: str,
-        docs: list,
+        documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
@@ -107,17 +107,17 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         >>> project = ""
         >>> api_key = ""
         >>> client = Client(project, api_key)
-        >>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
-        >>> while len(docs['documents']) > 0:
-        >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
-        >>>     client.update_documents(collection, docs['documents'])
-        >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
+        >>> while len(documents['documents']) > 0:
+        >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
+        >>>     client.update_documents(collection, documents['documents'])
+        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=documents['cursor'])
 
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
-        docs : list
+        documents : list
             A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         bulk_fn : callable
             Function to apply to documents before uploading
@@ -135,10 +135,10 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
             f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
         )
 
-        def bulk_update_func(docs):
+        def bulk_update_func(documents):
             return self.datasets.documents.bulk_update(
                 dataset_id,
-                docs,
+                documents,
                 return_documents=True,
                 *args,
                 **kwargs,
@@ -146,7 +146,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
 
         return self._write_documents(
             bulk_update_func,
-            docs,
+            documents,
             bulk_fn,
             max_workers,
             retry_chunk_mult,
@@ -257,14 +257,14 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
             if updated_collection is None:
                 insert_json = self.update_documents(
                     dataset_id=original_collection,
-                    docs=updated_data,
+                    documents=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
                 )
             else:
                 insert_json = self.insert_documents(
                     dataset_id=updated_collection,
-                    docs=updated_data,
+                    documents=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
                 )
@@ -408,14 +408,14 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
                 if updated_collection is None:
                     insert_json = self.update_documents(
                         dataset_id=original_collection,
-                        docs=updated_data,
+                        documents=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
                     )
                 else:
                     insert_json = self.insert_documents(
                         dataset_id=updated_collection,
-                        docs=updated_data,
+                        documents=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
                     )
@@ -466,11 +466,11 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         """Insert a dataframe for eachd doc"""
         import pandas as pd
 
-        docs = [
+        documents = [
             {k: v for k, v in doc.items() if not pd.isna(v)}
             for doc in dataframe.to_dict(orient="records")
         ]
-        return self.insert_documents(dataset_id, docs, *args, **kwargs)
+        return self.insert_documents(dataset_id, documents, *args, **kwargs)
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 
@@ -492,7 +492,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
     def _write_documents(
         self,
         insert_function,
-        docs: list,
+        documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
@@ -501,7 +501,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
     ):
 
         # Get one document to test the size
-        if len(docs) == 0:
+        if len(documents) == 0:
             self.logger.warning("No document is detected")
             return {
                 "inserted": 0,
@@ -510,15 +510,15 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
             }
 
         # Insert documents
-        test_doc = json.dumps(docs[0], indent=4)
+        test_doc = json.dumps(documents[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
             chunksize = (
                 int(target_chunk_mb / doc_mb) + 1
-                if int(target_chunk_mb / doc_mb) + 1 < len(docs)
-                else len(docs)
+                if int(target_chunk_mb / doc_mb) + 1 < len(documents)
+                else len(documents)
             )
             chunksize = max(chunksize, max_chunk_size)
 
@@ -526,7 +526,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         inserted: List[str] = []
 
         # Initialise failed documents
-        failed_ids = [i["_id"] for i in docs]
+        failed_ids = [i["_id"] for i in documents]
 
         # Initialise failed documents detailed
         failed_ids_detailed: List[str] = []
@@ -539,7 +539,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
                 if bulk_fn is not None:
                     insert_json = multiprocess(
                         func=bulk_fn,
-                        iterables=docs,
+                        iterables=documents,
                         post_func_hook=insert_function,
                         max_workers=max_workers,
                         chunksize=chunksize,
@@ -548,7 +548,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
                 else:
                     insert_json = multithread(
                         insert_function,
-                        docs,
+                        documents,
                         max_workers=max_workers,
                         chunksize=chunksize,
                         show_progress_bar=show_progress_bar,
@@ -593,8 +593,8 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
                     else:
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
-                # Update docs to retry which have failed
-                docs = [i for i in docs if i["_id"] in failed_ids]
+                # Update documents to retry which have failed
+                documents = [i for i in documents if i["_id"] in failed_ids]
 
             else:
                 break
