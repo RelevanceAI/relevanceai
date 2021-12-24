@@ -16,36 +16,47 @@ The most in-demand features of the library include:
 
 # Installation
 
+You can install it this way via `pip` 
+
     !pip install -U relevanceai
+
+Or you can install it via conda to:
+
+    !conda install pip 
+    !pip install -c relevanceai
 
 # Quickstart
 
-## login into your project space
 
     from relevanceai import Client
-    client = relevanceai.Client(<project_name>, <api_key>)
+    client = Client()
+    # This will link you to a login page called https://cloud.relevance.ai/sdk/api/
 
 This is a data example in the right format to be uploaded to relevanceai. Every document you upload should:
+
 - Be a list of dictionaries
-- Every dictionary has a field called _id
-- Vector fields end in _vector_
+- Every dictionary has a field called `_id`
+- Vector fields end in `_vector_`
 
-.
-
-    docs = [
+```
+    documents = [
         {"_id": "1", "example_vector_": [0.1, 0.1, 0.1], "data": "Documentation"},
         {"_id": "2", "example_vector_": [0.2, 0.2, 0.2], "data": "Best document!"},
         {"_id": "3", "example_vector_": [0.3, 0.3, 0.3], "data": "document example"},
         {"_id": "4", "example_vector_": [0.4, 0.4, 0.4], "data": "this is another doc"},
         {"_id": "5", "example_vector_": [0.5, 0.5, 0.5], "data": "this is a doc"},
     ]
+```
 
-## upload data into a new dataset
+## Insert documents into Relevance AI
+
 The documents will be uploaded into a new dataset that you can name in whichever way you want. If the dataset name does not exist yet, it will be created automatically. If the dataset already exist, the uploaded _id will be replacing the old data.
 
-    client.insert_documents(dataset_id="quickstart", docs=docs)
+    client.insert_documents(dataset_id="quickstart", documents=documents)
 
-## perform a vector search
+## Perform a vector search
+
+You can perform a vector search as below
 
     client.services.search.vector(
         dataset_id="quickstart", 
@@ -54,6 +65,7 @@ The documents will be uploaded into a new dataset that you can name in whichever
         ],
         page_size=3,
         query="sample search" # Stored on the dashboard but not required
+    )
 
 # Documentation
 
@@ -95,6 +107,26 @@ The syntax for selecting an option is section.key. For example, to disable loggi
 
 To restore all options to their default, run the following:
 
+<<<<<<< HEAD
     client.config.reset_to_default()
 
 
+=======
+```python
+client.config.reset_to_default()
+```
+
+## Changing Base URL 
+
+You can change the base URL as such: 
+
+```
+client.base_url = "https://.../latest"
+```
+
+You can also update the ingest base URL: 
+
+```
+client.ingest_base_url = "https://.../latest
+```
+>>>>>>> main

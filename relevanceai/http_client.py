@@ -21,7 +21,7 @@ try:
 
     vis_requirements = True
 except ModuleNotFoundError as e:
-    warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
+    # warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
     pass
 
 from relevanceai.vector_tools.client import VectorTools
@@ -53,7 +53,7 @@ class Client(BatchAPIClient, DocUtils):
             if self.check_auth():
 
                 WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
-                print(self.WELCOME_MESSAGE)
+                print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
@@ -79,7 +79,19 @@ class Client(BatchAPIClient, DocUtils):
 
     @base_url.setter
     def base_url(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
         CONFIG.set_option("api.base_url", value)
+
+    @property
+    def base_ingest_url(self):
+        return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
+
+    @base_ingest_url.setter
+    def base_ingest_url(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
+        CONFIG.set_option("api.base_ingest_url", value)
 
     def _token_to_auth(self):
         # if verbose:
@@ -90,9 +102,7 @@ class Client(BatchAPIClient, DocUtils):
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(
-                f"Authorization token (you can find it here: {SIGNUP_URL} )"
-            )
+            token = getpass.getpass(f"Auth token:")
             project = token.split(":")[0]
             api_key = token.split(":")[1]
             self._write_credentials(project, api_key)
