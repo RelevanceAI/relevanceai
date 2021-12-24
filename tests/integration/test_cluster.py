@@ -16,7 +16,9 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
         raise ValueError("Missing documents")
     cluster = KMeans(k=10)
     # Now when we want to fit the documents
-    documents["documents"] = cluster.fit_documents([VECTOR_FIELD], documents["documents"])
+    documents["documents"] = cluster.fit_documents(
+        [VECTOR_FIELD], documents["documents"]
+    )
 
     # Centroids
     cluster_centers = cluster.get_centroid_documents()
