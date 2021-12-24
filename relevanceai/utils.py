@@ -10,10 +10,10 @@ import pandas as pd
 
 from doc_utils import DocUtils
 from relevanceai.base import _Base
-from relevanceai.api.endpoints.datasets import DatasetsClient
+from relevanceai.api.endpoints.client import APIClient
 
 
-class Utils(DatasetsClient, _Base, DocUtils):
+class Utils(APIClient, _Base, DocUtils):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -64,7 +64,7 @@ class Utils(DatasetsClient, _Base, DocUtils):
         Check vector field name is valid
         """
         vector_fields = self.get_vector_fields(dataset_id)
-        schema = self.schema(dataset_id)
+        schema = self.datasets.schema(dataset_id)
         if vector_name in schema.keys():
             if vector_name in vector_fields:
                 return True
@@ -77,7 +77,7 @@ class Utils(DatasetsClient, _Base, DocUtils):
         """
         Check vector label name is valid. Checks that it is either numeric or text
         """
-        schema = self.schema(dataset_id)
+        schema = self.datasets.schema(dataset_id)
         if label_name == "_id":
             return True
         if label_name in list(schema.keys()):
