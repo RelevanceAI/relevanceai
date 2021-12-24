@@ -6,6 +6,8 @@ import uuid
 import random
 import numpy as np
 from relevanceai import Client
+import datetime
+import pandas as pd
 
 from utils import generate_random_string, generate_random_vector, generate_random_label
 
@@ -88,6 +90,49 @@ def sample_vector_docs():
 
 
 @pytest.fixture(scope="session")
+def sample_datetime_docs():
+    def _sample_datetime_doc(doc_id: str):
+        return {
+            "_id": doc_id,
+            "sample_1_datetime": datetime.now(),
+            "sample_2_datetime": datetime.now(),
+        }
+
+    N = 20
+    return [_sample_datetime_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
+
+
+@pytest.fixture(scope="session")
+def sample_numpy_docs():
+    def _sample_numpy_doc(doc_id: str):
+        return {
+            "_id": doc_id,
+            "sample_1_numpy": np.random.randint(5, size=1)[0],
+            "sample_2_numpy": np.random.rand(3, 2),
+        }
+
+    N = 20
+    return [_sample_numpy_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
+
+
+@pytest.fixture(scope="session")
+def sample_pandas_docs():
+    def _sample_numpy_doc(doc_id: str):
+        return {
+            "_id": doc_id,
+            "sample_1_pandas": pd.DataFrame(
+                np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
+            ),
+            "sample_2_pandas": pd.DataFrame(
+                np.random.randint(0, 10, size=(10, 4)), columns=list("ABCD")
+            ),
+        }
+
+    N = 20
+    return [_sample_numpy_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
+
+
+@pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample vector dataset"""
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
@@ -104,3 +149,27 @@ def test_clustered_dataset(test_client, test_sample_vector_dataset):
         overwrite=True,
     )
     yield test_sample_vector_dataset
+
+
+@pytest.fixture(scope="session")
+def test_datetime_dataset(test_client, sample_datetime_docs, test_dataset_id):
+    """Sample datetime dataset"""
+    response = test_client.insert_documents(test_dataset_id, sample_datetime_docs)
+    yield test_dataset_id
+    test_client.datasets.delete(test_dataset_id)
+
+
+@pytest.fixture(scope="session")
+def test_numpy_dataset(test_client, sample_numpy_docs, test_dataset_id):
+    """Sample numpy dataset"""
+    response = test_client.insert_documents(test_dataset_id, sample_numpy_docs)
+    yield test_dataset_id
+    test_client.datasets.delete(test_dataset_id)
+
+
+@pytest.fixture(scope="session")
+def test_pandas_dataset(test_client, sample_pandas_docs, test_dataset_id):
+    """Sample pandas dataset"""
+    response = test_client.insert_documents(test_dataset_id, sample_pandas_docs)
+    yield test_dataset_id
+    test_client.datasets.delete(test_dataset_id)

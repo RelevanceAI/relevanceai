@@ -15,6 +15,7 @@ from relevanceai.api.endpoints.cluster import ClusterClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.cluster import KMeans
 
+
 vis_requirements = False
 try:
     from relevanceai.visualise.projector import Projector

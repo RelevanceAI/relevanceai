@@ -13,12 +13,13 @@ from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
 from relevanceai.api.batch.chunk import Chunker
+from relevanceai.utils import Utils
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
 
-class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
+class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
         self,
         dataset_id: str,
@@ -65,6 +66,9 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker):
         )
         # Check if the collection exists
         self.datasets.create(dataset_id)
+
+        # Ensure JSON serializable
+        docs = self.json_encoder(docs)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
