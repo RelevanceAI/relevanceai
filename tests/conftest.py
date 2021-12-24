@@ -6,7 +6,7 @@ import uuid
 import random
 import numpy as np
 from relevanceai import Client
-import datetime
+from datetime import datetime
 import pandas as pd
 
 from utils import generate_random_string, generate_random_vector, generate_random_label
