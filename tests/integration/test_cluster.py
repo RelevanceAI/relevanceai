@@ -9,17 +9,17 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     # Retrieve a previous dataset
     VECTOR_FIELD = "sample_1_vector_"
     ALIAS = "kmeans_10"
-    docs = test_client.datasets.documents.list(test_sample_vector_dataset)
+    documents = test_client.datasets.documents.list(test_sample_vector_dataset)
 
-    # check if docs are inserted
-    if len(docs["documents"]) == 0:
-        raise ValueError("Missing docs")
+    # check if documents are inserted
+    if len(documents["documents"]) == 0:
+        raise ValueError("Missing documents")
     cluster = KMeans(k=10)
     # Now when we want to fit the documents
-    docs["documents"] = cluster.fit_documents([VECTOR_FIELD], docs["documents"])
+    documents["documents"] = cluster.fit_documents([VECTOR_FIELD], documents["documents"])
 
     # Centroids
-    cluster_centers = cluster.get_centroid_docs()
+    cluster_centers = cluster.get_centroid_documents()
     test_client.services.cluster.centroids.insert(
         test_sample_vector_dataset,
         vector_fields=[VECTOR_FIELD],

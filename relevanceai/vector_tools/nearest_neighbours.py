@@ -14,7 +14,7 @@ class NearestNeighbours(_Base, DocUtils):
 
     @staticmethod
     def get_nearest_neighbours(
-        docs: list,
+        documents: list,
         vector: list,
         vector_field: str,
         distance_measure_mode: NEAREST_NEIGHBOURS = "cosine",
@@ -24,21 +24,21 @@ class NearestNeighbours(_Base, DocUtils):
         if callable_distance:
             sort_key = [
                 callable_distance(i, vector)
-                for i in doc_utils.get_field_across_documents(vector_field, docs)
+                for i in doc_utils.get_field_across_documents(vector_field, documents)
             ]
             reverse = False
 
         elif distance_measure_mode == "cosine":
             sort_key = [
                 1 - spatial_distance.cosine(i, vector)
-                for i in doc_utils.get_field_across_documents(vector_field, docs)
+                for i in doc_utils.get_field_across_documents(vector_field, documents)
             ]
             reverse = True
 
         elif distance_measure_mode == "l2":
             sort_key = [
                 spatial_distance.euclidean(i, vector)
-                for i in doc_utils.get_field_across_documents(vector_field, docs)
+                for i in doc_utils.get_field_across_documents(vector_field, documents)
             ]
             reverse = False
 
@@ -46,9 +46,9 @@ class NearestNeighbours(_Base, DocUtils):
             raise ValueError("Need valid distance measure mode or callable distance")
 
         doc_utils.set_field_across_documents(
-            "nearest_neighbour_distance", sort_key, docs
+            "nearest_neighbour_distance", sort_key, documents
         )
 
         return sorted(
-            docs, reverse=reverse, key=lambda x: x["nearest_neighbour_distance"]
+            documents, reverse=reverse, key=lambda x: x["nearest_neighbour_distance"]
         )

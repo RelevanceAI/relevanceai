@@ -145,16 +145,16 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         # Check hover label field
         [self._is_valid_label_name(dataset_id, label) for label in hover_label]
 
-        docs = self.get_documents(
+        documents = self.get_documents(
             dataset_id,
             number_of_documents=number_of_points_to_render,
             batch_size=1000,
             select_fields=["_id", vector_field] + vector_label_field + hover_label,
         )
-        docs = self._remove_empty_vector_fields(docs, vector_field)
+        documents = self._remove_empty_vector_fields(documents, vector_field)
 
-        return self.plot_from_docs(
-            docs,
+        return self.plot_from_documents(
+            documents,
             vector_field=vector_field,
             vector_label=vector_label,
             label_char_length=label_char_length,
@@ -172,9 +172,9 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             interactive=interactive,
         )
 
-    def plot_from_docs(
+    def plot_from_documents(
         self,
-        docs: List[Dict],
+        documents: List[Dict],
         vector_field: str,
         # Plot rendering args
         vector_label: Union[None, str] = None,
@@ -200,12 +200,12 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         if show_image is False and vector_label:
             self.set_field_across_documents(
                 vector_label,
-                [i[vector_label][:label_char_length] + "..." for i in docs],
-                docs,
+                [i[vector_label][:label_char_length] + "..." for i in documents],
+                documents,
             )
 
         # Dimension reduce vectors
-        vectors = np.array(self.get_field_across_documents(vector_field, docs))
+        vectors = np.array(self.get_field_across_documents(vector_field, documents))
         vectors_dr = DimReduction.dim_reduce(
             vectors=vectors, dr=dr, dr_args=dr_args, dims=dims
         )
@@ -214,7 +214,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             points["z"] = vectors_dr[:, 2]
 
         embedding_df = pd.DataFrame(points)
-        embedding_df = pd.concat([embedding_df, pd.DataFrame(docs)], axis=1)
+        embedding_df = pd.concat([embedding_df, pd.DataFrame(documents)], axis=1)
 
         # Set hover labels
         if vector_label:
@@ -265,7 +265,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             plot_data=plot_data,
             layout=layout,
             show_image=show_image,
-            docs=docs,
+            documents=documents,
             vector_label=vector_label,
             vector_field=vector_field,
             interactive=interactive,

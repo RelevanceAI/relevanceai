@@ -16,7 +16,7 @@ doc_utils = DocUtils()
 MAX_SIZE = 200
 
 
-def display_callbacks(app, show_image, docs, vector_label):
+def display_callbacks(app, show_image, documents, vector_label):
 
     if show_image:
 
@@ -30,7 +30,7 @@ def display_callbacks(app, show_image, docs, vector_label):
             except TypeError:
                 return None
 
-            click_doc = [i for i in docs if i["_id"] == click_id][0]
+            click_doc = [i for i in documents if i["_id"] == click_id][0]
             image_url = click_doc[vector_label]
 
             return [
@@ -54,7 +54,7 @@ def display_callbacks(app, show_image, docs, vector_label):
 def neighbour_callbacks(
     app,
     show_image,
-    docs,
+    documents,
     vector_label,
     vector_field,
     distance_measure_mode="cosine",
@@ -66,11 +66,11 @@ def neighbour_callbacks(
         except TypeError:
             return None
 
-        click_doc = [i for i in docs if i["_id"] == click_id][0]
+        click_doc = [i for i in documents if i["_id"] == click_id][0]
 
         click_vec = click_doc[vector_field]
         nearest_neighbors = NearestNeighbours.get_nearest_neighbours(
-            docs, click_vec, vector_field, distance_measure_mode
+            documents, click_vec, vector_field, distance_measure_mode
         )[:n]
         nearest_neighbor_values = doc_utils.get_field_across_documents(
             vector_label, nearest_neighbors

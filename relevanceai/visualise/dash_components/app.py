@@ -16,7 +16,7 @@ def create_dash_graph(
     plot_data,
     layout,
     show_image,
-    docs,
+    documents,
     vector_label,
     vector_field,
     interactive: bool = True,
@@ -48,7 +48,7 @@ def create_dash_graph(
         )
 
     app.layout = create_layout(app)
-    # display_callbacks(app, show_image, docs, vector_label)
+    # display_callbacks(app, show_image, documents, vector_label)
     if interactive:
-        neighbour_callbacks(app, show_image, docs, vector_label, vector_field)
+        neighbour_callbacks(app, show_image, documents, vector_label, vector_field)
     app.run_server(mode="inline")

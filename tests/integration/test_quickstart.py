@@ -4,7 +4,7 @@ import time
 
 
 def test_quickstart(test_client):
-    docs = [
+    documents = [
         {"_id": "1", "example_vector_": [0.1, 0.1, 0.1]},
         {"_id": "2", "example_vector_": [0.2, 0.2, 0.2]},
         {"_id": "3", "example_vector_": [0.3, 0.3, 0.3]},
@@ -12,7 +12,7 @@ def test_quickstart(test_client):
         {"_id": "5", "example_vector_": [0.5, 0.5, 0.5]},
     ]
 
-    test_client.insert_documents(dataset_id="quickstart", docs=docs)
+    test_client.insert_documents(dataset_id="quickstart", documents=documents)
     time.sleep(2)
     results = test_client.services.search.vector(
         dataset_id="quickstart",

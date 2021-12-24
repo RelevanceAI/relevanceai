@@ -10,30 +10,30 @@ class TestInsert:
 
     def test_batch_insert(self, simple_doc, test_dataset_id, test_client):
         """Batch insert"""
-        simple_docs = simple_doc * 100
-        results = test_client.insert_documents(test_dataset_id, simple_docs)
+        simple_documents = simple_doc * 100
+        results = test_client.insert_documents(test_dataset_id, simple_documents)
         assert len(results["failed_documents"]) == 0
 
 
 # Mock a callable For pull update push
-def do_nothing(docs):
-    return docs
+def do_nothing(documents):
+    return documents
 
 
-def cause_error(docs):
-    for d in docs:
+def cause_error(documents):
+    for d in documents:
         d["value"] = np.nan
-    return docs
+    return documents
 
 
-def cause_some_error(docs):
+def cause_some_error(documents):
     MAX_ERRORS = 5
     ERROR_COUNT = 0
-    for d in docs:
+    for d in documents:
         if ERROR_COUNT < MAX_ERRORS:
             d["value"] = np.nan
             ERROR_COUNT += 1
-    return docs
+    return documents
 
 
 class TestPullUpdatePush:
@@ -62,11 +62,11 @@ class TestPullUpdatePush:
     def test_pull_update_push_loaded(self, test_sample_dataset, test_client):
         """Stress testing pull update push."""
 
-        def do_nothing(docs):
-            return docs
+        def do_nothing(documents):
+            return documents
 
         response = test_client.pull_update_push(test_sample_dataset, do_nothing)
-        assert len(response["failed_documents"]) == 0, "Failed to insert docs"
+        assert len(response["failed_documents"]) == 0, "Failed to insert documents"
 
 
 # class TestCleanUp:
