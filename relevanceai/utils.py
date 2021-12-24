@@ -39,8 +39,8 @@ class Utils(BatchAPIClient, _Base, DocUtils):
         else:
             raise ValueError(f"{label_name} is not in the {dataset_id} schema")
 
-    def _remove_empty_vector_fields(self, docs, vector_field: str) -> List[Dict]:
+    def _remove_empty_vector_fields(self, documents, vector_field: str) -> List[Dict]:
         """
         Remove documents with empty vector fields
         """
-        return [d for d in docs if d.get(vector_field)]
+        return [d for d in documents if d.get(vector_field)]
