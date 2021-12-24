@@ -6,6 +6,7 @@ from typing import List, Union, Dict, Any
 import sys
 import pandas as pd
 import requests
+import json
 
 THIS_MODULE = sys.modules[__name__]
 DATASETS = [
@@ -472,6 +473,38 @@ def get_mission_statements_dataset(
         number_of_documents = 514330
     return ExampleDatasets._get_online_dataset(
         "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv",
+        number_of_documents,
+        select_fields,
+    )
+
+
+def get_news_category_dataset(
+    number_of_documents: Union[None, int] = 11000, select_fields: list = []
+) -> List:
+    """
+    Download an example news category dataset \n
+    Total Len: 11000 \n
+    Sample document:
+
+    >>> {"category": "CRIME", 
+    >>> "headline": "There Were 2 Mass Shootings In Texas Last Week, But Only 1 On TV", 
+    >>> "authors": "Melissa Jeltsen", 
+    >>> "link": "https://www.huffingtonpost.com/entry/texas-amanda-painter-mass-shooting_us_5b081ab4e4b0802d69caad89", 
+    >>> "short_description": "She left her husband. He killed their children. Just another day in America.", 
+    >>> "date": "2018-05-26", 
+    >>> "_id": 0, "short_description_sentence_transformers_vector_": [-0.0023065314162522554, -0.0421421155333519, ...}
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+            Fields to include in the dataset, empty array/list means all fields.
+    """
+    if number_of_documents is None:
+        number_of_documents = 11000
+    return ExampleDatasets._get_online_dataset(
+        "https://raw.githubusercontent.com/arditoibryan/datasets/main/211214_news_category/2_news_category_encoded_11000.json",
         number_of_documents,
         select_fields,
     )

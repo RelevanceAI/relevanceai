@@ -13,45 +13,59 @@ The most in-demand features of the library include:
 
 # Installation
 
-    !pip install -U relevanceai
+```
+!pip install -U relevanceai
+```
+Or you can install it via conda to:
+
+```
+!conda install pip 
+!pip install -c relevanceai
+```
 
 # Quickstart
 
 ## login into your project space
 
-    from relevanceai import Client 
+```
+from relevanceai import Client 
 
-    client = relevanceai.Client(<project_name>, <api_key>)
+client = relevanceai.Client(<project_name>, <api_key>)
+```
 
 This is a data example in the right format to be uploaded to relevanceai. Every document you upload should:
 - Be a list of dictionaries
 - Every dictionary has a field called _id
 - Vector fields end in _vector_
 
-.
-
-    docs = [
-        {"_id": "1", "example_vector_": [0.1, 0.1, 0.1], "data": "Documentation"},
-        {"_id": "2", "example_vector_": [0.2, 0.2, 0.2], "data": "Best document!"},
-        {"_id": "3", "example_vector_": [0.3, 0.3, 0.3], "data": "document example"},
-        {"_id": "4", "example_vector_": [0.4, 0.4, 0.4], "data": "this is another doc"},
-        {"_id": "5", "example_vector_": [0.5, 0.5, 0.5], "data": "this is a doc"},
-    ]
+```
+docs = [
+    {"_id": "1", "example_vector_": [0.1, 0.1, 0.1], "data": "Documentation"},
+    {"_id": "2", "example_vector_": [0.2, 0.2, 0.2], "data": "Best document!"},
+    {"_id": "3", "example_vector_": [0.3, 0.3, 0.3], "data": "document example"},
+    {"_id": "4", "example_vector_": [0.4, 0.4, 0.4], "data": "this is another doc"},
+    {"_id": "5", "example_vector_": [0.5, 0.5, 0.5], "data": "this is a doc"},
+]
+```
 
 ## upload data into a new dataset
 The documents will be uploaded into a new dataset that you can name in whichever way you want. If the dataset name does not exist yet, it will be created automatically. If the dataset already exist, the uploaded _id will be replacing the old data.
 
-    client.insert_documents(dataset_id="quickstart", docs=docs)
+```
+client.insert_documents(dataset_id="quickstart", docs=docs)
+```
 
 ## perform a vector search
 
-    client.services.search.vector(
-        dataset_id="quickstart", 
-        multivector_query=[
-            {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
-        ],
-        page_size=3,
-        query="sample search" # Stored on the dashboard but not required
+```
+client.services.search.vector(
+    dataset_id="quickstart", 
+    multivector_query=[
+        {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
+    ],
+    page_size=3,
+    query="sample search" # Stored on the dashboard but not required
+```
 
 # Documentation
 
@@ -67,17 +81,21 @@ There are two ways of interacting with the API:
 ## Getting Started
 To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
 
-    python -m pip install pytest mypy
+```
+python -m pip install pytest mypy
+```
 
 Then run testing using:
 
 Make sure to set your test credentials!
 
-    export TEST_PROJECT = xxx 
-    export TEST_API_KEY = xxx 
+```
+export TEST_PROJECT = xxx 
+export TEST_API_KEY = xxx 
 
-    python -m pytest
-    mypy relevanceai
+python -m pytest
+mypy relevanceai
+```
 
 # Config
 
@@ -85,12 +103,18 @@ The config contains the adjustable global settings for the SDK. For a descriptio
 
 To view setting options, run the following:
 
-    client.config.options
+```
+client.config.options
+```
 
 The syntax for selecting an option is section.key. For example, to disable logging, run the following to modify logging.enable_logging:
 
-    client.config.set_option('logging.enable_logging', False)
+```
+client.config.set_option('logging.enable_logging', False)
+```
 
 To restore all options to their default, run the following:
 
-    client.config.reset_to_default()
+```
+client.config.reset_to_default()
+```
