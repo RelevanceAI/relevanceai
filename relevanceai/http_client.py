@@ -6,6 +6,7 @@ import os
 import sys
 import warnings
 from typing import Optional, List, Union
+import requests
 
 from doc_utils.doc_utils import DocUtils
 
@@ -49,6 +50,10 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
+        # Check package version
+        self.check_package_version()
+
+        # Authenticate user
         if authenticate:
             if self.check_auth():
 
@@ -57,6 +62,7 @@ class Client(BatchAPIClient, DocUtils):
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
+        # Import projector and vector tools
         if vis_requirements:
             self.projector = Projector(project, api_key)
         else:
@@ -135,3 +141,11 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         return self.admin._ping()
+
+    def check_package_version(self):
+        import relevanceai
+        installed_version = relevanceai.__version__ 
+        latest_version = requests.get("https://pypi.org/pypi/relevanceai/json").json()['info']['version']
+        if installed_version != latest_version:
+            self.logger.warning(f"Your RelevanceAI version ({installed_version}) is not the latest. Please install the latest version ({latest_version})")
+        return
