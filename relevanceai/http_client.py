@@ -151,6 +151,6 @@ class Client(BatchAPIClient, DocUtils):
         ]["version"]
         if installed_version != latest_version:
             self.logger.warning(
-                f"Your RelevanceAI version ({installed_version}) is not the latest. Please install the latest version ({latest_version})"
+                f"Your RelevanceAI version ({installed_version}) is not the latest. Please install the latest version ({latest_version}) by running pip install -U relevanceai"
             )
         return
