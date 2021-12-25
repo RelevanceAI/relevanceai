@@ -144,8 +144,13 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_package_version(self):
         import relevanceai
-        installed_version = relevanceai.__version__ 
-        latest_version = requests.get("https://pypi.org/pypi/relevanceai/json").json()['info']['version']
+
+        installed_version = relevanceai.__version__
+        latest_version = requests.get("https://pypi.org/pypi/relevanceai/json").json()[
+            "info"
+        ]["version"]
         if installed_version != latest_version:
-            self.logger.warning(f"Your RelevanceAI version ({installed_version}) is not the latest. Please install the latest version ({latest_version})")
+            self.logger.warning(
+                f"Your RelevanceAI version ({installed_version}) is not the latest. Please install the latest version ({latest_version})"
+            )
         return
