@@ -133,34 +133,23 @@ def get_games_dataset(
 
 
 def get_ecommerce_1_dataset(
-    number_of_documents: int = 1000, select_fields: list = []
+    number_of_documents: int = 739, select_fields: list = []
 ) -> List[Dict[Any, Any]]:
     """
     Download an example e-commerce dataset \n
-    Total Len: 14058 \n
+    Total Len: 739 \n
     Sample document:
 
     >>> {'_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
-    >>> 'uniq_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
-    >>> 'crawl_timestamp': '2016-04-24 18:34:50 +0000',
-    >>> 'product_url': 'http://www.flipkart.com/babeezworld-baby-boy-s-romper/p/itmehyhguebbzb6h?pid=DRPEHYHGNAF5UYUQ',
-    >>> 'product_name': "Babeezworld Baby Boy's Romper",
-    >>> 'product_category_tree': '["Baby Care >> Infant Wear >> Baby Boys\' Clothes >> Dungarees & Jumpsuits >> Dungarees >> Babeezworld Dungarees >> Babeezworld Baby Boy\'s Romper"]',
-    >>> 'pid': 'DRPEHYHGNAF5UYUQ',
-    >>> 'retail_price': 999,
-    >>> 'discounted_price': 499,
-    >>> 'image': '["http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg", "http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehbf3h3jsmzhb.jpeg", "http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehbf4nupsmhzt.jpeg", "http://img5a.flixcart.com/image/dungaree-romper/z/n/u/1012blue-yellow-6-9-babeezworld-6-9-months-original-imaehbfbkynega2z.jpeg", "http://img6a.flixcart.com/image/dungaree-romper/z/n/u/1012blue-yellow-6-9-babeezworld-6-9-months-original-imaehbfbjjffht4e.jpeg"]',
-    >>> 'is_FK_Advantage_product': False,
-    >>> 'description': "Key Features of Babeezworld Baby Boy's Romper Fabric: Cotton Brand Color: Blue:Yellow,Babeezworld Baby Boy's Romper Price: Rs. 499 Babeezworld presents a cute baby dungaree set for your little one.This dungaree set comes with a trendy round neck cotton t-shirt with shoulder loops for ease and comfort fit. Set is made of soft cotton material and has adjustable straps with two button closures. The front has a special character which gives it a stylish look. This dungaree set is an ideal pick for this summer and is available in multiple colors.,Specifications of Babeezworld Baby Boy's Romper Top Details Sleeve Half Sleeve Number of Contents in Sales Package Pack of 2 Fabric Cotton Type Romper Neck Round Neck General Details Pattern Printed Ideal For Baby Boy's Fabric Care Wash with Similar Colors, Use Detergent for Colors",
-    >>> 'product_rating': 'No rating available',
-    >>> 'overall_rating': 'No rating available',
-    >>> 'brand': 'Babeezworld',
-    >>> 'product_specifications': '{"product_specification"=>[{"key"=>"Sleeve", "value"=>"Half Sleeve"}, {"key"=>"Number of Contents in Sales Package", "value"=>"Pack of 2"}, {"key"=>"Fabric", "value"=>"Cotton"}, {"key"=>"Type", "value"=>"Romper"}, {"key"=>"Neck", "value"=>"Round Neck"}, {"key"=>"Pattern", "value"=>"Printed"}, {"key"=>"Ideal For", "value"=>"Baby Boy\'s"}, {"value"=>"Wash with Similar Colors, Use Detergent for Colors"}]}',
-    >>> 'image_first': 'http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg',
-    >>> 'category': 'Baby Care ',
-    >>> 'insert_date_': '2021-08-13T11:38:52.110Z'
-    >>>  ...
-    >>>  }
+    >>> 'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
+    >>> 'product_image_clip_vector_': [...],
+    >>> 'product_link': 'https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&var=&hash=item4adee9354f',
+    >>> 'product_price': '$7.99 to $12.99',
+    >>> 'product_title': '20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM"',
+    >>> 'product_title_clip_vector_': [...],
+    >>> 'query': 'steel necklace',
+    >>> 'source': 'eBay'
+    >>> }
 
     Parameters
     ----------
@@ -170,9 +159,9 @@ def get_ecommerce_1_dataset(
             Fields to include in the dataset, empty array/list means all fields.
     """
     if number_of_documents is None:
-        number_of_documents = 1000
+        number_of_documents = 739
     return ExampleDatasets._get_dummy_dataset(
-        "ecommerce-5", number_of_documents, select_fields
+        "ecommerce-example-encoded", number_of_documents, select_fields
     )
 
 
