@@ -516,6 +516,8 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
+
+        # Change centroids insertion
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
@@ -523,8 +525,10 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             alias=alias,
         )
         self.logger.info(results)
-
-        return centers
+        print(f"Finished clustering. The cluster alias is `{alias}`.")
+        self.services.cluster.centroids.list_closest_to_center(
+            dataset_id, vector_fields=vector_fields, alias=alias
+        )
 
     def hdbscan_cluster(
         self,
