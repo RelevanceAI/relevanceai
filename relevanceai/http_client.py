@@ -3,9 +3,6 @@
 import getpass
 import json
 import os
-import sys
-import warnings
-from typing import Optional, List, Union
 
 from doc_utils.doc_utils import DocUtils
 
@@ -51,6 +48,7 @@ class Client(BatchAPIClient, DocUtils):
 
         super().__init__(project, api_key)
 
+        # Authenticate user
         if authenticate:
             if self.check_auth():
 
@@ -59,6 +57,7 @@ class Client(BatchAPIClient, DocUtils):
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
+        # Import projector and vector tools
         if vis_requirements:
             self.projector = Projector(project, api_key)
         else:
