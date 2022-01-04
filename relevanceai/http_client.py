@@ -3,10 +3,6 @@
 import getpass
 import json
 import os
-import sys
-import warnings
-from typing import Optional, List, Union
-import requests
 
 from doc_utils.doc_utils import DocUtils
 
