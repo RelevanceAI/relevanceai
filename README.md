@@ -6,12 +6,6 @@ If you are looking for an SDK reference, you can find that [here](https://releva
 
 Built mainly for data scientists/engineers looking to experiment with vectors/embeddings.
 
-Side note:
-VecDB (Vector databases) allows for a unified interface from which data scientists and developers can 
-* quickly build and productionise recommendation engines
-* build search or similarity matching apps
-* perform clustering while obtaining state-of-the-art results across all functions
-
 ## Installation 
 
 The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
