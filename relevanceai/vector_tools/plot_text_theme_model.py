@@ -15,15 +15,18 @@ from relevanceai.data_tools.base_text_processing import BaseTextProcessing
 try:
     from ivis import Ivis
 except ModuleNotFoundError:
-    warnings.warn("""You are missing ivis, please run the appropriate installation option:
+    warnings.warn(
+        """You are missing ivis, please run the appropriate installation option:
     `pip install ivis[gpu]` If you have CUDA installed
     `pip install ivis[cpu]` if you don't have CUDA installed
-    """)
+    """
+    )
 
 try:
     import matplotlib.pyplot as plt
 except ModuleNotFoundError:
     warnings.warn("You are missing matplotlib, please run `pip install matplotlib`")
+
 
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):
     def __init__(
