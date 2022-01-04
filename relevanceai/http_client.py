@@ -11,6 +11,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.api.endpoints.cluster import ClusterClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.cluster import KMeans
+from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
 vis_requirements = False
 try:
@@ -22,6 +23,7 @@ except ModuleNotFoundError as e:
     pass
 
 from relevanceai.vector_tools.client import VectorTools
+from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
 
 def str2bool(v):
@@ -134,3 +136,5 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         return self.admin._ping()
+
+    build_and_plot_clusters = build_and_plot_clusters
