@@ -1,0 +1,66 @@
+:py:mod:`relevanceai.api.endpoints.admin`
+=========================================
+
+.. py:module:: relevanceai.api.endpoints.admin
+
+.. autoapi-nested-parse::
+
+   All admin-related tasks.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.api.endpoints.admin.Admin
+
+
+
+
+.. py:class:: Admin(project, api_key)
+
+   Bases: :py:obj:`relevanceai.base.Base`
+
+   Base class for all relevanceai utilities
+
+   .. py:method:: request_read_api_key(self, read_username: str)
+
+      Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used.
+
+      :param read_username: Read-only project
+
+
+   .. py:method:: copy_foreign_dataset(self, dataset_id: str, source_dataset_id: str, source_project: str, source_api_key: str, project: str = None, api_key: str = None)
+
+      Copy a dataset from another user's projects into your project.
+
+      :param dataset_id: The dataset to copy
+      :param source_dataset_id: The original dataset
+      :param source_project: The original project to copy from
+      :param source_api_key: The original API key of the project
+      :param project: The original project
+      :param api_key: The original API key
+
+
+   .. py:method:: send_dataset(self, dataset_id: str, receiver_project: str, receiver_api_key: str)
+
+      Send an individual a dataset.
+
+      :param dataset_id: The name of the dataset
+      :type dataset_id: str
+      :param receiver_project: The project name that will receive the dataset
+      :type receiver_project: str
+      :param receiver_api_key: The project API key that will receive the dataset
+      :type receiver_api_key: str
+      :param >>> client.admin.send_dataset(: dataset_id="research",
+                                             receiver_project="...",
+                                             receiver_api_key="..."
+      :param ):
+
+
+

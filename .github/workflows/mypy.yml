@@ -1,0 +1,43 @@
+# MYPY workflow
+name: MyPy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # os: [ ubuntu-latest, macos-latest, windows-latest ] 
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+        #   - os: macos-latest
+        #     path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install mypy
+      run: |
+        pip install mypy
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ${{ matrix.path }}
+        key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.pythonLocation }}-pip-
+          ${{ runner.os }}-${{ env.pythonLocation }}-
+    - name: mypy
+      run: |
+        mypy relevanceai

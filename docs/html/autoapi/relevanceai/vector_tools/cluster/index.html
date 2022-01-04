@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.vector_tools.cluster &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/relevanceai/vector_tools/cluster/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-relevanceai.vector_tools.cluster">
+<span id="relevanceai-vector-tools-cluster"></span><h1><a class="reference internal" href="../../../../vectortools.html#module-relevanceai.vector_tools.cluster" title="relevanceai.vector_tools.cluster"><code class="xref py py-mod docutils literal notranslate"><span class="pre">relevanceai.vector_tools.cluster</span></code></a><a class="headerlink" href="#module-relevanceai.vector_tools.cluster" title="Permalink to this headline"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterBase</span></code></a></p></td>
+<td><p>Using verbose loguru as base logger for now</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster" title="relevanceai.vector_tools.cluster.CentroidCluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentroidCluster</span></code></a></p></td>
+<td><p>Using verbose loguru as base logger for now</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster" title="relevanceai.vector_tools.cluster.DensityCluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DensityCluster</span></code></a></p></td>
+<td><p>Using verbose loguru as base logger for now</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans" title="relevanceai.vector_tools.cluster.MiniBatchKMeans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MiniBatchKMeans</span></code></a></p></td>
+<td><p>Using verbose loguru as base logger for now</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.KMeans" title="relevanceai.vector_tools.cluster.KMeans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KMeans</span></code></a></p></td>
+<td><p>Using verbose loguru as base logger for now</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.HDBSCAN" title="relevanceai.vector_tools.cluster.HDBSCAN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDBSCAN</span></code></a></p></td>
+<td><p>Using verbose loguru as base logger for now</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.Cluster" title="relevanceai.vector_tools.cluster.Cluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cluster</span></code></a></p></td>
+<td><p>Batch API client</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">ClusterBase</span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../logger/index.html#relevanceai.logger.LoguruLogger" title="relevanceai.logger.LoguruLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.logger.LoguruLogger</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">doc_utils.DocUtils</span></code></p>
+<p>Using verbose loguru as base logger for now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase.__call__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase.fit_transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase.fit_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase.fit_documents">
+<span class="sig-name descname"><span class="pre">fit_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_cluster_'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_only_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase.fit_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase.fit_documents" title="Permalink to this definition"></a></dt>
+<dd><p>Train clustering algorithm on documents and then store the labels
+inside the documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vector_field</strong> (<em>list</em>) – The vector field of the documents</p></li>
+<li><p><strong>docs</strong> (<em>list</em>) – List of documents to run clustering on</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – What the clusters can be called</p></li>
+<li><p><strong>cluster_field</strong> (<em>str</em>) – What the cluster fields should be called</p></li>
+<li><p><strong>return_only_clusters</strong> (<em>bool</em>) – If True, return only clusters, otherwise returns the original document</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase.to_metadata">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase.to_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>You can also store the metadata of this clustering algorithm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase._label_cluster">
+<span class="sig-name descname"><span class="pre">_label_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase._label_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase._label_cluster" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.ClusterBase._label_clusters">
+<span class="sig-name descname"><span class="pre">_label_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#ClusterBase._label_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.ClusterBase._label_clusters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">CentroidCluster</span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#CentroidCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterBase</span></code></a></p>
+<p>Using verbose loguru as base logger for now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#CentroidCluster.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster.__call__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.fit_transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#CentroidCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster.fit_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.get_centers">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#CentroidCluster.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster.get_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Get centers for the centroid-based clusters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs">
+<span class="sig-name descname"><span class="pre">get_centroid_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#CentroidCluster.get_centroid_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.CentroidCluster.get_centroid_docs" title="Permalink to this definition"></a></dt>
+<dd><p>Get the centroid documents to store.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">DensityCluster</span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#DensityCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.DensityCluster" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterBase</span></code></a></p>
+<p>Using verbose loguru as base logger for now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#DensityCluster.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.DensityCluster.__call__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.DensityCluster.fit_transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#DensityCluster.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.DensityCluster.fit_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">MiniBatchKMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_no_improvement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.CentroidCluster" title="relevanceai.vector_tools.cluster.CentroidCluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentroidCluster</span></code></a></p>
+<p>Using verbose loguru as base logger for now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans._init_model">
+<span class="sig-name descname"><span class="pre">_init_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans._init_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans._init_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Fit and transform transform the vectors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers">
+<span class="sig-name descname"><span class="pre">get_centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.get_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.get_centers" title="Permalink to this definition"></a></dt>
+<dd><p>Returns centroids of clusters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata">
+<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#MiniBatchKMeans.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.MiniBatchKMeans.to_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Editing the metadata of the function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">KMeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#KMeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.MiniBatchKMeans" title="relevanceai.vector_tools.cluster.MiniBatchKMeans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MiniBatchKMeans</span></code></a></p>
+<p>Using verbose loguru as base logger for now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans._init_model">
+<span class="sig-name descname"><span class="pre">_init_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#KMeans._init_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans._init_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.KMeans.to_metadata">
+<span class="sig-name descname"><span class="pre">to_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#KMeans.to_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.KMeans.to_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Editing the metadata of the function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.HDBSCAN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">HDBSCAN</span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#HDBSCAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.HDBSCAN" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.DensityCluster" title="relevanceai.vector_tools.cluster.DensityCluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DensityCluster</span></code></a></p>
+<p>Using verbose loguru as base logger for now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.HDBSCAN.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">CLUSTER_DEFAULT_ARGS['hdbscan']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#HDBSCAN.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.HDBSCAN.fit_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.vector_tools.cluster.</span></span><span class="sig-name descname"><span class="pre">Cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#Cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.api.client.BatchAPIClient</span></code></a>, <a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClusterBase</span></code></a></p>
+<p>Batch API client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster._choose_k">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_choose_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#Cluster._choose_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster._choose_k" title="Permalink to this definition"></a></dt>
+<dd><p>”
+Choose k clusters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.cluster">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../constants/index.html#relevanceai.vector_tools.constants.CLUSTER" title="relevanceai.vector_tools.constants.CLUSTER"><span class="pre">relevanceai.vector_tools.constants.CLUSTER</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../../../vectortools.html#relevanceai.vector_tools.cluster.ClusterBase" title="relevanceai.vector_tools.cluster.ClusterBase"><span class="pre">ClusterBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#Cluster.cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.cluster" title="Permalink to this definition"></a></dt>
+<dd><p>Cluster vectors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.vector_tools.cluster.Cluster.kmeans_cluster">
+<span class="sig-name descname"><span class="pre">kmeans_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_cluster_'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_documents_chunksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/relevanceai/vector_tools/cluster.html#Cluster.kmeans_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.vector_tools.cluster.Cluster.kmeans_cluster" title="Permalink to this definition"></a></dt>
+<dd><p>This function performs all the steps required for Kmeans clustering:
+1- Loads the data
+2- Clusters the data
+3- Updates the data with clustering info
+4- Adds the centroid to the hidden centroid collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – name of the dataser</p></li>
+<li><p><strong>vector_fields</strong> (<em>list</em>) – a list containing the vector field to be used for clustering</p></li>
+<li><p><strong>filters</strong> (<em>list</em>) – a list to filter documents of the dataset,</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – K in Kmeans</p></li>
+<li><p><strong>init</strong> (<em>string</em>) – “k-means++” -&gt; Kmeans algorithm parameter</p></li>
+<li><p><strong>n_init</strong> (<em>int</em>) – number of reinitialization for the kmeans algorithm</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em>) – max iteration in the kmeans algorithm</p></li>
+<li><p><strong>tol</strong> (<em>int</em>) – tol in the kmeans algorithm</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – True by default</p></li>
+<li><p><strong>None</strong> (<em>random_state =</em>) – None by default -&gt; Kmeans algorithm parameter</p></li>
+<li><p><strong>copy_x</strong> (<em>bool</em>) – True bydefault</p></li>
+<li><p><strong>algorithm</strong> (<em>string</em>) – “auto” by default</p></li>
+<li><p><strong>alias</strong> (<em>string</em>) – “default”, string to be used in naming of the field showing the clustering results</p></li>
+<li><p><strong>cluster_field</strong> (<em>string</em>) – “_cluster_”, string to name the main cluster field</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – False by default, To overwite an existing clusering result</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">vector_tools</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">kmeans_cluster</span><span class="p">(</span>
+<span class="go">    dataset_id=&quot;sample_dataset&quot;,</span>
+<span class="go">    vector_fields=[&quot;sample_1_vector_&quot;] # Only 1 vector field is supported for now</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

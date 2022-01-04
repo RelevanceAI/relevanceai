@@ -1,0 +1,105 @@
+:py:mod:`relevanceai`
+=====================
+
+.. py:module:: relevanceai
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   api/index.rst
+   vector_tools/index.rst
+   visualise/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   base/index.rst
+   concurrency/index.rst
+   config/index.rst
+   datasets/index.rst
+   errors/index.rst
+   http_client/index.rst
+   logger/index.rst
+   progress_bar/index.rst
+   transport/index.rst
+   utils/index.rst
+
+
+Package Contents
+----------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.Client
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.__version__
+
+
+.. py:class:: Client(project=os.getenv('RELEVANCE_PROJECT'), api_key=os.getenv('RELEVANCE_API_KEY'), verbose: bool = True)
+
+   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
+
+   Python Client for Relevance AI's relevanceai
+
+   .. py:attribute:: WELCOME_MESSAGE
+      :annotation: = Welcome to the RelevanceAI Python SDK
+
+      
+
+   .. py:attribute:: FAIL_MESSAGE
+      :annotation: = Your API key is invalid. Please login again
+
+      
+
+   .. py:method:: output_format(self)
+      :property:
+
+
+   .. py:method:: token_to_auth(verbose=True)
+      :staticmethod:
+
+
+   .. py:method:: login(verbose: bool = True)
+      :staticmethod:
+
+      Preferred login method for demos and interactive usage.
+
+
+   .. py:method:: auth_header(self)
+      :property:
+
+
+   .. py:method:: make_search_suggestion(self)
+
+
+   .. py:method:: check_auth(self)
+
+      TODO: Add a proper way to check authentication based on pinging.
+
+
+
+
+.. py:data:: __version__
+   :annotation: = 0.19.2
+
+   
+

@@ -6,7 +6,6 @@ from contextlib import AbstractContextManager
 
 class ProgressBar:
     def __call__(self, iterable):
-        self.logger.info("WHAT BAR")
         return self.get_bar()(iterable)
 
     @staticmethod
@@ -39,13 +38,9 @@ class ProgressBar:
         return is_in_notebook
 
     def get_bar(self):
-        if self.is_in_notebook():
-            from tqdm.notebook import tqdm as notebook_bar
+        from tqdm.auto import tqdm
 
-            return notebook_bar
-        from tqdm import tqdm as normal_bar
-
-        return normal_bar
+        return tqdm
 
 
 class NullProgressBar(AbstractContextManager):
@@ -76,19 +71,10 @@ class NullProgressBar(AbstractContextManager):
 
 
 def progress_bar(iterable, show_progress_bar: bool = False):
+
     try:
         if show_progress_bar:
             return ProgressBar()(iterable)
-    except:
-        return NullProgressBar(iterable)
+    except Exception as e:
+        pass
     return NullProgressBar(iterable)
-
-
-if __name__ == "__main__":
-
-    x = 0
-    for i in progress_bar(range(5), show_progress_bar=False):
-        x += 1
-        print(i)
-        if x > 10:
-            break

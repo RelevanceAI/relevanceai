@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>relevanceai.api.endpoints.centroids &mdash; Relevance AI 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> Relevance AI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.batch.html">Batch Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.api.endpoints.html">Core Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../relevanceai.visualise.html">Visualisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../vectortools.html">Vector Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">Python Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Relevance AI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../../relevanceai.html">relevanceai</a> &raquo;</li>
+      <li>relevanceai.api.endpoints.centroids</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for relevanceai.api.endpoints.centroids</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
+
+<div class="viewcode-block" id="Centroids"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids">[docs]</a><span class="k">class</span> <span class="nc">Centroids</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.list"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://gateway-api-aueast.relevance.ai/latest&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<div class="viewcode-block" id="Centroids.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.project">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="Centroids.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.api_key">[docs]</a><span class="sd">        Retrieve the cluster centroid</span></div>
+<div class="viewcode-block" id="Centroids.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.config">[docs]</a></div>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        cursor: string</span>
+<span class="sd">            Cursor to paginate the document retrieval</span>
+<span class="sd">        include_vector: bool</span>
+<span class="sd">            Include vectors in the search results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/services/cluster/centroids/list&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.get"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the cluster centroids by IDs</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        cluster_ids : list</span>
+<span class="sd">            List of cluster IDs    </span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        cursor: string</span>
+<span class="sd">            Cursor to paginate the document retrieval</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/services/cluster/centroids/get&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;cluster_ids&quot;</span><span class="p">:</span> <span class="n">cluster_ids</span><span class="p">,</span>
+                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span></div>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.insert"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_centers</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert your own cluster centroids for it to be used in approximate search settings and cluster aggregations.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        cluster_centers : list</span>
+<span class="sd">            Cluster centers with the key being the index number</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/services/cluster/centroids/insert&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;cluster_centers&quot;</span><span class="p">:</span> <span class="n">cluster_centers</span><span class="p">,</span>
+                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span></div>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.documents"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.documents">[docs]</a>    <span class="k">def</span> <span class="nf">documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">similarity_metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the cluster centroids by IDs</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        cluster_ids : list</span>
+<span class="sd">            List of cluster IDs    </span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        cursor: string</span>
+<span class="sd">            Cursor to paginate the document retrieval</span>
+<span class="sd">        page: int</span>
+<span class="sd">            Page of the results</span>
+<span class="sd">        include_vector: bool</span>
+<span class="sd">            Include vectors in the search results</span>
+<span class="sd">        similarity_metric: string</span>
+<span class="sd">            Similarity Metric, choose from [&#39;cosine&#39;, &#39;l1&#39;, &#39;l2&#39;, &#39;dp&#39;]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/services/cluster/centroids/documents&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;cluster_ids&quot;</span><span class="p">:</span> <span class="n">cluster_ids</span><span class="p">,</span>
+                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="n">cursor</span><span class="p">,</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
+                <span class="s2">&quot;similarity_metric&quot;</span><span class="p">:</span> <span class="n">similarity_metric</span><span class="p">,</span></div>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.metadata"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If metadata is none, retrieves metadata about a dataset. notably description, data source, etc</span>
+<span class="sd">        Otherwise, you can store the metadata about your cluster here.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        metadata: Optional[dict]</span>
+<span class="sd">           If None, it will retrieve the metadata, otherwise</span>
+<span class="sd">           it will overwrite the metadata of the cluster</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+                <span class="s2">&quot;/services/cluster/centroids/metadata&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                    <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                    <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+                <span class="s2">&quot;/services/cluster/centroids/metadata&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                    <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                    <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+                    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">metadata</span></div>
+                <span class="p">},</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.list_closest_to_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.list_closest_to_center">[docs]</a>    <span class="k">def</span> <span class="nf">list_closest_to_center</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
+        <span class="n">approx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">sum_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">similarity_metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
+        <span class="n">facets</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
+        <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_facets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of documents closest from the centre.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        cluster_ids: lsit</span>
+<span class="sd">            Any of the cluster ids</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        select_fields: list</span>
+<span class="sd">            Fields to include in the search results, empty array/list means all fields</span>
+<span class="sd">        approx: int</span>
+<span class="sd">            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate</span>
+<span class="sd">        sum_fields: bool</span>
+<span class="sd">            Whether to sum the multiple vectors similarity search score as 1 or seperate</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        page: int</span>
+<span class="sd">            Page of the results</span>
+<span class="sd">        similarity_metric: string</span>
+<span class="sd">            Similarity Metric, choose from [&#39;cosine&#39;, &#39;l1&#39;, &#39;l2&#39;, &#39;dp&#39;]</span>
+<span class="sd">        filters: list</span>
+<span class="sd">            Query for filtering the search results</span>
+<span class="sd">        facets: list</span>
+<span class="sd">            Fields to include in the facets, if [] then all</span>
+<span class="sd">        min_score: int</span>
+<span class="sd">            Minimum score for similarity metric</span>
+<span class="sd">        include_vectors: bool</span>
+<span class="sd">            Include vectors in the search results</span>
+<span class="sd">        include_count: bool</span>
+<span class="sd">            Include the total count of results in the search results</span>
+<span class="sd">        include_facets: bool</span>
+<span class="sd">            Include facets in the search results</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/services/cluster/centroids/list_closest_to_center&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+                <span class="s2">&quot;cluster_ids&quot;</span><span class="p">:</span> <span class="n">cluster_ids</span><span class="p">,</span>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
+                <span class="s2">&quot;approx&quot;</span><span class="p">:</span> <span class="n">approx</span><span class="p">,</span>
+                <span class="s2">&quot;sum_fields&quot;</span><span class="p">:</span> <span class="n">sum_fields</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+                <span class="s2">&quot;similarity_metric&quot;</span><span class="p">:</span> <span class="n">similarity_metric</span><span class="p">,</span>
+                <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
+                <span class="s2">&quot;facets&quot;</span><span class="p">:</span> <span class="n">facets</span><span class="p">,</span>
+                <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
+                <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
+                <span class="s2">&quot;include_facets&quot;</span><span class="p">:</span> <span class="n">include_facets</span></div>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Centroids.docs_closest_to_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.docs_closest_to_center">[docs]</a>    <span class="n">docs_closest_to_center</span> <span class="o">=</span> <span class="n">list_closest_to_center</span></div>
+
+<div class="viewcode-block" id="Centroids.list_furthest_from_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.list_furthest_from_center">[docs]</a>    <span class="k">def</span> <span class="nf">list_furthest_from_center</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">vector_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cluster_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
+        <span class="n">approx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">sum_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">similarity_metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
+        <span class="n">facets</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span> <span class="p">],</span>
+        <span class="n">min_score</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_facets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of documents furthest from the centre.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        vector_field: string</span>
+<span class="sd">            The vector field where a clustering task was run.</span>
+<span class="sd">        cluster_ids: lsit</span>
+<span class="sd">            Any of the cluster ids</span>
+<span class="sd">        alias: string</span>
+<span class="sd">            Alias is used to name a cluster</span>
+<span class="sd">        select_fields: list</span>
+<span class="sd">            Fields to include in the search results, empty array/list means all fields</span>
+<span class="sd">        approx: int</span>
+<span class="sd">            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate</span>
+<span class="sd">        sum_fields: bool</span>
+<span class="sd">            Whether to sum the multiple vectors similarity search score as 1 or seperate</span>
+<span class="sd">        page_size: int</span>
+<span class="sd">            Size of each page of results</span>
+<span class="sd">        page: int</span>
+<span class="sd">            Page of the results</span>
+<span class="sd">        similarity_metric: string</span>
+<span class="sd">            Similarity Metric, choose from [&#39;cosine&#39;, &#39;l1&#39;, &#39;l2&#39;, &#39;dp&#39;]</span>
+<span class="sd">        filters: list</span>
+<span class="sd">            Query for filtering the search results</span>
+<span class="sd">        facets: list</span>
+<span class="sd">            Fields to include in the facets, if [] then all</span>
+<span class="sd">        min_score: int</span>
+<span class="sd">            Minimum score for similarity metric</span>
+<span class="sd">        include_vectors: bool</span>
+<span class="sd">            Include vectors in the search results</span>
+<span class="sd">        include_count: bool</span>
+<span class="sd">            Include the total count of results in the search results</span>
+<span class="sd">        include_facets: bool</span>
+<span class="sd">            Include facets in the search results</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/services/cluster/centroids/list_furthest_from_center&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                <span class="s2">&quot;vector_field&quot;</span><span class="p">:</span> <span class="n">vector_field</span><span class="p">,</span>
+                <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">alias</span><span class="p">,</span>
+                <span class="s2">&quot;cluster_ids&quot;</span><span class="p">:</span> <span class="n">cluster_ids</span><span class="p">,</span>
+                <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
+                <span class="s2">&quot;approx&quot;</span><span class="p">:</span> <span class="n">approx</span><span class="p">,</span>
+                <span class="s2">&quot;sum_fields&quot;</span><span class="p">:</span> <span class="n">sum_fields</span><span class="p">,</span>
+                <span class="s2">&quot;page_size&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+                <span class="s2">&quot;similarity_metric&quot;</span><span class="p">:</span> <span class="n">similarity_metric</span><span class="p">,</span>
+                <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
+                <span class="s2">&quot;facets&quot;</span><span class="p">:</span> <span class="n">facets</span><span class="p">,</span>
+                <span class="s2">&quot;min_score&quot;</span><span class="p">:</span> <span class="n">min_score</span><span class="p">,</span>
+                <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
+                <span class="s2">&quot;include_count&quot;</span><span class="p">:</span> <span class="n">include_count</span><span class="p">,</span>
+                <span class="s2">&quot;include_facets&quot;</span><span class="p">:</span> <span class="n">include_facets</span></div>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    
+<div class="viewcode-block" id="Centroids.docs_furthest_from_center"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.centroids.Centroids.docs_furthest_from_center">[docs]</a>    <span class="n">docs_furthest_from_center</span> <span class="o">=</span> <span class="n">list_furthest_from_center</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Relevance AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,9 +1,10 @@
 """Multithreading Module
 """
+import math
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from typing import Callable
 
-from .progress_bar import progress_bar
+from relevanceai.progress_bar import NullProgressBar, progress_bar
 
 
 def chunk(iterables, n=20):
@@ -17,7 +18,7 @@ def multithread(
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Create trackers
         progress_tracker = progress_bar(
-            range(int(len(iterables) / chunksize) + 1),
+            range(math.ceil(len(iterables) / chunksize)),
             show_progress_bar=show_progress_bar,
         )
         progress_iterator = iter(progress_tracker)
@@ -46,7 +47,7 @@ def multiprocess(
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         # Create trackers
         progress_tracker = progress_bar(
-            range(int(len(iterables) / chunksize) + 1),
+            range(math.ceil(len(iterables) / chunksize)),
             show_progress_bar=show_progress_bar,
         )
         progress_iterator = iter(progress_tracker)
