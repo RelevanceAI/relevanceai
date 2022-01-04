@@ -65,6 +65,7 @@ dev_requirements = [
     "pylint",
     "jupyter",
     "sphinx-rtd-theme>=0.5.0",
+    "sphinx-autoapi==1.8.4",
 ] + test_requirements
 
 
