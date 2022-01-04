@@ -1,11 +1,15 @@
 import string
+import warnings
 from typing import List
 from collections import Counter
 
-import nltk
+try:
+    import nltk
 
-nltk.download("stopwords")
-from nltk.corpus import stopwords
+    nltk.download("stopwords")
+    from nltk.corpus import stopwords
+except ModuleNotFoundError:
+    warnings.warn("You are missing NLTK, please run `pip install nltk`")
 
 
 class BaseTextProcessing:

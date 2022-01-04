@@ -1,8 +1,7 @@
+import numpy as np
+import warnings
 from random import randint
 from typing import List, Tuple
-import matplotlib.pyplot as plt
-import numpy as np
-
 from sklearn import preprocessing
 from tqdm.auto import tqdm
 from typing import List
@@ -11,8 +10,20 @@ from relevanceai.logger import LoguruLogger
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.data_tools.base_text_processing import BaseTextProcessing
-from ivis import Ivis
 
+
+try:
+    from ivis import Ivis
+except ModuleNotFoundError:
+    warnings.warn("""You are missing ivis, please run the appropriate installation option:
+    `pip install ivis[gpu]` If you have CUDA installed
+    `pip install ivis[cpu]` if you don't have CUDA installed
+    """)
+
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    warnings.warn("You are missing matplotlib, please run `pip install matplotlib`")
 
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):
     def __init__(
