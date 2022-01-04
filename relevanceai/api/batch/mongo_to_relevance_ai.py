@@ -1,5 +1,5 @@
 """
-Migrate from mongo database to Mongo2RelevanceAi:
+Migrate from mongo database to Relevance Ai:
     #Create an object of Mongo2RelevanceAi class
     connection_string= "..."
     project= "..."
