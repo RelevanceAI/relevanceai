@@ -58,6 +58,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             Any other keyword argument will go directly into the clustering algorithm
 
         """
+        self.vector_fields = vector_fields
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             docs = list(filter(DocUtils.list_doc_fields, docs))
@@ -72,6 +73,18 @@ class ClusterBase(LoguruLogger, DocUtils):
             all_vectors = self.get_fields_across_documents(
                 vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
+            # Store the vector field lengths to de-concatenate them later
+            self._vector_field_length: dict = {}
+            prev_vf = 0
+            for i, vf in enumerate(self.vector_fields):
+                self._vector_field_length[vf] = {}
+                self._vector_field_length[vf]["start"] = prev_vf
+                end_vf = prev_vf + len(all_vectors[0][i])
+                self._vector_field_length[vf]["end"] = end_vf
+                # Update the ending
+                prev_vf = end_vf
+
+            # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
 
         cluster_labels = self.fit_transform(vectors)
@@ -137,15 +150,43 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_docs(self) -> List:
-        """Get the centroid documents to store."""
+    def get_centroid_docs(self, centroid_vector_field_name="centroid_vector_") -> List:
+        """Get the centroid documents to store.
+        if single vector field returns this:
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+        If multiple vector fields returns this:
+        Returns multiple
+        ```
+        {
+            "_id": "document-id-1",
+            "blue_vector_": [0.12, 0.312, 0.42],
+            "red_vector_": [0.23, 0.41, 0.3]
+        }
+        ```
+        """
         self.centers = self.get_centers()
-        if isinstance(self.centers, np.ndarray):
-            self.centers = self.centers.tolist()
-        return [
-            {"_id": self._label_cluster(i), "centroid_vector_": self.centers[i]}
-            for i in range(len(self.centers))
-        ]
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            return [
+                {
+                    "_id": self._label_cluster(i),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
 
 
 class DensityCluster(ClusterBase):
@@ -212,7 +253,22 @@ class MiniBatchKMeans(CentroidCluster):
 
     def get_centers(self):
         """Returns centroids of clusters"""
-        return [list(i) for i in self.km.cluster_centers_]
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            return [list(i) for i in self.km.cluster_centers_]
+
+        # Returning for multiple vector fields
+        cluster_centers = []
+        for i, center in enumerate(self.km.cluster_centers_):
+            cluster_center_doc = {}
+            for j, vf in enumerate(self.vector_fields):
+                deconcat_center = center[
+                    self._vector_field_length[vf]["start"] : self._vector_field_length[
+                        vf
+                    ]["end"]
+                ].tolist()
+                cluster_center_doc[vf] = deconcat_center
+            cluster_centers.append(cluster_center_doc.copy())
+        return cluster_centers
 
     def to_metadata(self):
         """Editing the metadata of the function"""
@@ -526,9 +582,14 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             alias=alias,
         )
         self.logger.info(results)
-        self.logger.info(f"Finished clustering. The cluster alias is `{alias}`.")
+        print(f"Finished clustering. The cluster alias is `{alias}`.")
+
         self.services.cluster.centroids.list_closest_to_center(
-            dataset_id, vector_fields=vector_fields, alias=alias, page_size=page_size
+            dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
+            centroid_vector_fields=vector_fields,
+            page_size=page_size,
         )
 
     def hdbscan_cluster(
