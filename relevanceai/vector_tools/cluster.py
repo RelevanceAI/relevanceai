@@ -58,6 +58,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             Any other keyword argument will go directly into the clustering algorithm
 
         """
+        self.vector_fields = vector_fields
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             docs = list(filter(DocUtils.list_doc_fields, docs))
@@ -72,6 +73,18 @@ class ClusterBase(LoguruLogger, DocUtils):
             all_vectors = self.get_fields_across_documents(
                 vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
+            # Store the vector field lengths to de-concatenate them later
+            self._vector_field_length: dict = {}
+            prev_vf = 0
+            for i, vf in enumerate(self.vector_fields):
+                self._vector_field_length[vf] = {}
+                self._vector_field_length[vf]["start"] = prev_vf
+                end_vf = prev_vf + len(all_vectors[0][i])
+                self._vector_field_length[vf]["end"] = end_vf
+                # Update the ending
+                prev_vf = end_vf
+
+            # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
 
         cluster_labels = self.fit_transform(vectors)
@@ -137,15 +150,43 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_docs(self) -> List:
-        """Get the centroid documents to store."""
+    def get_centroid_docs(self, centroid_vector_field_name="centroid_vector_") -> List:
+        """Get the centroid documents to store.
+        if single vector field returns this:
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+        If multiple vector fields returns this:
+        Returns multiple
+        ```
+        {
+            "_id": "document-id-1",
+            "blue_vector_": [0.12, 0.312, 0.42],
+            "red_vector_": [0.23, 0.41, 0.3]
+        }
+        ```
+        """
         self.centers = self.get_centers()
-        if isinstance(self.centers, np.ndarray):
-            self.centers = self.centers.tolist()
-        return [
-            {"_id": self._label_cluster(i), "centroid_vector_": self.centers[i]}
-            for i in range(len(self.centers))
-        ]
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            return [
+                {
+                    "_id": self._label_cluster(i),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
 
 
 class DensityCluster(ClusterBase):
@@ -212,7 +253,22 @@ class MiniBatchKMeans(CentroidCluster):
 
     def get_centers(self):
         """Returns centroids of clusters"""
-        return [list(i) for i in self.km.cluster_centers_]
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            return [list(i) for i in self.km.cluster_centers_]
+
+        # Returning for multiple vector fields
+        cluster_centers = []
+        for i, center in enumerate(self.km.cluster_centers_):
+            cluster_center_doc = {}
+            for j, vf in enumerate(self.vector_fields):
+                deconcat_center = center[
+                    self._vector_field_length[vf]["start"] : self._vector_field_length[
+                        vf
+                    ]["end"]
+                ].tolist()
+                cluster_center_doc[vf] = deconcat_center
+            cluster_centers.append(cluster_center_doc.copy())
+        return cluster_centers
 
     def to_metadata(self):
         """Editing the metadata of the function"""
@@ -347,6 +403,7 @@ class HDBSCANClusterer(DensityCluster):
         cluster_labels = hdbscan.labels_
         return cluster_labels
 
+
 class HierarchicalClusterer(DensityCluster):
     def __init__(
         self,
@@ -354,10 +411,10 @@ class HierarchicalClusterer(DensityCluster):
         dataset_id=None,
         vector_field=None,
         n_clusters: Union[int, None] = None,
-        affinity: str = 'euclidean',
-        memory = Memory(cachedir=None),
+        affinity: str = "euclidean",
+        memory=Memory(cachedir=None),
         compute_full_tree: Union[str, bool] = True,
-        linkage: str = 'ward',
+        linkage: str = "ward",
         distance_threshold: Union[float, None] = None,
         compute_distances: bool = True,
         dendrogram_plot_args: Union[dict, None] = None,
@@ -374,10 +431,7 @@ class HierarchicalClusterer(DensityCluster):
         self.compute_distances = compute_distances
         self.dendrogram_plot_args = dendrogram_plot_args
 
-    def fit_transform(
-        self,
-        vectors: np.ndarray
-    ) -> np.ndarray:
+    def fit_transform(self, vectors: np.ndarray) -> np.ndarray:
         try:
             from sklearn.cluster import AgglomerativeClustering
         except ModuleNotFoundError as e:
@@ -401,38 +455,51 @@ class HierarchicalClusterer(DensityCluster):
         cluster_labels = agg.labels_
 
         if self.dendrogram_plot_args is not None:
-            if 'color_threshold' not in self.dendrogram_plot_args and self.n_clusters is not None:
-                self.logger.warning('cluster colours will not be same as n_clusters by default, set color_threshold to customise this')
+            if (
+                "color_threshold" not in self.dendrogram_plot_args
+                and self.n_clusters is not None
+            ):
+                self.logger.warning(
+                    "cluster colours will not be same as n_clusters by default, set color_threshold to customise this"
+                )
 
-            if 'plot_backend' not in self.dendrogram_plot_args:
-                self.dendrogram_plot_args['plot_backend'] = 'matplotlib'
+            if "plot_backend" not in self.dendrogram_plot_args:
+                self.dendrogram_plot_args["plot_backend"] = "matplotlib"
 
-            plot_backend = self.dendrogram_plot_args['plot_backend']
-            self.dendrogram_plot_args.pop('plot_backend')
+            plot_backend = self.dendrogram_plot_args["plot_backend"]
+            self.dendrogram_plot_args.pop("plot_backend")
 
-            if plot_backend == 'plotly':
-                if self.affinity == 'euclidean':
+            if plot_backend == "plotly":
+                if self.affinity == "euclidean":
                     from scipy.spatial.distance import pdist
-                    self.dendrogram_plot_args['distfun'] = pdist
-                elif self.affinity == 'cosine':
+
+                    self.dendrogram_plot_args["distfun"] = pdist
+                elif self.affinity == "cosine":
                     from scipy.spatial.distance import cosine
-                    self.dendrogram_plot_args['distfun'] = cosine
-                elif self.affinity == 'manhattan':
+
+                    self.dendrogram_plot_args["distfun"] = cosine
+                elif self.affinity == "manhattan":
                     from scipy.spatial.distance import cityblock
-                    self.dendrogram_plot_args['distfun'] = cityblock
+
+                    self.dendrogram_plot_args["distfun"] = cityblock
 
                 from scipy.cluster.hierarchy import linkage
-                self.dendrogram_plot_args['linkagefun'] = lambda x: linkage(vectors, method=self.linkage, metric=self.affinity)
+
+                self.dendrogram_plot_args["linkagefun"] = lambda x: linkage(
+                    vectors, method=self.linkage, metric=self.affinity
+                )
 
                 self.plot_dendrogram_plotly(vectors, **self.dendrogram_plot_args)
-            elif plot_backend == 'matplotlib':
+            elif plot_backend == "matplotlib":
                 self.plot_dendrogram_matplotlib(agg, **self.dendrogram_plot_args)
 
         return cluster_labels
 
     def get_centroids(self):
         centroids = {
-            label: np.mean(self.vectors[np.argwhere(self.agg.labels_ == label)], axis=0)[0] 
+            label: np.mean(
+                self.vectors[np.argwhere(self.agg.labels_ == label)], axis=0
+            )[0]
             for label in np.unique(self.agg.labels_)
         }
         return centroids
@@ -449,15 +516,17 @@ class HierarchicalClusterer(DensityCluster):
 
         vectors = np.array(vectors)
 
-        if 'layout_args' in kwargs:
-            layout_args = kwargs.pop('layout_args')
+        if "layout_args" in kwargs:
+            layout_args = kwargs.pop("layout_args")
         else:
             layout_args = {}
 
-        fig = Dendrogram(vectors, self.instance, self.dataset_id, self.vector_field, **kwargs)
+        fig = Dendrogram(
+            vectors, self.instance, self.dataset_id, self.vector_field, **kwargs
+        )
 
         graph = fig.get()
-        
+
         return graph
 
     def plot_dendrogram_matplotlib(self, model, **kwargs):
@@ -482,7 +551,7 @@ class HierarchicalClusterer(DensityCluster):
                 else:
                     current_count += counts[child_idx - n_samples]
             counts[i] = current_count
-        
+
         linkage_matrix = np.column_stack(
             [model.children_, model.distances_, counts]
         ).astype(float)
@@ -490,12 +559,12 @@ class HierarchicalClusterer(DensityCluster):
         # Plot the corresponding dendrogram
         dendrogram(linkage_matrix, **kwargs)
 
-
         from matplotlib.patches import Rectangle
+
         class Annotate(object):
             def __init__(self, model, linkage_matrix):
                 self.ax = plt.gca()
-                self.rect = Rectangle((0,0), 1, 1)
+                self.rect = Rectangle((0, 0), 1, 1)
 
                 self.model = model
                 self.linkage_matrix = linkage_matrix
@@ -505,17 +574,21 @@ class HierarchicalClusterer(DensityCluster):
                 self.x1 = None
                 self.y1 = None
                 self.ax.add_patch(self.rect)
-                self.ax.figure.canvas.mpl_connect('button_press_event', self.on_press)
-                self.ax.figure.canvas.mpl_connect('button_release_event', self.on_release)
-                binding_id = self.ax.figure.canvas.mpl_connect('motion_notify_event', self.on_move)
+                self.ax.figure.canvas.mpl_connect("button_press_event", self.on_press)
+                self.ax.figure.canvas.mpl_connect(
+                    "button_release_event", self.on_release
+                )
+                binding_id = self.ax.figure.canvas.mpl_connect(
+                    "motion_notify_event", self.on_move
+                )
 
             def on_press(self, event):
-                print('press')
+                print("press")
                 self.x0 = event.xdata
                 self.y0 = event.ydata
 
             def on_release(self, event):
-                print('release')
+                print("release")
                 self.x1 = event.xdata
                 self.y1 = event.ydata
 
@@ -527,9 +600,10 @@ class HierarchicalClusterer(DensityCluster):
 
                 self.rect.set_xy((self.x0, self.y0))
                 self.ax.figure.canvas.draw()
-            
+
         a = Annotate(model, linkage_matrix)
         plt.show()
+
 
 class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def __init__(self, project, api_key):
@@ -572,9 +646,11 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                     raise NotImplementedError
             elif cluster == "hdbscan":
                 return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
-              
+
             elif cluster == "hierarchical":
-                return HierarchicalClusterer(**cluster_args).fit_transform(vectors=vectors)
+                return HierarchicalClusterer(**cluster_args).fit_transform(
+                    vectors=vectors
+                )
 
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
@@ -598,6 +674,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
+        page_size: int = 1,
     ):
         """
         This function performs all the steps required for Kmeans clustering:
@@ -644,7 +721,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         >>> client.vector_tools.cluster.kmeans_cluster(
             dataset_id="sample_dataset",
-            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+            vector_fields=vector_fields
         )
         """
 
@@ -703,6 +780,8 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         # Update the centroid collection
         centers = clusterer.get_centroid_docs()
+
+        # Change centroids insertion
         results = self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centers,
@@ -710,8 +789,15 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             alias=alias,
         )
         self.logger.info(results)
+        print(f"Finished clustering. The cluster alias is `{alias}`.")
 
-        return centers
+        self.services.cluster.centroids.list_closest_to_center(
+            dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
+            centroid_vector_fields=vector_fields,
+            page_size=page_size,
+        )
 
     def hdbscan_cluster(
         self,
@@ -830,23 +916,23 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
         return clustered_docs
-        
+
     def hierarchical_cluster(
         self,
         dataset_id: str,
         vector_fields: list,
         filters: List = [],
         n_clusters: Union[int, None] = None,
-        affinity: str = 'euclidean',
-        memory = Memory(cachedir=None),
+        affinity: str = "euclidean",
+        memory=Memory(cachedir=None),
         compute_full_tree: Union[str, bool] = True,
-        linkage: str = 'ward',
+        linkage: str = "ward",
         distance_threshold: Union[float, None] = None,
         compute_distances: bool = True,
         alias: str = "hierarchical",
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
-        overwrite: bool = False, 
+        overwrite: bool = False,
     ):
         """
         This function performs all the steps required for hierarchical clustering:
@@ -886,7 +972,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             The maximum distance for which clusters can be to not be merged together
 
         compute_distances : bool
-            Computes distances between clusters even if distance_threshold is not used. 
+            Computes distances between clusters even if distance_threshold is not used.
             This can be used to make dendrogram visualization, but introduces a computational and memory overhead.
 
         alias : string
@@ -916,9 +1002,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                 ".".join([cluster_field, vector_fields[0], alias])
             )
         # load the documents
-        docs = self.get_all_documents(
-            dataset_id=dataset_id, filters=filters
-        )
+        docs = self.get_all_documents(dataset_id=dataset_id, filters=filters)
 
         # get vectors
         if len(vector_fields) > 1:
@@ -927,10 +1011,10 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             )
 
         if n_clusters is None and distance_threshold is None:
-            self.logger.warning('setting distance_threshold=0')
+            self.logger.warning("setting distance_threshold=0")
             distance_threshold = 0
         elif n_clusters is not None and distance_threshold is not None:
-            self.logger.warning('setting n_clusters=10')
+            self.logger.warning("setting n_clusters=10")
             n_clusters = 10
             distance_threshold = None
 

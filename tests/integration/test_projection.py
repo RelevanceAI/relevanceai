@@ -1,5 +1,4 @@
 from pathlib import Path
-import ivis
 import pytest
 import json
 import uuid

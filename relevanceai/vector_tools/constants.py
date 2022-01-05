@@ -67,7 +67,7 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
     "hierarchical": {
         "memory": Memory(cachedir=None),
         "metric": "euclidean",
-    }
+    },
 }
 
 NEAREST_NEIGHBOURS = Literal["cosine", "l2"]

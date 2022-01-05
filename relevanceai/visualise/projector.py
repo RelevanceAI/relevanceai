@@ -11,10 +11,14 @@ from typing import List, Union, Dict, Any, Tuple, Optional
 from scipy.cluster.hierarchy import dendrogram
 from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
 from relevanceai.vector_tools.cluster import Cluster, ClusterBase
-from relevanceai.visualise.dash_components.app import create_dash_graph, create_dendrogram_tree
+from relevanceai.visualise.dash_components.app import (
+    create_dash_graph,
+    create_dendrogram_tree,
+)
 from relevanceai.visualise.dendrogram import Dendrogram
 from relevanceai.vector_tools.constants import *
 from relevanceai.base import _Base
+from relevanceai.utils import Utils
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
@@ -26,7 +30,7 @@ RELEVANCEAI_BLUE = "#1854FF"
 
 
 @dataclass
-class Projector(BatchAPIClient, _Base, DocUtils):
+class Projector(Utils, BatchAPIClient, _Base, DocUtils):
     """
     Projector class.
 
@@ -472,15 +476,19 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         """
         return [d for d in docs if d.get(vector_field)]
 
-
     def dendrogram(self, dataset_id, vector_fields, node_label=None, **layout_args):
         docs = self.get_all_documents(dataset_id=dataset_id)
         vectors = [sample[vector_fields[0]] for sample in docs]
-        dendrogram = Dendrogram(vectors=vectors, dataset_id=dataset_id, vector_field=vector_fields, node_label=node_label)
+        dendrogram = Dendrogram(
+            vectors=vectors,
+            dataset_id=dataset_id,
+            vector_field=vector_fields,
+            node_label=node_label,
+        )
         dendrogram = dendrogram.get()
         dendrogram.update_layout(**layout_args)
         if node_label is None:
-            node_label = '_id'
-        create_dendrogram_tree(dendrogram, self.services, dataset_id, vector_fields, node_label)
-
-
+            node_label = "_id"
+        create_dendrogram_tree(
+            dendrogram, self.services, dataset_id, vector_fields, node_label
+        )

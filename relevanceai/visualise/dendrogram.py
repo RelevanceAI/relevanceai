@@ -10,14 +10,15 @@ import scipy.cluster.hierarchy as sch
 
 from plotly.graph_objs import graph_objs
 
+
 class Dendrogram(object):
     """Refer to FigureFactory.create_dendrogram() for docstring."""
 
     def __init__(
         self,
         vectors,
-        dataset_id = None,
-        vector_field = None,
+        dataset_id=None,
+        vector_field=None,
         orientation="bottom",
         labels=None,
         colorscale=None,
@@ -36,9 +37,9 @@ class Dendrogram(object):
         self.vector_field = vector_field
 
         try:
-            self.node_label = kwargs['node_label']
+            self.node_label = kwargs["node_label"]
         except Exception:
-            self.node_label = '_id'
+            self.node_label = "_id"
 
         self.orientation = orientation
         self.labels = labels
@@ -98,8 +99,7 @@ class Dendrogram(object):
         self.data = dd_traces
 
     def get(self):
-        return graph_objs.Figure(data=self.data, layout=self.layout) 
-
+        return graph_objs.Figure(data=self.data, layout=self.layout)
 
     def get_color_dict(self, colorscale):
         """
@@ -233,7 +233,9 @@ class Dendrogram(object):
 
         return self.layout
 
-    def get_dendrogram_traces(self, X, colorscale, distfun, linkagefun, hovertext, color_threshold):
+    def get_dendrogram_traces(
+        self, X, colorscale, distfun, linkagefun, hovertext, color_threshold
+    ):
         """
         Calculates all the elements needed for plotting a dendrogram.
 
@@ -320,25 +322,27 @@ class Dendrogram(object):
         vertices = []
 
         base = {
-            'type': 'scatter',
-            'x': 0,
-            'y': 0,
-            'mode': 'markers',
-            'marker': {'color': 'rgb(0, 0, 0)'},
-            'text': None,
-            'hoverinfo': 'skip',
-            'xaxis': 'x',
-            'yaxis': 'y',
+            "type": "scatter",
+            "x": 0,
+            "y": 0,
+            "mode": "markers",
+            "marker": {"color": "rgb(0, 0, 0)"},
+            "text": None,
+            "hoverinfo": "skip",
+            "xaxis": "x",
+            "yaxis": "y",
         }
         for trace in dd_traces:
-            x = (trace['x'][1] + trace['x'][2]) / 2
-            y = (trace['y'][1] + trace['y'][2]) / 2
+            x = (trace["x"][1] + trace["x"][2]) / 2
+            y = (trace["y"][1] + trace["y"][2]) / 2
             vertex = deepcopy(base)
-            vertex['x'] = np.array(x)
-            vertex['y'] = np.array(y)
+            vertex["x"] = np.array(x)
+            vertex["y"] = np.array(y)
 
             children = self.get_children(trace, dd_traces)
-            children = [child for child in children if child['y'][0] == 0 or child['y'][3] == 0]
+            children = [
+                child for child in children if child["y"][0] == 0 or child["y"][3] == 0
+            ]
             if not children:
                 children = [trace]
 
@@ -346,31 +350,37 @@ class Dendrogram(object):
             vectors = self.get_vectors(indices)
             mean_vec = np.mean(vectors, 0).tolist()
 
-            vertex['text'] = json.dumps({index: mean_vec[index] for index in range(len(mean_vec))})
+            vertex["text"] = json.dumps(
+                {index: mean_vec[index] for index in range(len(mean_vec))}
+            )
             vertices.append(vertex)
 
         return dd_traces + vertices
 
     def get_children(self, trace, dd_traces):
         children = [
-            t for t in dd_traces 
-            if ((t['x'][1] < trace['x'][1] and trace['x'][1] < t['x'][2]) or (t['x'][1] < trace['x'][2] and trace['x'][2] < t['x'][2]))
-            and t['y'][1] < trace['y'][1]
+            t
+            for t in dd_traces
+            if (
+                (t["x"][1] < trace["x"][1] and trace["x"][1] < t["x"][2])
+                or (t["x"][1] < trace["x"][2] and trace["x"][2] < t["x"][2])
+            )
+            and t["y"][1] < trace["y"][1]
         ]
         sub_children = []
         if children:
             for child in children:
                 sub_children += self.get_children(child, dd_traces)
-                
+
         return children + sub_children
 
     def get_indices(self, children):
         indices = []
         for child in children:
-            x1 = child['x'][1]
-            x2 = child['x'][2]
-            y1 = child['y'][0]
-            y2 = child['y'][3]
+            x1 = child["x"][1]
+            x2 = child["x"][2]
+            y1 = child["y"][0]
+            y2 = child["y"][3]
 
             if y1 == 0:
                 indices.append(int(x1 / 10))

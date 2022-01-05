@@ -12,7 +12,7 @@ class ClusterClient(_Base):
     def aggregate(
         self,
         dataset_id: str,
-        vector_field: str,
+        vector_fields: list,
         metrics: list = [],
         groupby: list = [],
         filters: list = [],
@@ -32,7 +32,7 @@ class ClusterClient(_Base):
         ----------
         dataset_id : string
             Unique name of dataset
-        vector_field : string
+        vector_fields : list
             The vector field that was clustered on
         metrics: list
             Fields and metrics you want to calculate
@@ -61,7 +61,7 @@ class ClusterClient(_Base):
             "page": page,
             "asc": asc,
             "flatten": flatten,
-            "vector_field": vector_field,
+            "vector_fields": vector_fields,
             "alias": alias,
         }
         self._log_to_dashboard(
@@ -119,7 +119,7 @@ class ClusterClient(_Base):
         self,
         dataset_id: str,
         vector_field: list,
-        alias: str = 'default',
+        alias: str = "default",
     ):
         """
         List clusters
@@ -147,7 +147,7 @@ class ClusterClient(_Base):
         self,
         dataset_id: str,
         vector_field: list,
-        alias: str = 'default',
+        alias: str = "default",
     ):
         """
         delete centroid
@@ -176,7 +176,7 @@ class ClusterClient(_Base):
         centroid_id: str,
         dataset_id: str,
         vector_field: list,
-        alias: str = 'default',
+        alias: str = "default",
     ):
         """
         delete centroid
@@ -208,7 +208,7 @@ class ClusterClient(_Base):
         update: dict,
         dataset_id: str,
         vector_field: list,
-        alias: str = 'default',
+        alias: str = "default",
     ):
         """
         delete centroid
@@ -235,7 +235,3 @@ class ClusterClient(_Base):
                 "update": update,
             },
         )
-
-    
-
-    

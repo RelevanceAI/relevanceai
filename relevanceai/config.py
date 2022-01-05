@@ -94,7 +94,7 @@ class Config(DocUtils):
         }
         config["upload"] = {"target_chunk_mb": 100, "max_chunk_size": 10000}
         config["api"] = {
-            "base_url": "https://gateway-api-aueast.relevance.ai/v1",
+            "base_url": "https://gateway-api-aueast.relevance.ai/latest",
             "base_ingest_url": "https://ingest-api-dev-aueast.relevance.ai/latest",
             "output_format": "json",
         }
