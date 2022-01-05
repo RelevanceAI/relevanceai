@@ -5,12 +5,45 @@ from types import GeneratorType
 import numpy as np
 import collections
 from typing import List, Dict
-from pydantic.json import ENCODERS_BY_TYPE
 import pandas as pd
+import datetime
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
+from uuid import UUID
+from collections import deque
+from pathlib import Path
 
 from doc_utils import DocUtils
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.client import APIClient
+
+# Taken from pydanitc.json
+ENCODERS_BY_TYPE = {
+    bytes: lambda o: o.decode(),
+    datetime.date: lambda o: o.isoformat(),
+    datetime.datetime: lambda o: o.isoformat(),
+    datetime.time: lambda o: o.isoformat(),
+    datetime.timedelta: lambda td: td.total_seconds(),
+    Enum: lambda o: o.value,
+    frozenset: list,
+    deque: list,
+    GeneratorType: list,
+    IPv4Address: str,
+    IPv4Interface: str,
+    IPv4Network: str,
+    IPv6Address: str,
+    IPv6Interface: str,
+    IPv6Network: str,
+    Path: str,
+    set: list,
+    UUID: str,
+}
 
 
 class Utils(APIClient, _Base, DocUtils):
