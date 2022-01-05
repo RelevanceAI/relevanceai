@@ -128,11 +128,12 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         """
 
         docs = self._get_plot_docs(
-            dataset_id = dataset_id,
-            vector_field = vector_field,
-            number_of_points_to_render= number_of_points_to_render,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            number_of_points_to_render=number_of_points_to_render,
             vector_label=vector_label,
-            hover_label= hover_label)
+            hover_label=hover_label,
+        )
 
         return self.plot_from_docs(
             docs,
@@ -150,7 +151,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             show_image=show_image,
             marker_size=marker_size,
             dataset_name=dataset_id,
-            jupyter_dash=False
+            jupyter_dash=False,
         )
 
     @typechecked
@@ -240,14 +241,17 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         try:
             from jupyter_dash import JupyterDash
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("You are missing Jupyter Dash, please run `pip install jupyter_dash`")
+            raise ModuleNotFoundError(
+                "You are missing Jupyter Dash, please run `pip install jupyter_dash`"
+            )
 
         docs = self._get_plot_docs(
-            dataset_id = dataset_id,
-            vector_field = vector_field,
-            number_of_points_to_render= number_of_points_to_render,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            number_of_points_to_render=number_of_points_to_render,
             vector_label=vector_label,
-            hover_label= hover_label)
+            hover_label=hover_label,
+        )
 
         return self.plot_from_docs(
             docs,
@@ -275,7 +279,8 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         vector_field: str,
         number_of_points_to_render: int = 1000,
         vector_label: Union[None, str] = None,
-        hover_label: list = []):
+        hover_label: list = [],
+    ):
 
         # Check vector field
         self._is_valid_vector_name(dataset_id, vector_field)

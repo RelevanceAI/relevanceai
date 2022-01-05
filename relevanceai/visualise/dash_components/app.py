@@ -10,6 +10,7 @@ from relevanceai.visualise.dash_components.callbacks import (
 )
 import warnings
 
+
 def create_dash_graph(
     plot_data,
     layout,
@@ -21,7 +22,7 @@ def create_dash_graph(
 ):
 
     from jupyter_dash import JupyterDash
-    
+
     app = JupyterDash(__name__)
 
     def create_layout(app):

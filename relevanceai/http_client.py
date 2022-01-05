@@ -16,8 +16,9 @@ from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_cluste
 vis_requirements = False
 try:
     from relevanceai.visualise.projector import Projector
+
     vis_requirements = True
-    
+
 except ModuleNotFoundError as e:
     # warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
     pass
