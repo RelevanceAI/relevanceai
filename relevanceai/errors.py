@@ -13,7 +13,6 @@ class MissingFieldError(RelevanceAIError):
 class APIError(RelevanceAIError):
     """Error related to API"""
 
-
 class ClusteringResultsAlreadyExistsError(RelevanceAIError):
     """Exception raised for existing clustering results
 
