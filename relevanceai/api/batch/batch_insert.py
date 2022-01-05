@@ -21,7 +21,6 @@ BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
 
-
 class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
         self,
