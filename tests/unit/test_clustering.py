@@ -38,6 +38,7 @@ def test_cluster_distribution(test_client, test_clustered_dataset):
     assert True
 
 
+@pytest.mark.skip(reason="Not fully implemented")
 def test_hdbscan_cluster(test_client, test_sample_vector_dataset):
     test_client.vector_tools.cluster.hdbscan_cluster(
         dataset_id=test_sample_vector_dataset,

@@ -7,6 +7,8 @@ import traceback
 from datetime import datetime
 from typing import Callable, List, Dict, Union, Any
 
+from doc_utils import DocUtils
+
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
@@ -17,6 +19,7 @@ from relevanceai.utils import Utils
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
+
 
 
 class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
@@ -612,3 +615,79 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "failed_documents_detailed": failed_ids_detailed,
         }
         return output
+
+    def rename_fields(
+        self,
+        dataset_id: str,
+        field_mappings: dict,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 8,
+        show_progress_bar: bool = True,
+    ):
+        """
+        Loops through every document in your collection and renames specified fields by deleting the old one and
+        creating a new field using the provided mapping
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+
+        Example:
+        rename_fields(dataset_id,field_mappings = {'a.b.d':'a.b.c'})  => doc['a']['b']['d'] => doc['a']['b']['c']
+        rename_fields(dataset_id,field_mappings = {'a.b':'a.c'})  => doc['a']['b'] => doc['a']['c']
+
+        Parameters
+        ----------
+        dataset_id : string
+            The dataset_id of the collection where your original documents are
+        field_mappings : dict
+            A dictionary in the form f {old_field_name1 : new_field_name1, ...}
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        retrieve_chunk_size_failure_retry_multiplier: int
+            If fails, retry on each chunk
+        max_workers: int
+            The number of processors you want to parallelize with
+        show_progress_bar: bool
+            Shows a progress bar if True
+        """
+        self.logger.warning(
+            "Currently this function is in beta and may change in the future."
+        )
+
+        skip = set()
+        for old_f, new_f in field_mappings.items():
+            if len(old_f.split(".")) != len(new_f.split(".")):
+                skip.add(old_f)
+                self.logger.warning(f"{old_f} does not match {new_f}.")
+
+        for k in skip:
+            del field_mappings[k]
+
+        def rename_dict_fields(d, field_mappings={}, track=""):
+            modified_dict = {}
+            for k, v in sorted(d.items(), key=lambda x: x[0]):
+                if track != "" and track[-1] != ".":
+                    track += "."
+                if track + k not in field_mappings.keys():
+                    kk = k
+                else:
+                    kk = field_mappings[track + k].split(".")[-1]
+
+                if isinstance(v, dict):
+                    if k not in modified_dict:
+                        modified_dict[kk] = {}
+                    modified_dict[kk] = rename_dict_fields(
+                        v, field_mappings, track + kk
+                    )
+                else:
+                    modified_dict[kk] = v
+            return modified_dict
+
+        sample_docs = self.datasets.documents.list(dataset_id)
+
+        def update_function(sample_docs):
+            for i, d in enumerate(sample_docs):
+                sample_docs[i] = rename_dict_fields(
+                    d, field_mappings=field_mappings, track=""
+                )
+            return sample_docs
+
+        self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)
