@@ -58,6 +58,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             Any other keyword argument will go directly into the clustering algorithm
 
         """
+        self.vector_fields = vector_fields
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             docs = list(filter(DocUtils.list_doc_fields, docs))
@@ -72,6 +73,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             all_vectors = self.get_fields_across_documents(
                 vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
+            # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
 
         cluster_labels = self.fit_transform(vectors)
@@ -137,16 +139,40 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_docs(self) -> List:
-        """Get the centroid documents to store."""
+    def get_centroid_docs(self, centroid_vector_field_name="centroid_vector_") -> List:
+        """Get the centroid documents to store.
+        if single vector field returns this: 
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+        If multiple vector fields returns this: 
+        Returns multiple
+        ```
+        {
+            "_id": "document-id-1",
+            "blue_vector_": [0.12, 0.312, 0.42],
+            "red_vector_": [0.23, 0.41, 0.3]
+        }
+        ```
+        """
         self.centers = self.get_centers()
-        if isinstance(self.centers, np.ndarray):
-            self.centers = self.centers.tolist()
-        return [
-            {"_id": self._label_cluster(i), "centroid_vector_": self.centers[i]}
-            for i in range(len(self.centers))
-        ]
-
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            return [
+                {"_id": self._label_cluster(i), centroid_vector_field_name: self.centers[i]}
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
 
 class DensityCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
