@@ -45,18 +45,18 @@ vis_requirements = requirements + [
 ]
 
 umap = ["umap-learn>=0.5.2"]
-ivis_cpu = ["ivis[cpu]>=2.0.6"]
-ivis_gpu = ["ivis[gpu]>=2.0.6"]
+# ivis_cpu = ["ivis[cpu]>=2.0.6"]
+# ivis_gpu = ["ivis[gpu]>=2.0.6"]
 kmedoids = ["scikit-learn-extra>=0.2.0"]
 hdbscan = ["hdbscan>=0.8.27"]
 
-vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
+# vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
 test_requirements = (
     ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
     + excel_requirements
     + vis_requirements
-    + vis_extras
+    # + vis_extras
 )
 
 
@@ -65,6 +65,8 @@ dev_requirements = [
     "pylint",
     "jupyter",
     "sphinx-rtd-theme>=0.5.0",
+    "sphinx-autoapi==1.8.4",
+    "sphinx-autodoc-typehints==1.12.0"
 ] + test_requirements
 
 
@@ -72,7 +74,7 @@ dev_vis_requirements = (
     ["autopep8", "pylint", "jupyter", "sphinx-rtd-theme>=0.5.0"]
     + test_requirements
     + vis_requirements
-    + vis_extras
+    # + vis_extras
 )
 
 from pathlib import Path
@@ -112,12 +114,12 @@ setup(
         "dev-vis": dev_vis_requirements,
         "excel": excel_requirements,
         "vis": vis_requirements,
-        "vis-all": vis_requirements + vis_extras,
+        # "vis-all": vis_requirements + vis_extras,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,
         "umap": umap,
-        "ivis-cpu": ivis_cpu,
-        "ivis-gpu": ivis_gpu,
+        # "ivis-cpu": ivis_cpu,
+        # "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
     },

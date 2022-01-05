@@ -133,3 +133,4 @@ dmypy.json
 
 test_projection/*
 *.ipynb
+.creds.json

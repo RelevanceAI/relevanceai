@@ -226,14 +226,15 @@ class CentroidsClient(_Base):
         vector_fields: List,
         cluster_ids: List = [],
         alias: str = "default",
-        select_fields: list = [],
+        centroid_vector_fields: List = ["centroid_vector_"],
+        select_fields: List = [],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [],
-        facets: list = [],
+        filters: List = [],
+        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -252,6 +253,8 @@ class CentroidsClient(_Base):
             Any of the cluster ids
         alias: string
             Alias is used to name a cluster
+        centroid_vector_fields: list
+            Vector fields stored
         select_fields: list
             Fields to include in the search results, empty array/list means all fields
         approx: int
@@ -284,6 +287,7 @@ class CentroidsClient(_Base):
             "vector_fields": vector_fields,
             "alias": alias,
             "cluster_ids": cluster_ids,
+            "centroid_vector_fields": centroid_vector_fields,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
