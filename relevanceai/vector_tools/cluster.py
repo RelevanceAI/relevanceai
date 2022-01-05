@@ -467,6 +467,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
+        page_size: int = 1,
     ):
         """
         This function performs all the steps required for Kmeans clustering:
@@ -513,7 +514,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         >>> client.vector_tools.cluster.kmeans_cluster(
             dataset_id="sample_dataset",
-            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+            vector_fields=vector_fields
         )
         """
 
@@ -581,12 +582,10 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             alias=alias,
         )
         self.logger.info(results)
+        # Not logged because the cluster alias is really important if auto generated.
         print(f"Finished clustering. The cluster alias is `{alias}`.")
-
         self.services.cluster.centroids.list_closest_to_center(
-            dataset_id,
-            vector_fields=vector_fields,
-            alias=alias,
+            dataset_id, vector_fields=vector_fields, alias=alias, page_size=page_size,
             centroid_vector_fields=vector_fields,
         )
 
