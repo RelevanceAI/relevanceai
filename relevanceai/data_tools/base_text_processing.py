@@ -32,10 +32,10 @@ class BaseTextProcessing:
         additional_stop_words: List[str] = [],
         language="english",
     ) -> List:
-        """Returns a sorted word frequency in Python
-        """
+        """Returns a sorted word frequency in Python"""
         try:
             import nltk
+
             nltk.download("stopwords")
             from nltk.corpus import stopwords
         except ModuleNotFoundError:
