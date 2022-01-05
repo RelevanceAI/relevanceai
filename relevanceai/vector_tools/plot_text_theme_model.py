@@ -295,16 +295,16 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         run_fit=True,
     ):
         self.logger.info(" * Dimensionality reduction")
-        vector_data = np.array(vector_data)
+        vector_data_array = np.array(vector_data)
         if run_fit:
             self.dr_model = Ivis(
                 embedding_dims=embedding_dims,
                 k=k,
                 n_epochs_without_progress=n_epochs_without_progress,
             )
-            dr_docs = self.dr_model.fit_transform(vector_data)
+            dr_docs = self.dr_model.fit_transform(vector_data_array)
         else:
-            dr_docs = self.dr_model.transform(vector_data)
+            dr_docs = self.dr_model.transform(vector_data_array)
 
         return dr_docs
 

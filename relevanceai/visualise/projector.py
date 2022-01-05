@@ -245,7 +245,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
                 "You are missing Jupyter Dash, please run `pip install jupyter_dash`"
             )
 
-        docs = self._get_plot_docs(
+        documents = self._get_plot_docs(
             dataset_id=dataset_id,
             vector_field=vector_field,
             number_of_points_to_render=number_of_points_to_render,
@@ -254,7 +254,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         )
 
         return self.plot_from_documents(
-            documents,
+            documents=documents,
             vector_field=vector_field,
             vector_label=vector_label,
             label_char_length=label_char_length,
@@ -403,7 +403,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
                 plot_data=plot_data,
                 layout=layout,
                 show_image=show_image,
-                docs=docs,
+                documents=documents,
                 vector_label=vector_label,
                 vector_field=vector_field,
                 interactive=interactive,
