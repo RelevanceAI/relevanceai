@@ -144,13 +144,22 @@ def sample_nested_assorted_docs():
                 "datetime": datetime.now(),
                 "numpy": np.random.rand(3, 2),
             },
-            "sample_2": {
-                "panda": pd.DataFrame(
-                    np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
-                ),
-                "datetime": datetime.now(),
-                "numpy": np.random.rand(3, 2),
-            },
+            "sample_2": [
+                {
+                    "panda": pd.DataFrame(
+                        np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
+                    ),
+                    "datetime": datetime.now(),
+                    "numpy": np.random.rand(3, 2),
+                },
+                {
+                    "panda": pd.DataFrame(
+                        np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
+                    ),
+                    "datetime": datetime.now(),
+                    "numpy": np.random.rand(3, 2),
+                },
+            ],
         }
 
     N = 20
