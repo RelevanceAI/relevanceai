@@ -3,14 +3,6 @@ import warnings
 from typing import List
 from collections import Counter
 
-try:
-    import nltk
-
-    nltk.download("stopwords")
-    from nltk.corpus import stopwords
-except ModuleNotFoundError:
-    warnings.warn("You are missing NLTK, please run `pip install nltk`")
-
 
 class BaseTextProcessing:
     @staticmethod
@@ -40,6 +32,15 @@ class BaseTextProcessing:
         additional_stop_words: List[str] = [],
         language="english",
     ) -> List:
+        """Returns a sorted word frequency in Python
+        """
+        try:
+            import nltk
+            nltk.download("stopwords")
+            from nltk.corpus import stopwords
+        except ModuleNotFoundError:
+            warnings.warn("You are missing NLTK, please run `pip install nltk`")
+
         if remove_stop_words:
             stpw = stopwords.words(language)
             stpw += additional_stop_words
