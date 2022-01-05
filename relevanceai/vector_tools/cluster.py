@@ -467,6 +467,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
+        page_size: int = 1,
     ):
         """
         This function performs all the steps required for Kmeans clustering:
@@ -513,7 +514,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         >>> client.vector_tools.cluster.kmeans_cluster(
             dataset_id="sample_dataset",
-            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+            vector_fields=vector_fields
         )
         """
 
@@ -588,6 +589,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             vector_fields=vector_fields,
             alias=alias,
             centroid_vector_fields=vector_fields,
+            page_size=page_size,
         )
 
     def hdbscan_cluster(
