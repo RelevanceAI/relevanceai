@@ -43,7 +43,7 @@ Attributes
 
 .. py:class:: BatchInsertClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieveClient`, :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`
+   Bases: :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieveClient`, :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`, :py:obj:`doc_utils.DocUtils`
 
    API Client
 
@@ -158,6 +158,30 @@ Attributes
 
 
    .. py:method:: _write_documents(self, insert_function, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize: int = 0)
+
+
+   .. py:method:: rename_fields(self, dataset_id: str, field_mappings: dict, retrieve_chunk_size: int = 100, max_workers: int = 8, show_progress_bar: bool = True)
+
+      Loops through every document in your collection and renames specified fields by deleting the old one and
+      creating a new field using the provided mapping
+      These documents are then uploaded into either an updated collection, or back into the original collection.
+
+      Example:
+      rename_fields(dataset_id,field_mappings = {'a.b.d':'a.b.c'})  => doc['a']['b']['d'] => doc['a']['b']['c']
+      rename_fields(dataset_id,field_mappings = {'a.b':'a.c'})  => doc['a']['b'] => doc['a']['c']
+
+      :param dataset_id: The dataset_id of the collection where your original documents are
+      :type dataset_id: string
+      :param field_mappings: A dictionary in the form f {old_field_name1 : new_field_name1, ...}
+      :type field_mappings: dict
+      :param retrieve_chunk_size: The number of documents that are received from the original collection with each loop iteration.
+      :type retrieve_chunk_size: int
+      :param retrieve_chunk_size_failure_retry_multiplier: If fails, retry on each chunk
+      :type retrieve_chunk_size_failure_retry_multiplier: int
+      :param max_workers: The number of processors you want to parallelize with
+      :type max_workers: int
+      :param show_progress_bar: Shows a progress bar if True
+      :type show_progress_bar: bool
 
 
 

@@ -16,5 +16,6 @@ Submodules
    constants/index.rst
    dim_reduction/index.rst
    nearest_neighbours/index.rst
+   plot_text_theme_model/index.rst
 
 

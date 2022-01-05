@@ -68,6 +68,11 @@ Attributes
 
       
 
+   .. py:attribute:: build_and_plot_clusters
+      
+
+      
+
    .. py:method:: base_url(self)
       :property:
 

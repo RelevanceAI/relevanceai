@@ -122,7 +122,7 @@ Classes
       :type metadata: Optional[dict]
 
 
-   .. py:method:: list_closest_to_center(self, dataset_id: str, vector_fields: List, cluster_ids: List = [], alias: str = 'default', select_fields: list = [], approx: int = 0, sum_fields: bool = True, page_size: int = 1, page: int = 1, similarity_metric: str = 'cosine', filters: list = [], facets: list = [], min_score: int = 0, include_vector: bool = False, include_count: bool = True, include_facets: bool = False)
+   .. py:method:: list_closest_to_center(self, dataset_id: str, vector_fields: List, cluster_ids: List = [], alias: str = 'default', centroid_vector_fields: List = ['centroid_vector_'], select_fields: List = [], approx: int = 0, sum_fields: bool = True, page_size: int = 1, page: int = 1, similarity_metric: str = 'cosine', filters: List = [], facets: List = [], min_score: int = 0, include_vector: bool = False, include_count: bool = True, include_facets: bool = False)
 
       List of documents closest from the centre.
 
@@ -134,6 +134,8 @@ Classes
       :type cluster_ids: lsit
       :param alias: Alias is used to name a cluster
       :type alias: string
+      :param centroid_vector_fields: Vector fields stored
+      :type centroid_vector_fields: list
       :param select_fields: Fields to include in the search results, empty array/list means all fields
       :type select_fields: list
       :param approx: Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate

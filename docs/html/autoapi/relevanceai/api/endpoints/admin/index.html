@@ -91,12 +91,12 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.api.endpoints.admin.AdminClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.endpoints.admin.</span></span><span class="sig-name descname"><span class="pre">AdminClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/endpoints/admin.html#AdminClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.api.endpoints.admin.</span></span><span class="sig-name descname"><span class="pre">AdminClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../../base/index.html#relevanceai.base._Base" title="relevanceai.base._Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relevanceai.base._Base</span></code></a></p>
 <p>Base class for all relevanceai client utilities</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.endpoints.admin.AdminClient.request_read_api_key">
-<span class="sig-name descname"><span class="pre">request_read_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/endpoints/admin.html#AdminClient.request_read_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient.request_read_api_key" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">request_read_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient.request_read_api_key" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -107,8 +107,17 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.endpoints.admin.AdminClient.copy_foreign_dataset">
-<span class="sig-name descname"><span class="pre">copy_foreign_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/endpoints/admin.html#AdminClient.copy_foreign_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient.copy_foreign_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">copy_foreign_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient.copy_foreign_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Copy a dataset from another user’s projects into your project.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">send_dataset</span><span class="p">(</span>
+<span class="go">    dataset_id=&quot;research&quot;,</span>
+<span class="go">    receiver_project=&quot;...&quot;,</span>
+<span class="go">    receiver_api_key=&quot;...&quot;</span>
+<span class="go">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -125,18 +134,23 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.endpoints.admin.AdminClient.send_dataset">
-<span class="sig-name descname"><span class="pre">send_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/endpoints/admin.html#AdminClient.send_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient.send_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">send_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient.send_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Send an individual a dataset.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">send_dataset</span><span class="p">(</span>
+<span class="go">    dataset_id=&quot;research&quot;,</span>
+<span class="go">    receiver_project=&quot;...&quot;,</span>
+<span class="go">    receiver_api_key=&quot;...&quot;</span>
+<span class="go">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_id</strong> (<em>str</em>) – The name of the dataset</p></li>
 <li><p><strong>receiver_project</strong> (<em>str</em>) – The project name that will receive the dataset</p></li>
 <li><p><strong>receiver_api_key</strong> (<em>str</em>) – The project API key that will receive the dataset</p></li>
-<li><p><strong>client.admin.send_dataset</strong><strong>(</strong> (<em>&gt;&gt;&gt;</em>) – dataset_id=”research”,
-receiver_project=”…”,
-receiver_api_key=”…”</p></li>
-<li><p><strong>)</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -144,7 +158,7 @@ receiver_api_key=”…”</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="relevanceai.api.endpoints.admin.AdminClient._ping">
-<span class="sig-name descname"><span class="pre">_ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/relevanceai/api/endpoints/admin.html#AdminClient._ping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient._ping" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.api.endpoints.admin.AdminClient._ping" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -14,5 +14,6 @@ Submodules
    batch_retrieve/index.rst
    chunk/index.rst
    local_logger/index.rst
+   mongo_to_relevance_ai/index.rst
 
 

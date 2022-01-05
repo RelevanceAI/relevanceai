@@ -43,7 +43,24 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.batch.html">Batch Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="relevanceai.api.endpoints.html">Core Endpoints</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Visualisations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Visualisations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#relevanceai.visualise.projector.Projector">Projector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.api_key">api_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.config">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.critical">critical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.debug">debug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.error">error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.info">info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.plot">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.plot_from_docs">plot_from_docs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.project">project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.success">success</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.warn">warn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relevanceai.visualise.projector.Projector.warning">warning</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="vectortools.html">Vector Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="features.html">Python Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
@@ -73,9 +90,138 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="visualisations">
-<h1>Visualisations<a class="headerlink" href="#visualisations" title="Permalink to this headline"></a></h1>
-</section>
+  <section id="module-relevanceai.visualise.projector">
+<span id="visualisations"></span><h1>Visualisations<a class="headerlink" href="#module-relevanceai.visualise.projector" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.visualise.projector.</span></span><span class="sig-name descname"><span class="pre">Projector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.projector.Projector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="autoapi/relevanceai/utils/index.html#relevanceai.utils.Utils" title="relevanceai.utils.Utils"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.utils.Utils</span></code></a>, <a class="reference internal" href="core_api.html#relevanceai.api.client.BatchAPIClient" title="relevanceai.api.client.BatchAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.api.client.BatchAPIClient</span></code></a>, <a class="reference internal" href="autoapi/relevanceai/base/index.html#relevanceai.base._Base" title="relevanceai.base._Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">relevanceai.base._Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">doc_utils.doc_utils.DocUtils</span></code></p>
+<p>Projector class.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api_key</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<span class="go">        dataset_id, vector_field, number_of_points_to_render, random_state,</span>
+<span class="go">        dr, dr_args, dims,</span>
+<span class="go">        vector_label, label_char_length,</span>
+<span class="go">        color_label, colour_label_char_length,</span>
+<span class="go">        hover_label,</span>
+<span class="go">        cluster, cluster_args,</span>
+<span class="go">        )</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.api_key">
+<span class="sig-name descname"><span class="pre">api_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.api_key" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.config">
+<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="relevanceai.html#relevanceai.config.Config" title="relevanceai.config.Config"><span class="pre">relevanceai.config.Config</span></a></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.config" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.critical">
+<span class="sig-name descname"><span class="pre">critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.critical" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.debug" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.error" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_points_to_render</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_on_dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_char_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interactive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot" title="Permalink to this definition"></a></dt>
+<dd><p>Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours</p>
+<p>To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
+from relevanceai.visualise.dim_reduction import DimReductionBase
+class CustomDimReduction(DimReductionBase):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>def fit_transform(self, vectors):</dt><dd><p>return np.arange(512, 2)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">relevanceai</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api_key</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">projector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<span class="go">        dataset_id, vector_field, number_of_points_to_render, random_state,</span>
+<span class="go">        dr, dr_args, dims,</span>
+<span class="go">        vector_label, label_char_length,</span>
+<span class="go">        color_label, colour_label_char_length,</span>
+<span class="go">        hover_label,</span>
+<span class="go">        cluster, cluster_args,</span>
+<span class="go">        )</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – Unique name of dataset</p></li>
+<li><p><strong>vector_field</strong> (<em>list</em>) – Vector field to plot</p></li>
+<li><p><strong>number_of_points_to_render</strong> (<em>int</em>) – Number of vector fields to plot</p></li>
+<li><p><strong>vector_label</strong> (<em>string</em>) – Field to use as label to describe vector on plot</p></li>
+<li><p><strong>dr</strong> (<em>string</em>) – Method of dimension reduction for vectors</p></li>
+<li><p><strong>dims</strong> (<em>int</em>) – Number of dimensions to reduce to</p></li>
+<li><p><strong>dr_args</strong> (<em>dict</em>) – Additional arguments for dimension reduction</p></li>
+<li><p><strong>cluster</strong> (<em>string</em>) – Method of clustering for vectors</p></li>
+<li><p><strong>num_clusters</strong> (<em>string</em>) – Number of clusters to create</p></li>
+<li><p><strong>cluster_args</strong> (<em>dict</em>) – Additional arguments for clustering</p></li>
+<li><p><strong>cluster_on_dr</strong> (<em>int</em>) – Whether to cluster on the dimension reduced or original vectors</p></li>
+<li><p><strong>hover_label</strong> (<em>list</em>) – Additional labels to include as plot labels</p></li>
+<li><p><strong>show_image</strong> (<em>bool</em>) – Whether vector labels are image urls</p></li>
+<li><p><strong>label_char_length</strong> (<em>int</em>) – Maximum length of text for each hover label</p></li>
+<li><p><strong>marker_size</strong> (<em>int</em>) – Marker size of the plot</p></li>
+<li><p><strong>interactive</strong> (<em>bool</em>) – Whether to include interactive features including nearest neighbours</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.plot_from_docs">
+<span class="sig-name descname"><span class="pre">plot_from_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dr_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_on_dr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_char_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interactive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#relevanceai.visualise.projector.Projector.plot_from_docs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.project">
+<span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.project" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.success">
+<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.success" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.warn">
+<span class="sig-name descname"><span class="pre">warn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.warn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="relevanceai.visualise.projector.Projector.warning">
+<span class="sig-name descname"><span class="pre">warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span></em><a class="headerlink" href="#relevanceai.visualise.projector.Projector.warning" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-relevanceai.visualise"></span></section>
 
 
            </div>

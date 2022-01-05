@@ -53,6 +53,7 @@ Attributes
 .. autoapisummary::
 
    relevanceai.__version__
+   relevanceai.pypi_data
 
 
 .. py:class:: Client(project=os.getenv('RELEVANCE_PROJECT'), api_key=os.getenv('RELEVANCE_API_KEY'), authenticate: bool = False)
@@ -68,6 +69,11 @@ Attributes
 
    .. py:attribute:: _cred_fn
       :annotation: = .creds.json
+
+      
+
+   .. py:attribute:: build_and_plot_clusters
+      
 
       
 
@@ -105,7 +111,12 @@ Attributes
 
 
 .. py:data:: __version__
-   :annotation: = 0.24.7
+   :annotation: = 0.25.1
+
+   
+
+.. py:data:: pypi_data
+   
 
    
 

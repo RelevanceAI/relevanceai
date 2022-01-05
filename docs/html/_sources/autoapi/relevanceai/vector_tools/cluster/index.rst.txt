@@ -98,9 +98,23 @@ Classes
       Get centers for the centroid-based clusters
 
 
-   .. py:method:: get_centroid_docs(self) -> List
+   .. py:method:: get_centroid_docs(self, centroid_vector_field_name='centroid_vector_') -> List
 
       Get the centroid documents to store.
+      if single vector field returns this:
+          {
+              "_id": "document-id-1",
+              "centroid_vector_": [0.23, 0.24, 0.23]
+          }
+      If multiple vector fields returns this:
+      Returns multiple
+      ```
+      {
+          "_id": "document-id-1",
+          "blue_vector_": [0.12, 0.312, 0.42],
+          "red_vector_": [0.23, 0.41, 0.3]
+      }
+      ```
 
 
 
@@ -187,7 +201,7 @@ Classes
       Cluster vectors
 
 
-   .. py:method:: kmeans_cluster(self, dataset_id: str, vector_fields: list, filters: List = [], k: Union[None, int] = 10, init: str = 'k-means++', n_init: int = 10, max_iter: int = 300, tol: float = 0.0001, verbose: bool = True, random_state: Optional[int] = None, copy_x: bool = True, algorithm: str = 'auto', alias: str = None, cluster_field: str = '_cluster_', update_documents_chunksize: int = 50, overwrite: bool = False)
+   .. py:method:: kmeans_cluster(self, dataset_id: str, vector_fields: list, filters: List = [], k: Union[None, int] = 10, init: str = 'k-means++', n_init: int = 10, max_iter: int = 300, tol: float = 0.0001, verbose: bool = True, random_state: Optional[int] = None, copy_x: bool = True, algorithm: str = 'auto', alias: str = None, cluster_field: str = '_cluster_', update_documents_chunksize: int = 50, overwrite: bool = False, page_size: int = 1)
 
       This function performs all the steps required for Kmeans clustering:
       1- Loads the data
@@ -229,7 +243,7 @@ Classes
 
       >>> client.vector_tools.cluster.kmeans_cluster(
           dataset_id="sample_dataset",
-          vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+          vector_fields=vector_fields
       )
 
 
