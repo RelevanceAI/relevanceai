@@ -48,7 +48,7 @@ class Dendrogram(object):
         self.leaves = []
         self.sign = {self.xaxis: 1, self.yaxis: 1}
         self.layout = {self.xaxis: {}, self.yaxis: {}}
-        self.number_of_nodes = self.number_of_nodes
+        self.number_of_nodes = number_of_nodes
 
         if self.orientation in ["left", "bottom"]:
             self.sign[self.xaxis] = 1
