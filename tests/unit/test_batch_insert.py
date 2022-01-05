@@ -14,6 +14,10 @@ class TestInsert:
         results = test_client.insert_documents(test_dataset_id, simple_docs)
         assert len(results["failed_documents"]) == 0
 
+    def test_csv_upload(test_csv_dataset):
+        response, original_length = test_csv_dataset
+        assert response["inserted"] == original_length
+
 
 # Mock a callable For pull update push
 def do_nothing(docs):
