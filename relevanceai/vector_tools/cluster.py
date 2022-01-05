@@ -74,7 +74,7 @@ class ClusterBase(LoguruLogger, DocUtils):
                 vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
             # Store the vector field lengths to de-concatenate them later
-            self._vector_field_length = {}
+            self._vector_field_length: dict = {}
             prev_vf = 0
             for i, vf in enumerate(self.vector_fields):
                 self._vector_field_length[vf] = {}
