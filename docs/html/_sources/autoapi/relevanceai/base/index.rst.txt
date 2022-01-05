@@ -12,7 +12,7 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.base.Base
+   relevanceai.base._Base
 
 
 
@@ -28,10 +28,10 @@ Functions
 .. py:function:: str2bool(v)
 
 
-.. py:class:: Base(project: str, api_key: str)
+.. py:class:: _Base(project: str, api_key: str)
 
    Bases: :py:obj:`relevanceai.transport.Transport`, :py:obj:`relevanceai.logger.LoguruLogger`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
 

@@ -24,7 +24,7 @@ Classes
 
 .. py:class:: BatchAPIClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.batch.batch_insert.BatchInsert`, :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieve`, :py:obj:`relevanceai.api.endpoints.client.APIClient`
+   Bases: :py:obj:`relevanceai.api.batch.batch_insert.BatchInsertClient`, :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieveClient`, :py:obj:`relevanceai.api.endpoints.client.APIClient`
 
    Batch API client
 

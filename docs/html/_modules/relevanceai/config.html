@@ -85,7 +85,7 @@
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">DocUtils</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set and change configuration settings</span>
-<span class="sd">    </span>
+
 <span class="sd">    - Retries - Set the behaviour of retries for failed responses from the API</span>
 <span class="sd">        - number_of_retries - Number of retries to attempt</span>
 <span class="sd">        - seconds_between_retries - Seconds to wait between retries</span>
@@ -106,15 +106,16 @@
 <span class="sd">    - Dashboard - URLS to various things</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_config</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Config._read_config"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config._read_config">[docs]</a>    <span class="k">def</span> <span class="nf">_read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up custom config by reading in a file</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        config_path : string</span>
@@ -128,7 +129,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_sections</span></div>
 
 <div class="viewcode-block" id="Config.get_option"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config.get_option">[docs]</a>    <span class="k">def</span> <span class="nf">get_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        View current config settings</span>
 
 <span class="sd">        Parameters</span>
@@ -139,7 +140,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Config.set_option"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.config.Config.set_option">[docs]</a>    <span class="k">def</span> <span class="nf">set_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change a config settings</span>
 
 <span class="sd">        Parameters</span>
@@ -158,21 +159,36 @@
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="Config._create_default"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config._create_default">[docs]</a>    <span class="k">def</span> <span class="nf">_create_default</span><span class="p">():</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;retries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;number_of_retries&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                             <span class="s2">&quot;seconds_between_retries&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;log_to_file&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;logging_level&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
-                             <span class="s1">&#39;enable_logging&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;log_file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;relevanceai&quot;</span><span class="p">}</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;target_chunk_mb&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://gateway-api-aueast.relevance.ai/v1&quot;</span><span class="p">,</span> <span class="s2">&quot;output_format&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">}</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;retries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;number_of_retries&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;seconds_between_retries&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;log_to_file&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;logging_level&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enable_logging&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;log_file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;relevanceai&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;target_chunk_mb&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;max_chunk_size&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">}</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://gateway-api-aueast.relevance.ai/latest&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;base_ingest_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://ingest-api-dev-aueast.relevance.ai/latest&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;output_format&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dashboard&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dashboard_request_url&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;https://us-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;base_dashboard_url&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;https://cloud.relevance.ai&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;signup_endpoint&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;/sdk/api&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;search_dashboard_endpoint&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;&quot;/sdk/search&quot;&#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
             <span class="n">config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Config.__getitem__"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get teh config using client.config[&quot;api.base_url&quot;]</span>
+<span class="sd">        Get the config using client.config[&quot;api.base_url&quot;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Config.__setitem__"><a class="viewcode-back" href="../../autoapi/relevanceai/config/index.html#relevanceai.config.Config.__setitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the config using client.config[&quot;api.base_url&quot;] = &quot;https://...&quot;</span>

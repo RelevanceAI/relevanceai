@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.monitor.Monitor
+   relevanceai.api.endpoints.monitor.MonitorClient
 
 
 
 
-.. py:class:: Monitor(project, api_key)
+.. py:class:: MonitorClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: health(self, dataset_id: str)
 

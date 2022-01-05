@@ -12,22 +12,30 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.utils.NoteBookUtils
+   relevanceai.utils.Utils
 
 
 
 
-.. py:class:: NoteBookUtils
+.. py:class:: Utils(project, api_key)
 
-   .. py:method:: is_in_ipython()
-      :staticmethod:
+   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`relevanceai.base._Base`, :py:obj:`doc_utils.DocUtils`
 
-      Determines if current code is executed within an ipython session.
+   Batch API client
+
+   .. py:method:: _is_valid_vector_name(self, dataset_id, vector_name: str) -> bool
+
+      Check vector field name is valid
 
 
-   .. py:method:: is_in_notebook(self) -> bool
+   .. py:method:: _is_valid_label_name(self, dataset_id, label_name: str) -> bool
 
-      Determines if current code is executed from an ipython notebook.
+      Check vector label name is valid. Checks that it is either numeric or text
+
+
+   .. py:method:: _remove_empty_vector_fields(self, docs, vector_field: str) -> List[Dict]
+
+      Remove documents with empty vector fields
 
 
 

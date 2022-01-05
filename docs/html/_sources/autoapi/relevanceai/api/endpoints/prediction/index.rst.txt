@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.prediction.Prediction
+   relevanceai.api.endpoints.prediction.PredictionClient
 
 
 
 
-.. py:class:: Prediction(project, api_key)
+.. py:class:: PredictionClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: KNN(self, dataset_id: str, vector: list, vector_field: str, target_field: str, k: int = 5, weighting: bool or list = True, impute_value: int = 0, predict_operation: str = 'most_frequent', include_search_results: bool = True)
 

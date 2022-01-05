@@ -35,7 +35,7 @@ Functions
 
 .. py:class:: APIClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
    API Client
 

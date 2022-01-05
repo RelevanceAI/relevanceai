@@ -74,16 +74,16 @@
   <h1>Source code for relevanceai.api.endpoints.wordclouds</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Wordclouds services</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
 
 
-<div class="viewcode-block" id="Wordclouds"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.Wordclouds">[docs]</a><span class="k">class</span> <span class="nc">Wordclouds</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="WordcloudsClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.WordcloudsClient">[docs]</a><span class="k">class</span> <span class="nc">WordcloudsClient</span><span class="p">(</span><span class="n">_Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Wordclouds.wordclouds"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.Wordclouds.wordclouds">[docs]</a>    <span class="k">def</span> <span class="nf">wordclouds</span><span class="p">(</span>
+<div class="viewcode-block" id="WordcloudsClient.wordclouds"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.WordcloudsClient.wordclouds">[docs]</a>    <span class="k">def</span> <span class="nf">wordclouds</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -92,13 +92,13 @@
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<div class="viewcode-block" id="Wordclouds.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.Wordclouds.project">[docs]</a>        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span></div>
-<div class="viewcode-block" id="Wordclouds.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.Wordclouds.api_key">[docs]</a>        <span class="n">additional_stopwords</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span></div>
-<div class="viewcode-block" id="Wordclouds.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.Wordclouds.config">[docs]</a>    <span class="p">):</span></div>
-        <span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">        Get frequency n-gram frequency counter from the wordcloud.</span>
-
-<span class="sd">        Parameters</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">additional_stopwords</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WordcloudsClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.WordcloudsClient.project">[docs]</a><span class="sd">        Get frequency n-gram frequency counter from the wordcloud.</span></div>
+<div class="viewcode-block" id="WordcloudsClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.WordcloudsClient.api_key">[docs]</a></div>
+<div class="viewcode-block" id="WordcloudsClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.wordclouds.WordcloudsClient.config">[docs]</a><span class="sd">        Parameters</span></div>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
 <span class="sd">            Unique name of dataset</span>
@@ -132,7 +132,7 @@
                 <span class="s2">&quot;select_fields&quot;</span><span class="p">:</span> <span class="n">select_fields</span><span class="p">,</span>
                 <span class="s2">&quot;include_vector&quot;</span><span class="p">:</span> <span class="n">include_vector</span><span class="p">,</span>
                 <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters</span><span class="p">,</span>
-                <span class="s2">&quot;additional_stopwords&quot;</span><span class="p">:</span> <span class="n">additional_stopwords</span></div></div>
+                <span class="s2">&quot;additional_stopwords&quot;</span><span class="p">:</span> <span class="n">additional_stopwords</span><span class="p">,</span></div></div>
             <span class="p">},</span>
         <span class="p">)</span>
 </pre></div>

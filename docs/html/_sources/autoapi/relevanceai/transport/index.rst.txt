@@ -22,6 +22,19 @@ Classes
 
 
 
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES
+
+
+.. py:data:: DO_NOT_REPEAT_STATUS_CODES
+   
+
+   
+
 .. py:class:: Transport
 
    Base class for all relevanceai objects
@@ -58,8 +71,34 @@ Classes
       :property:
 
 
-   .. py:method:: is_search_in_path(url: str)
+   .. py:method:: _is_search_in_path(url: str)
       :staticmethod:
+
+
+   .. py:method:: DASHBOARD_TYPES(self)
+      :property:
+
+
+   .. py:method:: _log_to_dashboard(self, method: str, parameters: dict, endpoint: str, dashboard_type: str, verbose: bool = True)
+
+      Log search to dashboard
+
+
+   .. py:method:: _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None)
+
+      Link to a monitoring dashboard
+      Suburl must be one of
+      - "monitor"
+      - "lookups"
+      - "monitor/schema"
+
+
+   .. py:method:: _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str)
+
+      Log search to dashboard
+
+
+   .. py:method:: print_dashboard_url(self, dashboard_url)
 
 
    .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, base_url: str = None, output_format=None)

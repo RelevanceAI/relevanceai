@@ -17,7 +17,7 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.batch.batch_retrieve.BatchRetrieve
+   relevanceai.api.batch.batch_retrieve.BatchRetrieveClient
 
 
 
@@ -41,13 +41,13 @@ Attributes
 
    
 
-.. py:class:: BatchRetrieve(project: str, api_key: str)
+.. py:class:: BatchRetrieveClient(project: str, api_key: str)
 
    Bases: :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`
 
    API Client
 
-   .. py:method:: get_documents(self, dataset_id: str, filters: list = [], number_of_documents: int = 20, cursor: str = None, batch_size: int = 1000, sort: list = [], select_fields: list = [], include_vector: bool = True)
+   .. py:method:: get_documents(self, dataset_id: str, number_of_documents: int = 20, filters: list = [], cursor: str = None, batch_size: int = 1000, sort: list = [], select_fields: list = [], include_vector: bool = True)
 
       Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched.
 
@@ -70,7 +70,7 @@ Attributes
       :type filters: list
 
 
-   .. py:method:: get_all_documents(self, dataset_id: str, chunk_size: int = 10000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True)
+   .. py:method:: get_all_documents(self, dataset_id: str, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
 
       Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
@@ -91,6 +91,23 @@ Attributes
       :type filters: list
       :param select_fields: Fields to include in the search results, empty array/list means all fields.
       :type select_fields: list
+
+
+   .. py:method:: get_number_of_documents(self, dataset_id, filters=[])
+
+      Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
+
+      :param dataset_ids: Unique names of datasets
+      :type dataset_ids: list
+      :param filters: Filters to select documents
+      :type filters: list
+
+
+   .. py:method:: get_vector_fields(self, dataset_id)
+
+      Returns list of valid vector fields in dataset
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
 
 
 

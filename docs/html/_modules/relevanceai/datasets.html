@@ -82,12 +82,21 @@
 <span class="kn">import</span> <span class="nn">requests</span>
 
 <div class="viewcode-block" id="THIS_MODULE"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.THIS_MODULE">[docs]</a><span class="n">THIS_MODULE</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span></div>
-<div class="viewcode-block" id="DATASETS"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.DATASETS">[docs]</a><span class="n">DATASETS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;games&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_1&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_2&#39;</span><span class="p">,</span> <span class="s1">&#39;ecommerce_3&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;online_retail&#39;</span><span class="p">,</span> <span class="s1">&#39;news&#39;</span><span class="p">,</span> <span class="s1">&#39;flipkart&#39;</span><span class="p">,</span> <span class="s1">&#39;realestate&#39;</span><span class="p">]</span></div>
+<div class="viewcode-block" id="DATASETS"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.DATASETS">[docs]</a><span class="n">DATASETS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;games&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ecommerce_1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ecommerce_2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ecommerce_3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;online_retail&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;news&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;flipkart&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;realestate&quot;</span><span class="p">,</span></div>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="select_fields_from_json"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.select_fields_from_json">[docs]</a><span class="k">def</span> <span class="nf">select_fields_from_json</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">i</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">select_fields</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">json</span><span class="p">]</span></div>
+
 
 <div class="viewcode-block" id="ExampleDatasets"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets">[docs]</a><span class="k">class</span> <span class="nc">ExampleDatasets</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -110,13 +119,16 @@
 <span class="sd">            Fields to include in the dataset, empty array/list means all fields.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">THIS_MODULE</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;get_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_dataset&#39;</span><span class="p">)(</span><span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">THIS_MODULE</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;get_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_dataset&quot;</span><span class="p">)(</span>
+                <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Not a valid dataset&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a valid dataset&quot;</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="ExampleDatasets._get_dummy_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_dummy_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">_get_dummy_dataset</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[]):</span>
         <span class="kn">from</span> <span class="nn">.http_client</span> <span class="kn">import</span> <span class="n">Client</span>
+
         <span class="n">project</span> <span class="o">=</span> <span class="s2">&quot;dummy-collections&quot;</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw&quot;</span>  <span class="c1"># read access</span>
@@ -128,15 +140,18 @@
         <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_documents</span><span class="p">(</span>
             <span class="n">db_name</span><span class="p">,</span>
             <span class="n">number_of_documents</span><span class="o">=</span><span class="n">number_of_documents</span><span class="p">,</span>
-            <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span>
+            <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">docs</span></div>
 
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="ExampleDatasets._get_online_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_online_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">_get_online_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[],</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csv</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ExampleDatasets._get_online_dataset"><a class="viewcode-back" href="../../autoapi/relevanceai/datasets/index.html#relevanceai.datasets.ExampleDatasets._get_online_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">_get_online_dataset</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="o">=</span><span class="p">[],</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csv</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="n">csv</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span>
-                <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+                <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">number_of_documents</span><span class="p">:</span>
@@ -155,7 +170,9 @@
         <span class="k">return</span> <span class="n">data</span></div></div>
 
 
-<div class="viewcode-block" id="get_games_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_games_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_games_dataset</span><span class="p">(</span><span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">365</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<div class="viewcode-block" id="get_games_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_games_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_games_dataset</span><span class="p">(</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">365</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example games dataset (https://www.freetogame.com/) \n</span>
 <span class="sd">    Total Len: 365 \n</span>
@@ -184,18 +201,19 @@
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">365</span>
 
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_api_dataset</span><span class="p">(</span><span class="s2">&quot;https://www.freetogame.com/api/games&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_api_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;https://www.freetogame.com/api/games&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span></div>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_ecommerce_1_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_ecommerce_1_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_ecommerce_1_dataset</span><span class="p">(</span>
-    <span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> 
-    <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example e-commerce dataset \n</span>
-<span class="sd">    Total Len: 14058 \n </span>
+<span class="sd">    Total Len: 14058 \n</span>
 <span class="sd">    Sample document:</span>
-<span class="sd">    </span>
+
 <span class="sd">    &gt;&gt;&gt; {&#39;_id&#39;: &#39;b7fc9acbc9ddd18855f96863d37a4fe9&#39;,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;uniq_id&#39;: &#39;b7fc9acbc9ddd18855f96863d37a4fe9&#39;,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;crawl_timestamp&#39;: &#39;2016-04-24 18:34:50 +0000&#39;,</span>
@@ -214,8 +232,8 @@
 <span class="sd">    &gt;&gt;&gt; &#39;product_specifications&#39;: &#39;{&quot;product_specification&quot;=&gt;[{&quot;key&quot;=&gt;&quot;Sleeve&quot;, &quot;value&quot;=&gt;&quot;Half Sleeve&quot;}, {&quot;key&quot;=&gt;&quot;Number of Contents in Sales Package&quot;, &quot;value&quot;=&gt;&quot;Pack of 2&quot;}, {&quot;key&quot;=&gt;&quot;Fabric&quot;, &quot;value&quot;=&gt;&quot;Cotton&quot;}, {&quot;key&quot;=&gt;&quot;Type&quot;, &quot;value&quot;=&gt;&quot;Romper&quot;}, {&quot;key&quot;=&gt;&quot;Neck&quot;, &quot;value&quot;=&gt;&quot;Round Neck&quot;}, {&quot;key&quot;=&gt;&quot;Pattern&quot;, &quot;value&quot;=&gt;&quot;Printed&quot;}, {&quot;key&quot;=&gt;&quot;Ideal For&quot;, &quot;value&quot;=&gt;&quot;Baby Boy\&#39;s&quot;}, {&quot;value&quot;=&gt;&quot;Wash with Similar Colors, Use Detergent for Colors&quot;}]}&#39;,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;image_first&#39;: &#39;http://img5a.flixcart.com/image/dungaree-romper/x/f/r/1012blue-yellow-3-6-babeezworld-3-6-months-original-imaehydgqkkadjud.jpeg&#39;,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;category&#39;: &#39;Baby Care &#39;,</span>
-<span class="sd">    &gt;&gt;&gt; &#39;insert_date_&#39;: &#39;2021-08-13T11:38:52.110Z&#39; </span>
-<span class="sd">    &gt;&gt;&gt;  ... </span>
+<span class="sd">    &gt;&gt;&gt; &#39;insert_date_&#39;: &#39;2021-08-13T11:38:52.110Z&#39;</span>
+<span class="sd">    &gt;&gt;&gt;  ...</span>
 <span class="sd">    &gt;&gt;&gt;  }</span>
 
 <span class="sd">    Parameters</span>
@@ -227,11 +245,22 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">1000</span>
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_dummy_dataset</span><span class="p">(</span><span class="s2">&quot;ecommerce-5&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_dummy_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;ecommerce-5&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span></div>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_ecommerce_2_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_ecommerce_2_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_ecommerce_2_dataset</span><span class="p">(</span>
-    <span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;product_image&quot;</span><span class="p">,</span> <span class="s2">&quot;product_link&quot;</span><span class="p">,</span> <span class="s2">&quot;product_title&quot;</span><span class="p">,</span> <span class="s2">&quot;product_price&quot;</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">]</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;product_image&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;product_link&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;product_title&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;product_price&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example e-commerce dataset \n</span>
@@ -250,7 +279,7 @@
 <span class="sd">    &gt;&gt;&gt; &#39;rank&#39;: 23,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;source&#39;: &#39;eBay&#39;,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;url&#39;: &#39;https://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&amp;_nkw=steel%20necklace&#39;,</span>
-<span class="sd">    &gt;&gt;&gt; &#39;product_description&#39;: &#39;eBay item number:321567405391\n\n\n\tSeller assumes all responsibility for this listing </span>
+<span class="sd">    &gt;&gt;&gt; &#39;product_description&#39;: &#39;eBay item number:321567405391\n\n\n\tSeller assumes all responsibility for this listing</span>
 <span class="sd">    &gt;&gt;&gt; ...</span>
 <span class="sd">    &gt;&gt;&gt; }</span>
 
@@ -264,14 +293,17 @@
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">1000</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_dummy_dataset</span><span class="p">(</span>
-        <span class="s2">&quot;quickstart_data_sample&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span>
+        <span class="s2">&quot;quickstart_data_sample&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span>
+    <span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;image_first&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;image_first&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">docs</span></div>
 
 
-<div class="viewcode-block" id="get_online_retail_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_online_retail_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_online_retail_dataset</span><span class="p">(</span><span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<div class="viewcode-block" id="get_online_retail_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_online_retail_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_online_retail_dataset</span><span class="p">(</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example online retail dataset from UCI machine learning \n</span>
 <span class="sd">    Total Len: 541909 \n</span>
@@ -296,17 +328,24 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">1000</span>
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span><span class="s2">&quot;https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">,</span> <span class="n">csv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx&quot;</span><span class="p">,</span>
+        <span class="n">number_of_documents</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">,</span>
+        <span class="n">csv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span></div>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_news_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_news_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_news_dataset</span><span class="p">(</span><span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<div class="viewcode-block" id="get_news_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_news_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_news_dataset</span><span class="p">(</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example news dataset \n</span>
 <span class="sd">    Total Len: 250 \n</span>
 <span class="sd">    Sample document:</span>
 
 <span class="sd">    &gt;&gt;&gt; {&#39;authors&#39;: &#39;Ruth Harris&#39;,</span>
-<span class="sd">    &gt;&gt;&gt; &#39;content&#39;: &#39;Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others. </span>
+<span class="sd">    &gt;&gt;&gt; &#39;content&#39;: &#39;Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.</span>
 <span class="sd">    &gt;&gt;&gt; &#39;domain&#39;: &#39;awm.com&#39;,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;id&#39;: 141,</span>
 <span class="sd">    &gt;&gt;&gt; &#39;inserted_at&#39;: &#39;2018-02-02 01:19:41.756632&#39;,</span>
@@ -330,10 +369,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">250</span>
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;https://raw.githubusercontent.com/several27/FakeNewsCorpus/master/news_sample.csv&quot;</span><span class="p">,</span>
+        <span class="n">number_of_documents</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">,</span></div>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_ecommerce_3_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_ecommerce_3_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_ecommerce_3_dataset</span><span class="p">(</span><span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span><span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<div class="viewcode-block" id="get_ecommerce_3_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_ecommerce_3_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_ecommerce_3_dataset</span><span class="p">(</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance) \n</span>
 <span class="sd">    Total Len: 15528 \n</span>
@@ -367,14 +412,16 @@
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">1000</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span>
-        <span class="s2">&quot;https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;ISO-8859-1&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;https://query.data.world/s/glc7oe2ssd252scha53mu7dy2e7cft&quot;</span><span class="p">,</span>
+        <span class="n">number_of_documents</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;ISO-8859-1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;product_image&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_image&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_image&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;product_link&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_link&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_link&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;product_link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;url&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;_unit_id&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
@@ -387,12 +434,11 @@
 
 
 <div class="viewcode-block" id="get_flipkart_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_flipkart_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_flipkart_dataset</span><span class="p">(</span>
-    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">19920</span><span class="p">,</span> 
-    <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span><span class="p">[]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">19920</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example flipkart ecommerce dataset \n</span>
-<span class="sd">    Total Len: 19920 \n </span>
+<span class="sd">    Total Len: 19920 \n</span>
 <span class="sd">    Sample document:</span>
 
 <span class="sd">    &gt;&gt;&gt; {&#39;_id&#39;: 0,</span>
@@ -409,13 +455,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">19920</span>
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv&quot;</span><span class="p">,</span>
+        <span class="n">number_of_documents</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">,</span></div>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_realestate_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_realestate_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_realestate_dataset</span><span class="p">(</span>
-    <span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-    <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span><span class="p">[]</span>
-<span class="p">):</span>
+<div class="viewcode-block" id="get_realestate_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_realestate_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_realestate_dataset</span><span class="p">(</span><span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download an example real-estate dataset \n</span>
 <span class="sd">    Total Len: 5885 \n</span>
@@ -461,11 +508,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">50</span>
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_dummy_dataset</span><span class="p">(</span><span class="s1">&#39;realestate&#39;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_dummy_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;realestate&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span></div>
+    <span class="p">)</span>
+
 
 <div class="viewcode-block" id="get_mission_statements_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_mission_statements_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_mission_statements_dataset</span><span class="p">(</span>
-    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1433</span><span class="p">,</span>
-    <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span><span class="p">[]</span>
+    <span class="n">number_of_documents</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1433</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Function to download a sample company mission statement dataset.</span>
 <span class="sd">    Total Len: 1433</span>
@@ -495,12 +544,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">number_of_documents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">number_of_documents</span> <span class="o">=</span> <span class="mi">514330</span>
-    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv&quot;</span><span class="p">,</span> <span class="n">number_of_documents</span><span class="p">,</span> <span class="n">select_fields</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">ExampleDatasets</span><span class="o">.</span><span class="n">_get_online_dataset</span><span class="p">(</span>
+        <span class="s2">&quot;https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv&quot;</span><span class="p">,</span>
+        <span class="n">number_of_documents</span><span class="p">,</span>
+        <span class="n">select_fields</span><span class="p">,</span></div>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_machine_learning_research_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_machine_learning_research_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_machine_learning_research_dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Here we get our Machine Learning research dataset.&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
 
 <div class="viewcode-block" id="get_dummy_ecommerce_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_dummy_ecommerce_dataset">[docs]</a><span class="n">get_dummy_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_1_dataset</span></div>
 <div class="viewcode-block" id="get_sample_ecommerce_dataset"><a class="viewcode-back" href="../../relevanceai.html#relevanceai.datasets.get_sample_ecommerce_dataset">[docs]</a><span class="n">get_sample_ecommerce_dataset</span> <span class="o">=</span> <span class="n">get_ecommerce_2_dataset</span></div>

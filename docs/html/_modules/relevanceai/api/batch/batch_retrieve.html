@@ -75,26 +75,31 @@
 <span></span><span class="sd">&quot;&quot;&quot;Batch Retrieve&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.client</span> <span class="kn">import</span> <span class="n">APIClient</span>
 <span class="kn">from</span> <span class="nn">relevanceai.api.batch.chunk</span> <span class="kn">import</span> <span class="n">Chunker</span>
+<span class="kn">from</span> <span class="nn">relevanceai.progress_bar</span> <span class="kn">import</span> <span class="n">progress_bar</span>
 
 <div class="viewcode-block" id="BYTE_TO_MB"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_retrieve/index.html#relevanceai.api.batch.batch_retrieve.BYTE_TO_MB">[docs]</a><span class="n">BYTE_TO_MB</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span></div>
 <div class="viewcode-block" id="LIST_SIZE_MULTIPLIER"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_retrieve/index.html#relevanceai.api.batch.batch_retrieve.LIST_SIZE_MULTIPLIER">[docs]</a><span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">=</span> <span class="mi">3</span></div>
 
+<span class="c1"># ADD SUPPORT FOR SAVING TO JSON</span>
 
-<div class="viewcode-block" id="BatchRetrieve"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve">[docs]</a><span class="k">class</span> <span class="nc">BatchRetrieve</span><span class="p">(</span><span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span>
-<div class="viewcode-block" id="BatchRetrieve.get_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.get_documents">[docs]</a>    <span class="k">def</span> <span class="nf">get_documents</span><span class="p">(</span>
+
+<div class="viewcode-block" id="BatchRetrieveClient"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient">[docs]</a><span class="k">class</span> <span class="nc">BatchRetrieveClient</span><span class="p">(</span><span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchRetrieveClient.get_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.get_documents">[docs]</a>    <span class="k">def</span> <span class="nf">get_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">number_of_documents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">sort</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">select_fields</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
-<div class="viewcode-block" id="BatchRetrieve.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.project">[docs]</a>        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span></div>
-<div class="viewcode-block" id="BatchRetrieve.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.api_key">[docs]</a>        </div>
-<div class="viewcode-block" id="BatchRetrieve.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.config">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="BatchRetrieveClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.project">[docs]</a>        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span></div>
+<div class="viewcode-block" id="BatchRetrieveClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.api_key">[docs]</a>    <span class="p">):</span></div>
+<div class="viewcode-block" id="BatchRetrieveClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.config">[docs]</a></div>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n</span>
 <span class="sd">        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {&quot;strict&quot;:&quot;must_or&quot;}.</span>
 <span class="sd">        Parameters</span>
@@ -117,18 +122,18 @@
 <span class="sd">            Query for filtering the search results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">batch_size</span> <span class="o">&gt;</span> <span class="n">number_of_documents</span><span class="p">:</span>
-            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">number_of_documents</span> 
+            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">number_of_documents</span>
 
         <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span>
             <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span>
             <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
             <span class="n">include_vector</span><span class="o">=</span><span class="n">include_vector</span><span class="p">,</span>
             <span class="n">page_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-            <span class="n">sort</span> <span class="o">=</span> <span class="n">sort</span><span class="p">,</span>
+            <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span>
             <span class="n">is_random</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span>
-            <span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span>
+            <span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
 
@@ -142,11 +147,11 @@
                     <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
                     <span class="n">include_vector</span><span class="o">=</span><span class="n">include_vector</span><span class="p">,</span>
                     <span class="n">page_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-                    <span class="n">sort</span> <span class="o">=</span> <span class="n">sort</span><span class="p">,</span>
+                    <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span>
                     <span class="n">is_random</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                     <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span>
-                    <span class="n">cursor</span><span class="o">=</span><span class="n">_cursor</span>
+                    <span class="n">cursor</span><span class="o">=</span><span class="n">_cursor</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">_data</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
                 <span class="n">_cursor</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&quot;cursor&quot;</span><span class="p">]</span>
@@ -159,15 +164,16 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="n">number_of_documents</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">data</span></div>
-    
-<div class="viewcode-block" id="BatchRetrieve.get_all_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieve.get_all_documents">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_documents</span><span class="p">(</span>
+
+<div class="viewcode-block" id="BatchRetrieveClient.get_all_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.get_all_documents">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">filters</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">sort</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">select_fields</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">include_vector</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.</span>
@@ -199,8 +205,17 @@
         <span class="n">cursor</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">full_data</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="c1"># Find number of iterations</span>
+        <span class="n">number_of_documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_documents</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">filters</span>
+        <span class="p">)</span>
+        <span class="n">iterations_required</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">number_of_documents</span> <span class="o">/</span> <span class="n">chunk_size</span><span class="p">)</span>
+
         <span class="c1"># While there is still data to fetch, fetch it at the latest cursor</span>
-        <span class="k">while</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="n">iterations_required</span><span class="p">),</span> <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span>
+        <span class="p">):</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span>
                 <span class="n">dataset_id</span><span class="p">,</span>
                 <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span>
@@ -208,7 +223,7 @@
                 <span class="n">page_size</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">,</span>
                 <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span>
                 <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
-                <span class="n">include_vector</span><span class="o">=</span><span class="n">include_vector</span>
+                <span class="n">include_vector</span><span class="o">=</span><span class="n">include_vector</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">])</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;cursor&quot;</span><span class="p">]</span>
@@ -216,7 +231,33 @@
             <span class="c1"># Append fetched data to the full data</span>
             <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">full_data</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">full_data</span></div></div>
+        <span class="k">return</span> <span class="n">full_data</span></div>
+
+<div class="viewcode-block" id="BatchRetrieveClient.get_number_of_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.get_number_of_documents">[docs]</a>    <span class="k">def</span> <span class="nf">get_number_of_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_ids: list</span>
+<span class="sd">            Unique names of datasets</span>
+<span class="sd">        filters: list</span>
+<span class="sd">            Filters to select documents</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">get_where</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">filters</span>
+        <span class="p">)[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="BatchRetrieveClient.get_vector_fields"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_retrieve.BatchRetrieveClient.get_vector_fields">[docs]</a>    <span class="k">def</span> <span class="nf">get_vector_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of valid vector fields in dataset</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : string</span>
+<span class="sd">            Unique name of dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_vector_&quot;</span><span class="p">)]</span></div></div>
 </pre></div>
 
            </div>

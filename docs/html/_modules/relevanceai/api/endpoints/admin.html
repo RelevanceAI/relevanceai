@@ -75,16 +75,16 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">All admin-related tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
 
 
-<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="AdminClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient">[docs]</a><span class="k">class</span> <span class="nc">AdminClient</span><span class="p">(</span><span class="n">_Base</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Admin.request_read_api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.request_read_api_key">[docs]</a>    <span class="k">def</span> <span class="nf">request_read_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="AdminClient.request_read_api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient.request_read_api_key">[docs]</a>    <span class="k">def</span> <span class="nf">request_read_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates a read only key for your project. Make sure to save the api key somewhere safe. When doing a search the admin username should still be used.</span>
 
 <span class="sd">        Parameters</span>
@@ -92,20 +92,20 @@
 <span class="sd">        read_username:</span>
 <span class="sd">            Read-only project</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Admin.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.project">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span></div>
-<div class="viewcode-block" id="Admin.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.api_key">[docs]</a>            <span class="s2">&quot;/admin/request_read_api_key&quot;</span><span class="p">,</span></div>
-<div class="viewcode-block" id="Admin.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.config">[docs]</a>            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span>
+            <span class="s2">&quot;/admin/request_read_api_key&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read_username&quot;</span><span class="p">:</span> <span class="n">read_username</span><span class="p">},</span></div>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="Admin.copy_foreign_dataset"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.copy_foreign_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">copy_foreign_dataset</span><span class="p">(</span>
+<div class="viewcode-block" id="AdminClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient.project">[docs]</a>        <span class="p">)</span></div>
+<div class="viewcode-block" id="AdminClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient.api_key">[docs]</a></div>
+<div class="viewcode-block" id="AdminClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient.config">[docs]</a><div class="viewcode-block" id="AdminClient.copy_foreign_dataset"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient.copy_foreign_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">copy_foreign_dataset</span><span class="p">(</span></div>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source_dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source_project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source_api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Copy a dataset from another user&#39;s projects into your project.</span>
 
@@ -137,21 +137,21 @@
                 <span class="c1"># &quot;filters&quot;: filters</span>
             <span class="p">},</span>
         <span class="p">)</span>
-    
-<div class="viewcode-block" id="Admin.send_dataset"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.Admin.send_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">send_dataset</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
+
+<div class="viewcode-block" id="AdminClient.send_dataset"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.admin.AdminClient.send_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">send_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">receiver_project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">receiver_api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send an individual a dataset.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
 <span class="sd">        dataset_id: str</span>
-<span class="sd">            The name of the dataset </span>
+<span class="sd">            The name of the dataset</span>
 <span class="sd">        receiver_project: str</span>
 <span class="sd">            The project name that will receive the dataset</span>
 <span class="sd">        receiver_api_key: str</span>
@@ -173,10 +173,13 @@
                 <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
                 <span class="s2">&quot;source_dataset_id&quot;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
                 <span class="s2">&quot;source_project&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
-                <span class="s2">&quot;source_api_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span></div></div>
+                <span class="s2">&quot;source_api_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span></div>
                 <span class="c1"># &quot;filters&quot;: filters</span>
             <span class="p">},</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="AdminClient._ping"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/endpoints/admin/index.html#relevanceai.api.endpoints.admin.AdminClient._ping">[docs]</a>    <span class="k">def</span> <span class="nf">_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_http_request</span><span class="p">(</span><span class="s2">&quot;/admin/ping&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

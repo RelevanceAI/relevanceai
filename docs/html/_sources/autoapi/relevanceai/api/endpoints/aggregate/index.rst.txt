@@ -12,14 +12,14 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.aggregate.Aggregate
+   relevanceai.api.endpoints.aggregate.AggregateClient
 
 
 
 
-.. py:class:: Aggregate(project, api_key)
+.. py:class:: AggregateClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
    Aggregate service
 

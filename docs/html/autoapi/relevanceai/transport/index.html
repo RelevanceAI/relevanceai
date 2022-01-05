@@ -89,6 +89,25 @@
 </tr>
 </tbody>
 </table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES" title="relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DO_NOT_REPEAT_STATUS_CODES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES">
+<span class="sig-prename descclassname"><span class="pre">relevanceai.transport.</span></span><span class="sig-name descname"><span class="pre">DO_NOT_REPEAT_STATUS_CODES</span></span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#DO_NOT_REPEAT_STATUS_CODES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="relevanceai.transport.Transport">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.transport.</span></span><span class="sig-name descname"><span class="pre">Transport</span></span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport" title="Permalink to this definition"></a></dt>
@@ -129,8 +148,40 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.transport.Transport.is_search_in_path">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_search_in_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport.is_search_in_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport.is_search_in_path" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="relevanceai.transport.Transport._is_search_in_path">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_search_in_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport._is_search_in_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport._is_search_in_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.transport.Transport.DASHBOARD_TYPES">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DASHBOARD_TYPES</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport.DASHBOARD_TYPES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport.DASHBOARD_TYPES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.transport.Transport._log_to_dashboard">
+<span class="sig-name descname"><span class="pre">_log_to_dashboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dashboard_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport._log_to_dashboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport._log_to_dashboard" title="Permalink to this definition"></a></dt>
+<dd><p>Log search to dashboard</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.transport.Transport._link_to_dataset_dashboard">
+<span class="sig-name descname"><span class="pre">_link_to_dataset_dashboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suburl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport._link_to_dataset_dashboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport._link_to_dataset_dashboard" title="Permalink to this definition"></a></dt>
+<dd><p>Link to a monitoring dashboard
+Suburl must be one of
+- “monitor”
+- “lookups”
+- “monitor/schema”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.transport.Transport._log_search_to_dashboard">
+<span class="sig-name descname"><span class="pre">_log_search_to_dashboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport._log_search_to_dashboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport._log_search_to_dashboard" title="Permalink to this definition"></a></dt>
+<dd><p>Log search to dashboard</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="relevanceai.transport.Transport.print_dashboard_url">
+<span class="sig-name descname"><span class="pre">print_dashboard_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dashboard_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/relevanceai/transport.html#Transport.print_dashboard_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.transport.Transport.print_dashboard_url" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

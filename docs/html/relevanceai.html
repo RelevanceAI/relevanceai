@@ -87,12 +87,6 @@
 </section>
 <section id="module-relevanceai.base">
 <span id="relevanceai-base-module"></span><h2>relevanceai.base module<a class="headerlink" href="#module-relevanceai.base" title="Permalink to this headline"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.base.Base">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.base.</span></span><span class="sig-name descname"><span class="pre">Base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/base.html#Base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.base.Base" title="Permalink to this definition"></a></dt>
-<dd><p>Base class for all relevanceai utilities</p>
-</dd></dl>
-
 </section>
 <section id="module-relevanceai.concurrency">
 <span id="relevanceai-concurrency-module"></span><h2>relevanceai.concurrency module<a class="headerlink" href="#module-relevanceai.concurrency" title="Permalink to this headline"></a></h2>
@@ -625,8 +619,13 @@ Sample document:
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="relevanceai.errors.ClusteringResultsAlreadyExistsError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">ClusteringResultsAlreadyExistsError</span></span><a class="reference internal" href="_modules/relevanceai/errors.html#ClusteringResultsAlreadyExistsError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.ClusteringResultsAlreadyExistsError" title="Permalink to this definition"></a></dt>
-<dd><p>Error is raised when the clustering dataset already exists</p>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">ClusteringResultsAlreadyExistsError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Clustering</span> <span class="pre">results</span> <span class="pre">for</span> <span class="pre">%s</span> <span class="pre">already</span> <span class="pre">exist'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/errors.html#ClusteringResultsAlreadyExistsError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.ClusteringResultsAlreadyExistsError" title="Permalink to this definition"></a></dt>
+<dd><p>Exception raised for existing clustering results</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">message</span> <span class="pre">--</span> <span class="pre">explanation</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">error</span></span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py exception">
@@ -638,31 +637,12 @@ Sample document:
 <dl class="py exception">
 <dt class="sig sig-object py" id="relevanceai.errors.RelevanceAIError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.errors.</span></span><span class="sig-name descname"><span class="pre">RelevanceAIError</span></span><a class="reference internal" href="_modules/relevanceai/errors.html#RelevanceAIError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.errors.RelevanceAIError" title="Permalink to this definition"></a></dt>
-<dd><p>base class for all errors</p>
+<dd><p>Base class for all errors</p>
 </dd></dl>
 
 </section>
-<section id="module-relevanceai.http_client">
-<span id="relevanceai-http-client-module"></span><h2>relevanceai.http_client module<a class="headerlink" href="#module-relevanceai.http_client" title="Permalink to this headline"></a></h2>
-<p>access the client via this class</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="relevanceai.http_client.Client">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">relevanceai.http_client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client" title="Permalink to this definition"></a></dt>
-<dd><p>Python Client for Relevance AI’s relevanceai</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.http_client.Client.check_auth">
-<span class="sig-name descname"><span class="pre">check_auth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client.check_auth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client.check_auth" title="Permalink to this definition"></a></dt>
-<dd><p>TODO: Add a proper way to check authentication based on pinging.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="relevanceai.http_client.Client.login">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/relevanceai/http_client.html#Client.login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#relevanceai.http_client.Client.login" title="Permalink to this definition"></a></dt>
-<dd><p>Preferred login method for demos and interactive usage.</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="relevanceai-http-client-module">
+<h2>relevanceai.http_client module<a class="headerlink" href="#relevanceai-http-client-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-relevanceai.progress_bar">
 <span id="relevanceai-progress-bar-module"></span><h2>relevanceai.progress_bar module<a class="headerlink" href="#module-relevanceai.progress_bar" title="Permalink to this headline"></a></h2>
@@ -702,8 +682,8 @@ with cm:</p>
 </dd></dl>
 
 </section>
-<section id="module-relevanceai">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-relevanceai" title="Permalink to this headline"></a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 </section>
 </section>
 

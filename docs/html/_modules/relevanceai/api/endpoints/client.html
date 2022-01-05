@@ -74,10 +74,10 @@
   <h1>Source code for relevanceai.api.endpoints.client</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;API Client</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">Base</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.admin</span> <span class="kn">import</span> <span class="n">Admin</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.datasets</span> <span class="kn">import</span> <span class="n">Datasets</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.services</span> <span class="kn">import</span> <span class="n">Services</span>
+<span class="kn">from</span> <span class="nn">relevanceai.base</span> <span class="kn">import</span> <span class="n">_Base</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.admin</span> <span class="kn">import</span> <span class="n">AdminClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.datasets</span> <span class="kn">import</span> <span class="n">DatasetsClient</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.services</span> <span class="kn">import</span> <span class="n">ServicesClient</span>
 <span class="kn">from</span> <span class="nn">relevanceai.datasets</span> <span class="kn">import</span> <span class="n">ExampleDatasets</span>
 
 
@@ -85,15 +85,16 @@
     <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="APIClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.client.APIClient">[docs]</a><span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="APIClient"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.client.APIClient">[docs]</a><span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">_Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;API Client&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">Datasets</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">Services</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">DatasetsClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">ServicesClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">example_datasets</span> <span class="o">=</span> <span class="n">ExampleDatasets</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">admin</span> <span class="o">=</span> <span class="n">Admin</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
-<div class="viewcode-block" id="APIClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.client.APIClient.project">[docs]</a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span></div></div>
-<div class="viewcode-block" id="APIClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.endpoints.html#relevanceai.api.endpoints.client.APIClient.api_key">[docs]</a></pre></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">admin</span> <span class="o">=</span> <span class="n">AdminClient</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span></div>
+</pre></div>
 
            </div>
           </div>

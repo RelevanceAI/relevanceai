@@ -73,7 +73,7 @@
              
   <h1>Source code for relevanceai.vector_tools.constants</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">get_args</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">from</span> <span class="nn">joblib.memory</span> <span class="kn">import</span> <span class="n">Memory</span>
 
@@ -103,8 +103,9 @@
 <div class="viewcode-block" id="CLUSTER"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.CLUSTER">[docs]</a><span class="n">CLUSTER</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span> <span class="s2">&quot;kmedoids&quot;</span><span class="p">,</span> <span class="s2">&quot;hdbscan&quot;</span><span class="p">]</span></div>
 <div class="viewcode-block" id="CLUSTER_DEFAULT_ARGS"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.CLUSTER_DEFAULT_ARGS">[docs]</a><span class="n">CLUSTER_DEFAULT_ARGS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;kmeans&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
         <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="s2">&quot;k-means++&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="c1"># &quot;compute_labels&quot;: True,</span>
         <span class="c1"># &quot;max_no_improvement&quot;: 2,</span>
     <span class="p">},</span>
@@ -116,13 +117,13 @@
     <span class="p">},</span>
     <span class="c1"># &#39;kmodes&#39;: {</span>
     <span class="c1">#     &quot;init&quot;: &quot;Huang&quot;,</span>
-    <span class="c1">#     &quot;verbose&quot;: 1,</span>
+    <span class="c1">#     &quot;verbose&quot;: 0,</span>
     <span class="c1">#     &quot;random_state&quot;: 42,</span>
     <span class="c1">#     &quot;n_jobs&quot;: -1</span>
     <span class="c1"># },</span>
     <span class="c1"># &#39;kprototypes&#39;: {</span>
     <span class="c1">#     &quot;init&quot;: &quot;Huang&quot;,</span>
-    <span class="c1">#     &quot;verbose&quot;: 1,</span>
+    <span class="c1">#     &quot;verbose&quot;: 0,</span>
     <span class="c1">#     &quot;random_state&quot;: 42,</span>
     <span class="c1">#     &quot;n_jobs&quot;: -1</span>
     <span class="c1"># },</span>
@@ -138,6 +139,8 @@
         <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span></div>
     <span class="p">},</span>
 <span class="p">}</span>
+
+<div class="viewcode-block" id="NEAREST_NEIGHBOURS"><a class="viewcode-back" href="../../../autoapi/relevanceai/vector_tools/constants/index.html#relevanceai.vector_tools.constants.NEAREST_NEIGHBOURS">[docs]</a><span class="n">NEAREST_NEIGHBOURS</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;cosine&quot;</span><span class="p">,</span> <span class="s2">&quot;l2&quot;</span><span class="p">]</span></div>
 </pre></div>
 
            </div>

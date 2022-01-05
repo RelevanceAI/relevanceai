@@ -17,7 +17,7 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.batch.batch_insert.BatchInsert
+   relevanceai.api.batch.batch_insert.BatchInsertClient
 
 
 
@@ -41,9 +41,9 @@ Attributes
 
    
 
-.. py:class:: BatchInsert(project: str, api_key: str)
+.. py:class:: BatchInsertClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieve`, :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`
+   Bases: :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieveClient`, :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`
 
    API Client
 

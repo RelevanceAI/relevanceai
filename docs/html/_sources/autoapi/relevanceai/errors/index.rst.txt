@@ -16,8 +16,7 @@ Module Contents
 
    Bases: :py:obj:`Exception`
 
-   base class for all errors
-
+   Base class for all errors
 
 
 .. py:exception:: MissingFieldError
@@ -34,11 +33,19 @@ Module Contents
    Error related to API
 
 
-.. py:exception:: ClusteringResultsAlreadyExistsError
+.. py:exception:: ClusteringResultsAlreadyExistsError(field_name, message='Clustering results for %s already exist')
 
    Bases: :py:obj:`RelevanceAIError`
 
-   Error is raised when the clustering dataset already exists
+   Exception raised for existing clustering results
+
+   .. attribute:: message -- explanation of the error
+
+      
+
+   .. py:method:: __str__(self)
+
+      Return str(self).
 
 
 

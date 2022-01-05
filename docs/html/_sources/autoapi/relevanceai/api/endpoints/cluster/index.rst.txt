@@ -12,18 +12,18 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.cluster.Cluster
+   relevanceai.api.endpoints.cluster.ClusterClient
 
 
 
 
-.. py:class:: Cluster(project, api_key)
+.. py:class:: ClusterClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
-   .. py:method:: aggregate(self, dataset_id: str, vector_field: str, metrics: list = [], groupby: list = [], filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, alias: str = 'default')
+   .. py:method:: aggregate(self, dataset_id: str, vector_fields: list, metrics: list = [], groupby: list = [], filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, alias: str = 'default')
 
       Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
       It can only can be used after a vector field has been clustered.
@@ -33,8 +33,8 @@ Classes
 
       :param dataset_id: Unique name of dataset
       :type dataset_id: string
-      :param vector_field: The vector field that was clustered on
-      :type vector_field: string
+      :param vector_fields: The vector field that was clustered on
+      :type vector_fields: list
       :param metrics: Fields and metrics you want to calculate
       :type metrics: list
       :param groupby: Fields you want to split the data into

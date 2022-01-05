@@ -17,7 +17,7 @@ Classes
    relevanceai.vector_tools.cluster.DensityCluster
    relevanceai.vector_tools.cluster.MiniBatchKMeans
    relevanceai.vector_tools.cluster.KMeans
-   relevanceai.vector_tools.cluster.HDBSCAN
+   relevanceai.vector_tools.cluster.HDBSCANClusterer
    relevanceai.vector_tools.cluster.Cluster
 
 
@@ -35,10 +35,13 @@ Classes
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
 
-      
+
+   .. py:method:: _concat_vectors_from_list(self, list_of_vectors: list)
+
+      Concatenate 2 vectors together in a pairwise fashion
 
 
-   .. py:method:: fit_documents(self, vector_field: list, docs: list, alias: str = 'default', cluster_field: str = '_cluster_', return_only_clusters: bool = True)
+   .. py:method:: fit_documents(self, vector_fields: list, docs: list, alias: str = 'default', cluster_field: str = '_cluster_', return_only_clusters: bool = True, inplace: bool = True)
 
       Train clustering algorithm on documents and then store the labels
       inside the documents.
@@ -53,6 +56,10 @@ Classes
       :type cluster_field: str
       :param return_only_clusters: If True, return only clusters, otherwise returns the original document
       :type return_only_clusters: bool
+      :param inplace: If True, the documents are edited inplace otherwise, a copy is made first
+      :type inplace: bool
+      :param kwargs: Any other keyword argument will go directly into the clustering algorithm
+      :type kwargs: dict
 
 
    .. py:method:: to_metadata(self)
@@ -60,6 +67,9 @@ Classes
 
       You can also store the metadata of this clustering algorithm
 
+
+   .. py:method:: metadata(self)
+      :property:
 
 
    .. py:method:: _label_cluster(self, label: Union[int, str])
@@ -81,8 +91,6 @@ Classes
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
 
-      
-
 
    .. py:method:: get_centers(self) -> Union[numpy.ndarray, List[list]]
       :abstractmethod:
@@ -90,11 +98,9 @@ Classes
       Get centers for the centroid-based clusters
 
 
-
    .. py:method:: get_centroid_docs(self) -> List
 
       Get the centroid documents to store.
-
 
 
 
@@ -110,11 +116,9 @@ Classes
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
 
-      
 
 
-
-.. py:class:: MiniBatchKMeans(k: Union[None, int] = 10, init: str = 'k-means++', verbose: bool = True, compute_labels: bool = True, max_no_improvement: int = 2)
+.. py:class:: MiniBatchKMeans(k: Union[None, int] = 10, init: str = 'k-means++', verbose: bool = False, compute_labels: bool = True, max_no_improvement: int = 2)
 
    Bases: :py:obj:`CentroidCluster`
 
@@ -133,11 +137,9 @@ Classes
       Returns centroids of clusters
 
 
-
    .. py:method:: to_metadata(self)
 
       Editing the metadata of the function
-
 
 
 
@@ -156,22 +158,19 @@ Classes
 
 
 
-
-.. py:class:: HDBSCAN
+.. py:class:: HDBSCANClusterer(algorithm: str = 'best', alpha: float = 1.0, approx_min_span_tree: bool = True, gen_min_span_tree: bool = False, leaf_size: int = 40, memory=Memory(cachedir=None), metric: str = 'euclidean', min_samples: int = None, p: float = None, min_cluster_size: Union[None, int] = 10)
 
    Bases: :py:obj:`DensityCluster`
 
    Using verbose loguru as base logger for now
 
-   .. py:method:: fit_transform(self, vectors: numpy.ndarray, cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['hdbscan'], min_cluster_size: Union[None, int] = 10) -> numpy.ndarray
-
-      
+   .. py:method:: fit_transform(self, vectors: numpy.ndarray) -> numpy.ndarray
 
 
 
 .. py:class:: Cluster(project, api_key)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`ClusterBase`
+   Bases: :py:obj:`relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate`, :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`ClusterBase`
 
    Batch API client
 
@@ -182,13 +181,13 @@ Classes
       Choose k clusters
 
 
-   .. py:method:: cluster(vectors: numpy.ndarray, cluster: Union[relevanceai.vector_tools.constants.CLUSTER, ClusterBase], cluster_args: Union[None, dict], k: Union[None, int] = None) -> numpy.ndarray
+   .. py:method:: cluster(vectors: numpy.ndarray, cluster: Union[relevanceai.vector_tools.constants.CLUSTER, ClusterBase], cluster_args: Dict = {}, k: Union[None, int] = None) -> numpy.ndarray
       :staticmethod:
 
       Cluster vectors
 
 
-   .. py:method:: kmeans_cluster(self, dataset_id: str, vector_fields: list, filters: List = [], k: Union[None, int] = 10, init: str = 'k-means++', n_init: int = 10, max_iter: int = 300, tol: float = 0.0001, verbose: bool = True, random_state: Optional[int] = None, copy_x: bool = True, algorithm: str = 'auto', alias: str = 'default', cluster_field: str = '_cluster_', update_documents_chunksize: int = 50, overwrite: bool = False)
+   .. py:method:: kmeans_cluster(self, dataset_id: str, vector_fields: list, filters: List = [], k: Union[None, int] = 10, init: str = 'k-means++', n_init: int = 10, max_iter: int = 300, tol: float = 0.0001, verbose: bool = True, random_state: Optional[int] = None, copy_x: bool = True, algorithm: str = 'auto', alias: str = None, cluster_field: str = '_cluster_', update_documents_chunksize: int = 50, overwrite: bool = False)
 
       This function performs all the steps required for Kmeans clustering:
       1- Loads the data
@@ -219,7 +218,7 @@ Classes
       :type copy_x: bool
       :param algorithm: "auto" by default
       :type algorithm: string
-      :param alias: "default", string to be used in naming of the field showing the clustering results
+      :param alias: "kmeans", string to be used in naming of the field showing the clustering results
       :type alias: string
       :param cluster_field: "_cluster_", string to name the main cluster field
       :type cluster_field: string
@@ -229,6 +228,51 @@ Classes
       .. rubric:: Example
 
       >>> client.vector_tools.cluster.kmeans_cluster(
+          dataset_id="sample_dataset",
+          vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+      )
+
+
+   .. py:method:: hdbscan_cluster(self, dataset_id: str, vector_fields: list, filters: List = [], algorithm: str = 'best', alpha: float = 1.0, approx_min_span_tree: bool = True, gen_min_span_tree: bool = False, leaf_size: int = 40, memory=Memory(cachedir=None), metric: str = 'euclidean', min_samples=None, p=None, min_cluster_size: Union[None, int] = 10, alias: str = 'hdbscan', cluster_field: str = '_cluster_', update_documents_chunksize: int = 50, overwrite: bool = False)
+
+      This function performs all the steps required for hdbscan clustering:
+      1- Loads the data
+      2- Clusters the data
+      3- Updates the data with clustering info
+      4- Adds the centroid to the hidden centroid collection
+
+      :param dataset_id: name of the dataser
+      :type dataset_id: string
+      :param vector_fields: a list containing the vector field to be used for clustering
+      :type vector_fields: list
+      :param filters: a list to filter documents of the dataset
+      :type filters: list
+      :param algorithm: hdbscan configuration parameter default to "best"
+      :type algorithm: str
+      :param alpha: hdbscan configuration parameter default to 1.0
+      :type alpha: float
+      :param approx_min_span_tree: hdbscan configuration parameter default to True
+      :type approx_min_span_tree: bool
+      :param gen_min_span_tree: hdbscan configuration parameter default to False
+      :type gen_min_span_tree: bool
+      :param leaf_size: hdbscan configuration parameter default to 40
+      :type leaf_size: int
+      :param memory = Memory(cachedir=None): hdbscan configuration parameter on memory management
+      :param metric: hdbscan configuration parameter default to "euclidean"
+      :type metric: str = "euclidean"
+      :param min_samples = None: hdbscan configuration parameter default to None
+      :param p = None: hdbscan configuration parameter default to None
+      :param min_cluster_size: minimum cluster size, 10 by default
+      :param alias: "hdbscan", string to be used in naming of the field showing the clustering results
+      :type alias: string
+      :param cluster_field: "_cluster_", string to name the main cluster field
+      :type cluster_field: string
+      :param overwrite: False by default, To overwite an existing clusering result
+      :type overwrite: bool
+
+      .. rubric:: Example
+
+      >>> client.vector_tools.cluster.hdbscan_cluster(
           dataset_id="sample_dataset",
           vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
       )

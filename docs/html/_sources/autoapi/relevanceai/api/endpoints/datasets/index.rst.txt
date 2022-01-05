@@ -17,14 +17,14 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.datasets.Datasets
+   relevanceai.api.endpoints.datasets.DatasetsClient
 
 
 
 
-.. py:class:: Datasets(project: str, api_key: str)
+.. py:class:: DatasetsClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
    All dataset-related functions
 
@@ -182,7 +182,7 @@ Classes
       :type update_schema: bool
 
 
-   .. py:method:: bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, field_transformers=[], return_documents: bool = False, base_url='https://ingest-api-dev-aueast.relevance.ai/latest')
+   .. py:method:: bulk_insert(self, dataset_id: str, documents: list, insert_date: bool = True, overwrite: bool = True, update_schema: bool = True, field_transformers=[], return_documents: bool = False)
 
       Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
 

@@ -82,7 +82,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">relevanceai.api.endpoints.client</span> <span class="kn">import</span> <span class="n">APIClient</span>
-<span class="kn">from</span> <span class="nn">relevanceai.api.batch.batch_retrieve</span> <span class="kn">import</span> <span class="n">BatchRetrieve</span>
+<span class="kn">from</span> <span class="nn">relevanceai.api.batch.batch_retrieve</span> <span class="kn">import</span> <span class="n">BatchRetrieveClient</span>
 <span class="kn">from</span> <span class="nn">relevanceai.api.batch.local_logger</span> <span class="kn">import</span> <span class="n">PullUpdatePushLocalLogger</span>
 <span class="kn">from</span> <span class="nn">relevanceai.concurrency</span> <span class="kn">import</span> <span class="n">multiprocess</span><span class="p">,</span> <span class="n">multithread</span>
 <span class="kn">from</span> <span class="nn">relevanceai.progress_bar</span> <span class="kn">import</span> <span class="n">progress_bar</span>
@@ -92,13 +92,13 @@
 <div class="viewcode-block" id="LIST_SIZE_MULTIPLIER"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.LIST_SIZE_MULTIPLIER">[docs]</a><span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">=</span> <span class="mi">3</span></div>
 
 
-<div class="viewcode-block" id="BatchInsert.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.project">[docs]</a><div class="viewcode-block" id="BatchInsert"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert">[docs]</a><span class="k">class</span> <span class="nc">BatchInsert</span><span class="p">(</span><span class="n">BatchRetrieve</span><span class="p">,</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span></div>
-<div class="viewcode-block" id="BatchInsert.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.api_key">[docs]</a><div class="viewcode-block" id="BatchInsert.insert_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.insert_documents">[docs]</a>    <span class="k">def</span> <span class="nf">insert_documents</span><span class="p">(</span></div>
-<div class="viewcode-block" id="BatchInsert.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.config">[docs]</a>        <span class="bp">self</span><span class="p">,</span></div>
+<div class="viewcode-block" id="BatchInsertClient"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient">[docs]</a><span class="k">class</span> <span class="nc">BatchInsertClient</span><span class="p">(</span><span class="n">BatchRetrieveClient</span><span class="p">,</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">Chunker</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchInsertClient.insert_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.insert_documents">[docs]</a>    <span class="k">def</span> <span class="nf">insert_documents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-        <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+<div class="viewcode-block" id="BatchInsertClient.project"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.project">[docs]</a>        <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span></div>
+<div class="viewcode-block" id="BatchInsertClient.api_key"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.api_key">[docs]</a>        <span class="n">bulk_fn</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span></div>
+<div class="viewcode-block" id="BatchInsertClient.config"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.config">[docs]</a>        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span></div>
         <span class="n">retry_chunk_mult</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">chunksize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -113,9 +113,9 @@
 <span class="sd">        - When inserting or specifying vectors in a document use the suffix (ends with) &quot;_vector_&quot; for the field name. e.g. &quot;product_description_vector_&quot;.</span>
 <span class="sd">        - When inserting or specifying chunks in a document the suffix (ends with) &quot;_chunk_&quot; for the field name. e.g. &quot;products_chunk_&quot;.</span>
 <span class="sd">        - When inserting or specifying chunk vectors in a document&#39;s chunks use the suffix (ends with) &quot;_chunkvector_&quot; for the field name. e.g. &quot;products_chunk_.product_description_chunkvector_&quot;.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataset_id : string</span>
@@ -159,7 +159,7 @@
             <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span></div>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="BatchInsert.update_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.update_documents">[docs]</a>    <span class="k">def</span> <span class="nf">update_documents</span><span class="p">(</span>
+<div class="viewcode-block" id="BatchInsertClient.update_documents"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.update_documents">[docs]</a>    <span class="k">def</span> <span class="nf">update_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -224,10 +224,11 @@
             <span class="n">bulk_fn</span><span class="p">,</span>
             <span class="n">max_workers</span><span class="p">,</span>
             <span class="n">retry_chunk_mult</span><span class="p">,</span>
+            <span class="n">show_progress_bar</span><span class="o">=</span><span class="n">show_progress_bar</span><span class="p">,</span>
             <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">,</span></div>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="BatchInsert.pull_update_push"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.pull_update_push">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push</span><span class="p">(</span>
+<div class="viewcode-block" id="BatchInsertClient.pull_update_push"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.pull_update_push">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">original_collection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">update_function</span><span class="p">,</span>
@@ -242,8 +243,8 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loops through every document in your collection and applies a function (that is specified by you) to the documents.</span>
-<span class="sd">        These documents are then uploaded into either an updated collection, or back into the original collection. </span>
-<span class="sd">        </span>
+<span class="sd">        These documents are then uploaded into either an updated collection, or back into the original collection.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        original_collection : string</span>
@@ -270,8 +271,14 @@
 
         <span class="c1"># Check if a logging_collection has been supplied</span>
         <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log_file</span> <span class="o">=</span> <span class="n">original_collection</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
-        
+            <span class="n">log_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">original_collection</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
+            <span class="p">)</span>
+
         <span class="c1"># Instantiate the logger to document the successful IDs</span>
         <span class="n">PULL_UPDATE_PUSH_LOGGER</span> <span class="o">=</span> <span class="n">PullUpdatePushLocalLogger</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
 
@@ -280,9 +287,7 @@
 
         <span class="c1"># Trust the process</span>
         <span class="c1"># Get document lengths to calculate iterations</span>
-        <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
-            <span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span>
-        <span class="p">)</span>
+        <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_documents</span><span class="p">(</span><span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 
         <span class="c1"># get the remaining number in case things break</span>
         <span class="n">remaining_length</span> <span class="o">=</span> <span class="n">original_length</span> <span class="o">-</span> <span class="n">PULL_UPDATE_PUSH_LOGGER</span><span class="o">.</span><span class="n">count_ids_in_fn</span><span class="p">()</span>
@@ -308,7 +313,7 @@
                 <span class="n">original_collection</span><span class="p">,</span>
                 <span class="n">filters</span><span class="o">=</span><span class="n">retrieve_filters</span><span class="p">,</span>
                 <span class="n">page_size</span><span class="o">=</span><span class="n">retrieve_chunk_size</span><span class="p">,</span>
-                <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span>
+                <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">documents</span> <span class="o">=</span> <span class="n">orig_json</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
@@ -347,15 +352,15 @@
                 <span class="sa">f</span><span class="s2">&quot;Chunk of </span><span class="si">{</span><span class="n">retrieve_chunk_size</span><span class="si">}</span><span class="s2"> original documents updated and uploaded with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed documents!&quot;</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span> 
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pull, Update, Push is complete!&quot;</span><span class="p">)</span>
+
         <span class="c1"># if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:</span>
         <span class="c1">#     os.remove(log_file)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;failed_documents&quot;</span><span class="p">:</span> <span class="n">failed_documents</span><span class="p">,</span></div>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="BatchInsert.pull_update_push_to_cloud"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.pull_update_push_to_cloud">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push_to_cloud</span><span class="p">(</span>
+<div class="viewcode-block" id="BatchInsertClient.pull_update_push_to_cloud"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.pull_update_push_to_cloud">[docs]</a>    <span class="k">def</span> <span class="nf">pull_update_push_to_cloud</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">original_collection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">update_function</span><span class="p">,</span>
@@ -374,7 +379,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loops through every document in your collection and applies a function (that is specified by you) to the documents.</span>
 <span class="sd">        These documents are then uploaded into either an updated collection, or back into the original collection.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        original_collection : string</span>
@@ -398,17 +403,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check if a logging_collection has been supplied</span>
         <span class="k">if</span> <span class="n">logging_collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging_collection</span> <span class="o">=</span> <span class="n">original_collection</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span>
+            <span class="n">logging_collection</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">original_collection</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y-%H-%M-%S&quot;</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">&quot;_pull_update_push&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Check collections and create completed list if needed</span>
         <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">logging_collection</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">collection_list</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a logging collection for you.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-                    <span class="n">logging_collection</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">logging_collection</span><span class="p">))</span>
 
         <span class="c1"># Track failed documents</span>
         <span class="n">failed_documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -417,12 +423,8 @@
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_retrieve_retries</span><span class="p">):</span>
 
             <span class="c1"># Get document lengths to calculate iterations</span>
-            <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
-                <span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span>
-            <span class="p">)</span>
-            <span class="n">completed_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">_get_number_of_documents</span><span class="p">(</span>
-                <span class="n">logging_collection</span>
-            <span class="p">)</span>
+            <span class="n">original_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_documents</span><span class="p">(</span><span class="n">original_collection</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+            <span class="n">completed_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_documents</span><span class="p">(</span><span class="n">logging_collection</span><span class="p">)</span>
             <span class="n">remaining_length</span> <span class="o">=</span> <span class="n">original_length</span> <span class="o">-</span> <span class="n">completed_length</span>
             <span class="n">iterations_required</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">remaining_length</span> <span class="o">/</span> <span class="n">retrieve_chunk_size</span><span class="p">)</span>
 
@@ -443,9 +445,7 @@
             <span class="p">):</span>
 
                 <span class="c1"># Get completed documents</span>
-                <span class="n">log_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_documents</span><span class="p">(</span>
-                    <span class="n">logging_collection</span>
-                <span class="p">)</span>
+                <span class="n">log_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_documents</span><span class="p">(</span><span class="n">logging_collection</span><span class="p">)</span>
                 <span class="n">completed_documents_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_json</span><span class="p">]</span>
 
                 <span class="c1"># Get incomplete documents from raw collection</span>
@@ -462,7 +462,7 @@
                     <span class="n">original_collection</span><span class="p">,</span>
                     <span class="n">filters</span><span class="o">=</span><span class="n">retrieve_filters</span><span class="p">,</span>
                     <span class="n">page_size</span><span class="o">=</span><span class="n">retrieve_chunk_size</span><span class="p">,</span>
-                    <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span>
+                    <span class="n">select_fields</span><span class="o">=</span><span class="n">select_fields</span><span class="p">,</span>
                 <span class="p">)</span>
 
                 <span class="n">documents</span> <span class="o">=</span> <span class="n">orig_json</span><span class="p">[</span><span class="s2">&quot;documents&quot;</span><span class="p">]</span>
@@ -536,7 +536,7 @@
             <span class="s2">&quot;logging_collection&quot;</span><span class="p">:</span> <span class="n">logging_collection</span><span class="p">,</span></div>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="BatchInsert.insert_df"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.insert_df">[docs]</a>    <span class="k">def</span> <span class="nf">insert_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchInsertClient.insert_df"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.insert_df">[docs]</a>    <span class="k">def</span> <span class="nf">insert_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Insert a dataframe for eachd doc&quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -546,7 +546,7 @@
         <span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_documents</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BatchInsert.delete_pull_update_push_logs"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsert.delete_pull_update_push_logs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_pull_update_push_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchInsertClient.delete_pull_update_push_logs"><a class="viewcode-back" href="../../../../relevanceai.api.batch.html#relevanceai.api.batch.batch_insert.BatchInsertClient.delete_pull_update_push_logs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_pull_update_push_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="n">collection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span>
 
@@ -558,16 +558,12 @@
             <span class="p">]</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">i</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">collection_list</span>
-                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
-            <span class="p">]</span>
+            <span class="n">log_collections</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">collection_list</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;pull_update_push&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)]</span>
 
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">log_collections</span><span class="p">]</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="BatchInsert._write_documents"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.BatchInsert._write_documents">[docs]</a>    <span class="k">def</span> <span class="nf">_write_documents</span><span class="p">(</span>
+<div class="viewcode-block" id="BatchInsertClient._write_documents"><a class="viewcode-back" href="../../../../autoapi/relevanceai/api/batch/batch_insert/index.html#relevanceai.api.batch.batch_insert.BatchInsertClient._write_documents">[docs]</a>    <span class="k">def</span> <span class="nf">_write_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">insert_function</span><span class="p">,</span>
         <span class="n">docs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -592,8 +588,14 @@
         <span class="n">doc_mb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">test_doc</span><span class="p">)</span> <span class="o">*</span> <span class="n">LIST_SIZE_MULTIPLIER</span> <span class="o">/</span> <span class="n">BYTE_TO_MB</span>
         <span class="k">if</span> <span class="n">chunksize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">target_chunk_mb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;upload.target_chunk_mb&quot;</span><span class="p">))</span>
-            <span class="n">chunksize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_chunk_mb</span> <span class="o">/</span> <span class="n">doc_mb</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_chunk_mb</span><span class="o">/</span> <span class="n">doc_mb</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
-    
+            <span class="n">max_chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;upload.max_chunk_size&quot;</span><span class="p">))</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">target_chunk_mb</span> <span class="o">/</span> <span class="n">doc_mb</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_chunk_mb</span> <span class="o">/</span> <span class="n">doc_mb</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+                <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">chunksize</span><span class="p">,</span> <span class="n">max_chunk_size</span><span class="p">)</span>
+
         <span class="c1"># Initialise number of inserted documents</span>
         <span class="n">inserted</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 

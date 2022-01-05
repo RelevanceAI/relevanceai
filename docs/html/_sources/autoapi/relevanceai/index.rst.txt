@@ -24,6 +24,7 @@ Submodules
    base/index.rst
    concurrency/index.rst
    config/index.rst
+   dashboard_mappings/index.rst
    datasets/index.rst
    errors/index.rst
    http_client/index.rst
@@ -54,32 +55,40 @@ Attributes
    relevanceai.__version__
 
 
-.. py:class:: Client(project=os.getenv('RELEVANCE_PROJECT'), api_key=os.getenv('RELEVANCE_API_KEY'), verbose: bool = True)
+.. py:class:: Client(project=os.getenv('RELEVANCE_PROJECT'), api_key=os.getenv('RELEVANCE_API_KEY'), authenticate: bool = False)
 
    Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
 
    Python Client for Relevance AI's relevanceai
-
-   .. py:attribute:: WELCOME_MESSAGE
-      :annotation: = Welcome to the RelevanceAI Python SDK
-
-      
 
    .. py:attribute:: FAIL_MESSAGE
       :annotation: = Your API key is invalid. Please login again
 
       
 
-   .. py:method:: output_format(self)
+   .. py:attribute:: _cred_fn
+      :annotation: = .creds.json
+
+      
+
+   .. py:method:: base_url(self)
       :property:
 
 
-   .. py:method:: token_to_auth(verbose=True)
-      :staticmethod:
+   .. py:method:: base_ingest_url(self)
+      :property:
 
 
-   .. py:method:: login(verbose: bool = True)
-      :staticmethod:
+   .. py:method:: _token_to_auth(self)
+
+
+   .. py:method:: _write_credentials(self, project, api_key)
+
+
+   .. py:method:: _read_credentials(self)
+
+
+   .. py:method:: login(self, authenticate: bool = True)
 
       Preferred login method for demos and interactive usage.
 
@@ -93,13 +102,10 @@ Attributes
 
    .. py:method:: check_auth(self)
 
-      TODO: Add a proper way to check authentication based on pinging.
-
-
 
 
 .. py:data:: __version__
-   :annotation: = 0.19.2
+   :annotation: = 0.24.7
 
    
 

@@ -17,16 +17,16 @@ Classes
 
 .. autoapisummary::
 
-   relevanceai.api.endpoints.admin.Admin
+   relevanceai.api.endpoints.admin.AdminClient
 
 
 
 
-.. py:class:: Admin(project, api_key)
+.. py:class:: AdminClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base.Base`
+   Bases: :py:obj:`relevanceai.base._Base`
 
-   Base class for all relevanceai utilities
+   Base class for all relevanceai client utilities
 
    .. py:method:: request_read_api_key(self, read_username: str)
 
@@ -61,6 +61,9 @@ Classes
                                              receiver_project="...",
                                              receiver_api_key="..."
       :param ):
+
+
+   .. py:method:: _ping(self)
 
 
 
