@@ -73,6 +73,17 @@ class ClusterBase(LoguruLogger, DocUtils):
             all_vectors = self.get_fields_across_documents(
                 vector_fields, docs, missing_treatment="skip_if_any_missing"
             )
+            # Store the vector field lengths to de-concatenate them later
+            self._vector_field_length = {}
+            prev_vf = 0
+            for i, vf in enumerate(self.vector_fields):
+                self._vector_field_length[vf] = {}
+                self._vector_field_length[vf]['start'] = prev_vf
+                end_vf = prev_vf + len(all_vectors[0][i])
+                self._vector_field_length[vf]['end'] = end_vf
+                # Update the ending
+                prev_vf = end_vf
+
             # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
 
@@ -170,7 +181,7 @@ class CentroidCluster(ClusterBase):
         for i, c in enumerate(self.centers):
             centroid_doc = {"_id": self._label_cluster(i)}
             for j, vf in enumerate(self.vector_fields):
-                centroid_doc[vf] = self.centers[i]
+                centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
         return centroid_docs
 
@@ -238,7 +249,18 @@ class MiniBatchKMeans(CentroidCluster):
 
     def get_centers(self):
         """Returns centroids of clusters"""
-        return [list(i) for i in self.km.cluster_centers_]
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            return [list(i) for i in self.km.cluster_centers_]
+
+        # Returning for multiple vector fields
+        cluster_centers = []
+        for i, center in enumerate(self.km.cluster_centers_):
+            cluster_center_doc = {}
+            for j, vf in enumerate(self.vector_fields):
+                deconcat_center = center[self._vector_field_length[vf]['start']: self._vector_field_length[vf]['end']].tolist()
+                cluster_center_doc[vf] = deconcat_center
+            cluster_centers.append(cluster_center_doc.copy())
+        return cluster_centers
 
     def to_metadata(self):
         """Editing the metadata of the function"""
@@ -552,8 +574,10 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
         print(f"Finished clustering. The cluster alias is `{alias}`.")
+
         self.services.cluster.centroids.list_closest_to_center(
-            dataset_id, vector_fields=vector_fields, alias=alias
+            dataset_id, vector_fields=vector_fields, alias=alias, 
+            centroid_vector_fields=vector_fields
         )
 
     def hdbscan_cluster(
