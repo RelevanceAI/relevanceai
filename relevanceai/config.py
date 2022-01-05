@@ -100,10 +100,10 @@ class Config(DocUtils):
         }
 
         config["dashboard"] = {
-            "dashboard_request_url": '''"https://us-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest"''',
-            "base_dashboard_url": '''"https://cloud.relevance.ai"''',
-            "signup_endpoint": '''"/sdk/api"''',
-            "search_dashboard_endpoint": '''"/sdk/search"''',
+            "dashboard_request_url": "https:s-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest",
+            "base_dashboard_url": "https://cloud.relevance.ai",
+            "signup_endpoint": "/sdk/api",
+            "search_dashboard_endpoint": "/sdk/search",
         }
 
         with open(CONFIG_PATH, "w") as configfile:
