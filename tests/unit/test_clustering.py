@@ -38,6 +38,13 @@ def test_cluster_distribution(test_client, test_clustered_dataset):
     assert True
 
 
+def test_centroid_distances(test_client, test_clustered_dataset):
+    centroid_distances = test_client.vector_tools.cluster.centroid_distances(
+        test_clustered_dataset, "sample_1_vector_", "kmeans_10"
+    )
+    assert True
+
+
 @pytest.mark.skip(reason="Not fully implemented")
 def test_hdbscan_cluster(test_client, test_sample_vector_dataset):
     test_client.vector_tools.cluster.hdbscan_cluster(

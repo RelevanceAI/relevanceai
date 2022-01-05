@@ -193,12 +193,14 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         else:
             return self.label_distribution_from_docs(cluster_labels)
 
-    def centroid_distances(self, 
+    def centroid_distances(
+        self,
         dataset_id: str,
         vector_field: str,
         cluster_alias: str,
         distance_measure_mode: CENTROID_DISTANCES = "cosine",
-        callable_distance=None):
+        callable_distance=None,
+    ):
 
         """
         Determine the distances of centroid from each other
@@ -212,19 +214,24 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         cluster_alias: string
             The alias of the clustered labels
         distance_measure_mode : string
-            Distance measure to compare cluster centroids 
+            Distance measure to compare cluster centroids
         callable_distance: func
             Optional function to use for distance measure
-            
+
         """
 
-        centroid_response = self.services.cluster.centroids.list(dataset_id, [vector_field], cluster_alias, include_vector = True)
-        centroids = {i['_id']: i['centroid_vector_'] for i in centroid_response['documents']}
+        centroid_response = self.services.cluster.centroids.list(
+            dataset_id, [vector_field], cluster_alias, include_vector=True
+        )
+        centroids = {
+            i["_id"]: i["centroid_vector_"] for i in centroid_response["documents"]
+        }
 
-        return self.centroid_distances_from_docs(centroids,
-        distance_measure_mode = distance_measure_mode,
-        callable_distance=callable_distance)
-
+        return self.centroid_distances_from_docs(
+            centroids,
+            distance_measure_mode=distance_measure_mode,
+            callable_distance=callable_distance,
+        )
 
     def _get_cluster_documents(
         self,
@@ -473,9 +480,11 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return label_distribution
 
     @staticmethod
-    def centroid_distances_from_docs(centroids,
+    def centroid_distances_from_docs(
+        centroids,
         distance_measure_mode: CENTROID_DISTANCES = "cosine",
-        callable_distance=None):
+        callable_distance=None,
+    ):
         """
         Determine the distances of centroid from each other
 
@@ -484,23 +493,31 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         centroids : dict
             Dictionary containing cluster name and centroid
         distance_measure_mode : string
-            Distance measure to compare cluster centroids 
+            Distance measure to compare cluster centroids
         callable_distance: func
             Optional function to use for distance measure
 
         """
-        df = pd.DataFrame(columns = centroids.keys(), index = centroids.keys())
+        df = pd.DataFrame(columns=centroids.keys(), index=centroids.keys())
         for cluster1 in centroids.keys():
             for cluster2 in centroids.keys():
                 if callable_distance:
-                    df.loc[cluster1, cluster2] = callable_distance(centroids[cluster1], centroids[cluster2])
+                    df.loc[cluster1, cluster2] = callable_distance(
+                        centroids[cluster1], centroids[cluster2]
+                    )
                 elif distance_measure_mode == "cosine":
-                    df.loc[cluster1, cluster2] = 1 - spatial_distance.cosine(centroids[cluster1], centroids[cluster2])
+                    df.loc[cluster1, cluster2] = 1 - spatial_distance.cosine(
+                        centroids[cluster1], centroids[cluster2]
+                    )
                 elif distance_measure_mode == "l2":
-                    df.loc[cluster1, cluster2] = spatial_distance.euclidean(centroids[cluster1], centroids[cluster2])
+                    df.loc[cluster1, cluster2] = spatial_distance.euclidean(
+                        centroids[cluster1], centroids[cluster2]
+                    )
                 else:
-                    raise ValueError("Need valid distance measure mode or callable distance")
-        return df.astype('float').to_dict()
+                    raise ValueError(
+                        "Need valid distance measure mode or callable distance"
+                    )
+        return df.astype("float").to_dict()
 
     @staticmethod
     def silhouette_score(vectors, cluster_labels):
