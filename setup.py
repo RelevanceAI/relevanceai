@@ -27,6 +27,8 @@ requirements = [
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
+    "matplotlib>=3.5.1",
+    "nltk>=3.6.7",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
@@ -47,7 +49,7 @@ vis_requirements = requirements + [
 umap = ["umap-learn>=0.5.2"]
 # ivis_cpu = ["ivis[cpu]>=2.0.6"]
 # ivis_gpu = ["ivis[gpu]>=2.0.6"]
-kmedoids = ["scikit-learn-extra>=0.2.0"]
+# kmedoids = ["scikit-learn-extra>=0.2.0"]
 hdbscan = ["hdbscan>=0.8.27"]
 
 # vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
@@ -120,7 +122,7 @@ setup(
         "umap": umap,
         # "ivis-cpu": ivis_cpu,
         # "ivis-gpu": ivis_gpu,
-        "kmedoids": kmedoids,
+        # "kmedoids": kmedoids,
         "hdbscan": hdbscan,
     },
     python_requires=">=3.6",

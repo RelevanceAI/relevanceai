@@ -153,7 +153,9 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_documents(self, centroid_vector_field_name="centroid_vector_") -> List:
+    def get_centroid_documents(
+        self, centroid_vector_field_name="centroid_vector_"
+    ) -> List:
         """Get the centroid documents to store.
         if single vector field returns this:
             {
