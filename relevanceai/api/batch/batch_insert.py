@@ -99,7 +99,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        csv_args: dict = {}
+        csv_args: dict = {},
     ):
 
         """
@@ -109,8 +109,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ----------
         dataset_id : string
             Unique name of dataset
-        filepath_or_buffer : 
-            Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file. 
+        filepath_or_buffer :
+            Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
         chunksize : int
             Number of lines to read from csv per iteration
         max_workers : int
@@ -120,30 +120,50 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         csv_args : dict
             Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
         """
-        
-        csv_args.pop("index_col", None);
-        csv_args.pop("chunksize", None);
-        df = pd.read_csv(filepath_or_buffer, index_col =0, chunksize = chunksize, **csv_args)
+
+        csv_args.pop("index_col", None)
+        csv_args.pop("chunksize", None)
+        df = pd.read_csv(
+            filepath_or_buffer, index_col=0, chunksize=chunksize, **csv_args
+        )
 
         inserted = 0
         failed_documents = []
         failed_documents_detailed = []
         for chunk in df:
-            response = self._insert_csv_chunk(chunk=chunk, dataset_id=dataset_id, max_workers=max_workers, retry_chunk_mult = retry_chunk_mult, show_progress_bar=show_progress_bar)
-            inserted += response['inserted']
-            failed_documents += response['failed_documents']
-            failed_documents_detailed += response['failed_documents_detailed']
+            response = self._insert_csv_chunk(
+                chunk=chunk,
+                dataset_id=dataset_id,
+                max_workers=max_workers,
+                retry_chunk_mult=retry_chunk_mult,
+                show_progress_bar=show_progress_bar,
+            )
+            inserted += response["inserted"]
+            failed_documents += response["failed_documents"]
+            failed_documents_detailed += response["failed_documents_detailed"]
 
-        return {'inserted': inserted, 'failed_documents': failed_documents, 'failed_documents_detailed': failed_documents_detailed}
+        return {
+            "inserted": inserted,
+            "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
+        }
 
-    def _insert_csv_chunk(self, chunk, dataset_id, max_workers, retry_chunk_mult, show_progress_bar):
+    def _insert_csv_chunk(
+        self, chunk, dataset_id, max_workers, retry_chunk_mult, show_progress_bar
+    ):
 
         # Check for _id
-        if '_id' not in chunk.columns:
+        if "_id" not in chunk.columns:
             raise MissingFieldError("Need _id as a column")
-        
+
         chunk_json = chunk.to_dict(orient="records")
-        response = self.insert_documents(dataset_id=dataset_id, docs=chunk_json, max_workers=max_workers, retry_chunk_mult = retry_chunk_mult, show_progress_bar=show_progress_bar)
+        response = self.insert_documents(
+            dataset_id=dataset_id,
+            docs=chunk_json,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+        )
         return response
 
     def update_documents(
