@@ -39,7 +39,6 @@ vis_requirements = requirements + [
     "dash",
     "pillow",
     "opencv-python",
-    "jupyter_dash",
     "scikit-image",
     "dash_bootstrap_components",
 ]

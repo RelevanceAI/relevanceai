@@ -1,4 +1,3 @@
-import dash
 from dash import html
 from relevanceai.visualise.dash_components.sections.header import build_header
 from relevanceai.visualise.dash_components.sections.display_panel import (
@@ -9,7 +8,7 @@ from relevanceai.visualise.dash_components.callbacks import (
     display_callbacks,
     neighbour_callbacks,
 )
-from jupyter_dash import JupyterDash
+import warnings
 
 
 def create_dash_graph(
@@ -22,9 +21,11 @@ def create_dash_graph(
     interactive: bool = True,
 ):
 
+    from jupyter_dash import JupyterDash
+
     app = JupyterDash(__name__)
 
-    def create_layout(app: dash.Dash) -> html.Div:
+    def create_layout(app):
         """
         Create the layout of the Dash app.
         """
