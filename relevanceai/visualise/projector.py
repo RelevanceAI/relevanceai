@@ -267,17 +267,10 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         )
 
         layout = self._generate_layout(plot_title=plot_title)
-
-        create_dash_graph(
-            plot_data=plot_data,
-            layout=layout,
-            show_image=show_image,
-            docs=docs,
-            vector_label=vector_label,
-            vector_field=vector_field,
-            interactive=interactive,
+        fig = go.Figure(
+            data=plot_data, layout=layout
         )
-        return
+        fig.show()
 
     def _generate_plot_data(
         self,
@@ -476,19 +469,27 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         """
         return [d for d in docs if d.get(vector_field)]
 
-    def dendrogram(self, dataset_id, vector_fields, node_label=None, **layout_args):
+    def dendrogram(self, dataset_id, vector_fields, alias, node_label=None, 
+        number_of_nodes: Optional[int]=None, **layout_args):
         docs = self.get_all_documents(dataset_id=dataset_id)
+        return self.dendrogram_from_docs(docs, vector_fields=vector_fields, 
+            alias=alias, node_label=node_label, number_of_nodes=number_of_nodes,
+            **layout_args)
+
+    def dendrogram_from_docs(self, docs, vector_fields, alias, node_label=None,
+        number_of_nodes: int=20, **layout_args):
         vectors = [sample[vector_fields[0]] for sample in docs]
         dendrogram = Dendrogram(
             vectors=vectors,
-            dataset_id=dataset_id,
             vector_field=vector_fields,
             node_label=node_label,
+            number_of_nodes=number_of_nodes
         )
         dendrogram = dendrogram.get()
         dendrogram.update_layout(**layout_args)
         if node_label is None:
             node_label = "_id"
-        create_dendrogram_tree(
-            dendrogram, self.services, dataset_id, vector_fields, node_label
-        )
+        return dendrogram
+        # create_dendrogram_tree(
+        #     dendrogram, self.services, dataset_id, vector_fields, node_label
+        # )

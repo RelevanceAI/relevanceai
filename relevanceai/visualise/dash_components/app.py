@@ -15,19 +15,19 @@ from relevanceai.visualise.dash_components.callbacks import (
     display_callbacks,
     neighbour_callbacks,
 )
-from jupyter_dash import JupyterDash
-
 
 def create_dash_graph(
     plot_data,
     layout,
-    show_image,
-    docs,
-    vector_label,
-    vector_field,
+    show_image: bool,
+    docs: list,
+    vector_label: str,
+    vector_field: str,
     interactive: bool = True,
+    style={"max-width": "100%", "font-size": "1.5rem", "padding": "0px 0px"},
 ):
 
+    from jupyter_dash import JupyterDash
     app = JupyterDash(__name__)
 
     def create_layout(app: dash.Dash) -> html.Div:
@@ -36,7 +36,7 @@ def create_dash_graph(
         """
         return html.Div(
             className="row",
-            style={"max-width": "100%", "font-size": "1.5rem", "padding": "0px 0px"},
+            style=style,
             children=[
                 ## --- Header --- ##
                 build_header(app),
@@ -61,6 +61,7 @@ def create_dash_graph(
 
 
 def create_dendrogram_tree(fig, services, dataset_id, field_name, node_label):
+    from jupyter_dash import JupyterDash
     app = JupyterDash(__name__)
 
     app.layout = html.Div(
@@ -84,11 +85,14 @@ def create_dendrogram_tree(fig, services, dataset_id, field_name, node_label):
                 if node["x"][0] == x and node["y"][0] == y
             ][0]
             text = fig.data[index].text
-            if text is not None:
-                mean_vec = json.loads(text)
-                mean_vec = [value for value in mean_vec.values()]
-                mvq = {"vector": mean_vec, "fields": field_name}
-                search = services.search.vector(dataset_id, [mvq], page_size=1)
-        return search["results"][0][node_label]
+            # if text is not None:
+            #     mean_vec = json.loads(text)
+            #     mean_vec = [value for value in mean_vec.values()]
+            #     mvq = {"vector": mean_vec, "fields": field_name}
+            # TODO:
+            # Insert mean vec as centroids
+            # list_closest_to_centers
+            # search = services.search.vector(dataset_id, [mvq], page_size=1)
+        return hoverData["points"][0][node_label]
 
     app.run_server(debug=True)

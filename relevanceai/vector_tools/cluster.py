@@ -933,6 +933,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
+        centroid_vector_field=None
     ):
         """
         This function performs all the steps required for hierarchical clustering:
@@ -1034,6 +1035,19 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         results = self.update_documents(
             dataset_id, clustered_docs, chunksize=update_documents_chunksize
+        )
+        self.logger.info(results)
+
+        centroids = self.clusterer.get_centroids()
+        if centroid_vector_field is None:
+            centroid_vector_field = vector_fields[0]
+        centroid_docs = [{"_id": str(label), centroid_vector_field: vector.tolist()} for label, vector in centroids.items()]
+
+        results = self.services.cluster.centroids.insert(
+            dataset_id=dataset_id,
+            cluster_centers=centroid_docs,
+            vector_fields=vector_fields,
+            alias=alias,
         )
         self.logger.info(results)
 

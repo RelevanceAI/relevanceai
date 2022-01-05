@@ -1,7 +1,7 @@
 import json
 from collections import OrderedDict
 from copy import deepcopy
-
+from typing import Optional
 import numpy as np
 
 import scipy as scp
@@ -17,7 +17,6 @@ class Dendrogram(object):
     def __init__(
         self,
         vectors,
-        dataset_id=None,
         vector_field=None,
         orientation="bottom",
         labels=None,
@@ -30,10 +29,10 @@ class Dendrogram(object):
         linkagefun=lambda x: sch.linkage(x, "complete"),
         hovertext=None,
         color_threshold=None,
+        number_of_nodes: Optional[int] = None,
         **kwargs
     ):
         self.vectors = vectors
-        self.dataset_id = dataset_id
         self.vector_field = vector_field
 
         try:
@@ -49,6 +48,7 @@ class Dendrogram(object):
         self.leaves = []
         self.sign = {self.xaxis: 1, self.yaxis: 1}
         self.layout = {self.xaxis: {}, self.yaxis: {}}
+        self.number_of_nodes = self.number_of_nodes
 
         if self.orientation in ["left", "bottom"]:
             self.sign[self.xaxis] = 1
@@ -316,7 +316,11 @@ class Dendrogram(object):
 
             trace_list.append(trace)
 
-        return trace_list, icoord, dcoord, ordered_labels, P["leaves"]
+        if self.number_of_nodes is None:
+            return trace_list, icoord, dcoord, ordered_labels, P["leaves"]
+
+        # Return the number of nodes
+        return trace_list[:self.number_of_nodes], icoord[:self.number_of_nodes], dcoord[:self.number_of_nodes], ordered_labels[:self.number_of_nodes], P["leaves"]
 
     def add_vertices(self, dd_traces):
         vertices = []
