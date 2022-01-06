@@ -9,6 +9,8 @@ from relevanceai import Client
 from datetime import datetime
 import pandas as pd
 import io
+import csv
+import tempfile
 
 from utils import generate_random_string, generate_random_vector, generate_random_label
 
@@ -68,6 +70,47 @@ def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
 @pytest.fixture(scope="session")
 def error_doc():
     return [{"_id": 3, "value": np.nan}]
+
+
+@pytest.fixture(scope="session")
+def sample_vector_csv():
+    def _sample_vector_doc(doc_id: str):
+        return {
+            "_id": doc_id,
+            "sample_1_label": generate_random_label(),
+            "sample_2_label": generate_random_label(),
+            "sample_3_label": generate_random_label(),
+            "sample_1_description": generate_random_string(),
+            "sample_2_description": generate_random_string(),
+            "sample_3_description": generate_random_string(),
+            "sample_1_vector_": generate_random_vector(N=100),
+            "sample_2_vector_": generate_random_vector(N=100),
+            "sample_3_vector_": generate_random_vector(N=100),
+        }
+
+    N = 100
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
+        writer = csv.DictWriter(
+            csvfile,
+            fieldnames=[
+                "_id" "sample_1_label",
+                "sample_2_label",
+                "sample_3_label",
+                "sample_1_description",
+                "sample_2_description",
+                "sample_3_description",
+                "sample_1_vector_",
+                "sample_2_vector_",
+                "sample_3_vector_",
+            ],
+        )
+        writer.writeheader()
+        [
+            writer.writerow(_sample_vector_doc(doc_id=uuid.uuid4().__str__()))
+            for _ in range(N)
+        ]
+    return csvfile
 
 
 @pytest.fixture(scope="session")
@@ -231,10 +274,8 @@ def test_nested_assorted_dataset(
 
 
 @pytest.fixture(scope="session")
-def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
+def test_csv_dataset(test_client, sample_vector_csv, test_dataset_id):
     """Sample csv dataset"""
-    fake_csv = io.StringIO(sample_vector_docs)
-
-    response = test_client.insert_csv(test_dataset_id, fake_csv)
+    response = test_client.insert_csv(test_dataset_id, sample_vector_csv)
     yield response, len(sample_vector_docs)
     test_client.datasets.delete(test_dataset_id)
