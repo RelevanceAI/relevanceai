@@ -10,7 +10,6 @@ def str2bool(v):
 class _Base(Transport, LoguruLogger):
     """Base class for all relevanceai client utilities"""
 
-    # Provide class-based access to json encoder
     def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
