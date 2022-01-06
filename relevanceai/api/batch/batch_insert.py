@@ -4,7 +4,9 @@ import math
 import sys
 import time
 import traceback
+import pandas as pd
 from datetime import datetime
+from ast import literal_eval
 from typing import Callable, List, Dict, Union, Any
 
 from doc_utils import DocUtils
@@ -15,12 +17,18 @@ from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.progress_bar import progress_bar
 from relevanceai.api.batch.chunk import Chunker
+from relevanceai.utils import Utils
+from relevanceai.errors import MissingFieldError
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
+SUCCESS_CODES = [200]
+RETRY_CODES = [400, 404]
+HALF_CHUNK_CODES = [413, 524]
 
-class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
+
+class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
         self,
         dataset_id: str,
@@ -29,7 +37,8 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        chunksize=0,
+        chunksize: int = 0,
+        use_json_encoder: bool = True,
         *args,
         **kwargs,
     ):
@@ -58,6 +67,8 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
             Multiplier to apply to chunksize if upload fails
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
         """
 
         self.logger.info(f"You are currently inserting into {dataset_id}")
@@ -67,6 +78,12 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         )
         # Check if the collection exists
         self.datasets.create(dataset_id)
+
+        # Turn _id into string
+        self._convert_id_to_string(docs)
+
+        if use_json_encoder:
+            docs = self.json_encoder(docs)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
@@ -87,6 +104,89 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
             chunksize=chunksize,
         )
 
+    def insert_csv(
+        self,
+        dataset_id: str,
+        filepath_or_buffer,
+        chunksize: int = 10000,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
+        csv_args: dict = {},
+    ):
+
+        """
+        Insert data from csv file
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        filepath_or_buffer :
+            Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
+        chunksize : int
+            Number of lines to read from csv per iteration
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        csv_args : dict
+            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+        """
+
+        csv_args.pop("index_col", None)
+        csv_args.pop("chunksize", None)
+        df = pd.read_csv(
+            filepath_or_buffer, index_col=0, chunksize=chunksize, **csv_args
+        )
+
+        # Initialise output
+        inserted = 0
+        failed_documents = []
+        failed_documents_detailed = []
+
+        # Chunk inserts
+        for chunk in df:
+            response = self._insert_csv_chunk(
+                chunk=chunk,
+                dataset_id=dataset_id,
+                max_workers=max_workers,
+                retry_chunk_mult=retry_chunk_mult,
+                show_progress_bar=show_progress_bar,
+            )
+            inserted += response["inserted"]
+            failed_documents += response["failed_documents"]
+            failed_documents_detailed += response["failed_documents_detailed"]
+
+        return {
+            "inserted": inserted,
+            "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
+        }
+
+    def _insert_csv_chunk(
+        self, chunk, dataset_id, max_workers, retry_chunk_mult, show_progress_bar
+    ):
+
+        # Check for _id
+        if "_id" not in chunk.columns:
+            raise MissingFieldError("Need _id as a column")
+
+        # Convert vector fields
+        vector_columns = [i for i in chunk.columns if i.endswith("_vector_")]
+        for i in vector_columns:
+            chunk[i] = chunk[i].apply(literal_eval)
+
+        chunk_json = chunk.to_dict(orient="records")
+        response = self.insert_documents(
+            dataset_id=dataset_id,
+            docs=chunk_json,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+        )
+        return response
+
     def update_documents(
         self,
         dataset_id: str,
@@ -96,6 +196,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
         show_progress_bar=False,
+        use_json_encoder: bool = True,
         *args,
         **kwargs,
     ):
@@ -129,6 +230,8 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
             Multiplier to apply to chunksize if upload fails
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
         """
 
         self.logger.info(f"You are currently updating {dataset_id}")
@@ -136,6 +239,12 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         self.logger.info(
             f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
         )
+
+        # Turn _id into string
+        self._convert_id_to_string(docs)
+
+        if use_json_encoder:
+            docs = self.json_encoder(docs)
 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
@@ -168,6 +277,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         filters: list = [],
         select_fields: list = [],
         show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -189,8 +299,10 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
             The number of documents that are received from the original collection with each loop iteration.
         max_workers: int
             The number of processors you want to parallelize with
-        max_error:
+        max_error: int
             How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
         """
         if not callable(update_function):
             raise TypeError(
@@ -262,6 +374,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
+                    use_json_encoder=use_json_encoder,
                 )
             else:
                 insert_json = self.insert_documents(
@@ -269,6 +382,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
+                    use_json_encoder=use_json_encoder,
                 )
 
             # Check success
@@ -303,6 +417,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
         filters: list = [],
         select_fields: list = [],
         show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -326,8 +441,10 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
             If fails, retry on each chunk
         max_workers: int
             The number of processors you want to parallelize with
-        max_error:
+        max_error: int
             How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
         """
         # Check if a logging_collection has been supplied
         if logging_collection is None:
@@ -413,6 +530,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                         docs=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
+                        use_json_encoder=use_json_encoder,
                     )
                 else:
                     insert_json = self.insert_documents(
@@ -420,6 +538,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                         docs=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
+                        use_json_encoder=use_json_encoder,
                     )
 
                 # Check success
@@ -538,6 +657,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
 
         for i in range(int(self.config.get_option("retries.number_of_retries"))):
             if len(failed_ids) > 0:
+                self.logger.info(f"Inserting with chunksize {chunksize}")
                 if bulk_fn is not None:
                     insert_json = multiprocess(
                         func=bulk_fn,
@@ -573,7 +693,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                 for chunk in insert_json:
 
                     # Track failed in 200
-                    if chunk["status_code"] == 200:
+                    if chunk["status_code"] in SUCCESS_CODES:
                         failed_ids += [
                             i["_id"] for i in chunk["response_json"]["failed_documents"]
                         ]
@@ -583,11 +703,11 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                         ]
 
                     # Cancel documents with 400 or 404
-                    elif chunk["status_code"] in [400, 404]:
+                    elif chunk["status_code"] in RETRY_CODES:
                         cancelled_ids += [i["_id"] for i in chunk["documents"]]
 
                     # Half chunksize with 413 or 524
-                    elif chunk["status_code"] in [413, 524]:
+                    elif chunk["status_code"] in HALF_CHUNK_CODES:
                         failed_ids += [i["_id"] for i in chunk["documents"]]
                         chunksize = int(chunksize * retry_chunk_mult)
 
@@ -596,12 +716,15 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
                 # Update docs to retry which have failed
+                self.logger.error(
+                    f"Failed to upload {failed_ids}. Retrying with chunksize {chunksize}"
+                )
                 docs = [i for i in docs if i["_id"] in failed_ids]
 
             else:
                 break
 
-        # When returning, add in the cancelled ids
+        # When returning, add in the cancelled id
         failed_ids.extend(cancelled_ids)
 
         output = {
