@@ -48,11 +48,13 @@ class TestPullUpdatePush:
         results = test_client.pull_update_push(test_sample_dataset, do_nothing)
         assert len(results["failed_documents"]) == 0
 
+    @pytest.mark.xfail
     def test_pull_update_push_with_errors(self, test_client, test_sample_dataset):
         """Simple test for pull update push with an errored update function"""
         with pytest.raises(Exception) as execinfo:
             results = test_client.pull_update_push(test_sample_dataset, cause_error)
 
+    @pytest.mark.xfail
     def test_with_some_errors(self, test_client, test_sample_dataset):
         """Test with some errors"""
         import requests
