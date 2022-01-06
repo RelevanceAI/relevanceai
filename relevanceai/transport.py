@@ -78,6 +78,7 @@ class Transport:
                 "query": parameters.get("query"),
             },
         }
+
         req = Request(
             method=method.upper(),
             url=self._dashboard_request_url,
@@ -175,7 +176,7 @@ class Transport:
                     method=method.upper(),
                     url=request_url,
                     headers=self.auth_header,
-                    json=parameters if method.upper() == "POST" else {},
+                    data=json.dumps(parameters if method.upper() == "POST" else {},allow_nan=False), # strip nan values from payload for JSON spec compliance
                     params=parameters if method.upper() == "GET" else {},
                 ).prepare()
 
