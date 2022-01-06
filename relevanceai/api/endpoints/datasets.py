@@ -288,6 +288,7 @@ class DatasetsClient(_Base):
         update_schema: bool = True,
         field_transformers=[],
         return_documents: bool = False,
+        use_json_encoder: bool = True,
     ):
         """
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
@@ -324,6 +325,9 @@ class DatasetsClient(_Base):
         """
 
         base_url = self.config.get_option("api.base_ingest_url")
+
+        if use_json_encoder:
+            documents= self.json_encoder(documents)
 
         if return_documents is False:
             return self.make_http_request(

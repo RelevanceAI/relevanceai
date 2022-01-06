@@ -15,11 +15,11 @@ from relevanceai.config import Config
 from relevanceai.logger import AbstractLogger
 from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.errors import APIError
+from relevanceai.json_encoder import JSONEncoderUtils
 
 DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
-
-class Transport:
+class Transport(JSONEncoderUtils):
     """Base class for all relevanceai objects"""
 
     project: str
