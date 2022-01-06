@@ -109,6 +109,7 @@ def sample_numpy_docs():
             "_id": doc_id,
             "sample_1_numpy": np.random.randint(5, size=1)[0],
             "sample_2_numpy": np.random.rand(3, 2),
+            "sample_3_numpy": np.nan,
         }
 
     N = 20
@@ -125,6 +126,10 @@ def sample_pandas_docs():
             ),
             "sample_2_pandas": pd.DataFrame(
                 np.random.randint(0, 10, size=(10, 4)), columns=list("ABCD")
+            ),
+            "sample_3_pandas": pd.DataFrame(
+                np.array([[1, 2, np.nan], [4, np.nan, 6], [7, 8, 9]]),
+                columns=["a", "b", "c"],
             ),
         }
 
@@ -154,7 +159,8 @@ def sample_nested_assorted_docs():
                 },
                 {
                     "panda": pd.DataFrame(
-                        np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
+                        np.array([[1, 2, np.nan], [4, np.nan, 6], [7, 8, 9]]),
+                        columns=["a", "b", "c"],
                     ),
                     "datetime": datetime.now(),
                     "numpy": np.random.rand(3, 2),
