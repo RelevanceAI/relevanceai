@@ -4,6 +4,7 @@ from doc_utils import DocUtils
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.client import APIClient
 
+
 class Utils(APIClient, _Base, DocUtils):
     def __init__(self, project, api_key):
         self.project = project

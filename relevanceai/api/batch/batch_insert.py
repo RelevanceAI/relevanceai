@@ -254,7 +254,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             retry_chunk_mult,
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
-            use_json_encoder=use_json_encoder
+            use_json_encoder=use_json_encoder,
         )
 
     def pull_update_push(

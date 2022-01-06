@@ -54,24 +54,25 @@ ENCODERS_BY_TYPE = {
     UUID: str,
 }
 
+
 class JSONEncoderUtils:
     def json_encoder(self, obj):
         """
         Converts object so it is json serializable
-        If you want to add your own mapping, 
-        customize it this way; 
+        If you want to add your own mapping,
+        customize it this way;
 
         Example
         --------
-        
+
         YOu can use our JSON encoder easily.
         >>> docs = [{"value": np.nan}]
         >>> client.json_encoder(docs)
 
-        If you want to use FastAPI's json encoder, do this: 
+        If you want to use FastAPI's json encoder, do this:
         >>> from fastapi import jsonable_encoder
         >>> client.json_encoder = jsonable_encoder
-    
+
         """
         # Loop through iterators and convert
         if isinstance(

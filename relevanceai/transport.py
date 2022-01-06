@@ -19,6 +19,7 @@ from relevanceai.json_encoder import JSONEncoderUtils
 
 DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
+
 class Transport(JSONEncoderUtils):
     """Base class for all relevanceai objects"""
 

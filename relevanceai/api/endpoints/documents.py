@@ -1,6 +1,7 @@
 from typing import List
 from relevanceai.base import _Base
 
+
 class DocumentsClient(_Base):
     def __init__(self, project, api_key):
         self.project = project
@@ -292,7 +293,7 @@ class DocumentsClient(_Base):
         updates: list,
         insert_date: bool = True,
         return_documents: bool = False,
-        use_json_encoder: bool=True
+        use_json_encoder: bool = True,
     ):
 
         """

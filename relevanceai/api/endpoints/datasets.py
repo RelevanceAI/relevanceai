@@ -327,7 +327,7 @@ class DatasetsClient(_Base):
         base_url = self.config.get_option("api.base_ingest_url")
 
         if use_json_encoder:
-            documents= self.json_encoder(documents)
+            documents = self.json_encoder(documents)
 
         if return_documents is False:
             return self.make_http_request(
