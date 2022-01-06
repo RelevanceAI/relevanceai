@@ -73,47 +73,6 @@ def error_doc():
 
 
 @pytest.fixture(scope="session")
-def sample_vector_csv():
-    def _sample_vector_doc(doc_id: str):
-        return {
-            "_id": doc_id,
-            "sample_1_label": generate_random_label(),
-            "sample_2_label": generate_random_label(),
-            "sample_3_label": generate_random_label(),
-            "sample_1_description": generate_random_string(),
-            "sample_2_description": generate_random_string(),
-            "sample_3_description": generate_random_string(),
-            "sample_1_vector_": generate_random_vector(N=100),
-            "sample_2_vector_": generate_random_vector(N=100),
-            "sample_3_vector_": generate_random_vector(N=100),
-        }
-
-    N = 100
-
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
-        writer = csv.DictWriter(
-            csvfile,
-            fieldnames=[
-                "_id" "sample_1_label",
-                "sample_2_label",
-                "sample_3_label",
-                "sample_1_description",
-                "sample_2_description",
-                "sample_3_description",
-                "sample_1_vector_",
-                "sample_2_vector_",
-                "sample_3_vector_",
-            ],
-        )
-        writer.writeheader()
-        [
-            writer.writerow(_sample_vector_doc(doc_id=uuid.uuid4().__str__()))
-            for _ in range(N)
-        ]
-    return csvfile
-
-
-@pytest.fixture(scope="session")
 def sample_vector_docs():
     def _sample_vector_doc(doc_id: str):
         return {
@@ -274,8 +233,13 @@ def test_nested_assorted_dataset(
 
 
 @pytest.fixture(scope="session")
-def test_csv_dataset(test_client, sample_vector_csv, test_dataset_id):
+def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample csv dataset"""
-    response = test_client.insert_csv(test_dataset_id, sample_vector_csv)
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
+        df = pd.DataFrame(sample_vector_docs)
+        df.to_csv(csvfile)
+
+    response = test_client.insert_csv(test_dataset_id, csvfile.name)
     yield response, len(sample_vector_docs)
     test_client.datasets.delete(test_dataset_id)
