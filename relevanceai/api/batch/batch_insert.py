@@ -78,7 +78,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Turn _id into string
         self._convert_id_to_string(docs)
 
-
         if use_json_encoder:
             docs = self.json_encoder(docs)
 
