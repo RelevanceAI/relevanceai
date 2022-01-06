@@ -41,7 +41,8 @@ def simple_doc():
 
 @pytest.fixture(scope="session")
 def test_client(test_project, test_api_key):
-    return Client(test_project, test_api_key)
+    client = Client(test_project, test_api_key)
+    return client
 
 
 @pytest.fixture(scope="session")
