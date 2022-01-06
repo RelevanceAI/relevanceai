@@ -151,8 +151,9 @@ class CentroidCluster(ClusterBase):
         raise NotImplementedError
 
     def get_centroid_docs(self, centroid_vector_field_name="centroid_vector_") -> List:
-        """Get the centroid documents to store.
-        if single vector field returns this:
+        """
+        Get the centroid documents to store.
+        If single vector field returns this:
             {
                 "_id": "document-id-1",
                 "centroid_vector_": [0.23, 0.24, 0.23]
@@ -572,7 +573,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self.logger.info(results)
 
         # Update the centroid collection
-        centers = clusterer.get_centroid_docs()
+        clusterer.vector_fields = vector_fields
+        if len(vector_fields) == 1:
+            centers = clusterer.get_centroid_docs(vector_fields[0])
 
         # Change centroids insertion
         results = self.services.cluster.centroids.insert(
@@ -583,7 +586,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
         print(f"Finished clustering. The cluster alias is `{alias}`.")
-
         self.services.cluster.centroids.list_closest_to_center(
             dataset_id,
             vector_fields=vector_fields,
