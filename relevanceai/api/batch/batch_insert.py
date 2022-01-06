@@ -242,6 +242,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 dataset_id,
                 docs,
                 return_documents=True,
+                use_json_encoder=use_json_encoder
                 *args,
                 **kwargs,
             )
@@ -254,7 +255,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             retry_chunk_mult,
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
         )
 
     def pull_update_push(
@@ -269,7 +269,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         filters: list = [],
         select_fields: list = [],
         show_progress_bar: bool = True,
-        json_encoder: bool = True,
+        use_json_encoder: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -366,7 +366,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
-                    json_encoder=json_encoder,
+                    use_json_encoder=use_json_encoder,
                 )
             else:
                 insert_json = self.insert_documents(
@@ -374,7 +374,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
-                    json_encoder=json_encoder,
+                    use_json_encoder=use_json_encoder,
                 )
 
             # Check success
@@ -409,7 +409,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         filters: list = [],
         select_fields: list = [],
         show_progress_bar: bool = True,
-        json_encoder: bool = True,
+        use_json_encoder: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -522,7 +522,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         docs=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
-                        json_encoder=json_encoder,
+                        use_json_encoder=use_json_encoder,
                     )
                 else:
                     insert_json = self.insert_documents(
@@ -530,7 +530,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         docs=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
-                        json_encoder=json_encoder,
+                        use_json_encoder=use_json_encoder,
                     )
 
                 # Check success
