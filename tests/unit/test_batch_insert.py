@@ -22,21 +22,17 @@ class TestInsert:
         response, original_length = test_datetime_dataset
         assert response["inserted"] == original_length
 
-
     def test_numpy_upload(self, test_numpy_dataset):
         response, original_length = test_numpy_dataset
         assert response["inserted"] == original_length
-
 
     def test_pandas_upload(self, test_pandas_dataset):
         response, original_length = test_pandas_dataset
         assert response["inserted"] == original_length
 
-
     def test_nested_assorted_upload(self, test_nested_assorted_dataset):
         response, original_length = test_nested_assorted_dataset
         assert response["inserted"] == original_length
-
 
 
 # Mock a callable For pull update push
