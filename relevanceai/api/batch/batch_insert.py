@@ -127,9 +127,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             filepath_or_buffer, index_col=0, chunksize=chunksize, **csv_args
         )
 
+        # Initialise output
         inserted = 0
         failed_documents = []
         failed_documents_detailed = []
+
+        # Chunk inserts
         for chunk in df:
             response = self._insert_csv_chunk(
                 chunk=chunk,
