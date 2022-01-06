@@ -6,6 +6,12 @@ Here you will find a list of changes for each package update.
 Update the package accordingly.
 ----------------------------
 
+v0.26.3
+---------
+
+- Cluster labels are now lower case 
+- Bug fix on centroids furthest from center
+
 v0.26.2
 ---------
 
