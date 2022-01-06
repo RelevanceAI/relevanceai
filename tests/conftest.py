@@ -8,6 +8,9 @@ import numpy as np
 from relevanceai import Client
 from datetime import datetime
 import pandas as pd
+import io
+import csv
+import tempfile
 
 from utils import generate_random_string, generate_random_vector, generate_random_label
 
@@ -221,9 +224,22 @@ def test_pandas_dataset(test_client, sample_pandas_docs, test_dataset_id):
 def test_nested_assorted_dataset(
     test_client, sample_nested_assorted_docs, test_dataset_id
 ):
-    """Sample pandas dataset"""
+    """Sample nested assorted dataset"""
     response = test_client.insert_documents(
         test_dataset_id, sample_nested_assorted_docs
     )
     yield response, len(sample_nested_assorted_docs)
+    test_client.datasets.delete(test_dataset_id)
+
+
+@pytest.fixture(scope="session")
+def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
+    """Sample csv dataset"""
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
+        df = pd.DataFrame(sample_vector_docs)
+        df.to_csv(csvfile)
+
+    response = test_client.insert_csv(test_dataset_id, csvfile.name)
+    yield response, len(sample_vector_docs)
     test_client.datasets.delete(test_dataset_id)
