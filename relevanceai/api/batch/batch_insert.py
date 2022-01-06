@@ -76,6 +76,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if json_encoder:
             docs = self.json_encoder(docs)
 
+        # Turn _id into string
+        docs = self._convert_id_to_string(docs)
+
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
@@ -151,6 +154,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Ensure JSON serializable
         if json_encoder:
             docs = self.json_encoder(docs)
+
+        # Turn _id into string
+        docs = self._convert_id_to_string(docs)
 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
@@ -563,6 +569,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         for i in range(int(self.config.get_option("retries.number_of_retries"))):
             if len(failed_ids) > 0:
+                self.logger.info(f"Inserting with chunksize {chunksize}")
                 if bulk_fn is not None:
                     insert_json = multiprocess(
                         func=bulk_fn,
@@ -621,6 +628,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
                 # Update docs to retry which have failed
+                self.logger.error(
+                    f"Failed to upload {failed_ids}. Retrying with chunksize {chunksize}"
+                )
                 docs = [i for i in docs if i["_id"] in failed_ids]
 
             else:

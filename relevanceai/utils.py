@@ -132,3 +132,7 @@ class Utils(APIClient, _Base, DocUtils):
         Remove documents with empty vector fields
         """
         return [d for d in docs if d.get(vector_field)]
+
+    def _convert_id_to_string(self, docs):
+        self.set_field_across_documents("_id", [str(i["_id"]) for i in docs], docs)
+        return docs
