@@ -230,7 +230,6 @@ class MiniBatchKMeans(CentroidCluster):
 
     def _init_model(self):
         from sklearn.cluster import MiniBatchKMeans
-
         self.km = MiniBatchKMeans(
             n_clusters=self.k,
             init=self.init,
