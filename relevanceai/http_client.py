@@ -13,6 +13,7 @@ from relevanceai.config import CONFIG
 from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
+
 vis_requirements = False
 try:
     from relevanceai.visualise.projector import Projector
