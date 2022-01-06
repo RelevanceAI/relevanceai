@@ -38,7 +38,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
-        json_encoder: bool = True,
+        use_json_encoder: bool = True,
         *args,
         **kwargs,
     ):
@@ -67,7 +67,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Multiplier to apply to chunksize if upload fails
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
-        json_encoder : bool
+        use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
 
@@ -79,12 +79,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        # Ensure JSON serializable
-        if json_encoder:
-            docs = self.json_encoder(docs)
-
         # Turn _id into string
         self._convert_id_to_string(docs)
+
+        if use_json_encoder:
+            docs = self.json_encoder(docs)
 
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
@@ -197,7 +196,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
         show_progress_bar=False,
-        json_encoder: bool = True,
+        use_json_encoder: bool = True,
         *args,
         **kwargs,
     ):
@@ -231,7 +230,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Multiplier to apply to chunksize if upload fails
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
-        json_encoder : bool
+        use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
 
@@ -241,12 +240,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
         )
 
-        # Ensure JSON serializable
-        if json_encoder:
-            docs = self.json_encoder(docs)
-
         # Turn _id into string
         self._convert_id_to_string(docs)
+
+        if use_json_encoder:
+            docs = self.json_encoder(docs)
 
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
@@ -279,7 +277,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         filters: list = [],
         select_fields: list = [],
         show_progress_bar: bool = True,
-        json_encoder: bool = True,
+        use_json_encoder: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -376,7 +374,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
-                    json_encoder=json_encoder,
+                    use_json_encoder=use_json_encoder,
                 )
             else:
                 insert_json = self.insert_documents(
@@ -384,7 +382,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
-                    json_encoder=json_encoder,
+                    use_json_encoder=use_json_encoder,
                 )
 
             # Check success
@@ -419,7 +417,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         filters: list = [],
         select_fields: list = [],
         show_progress_bar: bool = True,
-        json_encoder: bool = True,
+        use_json_encoder: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -532,7 +530,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         docs=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
-                        json_encoder=json_encoder,
+                        use_json_encoder=use_json_encoder,
                     )
                 else:
                     insert_json = self.insert_documents(
@@ -540,7 +538,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         docs=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
-                        json_encoder=json_encoder,
+                        use_json_encoder=use_json_encoder,
                     )
 
                 # Check success
