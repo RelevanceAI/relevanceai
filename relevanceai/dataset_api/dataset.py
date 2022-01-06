@@ -47,17 +47,10 @@ class Dataset:
         print(tabulate(table_data, headers=headers))
 
     def head(self) -> None:
-        schema = self.client.datasets.schema(self.dataset_id)
         head_docs = self.client.get_documents(self.dataset_id, number_of_documents=5)
-        headers = ["#"] + [
-            header[:7].replace(" ", "") + "..." if len(header) > 10 else header
-            for header in list(schema.keys())
-        ]
-        table_data = [
-            [index] + [str(doc[key])[:10] for key in list(schema.keys())]
-            for index, doc in enumerate(head_docs)
-        ]
-        print(tabulate(table_data, headers=headers))
+        head_df = pd.DataFrame(head_docs).head()
+        head_df = head_df.drop(["_id", "insert_date_"], axis=1)
+        return head_df
 
     def stats(self):
         # TODO
