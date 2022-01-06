@@ -32,7 +32,10 @@ class Dataset:
         schema = self.client.datasets.schema(self.dataset_id)
 
         info = {
-            key: {"missing": health[key]["missing"], "dtype": schema[key]}
+            key: {
+                "missing": health[key]["missing"], 
+                "dtype": schema[key]
+            }
             for key in health.keys()
         }
         for key, value in info.items():
@@ -40,12 +43,12 @@ class Dataset:
 
     def head(self):
         # TODO
-        return
+        raise NotImplementedError
 
     def stats(self):
         # TODO
-        return
+        raise NotImplementedError
 
     def describe(self):
         # TODO
-        return
+        raise NotImplementedError
