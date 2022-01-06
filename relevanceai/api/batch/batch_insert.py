@@ -167,7 +167,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             raise MissingFieldError("Need _id as a column")
 
         # Convert vector fields
-        vector_columns = [i for i in chunk.columns if i.endswith('_vector_')]
+        vector_columns = [i for i in chunk.columns if i.endswith("_vector_")]
         for i in vector_columns:
             chunk[i] = chunk[i].apply(literal_eval)
 
