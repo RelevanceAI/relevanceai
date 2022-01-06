@@ -135,4 +135,3 @@ class Utils(APIClient, _Base, DocUtils):
 
     def _convert_id_to_string(self, docs):
         self.set_field_across_documents("_id", [str(i["_id"]) for i in docs], docs)
-        return docs
