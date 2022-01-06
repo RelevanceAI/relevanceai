@@ -716,8 +716,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
                 # Update docs to retry which have failed
-                self.logger.error(
-                    f"Failed to upload {failed_ids}. Retrying with chunksize {chunksize}"
+                self.logger.warning(
+                    f"Failed to upload {failed_ids}. Automatically retrying for you with chunksize {chunksize}"
                 )
                 docs = [i for i in docs if i["_id"] in failed_ids]
 
