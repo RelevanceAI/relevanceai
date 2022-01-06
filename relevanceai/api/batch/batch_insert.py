@@ -78,12 +78,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Turn _id into string
         self._convert_id_to_string(docs)
 
+
+        if use_json_encoder:
+            docs = self.json_encoder(docs)
+
         def bulk_insert_func(docs):
             return self.datasets.bulk_insert(
                 dataset_id,
                 docs,
                 return_documents=True,
-                use_json_encoder=use_json_encoder,
                 *args,
                 **kwargs,
             )
@@ -237,12 +240,14 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Turn _id into string
         self._convert_id_to_string(docs)
 
+        if use_json_encoder:
+            docs = self.json_encoder(docs)
+
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
                 docs,
                 return_documents=True,
-                use_json_encoder=use_json_encoder,
                 *args,
                 **kwargs,
             )

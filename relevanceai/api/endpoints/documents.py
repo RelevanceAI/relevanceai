@@ -293,7 +293,6 @@ class DocumentsClient(_Base):
         updates: list,
         insert_date: bool = True,
         return_documents: bool = False,
-        use_json_encoder: bool = True,
     ):
 
         """
@@ -313,9 +312,6 @@ class DocumentsClient(_Base):
         """
 
         base_url = self.config.get_option("api.base_ingest_url")
-
-        if use_json_encoder:
-            updates = self.json_encoder(updates)
 
         if return_documents is False:
             return self.make_http_request(
