@@ -23,6 +23,10 @@ from relevanceai.errors import MissingFieldError
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
+SUCCESS_CODES = [200]
+RETRY_CODES = [400, 404]
+HALF_CHUNK_CODES = [413, 524]
+
 
 class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     def insert_documents(
@@ -684,7 +688,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 for chunk in insert_json:
 
                     # Track failed in 200
-                    if chunk["status_code"] == 200:
+                    if chunk["status_code"] in SUCCESS_CODES:
                         failed_ids += [
                             i["_id"] for i in chunk["response_json"]["failed_documents"]
                         ]
@@ -694,11 +698,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         ]
 
                     # Cancel documents with 400 or 404
-                    elif chunk["status_code"] in [400, 404]:
+                    elif chunk["status_code"] in RETRY_CODES:
                         cancelled_ids += [i["_id"] for i in chunk["documents"]]
 
                     # Half chunksize with 413 or 524
-                    elif chunk["status_code"] in [413, 524]:
+                    elif chunk["status_code"] in HALF_CHUNK_CODES:
                         failed_ids += [i["_id"] for i in chunk["documents"]]
                         chunksize = int(chunksize * retry_chunk_mult)
 
