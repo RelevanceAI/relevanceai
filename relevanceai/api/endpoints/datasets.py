@@ -1,6 +1,6 @@
 """All Dataset related functions
 """
-from typing import Union, Optional
+from typing import List
 
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.documents import DocumentsClient
@@ -282,7 +282,7 @@ class DatasetsClient(_Base):
     def bulk_insert(
         self,
         dataset_id: str,
-        documents: list,
+        documents: List,
         insert_date: bool = True,
         overwrite: bool = True,
         update_schema: bool = True,
