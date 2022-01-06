@@ -43,9 +43,7 @@ vis_requirements = requirements + [
     "dash_bootstrap_components",
 ]
 
-dataset_requirements = [
-    "tabulate>=0.8.9"
-]
+dataset_requirements = ["tabulate>=0.8.9"]
 
 umap = ["umap-learn>=0.5.2"]
 # ivis_cpu = ["ivis[cpu]>=2.0.6"]
@@ -70,7 +68,7 @@ dev_requirements = [
     "jupyter",
     "sphinx-rtd-theme>=0.5.0",
     "sphinx-autoapi==1.8.4",
-    "sphinx-autodoc-typehints==1.12.0"
+    "sphinx-autodoc-typehints==1.12.0",
 ] + test_requirements
 
 
@@ -126,7 +124,7 @@ setup(
         # "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
-        "dataset": dataset_requirements
+        "dataset": dataset_requirements,
     },
     python_requires=">=3.6",
     classifiers=[
