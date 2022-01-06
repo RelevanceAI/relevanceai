@@ -46,9 +46,18 @@ class Dataset:
         table_data = [list(schema_info.values()) for schema_info in info]
         print(tabulate(table_data, headers=headers))
 
-    def head(self):
-        # TODO
-        raise NotImplementedError
+    def head(self) -> None:
+        schema = self.client.datasets.schema(self.dataset_id)
+        head_docs = self.client.get_documents(self.dataset_id, number_of_documents=5)
+        headers = ["#"] + [
+            header[:7].replace(" ", "") + "..." if len(header) > 10 else header
+            for header in list(schema.keys())
+        ]
+        table_data = [
+            [index] + [str(doc[key])[:10] for key in list(schema.keys())]
+            for index, doc in enumerate(head_docs)
+        ]
+        print(tabulate(table_data, headers=headers))
 
     def stats(self):
         # TODO
