@@ -141,6 +141,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             f"You can track your stats and progress via our dashboard at https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
         )
 
+        # Ensure JSON serializable
+        docs = self.json_encoder(docs)
+
         def bulk_update_func(docs):
             return self.datasets.documents.bulk_update(
                 dataset_id,
