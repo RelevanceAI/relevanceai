@@ -318,7 +318,7 @@ class CentroidsClient(_Base):
         dataset_id: str,
         vector_fields: List[str],
         alias: str,
-        centroid_vector_fields: List=[],
+        centroid_vector_fields: List = [],
         cluster_ids: List = [],
         select_fields: List = [],
         approx: int = 0,
