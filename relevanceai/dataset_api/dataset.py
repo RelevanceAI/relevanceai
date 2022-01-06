@@ -10,7 +10,7 @@ class Dataset():
     def __init__(self, client) -> None:
         self.client = client
 
-    def __call__(self, dataset_id: Union[list, str], image_fields: List = [], text_fields: List = [], audio_fields: List = [], output_format: str = 'pandas') -> None:
+    def __call__(self, dataset_id: Union[list, str], image_fields: List = [], text_fields: List = [], audio_fields: List = [], output_format: str = 'pandas'):
         self.dataset_id = dataset_id
         self.image_fields = image_fields
         self.text_fields = text_fields
