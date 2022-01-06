@@ -573,7 +573,7 @@ class BatchInsertClient(BatchRetrieveClient, APIClient, Chunker, DocUtils):
                 for chunk in insert_json:
 
                     # Track failed in 200
-                    if chunk["status_code"] == 200:
+                    if chunk["status_code"] in [200, 500]:
                         failed_ids += [
                             i["_id"] for i in chunk["response_json"]["failed_documents"]
                         ]
