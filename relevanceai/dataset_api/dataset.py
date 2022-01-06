@@ -6,6 +6,7 @@ import pandas as pd
 from typing import Union
 from typing import List
 
+from tabulate import tabulate
 
 class Dataset:
     def __init__(self, client) -> None:
@@ -31,15 +32,20 @@ class Dataset:
         health = self.client.datasets.monitor.health(self.dataset_id)
         schema = self.client.datasets.schema(self.dataset_id)
 
-        info = {
-            key: {
+        info = [
+            {
+                "#": index,
+                "key": key,
                 "missing": health[key]["missing"], 
                 "dtype": schema[key]
             }
-            for key in health.keys()
-        }
-        for key, value in info.items():
-            print(key, value)
+            for index, key in enumerate(health.keys())
+        ]
+        headers = list(info[0].keys())
+        table_data = [
+            list(schema_info.values()) for schema_info in info
+        ]
+        print(tabulate(table_data, headers=headers))
 
     def head(self):
         # TODO
