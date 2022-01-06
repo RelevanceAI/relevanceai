@@ -242,7 +242,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 dataset_id,
                 docs,
                 return_documents=True,
-                use_json_encoder=use_json_encoder
+                use_json_encoder=use_json_encoder,
                 *args,
                 **kwargs,
             )
