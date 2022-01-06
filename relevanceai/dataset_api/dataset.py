@@ -8,6 +8,7 @@ from typing import List
 
 from tabulate import tabulate
 
+
 class Dataset:
     def __init__(self, client) -> None:
         self.client = client
@@ -36,15 +37,13 @@ class Dataset:
             {
                 "#": index,
                 "key": key,
-                "missing": health[key]["missing"], 
-                "dtype": schema[key]
+                "missing": health[key]["missing"],
+                "dtype": schema[key],
             }
             for index, key in enumerate(health.keys())
         ]
         headers = list(info[0].keys())
-        table_data = [
-            list(schema_info.values()) for schema_info in info
-        ]
+        table_data = [list(schema_info.values()) for schema_info in info]
         print(tabulate(table_data, headers=headers))
 
     def head(self):
