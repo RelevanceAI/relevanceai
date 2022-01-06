@@ -6,6 +6,7 @@ import time
 import traceback
 import pandas as pd
 from datetime import datetime
+from ast import literal_eval
 from typing import Callable, List, Dict, Union, Any
 
 from doc_utils import DocUtils
@@ -164,6 +165,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check for _id
         if "_id" not in chunk.columns:
             raise MissingFieldError("Need _id as a column")
+
+        # Convert vector fields
+        vector_columns = [i for i in chunk.columns if i.endswith("_vector_")]
+        for i in vector_columns:
+            chunk[i] = chunk[i].apply(literal_eval)
 
         chunk_json = chunk.to_dict(orient="records")
         response = self.insert_documents(
