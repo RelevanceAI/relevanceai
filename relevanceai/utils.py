@@ -18,6 +18,7 @@ from ipaddress import (
 from uuid import UUID
 from collections import deque
 from pathlib import Path
+import math
 
 from doc_utils import DocUtils
 from relevanceai.base import _Base
@@ -78,15 +79,20 @@ class Utils(APIClient, _Base, DocUtils):
         if dataclasses.is_dataclass(obj):
             return dataclasses.asdict(obj)
         if isinstance(obj, (np.ndarray, np.generic)):
-            return obj.tolist()
+            return self.json_encoder(obj.tolist())
         if isinstance(obj, pd.DataFrame):
-            return obj.to_dict()
+            return self.json_encoder(obj.to_dict())
         if isinstance(obj, Enum):
             return obj.value
         if isinstance(obj, PurePath):
             return str(obj)
-        if isinstance(obj, (str, int, float, type(None))):
+        if isinstance(obj, (str, int, type(None))):
             return obj
+        if isinstance(obj, float):
+            if pd.isna(obj):
+                return None
+            else:
+                return obj
         if type(obj) in ENCODERS_BY_TYPE:
             return ENCODERS_BY_TYPE[type(obj)](obj)
 
