@@ -636,7 +636,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             else:
                 break
 
-        # When returning, add in the cancelled ids
+        # When returning, add in the cancelled id
         failed_ids.extend(cancelled_ids)
 
         output = {
