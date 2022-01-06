@@ -12,21 +12,6 @@ from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.data_tools.base_text_processing import BaseTextProcessing
 
 
-try:
-    from ivis import Ivis
-except ModuleNotFoundError:
-    warnings.warn(
-        """You are missing ivis, please run the appropriate installation option:
-    `pip install ivis[gpu]` If you have CUDA installed
-    `pip install ivis[cpu]` if you don't have CUDA installed
-    """
-    )
-
-try:
-    import matplotlib.pyplot as plt
-except ModuleNotFoundError:
-    warnings.warn("You are missing matplotlib, please run `pip install matplotlib`")
-
 
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):
     def __init__(
@@ -294,6 +279,17 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         n_epochs_without_progress=100,
         run_fit=True,
     ):
+
+        try:
+            from ivis import Ivis
+        except ModuleNotFoundError:
+            warnings.warn(
+                """You are missing ivis, please run the appropriate installation option:
+            `pip install ivis[gpu]` If you have CUDA installed
+            `pip install ivis[cpu]` if you don't have CUDA installed
+            """
+        )
+
         self.logger.info(" * Dimensionality reduction")
         vector_data = np.array(vector_data)
         if run_fit:
@@ -329,6 +325,11 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         le = preprocessing.LabelEncoder()
         color = le.fit_transform(group)
 
+        try:
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+            warnings.warn("You are missing matplotlib, please run `pip install matplotlib`")
+
         plt.axis(plot_axis)
         plt.figure(figsize=figsize)
         plt.scatter(
@@ -349,7 +350,6 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
                 ],
                 (r["centroid_dr_vector_"][0] - 0.5, r["centroid_dr_vector_"][1]),
             )
-
 
 def build_and_plot_clusters(
     self,
