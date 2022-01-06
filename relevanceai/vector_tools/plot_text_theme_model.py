@@ -12,7 +12,6 @@ from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.data_tools.base_text_processing import BaseTextProcessing
 
 
-
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):
     def __init__(
         self,
@@ -288,7 +287,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             `pip install ivis[gpu]` If you have CUDA installed
             `pip install ivis[cpu]` if you don't have CUDA installed
             """
-        )
+            )
 
         self.logger.info(" * Dimensionality reduction")
         vector_data = np.array(vector_data)
@@ -328,7 +327,9 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         try:
             import matplotlib.pyplot as plt
         except ModuleNotFoundError:
-            warnings.warn("You are missing matplotlib, please run `pip install matplotlib`")
+            warnings.warn(
+                "You are missing matplotlib, please run `pip install matplotlib`"
+            )
 
         plt.axis(plot_axis)
         plt.figure(figsize=figsize)
@@ -350,6 +351,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
                 ],
                 (r["centroid_dr_vector_"][0] - 0.5, r["centroid_dr_vector_"][1]),
             )
+
 
 def build_and_plot_clusters(
     self,
