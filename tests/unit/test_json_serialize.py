@@ -21,6 +21,7 @@ def test_nested_assorted_upload(test_nested_assorted_dataset):
     response, original_length = test_nested_assorted_dataset
     assert response["inserted"] == original_length
 
+
 def test_csv_upload(test_csv_dataset):
     response, original_length = test_csv_dataset
     assert response["inserted"] == original_length
