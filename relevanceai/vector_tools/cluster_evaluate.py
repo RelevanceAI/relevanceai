@@ -224,6 +224,14 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             + vector_select_field
             + ground_truth_select_field
             + description_fields,
+            filters=[
+                {
+                    "field": cluster_field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": "",
+                }
+            ],
         )
 
         # Get cluster labels

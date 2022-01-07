@@ -27,14 +27,12 @@ requirements = [
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
-    "matplotlib>=3.5.1",
-    "nltk>=3.6.7",
+    "scikit-learn",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
-    "scikit-learn",
     "plotly>=5.3.1",
     "typing-extensions",
     "typeguard",
@@ -113,8 +111,10 @@ setup(
     extras_require={
         "dev": dev_requirements,
         "dev-vis": dev_vis_requirements,
+        "dev-viz": dev_vis_requirements,
         "excel": excel_requirements,
         "vis": vis_requirements,
+        "viz": vis_requirements,
         # "vis-all": vis_requirements + vis_extras,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,

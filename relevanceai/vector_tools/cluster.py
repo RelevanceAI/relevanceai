@@ -133,7 +133,7 @@ class ClusterBase(LoguruLogger, DocUtils):
 
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):
-            return "Cluster-" + str(label)
+            return "cluster-" + str(label)
         return str(label)
 
     def _label_clusters(self, labels):
@@ -577,7 +577,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self.logger.info(results)
 
         # Update the centroid collection
-        centers = clusterer.get_centroid_documents()
+        clusterer.vector_fields = vector_fields
+        if len(vector_fields) == 1:
+            centers = clusterer.get_centroid_documents(vector_fields[0])
 
         # Change centroids insertion
         results = self.services.cluster.centroids.insert(
@@ -588,7 +590,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
         print(f"Finished clustering. The cluster alias is `{alias}`.")
-
         self.services.cluster.centroids.list_closest_to_center(
             dataset_id,
             vector_fields=vector_fields,
