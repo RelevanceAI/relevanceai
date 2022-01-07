@@ -17,7 +17,7 @@ class Dataset(BatchAPIClient):
 
     def __call__(
         self,
-        dataset_id: Union[list, str],
+        dataset_id: str,
         image_fields: List = [],
         text_fields: List = [],
         audio_fields: List = [],
