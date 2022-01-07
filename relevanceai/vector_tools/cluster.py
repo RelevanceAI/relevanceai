@@ -576,6 +576,8 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         clusterer.vector_fields = vector_fields
         if len(vector_fields) == 1:
             centers = clusterer.get_centroid_docs(vector_fields[0])
+        else:
+            centers = clusterer.get_centroid_docs()
 
         # Change centroids insertion
         results = self.services.cluster.centroids.insert(
