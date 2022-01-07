@@ -41,7 +41,7 @@ def test_cluster_integration_multiple_vector_fields(
 ):
     """Test for the entire clustering workflow."""
     # Retrieve a previous dataset
-    VECTOR_FIELDS = "sample_1_vector_"
+    VECTOR_FIELDS = ["sample_1_vector_", "sample_2_vector_"]
     ALIAS = "kmeans_10"
     docs = test_client.datasets.documents.list(test_sample_vector_dataset)
 
