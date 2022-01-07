@@ -224,8 +224,8 @@ class CentroidsClient(_Base):
         self,
         dataset_id: str,
         vector_fields: List,
+        alias: str,
         cluster_ids: List = [],
-        alias: str = "default",
         centroid_vector_fields: List = ["centroid_vector_"],
         select_fields: List = [],
         approx: int = 0,
@@ -316,9 +316,10 @@ class CentroidsClient(_Base):
     def list_furthest_from_center(
         self,
         dataset_id: str,
-        vector_fields: str,
+        vector_fields: List[str],
+        alias: str,
+        centroid_vector_fields: List = [],
         cluster_ids: List = [],
-        alias: str = "default",
         select_fields: List = [],
         approx: int = 0,
         sum_fields: bool = True,
@@ -371,7 +372,9 @@ class CentroidsClient(_Base):
             Include facets in the search results
 
         """
-
+        # TODO: Update the API so that centroid vector fields defaults to vector fields
+        if not centroid_vector_fields:
+            centroid_vector_fields = vector_fields
         endpoint = "/services/cluster/centroids/list_furthest_from_center"
         method = "POST"
         parameters = {
@@ -380,6 +383,7 @@ class CentroidsClient(_Base):
             "alias": alias,
             "cluster_ids": cluster_ids,
             "select_fields": select_fields,
+            "centroid_vector_fields": centroid_vector_fields,
             "approx": approx,
             "sum_fields": sum_fields,
             "page_size": page_size,

@@ -22,7 +22,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    relevanceai.visualise
    vectortools
    features
-   
+   changelog
 
 Indices and tables
 ==================
