@@ -6,12 +6,14 @@ import pandas as pd
 from typing import Union
 from typing import List
 
-from tabulate import tabulate
+from relevanceai.api.client import BatchAPIClient
 
 
-class Dataset:
-    def __init__(self, client) -> None:
-        self.client = client
+class Dataset(BatchAPIClient):
+    def __init__(self, project, api_key) -> None:
+        super().__init__(project, api_key)
+        self.project = project
+        self.api_key = api_key
 
     def __call__(
         self,
@@ -27,47 +29,23 @@ class Dataset:
         self.audio_fields = audio_fields
         self.output_format = output_format
 
-        self.width = len(self.schema) - 1
-        self.length = max([value["exists"] for value in self.health.values()])
+        self.health = self.datasets.monitor.health(self.dataset_id)
+        self.schema = self.datasets.schema(self.dataset_id)
+
+        self.docs = self.get_all_documents(self.dataset_id)
+        self.df = pd.DataFrame(self.docs)
+
         return self
 
     @property
-    def health(self):
-        return self.client.datasets.monitor.health(self.dataset_id)
-
-    @property
-    def schema(self):
-        return self.client.datasets.schema(self.dataset_id)
-
-    @property
     def shape(self):
-        return (self.length, self.width)
+        return self.df.shape
 
     def info(self) -> None:
-
-        info = [
-            {
-                "#": index,
-                "key": key,
-                "missing": self.health[key]["missing"],
-                "dtype": self.schema[key],
-            }
-            for index, key in enumerate(self.health.keys())
-        ]
-        headers = list(info[0].keys())
-        table_data = [list(schema_info.values()) for schema_info in info]
-        print(tabulate(table_data, headers=headers))
+        return self.df.info()
 
     def head(self, raw_json=False) -> None:
-        head_docs = self.client.get_documents(self.dataset_id, number_of_documents=5)
-        head_df = pd.DataFrame(head_docs).head()
-        head_df = head_df.drop(["_id", "insert_date_"], axis=1)
-        return head_df
-
-    def stats(self):
-        # TODO
-        raise NotImplementedError
+        return self.df.head()
 
     def describe(self):
-        # TODO
-        raise NotImplementedError
+        return self.df.describe()
