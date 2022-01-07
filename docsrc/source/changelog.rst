@@ -11,6 +11,8 @@ v0.26.3
 
 - Cluster labels are now lower case 
 - Bug fix on centroids furthest from center
+- Changed error message 
+- Fixed Dodgy string parsing
 
 v0.26.2
 ---------
