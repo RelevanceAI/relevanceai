@@ -58,21 +58,24 @@ test_requirements = (
     # + vis_extras
 )
 
+doc_requirements = [
+    "sphinx-rtd-theme>=0.5.0",
+    "sphinx-autoapi==1.8.4",
+    "sphinx-autodoc-typehints==1.12.0",
+]
 
 dev_requirements = [
     "autopep8",
     "pylint",
     "jupyter",
-    "sphinx-rtd-theme>=0.5.0",
-    "sphinx-autoapi==1.8.4",
-    "sphinx-autodoc-typehints==1.12.0",
 ] + test_requirements
 
 
 dev_vis_requirements = (
-    ["autopep8", "pylint", "jupyter", "sphinx-rtd-theme>=0.5.0"]
+    ["autopep8", "pylint", "jupyter"]
     + test_requirements
     + vis_requirements
+    + doc_requirements
     # + vis_extras
 )
 
