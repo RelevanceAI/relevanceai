@@ -27,26 +27,38 @@ class Dataset:
         self.audio_fields = audio_fields
         self.output_format = output_format
 
+        self.width = len(self.schema) - 1
+        self.length = max([value["exists"] for value in self.health.values()])
         return self
 
+    @property
+    def health(self):
+        return self.client.datasets.monitor.health(self.dataset_id)
+
+    @property
+    def schema(self):
+        return self.client.datasets.schema(self.dataset_id)
+
+    @property
+    def shape(self):
+        return (self.length, self.width)
+
     def info(self) -> None:
-        health = self.client.datasets.monitor.health(self.dataset_id)
-        schema = self.client.datasets.schema(self.dataset_id)
 
         info = [
             {
                 "#": index,
                 "key": key,
-                "missing": health[key]["missing"],
-                "dtype": schema[key],
+                "missing": self.health[key]["missing"],
+                "dtype": self.schema[key],
             }
-            for index, key in enumerate(health.keys())
+            for index, key in enumerate(self.health.keys())
         ]
         headers = list(info[0].keys())
         table_data = [list(schema_info.values()) for schema_info in info]
         print(tabulate(table_data, headers=headers))
 
-    def head(self) -> None:
+    def head(self, raw_json=False) -> None:
         head_docs = self.client.get_documents(self.dataset_id, number_of_documents=5)
         head_df = pd.DataFrame(head_docs).head()
         head_df = head_df.drop(["_id", "insert_date_"], axis=1)
