@@ -68,7 +68,7 @@ dev_requirements = [
     "autopep8",
     "pylint",
     "jupyter",
-] + test_requirements
+] + test_requirements + doc_requirements
 
 
 dev_vis_requirements = (
