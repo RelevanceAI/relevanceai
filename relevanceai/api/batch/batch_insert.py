@@ -808,8 +808,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 )
             return sample_docs
 
-        self.pull_update_push(dataset_id, update_function, 
-            retrieve_chunk_size=retrieve_chunk_size, 
-            max_workers=max_workers, 
-            show_progress_bar=show_progress_bar
+        self.pull_update_push(
+            dataset_id,
+            update_function,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
+            show_progress_bar=show_progress_bar,
         )
