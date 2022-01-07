@@ -13,6 +13,7 @@ v0.26.3
 - Bug fix on centroids furthest from center
 - Changed error message 
 - Fixed Dodgy string parsing
+- Fixed bug with kmeans_cluster 1 liner by supporting getting multiple centers
 
 v0.26.2
 ---------
