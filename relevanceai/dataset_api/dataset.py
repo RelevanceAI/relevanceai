@@ -3,7 +3,6 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import Union
 from typing import List
 
 from relevanceai.api.client import BatchAPIClient
@@ -29,23 +28,38 @@ class Dataset(BatchAPIClient):
         self.audio_fields = audio_fields
         self.output_format = output_format
 
-        self.health = self.datasets.monitor.health(self.dataset_id)
-        self.schema = self.datasets.schema(self.dataset_id)
-
-        self.docs = self.get_all_documents(self.dataset_id)
-        self.df = pd.DataFrame(self.docs)
-
         return self
 
     @property
     def shape(self):
-        return self.df.shape
+        return self.get_number_of_documents(dataset_id=self.dataset_id)
 
     def info(self) -> None:
-        return self.df.info()
+        health = self.datasets.monitor.health(self.dataset_id)
+        schema = self.datasets.schema(self.dataset_id)
+        info = {
+            key: {
+                "Non-Null Count": health[key]["missing"],
+                "Dtype": schema[key],
+            }
+            for key in schema.keys()
+        }
+        dtypes = {
+            dtype: list(schema.values()).count(dtype)
+            for dtype in set(list(schema.values()))
+        }
+        info = {"info": info, "dtypes": dtypes}
+        return info
 
-    def head(self, raw_json=False) -> None:
-        return self.df.head()
+    def head(self, n=5, raw_json=False) -> None:
+        head_documents = self.get_documents(
+            dataset_id=self.dataset_id,
+            number_of_documents=n,
+        )
+        if raw_json:
+            return head_documents
+        else:
+            return pd.DataFrame(head_documents).head(n=n)
 
     def describe(self):
-        return self.df.describe()
+        return self.datasets.facets(self.dataset_id)
