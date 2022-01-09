@@ -493,7 +493,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
     def _generate_plot_info(
         self, embedding_df, hover_label, dims, marker_size, label_char_length
     ):
-
+        import plotly.graph_objects as go
         custom_data, hovertemplate = self._generate_hover_template(
             df=embedding_df,
             dims=dims,
