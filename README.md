@@ -1,6 +1,8 @@
 This library contains all the endpoints for the RelevanceAI API and gives you access to the latest vector-based technology on the market. 
 
-Get your free API key: https://development.qualitative-cloud.pages.dev/login
+[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
+
+For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
 # Main Features
 The most in-demand features of the library include:
@@ -23,9 +25,11 @@ Or you can install it via conda to:
 !pip install -c relevanceai
 ```
 
+You can also install on conda (only available on Linux environments at the moment): `conda install -c relevance relevanceai`.
+
 # Quickstart
 
-## login into your project space
+## Login into your project space
 
 ```
 from relevanceai import Client 
@@ -48,14 +52,14 @@ docs = [
 ]
 ```
 
-## upload data into a new dataset
+## Upload data into a new dataset
 The documents will be uploaded into a new dataset that you can name in whichever way you want. If the dataset name does not exist yet, it will be created automatically. If the dataset already exist, the uploaded _id will be replacing the old data.
 
 ```
 client.insert_documents(dataset_id="quickstart", docs=docs)
 ```
 
-## perform a vector search
+## Perform a vector search
 
 ```
 client.services.search.vector(
@@ -74,7 +78,7 @@ There are two ways of interacting with the API:
 | API type      | Link |
 | ------------- | ----------- |
 | Rest API      | [Documentation](https://docs.relevance.ai/docs/quickstart) | 
-| SDK     | [Documentation](https://relevanceai.github.io/RelevanceAI/docs/html/index.html)        |
+| SDK     | [Documentation](https://relevanceai.readthedocs.io/)        |
 
 # Development
 
@@ -116,5 +120,17 @@ client.config.set_option('logging.enable_logging', False)
 To restore all options to their default, run the following:
 
 ```
-client.config.reset_to_default()
+
+## Changing Base URL 
+
+You can change the base URL as such: 
+
+```
+client.base_url = "https://.../latest"
+```
+
+You can also update the ingest base URL: 
+
+```
+client.ingest_base_url = "https://.../latest
 ```

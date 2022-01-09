@@ -82,27 +82,37 @@ class Config(DocUtils):
         """Reset config to default"""
         self._read_config(CONFIG_PATH)
 
-    @staticmethod
-    def _create_default():
-        config = configparser.ConfigParser()
-        config["retries"] = {"number_of_retries": 3, "seconds_between_retries": 2}
-        config["logging"] = {
-            "log_to_file": False,
-            "logging_level": "ERROR",
-            "enable_logging": True,
-            "log_file_name": "relevanceai",
-        }
-        config["upload"] = {"target_chunk_mb": 100}
-        config["api"] = {
-            "base_url": "https://gateway-api-aueast.relevance.ai/v1",
-            "output_format": "json",
-        }
-        with open(CONFIG_PATH, "w") as configfile:
-            config.write(configfile)
+    # NOT NEEDED used to generate original config
+    # @staticmethod
+    # def _create_default():
+    #     config = configparser.ConfigParser()
+    #     config["retries"] = {"number_of_retries": 3, "seconds_between_retries": 2}
+    #     config["logging"] = {
+    #         "log_to_file": False,
+    #         "logging_level": "ERROR",
+    #         "enable_logging": True,
+    #         "log_file_name": "relevanceai",
+    #     }
+    #     config["upload"] = {"target_chunk_mb": 100, "max_chunk_size": 10000}
+    #     config["api"] = {
+    #         "base_url": "https://gateway-api-aueast.relevance.ai/latest",
+    #         "base_ingest_url": "https://ingest-api-dev-aueast.relevance.ai/latest",
+    #         "output_format": "json",
+    #     }
+
+    #     config["dashboard"] = {
+    #         "dashboard_request_url": "https:s-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest",
+    #         "base_dashboard_url": "https://cloud.relevance.ai",
+    #         "signup_endpoint": "/sdk/api",
+    #         "search_dashboard_endpoint": "/sdk/search",
+    #     }
+
+    #     with open(CONFIG_PATH, "w") as configfile:
+    #         config.write(configfile)
 
     def __getitem__(self, key):
         """
-        Get teh config using client.config["api.base_url"]
+        Get the config using client.config["api.base_url"]
         """
         return self.get_option(key)
 

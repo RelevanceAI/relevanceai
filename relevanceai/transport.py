@@ -15,9 +15,12 @@ from relevanceai.config import Config
 from relevanceai.logger import AbstractLogger
 from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.errors import APIError
+from relevanceai.json_encoder import JSONEncoderUtils
+
+DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
 
-class Transport:
+class Transport(JSONEncoderUtils):
     """Base class for all relevanceai objects"""
 
     project: str
@@ -27,7 +30,7 @@ class Transport:
 
     @property
     def _dashboard_request_url(self):
-        return self.config.get_option("dashboard.dashboard_request_url")[1:-1]
+        return self.config.get_option("dashboard.dashboard_request_url")
 
     @property
     def auth_header(self):
@@ -36,8 +39,8 @@ class Transport:
     @property
     def _search_dashboard_url(self):
         return (
-            self.config["dashboard.base_dashboard_url"][1:-1]
-            + self.config["dashboard.search_dashboard_endpoint"][1:-1]
+            self.config["dashboard.base_dashboard_url"]
+            + self.config["dashboard.search_dashboard_endpoint"]
         )
 
     @staticmethod
@@ -45,7 +48,8 @@ class Transport:
         if url is None:
             return False
         result = urlparse(url)
-        return "search" in result.path.split("/")
+        split_path = result.path.split("/")
+        return "search" in split_path and "services" in split_path
 
     @property
     def DASHBOARD_TYPES(self):
@@ -63,8 +67,8 @@ class Transport:
         # Needs to be a supported dashboard type
         if dashboard_type not in self.DASHBOARD_TYPES:
             return
-        url = self.config.get_option("api.base_url")[:-2]
-        version = self.config.get_option("api.base_url")[-2:]
+        url = self.config.get_option("api.base_url")
+        version = self.config.get_option("api.base_url")
         request_body = {
             dashboard_type: {
                 "body": parameters,
@@ -87,11 +91,30 @@ class Transport:
 
         if verbose:
             dashboard_url = (
-                self.config["dashboard.base_dashboard_url"][1:-1]
+                self.config["dashboard.base_dashboard_url"]
                 + DASHBOARD_MAPPINGS[dashboard_type]
             )
             self.print_dashboard_url(dashboard_url)
         return response
+
+    def _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None):
+        """Link to a monitoring dashboard
+        Suburl must be one of
+        - "monitor"
+        - "lookups"
+        - "monitor/schema"
+        """
+        MESSAGE = "You can view your dashboard at: "
+        if suburl is None:
+            print(
+                MESSAGE
+                + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            )
+        else:
+            print(
+                MESSAGE
+                + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/{suburl}"
+            )
 
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
@@ -177,7 +200,8 @@ class Transport:
                         return response
 
                 # Cancel bad URLs
-                elif response.status_code == 404:
+                # Logged status codes
+                elif response.status_code in DO_NOT_REPEAT_STATUS_CODES:
                     self._log_response_fail(
                         base_url,
                         endpoint,

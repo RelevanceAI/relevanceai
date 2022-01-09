@@ -35,6 +35,16 @@ class AdminClient(_Base):
     ):
         """Copy a dataset from another user's projects into your project.
 
+        Example
+        -----------
+        >>> client = Client()
+        >>> client.admin.send_dataset(
+            dataset_id="research",
+            receiver_project="...",
+            receiver_api_key="..."
+        )
+
+
         Parameters
         ----------
         dataset_id:
@@ -73,6 +83,15 @@ class AdminClient(_Base):
         """
         Send an individual a dataset.
 
+        Example
+        --------
+        >>> client = Client()
+        >>> client.admin.send_dataset(
+            dataset_id="research",
+            receiver_project="...",
+            receiver_api_key="..."
+        )
+
         Parameters
         -----------
 
@@ -82,12 +101,6 @@ class AdminClient(_Base):
             The project name that will receive the dataset
         receiver_api_key: str
             The project API key that will receive the dataset
-
-        >>> client.admin.send_dataset(
-            dataset_id="research",
-            receiver_project="...",
-            receiver_api_key="..."
-        )
 
         """
         return self.make_http_request(

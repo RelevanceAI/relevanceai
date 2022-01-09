@@ -18,6 +18,8 @@ class MonitorClient(_Base):
         dataset_id : string
             Unique name of dataset
         """
+        # https://cloud.relevance.ai/dataset/demo-movies/dashboard/monitor/
+        self._link_to_dataset_dashboard(dataset_id, "monitor/schema")
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/health", method="GET"
         )
@@ -31,6 +33,7 @@ class MonitorClient(_Base):
         dataset_id : string
             Unique name of dataset
         """
+        self._link_to_dataset_dashboard(dataset_id, "monitor/usage")
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/stats", method="GET"
         )
@@ -70,6 +73,7 @@ class MonitorClient(_Base):
             The log dataset IDs to aggregate with - one or more of logs, logs-write, logs-search, logs-task or js-logs
 
         """
+        self._link_to_dataset_dashboard(dataset_id, "monitor/schema")
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/usage",
             method="POST",
