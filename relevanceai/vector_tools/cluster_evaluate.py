@@ -465,6 +465,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
     @staticmethod
     def _generate_layout():
         import plotly.graph_objects as go
+
         axes_3d = {
             "title": "",
             "backgroundcolor": "#ffffff",
