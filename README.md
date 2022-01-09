@@ -45,7 +45,7 @@ You can also install on conda (only available on Linux environments at the momen
 
 ### Login into your project space
 
-```
+```{python}
 from relevanceai import Client 
 
 client = relevanceai.Client(<project_name>, <api_key>)
@@ -56,7 +56,7 @@ This is a data example in the right format to be uploaded to relevanceai. Every 
 - Every dictionary has a field called _id
 - Vector fields end in _vector_
 
-```
+```{python}
 docs = [
     {"_id": "1", "example_vector_": [0.1, 0.1, 0.1], "data": "Documentation"},
     {"_id": "2", "example_vector_": [0.2, 0.2, 0.2], "data": "Best document!"},
@@ -69,13 +69,13 @@ docs = [
 ### Upload data into a new dataset
 The documents will be uploaded into a new dataset that you can name in whichever way you want. If the dataset name does not exist yet, it will be created automatically. If the dataset already exist, the uploaded _id will be replacing the old data.
 
-```
+```{python}
 client.insert_documents(dataset_id="quickstart", docs=docs)
 ```
 
 ### Perform a vector search
 
-```
+```{python}
 client.services.search.vector(
     dataset_id="quickstart", 
     multivector_query=[
@@ -90,7 +90,7 @@ client.services.search.vector(
 ### Getting Started
 To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
 
-```
+```{bash}
 python -m pip install pytest mypy
 ```
 
@@ -98,7 +98,7 @@ Then run testing using:
 
 Make sure to set your test credentials!
 
-```
+```{bash}
 export TEST_PROJECT = xxx 
 export TEST_API_KEY = xxx 
 
@@ -112,13 +112,13 @@ The config contains the adjustable global settings for the SDK. For a descriptio
 
 To view setting options, run the following:
 
-```
+```{python}
 client.config.options
 ```
 
 The syntax for selecting an option is section.key. For example, to disable logging, run the following to modify logging.enable_logging:
 
-```
+```{python}
 client.config.set_option('logging.enable_logging', False)
 ```
 
@@ -128,12 +128,12 @@ To restore all options to their default, run the following:
 
 You can change the base URL as such: 
 
-```
+```{python}
 client.base_url = "https://.../latest"
 ```
 
 You can also update the ingest base URL: 
 
-```
+```{python}
 client.ingest_base_url = "https://.../latest
 ```
