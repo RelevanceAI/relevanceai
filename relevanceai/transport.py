@@ -67,8 +67,10 @@ class Transport(JSONEncoderUtils):
         # Needs to be a supported dashboard type
         if dashboard_type not in self.DASHBOARD_TYPES:
             return
-        url = self.config.get_option("api.base_url")
-        version = self.config.get_option("api.base_url")
+        # Get the URL but not the version
+        url = "/".join(self.config.get_option("api.base_url").split("/")[:-2]) + "/"
+        # Split off the version separately
+        version = self.config.get_option("api.base_url").split("/")[-1]
         request_body = {
             dashboard_type: {
                 "body": parameters,
