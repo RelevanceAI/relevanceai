@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.26.5
+---------
+
+- Fix incorrect URL being submitted to frontend
+
 v0.26.4
 ---------
 

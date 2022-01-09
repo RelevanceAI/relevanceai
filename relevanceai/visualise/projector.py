@@ -11,7 +11,6 @@ from relevanceai.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
-import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
 
@@ -328,6 +327,9 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         jupyter_dash=False,
         interactive: bool = True,
     ):
+
+        import plotly.graph_objects as go
+
         # Adjust vector label
         if show_image is False and vector_label:
             self.set_field_across_documents(
@@ -459,6 +461,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         return data
 
     def _generate_layout(self, plot_title):
+        import plotly.graph_objects as go
 
         axes_3d = {
             "title": "",

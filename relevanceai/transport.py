@@ -68,7 +68,7 @@ class Transport(JSONEncoderUtils):
         if dashboard_type not in self.DASHBOARD_TYPES:
             return
         # Get the URL but not the version
-        url = "/".join(self.config.get_option("api.base_url").split("/")[:-2]) + "/"
+        url = "/".join(self.config.get_option("api.base_url").split("/")[:-1]) + "/"
         # Split off the version separately
         version = self.config.get_option("api.base_url").split("/")[-1]
         # Parse the endpoint so it becomes 'endpoint/schema' instead of '/endpoint/schema'
@@ -84,6 +84,7 @@ class Transport(JSONEncoderUtils):
                 "query": parameters.get("query"),
             },
         }
+        self.logger.debug(request_body)
         req = Request(
             method=method.upper(),
             url=self._dashboard_request_url,
