@@ -475,12 +475,12 @@ def get_news_category_dataset(
     Total Len: 11000 \n
     Sample document:
 
-    >>> {"category": "CRIME", 
-    >>> "headline": "There Were 2 Mass Shootings In Texas Last Week, But Only 1 On TV", 
-    >>> "authors": "Melissa Jeltsen", 
-    >>> "link": "https://www.huffingtonpost.com/entry/texas-amanda-painter-mass-shooting_us_5b081ab4e4b0802d69caad89", 
-    >>> "short_description": "She left her husband. He killed their children. Just another day in America.", 
-    >>> "date": "2018-05-26", 
+    >>> {"category": "CRIME",
+    >>> "headline": "There Were 2 Mass Shootings In Texas Last Week, But Only 1 On TV",
+    >>> "authors": "Melissa Jeltsen",
+    >>> "link": "https://www.huffingtonpost.com/entry/texas-amanda-painter-mass-shooting_us_5b081ab4e4b0802d69caad89",
+    >>> "short_description": "She left her husband. He killed their children. Just another day in America.",
+    >>> "date": "2018-05-26",
     >>> "_id": 0, "short_description_sentence_transformers_vector_": [-0.0023065314162522554, -0.0421421155333519, ...}
 
     Parameters
