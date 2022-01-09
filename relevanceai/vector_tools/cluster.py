@@ -442,7 +442,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
                     if k not in cluster_args:
-                        cluster_args['k'] = k
+                        cluster_args["k"] = k
                     return KMeans(**cluster_args).fit_transform(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
