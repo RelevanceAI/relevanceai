@@ -64,11 +64,15 @@ doc_requirements = [
     "sphinx-autodoc-typehints==1.12.0",
 ]
 
-dev_requirements = [
-    "autopep8",
-    "pylint",
-    "jupyter",
-] + test_requirements
+dev_requirements = (
+    [
+        "autopep8",
+        "pylint",
+        "jupyter",
+    ]
+    + test_requirements
+    + doc_requirements
+)
 
 
 dev_vis_requirements = (
