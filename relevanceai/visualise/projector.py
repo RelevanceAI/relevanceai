@@ -474,6 +474,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             "backgroundcolor": "#ffffff",
             "showgrid": False,
             "showticklabels": False,
+            "showbackground": False
         }
 
         axes_2d = {"title": "", "visible": False, "showticklabels": False}

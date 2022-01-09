@@ -441,7 +441,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                 if k is None and cluster_args is None:
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
-                    return KMeans(k=k, **cluster_args).fit_transform(vectors=vectors)
+                    if k not in cluster_args:
+                        cluster_args['k'] = k
+                    return KMeans(**cluster_args).fit_transform(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
             elif cluster == "hdbscan":
