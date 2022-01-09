@@ -5,17 +5,18 @@
 
 For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
-# Main features
+## 🔥 Features
 
-The most in-demand features of the library include:
-- Quick vector search on Big Data
-- Vector Clustering
-- Transformers encoding for text and images
-- Multi-vector search
-- Hybrid search
-- Pay-to-use model (100.000 FREE API calls per month)
+Features of the library include:
+- Quick vector search with free dashboard to preview results
+- Vector clustering with support with built-in easy customisation
+- Multi-vector search with filtering, facets, weighting
+- Hybrid search (weighting exact text matching and vector search together)
+... and more! 
 
-# Installation
+You can 
+
+# 🛠️ Installation
 
 ```
 !pip install -U relevanceai
@@ -29,9 +30,9 @@ Or you can install it via conda to:
 
 You can also install on conda (only available on Linux environments at the moment): `conda install -c relevance relevanceai`.
 
-# Quickstart
+## ⏩ Quickstart
 
-## Login into your project space
+### Login into your project space
 
 ```
 from relevanceai import Client 
@@ -54,14 +55,14 @@ docs = [
 ]
 ```
 
-## Upload data into a new dataset
+### Upload data into a new dataset
 The documents will be uploaded into a new dataset that you can name in whichever way you want. If the dataset name does not exist yet, it will be created automatically. If the dataset already exist, the uploaded _id will be replacing the old data.
 
 ```
 client.insert_documents(dataset_id="quickstart", docs=docs)
 ```
 
-## Perform a vector search
+### Perform a vector search
 
 ```
 client.services.search.vector(
@@ -73,7 +74,7 @@ client.services.search.vector(
     query="sample search" # Stored on the dashboard but not required
 ```
 
-# Documentation
+## 🧠 Documentation
 
 There are two ways of interacting with the API:
 
@@ -82,9 +83,9 @@ There are two ways of interacting with the API:
 | Rest API      | [Documentation](https://docs.relevance.ai/docs/quickstart) | 
 | SDK     | [Documentation](https://relevanceai.readthedocs.io/)        |
 
-# Development
+## 🚧 Development
 
-## Getting Started
+### Getting Started
 To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
 
 ```
@@ -103,7 +104,7 @@ python -m pytest
 mypy relevanceai
 ```
 
-# Config
+## 🧰 Config
 
 The config contains the adjustable global settings for the SDK. For a description of all the settings, see here.
 
@@ -121,9 +122,7 @@ client.config.set_option('logging.enable_logging', False)
 
 To restore all options to their default, run the following:
 
-```
-
-## Changing Base URL 
+### Changing the base URL
 
 You can change the base URL as such: 
 
