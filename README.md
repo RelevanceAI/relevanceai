@@ -1,4 +1,4 @@
-This library contains all the endpoints for the RelevanceAI API and gives you access to the latest vector-based technology on the market. 
+![Github Banner](assets/github_banner.png)
 
 [![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
 
