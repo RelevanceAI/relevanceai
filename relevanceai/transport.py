@@ -71,7 +71,7 @@ class Transport(JSONEncoderUtils):
         url = "/".join(self.config.get_option("api.base_url").split("/")[:-2]) + "/"
         # Split off the version separately
         version = self.config.get_option("api.base_url").split("/")[-1]
-        # Parse the endpoint
+        # Parse the endpoint so it becomes 'endpoint/schema' instead of '/endpoint/schema'
         if endpoint.startswith("/"):
             endpoint = endpoint[1:]
         request_body = {
