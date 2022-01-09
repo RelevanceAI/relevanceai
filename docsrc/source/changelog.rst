@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.26.4
+---------
+
+- Fix string parsing issue for endpoints and dashboards
+
 v0.26.3
 ---------
 
