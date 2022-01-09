@@ -1,10 +1,12 @@
 ![Github Banner](assets/github_banner.png)
 
 [![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
+[![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
 For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
-# Main Features
+# Main features
+
 The most in-demand features of the library include:
 - Quick vector search on Big Data
 - Vector Clustering
