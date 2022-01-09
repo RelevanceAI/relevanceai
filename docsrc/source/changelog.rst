@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.26.6
+--------
+
+- Fix missing import in plotting since internalising plots
+
 v0.26.5
 ---------
 
