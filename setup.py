@@ -55,6 +55,7 @@ test_requirements = (
     ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
     + excel_requirements
     + vis_requirements
+    + requirements
     # + vis_extras
 )
 
