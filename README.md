@@ -29,14 +29,14 @@ There are two main ways of documentations to take a look at:
 
 ## 🛠️ Installation
 
-```
-!pip install -U relevanceai
+```{bash}
+pip install -U relevanceai
 ```
 Or you can install it via conda to:
 
-```
-!conda install pip 
-!pip install -c relevanceai
+```{bash}
+conda install pip 
+pip install -c relevanceai
 ```
 
 You can also install on conda (only available on Linux environments at the moment): `conda install -c relevance relevanceai`.
