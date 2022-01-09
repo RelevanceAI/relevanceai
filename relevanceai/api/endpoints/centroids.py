@@ -226,7 +226,7 @@ class CentroidsClient(_Base):
         vector_fields: List,
         alias: str,
         cluster_ids: List = [],
-        centroid_vector_fields: List = ["centroid_vector_"],
+        centroid_vector_fields: List = [],
         select_fields: List = [],
         approx: int = 0,
         sum_fields: bool = True,
@@ -282,6 +282,8 @@ class CentroidsClient(_Base):
 
         """
 
+        if not centroid_vector_fields:
+            centroid_vector_fields = vector_fields
         parameters = {
             "dataset_id": dataset_id,
             "vector_fields": vector_fields,
@@ -372,7 +374,6 @@ class CentroidsClient(_Base):
             Include facets in the search results
 
         """
-        # TODO: Update the API so that centroid vector fields defaults to vector fields
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         endpoint = "/services/cluster/centroids/list_furthest_from_center"
