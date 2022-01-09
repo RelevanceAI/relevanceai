@@ -16,7 +16,18 @@ Features of the library include:
 
 You can 
 
-# 🛠️ Installation
+
+## 🧠 Documentation
+
+There are two main ways of documentations to take a look at:
+
+| API type      | Link |
+| ------------- | ----------- |
+| Guides | [Documentation](https://docs.relevance.ai/) | 
+| Python Reference | [Documentation](https://relevanceai.readthedocs.io/)        |
+
+
+## 🛠️ Installation
 
 ```
 !pip install -U relevanceai
@@ -73,15 +84,6 @@ client.services.search.vector(
     page_size=3,
     query="sample search" # Stored on the dashboard but not required
 ```
-
-## 🧠 Documentation
-
-There are two ways of interacting with the API:
-
-| API type      | Link |
-| ------------- | ----------- |
-| Rest API      | [Documentation](https://docs.relevance.ai/docs/quickstart) | 
-| SDK     | [Documentation](https://relevanceai.readthedocs.io/)        |
 
 ## 🚧 Development
 
