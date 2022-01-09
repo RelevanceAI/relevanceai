@@ -3,6 +3,13 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.26.6
+--------
+
+- Fix missing import in plotting since internalising plots
+- Add support for vector labels
+- Remove background axes from plot
+
 v0.26.5
 ---------
 
