@@ -71,12 +71,15 @@ class Transport(JSONEncoderUtils):
         url = "/".join(self.config.get_option("api.base_url").split("/")[:-2]) + "/"
         # Split off the version separately
         version = self.config.get_option("api.base_url").split("/")[-1]
+        # Parse the endpoint
+        if endpoint.startswith("/"):
+            endpoint = endpoint[1:]
         request_body = {
             dashboard_type: {
                 "body": parameters,
                 "url": url,
                 "version": version,
-                "endpoint": endpoint[1:],
+                "endpoint": endpoint,
                 "metadata": parameters,
                 "query": parameters.get("query"),
             },
