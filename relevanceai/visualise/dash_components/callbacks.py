@@ -1,12 +1,4 @@
 from dash.dependencies import Input, Output
-import plotly.graph_objs as go
-import dash
-from dash import dcc
-import dash_bootstrap_components as dbc
-
-import plotly.express as px
-from skimage import io
-from plotly.subplots import make_subplots
 
 from relevanceai.vector_tools.nearest_neighbours import NearestNeighbours
 from doc_utils.doc_utils import DocUtils
@@ -18,6 +10,7 @@ MAX_SIZE = 200
 
 def display_callbacks(app, show_image, docs, vector_label):
 
+    import dash
     if show_image:
 
         @app.callback(
@@ -60,6 +53,12 @@ def neighbour_callbacks(
     distance_measure_mode="cosine",
     n=11,
 ):
+    import plotly.express as px
+    import plotly.graph_objects as go
+    from dash import dcc
+    import dash_bootstrap_components as dbc
+    import dash
+
     def _get_neighbours(clickData):
         try:
             click_id = clickData["points"][0]["customdata"][0]
