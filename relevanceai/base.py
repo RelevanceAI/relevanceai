@@ -1,6 +1,3 @@
-import sys
-import time
-
 from relevanceai.config import CONFIG
 from relevanceai.transport import Transport
 from relevanceai.logger import LoguruLogger

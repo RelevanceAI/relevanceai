@@ -34,3 +34,18 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     #     cluster_centers=cluster_centers,
     #     alias=ALIAS)
     assert True
+
+
+def test_cluster_integration_multiple_vector_fields(
+    test_client, test_sample_vector_dataset
+):
+    """Test for the entire clustering workflow."""
+    # Retrieve a previous dataset
+    VECTOR_FIELDS = ["sample_1_vector_", "sample_2_vector_"]
+    ALIAS = "kmeans_10"
+    docs = test_client.datasets.documents.list(test_sample_vector_dataset)
+
+    test_client.vector_tools.cluster.kmeans_cluster(
+        dataset_id=test_sample_vector_dataset, vector_fields=VECTOR_FIELDS
+    )
+    assert True

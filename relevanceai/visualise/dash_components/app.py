@@ -15,6 +15,8 @@ from relevanceai.visualise.dash_components.callbacks import (
     display_callbacks,
     neighbour_callbacks,
 )
+import warnings
+
 
 def create_dash_graph(
     plot_data,
@@ -30,7 +32,7 @@ def create_dash_graph(
     from jupyter_dash import JupyterDash
     app = JupyterDash(__name__)
 
-    def create_layout(app: dash.Dash) -> html.Div:
+    def create_layout(app):
         """
         Create the layout of the Dash app.
         """

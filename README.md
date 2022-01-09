@@ -1,5 +1,7 @@
 # RelevanceAI
 
+[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
+
 For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
 If you are looking for an SDK reference, you can find that [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).

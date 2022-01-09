@@ -134,3 +134,7 @@ dmypy.json
 test_projection/*
 *.ipynb
 .creds.json
+
+# Excel
+.csv
+.xlsx

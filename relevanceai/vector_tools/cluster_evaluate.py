@@ -134,6 +134,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             cluster_alias=cluster_alias,
             ground_truth_field=ground_truth_field,
         )
+
         return self.metrics_from_docs(
             vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
         )
@@ -224,6 +225,14 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             + vector_select_field
             + ground_truth_select_field
             + description_fields,
+            filters=[
+                {
+                    "field": cluster_field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": "",
+                }
+            ],
         )
 
         # Get cluster labels
