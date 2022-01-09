@@ -11,6 +11,7 @@ MAX_SIZE = 200
 def display_callbacks(app, show_image, docs, vector_label):
 
     import dash
+
     if show_image:
 
         @app.callback(
