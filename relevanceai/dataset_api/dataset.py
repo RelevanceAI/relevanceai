@@ -3,7 +3,7 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import Callable, List
+from typing import Callable, List, Union
 
 from relevanceai.api.client import BatchAPIClient
 
@@ -54,7 +54,7 @@ class Dataset(BatchAPIClient):
         info = {"info": info, "dtypes": dtypes}
         return info
 
-    def head(self, n: int=5, raw_json: bool=False) -> None:
+    def head(self, n: int=5, raw_json: bool=False) -> Union[dict, pd.DataFrame]:
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
             number_of_documents=n,
@@ -64,10 +64,10 @@ class Dataset(BatchAPIClient):
         else:
             return pd.DataFrame(head_documents).head(n=n)
 
-    def describe(self):
+    def describe(self) -> dict:
         return self.datasets.facets(self.dataset_id)
 
-    def vectorize(self, field: str, model: Callable):
+    def vectorize(self, field: str, model: Callable) -> None:
         def encode_documents(documents):
             return model.encode_documents([field], documents)
         self.pull_update_push(self.dataset_id, encode_documents)
