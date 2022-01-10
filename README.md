@@ -14,8 +14,6 @@ Features of the library include:
 - Hybrid search (weighting exact text matching and vector search together)
 ... and more! 
 
-You can 
-
 
 ## 🧠 Documentation
 
