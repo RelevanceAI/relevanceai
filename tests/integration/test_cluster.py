@@ -35,7 +35,10 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     #     alias=ALIAS)
     assert True
 
-@pytest.mark.parametrize("vector_fields", [["sample_1_vector_"], ["sample_2_vector_", "sample_1_vector_"]])
+
+@pytest.mark.parametrize(
+    "vector_fields", [["sample_1_vector_"], ["sample_2_vector_", "sample_1_vector_"]]
+)
 def test_cluster_integration_one_liner(
     test_client, test_sample_vector_dataset, vector_fields
 ):
