@@ -59,7 +59,6 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         """
         # Force sorting on vector fields
-        vector_fields = sorted(vector_fields)
         self.vector_fields = vector_fields
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
