@@ -5,8 +5,6 @@ import random
 # @pytest.mark.parametrize("output_format, expected_output_type", [("json", dict), ("content", bytes), ("status_code", int)])
 
 # @pytest.mark.parametrize("output_format, expected_output_type", [("content", bytes)])
-
-
 @pytest.mark.skip(reason="failed")
 def test_output_format(test_client, test_sample_dataset):
     output_format = "content"

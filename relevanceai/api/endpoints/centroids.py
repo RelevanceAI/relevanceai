@@ -240,7 +240,7 @@ class CentroidsClient(_Base):
         include_count: bool = True,
         include_facets: bool = False,
         aggregation_query: dict = None,
-        centroid_dataset_id: str=""
+        centroid_dataset_id: str = "",
     ):
         """
         List of documents closest from the centre.
