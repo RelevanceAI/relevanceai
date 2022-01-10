@@ -239,6 +239,8 @@ class CentroidsClient(_Base):
         include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False,
+        aggregation_query: dict = None,
+        centroid_dataset_id: str=""
     ):
         """
         List of documents closest from the centre.
@@ -279,9 +281,11 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-
+        aggregation_query: dict
+            Run aggregation_query on every cluster
+        centroid_dataset_id: str
+            Centroid dataset ID in case of not found error
         """
-
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         parameters = {
@@ -290,6 +294,8 @@ class CentroidsClient(_Base):
             "alias": alias,
             "cluster_ids": cluster_ids,
             "centroid_vector_fields": centroid_vector_fields,
+            "centroid_dataset_id": centroid_dataset_id,
+            "aggregation_query": aggregation_query,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
@@ -303,7 +309,7 @@ class CentroidsClient(_Base):
             "include_count": include_count,
             "include_facets": include_facets,
         }
-        endpoint = "/services/cluster/centroids/list_closest_to_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
         self._log_to_dashboard(
             method=method,
