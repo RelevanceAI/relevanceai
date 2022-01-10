@@ -58,6 +58,8 @@ class ClusterBase(LoguruLogger, DocUtils):
             Any other keyword argument will go directly into the clustering algorithm
 
         """
+        # Force sorting on vector fields
+        vector_fields = sorted(vector_fields)
         self.vector_fields = vector_fields
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
