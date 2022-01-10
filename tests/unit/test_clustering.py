@@ -1,12 +1,9 @@
 import pytest
-import random
-
 
 def test_kmeans(test_client, test_clustered_dataset):
     db_health = test_client.datasets.monitor.health(test_clustered_dataset)
     assert "_cluster_" in db_health
     assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
-
 
 def test_cluster_plot(test_client, test_clustered_dataset):
     test_client.vector_tools.cluster.plot(
@@ -17,7 +14,6 @@ def test_cluster_plot(test_client, test_clustered_dataset):
     )
     assert True
 
-
 def test_cluster_metrics(test_client, test_clustered_dataset):
     metrics = test_client.vector_tools.cluster.metrics(
         test_clustered_dataset,
@@ -27,7 +23,6 @@ def test_cluster_metrics(test_client, test_clustered_dataset):
     )
     assert True
 
-
 def test_cluster_distribution(test_client, test_clustered_dataset):
     distribution = test_client.vector_tools.cluster.distribution(
         test_clustered_dataset,
@@ -36,7 +31,6 @@ def test_cluster_distribution(test_client, test_clustered_dataset):
         ground_truth_field="sample_1_label",
     )
     assert True
-
 
 @pytest.mark.skip(reason="Not fully implemented")
 def test_hdbscan_cluster(test_client, test_sample_vector_dataset):
