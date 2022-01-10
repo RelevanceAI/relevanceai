@@ -40,7 +40,7 @@ class Dataset(BatchAPIClient):
     def __getitem__(self, index, number_of_documents=20):
         return self.get_documents(self.dataset_id, select_fields=[index], number_of_documents=number_of_documents)
 
-    def info(self) -> None:
+    def info(self) -> dict:
         health = self.datasets.monitor.health(self.dataset_id)
         schema = self.datasets.schema(self.dataset_id)
         schema = {key: str(value) for key, value in schema.items()}
