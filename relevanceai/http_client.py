@@ -8,7 +8,7 @@ from doc_utils.doc_utils import DocUtils
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.api.endpoints.cluster import ClusterClient
+from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
