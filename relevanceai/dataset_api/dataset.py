@@ -7,10 +7,6 @@ from typing import Callable, List
 
 from relevanceai.api.client import BatchAPIClient
 
-from vectorhub.encoders.text.tfhub import USE2Vec
-from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-
-
 class Dataset(BatchAPIClient):
     def __init__(self, project, api_key) -> None:
         super().__init__(project, api_key)
