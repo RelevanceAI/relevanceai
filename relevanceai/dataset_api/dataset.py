@@ -7,6 +7,7 @@ from typing import Callable, List, Union
 
 from relevanceai.api.client import BatchAPIClient
 
+
 class Dataset(BatchAPIClient):
     def __init__(self, project, api_key) -> None:
         super().__init__(project, api_key)
@@ -34,7 +35,11 @@ class Dataset(BatchAPIClient):
         return self.get_number_of_documents(dataset_id=self.dataset_id)
 
     def __getitem__(self, index, number_of_documents=20):
-        return self.get_documents(self.dataset_id, select_fields=[index], number_of_documents=number_of_documents)
+        return self.get_documents(
+            self.dataset_id,
+            select_fields=[index],
+            number_of_documents=number_of_documents,
+        )
 
     def info(self) -> dict:
         health = self.datasets.monitor.health(self.dataset_id)
@@ -54,7 +59,7 @@ class Dataset(BatchAPIClient):
         info = {"info": info, "dtypes": dtypes}
         return info
 
-    def head(self, n: int=5, raw_json: bool=False) -> Union[dict, pd.DataFrame]:
+    def head(self, n: int = 5, raw_json: bool = False) -> Union[dict, pd.DataFrame]:
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
             number_of_documents=n,
@@ -70,4 +75,5 @@ class Dataset(BatchAPIClient):
     def vectorize(self, field: str, model: Callable) -> None:
         def encode_documents(documents):
             return model.encode_documents([field], documents)
+
         self.pull_update_push(self.dataset_id, encode_documents)
