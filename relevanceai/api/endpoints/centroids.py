@@ -239,7 +239,6 @@ class CentroidsClient(_Base):
         include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False,
-        aggregation_query: dict = None,
         centroid_dataset_id: str = "",
     ):
         """
@@ -281,8 +280,6 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-        aggregation_query: dict
-            Run aggregation_query on every cluster
         centroid_dataset_id: str
             Centroid dataset ID in case of not found error
         """
@@ -295,7 +292,6 @@ class CentroidsClient(_Base):
             "cluster_ids": cluster_ids,
             "centroid_vector_fields": centroid_vector_fields,
             "centroid_dataset_id": centroid_dataset_id,
-            "aggregation_query": aggregation_query,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
