@@ -11,7 +11,6 @@ from relevanceai.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
-import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
 
@@ -328,6 +327,9 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         jupyter_dash=False,
         interactive: bool = True,
     ):
+
+        import plotly.graph_objects as go
+
         # Adjust vector label
         if show_image is False and vector_label:
             self.set_field_across_documents(
@@ -335,6 +337,9 @@ class Projector(BatchAPIClient, _Base, DocUtils):
                 [i[vector_label][:label_char_length] + "..." for i in docs],
                 docs,
             )
+
+        if vector_label:
+            point_labels = self.get_field_across_documents(vector_label, docs)
 
         # Dimension reduce vectors
         vectors = np.array(self.get_field_across_documents(vector_field, docs))
@@ -389,6 +394,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             marker_size=marker_size,
             cluster=cluster,
             label_char_length=label_char_length,
+            vector_label=point_labels,
         )
 
         layout = self._generate_layout(plot_title=plot_title)
@@ -410,8 +416,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
 
         else:
             fig = go.Figure(data=plot_data, layout=layout)
-            fig.show()
-        return
+            return fig
 
     def _generate_plot_data(
         self,
@@ -427,6 +432,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             None,
         ],
         label_char_length: int,
+        vector_label: str,
     ):
         """ """
 
@@ -441,6 +447,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
                         dims=dims,
                         marker_size=marker_size,
                         label_char_length=label_char_length,
+                        vector_label=vector_label,
                     )
                 )
 
@@ -453,18 +460,21 @@ class Projector(BatchAPIClient, _Base, DocUtils):
                     dims=dims,
                     marker_size=marker_size,
                     label_char_length=label_char_length,
+                    vector_label=vector_label,
                 )
             )
 
         return data
 
     def _generate_layout(self, plot_title):
+        import plotly.graph_objects as go
 
         axes_3d = {
             "title": "",
             "backgroundcolor": "#ffffff",
             "showgrid": False,
             "showticklabels": False,
+            "showbackground": False,
         }
 
         axes_2d = {"title": "", "visible": False, "showticklabels": False}
@@ -488,8 +498,15 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         return layout
 
     def _generate_plot_info(
-        self, embedding_df, hover_label, dims, marker_size, label_char_length
+        self,
+        embedding_df,
+        hover_label,
+        dims,
+        marker_size,
+        label_char_length,
+        vector_label,
     ):
+        import plotly.graph_objects as go
 
         custom_data, hovertemplate = self._generate_hover_template(
             df=embedding_df,
@@ -502,10 +519,11 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             "x": embedding_df["x"],
             "y": embedding_df["y"],
             "showlegend": False,
-            "mode": "markers",
+            "mode": "markers+text",
             "marker": {"size": marker_size, "symbol": "circle", "opacity": 0.75},
             "customdata": custom_data,
             "hovertemplate": hovertemplate,
+            "text": vector_label,
         }
 
         if dims == 2:

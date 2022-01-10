@@ -3,6 +3,23 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.26.6
+--------
+
+- Fix missing import in plotting since internalising plots
+- Add support for vector labels
+- Remove background axes from plot
+
+v0.26.5
+---------
+
+- Fix incorrect URL being submitted to frontend
+
+v0.26.4
+---------
+
+- Fix string parsing issue for endpoints and dashboards
+
 v0.26.3
 ---------
 
