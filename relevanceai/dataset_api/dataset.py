@@ -3,7 +3,7 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import List, Union
+from typing import Callable, List
 
 from relevanceai.api.client import BatchAPIClient
 
@@ -71,7 +71,7 @@ class Dataset(BatchAPIClient):
     def describe(self):
         return self.datasets.facets(self.dataset_id)
 
-    def vectorize(self, field: str, model: Union[USE2Vec, SentenceTransformer2Vec]):
+    def vectorize(self, field: str, model: Callable):
         def encode_documents(documents):
             return model.encode_documents([field], documents)
         self.pull_update_push(self.dataset_id, encode_documents)
