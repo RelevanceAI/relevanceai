@@ -3,9 +3,12 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import List
+from typing import List, Union
 
 from relevanceai.api.client import BatchAPIClient
+
+from vectorhub.encoders.text.tfhub import USE2Vec
+from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
 
 class Dataset(BatchAPIClient):
@@ -34,9 +37,13 @@ class Dataset(BatchAPIClient):
     def shape(self):
         return self.get_number_of_documents(dataset_id=self.dataset_id)
 
+    def __getitem__(self, index, number_of_documents=20):
+        return self.get_documents(self.dataset_id, select_fields=[index], number_of_documents=number_of_documents)
+
     def info(self) -> None:
         health = self.datasets.monitor.health(self.dataset_id)
         schema = self.datasets.schema(self.dataset_id)
+        schema = {key: str(value) for key, value in schema.items()}
         info = {
             key: {
                 "Non-Null Count": health[key]["missing"],
@@ -51,7 +58,7 @@ class Dataset(BatchAPIClient):
         info = {"info": info, "dtypes": dtypes}
         return info
 
-    def head(self, n=5, raw_json=False) -> None:
+    def head(self, n: int=5, raw_json: bool=False) -> None:
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
             number_of_documents=n,
@@ -63,3 +70,8 @@ class Dataset(BatchAPIClient):
 
     def describe(self):
         return self.datasets.facets(self.dataset_id)
+
+    def vectorize(self, field: str, model: Union[USE2Vec, SentenceTransformer2Vec]):
+        def encode_documents(documents):
+            return model.encode_documents([field], documents)
+        self.pull_update_push(self.dataset_id, encode_documents)
