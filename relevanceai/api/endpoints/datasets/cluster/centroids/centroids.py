@@ -1,6 +1,7 @@
 from relevanceai.base import _Base
 from typing import List
 
+
 class CentroidsClient(_Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
@@ -192,4 +193,3 @@ class CentroidsClient(_Base):
             endpoint, method=method, parameters=parameters
         )
         return response
-

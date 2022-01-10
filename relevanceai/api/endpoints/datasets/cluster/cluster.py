@@ -1,6 +1,7 @@
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.datasets.cluster.centroids import CentroidsClient
 
+
 class ClusterClient(_Base):
     def __init__(self, project: str, api_key: str):
         self.project = project
