@@ -43,8 +43,6 @@ vis_requirements = requirements + [
     "dash_bootstrap_components",
 ]
 
-dataset_requirements = ["tabulate>=0.8.9"]
-
 umap = ["umap-learn>=0.5.2"]
 # ivis_cpu = ["ivis[cpu]>=2.0.6"]
 # ivis_gpu = ["ivis[gpu]>=2.0.6"]
