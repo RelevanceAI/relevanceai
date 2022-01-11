@@ -4,6 +4,7 @@ import math
 import sys
 import time
 import traceback
+import uuid
 import pandas as pd
 from datetime import datetime
 from ast import literal_eval
@@ -112,7 +113,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
+        index_col: int = None,
         csv_args: dict = {},
+        use_as_id: str = None,
+        auto_generate_id: bool = True,
     ):
 
         """
@@ -132,12 +136,18 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Multiplier to apply to chunksize if upload fails
         csv_args : dict
             Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+        index_col : None
+            Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
+        use_as_id : str
+            Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
+        auto_generate_id: bool = True
+            Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
         """
 
         csv_args.pop("index_col", None)
         csv_args.pop("chunksize", None)
         df = pd.read_csv(
-            filepath_or_buffer, index_col=0, chunksize=chunksize, **csv_args
+            filepath_or_buffer, index_col=index_col, chunksize=chunksize, **csv_args
         )
 
         # Initialise output
@@ -153,6 +163,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 max_workers=max_workers,
                 retry_chunk_mult=retry_chunk_mult,
                 show_progress_bar=show_progress_bar,
+                use_as_id=use_as_id,
+                auto_generate_id=auto_generate_id,
             )
             inserted += response["inserted"]
             failed_documents += response["failed_documents"]
@@ -165,8 +177,29 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         }
 
     def _insert_csv_chunk(
-        self, chunk, dataset_id, max_workers, retry_chunk_mult, show_progress_bar
+        self,
+        chunk,
+        dataset_id,
+        max_workers,
+        retry_chunk_mult,
+        show_progress_bar,
+        use_as_id,
+        auto_generate_id,
     ):
+        # generate '_id' if possible
+        # use_as_id
+        if "_id" not in chunk.columns and use_as_id:
+            if use_as_id in chunk:
+                chunk.insert(0, "_id", chunk[use_as_id], False)
+            else:
+                self.logger.warning(
+                    f"The specified column {use_as_id} does not exist in the CSV file"
+                )
+        # auto_generate_id
+        if "_id" not in chunk.columns and auto_generate_id:
+            index = chunk.index
+            uuids = [uuid.uuid4() for _ in range(len(index))]
+            chunk.insert(0, "_id", uuids, False)
 
         # Check for _id
         if "_id" not in chunk.columns:
