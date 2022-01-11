@@ -1,5 +1,5 @@
 from relevanceai.base import _Base
-from relevanceai.api.endpoints.centroids import CentroidsClient
+from relevanceai.api.endpoints.services.centroids import CentroidsClient
 
 
 class ClusterClient(_Base):
