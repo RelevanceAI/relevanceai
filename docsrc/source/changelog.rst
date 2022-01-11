@@ -6,6 +6,7 @@ Here you will find a list of changes for each package update.
 v0.26.7
 --------
 
+- Fix datasets.documents.update_where so it runs
 - Add more tests around multivector search
 
 v0.26.6

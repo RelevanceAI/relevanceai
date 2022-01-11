@@ -284,7 +284,7 @@ class DocumentsClient(_Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/update_where",
             method="POST",
-            parameters={"update": update, "filters": filters},
+            parameters={"updates": update, "filters": filters},
         )
 
     def bulk_update(
