@@ -11,6 +11,7 @@ import numpy as np
 from relevanceai.vector_tools.dim_reduction import DimReduction
 from relevanceai.base import _Base
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.vector_tools.constants import CENTROID_DISTANCES
 from doc_utils import DocUtils
 from typing import Optional, Dict
 
@@ -190,6 +191,45 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         else:
             return self.label_distribution_from_docs(cluster_labels)
+
+    def centroid_distances(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        cluster_alias: str,
+        distance_measure_mode: CENTROID_DISTANCES = "cosine",
+        callable_distance=None,
+    ):
+
+        """
+        Determine the distances of centroid from each other
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: string
+            The vector field that was clustered upon
+        cluster_alias: string
+            The alias of the clustered labels
+        distance_measure_mode : string
+            Distance measure to compare cluster centroids
+        callable_distance: func
+            Optional function to use for distance measure
+
+        """
+
+        centroid_response = self.services.cluster.centroids.list(
+            dataset_id, [vector_field], cluster_alias, include_vector=True
+        )
+
+        centroids = {i["_id"]: i[vector_field] for i in centroid_response["documents"]}
+
+        return self.centroid_distances_from_docs(
+            centroids,
+            distance_measure_mode=distance_measure_mode,
+            callable_distance=callable_distance,
+        )
 
     def _get_cluster_documents(
         self,
@@ -445,6 +485,48 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         label_distribution = {k: sort_dict(v) for k, v in label_distribution.items()}
 
         return label_distribution
+
+    @staticmethod
+    def centroid_distances_from_docs(
+        centroids,
+        distance_measure_mode: CENTROID_DISTANCES = "cosine",
+        callable_distance=None,
+    ):
+        """
+        Determine the distances of centroid from each other
+
+        Parameters
+        ----------
+        centroids : dict
+            Dictionary containing cluster name and centroid
+        distance_measure_mode : string
+            Distance measure to compare cluster centroids
+        callable_distance: func
+            Optional function to use for distance measure
+
+        """
+        import scipy.spatial.distance as spatial_distance
+
+        df = pd.DataFrame(columns=centroids.keys(), index=centroids.keys())
+        for cluster1 in centroids.keys():
+            for cluster2 in centroids.keys():
+                if callable_distance:
+                    df.loc[cluster1, cluster2] = callable_distance(
+                        centroids[cluster1], centroids[cluster2]
+                    )
+                elif distance_measure_mode == "cosine":
+                    df.loc[cluster1, cluster2] = 1 - spatial_distance.cosine(
+                        centroids[cluster1], centroids[cluster2]
+                    )
+                elif distance_measure_mode == "l2":
+                    df.loc[cluster1, cluster2] = spatial_distance.euclidean(
+                        centroids[cluster1], centroids[cluster2]
+                    )
+                else:
+                    raise ValueError(
+                        "Need valid distance measure mode or callable distance"
+                    )
+        return df.astype("float").to_dict()
 
     @staticmethod
     def silhouette_score(vectors, cluster_labels):

@@ -192,6 +192,8 @@ def test_clustered_dataset(test_client, test_sample_vector_dataset):
     test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id=test_sample_vector_dataset,
         vector_fields=["sample_1_vector_"],
+        k=10,
+        alias="kmeans_10",
         overwrite=True,
     )
     yield test_sample_vector_dataset
