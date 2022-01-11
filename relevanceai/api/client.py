@@ -6,9 +6,10 @@ from relevanceai.api.batch.batch_insert import BatchInsertClient
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
+from relevanceai.utils import Utils
 
 
-class BatchAPIClient(BatchInsertClient, BatchRetrieveClient, APIClient):
+class BatchAPIClient(BatchInsertClient, Utils, BatchRetrieveClient, APIClient):
     """Batch API client"""
 
     def batch_insert(self):

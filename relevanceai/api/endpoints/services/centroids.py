@@ -224,16 +224,17 @@ class CentroidsClient(_Base):
         self,
         dataset_id: str,
         vector_fields: List,
+        alias: str,
         cluster_ids: List = [],
-        alias: str = "default",
-        select_fields: list = [],
+        centroid_vector_fields: List = [],
+        select_fields: List = [],
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [],
-        facets: list = [],
+        filters: List = [],
+        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -252,6 +253,8 @@ class CentroidsClient(_Base):
             Any of the cluster ids
         alias: string
             Alias is used to name a cluster
+        centroid_vector_fields: list
+            Vector fields stored
         select_fields: list
             Fields to include in the search results, empty array/list means all fields
         approx: int
@@ -279,11 +282,14 @@ class CentroidsClient(_Base):
 
         """
 
+        if not centroid_vector_fields:
+            centroid_vector_fields = vector_fields
         parameters = {
             "dataset_id": dataset_id,
             "vector_fields": vector_fields,
             "alias": alias,
             "cluster_ids": cluster_ids,
+            "centroid_vector_fields": centroid_vector_fields,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
@@ -312,9 +318,10 @@ class CentroidsClient(_Base):
     def list_furthest_from_center(
         self,
         dataset_id: str,
-        vector_fields: str,
+        vector_fields: List[str],
+        alias: str,
+        centroid_vector_fields: List = [],
         cluster_ids: List = [],
-        alias: str = "default",
         select_fields: List = [],
         approx: int = 0,
         sum_fields: bool = True,
@@ -367,7 +374,8 @@ class CentroidsClient(_Base):
             Include facets in the search results
 
         """
-
+        if not centroid_vector_fields:
+            centroid_vector_fields = vector_fields
         endpoint = "/services/cluster/centroids/list_furthest_from_center"
         method = "POST"
         parameters = {
@@ -376,6 +384,7 @@ class CentroidsClient(_Base):
             "alias": alias,
             "cluster_ids": cluster_ids,
             "select_fields": select_fields,
+            "centroid_vector_fields": centroid_vector_fields,
             "approx": approx,
             "sum_fields": sum_fields,
             "page_size": page_size,

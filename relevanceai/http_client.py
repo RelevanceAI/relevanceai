@@ -5,19 +5,22 @@ import json
 import os
 
 from doc_utils.doc_utils import DocUtils
+from relevanceai.dataset_api.dataset import Dataset
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.api.endpoints.cluster import ClusterClient
+from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.cluster import KMeans
 from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
+
 
 vis_requirements = False
 try:
     from relevanceai.visualise.projector import Projector
 
     vis_requirements = True
+
 except ModuleNotFoundError as e:
     # warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
     pass
@@ -65,6 +68,8 @@ class Client(BatchAPIClient, DocUtils):
                 "Projector not loaded. You do not have visualisation requirements installed."
             )
         self.vector_tools = VectorTools(project, api_key)
+
+        self.Dataset = Dataset(self)
 
     # @property
     # def output_format(self):

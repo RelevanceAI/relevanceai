@@ -1,11 +1,12 @@
 """All Dataset related functions
 """
-from typing import Union, Optional
+from typing import List
 
 from relevanceai.base import _Base
-from relevanceai.api.endpoints.documents import DocumentsClient
-from relevanceai.api.endpoints.monitor import MonitorClient
-from relevanceai.api.endpoints.tasks import TasksClient
+from relevanceai.api.endpoints.datasets.documents import DocumentsClient
+from relevanceai.api.endpoints.datasets.monitor import MonitorClient
+from relevanceai.api.endpoints.datasets.tasks import TasksClient
+from relevanceai.api.endpoints.datasets.cluster import ClusterClient
 
 
 class DatasetsClient(_Base):
@@ -17,6 +18,7 @@ class DatasetsClient(_Base):
         self.tasks = TasksClient(project=project, api_key=api_key)
         self.documents = DocumentsClient(project=project, api_key=api_key)
         self.monitor = MonitorClient(project=project, api_key=api_key)
+        self.cluster = ClusterClient(project=project, api_key=api_key)
 
         super().__init__(project, api_key)
 
@@ -282,7 +284,7 @@ class DatasetsClient(_Base):
     def bulk_insert(
         self,
         dataset_id: str,
-        documents: list,
+        documents: List,
         insert_date: bool = True,
         overwrite: bool = True,
         update_schema: bool = True,

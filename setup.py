@@ -27,19 +27,18 @@ requirements = [
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
+    "scikit-learn",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
-    "scikit-learn",
     "plotly>=5.3.1",
     "typing-extensions",
     "typeguard",
     "dash",
     "pillow",
     "opencv-python",
-    "jupyter_dash",
     "scikit-image",
     "dash_bootstrap_components",
 ]
@@ -56,23 +55,32 @@ test_requirements = (
     ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
     + excel_requirements
     + vis_requirements
+    + requirements
     # + vis_extras
 )
 
-
-dev_requirements = [
-    "autopep8",
-    "pylint",
-    "jupyter",
+doc_requirements = [
     "sphinx-rtd-theme>=0.5.0",
     "sphinx-autoapi==1.8.4",
-] + test_requirements
+    "sphinx-autodoc-typehints==1.12.0",
+]
+
+dev_requirements = (
+    [
+        "autopep8",
+        "pylint",
+        "jupyter",
+    ]
+    + test_requirements
+    + doc_requirements
+)
 
 
 dev_vis_requirements = (
-    ["autopep8", "pylint", "jupyter", "sphinx-rtd-theme>=0.5.0"]
+    ["autopep8", "pylint", "jupyter"]
     + test_requirements
     + vis_requirements
+    + doc_requirements
     # + vis_extras
 )
 
@@ -111,8 +119,10 @@ setup(
     extras_require={
         "dev": dev_requirements,
         "dev-vis": dev_vis_requirements,
+        "dev-viz": dev_vis_requirements,
         "excel": excel_requirements,
         "vis": vis_requirements,
+        "viz": vis_requirements,
         # "vis-all": vis_requirements + vis_extras,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,

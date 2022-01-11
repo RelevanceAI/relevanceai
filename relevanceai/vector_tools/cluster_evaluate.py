@@ -6,7 +6,6 @@ from sklearn.metrics import (
     homogeneity_score,
 )
 import pandas as pd
-import plotly.graph_objs as go
 import numpy as np
 
 from relevanceai.vector_tools.dim_reduction import DimReduction
@@ -135,6 +134,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             cluster_alias=cluster_alias,
             ground_truth_field=ground_truth_field,
         )
+
         return self.metrics_from_docs(
             vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
         )
@@ -264,6 +264,14 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             + vector_select_field
             + ground_truth_select_field
             + description_fields,
+            filters=[
+                {
+                    "field": cluster_field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": "",
+                }
+            ],
         )
 
         # Get cluster labels
@@ -317,6 +325,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         marker_size: int
             Size of scatterplot marker
         """
+        import plotly.graph_objs as go
 
         vector_dr = DimReduction.dim_reduce(
             vectors=np.array(vectors), dr="pca", dr_args=None, dims=3
@@ -537,6 +546,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
     @staticmethod
     def _generate_layout():
+        import plotly.graph_objects as go
+
         axes_3d = {
             "title": "",
             "backgroundcolor": "#ffffff",
@@ -552,6 +563,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
     @staticmethod
     def _generate_plot(df, hover_label, marker_size):
+        import plotly.graph_objects as go
+
         custom_data = df[hover_label]
         custom_data_hover = [
             f"{c}: %{{customdata[{i}]}}" for i, c in enumerate(hover_label)

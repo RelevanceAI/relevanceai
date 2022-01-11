@@ -1,10 +1,11 @@
-from doc_utils import DocUtils
-from relevanceai.base import _Base
-from relevanceai.api.client import BatchAPIClient
 from typing import List, Dict
 
+from doc_utils import DocUtils
+from relevanceai.base import _Base
+from relevanceai.api.endpoints.client import APIClient
 
-class Utils(BatchAPIClient, _Base, DocUtils):
+
+class Utils(APIClient, _Base, DocUtils):
     def __init__(self, project, api_key):
         self.project = project
         self.api_key = api_key
@@ -44,3 +45,6 @@ class Utils(BatchAPIClient, _Base, DocUtils):
         Remove documents with empty vector fields
         """
         return [d for d in docs if d.get(vector_field)]
+
+    def _convert_id_to_string(self, docs):
+        self.set_field_across_documents("_id", [str(i["_id"]) for i in docs], docs)

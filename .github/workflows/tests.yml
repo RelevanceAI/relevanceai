@@ -3,9 +3,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, development ]
   pull_request:
-    branches: [ main]
+    branches: [ main, development]
 
   workflow_dispatch:
 
@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest ] 
+        os: [ ubuntu-latest] 
         python-version: [ '3.7' ]
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
@@ -22,8 +22,8 @@ jobs:
             path: ~/.cache/pip
           # - os: macos-latest
           #   path: ~/Library/Caches/pip
-          - os: windows-latest
-            path: ~\AppData\Local\pip\Cache
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
     steps:
       - uses: actions/checkout@v2
 

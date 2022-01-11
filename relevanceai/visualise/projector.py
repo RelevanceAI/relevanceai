@@ -8,11 +8,9 @@ from relevanceai.vector_tools.cluster import Cluster, ClusterBase
 from relevanceai.visualise.dash_components.app import create_dash_graph
 from relevanceai.vector_tools.constants import *
 from relevanceai.base import _Base
-from relevanceai.utils import Utils
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
-import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
 
@@ -23,7 +21,7 @@ RELEVANCEAI_BLUE = "#1854FF"
 
 
 @dataclass
-class Projector(Utils, BatchAPIClient, _Base, DocUtils):
+class Projector(BatchAPIClient, _Base, DocUtils):
     """
     Projector class.
 
@@ -69,10 +67,117 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         show_image: bool = False,
         label_char_length: int = 50,
         marker_size: int = 5,
-        interactive: bool = False,
     ):
         """
-        Dimension reduce vectors and plot with functionality to visualise different clusters and nearest neighbours
+        Dimension reduce vectors and plot them
+
+        To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
+        from relevanceai.visualise.dim_reduction import DimReductionBase
+        class CustomDimReduction(DimReductionBase):
+            def fit_transform(self, vectors):
+                return np.arange(512, 2)
+
+        Example:
+            >>> from relevanceai import Client
+            >>> project = input()
+            >>> api_key = input()
+            >>> client = Client(project, api_key)
+            >>> client.projector.plot(
+                    dataset_id, vector_field, number_of_points_to_render, random_state,
+                    dr, dr_args, dims,
+                    vector_label, label_char_length,
+                    color_label, colour_label_char_length,
+                    hover_label,
+                    cluster, cluster_args,
+                    )
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field : list
+            Vector field to plot
+        number_of_points_to_render: int
+            Number of vector fields to plot
+        vector_label: string
+            Field to use as label to describe vector on plot
+        dr: string
+            Method of dimension reduction for vectors
+        dims: int
+            Number of dimensions to reduce to
+        dr_args: dict
+            Additional arguments for dimension reduction
+        cluster: string
+            Method of clustering for vectors
+        num_clusters: string
+            Number of clusters to create
+        cluster_args: dict
+            Additional arguments for clustering
+        cluster_on_dr: int
+            Whether to cluster on the dimension reduced or original vectors
+        hover_label: list
+            Additional labels to include as plot labels
+        show_image: bool
+            Whether vector labels are image urls
+        label_char_length: int
+            Maximum length of text for each hover label
+        marker_size: int
+            Marker size of the plot
+        """
+
+        docs = self._get_plot_docs(
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            number_of_points_to_render=number_of_points_to_render,
+            vector_label=vector_label,
+            hover_label=hover_label,
+        )
+
+        return self.plot_from_docs(
+            docs,
+            vector_field=vector_field,
+            vector_label=vector_label,
+            label_char_length=label_char_length,
+            dr=dr,
+            dims=dims,
+            dr_args=dr_args,
+            cluster=cluster,
+            num_clusters=num_clusters,
+            cluster_args=cluster_args,
+            cluster_on_dr=cluster_on_dr,
+            hover_label=hover_label,
+            show_image=show_image,
+            marker_size=marker_size,
+            dataset_name=dataset_id,
+            jupyter_dash=False,
+        )
+
+    @typechecked
+    def plot_with_jupyter_dash(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        number_of_points_to_render: int = 1000,
+        # Plot rendering args
+        vector_label: Union[None, str] = None,
+        # Dimensionality reduction args
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
+        dims: Literal[2, 3] = 3,
+        dr_args: Union[None, Dict] = None,
+        # Cluster args
+        cluster: Union[CLUSTER, ClusterBase] = None,
+        num_clusters: Union[None, int] = 10,
+        cluster_args: Dict = {},
+        cluster_on_dr: bool = False,
+        # Decoration args
+        hover_label: list = [],
+        show_image: bool = False,
+        label_char_length: int = 50,
+        marker_size: int = 5,
+        interactive: bool = True,
+    ):
+        """
+        Dimension reduce vectors and plot them using Jupyter Dash, with functionality to visualise different clusters and nearest neighbours
 
         To write your own custom dimensionality reduction, you should inherit from DimReductionBase:
         from relevanceai.visualise.dim_reduction import DimReductionBase
@@ -131,6 +236,50 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
 
         """
 
+        try:
+            from jupyter_dash import JupyterDash
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "You are missing Jupyter Dash, please run `pip install jupyter_dash`"
+            )
+
+        docs = self._get_plot_docs(
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            number_of_points_to_render=number_of_points_to_render,
+            vector_label=vector_label,
+            hover_label=hover_label,
+        )
+
+        return self.plot_from_docs(
+            docs,
+            vector_field=vector_field,
+            vector_label=vector_label,
+            label_char_length=label_char_length,
+            dr=dr,
+            dims=dims,
+            dr_args=dr_args,
+            cluster=cluster,
+            num_clusters=num_clusters,
+            cluster_args=cluster_args,
+            cluster_on_dr=cluster_on_dr,
+            hover_label=hover_label,
+            show_image=show_image,
+            marker_size=marker_size,
+            dataset_name=dataset_id,
+            jupyter_dash=True,
+            interactive=interactive,
+        )
+
+    def _get_plot_docs(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        number_of_points_to_render: int = 1000,
+        vector_label: Union[None, str] = None,
+        hover_label: list = [],
+    ):
+
         # Check vector field
         self._is_valid_vector_name(dataset_id, vector_field)
 
@@ -152,25 +301,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             select_fields=["_id", vector_field] + vector_label_field + hover_label,
         )
         docs = self._remove_empty_vector_fields(docs, vector_field)
-
-        return self.plot_from_docs(
-            docs,
-            vector_field=vector_field,
-            vector_label=vector_label,
-            label_char_length=label_char_length,
-            dr=dr,
-            dims=dims,
-            dr_args=dr_args,
-            cluster=cluster,
-            num_clusters=num_clusters,
-            cluster_args=cluster_args,
-            cluster_on_dr=cluster_on_dr,
-            hover_label=hover_label,
-            show_image=show_image,
-            marker_size=marker_size,
-            dataset_name=dataset_id,
-            interactive=interactive,
-        )
+        return docs
 
     def plot_from_docs(
         self,
@@ -193,8 +324,11 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         label_char_length: int = 50,
         marker_size: int = 5,
         dataset_name: Union[None, str] = None,
-        interactive: bool = False,
+        jupyter_dash=False,
+        interactive: bool = True,
     ):
+
+        import plotly.graph_objects as go
 
         # Adjust vector label
         if show_image is False and vector_label:
@@ -203,6 +337,9 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
                 [i[vector_label][:label_char_length] + "..." for i in docs],
                 docs,
             )
+
+        if vector_label:
+            point_labels = self.get_field_across_documents(vector_label, docs)
 
         # Dimension reduce vectors
         vectors = np.array(self.get_field_across_documents(vector_field, docs))
@@ -257,20 +394,29 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             marker_size=marker_size,
             cluster=cluster,
             label_char_length=label_char_length,
+            vector_label=point_labels,
         )
 
         layout = self._generate_layout(plot_title=plot_title)
 
-        create_dash_graph(
-            plot_data=plot_data,
-            layout=layout,
-            show_image=show_image,
-            docs=docs,
-            vector_label=vector_label,
-            vector_field=vector_field,
-            interactive=interactive,
-        )
-        return
+        if jupyter_dash:
+            if vector_label is None:
+                self.logger.warning("Need to provide vector label for interactivity")
+                interactive = False
+
+            create_dash_graph(
+                plot_data=plot_data,
+                layout=layout,
+                show_image=show_image,
+                docs=docs,
+                vector_label=vector_label,
+                vector_field=vector_field,
+                interactive=interactive,
+            )
+
+        else:
+            fig = go.Figure(data=plot_data, layout=layout)
+            return fig
 
     def _generate_plot_data(
         self,
@@ -286,6 +432,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             None,
         ],
         label_char_length: int,
+        vector_label: str,
     ):
         """ """
 
@@ -300,6 +447,7 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
                         dims=dims,
                         marker_size=marker_size,
                         label_char_length=label_char_length,
+                        vector_label=vector_label,
                     )
                 )
 
@@ -312,18 +460,21 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
                     dims=dims,
                     marker_size=marker_size,
                     label_char_length=label_char_length,
+                    vector_label=vector_label,
                 )
             )
 
         return data
 
     def _generate_layout(self, plot_title):
+        import plotly.graph_objects as go
 
         axes_3d = {
             "title": "",
             "backgroundcolor": "#ffffff",
             "showgrid": False,
             "showticklabels": False,
+            "showbackground": False,
         }
 
         axes_2d = {"title": "", "visible": False, "showticklabels": False}
@@ -347,8 +498,15 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
         return layout
 
     def _generate_plot_info(
-        self, embedding_df, hover_label, dims, marker_size, label_char_length
+        self,
+        embedding_df,
+        hover_label,
+        dims,
+        marker_size,
+        label_char_length,
+        vector_label,
     ):
+        import plotly.graph_objects as go
 
         custom_data, hovertemplate = self._generate_hover_template(
             df=embedding_df,
@@ -361,10 +519,11 @@ class Projector(Utils, BatchAPIClient, _Base, DocUtils):
             "x": embedding_df["x"],
             "y": embedding_df["y"],
             "showlegend": False,
-            "mode": "markers",
+            "mode": "markers+text",
             "marker": {"size": marker_size, "symbol": "circle", "opacity": 0.75},
             "customdata": custom_data,
             "hovertemplate": hovertemplate,
+            "text": vector_label,
         }
 
         if dims == 2:
