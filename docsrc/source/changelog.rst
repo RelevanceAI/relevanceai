@@ -6,8 +6,9 @@ Here you will find a list of changes for each package update.
 v0.26.7
 --------
 
-- Fix datasets.documents.update_where so it runs
-- Add more tests around multivector search
+- Fixed datasets.documents.update_where so it runs
+- Added more tests around multivector search
+- Added Pandas-like Dataset Class for interacting with SDK (Alpha)
 
 v0.26.6
 --------
