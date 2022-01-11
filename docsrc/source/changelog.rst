@@ -3,7 +3,7 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
-v0.26.7
+v0.27.0
 --------
 
 - Fixed datasets.documents.update_where so it runs
