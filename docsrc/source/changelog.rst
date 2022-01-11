@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v1.0.0
+--------
+
+- Added centroid distance evaluation
+
 v0.27.0
 --------
 
