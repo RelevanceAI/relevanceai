@@ -49,8 +49,8 @@ def closest_to_centers(test_client, test_clustered_dataset):
 
 
 @pytest.fixture
-def furthest_from_center(test_client, test_clustered_dataset):
-    results = test_client.datasets.clusters.centroids.list_closest_to_center(
+def furthest_from_centers(test_client, test_clustered_dataset):
+    results = test_client.datasets.cluster.centroids.list_furthest_from_center(
         test_clustered_dataset,
         ["sample_1_vector_"],
         "kmeans_10",

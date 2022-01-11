@@ -22,11 +22,10 @@ class CentroidsClient(_Base):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        facets: List = [],
+        # facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False,
     ):
         """
         List of documents closest from the centre.
@@ -85,11 +84,9 @@ class CentroidsClient(_Base):
             "page": page,
             "similarity_metric": similarity_metric,
             "filters": filters,
-            "facets": facets,
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
-            "include_facets": include_facets,
         }
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
@@ -115,11 +112,9 @@ class CentroidsClient(_Base):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False,
     ):
         """
         List of documents furthest from the centre.
@@ -177,11 +172,9 @@ class CentroidsClient(_Base):
             "page": page,
             "similarity_metric": similarity_metric,
             "filters": filters,
-            "facets": facets,
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
-            "include_facets": include_facets,
         }
         self._log_to_dashboard(
             method=method,

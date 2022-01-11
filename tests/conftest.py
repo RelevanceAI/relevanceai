@@ -177,7 +177,6 @@ def sample_nested_assorted_docs():
         _sample_nested_assorted_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)
     ]
 
-
 @pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """Sample vector dataset"""
