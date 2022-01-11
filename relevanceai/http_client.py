@@ -5,7 +5,7 @@ import json
 import os
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.dataset_api.__pycache__.dataset import Dataset
+from relevanceai.dataset_api.dataset import Dataset
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
