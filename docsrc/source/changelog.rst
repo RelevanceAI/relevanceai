@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.26.8
+--------
+
+- Fix datasets.documents.update_where so it runs
+
 v0.26.7
 --------
 
