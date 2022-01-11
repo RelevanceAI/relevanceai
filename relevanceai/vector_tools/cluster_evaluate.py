@@ -223,10 +223,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             dataset_id, [vector_field], cluster_alias, include_vector=True
         )
 
-        print(centroid_response["documents"])
-        centroids = {
-            i["_id"]: i["centroid_vector_"] for i in centroid_response["documents"]
-        }
+        centroids = {i["_id"]: i[vector_field] for i in centroid_response["documents"]}
 
         return self.centroid_distances_from_docs(
             centroids,
