@@ -130,7 +130,7 @@ setup(
         # "ivis-cpu": ivis_cpu,
         # "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
-        "hdbscan": hdbscan
+        "hdbscan": hdbscan,
     },
     python_requires=">=3.6",
     classifiers=[
