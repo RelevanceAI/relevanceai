@@ -12,7 +12,7 @@ Features of the library include:
 - Vector clustering with support with built-in easy customisation
 - Multi-vector search with filtering, facets, weighting
 - Hybrid search (weighting exact text matching and vector search together)
-... and more! 
+... and more!
 
 
 ## 🧠 Documentation
