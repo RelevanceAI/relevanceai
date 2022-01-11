@@ -3,24 +3,19 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import ClassVar, List, Union
-
-from relevanceai.api.client import BatchAPIClient
-from relevanceai.vector_tools.cluster import Cluster
+from typing import List, Union
 
 
-class Series(BatchAPIClient):
+class Series:
     """
     A wrapper class for being able to vectorize documents over field
     """
 
-    def __init__(self, project: str, api_key: str) -> None:
+    def __init__(self, client) -> None:
         """
         Initialise the class
         """
-        super().__init__(project, api_key)
-        self.project = project
-        self.api_key = api_key
+        self.client = client
 
     def __call__(self, dataset_id: str, field: str):
         """
@@ -60,21 +55,19 @@ class Series(BatchAPIClient):
             def encode_documents(documents):
                 return model([self.field], documents)
 
-        self.pull_update_push(self.dataset_id, encode_documents)
+        self.client.pull_update_push(self.dataset_id, encode_documents)
 
 
-class Dataset(Cluster):
+class Dataset:
     """
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
 
-    def __init__(self, project: str, api_key: str) -> None:
+    def __init__(self, client) -> None:
         """
         Initialise the class
         """
-        super().__init__(project, api_key)
-        self.project = project
-        self.api_key = api_key
+        self.client = client
 
     def __call__(
         self,
@@ -124,8 +117,8 @@ class Dataset(Cluster):
         Tuple
             (N, C)
         """
-        schema = self.datasets.schema(self.dataset_id)
-        n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
+        schema = self.client.datasets.schema(self.dataset_id)
+        n_documents = self.client.get_number_of_documents(dataset_id=self.dataset_id)
         return (n_documents, len(schema))
 
     def __getitem__(self, field: str):
@@ -142,7 +135,7 @@ class Dataset(Cluster):
         Tuple
             (N, C)
         """
-        series = Series(self.project, self.api_key)
+        series = Series(self.client)
         series(dataset_id=self.dataset_id, field=field)
         return series
 
@@ -156,8 +149,8 @@ class Dataset(Cluster):
         Dict
             Dictionary of information
         """
-        health = self.datasets.monitor.health(self.dataset_id)
-        schema = self.datasets.schema(self.dataset_id)
+        health = self.client.datasets.monitor.health(self.dataset_id)
+        schema = self.client.datasets.schema(self.dataset_id)
         schema = {key: str(value) for key, value in schema.items()}
         info = {
             key: {
@@ -190,7 +183,7 @@ class Dataset(Cluster):
         Pandas DataFrame or Dict, depending on args
             The first 'n' rows of the caller object.
         """
-        head_documents = self.get_documents(
+        head_documents = self.client.get_documents(
             dataset_id=self.dataset_id,
             number_of_documents=n,
         )
@@ -204,11 +197,11 @@ class Dataset(Cluster):
         Descriptive statistics include those that summarize the central tendency
         dispersion and shape of a dataset's distribution, excluding NaN values.
         """
-        return self.datasets.facets(self.dataset_id)
+        return self.client.datasets.facets(self.dataset_id)
 
     def vectorize(self, field, model):
-        """ 
-        Vectorizes a Particular field (text) of the dataset 
+        """
+        Vectorizes a Particular field (text) of the dataset
 
         Parameters
         ----------
@@ -217,21 +210,21 @@ class Dataset(Cluster):
         model
             a Type deep learning model that vectorizes text
         """
-        series = Series(self.project, self.api_key)
+        series = Series(self.client)
         series(self.dataset_id, field).vectorize(model)
 
-    def cluster(self, field, n_clusters):
-        """ 
+    def cluster(self, field, n_clusters=10):
+        """
         Performs KMeans Clustering on over a vector field within the dataset.
 
         Parameters
         ----------
         field : str
             The text field to select
-        n_cluster: int
+        n_cluster: int default = 10
             the number of cluster to find wihtin the vector field
         """
-        centroids = self.kmeans_cluster(
+        centroids = self.client.vector_tools.cluster.kmeans_cluster(
             dataset_id=self.dataset_id,
             vector_fields=[field],
             k=n_clusters,
