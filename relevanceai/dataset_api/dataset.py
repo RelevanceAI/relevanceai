@@ -3,6 +3,7 @@ Pandas like dataset API
 """
 import pandas as pd
 
+from relevanceai.api.client import BatchAPIClient
 from typing import List, Union
 
 
@@ -58,7 +59,7 @@ class Series:
         self.client.pull_update_push(self.dataset_id, encode_documents)
 
 
-class Dataset:
+class Dataset(BatchAPIClient):
     """
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
@@ -232,3 +233,10 @@ class Dataset:
             overwrite=overwrite,
         )
         return centroids
+
+
+class Datasets:
+    """Dataset class for multiple datasets"""
+
+    def __init__(self, client):
+        self.client = client
