@@ -213,7 +213,7 @@ class Dataset:
         series = Series(self.client)
         series(self.dataset_id, field).vectorize(model)
 
-    def cluster(self, field, n_clusters=10):
+    def cluster(self, field, n_clusters=10, overwrite=False):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
@@ -229,5 +229,6 @@ class Dataset:
             vector_fields=[field],
             k=n_clusters,
             alias=f"kmeans_{n_clusters}",
+            overwrite=overwrite,
         )
         return centroids

@@ -23,10 +23,10 @@ class TestDatset:
 
     def test_describe(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
-        head = df.head()
+        description = df.describe()
         assert True
 
     def test_cluster(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
-        head = df.cluster(field="sample_1_vector_")
+        centroids = df.cluster(field="sample_1_vector_", overwrite=True)
         assert True
