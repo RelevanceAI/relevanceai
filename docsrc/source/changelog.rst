@@ -9,6 +9,8 @@ v0.27.0
 - Fixed datasets.documents.update_where so it runs
 - Added more tests around multivector search
 - Added Pandas-like Dataset Class for interacting with SDK (Alpha)
+- Added datasets.cluster.centroids.list_furthest_from_centers and datasets.cluster.centroids.list_closest_to_centers
+- Folder Refactor
 
 v0.26.6
 --------
