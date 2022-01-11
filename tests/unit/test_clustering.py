@@ -1,5 +1,4 @@
 import pytest
-import random
 
 
 def test_kmeans(test_client, test_clustered_dataset):

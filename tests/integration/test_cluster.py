@@ -36,15 +36,15 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     assert True
 
 
-def test_cluster_integration_multiple_vector_fields(
-    test_client, test_sample_vector_dataset
+@pytest.mark.parametrize(
+    "vector_fields", [["sample_1_vector_"], ["sample_2_vector_", "sample_1_vector_"]]
+)
+def test_cluster_integration_one_liner(
+    test_client, test_sample_vector_dataset, vector_fields
 ):
-    """Test for the entire clustering workflow."""
+    """Smoke Test for the entire clustering workflow."""
     # Retrieve a previous dataset
-    VECTOR_FIELDS = ["sample_1_vector_", "sample_2_vector_"]
-    ALIAS = "kmeans_10"
-    docs = test_client.datasets.documents.list(test_sample_vector_dataset)
-
+    VECTOR_FIELDS = vector_fields
     test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id=test_sample_vector_dataset, vector_fields=VECTOR_FIELDS
     )
