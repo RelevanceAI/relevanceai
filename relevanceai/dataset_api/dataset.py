@@ -235,7 +235,7 @@ class Dataset(BatchAPIClient):
         return centroids
 
 
-class Datasets(BatchAPIClient):
+class Datasets:
     """Dataset class for multiple datasets"""
 
     def __init__(self, client):
