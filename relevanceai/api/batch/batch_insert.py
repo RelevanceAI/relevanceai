@@ -115,7 +115,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         show_progress_bar: bool = False,
         index_col: int = None,
         csv_args: dict = {},
-        use_as_id: str = None,
+        col_for_id: str = None,
         auto_generate_id: bool = True,
     ):
 
@@ -138,7 +138,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
         index_col : None
             Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
-        use_as_id : str
+        col_for_id : str
             Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
         auto_generate_id: bool = True
             Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
@@ -163,7 +163,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 max_workers=max_workers,
                 retry_chunk_mult=retry_chunk_mult,
                 show_progress_bar=show_progress_bar,
-                use_as_id=use_as_id,
+                col_for_id=col_for_id,
                 auto_generate_id=auto_generate_id,
             )
             inserted += response["inserted"]
@@ -183,23 +183,26 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         max_workers,
         retry_chunk_mult,
         show_progress_bar,
-        use_as_id,
+        col_for_id,
         auto_generate_id,
     ):
         # generate '_id' if possible
-        # use_as_id
-        if "_id" not in chunk.columns and use_as_id:
-            if use_as_id in chunk:
-                chunk.insert(0, "_id", chunk[use_as_id], False)
+        # col_for_id
+        if "_id" not in chunk.columns and col_for_id:
+            if col_for_id in chunk:
+                chunk.insert(0, "_id", chunk[col_for_id], False)
             else:
                 self.logger.warning(
-                    f"The specified column {use_as_id} does not exist in the CSV file"
+                    f"The specified column {col_for_id} does not exist in the CSV file"
                 )
         # auto_generate_id
         if "_id" not in chunk.columns and auto_generate_id:
             index = chunk.index
             uuids = [uuid.uuid4() for _ in range(len(index))]
             chunk.insert(0, "_id", uuids, False)
+            self.logger.warning(
+                "we will be auto-generating IDs since no ID field is detected"
+            )
 
         # Check for _id
         if "_id" not in chunk.columns:
