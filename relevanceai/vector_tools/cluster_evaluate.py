@@ -222,6 +222,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         centroid_response = self.services.cluster.centroids.list(
             dataset_id, [vector_field], cluster_alias, include_vector=True
         )
+
+        print(centroid_response["documents"])
         centroids = {
             i["_id"]: i["centroid_vector_"] for i in centroid_response["documents"]
         }
