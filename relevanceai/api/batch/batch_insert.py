@@ -201,7 +201,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             uuids = [uuid.uuid4() for _ in range(len(index))]
             chunk.insert(0, "_id", uuids, False)
             self.logger.warning(
-                "we will be auto-generating IDs since no ID field is detected"
+                "We will be auto-generating IDs since no id field is detected"
             )
 
         # Check for _id
