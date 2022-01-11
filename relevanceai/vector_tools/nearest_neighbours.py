@@ -20,6 +20,8 @@ class NearestNeighbours(_Base, DocUtils):
         distance_measure_mode: NEAREST_NEIGHBOURS = "cosine",
         callable_distance=None,
     ):
+    
+        import scipy.spatial.distance as spatial_distance
 
         if callable_distance:
             sort_key = [

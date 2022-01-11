@@ -5,7 +5,6 @@ from sklearn.metrics import (
     completeness_score,
     homogeneity_score,
 )
-import scipy.spatial.distance as spatial_distance
 import pandas as pd
 import plotly.graph_objs as go
 import numpy as np
@@ -498,6 +497,8 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             Optional function to use for distance measure
 
         """
+        import scipy.spatial.distance as spatial_distance
+
         df = pd.DataFrame(columns=centroids.keys(), index=centroids.keys())
         for cluster1 in centroids.keys():
             for cluster2 in centroids.keys():
