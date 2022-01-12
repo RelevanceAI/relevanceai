@@ -4,10 +4,11 @@ GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 
 
 class Groupby(BatchAPIClient):
-    def __init__(self, client, dataset_id, pre_groupby=None):
-        self.client = client
+    def __init__(self, project, api_key, dataset_id):
+        self.project = project
+        self.api_key = api_key
         self.dataset_id = dataset_id
-        self.pre_groupby = None
+        super().__init__(project=project, api_key=api_key)
 
     def __call__(self, by: list = []):
         """
@@ -64,10 +65,12 @@ class Groupby(BatchAPIClient):
 
 
 class Agg(BatchAPIClient):
-    def __init__(self, client, dataset_id, groupby_call=[]):
-        self.client = client
+    def __init__(self, project, api_key, dataset_id, groupby_call=[]):
+        self.project = project
+        self.api_key = api_key
         self.dataset_id = dataset_id
         self.groupby_call = groupby_call
+        super().__init__(project=project, api_key=api_key)
 
     def __call__(
         self,
