@@ -15,18 +15,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - uses: actions/checkout@v2
+    - name: Get RelevanceAI version
+      run: |
+        RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+        echo $RELEVANCEAI_VERSION
+        echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+
     - name: Check out ReadMe repo
       uses: actions/checkout@v2
       with:
         repository: RelevanceAI/RelevanceAI-readme-docs 
         ref: refs/heads/development
-    
-    - name: Create new branch
-      run: |
-        RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
-        echo $RELEVANCEAI_VERSION
 
-        # git checkout -b v0.27.0
 
 
     # - name: Set up Python
