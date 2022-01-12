@@ -35,9 +35,7 @@ class Centroids(BatchAPIClient):
 
         # Check if cluster is in schema
         schema = self.datasets.schema(self.dataset_id)
-        self._are_fields_in_schema(
-            [self.cluster_doc_field], self.dataset_id, schema
-        )
+        self._are_fields_in_schema([self.cluster_doc_field], self.dataset_id, schema)
         self.cluster_field_type = schema[self.cluster_doc_field]
 
         self.cluster_groupby = [
@@ -48,9 +46,17 @@ class Centroids(BatchAPIClient):
             }
         ]
         self.groupby = Groupby(
-            self.project, self.api_key, self.dataset_id, pre_groupby=self.cluster_groupby
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            pre_groupby=self.cluster_groupby,
         )
-        self.agg = Agg(self.project, self.api_key, self.dataset_id, groupby_call=self.cluster_groupby)
+        self.agg = Agg(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            groupby_call=self.cluster_groupby,
+        )
         return self
 
     def closest(

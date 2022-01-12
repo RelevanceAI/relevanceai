@@ -9,6 +9,7 @@ from typing import List, Union, Optional
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
+
 class Series:
     """
     A wrapper class for being able to vectorize documents over field
