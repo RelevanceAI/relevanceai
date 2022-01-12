@@ -30,12 +30,14 @@ class Centroids(BatchAPIClient):
         self.cluster_doc_field = (
             f"{self.cluster_field}.{self.vector_fields[0]}.{self.alias}"
         )
-        
+
         # Check if cluster is in schema
         schema = self.client.datasets.schema(self.dataset_id)
-        self.client._are_fields_in_schema([self.cluster_doc_field], self.dataset_id, schema)
+        self.client._are_fields_in_schema(
+            [self.cluster_doc_field], self.dataset_id, schema
+        )
         self.cluster_field_type = schema[self.cluster_doc_field]
-        
+
         self.cluster_groupby = [
             {
                 "name": "cluster",
