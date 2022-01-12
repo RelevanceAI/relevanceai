@@ -5,6 +5,7 @@ import warnings
 import pandas as pd
 from typing import List, Union, Optional
 
+
 class Series:
     """
     A wrapper class for being able to vectorize documents over field
@@ -74,7 +75,7 @@ class Dataset:
         image_fields: List = [],
         text_fields: List = [],
         audio_fields: List = [],
-        highlight_fields: dict={},
+        highlight_fields: dict = {},
         output_format: str = "pandas",
     ):
         """
@@ -167,7 +168,9 @@ class Dataset:
         info = {"info": info, "dtypes": dtypes}
         return info
 
-    def head(self, n: int = 5, raw_json: bool = False, **kw) -> Union[dict, pd.DataFrame]:
+    def head(
+        self, n: int = 5, raw_json: bool = False, **kw
+    ) -> Union[dict, pd.DataFrame]:
         """
         Return the first `n` rows.
         returns the first `n` rows of your dataset.
@@ -196,21 +199,22 @@ class Dataset:
             try:
                 return self._show_json(head_documents, **kw)
             except Exception as e:
-                warnings.warn("Displaying using Pandas."  + str(e))
+                warnings.warn("Displaying using Pandas." + str(e))
                 return pd.json_normalize(head_documents).head(n=n)
-        
+
     def _show_json(self, docs):
         from jsonshower import show_json
+
         if not self.text_fields:
             text_fields = pd.json_normalize(docs).columns.tolist()
         else:
             text_fields = self.text_fields
         return show_json(
-            docs, 
+            docs,
             image_fields=self.image_fields,
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
-            text_fields=text_fields
+            text_fields=text_fields,
         )
 
     def describe(self) -> dict:
