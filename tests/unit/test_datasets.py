@@ -34,6 +34,7 @@ def test_get_online_retail_dataset_full():
     assert len(get_online_retail_dataset(number_of_documents=None)) == 406829
 
 
+@pytest.mark.skip(reason="Dataset is officially down.")
 def test_get_news_dataset_subset():
     from relevanceai.datasets import get_news_dataset
 
