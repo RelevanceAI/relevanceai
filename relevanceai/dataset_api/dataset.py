@@ -61,7 +61,7 @@ class Series:
         self.client.pull_update_push(self.dataset_id, encode_documents)
 
 
-class Dataset:
+class Dataset(BatchAPIClient):
     """
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
