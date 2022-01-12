@@ -1,6 +1,7 @@
 """
 Pandas like dataset API
 """
+import warnings
 import pandas as pd
 
 from relevanceai.vector_tools.client import VectorTools
@@ -60,7 +61,7 @@ class Series:
         self.client.pull_update_push(self.dataset_id, encode_documents)
 
 
-class Dataset(BatchAPIClient):
+class Dataset:
     """
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
@@ -80,6 +81,7 @@ class Dataset(BatchAPIClient):
         image_fields: List = [],
         text_fields: List = [],
         audio_fields: List = [],
+        highlight_fields: dict = {},
         output_format: str = "pandas",
     ):
         """
@@ -106,6 +108,7 @@ class Dataset(BatchAPIClient):
         self.image_fields = image_fields
         self.text_fields = text_fields
         self.audio_fields = audio_fields
+        self.highlight_fields = highlight_fields
         self.output_format = output_format
 
         return self
@@ -171,7 +174,9 @@ class Dataset(BatchAPIClient):
         info = {"info": info, "dtypes": dtypes}
         return info
 
-    def head(self, n: int = 5, raw_json: bool = False) -> Union[dict, pd.DataFrame]:
+    def head(
+        self, n: int = 5, raw_json: bool = False, **kw
+    ) -> Union[dict, pd.DataFrame]:
         """
         Return the first `n` rows.
         returns the first `n` rows of your dataset.
@@ -182,6 +187,8 @@ class Dataset(BatchAPIClient):
         ----------
         n : int, default 5
             Number of rows to select.
+        raw_json: bool
+            If True, returns raw JSON and not Pandas Dataframe
 
         Returns
         -------
@@ -195,7 +202,26 @@ class Dataset(BatchAPIClient):
         if raw_json:
             return head_documents
         else:
-            return pd.DataFrame(head_documents).head(n=n)
+            try:
+                return self._show_json(head_documents, **kw)
+            except Exception as e:
+                warnings.warn("Displaying using Pandas." + str(e))
+                return pd.json_normalize(head_documents).head(n=n)
+
+    def _show_json(self, docs):
+        from jsonshower import show_json
+
+        if not self.text_fields:
+            text_fields = pd.json_normalize(docs).columns.tolist()
+        else:
+            text_fields = self.text_fields
+        return show_json(
+            docs,
+            image_fields=self.image_fields,
+            audio_fields=self.audio_fields,
+            highlight_fields=self.highlight_fields,
+            text_fields=text_fields,
+        )
 
     def describe(self) -> dict:
         """
