@@ -49,7 +49,7 @@ class Centroids(BatchAPIClient):
             self.project,
             self.api_key,
             self.dataset_id,
-            pre_groupby=self.cluster_groupby,
+            _pre_groupby=self.cluster_groupby,
         )
         self.agg = Agg(
             self.project,
