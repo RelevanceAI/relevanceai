@@ -100,9 +100,9 @@ class Agg(BatchAPIClient):
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
         self.metrics = metrics
-        self.client._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
+        self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
-        return self.client.services.aggregate.aggregate(
+        return self.services.aggregate.aggregate(
             dataset_id=self.dataset_id,
             metrics=self.metrics_call,
             groupby=self.groupby_call,

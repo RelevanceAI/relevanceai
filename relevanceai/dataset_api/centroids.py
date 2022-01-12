@@ -4,9 +4,11 @@ from typing import List
 
 
 class Centroids(BatchAPIClient):
-    def __init__(self, client, dataset_id):
-        self.client = client
+    def __init__(self, project: str, api_key: str, dataset_id: str):
+        self.project = project
+        self.api_key = api_key
         self.dataset_id = dataset_id
+        super().__init__(project=project, api_key=api_key)
 
     def __call__(
         self, vector_fields: list, alias: str, cluster_field: str = "_cluster_"
@@ -32,8 +34,8 @@ class Centroids(BatchAPIClient):
         )
 
         # Check if cluster is in schema
-        schema = self.client.datasets.schema(self.dataset_id)
-        self.client._are_fields_in_schema(
+        schema = self.datasets.schema(self.dataset_id)
+        self._are_fields_in_schema(
             [self.cluster_doc_field], self.dataset_id, schema
         )
         self.cluster_field_type = schema[self.cluster_doc_field]
@@ -46,9 +48,9 @@ class Centroids(BatchAPIClient):
             }
         ]
         self.groupby = Groupby(
-            self.client, self.dataset_id, pre_groupby=self.cluster_groupby
+            self.project, self.api_key, self.dataset_id, pre_groupby=self.cluster_groupby
         )
-        self.agg = Agg(self.client, self.dataset_id, groupby_call=self.cluster_groupby)
+        self.agg = Agg(self.project, self.api_key, self.dataset_id, groupby_call=self.cluster_groupby)
         return self
 
     def closest(
@@ -99,7 +101,7 @@ class Centroids(BatchAPIClient):
 
         """
 
-        return self.client.datasets.cluster.centroids.list_closest_to_center(
+        return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -163,7 +165,7 @@ class Centroids(BatchAPIClient):
 
         """
 
-        return self.client.datasets.cluster.centroids.list_furthest_from_center(
+        return self.datasets.cluster.centroids.list_furthest_from_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
