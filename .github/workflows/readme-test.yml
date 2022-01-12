@@ -20,7 +20,14 @@ jobs:
       with:
         repository: RelevanceAI/RelevanceAI-readme-docs 
         ref: refs/heads/development
-        # token: ${{ secrets.my_pat }}
+    
+    - name: Create new branch
+      run: |
+        RELEVANCEAI_VERSION=v$( cat ./relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+        echo $RELEVANCEAI_VERSION
+        
+        # git checkout -b v0.27.0
+
 
     # - name: Set up Python
     #   uses: actions/setup-python@v2
