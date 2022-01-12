@@ -23,9 +23,9 @@ class Groupby(BatchAPIClient):
         """
         self.by = by
         self.groupby_fields = self._get_groupby_fields()
-        if self._pre_groupby is not None:
-            self.groupby_fields += self._pre_groupby
         self.groupby_call = self._create_groupby_call()
+        if self._pre_groupby is not None:
+            self.groupby_call += self._pre_groupby
         self.agg = Agg(self.project, self.api_key, self.dataset_id, self.groupby_call)
         return self
 
