@@ -67,8 +67,8 @@ class Client(BatchAPIClient, DocUtils):
             )
         self.vector_tools = VectorTools(project, api_key)
 
-        self.Dataset = Dataset(self)
-        self.Datasets = Datasets(self)
+        self.Dataset = Dataset(project=project, api_key=api_key)
+        self.Datasets = Datasets(project=project, api_key=api_key)
 
     # @property
     # def output_format(self):
