@@ -295,7 +295,7 @@ class Dataset(BatchAPIClient):
             Random Seed for retrieving random documents.
 
         """
-        if n is 0 and frac is None:
+        if n == 0 and frac is None:
             raise ValueError("Must provide one of n or frac")
 
         if frac and n:
