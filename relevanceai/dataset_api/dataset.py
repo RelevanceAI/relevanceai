@@ -9,7 +9,6 @@ from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
 
-
 class Series:
     """
     A wrapper class for being able to vectorize documents over field
@@ -111,8 +110,8 @@ class Dataset(BatchAPIClient):
         self.audio_fields = audio_fields
         self.highlight_fields = highlight_fields
         self.output_format = output_format
-        self.groupby = Groupby(self.client, self.dataset_id)
-        self.agg = Agg(self.client, self.dataset_id)
+        self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
+        self.agg = Agg(self.project, self.api_key, self.dataset_id)
 
         return self
 
