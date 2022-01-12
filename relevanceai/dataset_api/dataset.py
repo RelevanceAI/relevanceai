@@ -269,7 +269,7 @@ class Dataset(BatchAPIClient):
 
     def sample(
         self,
-        n: int = None,
+        n: int = 0,
         frac: float = None,
         filters: list = [],
         random_state: int = 0,
@@ -290,7 +290,7 @@ class Dataset(BatchAPIClient):
             Random Seed for retrieving random documents.
 
         """
-        if n is None and frac is None:
+        if n is 0 and frac is None:
             raise ValueError("Must provide one of n or frac")
 
         if frac and n:
