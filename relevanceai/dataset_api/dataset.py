@@ -4,6 +4,7 @@ Pandas like dataset API
 import pandas as pd
 
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.dataset_api.groupby import Groupby, Agg
 from typing import List, Union
 
 
@@ -103,6 +104,8 @@ class Dataset(BatchAPIClient):
         self.text_fields = text_fields
         self.audio_fields = audio_fields
         self.output_format = output_format
+        self.groupby = Groupby(self.client, self.dataset_id)
+        self.agg = Agg(self.client, self.dataset_id)
 
         return self
 
