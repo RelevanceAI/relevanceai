@@ -247,6 +247,7 @@ def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
     yield response, len(sample_vector_docs)
     test_client.datasets.delete(test_dataset_id)
 
+
 @pytest.fixture(scope="session")
 def test_dataset_df(test_client, sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)

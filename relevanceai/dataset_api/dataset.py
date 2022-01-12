@@ -189,6 +189,8 @@ class Dataset(BatchAPIClient):
             Number of rows to select.
         raw_json: bool
             If True, returns raw JSON and not Pandas Dataframe
+        kw:
+            Additional arguments to feed into show_json
 
         Returns
         -------
@@ -208,7 +210,7 @@ class Dataset(BatchAPIClient):
                 warnings.warn("Displaying using Pandas." + str(e))
                 return pd.json_normalize(head_documents).head(n=n)
 
-    def _show_json(self, docs):
+    def _show_json(self, docs, **kw):
         from jsonshower import show_json
 
         if not self.text_fields:
@@ -265,8 +267,10 @@ class Dataset(BatchAPIClient):
         return centroids
 
 
-class Datasets:
+class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, project: str, api_key: str):
+        self.project = project
+        self.api_key = api_key
+        super().__init__(project=project, api_key=api_key)
