@@ -300,11 +300,11 @@ class Dataset(BatchAPIClient):
             if frac > 1 or frac < 0:
                 raise ValueError("Fraction must be between 0 and 1")
             n = math.ceil(
-                self.client.get_number_of_documents(self.dataset_id, filters=filters)
+                self.get_number_of_documents(self.dataset_id, filters=filters)
                 * frac
             )
 
-        return self.client.datasets.documents.get_where(
+        return self.datasets.documents.get_where(
             dataset_id=self.dataset_id,
             filters=filters,
             page_size=n,
