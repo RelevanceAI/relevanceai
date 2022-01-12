@@ -4,9 +4,10 @@ GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 
 
 class Groupby(BatchAPIClient):
-    def __init__(self, client, dataset_id):
+    def __init__(self, client, dataset_id, pre_groupby=None):
         self.client = client
         self.dataset_id = dataset_id
+        self.pre_groupby = None
 
     def __call__(self, by: list = []):
         """
@@ -20,6 +21,8 @@ class Groupby(BatchAPIClient):
         """
         self.by = by
         self.groupby_fields = self._get_groupby_fields()
+        if self.pre_groupby is not None:
+            self.groupby_fields += self.pre_groupby
         self.groupby_call = self._create_groupby_call()
         self.agg = Agg(self.client, self.dataset_id, self.groupby_call)
         return self

@@ -5,6 +5,7 @@ import pandas as pd
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.groupby import Groupby, Agg
+from relevanceai.dataset_api.centroids import Centroids
 from typing import List, Union
 
 
@@ -106,6 +107,7 @@ class Dataset(BatchAPIClient):
         self.output_format = output_format
         self.groupby = Groupby(self.client, self.dataset_id)
         self.agg = Agg(self.client, self.dataset_id)
+        self.centroids = Centroids(self.client, self.dataset_id)
 
         return self
 
