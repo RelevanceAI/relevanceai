@@ -30,3 +30,8 @@ class TestDatset:
         df = test_client.Dataset(test_sample_vector_dataset)
         centroids = df.cluster(field="sample_1_vector_", overwrite=True)
         assert True
+
+    def test_sample(self, test_client, test_sample_vector_dataset):
+        df = test_client.Dataset(test_sample_vector_dataset)
+        sample_n = df.sample(n=10)
+        assert len(sample_n) == 10
