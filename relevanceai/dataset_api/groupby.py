@@ -10,7 +10,7 @@ class Groupby(BatchAPIClient):
         self.dataset_id = dataset_id
         super().__init__(project=project, api_key=api_key)
 
-    def __call__(self, by: list = []):
+    def __call__(self, by: list = [], _pre_groupby=None):
         """
         Instaniates Groupby Class which stores a groupby call
 
@@ -22,8 +22,9 @@ class Groupby(BatchAPIClient):
         """
         self.by = by
         self.groupby_fields = self._get_groupby_fields()
-        if self.pre_groupby is not None:
-            self.groupby_fields += self.pre_groupby
+        self._pre_groupby = _pre_groupby
+        if self._pre_groupby is not None:
+            self.groupby_fields += self._pre_groupby
         self.groupby_call = self._create_groupby_call()
         self.agg = Agg(self.client, self.dataset_id, self.groupby_call)
         return self
