@@ -30,11 +30,17 @@ class Centroids(BatchAPIClient):
         self.cluster_doc_field = (
             f"{self.cluster_field}.{self.vector_fields[0]}.{self.alias}"
         )
+        
+        # Check if cluster is in schema
+        schema = self.client.datasets.schema(self.dataset_id)
+        self.client._are_fields_in_schema([self.cluster_doc_field], self.dataset_id, schema)
+        self.cluster_field_type = schema[self.cluster_doc_field]
+        
         self.cluster_groupby = [
             {
                 "name": "cluster",
                 "field": self.cluster_doc_field,
-                "agg": "numeric",
+                "agg": self.cluster_field_type,
             }
         ]
         self.groupby = Groupby(
@@ -54,11 +60,9 @@ class Centroids(BatchAPIClient):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False,
     ):
 
         """
@@ -84,20 +88,16 @@ class Centroids(BatchAPIClient):
             Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
         filters: list
             Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
         min_score: int
             Minimum score for similarity metric
         include_vectors: bool
             Include vectors in the search results
         include_count: bool
             Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
 
         """
 
-        return self.client.services.cluster.centroids.list_closest_to_center(
+        return self.client.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -110,11 +110,9 @@ class Centroids(BatchAPIClient):
             page=page,
             similarity_metric=similarity_metric,
             filters=filters,
-            facets=facets,
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
-            include_facets=include_facets,
         )
 
     def furthest(
@@ -128,11 +126,9 @@ class Centroids(BatchAPIClient):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False,
     ):
 
         """
@@ -156,20 +152,16 @@ class Centroids(BatchAPIClient):
             Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
         filters: list
             Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
         min_score: int
             Minimum score for similarity metric
         include_vectors: bool
             Include vectors in the search results
         include_count: bool
             Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
 
         """
 
-        return self.client.services.cluster.centroids.list_furthest_from_center(
+        return self.client.datasets.cluster.centroids.list_furthest_from_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -182,9 +174,7 @@ class Centroids(BatchAPIClient):
             page=page,
             similarity_metric=similarity_metric,
             filters=filters,
-            facets=facets,
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
-            include_facets=include_facets,
         )
