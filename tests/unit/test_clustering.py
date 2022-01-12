@@ -1,5 +1,4 @@
 import pytest
-import random
 
 
 def test_kmeans(test_client, test_clustered_dataset):
@@ -36,6 +35,31 @@ def test_cluster_distribution(test_client, test_clustered_dataset):
         ground_truth_field="sample_1_label",
     )
     assert True
+
+
+@pytest.fixture
+def closest_to_centers(test_client, test_clustered_dataset):
+    results = test_client.datasets.cluster.centroids.list_closest_to_center(
+        test_clustered_dataset,
+        ["sample_1_vector_"],
+        "kmeans_10",
+    )
+    return results
+
+
+@pytest.fixture
+def furthest_from_centers(test_client, test_clustered_dataset):
+    results = test_client.datasets.cluster.centroids.list_furthest_from_center(
+        test_clustered_dataset,
+        ["sample_1_vector_"],
+        "kmeans_10",
+    )
+    return results
+
+
+def test_furthest_different_from_closest(closest_to_centers, furthest_from_centers):
+    """Ensure that the bug where they are closest and furthest are no longer there"""
+    assert closest_to_centers != furthest_from_centers
 
 
 @pytest.mark.skip(reason="Not fully implemented")

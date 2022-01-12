@@ -2,14 +2,14 @@
 """
 from relevanceai.base import _Base
 
-from relevanceai.api.endpoints.encoders import EncodersClient
-from relevanceai.api.endpoints.cluster import ClusterClient
-from relevanceai.api.endpoints.search import SearchClient
-from relevanceai.api.endpoints.aggregate import AggregateClient
-from relevanceai.api.endpoints.recommend import RecommendClient
-from relevanceai.api.endpoints.tagger import TaggerClient
-from relevanceai.api.endpoints.prediction import PredictionClient
-from relevanceai.api.endpoints.wordclouds import WordcloudsClient
+from relevanceai.api.endpoints.services.encoders import EncodersClient
+from relevanceai.api.endpoints.services.cluster import ClusterClient
+from relevanceai.api.endpoints.services.search import SearchClient
+from relevanceai.api.endpoints.services.aggregate import AggregateClient
+from relevanceai.api.endpoints.services.recommend import RecommendClient
+from relevanceai.api.endpoints.services.tagger import TaggerClient
+from relevanceai.api.endpoints.services.prediction import PredictionClient
+from relevanceai.api.endpoints.services.wordclouds import WordcloudsClient
 
 
 class ServicesClient(_Base):
