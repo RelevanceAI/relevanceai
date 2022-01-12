@@ -23,15 +23,15 @@ class Groupby(BatchAPIClient):
         self.by = by
         self.groupby_fields = self._get_groupby_fields()
         self.groupby_call = self._create_groupby_call()
-        self.agg = Agg(self.client, self.dataset_id, self.groupby_call)
+        self.agg = Agg(self.project, self.api_key, self.dataset_id, self.groupby_call)
         return self
 
     def _get_groupby_fields(self):
         """
         Get what type of groupby field to use
         """
-        schema = self.client.datasets.schema(self.dataset_id)
-        self.client._are_fields_in_schema(self.by, self.dataset_id, schema)
+        schema = self.datasets.schema(self.dataset_id)
+        self._are_fields_in_schema(self.by, self.dataset_id, schema)
         fields_schema = {k: v for k, v in schema.items() if k in self.by}
         self._check_groupby_value_type(fields_schema)
 
@@ -98,9 +98,9 @@ class Agg(BatchAPIClient):
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
         self.metrics = metrics
-        self.client._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
+        self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
-        return self.client.services.aggregate.aggregate(
+        return self.services.aggregate.aggregate(
             dataset_id=self.dataset_id,
             metrics=self.metrics_call,
             groupby=self.groupby_call,
