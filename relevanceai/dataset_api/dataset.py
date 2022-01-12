@@ -8,7 +8,6 @@ from relevanceai.dataset_api.groupby import Groupby, Agg
 from typing import List, Union, Optional
 
 
-
 class Series:
     """
     A wrapper class for being able to vectorize documents over field
