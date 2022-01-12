@@ -52,7 +52,7 @@ class TestDatset:
             .agg({"sample_2_label": "avg"})
         )
         assert True
-        
+
     def test_sample(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
         sample_n = df.sample(n=10)
