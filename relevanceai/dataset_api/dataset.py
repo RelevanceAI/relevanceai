@@ -115,6 +115,7 @@ class Dataset(BatchAPIClient):
         self.output_format = output_format
         self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
         self.agg = Agg(self.project, self.api_key, self.dataset_id)
+        self.centroids = Centroids(self.project, self.api_key, self.dataset_id)
 
         return self
 
