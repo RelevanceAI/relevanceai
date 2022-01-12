@@ -46,7 +46,7 @@ You can also install on conda (only available on Linux environments at the momen
 ```{python}
 from relevanceai import Client 
 
-client = relevanceai.Client(<project_name>, <api_key>)
+client = Client(<project_name>, <api_key>)
 ```
 
 This is a data example in the right format to be uploaded to relevanceai. Every document you upload should:
