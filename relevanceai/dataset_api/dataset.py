@@ -5,6 +5,9 @@ import warnings
 import pandas as pd
 from typing import List, Union, Optional
 import math
+from relevanceai.vector_tools.client import VectorTools
+from relevanceai.api.client import BatchAPIClient
+from typing import List, Union
 
 
 class Series:
@@ -12,7 +15,7 @@ class Series:
     A wrapper class for being able to vectorize documents over field
     """
 
-    def __init__(self, client) -> None:
+    def __init__(self, client: BatchAPIClient) -> None:
         """
         Initialise the class
         """
@@ -59,16 +62,19 @@ class Series:
         self.client.pull_update_push(self.dataset_id, encode_documents)
 
 
-class Dataset:
+class Dataset(BatchAPIClient):
     """
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
 
-    def __init__(self, client) -> None:
+    def __init__(self, project: str, api_key: str) -> None:
         """
         Initialise the class
         """
-        self.client = client
+        self.project = project
+        self.api_key = api_key
+        self.vector_tools = VectorTools(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key)
 
     def __call__(
         self,
@@ -120,8 +126,8 @@ class Dataset:
         Tuple
             (N, C)
         """
-        schema = self.client.datasets.schema(self.dataset_id)
-        n_documents = self.client.get_number_of_documents(dataset_id=self.dataset_id)
+        schema = self.datasets.schema(self.dataset_id)
+        n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
         return (n_documents, len(schema))
 
     def __getitem__(self, field: str):
@@ -138,7 +144,7 @@ class Dataset:
         Tuple
             (N, C)
         """
-        series = Series(self.client)
+        series = Series(self)
         series(dataset_id=self.dataset_id, field=field)
         return series
 
@@ -152,8 +158,8 @@ class Dataset:
         Dict
             Dictionary of information
         """
-        health = self.client.datasets.monitor.health(self.dataset_id)
-        schema = self.client.datasets.schema(self.dataset_id)
+        health = self.datasets.monitor.health(self.dataset_id)
+        schema = self.datasets.schema(self.dataset_id)
         schema = {key: str(value) for key, value in schema.items()}
         info = {
             key: {
@@ -184,13 +190,15 @@ class Dataset:
             Number of rows to select.
         raw_json: bool
             If True, returns raw JSON and not Pandas Dataframe
+        kw:
+            Additional arguments to feed into show_json
 
         Returns
         -------
         Pandas DataFrame or Dict, depending on args
             The first 'n' rows of the caller object.
         """
-        head_documents = self.client.get_documents(
+        head_documents = self.get_documents(
             dataset_id=self.dataset_id,
             number_of_documents=n,
         )
@@ -203,7 +211,7 @@ class Dataset:
                 warnings.warn("Displaying using Pandas." + str(e))
                 return pd.json_normalize(head_documents).head(n=n)
 
-    def _show_json(self, docs):
+    def _show_json(self, docs, **kw):
         from jsonshower import show_json
 
         if not self.text_fields:
@@ -223,7 +231,7 @@ class Dataset:
         Descriptive statistics include those that summarize the central tendency
         dispersion and shape of a dataset's distribution, excluding NaN values.
         """
-        return self.client.datasets.facets(self.dataset_id)
+        return self.datasets.facets(self.dataset_id)
 
     def vectorize(self, field, model):
         """
@@ -236,7 +244,7 @@ class Dataset:
         model
             a Type deep learning model that vectorizes text
         """
-        series = Series(self.client)
+        series = Series(self)
         series(self.dataset_id, field).vectorize(model)
 
     def cluster(self, field, n_clusters=10, overwrite=False):
@@ -250,7 +258,7 @@ class Dataset:
         n_cluster: int default = 10
             the number of cluster to find wihtin the vector field
         """
-        centroids = self.client.vector_tools.cluster.kmeans_cluster(
+        centroids = self.vector_tools.cluster.kmeans_cluster(
             dataset_id=self.dataset_id,
             vector_fields=[field],
             k=n_clusters,
@@ -305,8 +313,10 @@ class Dataset:
         )["documents"]
 
 
-class Datasets:
+class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, project: str, api_key: str):
+        self.project = project
+        self.api_key = api_key
+        super().__init__(project=project, api_key=api_key)
