@@ -6,6 +6,8 @@ import pandas as pd
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
 from typing import List, Union, Optional
+import math
+
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
@@ -268,6 +270,50 @@ class Dataset(BatchAPIClient):
             overwrite=overwrite,
         )
         return centroids
+
+    def sample(
+        self,
+        n: int = 0,
+        frac: float = None,
+        filters: list = [],
+        random_state: int = 0,
+    ):
+
+        """
+        Return a random sample of items from a dataset.
+
+        Parameters
+        ----------
+        n : int
+            Number of items to return. Cannot be used with frac.
+        frac: float
+            Fraction of items to return. Cannot be used with n.
+        filters: list
+            Query for filtering the search results
+        random_state: int
+            Random Seed for retrieving random documents.
+
+        """
+        if n is 0 and frac is None:
+            raise ValueError("Must provide one of n or frac")
+
+        if frac and n:
+            raise ValueError("Only one of n or frac can be provided")
+
+        if frac:
+            if frac > 1 or frac < 0:
+                raise ValueError("Fraction must be between 0 and 1")
+            n = math.ceil(
+                self.get_number_of_documents(self.dataset_id, filters=filters) * frac
+            )
+
+        return self.datasets.documents.get_where(
+            dataset_id=self.dataset_id,
+            filters=filters,
+            page_size=n,
+            random_state=random_state,
+            is_random=True,
+        )["documents"]
 
 
 class Datasets(BatchAPIClient):
