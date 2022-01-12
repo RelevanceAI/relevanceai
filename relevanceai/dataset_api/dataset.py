@@ -4,6 +4,7 @@ Pandas like dataset API
 import warnings
 import pandas as pd
 from relevanceai.dataset_api.groupby import Groupby, Agg
+from relevanceai.dataset_api.centroids import Centroids
 from typing import List, Union, Optional
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
