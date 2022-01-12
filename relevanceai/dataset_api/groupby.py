@@ -66,7 +66,15 @@ class Agg(BatchAPIClient):
         self.dataset_id = dataset_id
         self.groupby_call = groupby_call
 
-    def __call__(self, metrics: dict = {}):
+    def __call__(
+        self,
+        metrics: dict = {},
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        alias: str = "default",
+    ):
         """
         Return aggregation query from metrics
 
@@ -74,7 +82,16 @@ class Agg(BatchAPIClient):
         ----------
         metrics : dict
             Dictionary of field and metric pairs to get
-
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+        alias: string
+            Alias used to name a vector field. Belongs in field_{alias} vector
         """
         self.metrics = metrics
         self.client._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
@@ -83,6 +100,11 @@ class Agg(BatchAPIClient):
             dataset_id=self.dataset_id,
             metrics=self.metrics_call,
             groupby=self.groupby_call,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+            alias=alias,
         )
 
     def _create_metrics(self):
