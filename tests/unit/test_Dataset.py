@@ -33,11 +33,12 @@ class TestDatset:
 
     def test_agg(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
-        groupby_agg = df.agg({'sample_1_label': 'avg'})
+        groupby_agg = df.agg({"sample_1_label": "avg"})
         assert True
 
     def test_groupby_agg(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
-        groupby_agg = df.groupby(['sample_1_description']).agg({'sample_1_label': 'avg'})
+        groupby_agg = df.groupby(["sample_1_description"]).agg(
+            {"sample_1_label": "avg"}
+        )
         assert True
-

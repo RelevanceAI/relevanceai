@@ -8,7 +8,7 @@ class Groupby(BatchAPIClient):
         self.client = client
         self.dataset_id = dataset_id
 
-    def __call__(self, by: list):
+    def __call__(self, by: list = []):
         """
         Instaniates Groupby Class which stores a groupby call
 
@@ -16,7 +16,7 @@ class Groupby(BatchAPIClient):
         ----------
         by : list
             List of fields to groupby
-     
+
         """
         self.by = by
         self.groupby_fields = self._get_groupby_fields()
@@ -29,24 +29,11 @@ class Groupby(BatchAPIClient):
         Get what type of groupby field to use
         """
         schema = self.client.datasets.schema(self.dataset_id)
-        self._check_groupby_in_schema(schema)
+        check_fields_in_schema(self.by, schema)
         fields_schema = {k: v for k, v in schema.items() if k in self.by}
         self._check_groupby_value_type(fields_schema)
 
         return {k: GROUPBY_MAPPING[v] for k, v in fields_schema.items()}
-
-    def _check_groupby_in_schema(self, schema):
-        """
-        Check groupby fields are in schema
-        """
-        invalid_fields = []
-        for i in self.by:
-            if i not in schema:
-                invalid_fields.append(i)
-        if len(invalid_fields) > 0:
-            raise ValueError(
-                f"{', '.join(invalid_fields)} are invalid fields. They are not in the dataset schema."
-            )
 
     def _check_groupby_value_type(self, fields_schema):
         """
@@ -74,12 +61,12 @@ class Groupby(BatchAPIClient):
 
 
 class Agg(BatchAPIClient):
-    def __init__(self, client, dataset_id, groupby_call = []):
+    def __init__(self, client, dataset_id, groupby_call=[]):
         self.client = client
         self.dataset_id = dataset_id
         self.groupby_call = groupby_call
 
-    def __call__(self, metrics: dict):
+    def __call__(self, metrics: dict = {}):
         """
         Return aggregation query from metrics
 
@@ -87,9 +74,12 @@ class Agg(BatchAPIClient):
         ----------
         metrics : dict
             Dictionary of field and metric pairs to get
-   
+
         """
         self.metrics = metrics
+        check_fields_in_schema(
+            self.metrics.keys(), self.client.datasets.schema(self.dataset_id)
+        )
         self.metrics_call = self._create_metrics()
         return self.client.services.aggregate.aggregate(
             dataset_id=self.dataset_id,
@@ -102,3 +92,17 @@ class Agg(BatchAPIClient):
         Create metric call
         """
         return [{"name": k, "field": k, "agg": v} for k, v in self.metrics.items()]
+
+
+def check_fields_in_schema(fields, schema):
+    """
+    Check fields are in schema
+    """
+    invalid_fields = []
+    for i in fields:
+        if i not in schema:
+            invalid_fields.append(i)
+    if len(invalid_fields) > 0:
+        raise ValueError(
+            f"{', '.join(invalid_fields)} are invalid fields. They are not in the dataset schema."
+        )
