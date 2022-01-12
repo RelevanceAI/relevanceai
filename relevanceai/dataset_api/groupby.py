@@ -29,7 +29,7 @@ class Groupby(BatchAPIClient):
         Get what type of groupby field to use
         """
         schema = self.client.datasets.schema(self.dataset_id)
-        check_fields_in_schema(self.by, schema)
+        self.client._are_fields_in_schema(self.by, self.dataset_id, schema)
         fields_schema = {k: v for k, v in schema.items() if k in self.by}
         self._check_groupby_value_type(fields_schema)
 
@@ -77,9 +77,7 @@ class Agg(BatchAPIClient):
 
         """
         self.metrics = metrics
-        check_fields_in_schema(
-            self.metrics.keys(), self.client.datasets.schema(self.dataset_id)
-        )
+        self.client._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
         return self.client.services.aggregate.aggregate(
             dataset_id=self.dataset_id,
@@ -92,17 +90,3 @@ class Agg(BatchAPIClient):
         Create metric call
         """
         return [{"name": k, "field": k, "agg": v} for k, v in self.metrics.items()]
-
-
-def check_fields_in_schema(fields, schema):
-    """
-    Check fields are in schema
-    """
-    invalid_fields = []
-    for i in fields:
-        if i not in schema:
-            invalid_fields.append(i)
-    if len(invalid_fields) > 0:
-        raise ValueError(
-            f"{', '.join(invalid_fields)} are invalid fields. They are not in the dataset schema."
-        )
