@@ -29,6 +29,12 @@ jobs:
         repository: RelevanceAI/RelevanceAI-readme-docs 
         ref: refs/heads/development
 
+    - name: Create new ReadMe branch
+      run: |
+        git checkout -b $RELEVANCEAI_VERSION
+        git add .
+        git commit -m "New ReadMe version for RelevanceAI $RELEVANCEAI_VERSION"
+        git push origin $RELEVANCEAI_VERSION
 
 
     # - name: Set up Python
