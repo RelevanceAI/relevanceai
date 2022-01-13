@@ -13,6 +13,7 @@ v0.28.0
 - Add aggregation, groupby pandas API support
 - Added GroupBy, Series class for Datasets
 - Added datasets.info()
+- Added df.apply()
 
 v0.27.0
 --------
