@@ -49,6 +49,10 @@ def test_client(test_project, test_api_key):
 def test_dataset_id():
     return "_sample_test_dataset" + RANDOM_STRING
 
+@pytest.fixture(scope="session")
+def pandas_test_dataset_id():
+    return "_sample_test_dataset" + RANDOM_STRING
+
 
 @pytest.fixture(scope="session")
 def test_sample_dataset(test_client, simple_doc, test_dataset_id):
@@ -220,11 +224,11 @@ def test_numpy_dataset(test_client, sample_numpy_docs, test_dataset_id):
 
 
 @pytest.fixture(scope="session")
-def test_pandas_dataset(test_client, sample_pandas_docs, test_dataset_id):
+def test_pandas_dataset(test_client, sample_pandas_docs, pandas_test_dataset_id):
     """Sample pandas dataset"""
-    response = test_client.insert_documents(test_dataset_id, sample_pandas_docs)
+    response = test_client.insert_documents(pandas_test_dataset_id, sample_pandas_docs)
     yield response, len(sample_pandas_docs)
-    test_client.datasets.delete(test_dataset_id)
+    test_client.datasets.delete(pandas_test_dataset_id)
 
 
 @pytest.fixture(scope="session")
