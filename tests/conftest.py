@@ -14,9 +14,13 @@ import tempfile
 
 from utils import generate_random_string, generate_random_vector, generate_random_label
 
-RANDOM_STRING = str(random.randint(0, 999))
-
-PANDAS_RANDOM_STRING = str(random.randint(0, 999))
+# We need to create separate datasets for different tests to avoid overwriting
+# Our original database
+# TODO: improve dataset modularisation
+RANDOM_DATASET_SUFFIX = generate_random_string().lower()
+RANDOM_PANDAS_DATASET_SUFFIX = generate_random_string().lower()
+SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
+CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 @pytest.fixture(scope="session")
 def test_project():
@@ -45,16 +49,14 @@ def test_client(test_project, test_api_key):
     client = Client(test_project, test_api_key)
     return client
 
-# Set up the sample test dataset prefix
-SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 
 @pytest.fixture(scope="session")
 def test_dataset_id():
-    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_STRING
+    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX
 
 @pytest.fixture(scope="session")
 def pandas_test_dataset_id():
-    return SAMPLE_DATASET_DATASET_PREFIX + PANDAS_RANDOM_STRING
+    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_PANDAS_DATASET_SUFFIX
 
 
 @pytest.fixture(scope="session")
@@ -193,7 +195,6 @@ def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
-CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + RANDOM_STRING
 
 @pytest.fixture(scope="session")
 def test_clustered_dataset(test_client, sample_vector_docs):
