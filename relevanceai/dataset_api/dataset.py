@@ -12,35 +12,65 @@ from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
 
-class Series:
+class Series(BatchAPIClient):
     """
     A wrapper class for being able to vectorize documents over field
     """
 
-    def __init__(self, client: BatchAPIClient) -> None:
+    def __init__(self, project: str, api_key: str, dataset_id: str, field) -> None:
         """
         Initialise the class
         """
-        self.client = client
+        self.project = project
+        self.api_key = api_key
+        self.dataset_id = dataset_id
+        self.field = field
+        super().__init__(project=project, api_key=api_key)
 
-    def __call__(self, dataset_id: str, field: str):
+    def sample(
+        self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0
+    ):
         """
-        Instaniates a Series
+        Return a random sample of items from a dataset.
 
         Parameters
         ----------
-        dataset_id : str
-            The dataset_id of concern
-        field : str
-            The field within the dataset that you would like to select
+        n : int
+            Number of items to return. Cannot be used with frac.
+        frac: float
+            Fraction of items to return. Cannot be used with n.
+        filters: list
+            Query for filtering the search results
+        random_state: int
+            Random Seed for retrieving random documents.
 
-        Returns
-        -------
-        Self
         """
-        self.dataset_id = dataset_id
-        self.field = field
-        return self
+        select_fields = [self.field] if isinstance(self.field, str) else self.field
+        return Dataset(self.project, self.api_key)(self.dataset_id).sample(
+            n=n,
+            frac=frac,
+            filters=filters,
+            random_state=random_state,
+            select_fields=select_fields,
+        )
+
+    def all(
+        self,
+        chunk_size: int = 1000,
+        filters: List = [],
+        sort: List = [],
+        include_vector: bool = True,
+        show_progress_bar: bool = True,
+    ):
+        select_fields = [self.field] if isinstance(self.field, str) else self.field
+        return Dataset(self.project, self.api_key)(self.dataset_id).all(
+            chunk_size=chunk_size,
+            filters=filters,
+            sort=sort,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            show_progress_bar=show_progress_bar,
+        )
 
     def vectorize(self, model) -> None:
         """
@@ -135,13 +165,13 @@ class Dataset(BatchAPIClient):
         n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
         return (n_documents, len(schema))
 
-    def __getitem__(self, field: str):
+    def __getitem__(self, field):
         """
         Returns a Series Object that selects a particular field within a dataset
 
         Parameters
         ----------
-        field : str
+        field
             the particular field within the dataset
 
         Returns
@@ -149,9 +179,7 @@ class Dataset(BatchAPIClient):
         Tuple
             (N, C)
         """
-        series = Series(self)
-        series(dataset_id=self.dataset_id, field=field)
-        return series
+        return Series(self.project, self.api_key, self.dataset_id, field)
 
     def info(self) -> dict:
         """
@@ -278,6 +306,7 @@ class Dataset(BatchAPIClient):
         frac: float = None,
         filters: list = [],
         random_state: int = 0,
+        select_fields: list = [],
     ):
 
         """
@@ -293,6 +322,8 @@ class Dataset(BatchAPIClient):
             Query for filtering the search results
         random_state: int
             Random Seed for retrieving random documents.
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
 
         """
         if n == 0 and frac is None:
@@ -314,7 +345,45 @@ class Dataset(BatchAPIClient):
             page_size=n,
             random_state=random_state,
             is_random=True,
+            select_fields=select_fields,
         )["documents"]
+
+    def all(
+        self,
+        chunk_size: int = 1000,
+        filters: List = [],
+        sort: List = [],
+        select_fields: List = [],
+        include_vector: bool = True,
+        show_progress_bar: bool = True,
+    ):
+
+        """
+        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
+
+        Parameters
+        ----------
+        chunk_size : list
+            Number of documents to retrieve per retrieval
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        select_fields : list
+            Fields to include in the search results, empty array/list means all fields.
+        """
+
+        return self.get_all_documents(
+            dataset_id=self.dataset_id,
+            chunk_size=chunk_size,
+            filters=filters,
+            sort=sort,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            show_progress_bar=show_progress_bar,
+        )
 
 
 class Datasets(BatchAPIClient):

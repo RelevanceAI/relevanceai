@@ -57,3 +57,14 @@ class TestDatset:
         df = test_client.Dataset(test_sample_vector_dataset)
         sample_n = df.sample(n=10)
         assert len(sample_n) == 10
+
+    def test_series_sample(self, test_client, test_sample_vector_dataset):
+        df = test_client.Dataset(test_sample_vector_dataset)
+        sample_n = df["sample_1_label"].sample(n=10)
+        assert len(sample_n) == 10
+
+    def test_series_sample(self, test_client, test_sample_vector_dataset):
+        df = test_client.Dataset(test_sample_vector_dataset)
+        sample_n = df[["sample_1_label", "sample_2_label"]].sample(n=10)
+        assert len(sample_n) == 10
+        assert len(sample_n[0].keys()) == 3
