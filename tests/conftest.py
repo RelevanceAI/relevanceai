@@ -22,6 +22,7 @@ RANDOM_PANDAS_DATASET_SUFFIX = generate_random_string().lower()
 SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
+
 @pytest.fixture(scope="session")
 def test_project():
     # test projects
@@ -53,6 +54,7 @@ def test_client(test_project, test_api_key):
 @pytest.fixture(scope="session")
 def test_dataset_id():
     return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX
+
 
 @pytest.fixture(scope="session")
 def pandas_test_dataset_id():
@@ -186,6 +188,7 @@ def sample_nested_assorted_docs():
         _sample_nested_assorted_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)
     ]
 
+
 @pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """
@@ -211,6 +214,7 @@ def test_clustered_dataset(test_client, sample_vector_docs):
     )
     yield CLUSTER_DATASET_ID
     test_client.datasets.delete(CLUSTER_DATASET_ID)
+
 
 @pytest.fixture(scope="session")
 def test_datetime_dataset(test_client, sample_datetime_docs, test_dataset_id):
