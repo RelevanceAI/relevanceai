@@ -720,7 +720,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self,
         dataset_id: str,
         vector_fields: list,
-        custom_clusterer,
+        clusterer,
         filters: List = [],
         alias: str = "default",
         cluster_field: str = "_cluster_",
@@ -736,7 +736,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         3- Updates the data with clustering info
         4- Adds the centroid to the hidden centroid collection
 
-        sklearn.KMeans is the intended object for custom_clusterer
+        sklearn.KMeans is the intended object for clusterer
 
         Parameters
         ----------
@@ -744,7 +744,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             name of the dataset
         vector_fields : list
             a list containing the vector field to be used for clustering
-        custom_clusterer: class
+        clusterer: class
             custom sklearn.KMeans class to perform clustering functions
         filters : list
             a list to filter documents of the dataset
@@ -763,7 +763,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         >>>     client.vector_tools.cluster.custom_centroid_cluster(
         >>>     dataset_id="sample_dataset",
         >>>     vector_fields=["sample_1_vector_"],
-        >>>     custom_clusterer=kmeans # Only 1 vector field is supported for now
+        >>>     clusterer=kmeans # Only 1 vector field is supported for now
         )
         """
 
@@ -792,22 +792,22 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         # Create custom cluster object based on the provided custom clusterer object.
         class CustomClusterer(CentroidCluster):
-            def __init__(self, custom_clusterer):
-                self.custom_clusterer = custom_clusterer
+            def __init__(self, clusterer):
+                self.clusterer = clusterer
 
             def fit_transform(self, vectors):
-                self.custom_clusterer.fit(vectors)
-                cluster_labels = self.custom_clusterer.labels_.tolist()
+                self.clusterer.fit(vectors)
+                cluster_labels = self.clusterer.labels_.tolist()
                 return cluster_labels
 
             def get_centers(self):
                 """Returns centroids of clusters"""
                 if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
-                    return [list(i) for i in self.custom_clusterer.cluster_centers_]
+                    return [list(i) for i in self.clusterer.cluster_centers_]
 
                 # Returning for multiple vector fields
                 cluster_centers = []
-                for i, center in enumerate(self.custom_clusterer.cluster_centers_):
+                for i, center in enumerate(self.clusterer.cluster_centers_):
                     cluster_center_doc = {}
                     for j, vf in enumerate(self.vector_fields):
                         deconcat_center = center[
@@ -819,9 +819,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                     cluster_centers.append(cluster_center_doc.copy())
                 return cluster_centers
 
-        custom_clusterer = CustomClusterer(custom_clusterer)
+        clusterer = CustomClusterer(clusterer)
 
-        clustered_docs = custom_clusterer.fit_documents(
+        clustered_docs = clusterer.fit_documents(
             vector_fields=vector_fields,
             docs=docs,
             alias=alias,
@@ -837,11 +837,11 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self.logger.info(results)
 
         # Update the centroid collection
-        custom_clusterer.vector_fields = vector_fields
+        clusterer.vector_fields = vector_fields
         if len(vector_fields) == 1:
-            centers = custom_clusterer.get_centroid_docs(vector_fields[0])
+            centers = clusterer.get_centroid_docs(vector_fields[0])
         else:
-            centers = custom_clusterer.get_centroid_docs()
+            centers = clusterer.get_centroid_docs()
 
         # Change centroids insertion
         results = self.services.cluster.centroids.insert(
