@@ -5,7 +5,7 @@ import warnings
 import pandas as pd
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
-from typing import List, Union
+from typing import List, Union, Callable
 import math
 
 from relevanceai.vector_tools.client import VectorTools
@@ -62,6 +62,63 @@ class Series:
                 return model([self.field], documents)
 
         self.client.pull_update_push(self.dataset_id, encode_documents)
+
+    def apply(
+        self,
+        func: Callable,
+        axis: int = 0,
+    ):
+        """
+        Apply a function along an axis of the DataFrame.
+
+        Objects passed to the function are Series objects whose index is either the DataFrame’s index (axis=0) or the DataFrame’s columns (axis=1). By default (result_type=None), the final return type is inferred from the return type of the applied function. Otherwise, it depends on the result_type argument.
+
+        Parameters
+        --------------
+        func: function
+            Function to apply to each document
+
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        Example
+        ---------------
+
+        >>> df["sample_1_label"].apply(lambda x: x + 3)
+
+        """
+        if axis == 1:
+            raise ValueError("We do not support column-wise operations!")
+
+        def bulk_fn(documents):
+            for d in documents:
+                try:
+                    if self.client.is_field(self.field, d):
+                        self.client.set_field(
+                            self.field, d, func(self.client.get_field(self.field, d))
+                        )
+                except Exception as e:
+                    print(e)
+                    continue
+            return documents
+
+        return self.client.pull_update_push(
+            self.dataset_id, bulk_fn, select_fields=[self.field]
+        )
+
+    def __getitem__(self, loc: Union[int, str]):
+        if isinstance(loc, int):
+            warnings.warn(
+                "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
+            )
+            return self.client.get_documents(
+                self.dataset_id, loc + 1, select_fields=[self.field]
+            )[loc][self.field]
+        elif isinstance(loc, str):
+            return self.client.datasets.documents.get(self.dataset_id, loc)[self.field]
+        raise TypeError("Incorrect data type! Must be a string or an integer")
 
 
 class Dataset(BatchAPIClient):
@@ -315,6 +372,37 @@ class Dataset(BatchAPIClient):
             random_state=random_state,
             is_random=True,
         )["documents"]
+
+    def apply(
+        self,
+        func: Callable,
+        axis: int = 0,
+    ):
+        """
+        Apply a function along an axis of the DataFrame.
+
+        Objects passed to the function are Series objects whose index is either the DataFrame’s index (axis=0) or the DataFrame’s columns (axis=1). By default (result_type=None), the final return type is inferred from the return type of the applied function. Otherwise, it depends on the result_type argument.
+
+        Parameters
+        --------------
+        func: function
+            Function to apply to each document
+
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        """
+        if axis == 1:
+            raise ValueError("We do not support column-wise operations!")
+
+        def bulk_fn(docs):
+            for d in docs:
+                func(d)
+            return docs
+
+        return self.pull_update_push(self.dataset_id, bulk_fn)
 
 
 class Datasets(BatchAPIClient):
