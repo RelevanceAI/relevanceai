@@ -32,4 +32,5 @@ jobs:
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
+          python -m pip install nbformat nbconvert
           python scripts/test_notebooks.py readme-docs
