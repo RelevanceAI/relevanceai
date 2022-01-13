@@ -5,7 +5,7 @@ import warnings
 import pandas as pd
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
-from typing import List, Union, Optional
+from typing import List, Union
 import math
 
 from relevanceai.vector_tools.client import VectorTools

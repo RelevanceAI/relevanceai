@@ -180,7 +180,9 @@ def sample_nested_assorted_docs():
 
 @pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
-    """Sample vector dataset"""
+    """
+    Use this dataset if you just want vector
+    """
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
@@ -188,7 +190,9 @@ def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id)
 
 @pytest.fixture(scope="session")
 def test_clustered_dataset(test_client, test_sample_vector_dataset):
-    """Sample vector dataset"""
+    """
+    Use this test dataset if you want a dataset with clusters already.
+    """
     test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id=test_sample_vector_dataset,
         vector_fields=["sample_1_vector_"],
@@ -243,9 +247,9 @@ def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
         df = pd.DataFrame(sample_vector_docs)
         df.to_csv(csvfile)
 
-    response = test_client.insert_csv(test_dataset_id, csvfile.name)
-    yield response, len(sample_vector_docs)
-    test_client.datasets.delete(test_dataset_id)
+        response = test_client.insert_csv(test_dataset_id, csvfile.name)
+        yield response, len(sample_vector_docs)
+        test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
