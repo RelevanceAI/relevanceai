@@ -237,32 +237,55 @@ class Dataset(BatchAPIClient):
         """
         return Series(self.project, self.api_key, self.dataset_id, field)
 
-    def info(self) -> dict:
+    def _get_possible_dtypes(self, schema):
+        possible_dtypes = []
+        for v in schema.values():
+            if isinstance(v, str):
+                possible_dtypes.append(v)
+            elif isinstance(v, dict):
+                if list(v)[0] == "vector":
+                    possible_dtypes.append("vector_")
+        return possible_dtypes
+
+    def _get_dtype_count(self, schema: dict):
+        possible_dtypes = self._get_possible_dtypes(schema)
+        dtypes = {
+            dtype: list(schema.values()).count(dtype) for dtype in possible_dtypes
+        }
+        return dtypes
+
+    def _get_schema(self):
+        # stores schema in memory to save users API usage/reloading
+        if hasattr(self, "_schema"):
+            return self._schema
+        self._schema = self.datasets.schema(self.dataset_id)
+        return self._schema
+
+    def info(self, dtype_count: bool = False) -> pd.DataFrame:
         """
         Return a dictionary that contains information about the Dataset
         including the index dtype and columns and non-null values.
 
+        Parameters
+        -----------
+        dtype_count: bool
+            If dtype_count is True, prints a value_counts of the data type
+
+
         Returns
-        -------
+        ---------
         Dict
             Dictionary of information
         """
-        health = self.datasets.monitor.health(self.dataset_id)
-        schema = self.datasets.schema(self.dataset_id)
-        schema = {key: str(value) for key, value in schema.items()}
-        info = {
-            key: {
-                "Non-Null Count": health[key]["missing"],
-                "Dtype": schema[key],
-            }
-            for key in schema.keys()
-        }
-        dtypes = {
-            dtype: list(schema.values()).count(dtype)
-            for dtype in set(list(schema.values()))
-        }
-        info = {"info": info, "dtypes": dtypes}
-        return info
+        health: dict = self.datasets.monitor.health(self.dataset_id)
+        schema: dict = self._get_schema()
+        info_df = pd.DataFrame()
+        info_df["Non-Null Count"] = [health[key]["missing"] for key in schema]
+        info_df["Dtype"] = [schema[key] for key in schema]
+        if dtype_count:
+            dtypes_info = self._get_dtype_count(schema)
+            print(dtypes_info)
+        return info_df
 
     def head(
         self, n: int = 5, raw_json: bool = False, **kw
