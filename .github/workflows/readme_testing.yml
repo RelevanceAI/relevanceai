@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/checkout@main
+      - uses: actions/checkout@master
         with:
           name: RelevanceAI/RelevanceAI-readme-docs
           ref: refs/heads/release
