@@ -16,6 +16,7 @@ from utils import generate_random_string, generate_random_vector, generate_rando
 
 RANDOM_STRING = str(random.randint(0, 999))
 
+PANDAS_RANDOM_STRING = str(random.randint(0, 999))
 
 @pytest.fixture(scope="session")
 def test_project():
@@ -44,14 +45,16 @@ def test_client(test_project, test_api_key):
     client = Client(test_project, test_api_key)
     return client
 
+# Set up the sample test dataset prefix
+SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 
 @pytest.fixture(scope="session")
 def test_dataset_id():
-    return "_sample_test_dataset" + RANDOM_STRING
+    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_STRING
 
 @pytest.fixture(scope="session")
 def pandas_test_dataset_id():
-    return "_sample_test_dataset" + RANDOM_STRING
+    return SAMPLE_DATASET_DATASET_PREFIX + PANDAS_RANDOM_STRING
 
 
 @pytest.fixture(scope="session")
@@ -181,7 +184,6 @@ def sample_nested_assorted_docs():
         _sample_nested_assorted_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)
     ]
 
-
 @pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
     """
@@ -191,21 +193,23 @@ def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
+CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + RANDOM_STRING
 
 @pytest.fixture(scope="session")
-def test_clustered_dataset(test_client, test_sample_vector_dataset):
+def test_clustered_dataset(test_client, sample_vector_docs):
     """
     Use this test dataset if you want a dataset with clusters already.
     """
+    test_client.insert_documents(CLUSTER_DATASET_ID, sample_vector_docs)
     test_client.vector_tools.cluster.kmeans_cluster(
-        dataset_id=test_sample_vector_dataset,
+        dataset_id=CLUSTER_DATASET_ID,
         vector_fields=["sample_1_vector_"],
         k=10,
         alias="kmeans_10",
         overwrite=True,
     )
-    yield test_sample_vector_dataset
-
+    yield CLUSTER_DATASET_ID
+    test_client.datasets.delete(CLUSTER_DATASET_ID)
 
 @pytest.fixture(scope="session")
 def test_datetime_dataset(test_client, sample_datetime_docs, test_dataset_id):
