@@ -1,0 +1,22 @@
+# # This workflows will upload a Python Package using Twine when a release is created
+# # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Testing ReadMe Repo branch creation upon release
+
+on:
+  pull_request:
+    branches: [ development, main ]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v2
+    - name: Get RelevanceAI version
+      run: |
+        RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+        echo $RELEVANCEAI_VERSION
+        echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
