@@ -73,7 +73,7 @@ def notebook_find_replace(notebook, find_str_regex, replace_str):
 
 # notebook = Path.cwd() / 'examples' / 'Intro_to_Relevance_AI.ipynb'
 
-for notebook in Path(".").rglob('*.ipynb'):
+for notebook in DOCS_PATH.rglob('*.ipynb'):
     print(notebook)
 
     ## Update to latest version
