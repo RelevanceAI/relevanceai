@@ -270,6 +270,7 @@ def test_dataset_df(test_client, test_sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     return df
 
+
 @pytest.fixture(scope="session")
 def test_clustered_dataset_df(test_client, test_clustered_dataset):
     df = test_client.Dataset(test_clustered_dataset)
