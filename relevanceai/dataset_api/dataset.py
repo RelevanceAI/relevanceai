@@ -125,16 +125,15 @@ class Series(BatchAPIClient):
         def bulk_fn(documents):
             for d in documents:
                 try:
-                    if self.client.is_field(self.field, d):
-                        self.client.set_field(
-                            self.field, d, func(self.client.get_field(self.field, d))
+                    if self.is_field(self.field, d):
+                        self.set_field(
+                            self.field, d, func(self.get_field(self.field, d))
                         )
                 except Exception as e:
-                    print(e)
                     continue
             return documents
 
-        return self.client.pull_update_push(
+        return self.pull_update_push(
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
 
@@ -143,11 +142,11 @@ class Series(BatchAPIClient):
             warnings.warn(
                 "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
             )
-            return self.client.get_documents(
+            return self.get_documents(
                 self.dataset_id, loc + 1, select_fields=[self.field]
             )[loc][self.field]
         elif isinstance(loc, str):
-            return self.client.datasets.documents.get(self.dataset_id, loc)[self.field]
+            return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
 
