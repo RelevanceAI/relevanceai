@@ -10,11 +10,21 @@ on:
 jobs:
   deploy:
 
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+          # - os: macos-latest
+          #   path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/checkout@v2
         with:
           repository: RelevanceAI/RelevanceAI-readme-docs
@@ -32,5 +42,5 @@ jobs:
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
-          python -m pip install nbformat nbconvert
+          python -m pip install jupyter nbformat nbconvert
           python scripts/test_notebooks.py readme-docs
