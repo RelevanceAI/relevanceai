@@ -48,7 +48,7 @@ class TestDatset:
 
         kmeans = KMeans(n_clusters=2, random_state=0)
         df = test_client.Dataset(test_sample_vector_dataset)
-        df.cluster("sample_1_vector_", custom_clusterer=kmeans, overwrite=True)
+        df.cluster("sample_1_vector_", clusterer=kmeans, overwrite=True)
         db_health = test_client.datasets.monitor.health(test_sample_vector_dataset)
         assert "_cluster_" in db_health
         assert "_cluster_.sample_1_vector_.default" in db_health
