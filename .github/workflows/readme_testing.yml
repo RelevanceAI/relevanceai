@@ -13,10 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
 
-    - uses: actions/checkout@v2
-    - name: Get RelevanceAI version
-      run: |
-        RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
-        echo $RELEVANCEAI_VERSION
-        echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+      - uses: actions/checkout@main
+        with:
+          name: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/release
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run tests
+        env:
+          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install -e .[tests]
+          python scripts/test_notebooks.py RelevanceAI-readme-docs
