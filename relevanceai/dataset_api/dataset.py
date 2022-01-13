@@ -247,7 +247,14 @@ class Dataset(BatchAPIClient):
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
 
-    def cluster(self, field, n_clusters=10, overwrite=False):
+    def cluster(
+        self,
+        field,
+        n_clusters=0,
+        custom_clusterer=None,
+        custom_alias=None,
+        overwrite=False,
+    ):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
@@ -255,16 +262,45 @@ class Dataset(BatchAPIClient):
         ----------
         field : str
             The text field to select
-        n_cluster: int default = 10
+        n_cluster: int
             the number of cluster to find wihtin the vector field
+        custom_clusterer: class
+            optional custom sklearn.KMeans class to perform clustering functions
+        custom_alias: str
+            optional alias to name clusters
         """
-        centroids = self.vector_tools.cluster.kmeans_cluster(
-            dataset_id=self.dataset_id,
-            vector_fields=[field],
-            k=n_clusters,
-            alias=f"kmeans_{n_clusters}",
-            overwrite=overwrite,
-        )
+
+        if n_clusters == 0 and custom_clusterer is None:
+            raise ValueError("Must provide one of n_clusters or custom_clusterer")
+
+        if n_clusters and custom_clusterer:
+            raise ValueError(
+                "Only one of n_clusters or custom_clusterer can be provided"
+            )
+
+        if custom_clusterer:
+            # Custom alias for custom_clusterer only, and is default to None so user is not confused with non custom clustering
+            if custom_alias is None:
+                custom_alias = "default"
+
+            centroids = self.vector_tools.cluster.custom_kmeans_cluster(
+                dataset_id=self.dataset_id,
+                vector_fields=[field],
+                custom_clusterer=custom_clusterer,
+                alias=custom_alias,
+                overwrite=overwrite,
+            )
+
+        else:
+            if custom_alias is None:
+                custom_alias = f"kmeans_{n_clusters}"
+            centroids = self.vector_tools.cluster.kmeans_cluster(
+                dataset_id=self.dataset_id,
+                vector_fields=[field],
+                k=n_clusters,
+                alias=custom_alias,
+                overwrite=overwrite,
+            )
         return centroids
 
     def sample(

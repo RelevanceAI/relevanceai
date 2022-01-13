@@ -628,7 +628,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         Parameters
         ----------
         dataset_id : string
-            name of the dataser
+            name of the dataset
         vector_fields : list
             a list containing the vector field to be used for clustering
         filters : list
@@ -715,3 +715,147 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
         return clustered_docs
+
+    def custom_kmeans_cluster(
+        self,
+        dataset_id: str,
+        vector_fields: list,
+        custom_clusterer,
+        filters: List = [],
+        alias: str = "default",
+        cluster_field: str = "_cluster_",
+        update_documents_chunksize: int = 50,
+        overwrite: bool = False,
+        page_size: int = 1,
+    ):
+
+        """
+        This function performs all the steps required for clustering from a custom cluster object:
+        1- Loads the data
+        2- Clusters the data
+        3- Updates the data with clustering info
+        4- Adds the centroid to the hidden centroid collection
+
+        sklearn.KMeans is the intended object for custom_clusterer
+
+        Parameters
+        ----------
+        dataset_id : string
+            name of the dataset
+        vector_fields : list
+            a list containing the vector field to be used for clustering
+        custom_clusterer: class
+            custom sklearn.KMeans class to perform clustering functions
+        filters : list
+            a list to filter documents of the dataset
+        alias : string
+            "hdbscan", string to be used in naming of the field showing the clustering results
+        cluster_field: string
+            "_cluster_", string to name the main cluster field
+        overwrite : bool
+            False by default, To overwite an existing clusering result
+
+        Example
+        -------------
+
+        >>>     from sklearn.cluster import KMeans
+        >>>     kmeans = KMeans(n_clusters=2, random_state=0)
+        >>>     client.vector_tools.cluster.custom_centroid_cluster(
+        >>>     dataset_id="sample_dataset",
+        >>>     vector_fields=["sample_1_vector_"],
+        >>>     custom_clusterer=kmeans # Only 1 vector field is supported for now
+        )
+        """
+
+        EXPECTED_CLUSTER_OUTFIELD = ".".join([cluster_field, vector_fields[0], alias])
+        if (
+            EXPECTED_CLUSTER_OUTFIELD in self.datasets.schema(dataset_id)
+            and not overwrite
+        ):
+            raise ClusteringResultsAlreadyExistsError(EXPECTED_CLUSTER_OUTFIELD)
+
+        filters = filters + [
+            {
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+        ]
+        # load the documents
+        self.logger.warning(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
+        docs = self.get_all_documents(
+            dataset_id=dataset_id, filters=filters, select_fields=vector_fields
+        )
+
+        # Create custom cluster object based on the provided custom clusterer object.
+        class CustomClusterer(CentroidCluster):
+            def __init__(self, custom_clusterer):
+                self.custom_clusterer = custom_clusterer
+
+            def fit_transform(self, vectors):
+                self.custom_clusterer.fit(vectors)
+                cluster_labels = self.custom_clusterer.labels_.tolist()
+                return cluster_labels
+
+            def get_centers(self):
+                """Returns centroids of clusters"""
+                if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+                    return [list(i) for i in self.custom_clusterer.cluster_centers_]
+
+                # Returning for multiple vector fields
+                cluster_centers = []
+                for i, center in enumerate(self.custom_clusterer.cluster_centers_):
+                    cluster_center_doc = {}
+                    for j, vf in enumerate(self.vector_fields):
+                        deconcat_center = center[
+                            self._vector_field_length[vf][
+                                "start"
+                            ] : self._vector_field_length[vf]["end"]
+                        ].tolist()
+                        cluster_center_doc[vf] = deconcat_center
+                    cluster_centers.append(cluster_center_doc.copy())
+                return cluster_centers
+
+        custom_clusterer = CustomClusterer(custom_clusterer)
+
+        clustered_docs = custom_clusterer.fit_documents(
+            vector_fields=vector_fields,
+            docs=docs,
+            alias=alias,
+            cluster_field=cluster_field,
+            return_only_clusters=True,
+            inplace=False,
+        )
+
+        # Updating the db
+        results = self.update_documents(
+            dataset_id, clustered_docs, chunksize=update_documents_chunksize
+        )
+        self.logger.info(results)
+
+        # Update the centroid collection
+        custom_clusterer.vector_fields = vector_fields
+        if len(vector_fields) == 1:
+            centers = custom_clusterer.get_centroid_docs(vector_fields[0])
+        else:
+            centers = custom_clusterer.get_centroid_docs()
+
+        # Change centroids insertion
+        results = self.services.cluster.centroids.insert(
+            dataset_id=dataset_id,
+            cluster_centers=centers,
+            vector_fields=vector_fields,
+            alias=alias,
+        )
+        self.logger.info(results)
+        print(f"Finished clustering. The cluster alias is `{alias}`.")
+        self.services.cluster.centroids.list_closest_to_center(
+            dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
+            centroid_vector_fields=vector_fields,
+            page_size=page_size,
+        )
