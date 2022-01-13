@@ -13,6 +13,8 @@ v0.28.0
 - Add aggregation, groupby pandas API support
 - Added GroupBy, Series class for Datasets
 - Added datasets.info()
+- Added documentation testing
+- Change pull_update_push to use dataset ID
 
 v0.27.0
 --------

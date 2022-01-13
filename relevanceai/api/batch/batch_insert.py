@@ -303,9 +303,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
     def pull_update_push(
         self,
-        original_collection: str,
+        dataset_id: str,
         update_function,
-        updated_collection: str = None,
+        updated_dataset_id: str = None,
         log_file: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
@@ -321,14 +321,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         Parameters
         ----------
-        original_collection : string
+        dataset_id: string
             The dataset_id of the collection where your original documents are
-        logging_collection: string
-            The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
-        updated_collection: string
-            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+        updated_dataset_id: string
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
         retrieve_chunk_size: int
@@ -348,7 +346,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check if a logging_collection has been supplied
         if log_file is None:
             log_file = (
-                original_collection
+                dataset_id
                 + "_"
                 + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
                 + "_pull_update_push"
@@ -363,7 +361,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Trust the process
         # Get document lengths to calculate iterations
-        original_length = self.get_number_of_documents(original_collection, filters)
+        original_length = self.get_number_of_documents(dataset_id, filters)
 
         # get the remaining number in case things break
         remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
@@ -386,7 +384,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ):
 
             orig_json = self.datasets.documents.get_where(
-                original_collection,
+                dataset_id,
                 filters=retrieve_filters,
                 page_size=retrieve_chunk_size,
                 select_fields=select_fields,
@@ -404,9 +402,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             updated_documents = [i["_id"] for i in documents]
 
             # Upload documents
-            if updated_collection is None:
+            if updated_dataset_id is None:
                 insert_json = self.update_documents(
-                    dataset_id=original_collection,
+                    dataset_id=dataset_id,
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
@@ -414,7 +412,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 )
             else:
                 insert_json = self.insert_documents(
-                    dataset_id=updated_collection,
+                    dataset_id=updated_dataset_id,
                     docs=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
