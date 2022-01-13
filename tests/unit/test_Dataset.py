@@ -31,6 +31,28 @@ class TestDatset:
         centroids = df.cluster(field="sample_1_vector_", overwrite=True)
         assert True
 
+    def test_groupby_agg(self, test_client, test_sample_vector_dataset):
+        df = test_client.Dataset(test_sample_vector_dataset)
+        agg = df.agg({"sample_1_label": "avg"})
+        groupby_agg = df.groupby(["sample_1_description"]).agg(
+            {"sample_1_label": "avg"}
+        )
+        assert True
+
+    def test_centroids(self, test_client, test_clustered_dataset):
+        df = test_client.Dataset(test_clustered_dataset)
+        closest = df.centroids(["sample_1_vector_"], "kmeans_10").closest()
+        furthest = df.centroids(["sample_1_vector_"], "kmeans_10").furthest()
+        agg = df.centroids(["sample_1_vector_"], "kmeans_10").agg(
+            {"sample_2_label": "avg"}
+        )
+        groupby_agg = (
+            df.centroids(["sample_1_vector_"], "kmeans_10")
+            .groupby(["sample_3_description"])
+            .agg({"sample_2_label": "avg"})
+        )
+        assert True
+
     def test_sample(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
         sample_n = df.sample(n=10)

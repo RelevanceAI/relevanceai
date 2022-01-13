@@ -48,3 +48,19 @@ class Utils(APIClient, _Base, DocUtils):
 
     def _convert_id_to_string(self, docs):
         self.set_field_across_documents("_id", [str(i["_id"]) for i in docs], docs)
+
+    def _are_fields_in_schema(self, fields, dataset_id, schema=None):
+        """
+        Check fields are in schema
+        """
+        if schema is None:
+            schema = self.datasets.schema(dataset_id)
+        invalid_fields = []
+        for i in fields:
+            if i not in schema:
+                invalid_fields.append(i)
+        if len(invalid_fields) > 0:
+            raise ValueError(
+                f"{', '.join(invalid_fields)} are invalid fields. They are not in the dataset schema."
+            )
+        return
