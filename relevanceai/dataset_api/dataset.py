@@ -3,11 +3,13 @@ Pandas like dataset API
 """
 import warnings
 import pandas as pd
-from typing import List, Union, Optional
+from relevanceai.dataset_api.groupby import Groupby, Agg
+from relevanceai.dataset_api.centroids import Centroids
+from typing import List, Union
 import math
+
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
-from typing import List, Union
 
 
 class Series:
@@ -111,6 +113,9 @@ class Dataset(BatchAPIClient):
         self.audio_fields = audio_fields
         self.highlight_fields = highlight_fields
         self.output_format = output_format
+        self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
+        self.agg = Agg(self.project, self.api_key, self.dataset_id)
+        self.centroids = Centroids(self.project, self.api_key, self.dataset_id)
 
         return self
 
@@ -326,7 +331,7 @@ class Dataset(BatchAPIClient):
             Random Seed for retrieving random documents.
 
         """
-        if n is 0 and frac is None:
+        if n == 0 and frac is None:
             raise ValueError("Must provide one of n or frac")
 
         if frac and n:
