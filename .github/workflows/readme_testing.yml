@@ -15,9 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
         with:
-          name: RelevanceAI/RelevanceAI-readme-docs
+          repository: RelevanceAI/RelevanceAI-readme-docs
           ref: refs/heads/release
 
       - name: Set up Python
