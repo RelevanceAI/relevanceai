@@ -14,6 +14,7 @@ v0.28.0
 - Added GroupBy, Series class for Datasets
 - Added datasets.info()
 - Added df.apply()
+- Added additional functionality for sampling etc.
 
 v0.27.0
 --------
