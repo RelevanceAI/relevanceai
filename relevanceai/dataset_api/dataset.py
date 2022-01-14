@@ -5,7 +5,7 @@ import warnings
 import pandas as pd
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
-from typing import List, Union
+from typing import List, Union, Callable
 import math
 
 from relevanceai.vector_tools.client import VectorTools
@@ -92,6 +92,62 @@ class Series(BatchAPIClient):
                 return model([self.field], documents)
 
         self.client.pull_update_push(self.dataset_id, encode_documents)
+
+    def apply(
+        self,
+        func: Callable,
+        axis: int = 0,
+    ):
+        """
+        Apply a function along an axis of the DataFrame.
+
+        Objects passed to the function are Series objects whose index is either the DataFrame’s index (axis=0) or the DataFrame’s columns (axis=1). By default (result_type=None), the final return type is inferred from the return type of the applied function. Otherwise, it depends on the result_type argument.
+
+        Parameters
+        --------------
+        func: function
+            Function to apply to each document
+
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        Example
+        ---------------
+
+        >>> df["sample_1_label"].apply(lambda x: x + 3)
+
+        """
+        if axis == 1:
+            raise ValueError("We do not support column-wise operations!")
+
+        def bulk_fn(documents):
+            for d in documents:
+                try:
+                    if self.is_field(self.field, d):
+                        self.set_field(
+                            self.field, d, func(self.get_field(self.field, d))
+                        )
+                except Exception as e:
+                    continue
+            return documents
+
+        return self.pull_update_push(
+            self.dataset_id, bulk_fn, select_fields=[self.field]
+        )
+
+    def __getitem__(self, loc: Union[int, str]):
+        if isinstance(loc, int):
+            warnings.warn(
+                "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
+            )
+            return self.get_documents(
+                self.dataset_id, loc + 1, select_fields=[self.field]
+            )[loc][self.field]
+        elif isinstance(loc, str):
+            return self.datasets.documents.get(self.dataset_id, loc)[self.field]
+        raise TypeError("Incorrect data type! Must be a string or an integer")
 
 
 class Dataset(BatchAPIClient):
@@ -181,32 +237,55 @@ class Dataset(BatchAPIClient):
         """
         return Series(self.project, self.api_key, self.dataset_id, field)
 
-    def info(self) -> dict:
+    def _get_possible_dtypes(self, schema):
+        possible_dtypes = []
+        for v in schema.values():
+            if isinstance(v, str):
+                possible_dtypes.append(v)
+            elif isinstance(v, dict):
+                if list(v)[0] == "vector":
+                    possible_dtypes.append("vector_")
+        return possible_dtypes
+
+    def _get_dtype_count(self, schema: dict):
+        possible_dtypes = self._get_possible_dtypes(schema)
+        dtypes = {
+            dtype: list(schema.values()).count(dtype) for dtype in possible_dtypes
+        }
+        return dtypes
+
+    def _get_schema(self):
+        # stores schema in memory to save users API usage/reloading
+        if hasattr(self, "_schema"):
+            return self._schema
+        self._schema = self.datasets.schema(self.dataset_id)
+        return self._schema
+
+    def info(self, dtype_count: bool = False) -> pd.DataFrame:
         """
         Return a dictionary that contains information about the Dataset
         including the index dtype and columns and non-null values.
 
+        Parameters
+        -----------
+        dtype_count: bool
+            If dtype_count is True, prints a value_counts of the data type
+
+
         Returns
-        -------
+        ---------
         Dict
             Dictionary of information
         """
-        health = self.datasets.monitor.health(self.dataset_id)
-        schema = self.datasets.schema(self.dataset_id)
-        schema = {key: str(value) for key, value in schema.items()}
-        info = {
-            key: {
-                "Non-Null Count": health[key]["missing"],
-                "Dtype": schema[key],
-            }
-            for key in schema.keys()
-        }
-        dtypes = {
-            dtype: list(schema.values()).count(dtype)
-            for dtype in set(list(schema.values()))
-        }
-        info = {"info": info, "dtypes": dtypes}
-        return info
+        health: dict = self.datasets.monitor.health(self.dataset_id)
+        schema: dict = self._get_schema()
+        info_df = pd.DataFrame()
+        info_df["Non-Null Count"] = [health[key]["missing"] for key in schema]
+        info_df["Dtype"] = [schema[key] for key in schema]
+        if dtype_count:
+            dtypes_info = self._get_dtype_count(schema)
+            print(dtypes_info)
+        return info_df
 
     def head(
         self, n: int = 5, raw_json: bool = False, **kw
@@ -347,6 +426,37 @@ class Dataset(BatchAPIClient):
             is_random=True,
             select_fields=select_fields,
         )["documents"]
+
+    def apply(
+        self,
+        func: Callable,
+        axis: int = 0,
+    ):
+        """
+        Apply a function along an axis of the DataFrame.
+
+        Objects passed to the function are Series objects whose index is either the DataFrame’s index (axis=0) or the DataFrame’s columns (axis=1). By default (result_type=None), the final return type is inferred from the return type of the applied function. Otherwise, it depends on the result_type argument.
+
+        Parameters
+        --------------
+        func: function
+            Function to apply to each document
+
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        """
+        if axis == 1:
+            raise ValueError("We do not support column-wise operations!")
+
+        def bulk_fn(docs):
+            for d in docs:
+                func(d)
+            return docs
+
+        return self.pull_update_push(self.dataset_id, bulk_fn)
 
     def all(
         self,

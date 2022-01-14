@@ -15,6 +15,8 @@ v0.28.0
 - Added datasets.info()
 - Added documentation testing
 - Change pull_update_push to use dataset ID
+- Added df.apply()
+- Added additional functionality for sampling etc.
 
 v0.27.0
 --------
