@@ -28,13 +28,13 @@ requirements = [
     "numpy>=1.19.0",
     "joblib>=1.0.0",
     "scikit-learn",
+    "typing-extensions",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
     "plotly>=5.3.1",
-    "typing-extensions",
     "typeguard",
     "dash",
     "pillow",
@@ -87,7 +87,7 @@ dev_vis_requirements = (
 from pathlib import Path
 
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text()
+long_description = (this_directory / "README.md").read_text(encoding='utf-8')
 
 name = "RelevanceAI"
 version = get_version("relevanceai/__init__.py")
