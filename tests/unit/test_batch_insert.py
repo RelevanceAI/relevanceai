@@ -13,6 +13,11 @@ class TestInsert:
         results = test_client.insert_documents(test_dataset_id, simple_docs)
         assert len(results["failed_documents"]) == 0
 
+    def test_health(self, simple_doc, test_dataset_id, test_client):
+        """Batch insert"""
+        health = test_client.datasets.monitor.health(test_dataset_id)
+        assert health["_chunk_"]["label"] == 100
+
     def test_csv_upload(self, test_csv_dataset):
         response, original_length = test_csv_dataset
         assert response["inserted"] == original_length
