@@ -3,10 +3,20 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
-v1.0.0
+v0.28.0
 --------
 
 - Added centroid distance evaluation
+- Added JSONShower to df.head() so previewing images is now possible
+- Refactor Pandas Dataset API to use BatchAPIClient
+- Modularise testing infrastructure to use separate datasets
+- Add aggregation, groupby pandas API support
+- Added GroupBy, Series class for Datasets
+- Added datasets.info()
+- Added documentation testing
+- Change pull_update_push to use dataset ID
+- Added df.apply()
+- Added additional functionality for sampling etc.
 
 v0.27.0
 --------

@@ -4,6 +4,7 @@ import time
 
 
 def test_quickstart(test_client):
+    QUICKSTART_DATASET = "quickstart"
     docs = [
         {"_id": "1", "example_vector_": [0.1, 0.1, 0.1]},
         {"_id": "2", "example_vector_": [0.2, 0.2, 0.2]},
@@ -12,13 +13,14 @@ def test_quickstart(test_client):
         {"_id": "5", "example_vector_": [0.5, 0.5, 0.5]},
     ]
 
-    test_client.insert_documents(dataset_id="quickstart", docs=docs)
+    test_client.insert_documents(dataset_id=QUICKSTART_DATASET, docs=docs)
     time.sleep(2)
     results = test_client.services.search.vector(
-        dataset_id="quickstart",
+        dataset_id=QUICKSTART_DATASET,
         multivector_query=[
             {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
         ],
         page_size=3,
     )
     assert len(results["results"]) > 0, "Not inserting properly"
+    test_client.datasets.delete(QUICKSTART_DATASET)

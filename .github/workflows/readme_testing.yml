@@ -1,16 +1,15 @@
+# # This workflows will upload a Python Package using Twine when a release is created
+# # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: CI
+name: Testing ReadMe Repo branch creation upon release
 
 on:
-  push:
-    branches: [ main, development ]
   pull_request:
-    branches: [ main, development]
-
-  workflow_dispatch:
+    branches: [ development, main ]
 
 jobs:
-  build:
+  deploy:
+
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -26,19 +25,18 @@ jobs:
           #   path: ~\AppData\Local\pip\Cache
     steps:
       - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/main
+          path: readme-docs
+          
+          
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # - name: Cache pip
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ${{ matrix.path }}
-      #     key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.pythonLocation }}-pip-
-      #       ${{ runner.os }}-${{ env.pythonLocation }}-
+
       - name: Run tests
         env:
           TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
@@ -46,7 +44,5 @@ jobs:
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
-          python -m pip install pytest-sugar
-          python -m pip install pytest-rerunfailures
-          python -m pip install pytest-xdist
-          python -m pytest --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests
+          python -m pip install -r readme-docs/requirements.txt
+          python scripts/test_notebooks.py readme-docs
