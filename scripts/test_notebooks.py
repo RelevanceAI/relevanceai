@@ -8,6 +8,11 @@ import sys
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("path")
+args = parser.parse_args()
 
 ###############################################################################
 # Helper Functions
@@ -51,7 +56,7 @@ def check_latest_version(name):
 # Update SDK version and test
 ###############################################################################
 
-DOCS_PATH = Path.cwd() / "docs"
+DOCS_PATH = Path(args.path) / "docs"
 RELEVANCEAI_SDK_VERSION_LATEST = get_latest_version("RelevanceAI")
 # RELEVANCEAI_SDK_VERSION_LATEST = 'latest'
 PIP_INSTALL_SENT_REGEX = f'".*pip install .* RelevanceAI.*==.*"'
