@@ -147,14 +147,14 @@ class Series(BatchAPIClient):
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
 
-        if dtype == 'numeric':
+        if dtype == "numeric":
             agg_type = dtype
         else:
-            agg_type = 'category'
+            agg_type = "category"
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
         aggregation = self.services.aggregate.aggregate(
-            self.dataset_id, 
+            self.dataset_id,
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,
@@ -162,7 +162,7 @@ class Series(BatchAPIClient):
         total = self.get_number_of_documents(dataset_id=self.dataset_id)
         if normalize:
             for agg in aggregation:
-                agg['frequency'] /= total
+                agg["frequency"] /= total
         return aggregation
 
     def __getitem__(self, loc: Union[int, str]):
