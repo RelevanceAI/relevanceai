@@ -17,6 +17,10 @@ v0.28.0
 - Added documentation testing
 - Added df.apply()
 - Added additional functionality for sampling etc.
+- Fixed documentation for Datasets API
+- Add new monitoring health test for chunk data structure
+- Add fix for csv reading for _chunk_ to be parsed as actual Python objects
+and not strings
 
 v0.27.0
 --------

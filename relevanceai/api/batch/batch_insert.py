@@ -208,8 +208,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if "_id" not in chunk.columns:
             raise MissingFieldError("Need _id as a column")
 
-        # Convert vector fields
-        vector_columns = [i for i in chunk.columns if i.endswith("_vector_")]
+        # add fix for when lists are read in as strings
+        EXCEPTION_COLUMNS = ("_vector_", "_chunk_")
+        vector_columns = [i for i in chunk.columns if i.endswith(EXCEPTION_COLUMNS)]
         for i in vector_columns:
             chunk[i] = chunk[i].apply(literal_eval)
 
