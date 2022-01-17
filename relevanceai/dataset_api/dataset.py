@@ -137,6 +137,36 @@ class Series(BatchAPIClient):
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
 
+    def value_counts(
+        self,
+        normalize: bool = False,
+        ascending: bool = False,
+        bins: Union[int, None] = None,
+        dropna: bool = True,
+    ):
+        schema = self.datasets.schema(self.dataset_id)
+        dtype = schema[self.field]
+
+        if dtype == 'numeric':
+            agg_type = dtype
+        else:
+            agg_type = 'category'
+
+        groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
+        metric_query = []
+        aggregation = self.services.aggregate.aggregate(
+            self.dataset_id, 
+            metrics=metric_query, 
+            groupby=groupby_query,
+            page_size=10000,
+            asc=ascending,
+        )
+        total = self.get_number_of_documents(dataset_id=self.dataset_id)
+        if normalize:
+            for agg in aggregation:
+                agg['frequency'] /= total
+        return aggregation
+
     def __getitem__(self, loc: Union[int, str]):
         if isinstance(loc, int):
             warnings.warn(
@@ -494,6 +524,9 @@ class Dataset(BatchAPIClient):
             include_vector=include_vector,
             show_progress_bar=show_progress_bar,
         )
+
+    def value_counts(self, field: str):
+        return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
 
 class Datasets(BatchAPIClient):
