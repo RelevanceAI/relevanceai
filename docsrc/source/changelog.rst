@@ -6,6 +6,7 @@ Here you will find a list of changes for each package update.
 v0.28.0
 --------
 
+- *Breaking Change*️ Change pull_update_push to use dataset ID
 - Added centroid distance evaluation
 - Added JSONShower to df.head() so previewing images is now possible
 - Refactor Pandas Dataset API to use BatchAPIClient
@@ -14,7 +15,6 @@ v0.28.0
 - Added GroupBy, Series class for Datasets
 - Added datasets.info()
 - Added documentation testing
-- Change pull_update_push to use dataset ID
 - Added df.apply()
 - Added additional functionality for sampling etc.
 
