@@ -97,10 +97,6 @@ def notebook_find_replace(notebook, find_sent_regex, find_str_regex, replace_str
             f.write(line)
 
 
-notebook = (
-    Path.cwd() / "examples" / "RelevanceAI_ReadMe_Quickstart_Text_to_Image_Search.ipynb"
-)
-
 ## Env vars
 CLIENT_INSTANTIATION_SENT_REGEX = '"client.*Client(.*)"'
 TEST_PROJECT = os.getenv("TEST_PROJECT")
