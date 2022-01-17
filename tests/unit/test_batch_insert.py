@@ -15,7 +15,7 @@ class TestInsert:
     def test_health(self, test_dataset_id, test_client):
         """Batch insert"""
         health = test_client.datasets.monitor.health(test_dataset_id)
-        assert health["_chunk_.label"] == 100
+        assert health["_chunk_.label"]['exists'] == 100
 
     def test_csv_upload(self, test_csv_dataset):
         response, original_length = test_csv_dataset
