@@ -15,6 +15,8 @@ v0.28.0
 - Added datasets.info()
 - Added df.apply()
 - Added additional functionality for sampling etc.
+- Fixed documentation to better suit
+- Add new monitoring health test for chunk data structure
 
 v0.27.0
 --------
