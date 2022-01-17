@@ -1,10 +1,10 @@
-relevanceai.vector\_tools package
+Vector Tools
 =================================
 
 Submodules
 ----------
 
-relevanceai.vector\_tools.client module
+Vector Tools Client
 ---------------------------------------
 
 .. automodule:: relevanceai.vector_tools.client
@@ -12,7 +12,7 @@ relevanceai.vector\_tools.client module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.vector\_tools.cluster module
+Vector Tools Cluster Client
 ----------------------------------------
 
 .. automodule:: relevanceai.vector_tools.cluster
@@ -20,7 +20,7 @@ relevanceai.vector\_tools.cluster module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.vector\_tools.constants module
+Vector Tools Constants
 ------------------------------------------
 
 .. automodule:: relevanceai.vector_tools.constants
@@ -28,7 +28,7 @@ relevanceai.vector\_tools.constants module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.vector\_tools.dim\_reduction module
+Vector Tools Dim Reduction Client
 -----------------------------------------------
 
 .. automodule:: relevanceai.vector_tools.dim_reduction
