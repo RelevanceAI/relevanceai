@@ -153,10 +153,8 @@ class Series(BatchAPIClient):
             agg_type = 'category'
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
-        metric_query = []
         aggregation = self.services.aggregate.aggregate(
             self.dataset_id, 
-            metrics=metric_query, 
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,
