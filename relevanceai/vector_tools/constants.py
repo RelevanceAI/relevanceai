@@ -67,3 +67,4 @@ CLUSTER_DEFAULT_ARGS: Dict[Any, Any] = {
 }
 
 NEAREST_NEIGHBOURS = Literal["cosine", "l2"]
+CENTROID_DISTANCES = Literal["cosine", "l2"]

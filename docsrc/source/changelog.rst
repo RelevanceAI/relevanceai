@@ -3,6 +3,25 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.28.0
+--------
+
+- *Breaking Change*️ Change pull_update_push to use dataset ID
+- Added centroid distance evaluation
+- Added JSONShower to df.head() so previewing images is now possible
+- Refactor Pandas Dataset API to use BatchAPIClient
+- Modularise testing infrastructure to use separate datasets
+- Add aggregation, groupby pandas API support
+- Added GroupBy, Series class for Datasets
+- Added datasets.info()
+- Added documentation testing
+- Added df.apply()
+- Added additional functionality for sampling etc.
+- Fixed documentation for Datasets API
+- Add new monitoring health test for chunk data structure
+- Add fix for csv reading for _chunk_ to be parsed as actual Python objects
+and not strings
+
 v0.27.0
 --------
 

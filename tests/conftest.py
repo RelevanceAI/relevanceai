@@ -14,7 +14,13 @@ import tempfile
 
 from utils import generate_random_string, generate_random_vector, generate_random_label
 
-RANDOM_STRING = str(random.randint(0, 999))
+# We need to create separate datasets for different tests to avoid overwriting
+# Our original database
+# TODO: improve dataset modularisation
+RANDOM_DATASET_SUFFIX = generate_random_string().lower()
+RANDOM_PANDAS_DATASET_SUFFIX = generate_random_string().lower()
+SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
+CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 
 @pytest.fixture(scope="session")
@@ -47,7 +53,12 @@ def test_client(test_project, test_api_key):
 
 @pytest.fixture(scope="session")
 def test_dataset_id():
-    return "_sample_test_dataset" + RANDOM_STRING
+    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX
+
+
+@pytest.fixture(scope="session")
+def pandas_test_dataset_id():
+    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_PANDAS_DATASET_SUFFIX
 
 
 @pytest.fixture(scope="session")
@@ -87,6 +98,12 @@ def sample_vector_docs():
             "sample_1_vector_": generate_random_vector(N=100),
             "sample_2_vector_": generate_random_vector(N=100),
             "sample_3_vector_": generate_random_vector(N=100),
+            "_chunk_": [
+                {
+                    "label": generate_random_label(),
+                    "label_chunkvector_": generate_random_vector(100),
+                }
+            ],
         }
 
     N = 100
@@ -180,21 +197,29 @@ def sample_nested_assorted_docs():
 
 @pytest.fixture(scope="session")
 def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
-    """Sample vector dataset"""
+    """
+    Use this dataset if you just want vector
+    """
     response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_clustered_dataset(test_client, test_sample_vector_dataset):
-    """Sample vector dataset"""
+def test_clustered_dataset(test_client, sample_vector_docs):
+    """
+    Use this test dataset if you want a dataset with clusters already.
+    """
+    test_client.insert_documents(CLUSTER_DATASET_ID, sample_vector_docs)
     test_client.vector_tools.cluster.kmeans_cluster(
-        dataset_id=test_sample_vector_dataset,
+        dataset_id=CLUSTER_DATASET_ID,
         vector_fields=["sample_1_vector_"],
+        k=10,
+        alias="kmeans_10",
         overwrite=True,
     )
-    yield test_sample_vector_dataset
+    yield CLUSTER_DATASET_ID
+    test_client.datasets.delete(CLUSTER_DATASET_ID)
 
 
 @pytest.fixture(scope="session")
@@ -214,11 +239,11 @@ def test_numpy_dataset(test_client, sample_numpy_docs, test_dataset_id):
 
 
 @pytest.fixture(scope="session")
-def test_pandas_dataset(test_client, sample_pandas_docs, test_dataset_id):
+def test_pandas_dataset(test_client, sample_pandas_docs, pandas_test_dataset_id):
     """Sample pandas dataset"""
-    response = test_client.insert_documents(test_dataset_id, sample_pandas_docs)
+    response = test_client.insert_documents(pandas_test_dataset_id, sample_pandas_docs)
     yield response, len(sample_pandas_docs)
-    test_client.datasets.delete(test_dataset_id)
+    test_client.datasets.delete(pandas_test_dataset_id)
 
 
 @pytest.fixture(scope="session")
@@ -241,6 +266,12 @@ def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
         df = pd.DataFrame(sample_vector_docs)
         df.to_csv(csvfile)
 
-    response = test_client.insert_csv(test_dataset_id, csvfile.name)
-    yield response, len(sample_vector_docs)
-    test_client.datasets.delete(test_dataset_id)
+        response = test_client.insert_csv(test_dataset_id, csvfile.name)
+        yield response, len(sample_vector_docs)
+        test_client.datasets.delete(test_dataset_id)
+
+
+@pytest.fixture(scope="session")
+def test_dataset_df(test_client, test_sample_vector_dataset):
+    df = test_client.Dataset(test_sample_vector_dataset)
+    return df

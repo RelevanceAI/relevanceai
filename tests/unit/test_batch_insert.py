@@ -1,18 +1,21 @@
 """Testing code for batch inserting
 """
 import numpy as np
-import random
 import pytest
 
 
 class TestInsert:
     """Testing the insert functionalities"""
 
-    def test_batch_insert(self, simple_doc, test_dataset_id, test_client):
+    def test_batch_insert(self, sample_vector_docs, test_dataset_id, test_client):
         """Batch insert"""
-        simple_docs = simple_doc * 100
-        results = test_client.insert_documents(test_dataset_id, simple_docs)
+        results = test_client.insert_documents(test_dataset_id, sample_vector_docs)
         assert len(results["failed_documents"]) == 0
+
+    def test_health(self, test_dataset_id, test_client):
+        """Batch insert"""
+        health = test_client.datasets.monitor.health(test_dataset_id)
+        assert health["_chunk_.label"]["exists"] == 100
 
     def test_csv_upload(self, test_csv_dataset):
         response, original_length = test_csv_dataset
