@@ -99,8 +99,12 @@ def notebook_find_replace(notebook, find_sent_regex, find_str_regex, replace_str
 
 ## Env vars
 CLIENT_INSTANTIATION_SENT_REGEX = '"client.*Client(.*)"'
+
 TEST_PROJECT = os.getenv("TEST_PROJECT")
 TEST_API_KEY = os.getenv("TEST_API_KEY")
+if TEST_PROJECT == None or TEST_API_KEY == None:
+    raise ValueError("No TEST_PROJECT or TEST_API_KEY environment variables found.")
+
 CLIENT_INSTANTIATION_STR_REGEX = "\((.*?)\)"
 CLIENT_INSTANTIATION_STR_REPLACE = (
     f'(project=\\"{TEST_PROJECT}\\", api_key=\\"{TEST_API_KEY}\\")'
