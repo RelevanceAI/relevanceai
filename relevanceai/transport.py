@@ -132,7 +132,8 @@ class Transport(JSONEncoderUtils):
         )
 
     def print_dashboard_url(self, dashboard_url):
-        print(f"You can now visit the dashboard at {dashboard_url}")
+        if self.config["dashboard.show_dashboard_link"]:
+            print(f"You can now visit the dashboard at {dashboard_url}")
 
     def make_http_request(
         self,
