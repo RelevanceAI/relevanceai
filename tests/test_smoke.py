@@ -23,3 +23,14 @@ def test_projector_smoke():
     from relevanceai.visualise.projector import Projector
 
     assert True
+
+
+def test_endpoints_smoke(
+        test_client, test_dataset_id, test_sample_vector_dataset
+    ):
+    test_client.services.cluster.aggregate(
+        test_dataset_id,
+        ['sample_1_vector_']
+    )
+
+    assert True
