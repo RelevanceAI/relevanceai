@@ -2,6 +2,7 @@
 Pandas like dataset API
 """
 import warnings
+from cv2 import sort
 import pandas as pd
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
@@ -140,30 +141,23 @@ class Series(BatchAPIClient):
     def value_counts(
         self,
         normalize: bool = False,
+        sort: bool = True,
         ascending: bool = False,
         bins: Union[int, None] = None,
         dropna: bool = True,
     ):
-        schema = self.datasets.schema(self.dataset_id)
-        dtype = schema[self.field]
-
-        if dtype == "numeric":
-            agg_type = dtype
-        else:
-            agg_type = "category"
-
-        groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
-        aggregation = self.services.aggregate.aggregate(
-            self.dataset_id,
-            groupby=groupby_query,
-            page_size=10000,
-            asc=ascending,
+        field_documents = self.get_all_documents(
+            self.dataset_id, select_fields=[self.field]
         )
-        total = self.get_number_of_documents(dataset_id=self.dataset_id)
-        if normalize:
-            for agg in aggregation:
-                agg["frequency"] /= total
-        return aggregation
+        values = [sample[self.field] for sample in field_documents]
+        value_counts = pd.Index(values).value_counts(
+            normalize=normalize,
+            sort=sort,
+            ascending=ascending,
+            bins=bins,
+            dropna=dropna,
+        )
+        return value_counts
 
     def __getitem__(self, loc: Union[int, str]):
         if isinstance(loc, int):
