@@ -98,6 +98,12 @@ def sample_vector_docs():
             "sample_1_vector_": generate_random_vector(N=100),
             "sample_2_vector_": generate_random_vector(N=100),
             "sample_3_vector_": generate_random_vector(N=100),
+            "_chunk_": [
+                {
+                    "label": generate_random_label(),
+                    "label_chunkvector_": generate_random_vector(100),
+                }
+            ],
         }
 
     N = 100
