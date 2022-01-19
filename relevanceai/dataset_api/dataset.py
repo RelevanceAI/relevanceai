@@ -140,10 +140,8 @@ class Series(BatchAPIClient):
     def value_counts(
         self,
         normalize: bool = False,
-        sort: bool = True,
         ascending: bool = False,
         bins: Union[int, None] = None,
-        dropna: bool = True,
     ):
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
@@ -161,9 +159,10 @@ class Series(BatchAPIClient):
             asc=ascending,
         )
         total = self.get_number_of_documents(dataset_id=self.dataset_id)
+        aggregation = pd.DataFrame(aggregation)
+        
         if normalize:
-            for agg in aggregation:
-                agg['frequency'] /= total
+            aggregation['frequency'] /= total
 
         return aggregation
 
