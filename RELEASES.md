@@ -25,4 +25,10 @@ If they have been manually tested, proceed to do the following:
 - Create a new branch for the version you are released following SemVer2.0 formatting, for example: `v0.28.0` or `v0.53.2`, this will automatically trigger `readthedocs` to create documentation once the new branch has been pushed.
 - Submit a Pull Request for the new version branch (`v0.28.1`) into `main`
 - Wait for tests to finish 
-- Merge this PR
+
+### Step 4: Releasing `Relevance AI` package
+- Merge this PR, this will trigger a Github action that will update teh package.
+- You will also want to do a Release on Github for fun.
+
+
+TODO: Document how to release Conda packages (currently in the works).
