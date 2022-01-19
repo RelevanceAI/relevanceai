@@ -141,6 +141,7 @@ class Series(BatchAPIClient):
         self,
         normalize: bool = False,
         ascending: bool = False,
+        sort: bool = False,
         bins: Union[int, None] = None,
     ):
         schema = self.datasets.schema(self.dataset_id)
@@ -158,11 +159,27 @@ class Series(BatchAPIClient):
             page_size=10000,
             asc=ascending,
         )
+
         total = self.get_number_of_documents(dataset_id=self.dataset_id)
         aggregation = pd.DataFrame(aggregation)
 
         if normalize:
             aggregation["frequency"] /= total
+
+        if bins is not None:
+            vals = []
+            for agg in [[agg[0]] * int(agg[1]) for agg in aggregation.values]:
+                vals += agg
+
+            vals = pd.cut(vals, bins)
+
+            bins = ['({}, {}]'.format(interval.left, interval.right) for interval in vals]
+            categories = list(set(bins))
+            if sort:
+                categories = sorted(categories, key=lambda x: float(x.split(',')[0][1:]))
+
+            aggregation = pd.DataFrame([bins.count(cat) for cat in categories], index=categories)
+            aggregation.columns = ['Frequency']
 
         return aggregation
 
