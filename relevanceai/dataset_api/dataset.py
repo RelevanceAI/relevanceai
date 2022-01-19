@@ -510,16 +510,19 @@ class Dataset(BatchAPIClient):
         fields: List
             fields alone which the new vector will concatenate
         """
-        field_documents = self.get_all_documents(self.dataset_id, select_fields=fields)
-
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
 
-        cat_vector_documents = [
-            {"_id": sample["_id"], vector_name: [sample[field] for field in fields]}
-            for sample in field_documents
-        ]
-        self.update_documents(self.dataset_id, cat_vector_documents)
+        def cat_fields(documents, field_name):
+            cat_vector_documents = [
+                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
+                for sample in documents
+            ]
+            return cat_vector_documents
+
+        self.pull_update_push(
+            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        )
 
 
 class Datasets(BatchAPIClient):
