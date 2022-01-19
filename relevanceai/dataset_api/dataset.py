@@ -173,13 +173,19 @@ class Series(BatchAPIClient):
 
             vals = pd.cut(vals, bins)
 
-            bins = ['({}, {}]'.format(interval.left, interval.right) for interval in vals]
+            bins = [
+                "({}, {}]".format(interval.left, interval.right) for interval in vals
+            ]
             categories = list(set(bins))
             if sort:
-                categories = sorted(categories, key=lambda x: float(x.split(',')[0][1:]))
+                categories = sorted(
+                    categories, key=lambda x: float(x.split(",")[0][1:])
+                )
 
-            aggregation = pd.DataFrame([bins.count(cat) for cat in categories], index=categories)
-            aggregation.columns = ['Frequency']
+            aggregation = pd.DataFrame(
+                [bins.count(cat) for cat in categories], index=categories
+            )
+            aggregation.columns = ["Frequency"]
 
         return aggregation
 
