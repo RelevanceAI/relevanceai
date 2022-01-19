@@ -98,7 +98,6 @@ class Series(BatchAPIClient):
     def apply(
         self,
         func: Callable,
-        output_field: str,
         axis: int = 0,
     ):
         """
@@ -116,9 +115,6 @@ class Series(BatchAPIClient):
             - 9 or 'index': apply function to each column
             - 1 or 'columns': apply function to each row
 
-        output_field: str
-            The field from which to output
-
         Example
         ---------------
 
@@ -133,7 +129,7 @@ class Series(BatchAPIClient):
                 try:
                     if self.is_field(self.field, d):
                         self.set_field(
-                            output_field, d, func(self.get_field(self.field, d))
+                            self.field, d, func(self.get_field(self.field, d))
                         )
                 except Exception as e:
                     continue
@@ -152,7 +148,7 @@ class Series(BatchAPIClient):
     ):
         """
         Return a Series containing counts of unique values (or values with in a range if bins is set).
-        
+
         Parameters
         ----------
         normalize : bool, default False
@@ -577,7 +573,7 @@ class Dataset(BatchAPIClient):
         Parameters
         ----------
         field: str
-            dataset field to which to do value counts on 
+            dataset field to which to do value counts on
         Returns
         -------
         Series
