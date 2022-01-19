@@ -146,23 +146,23 @@ class Series(BatchAPIClient):
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
 
-        if dtype == 'numeric':
+        if dtype == "numeric":
             agg_type = dtype
         else:
-            agg_type = 'category'
+            agg_type = "category"
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
         aggregation = self.services.aggregate.aggregate(
-            self.dataset_id, 
+            self.dataset_id,
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,
         )
         total = self.get_number_of_documents(dataset_id=self.dataset_id)
         aggregation = pd.DataFrame(aggregation)
-        
+
         if normalize:
-            aggregation['frequency'] /= total
+            aggregation["frequency"] /= total
 
         return aggregation
 
