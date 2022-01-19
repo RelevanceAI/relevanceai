@@ -423,9 +423,18 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
     """
     if number_of_documents is None:
         number_of_documents = 50
-    return ExampleDatasets._get_dummy_dataset(
+
+    docs = ExampleDatasets._get_dummy_dataset(
         "realestate", number_of_documents, select_fields
     )
+
+    # todo: fix the clustering results in the original dataset
+    # insert_documents fails if they are included
+    for doc in docs:
+        if "_clusters_" in doc:
+            del doc["_clusters_"]
+
+    return docs
 
 
 def get_mission_statements_dataset(
