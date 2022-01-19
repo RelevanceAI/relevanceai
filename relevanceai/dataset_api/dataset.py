@@ -1,12 +1,14 @@
 """
 Pandas like dataset API
 """
+import math
 import warnings
 import pandas as pd
+
+from typing import List, Union, Callable, Optional
+
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
-from typing import List, Union, Callable
-import math
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
@@ -142,7 +144,7 @@ class Series(BatchAPIClient):
         normalize: bool = False,
         ascending: bool = False,
         sort: bool = False,
-        bins: Union[int, None] = None,
+        bins: Optional[int] = None,
     ):
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
@@ -173,17 +175,18 @@ class Series(BatchAPIClient):
 
             vals = pd.cut(vals, bins)
 
-            bins = [
+            categories = [
                 "({}, {}]".format(interval.left, interval.right) for interval in vals
             ]
-            categories = list(set(bins))
+            unique_categories = list(set(categories))
+
             if sort:
                 categories = sorted(
                     categories, key=lambda x: float(x.split(",")[0][1:])
                 )
 
             aggregation = pd.DataFrame(
-                [bins.count(cat) for cat in categories], index=categories
+                [categories.count(cat) for cat in unique_categories], index=unique_categories
             )
             aggregation.columns = ["Frequency"]
 
