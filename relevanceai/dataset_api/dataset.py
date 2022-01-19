@@ -186,7 +186,8 @@ class Series(BatchAPIClient):
                 )
 
             aggregation = pd.DataFrame(
-                [categories.count(cat) for cat in unique_categories], index=unique_categories
+                [categories.count(cat) for cat in unique_categories],
+                index=unique_categories,
             )
             aggregation.columns = ["Frequency"]
 
