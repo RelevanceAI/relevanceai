@@ -590,7 +590,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
         self.logger.info(results)
         print(f"Finished clustering. The cluster alias is `{alias}`.")
-        self.datasets.cluster.centroids.list_furthest_from_center(
+        self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id,
             vector_fields=vector_fields,
             alias=alias,
