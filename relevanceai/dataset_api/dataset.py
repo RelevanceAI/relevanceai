@@ -508,8 +508,8 @@ class Dataset(BatchAPIClient):
         columns = df.columns
         documents = [
             {
-                '_id': str(hash(str(sample))),
-                **{key: value for key, value in zip(columns, sample)}
+                "_id": str(hash(str(sample))),
+                **{key: value for key, value in zip(columns, sample)},
             }
             for sample in df.values.tolist()
         ]
