@@ -146,6 +146,21 @@ class Series(BatchAPIClient):
         sort: bool = False,
         bins: Optional[int] = None,
     ):
+        """
+        Return a Series containing counts of unique values (or values with in a range if bins is set).
+        
+        Parameters
+        ----------
+        normalize : bool, default False
+            If True then the object returned will contain the relative frequencies of the unique values.
+        ascending : bool, default False
+            Sort in ascending order.
+        bins : int, optional
+            Groups categories into 'bins'. These bins are good for representing groups within continuous series
+        Returns
+        -------
+        Series
+        """
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
 
@@ -552,6 +567,17 @@ class Dataset(BatchAPIClient):
         )
 
     def value_counts(self, field: str):
+        """
+        Return a Series containing counts of unique values.
+
+        Parameters
+        ----------
+        field: str
+            dataset field to which to do value counts on 
+        Returns
+        -------
+        Series
+        """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
 
