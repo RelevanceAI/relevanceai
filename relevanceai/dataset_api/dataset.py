@@ -499,6 +499,28 @@ class Dataset(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
+    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+        """
+        Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+        Parameters
+        ----------
+        vector_name: str, default None
+            name of the new concatenated vector field
+        fields: List
+            fields alone which the new vector will concatenate
+        """
+        field_documents = self.get_all_documents(self.dataset_id, select_fields=fields)
+
+        if vector_name is None:
+            vector_name = "_".join(fields) + "_cat_vector_"
+
+        cat_vector_documents = [
+            {"_id": sample["_id"], vector_name: [sample[field] for field in fields]}
+            for sample in field_documents
+        ]
+        self.update_documents(self.dataset_id, cat_vector_documents)
+
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
