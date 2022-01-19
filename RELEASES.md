@@ -18,12 +18,13 @@ If they have been manually tested, proceed to do the following:
 - Create a new tag for the new version about to be released
 - Click on Autogenerate changelogs
 - Copy and paste the relevant changelogs into `docsrc/source/changelog.rst`
-- Submit a PR into Development
+- Check out a new branch from development, commit the changes and then push
+- Submit a PR and merge into Development
 
 ### Step 3: Creating Documentation
 
-- Create a new branch for the version you are released following SemVer2.0 formatting, for example: `v0.28.0` or `v0.53.2`, this will automatically trigger `readthedocs` to create documentation once the new branch has been pushed.
-- Submit a Pull Request for the new version branch (`v0.28.1`) into `main`
+- Create a new branch from development for the version you are released following SemVer2.0 formatting, for example: `v0.28.0` or `v0.53.2`, this will automatically trigger `readthedocs` to create documentation once the new branch has been pushed.
+- Submit a Pull Request for the new version branch (`v0.28.0`) into `main`
 - Wait for tests to finish 
 
 ### Step 4: Releasing `Relevance AI` package
