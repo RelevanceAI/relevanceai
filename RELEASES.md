@@ -27,7 +27,7 @@ If they have been manually tested, proceed to do the following:
 - Wait for tests to finish 
 
 ### Step 4: Releasing `Relevance AI` package
-- Merge this PR, this will trigger a Github action that will update teh package.
+- Merge this PR, this will trigger a Github action that will update the package.
 - You will also want to do a Release on Github for fun.
 
 
