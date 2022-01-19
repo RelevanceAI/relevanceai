@@ -3,6 +3,14 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.28.1
+--------
+
+- removed clustering results from get_realestate_dataset by @ChakavehSaedi in https://github.com/RelevanceAI/RelevanceAI/pull/277
+- add option to print no dashboard by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/278
+- move to node implementation for listing furthest by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/279
+- add output field to apply by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/282
+
 v0.28.0
 --------
 
