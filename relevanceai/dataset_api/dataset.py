@@ -98,6 +98,7 @@ class Series(BatchAPIClient):
     def apply(
         self,
         func: Callable,
+        output_field: str,
         axis: int = 0,
     ):
         """
@@ -115,6 +116,9 @@ class Series(BatchAPIClient):
             - 9 or 'index': apply function to each column
             - 1 or 'columns': apply function to each row
 
+        output_field: str
+            The field from which to output
+
         Example
         ---------------
 
@@ -129,7 +133,7 @@ class Series(BatchAPIClient):
                 try:
                     if self.is_field(self.field, d):
                         self.set_field(
-                            self.field, d, func(self.get_field(self.field, d))
+                            output_field, d, func(self.get_field(self.field, d))
                         )
                 except Exception as e:
                     continue
