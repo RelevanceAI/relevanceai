@@ -554,6 +554,20 @@ class Dataset(BatchAPIClient):
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
 
+    def to_dict(self):
+        """
+        Returns the raw list of dicts from the QC
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        list of documents in dictionary format
+        """
+        return self.get_all_documents(self.dataset_id)
+
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
