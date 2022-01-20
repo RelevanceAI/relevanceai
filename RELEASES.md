@@ -35,7 +35,7 @@ If they have been manually tested, proceed to do the following:
 - Click on Read the Docs in the bottom left corner, and check to make sure the new version is listed.
 
 ### Step 4: Releasing `Relevance AI` package
-- By this time, the tests will be close to down
+- By this time, the tests will be close to done
 - Once passed, Merge this PR, this will trigger a Github action that will update the package.
 
 
