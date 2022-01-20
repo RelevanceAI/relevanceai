@@ -12,7 +12,12 @@ import io
 import csv
 import tempfile
 
-from utils import generate_random_string, generate_random_vector, generate_random_label
+from utils import (
+    generate_random_string, 
+    generate_random_vector, 
+    generate_random_label,
+    generate_random_integer,
+)
 
 # We need to create separate datasets for different tests to avoid overwriting
 # Our original database
@@ -98,6 +103,9 @@ def sample_vector_docs():
             "sample_1_vector_": generate_random_vector(N=100),
             "sample_2_vector_": generate_random_vector(N=100),
             "sample_3_vector_": generate_random_vector(N=100),
+            "sample_1_value": generate_random_integer(N=100),
+            "sample_2_value": generate_random_integer(N=100),
+            "sample_3_value": generate_random_integer(N=100),
             "_chunk_": [
                 {
                     "label": generate_random_label(),
