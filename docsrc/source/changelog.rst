@@ -10,6 +10,8 @@ v0.28.1
 - add option to print no dashboard by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/278
 - move to node implementation for listing furthest by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/279
 - add output field to apply by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/282
+- Add releases workflow markdown and diagram
+- Fix clustering tests
 
 v0.28.0
 --------
