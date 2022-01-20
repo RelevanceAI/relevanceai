@@ -1,12 +1,14 @@
 """
 Pandas like dataset API
 """
+import math
 import warnings
 import pandas as pd
+
+from typing import List, Union, Callable, Optional
+
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
-from typing import List, Union, Callable
-import math
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
@@ -498,6 +500,34 @@ class Dataset(BatchAPIClient):
             include_vector=include_vector,
             show_progress_bar=show_progress_bar,
         )
+
+    def to_csv(self, filename: str, **kwargs):
+        """
+        Download a dataset from the QC to a local .csv file
+
+        Parameters
+        ----------
+        filename: str
+            path to downloaded .csv file
+        kwargs: Optional
+            see client.get_all_documents() for extra args
+        """
+        documents = self.get_all_documents(self.dataset_id, **kwargs)
+        df = pd.DataFrame(documents)
+        df.to_csv(filename)
+
+    def read_csv(self, filename: str, **kwargs):
+        """
+        Wrapper for client.insert_csv
+
+        Parameters
+        ----------
+        filename: str
+            path to .csv file
+        kwargs: Optional
+            see client.insert_csv() for extra args
+        """
+        self.insert_csv(self.dataset_id, filename, **kwargs)
 
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
