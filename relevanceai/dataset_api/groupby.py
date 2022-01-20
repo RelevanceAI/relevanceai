@@ -66,7 +66,7 @@ class Groupby(BatchAPIClient):
 
     def mean(self, field: str):
         """
-        Convenience method to call avg metric on groupby. 
+        Convenience method to call avg metric on groupby.
 
         Parameters
         ----------

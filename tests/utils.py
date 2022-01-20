@@ -18,5 +18,6 @@ def generate_random_vector(N: int = 512) -> List[float]:
 def generate_random_label(N: int = 5) -> str:
     return f"label_{random.randint(0, N)}"
 
+
 def generate_random_integer(N: int = 100) -> int:
     return random.randint(0, N)

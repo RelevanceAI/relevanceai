@@ -13,8 +13,8 @@ import csv
 import tempfile
 
 from utils import (
-    generate_random_string, 
-    generate_random_vector, 
+    generate_random_string,
+    generate_random_vector,
     generate_random_label,
     generate_random_integer,
 )
