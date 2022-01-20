@@ -46,6 +46,8 @@ def test_cluster_integration_one_liner(
     # Retrieve a previous dataset
     VECTOR_FIELDS = vector_fields
     test_client.vector_tools.cluster.kmeans_cluster(
-        dataset_id=test_sample_vector_dataset, vector_fields=VECTOR_FIELDS, overwrite=True
+        dataset_id=test_sample_vector_dataset,
+        vector_fields=VECTOR_FIELDS,
+        overwrite=True,
     )
     assert True
