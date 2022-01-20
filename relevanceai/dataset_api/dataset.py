@@ -529,6 +529,31 @@ class Dataset(BatchAPIClient):
         """
         self.insert_csv(self.dataset_id, filename, **kwargs)
 
+    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+        """
+        Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+        Parameters
+        ----------
+        vector_name: str, default None
+            name of the new concatenated vector field
+        fields: List
+            fields alone which the new vector will concatenate
+        """
+        if vector_name is None:
+            vector_name = "_".join(fields) + "_cat_vector_"
+
+        def cat_fields(documents, field_name):
+            cat_vector_documents = [
+                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
+                for sample in documents
+            ]
+            return cat_vector_documents
+
+        self.pull_update_push(
+            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        )
+
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
