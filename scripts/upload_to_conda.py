@@ -13,7 +13,7 @@ Then from the output, use this:
 - conda config --add channels conda-forge
 """
 
-import os 
+import os
 from pathlib import Path
 from tqdm.auto import tqdm
 
@@ -25,13 +25,18 @@ from tqdm.auto import tqdm
 # Automate the above
 
 import subprocess
+
 proc = subprocess.Popen(["conda", "build ."], stdout=subprocess.PIPE, shell=True)
 (out, err) = proc.communicate()
 
 
 # from observing the outputs, these seem to be the main file formats
 
-files_to_upload = list(Path("channel").rglob("*.whl")) +  list(Path("channel").rglob("*tar.gz")) + list(Path("channel").rglob("*.bz2"))
+files_to_upload = (
+    list(Path("channel").rglob("*.whl"))
+    + list(Path("channel").rglob("*tar.gz"))
+    + list(Path("channel").rglob("*.bz2"))
+)
 for fn in tqdm(files_to_upload):
     print(fn)
     cmd = f"anaconda upload --force -u relevance {fn}"
