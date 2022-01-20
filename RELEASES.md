@@ -5,6 +5,10 @@
 If you need to do a release, ensure all changes are reflected in `dev` branch. 
 Also make sure that the changes have been manually tested!
 
+An example of our release workflow:
+
+![Release Workflow](assets/release_workflow.png)
+
 If they have been manually tested, proceed to do the following: 
 
 
