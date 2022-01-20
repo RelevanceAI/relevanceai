@@ -497,27 +497,33 @@ class Dataset(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def to_csv(self, filename: str):
-        documents = self.get_all_documents(self.dataset_id)
+    def to_csv(self, filename: str, **kwargs):
+        """
+        Download a dataset from the QC to a local .csv file
+
+        Parameters
+        ----------
+        filename: str
+            path to downloaded .csv file
+        kwargs: Optional
+            see client.get_all_documents() for extra args
+        """
+        documents = self.get_all_documents(self.dataset_id, **kwargs)
         df = pd.DataFrame(documents)
         df.to_csv(filename)
 
-    def read_csv(self, filename: str):
-        df = pd.read_csv(filename)
+    def read_csv(self, filename: str, **kwargs):
+        """
+        Wrapper for client.insert_csv
 
-        columns = df.columns
-        documents = [
-            {
-                "_id": str(hash(str(sample))),
-                **{key: value for key, value in zip(columns, sample)},
-            }
-            for sample in df.values.tolist()
-        ]
-
-        self.insert_documents(
-            dataset_id=self.dataset_id,
-            docs=documents,
-        )
+        Parameters
+        ----------
+        filename: str
+            path to .csv file
+        kwargs: Optional
+            see client.insert_csv() for extra args
+        """
+        self.insert_csv(self.dataset_id, filename, **kwargs)
 
 
 class Datasets(BatchAPIClient):
