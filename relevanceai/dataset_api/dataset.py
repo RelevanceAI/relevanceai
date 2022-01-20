@@ -569,7 +569,6 @@ class Dataset(BatchAPIClient):
     def value_counts(self, field: str):
         """
         Return a Series containing counts of unique values.
-
         Parameters
         ----------
         field: str
@@ -579,6 +578,59 @@ class Dataset(BatchAPIClient):
         Series
         """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
+
+    def to_csv(self, filename: str, **kwargs):
+        """
+        Download a dataset from the QC to a local .csv file
+
+        Parameters
+        ----------
+        filename: str
+            path to downloaded .csv file
+        kwargs: Optional
+            see client.get_all_documents() for extra args
+        """
+        documents = self.get_all_documents(self.dataset_id, **kwargs)
+        df = pd.DataFrame(documents)
+        df.to_csv(filename)
+
+    def read_csv(self, filename: str, **kwargs):
+        """
+        Wrapper for client.insert_csv
+
+        Parameters
+        ----------
+        filename: str
+            path to .csv file
+        kwargs: Optional
+            see client.insert_csv() for extra args
+        """
+        self.insert_csv(self.dataset_id, filename, **kwargs)
+
+    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+        """
+        Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+        Parameters
+        ----------
+        vector_name: str, default None
+            name of the new concatenated vector field
+        fields: List
+            fields alone which the new vector will concatenate
+        """
+        if vector_name is None:
+            vector_name = "_".join(fields) + "_cat_vector_"
+
+        def cat_fields(documents, field_name):
+            cat_vector_documents = [
+                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
+                for sample in documents
+            ]
+            return cat_vector_documents
+
+        self.pull_update_push(
+            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        )
 
 
 class Datasets(BatchAPIClient):

@@ -19,21 +19,24 @@ If they have been manually tested, proceed to do the following:
 ### Step 2: Updating Changelog
 
 - On the Github repository home page (https://github.com/RelevanceAI/RelevanceAI), click on "releases"
-- Create a new tag for the new version about to be released
-- Click on Autogenerate changelogs
+- Select 'Choose a Tag'
+- Select 'Find or Create New Tag'
+- Type in new version id e.g. 'v0.28.n + 1'
+- Make sure Target is development
+- Make sure Release Title is the same as the new version
+- Click on Auto-generate release notes
 - Copy and paste the relevant changelogs into `docsrc/source/changelog.rst`
 - Check out a new branch from development, commit the changes and then push
-- Submit a PR and merge into Development
+- Submit a PR and wait for tests to run
 
 ### Step 3: Creating Documentation
 
-- Create a new branch from development for the version you are released following SemVer2.0 formatting, for example: `v0.28.0` or `v0.53.2`, this will automatically trigger `readthedocs` to create documentation once the new branch has been pushed.
-- Submit a Pull Request for the new version branch (`v0.28.0`) into `main`
-- Wait for tests to finish 
+- Go to https://relevanceai.readthedocs.io/en/latest/
+- Click on Read the Docs in the bottom left corner, and check to make sure the new version is listed.
 
 ### Step 4: Releasing `Relevance AI` package
-- Merge this PR, this will trigger a Github action that will update the package.
-- You will also want to do a Release on Github for fun.
+- By this time, the tests will be close to done
+- Once passed, Merge this PR, this will trigger a Github action that will update the package.
 
 
 TODO: Document how to release Conda packages (currently in the works).

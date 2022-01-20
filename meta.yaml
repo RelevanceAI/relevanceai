@@ -1,14 +1,12 @@
 {% set name = "RelevanceAI" %}
-{% set version = "0.22.0" %}
+{% set data = load_setup_py_data() %}
 
 package:
   name: "{{ name|lower }}"
-  version: "{{ version }}"
+  version: {{ data.get("version") }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 03eeed2bc2366ecfe36a29248a7c149e34cb409fe111a43d259c09dea0d37816
-
+  path: .
 
 build:
   number: 0
@@ -19,11 +17,13 @@ requirements:
     - pip
     - python
   run:
-    - python
+    {% for req in data.get("install_requires", []) %}
+      - {{ req }}
+    {% endfor %}
 
 about:
   home: https://relevance.ai
-  license: BSD
-  license_family: BSD
+  license: Apache2.0
+  license_family: Apache
   summary: Experimentation first vector database
  
