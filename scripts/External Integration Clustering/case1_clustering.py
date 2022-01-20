@@ -1,5 +1,4 @@
 from relevanceai import Client
-from sklearn.cluster import KMeans
 
 client = Client()
 

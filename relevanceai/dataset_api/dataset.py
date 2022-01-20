@@ -4,6 +4,7 @@ Pandas like dataset API
 import math
 import warnings
 import pandas as pd
+import numpy as np
 
 from typing import List, Union, Callable, Optional
 
@@ -142,6 +143,24 @@ class Series(BatchAPIClient):
         return self.pull_update_push(
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
+
+    def numpy(self) -> np.ndarray:
+        """
+        Iterates over all documents in dataset and returns all numeric values in a numpy array.
+
+        Parameters
+        ---------
+        None
+
+        Returns
+        -------
+        vectors: np.ndarray
+            an array/matrix of all numeric values selected
+        """
+        documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
+        vectors = [np.array(sample[self.field]) for sample in documents]
+        vectors = np.array(vectors)
+        return vectors
 
     def __getitem__(self, loc: Union[int, str]):
         if isinstance(loc, int):
