@@ -4,6 +4,7 @@ Pandas like dataset API
 import math
 import warnings
 import pandas as pd
+import numpy as np
 
 from typing import List, Union, Callable, Optional
 
@@ -207,6 +208,12 @@ class Series(BatchAPIClient):
             aggregation.columns = ["Frequency"]
 
         return aggregation
+
+    def numpy(self):
+        vectors = self.get_all_documents(self.dataset_id, select_fields=[self.field])
+        vectors = [np.array(sample[self.field]) for sample in vectors]
+        vectors = np.array(vectors)
+        return vectors
 
     def __getitem__(self, loc: Union[int, str]):
         if isinstance(loc, int):
