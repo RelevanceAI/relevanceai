@@ -6,6 +6,8 @@ import warnings
 import pandas as pd
 import numpy as np
 
+from doc_utils import DocUtils
+
 from typing import List, Union, Callable, Optional
 
 from relevanceai.dataset_api.groupby import Groupby, Agg
@@ -573,6 +575,19 @@ class Dataset(BatchAPIClient):
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
 
+    def set_cluster_labels(self, vector_field, alias, labels):
+        docs = self.get_all_documents(self.dataset_id)
+        docs = list(filter(DocUtils.list_doc_fields, docs))
+        vectors = self.get_field_across_documents(
+            vector_field, docs, missing_treatment="skip"
+        )
+        set_cluster_field = f"_cluster_.{vector_field}.{alias}"
+        self.set_field_across_documents(
+            set_cluster_field,
+            [f"cluster-{label}" for label in list(labels)],
+            docs,
+        )
+        return docs
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
