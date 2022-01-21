@@ -586,7 +586,9 @@ class Dataset(BatchAPIClient):
                 docs,
             )
             return docs
+
         self.pull_update_push(self.dataset_id, add_cluster_labels)
+
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
