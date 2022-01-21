@@ -34,7 +34,3 @@ df.set_cluster_labels(
     alias=clusterer.get_alias(),
     labels=clusterer.get_labels(),
 )
-
-# centroids = clusterer.get_centroids()
-
-print()
