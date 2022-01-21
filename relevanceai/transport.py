@@ -13,7 +13,7 @@ from requests import Request
 
 from relevanceai.config import Config
 from relevanceai.logger import AbstractLogger
-from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
+from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS, SOFTLINK_MAPPING
 from relevanceai.errors import APIError
 from relevanceai.json_encoder import JSONEncoderUtils
 
@@ -54,6 +54,17 @@ class Transport(JSONEncoderUtils):
     @property
     def DASHBOARD_TYPES(self):
         return list(DASHBOARD_MAPPINGS.keys())
+
+    def _softlink(self, parameters: dict, softlink_method: str = "") -> None:
+        # Here we print the cloud dashboard along with the link
+        if self.config["dashboard.show_dashboard_link"]:
+            dashboard_url = self.config[
+                "dashboard.base_dashboard_url"
+            ] + SOFTLINK_MAPPING[softlink_method].format(
+                dataset_id=parameters.get("dataset_id")
+            )
+
+            print("You can now visit your dashboard at " + dashboard_url)
 
     def _log_to_dashboard(
         self,
