@@ -456,6 +456,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self,
         dataset_id: str,
         vector_fields: list,
+        alias: str,
         filters: List = [],
         k: Union[None, int] = 10,
         init: str = "k-means++",
@@ -466,7 +467,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str = "auto",
-        alias: str = None,
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
@@ -485,6 +485,8 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             name of the dataser
         vector_fields : list
             a list containing the vector field to be used for clustering
+        alias : string
+            "kmeans", string to be used in naming of the field showing the clustering results
         filters : list
             a list to filter documents of the dataset,
         k : int
@@ -505,8 +507,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             True bydefault
         algorithm : string
             "auto" by default
-        alias : string
-            "kmeans", string to be used in naming of the field showing the clustering results
         cluster_field: string
             "_cluster_", string to name the main cluster field
         overwrite : bool
