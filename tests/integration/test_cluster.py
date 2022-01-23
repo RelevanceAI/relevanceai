@@ -49,6 +49,6 @@ def test_cluster_integration_one_liner(
         dataset_id=test_sample_vector_dataset,
         vector_fields=VECTOR_FIELDS,
         overwrite=True,
-        alias="sample_cluster"
+        alias="sample_cluster",
     )
     assert True
