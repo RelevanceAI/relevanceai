@@ -2,13 +2,14 @@ from typing import Dict, Optional
 
 from relevanceai.base import _Base
 
+
 class Deployable(_Base):
     def __init__(self, project: str, api_key: str):
         super().__init__(self, project, api_key)
         self.project = project
         self.api_key = api_key
 
-    def create(self, dataset_id: str, configuration: Optional[Dict]=None):
+    def create(self, dataset_id: str, configuration: Optional[Dict] = None):
         """
         Create a private deployable from an existing dataset.
         TODO: explain what a deployable is
@@ -20,10 +21,10 @@ class Deployable(_Base):
         configuration: None | dict
             A configuration specification
 
-        Returns 
+        Returns
         -------
-        On success (200): { 
-            deployable_id, dataset_id, project_id, api_key, configuration 
+        On success (200): {
+            deployable_id, dataset_id, project_id, api_key, configuration
         }
         On failure (422): {
             loc, msg, type
@@ -34,11 +35,8 @@ class Deployable(_Base):
 
         return self.make_http_request(
             endpoint="/deployables/create",
-            method="POST"
-            parameters={
-                "dataset_id": dataset_id, 
-                "configuration": configuration
-            }
+            method="POST",
+            parameters={"dataset_id": dataset_id, "configuration": configuration},
         )
 
     def share(self, deployable_id: str):
@@ -61,8 +59,7 @@ class Deployable(_Base):
         }
         """
         return self.make_http_request(
-            endpoint=f"/deployables/{deployable_id}/share",
-            method="POST"
+            endpoint=f"/deployables/{deployable_id}/share", method="POST"
         )
 
     def unshare(self, deployable_id: str):
@@ -85,16 +82,16 @@ class Deployable(_Base):
         }
         """
         return self.make_http_request(
-            endpoint=f"/deployables/{deployable_id}/private",
-            method="POST"
+            endpoint=f"/deployables/{deployable_id}/private", method="POST"
         )
 
-    def update(self, 
-        deployable_id: str, 
+    def update(
+        self,
+        deployable_id: str,
         dataset_id: str,
-        configuration: Optional[Dict]=None, 
-        overwrite: bool=True,
-        upsert: bool=True
+        configuration: Optional[Dict] = None,
+        overwrite: bool = True,
+        upsert: bool = True,
     ):
         """
         Update a specified deployable.
@@ -129,7 +126,7 @@ class Deployable(_Base):
                 "configuration": configuration,
                 "overwrite": overwrite,
                 "upsert": upsert,
-            }
+            },
         )
 
     def get(self, deloyable_id: str):
@@ -151,8 +148,7 @@ class Deployable(_Base):
         }
         """
         return self.make_http_request(
-            endpoint=f"/deployables/{deployable_id}/get",
-            method="GET"
+            endpoint=f"/deployables/{deployable_id}/get", method="GET"
         )
 
     def delete(self, deployable_id: str):
@@ -175,10 +171,10 @@ class Deployable(_Base):
         """
         return self.make_http_request(
             endpoint=f"/deployables/delete",
-            method="POST"
+            method="POST",
             parameters={
                 "id": deployable_id,
-            }
+            },
         )
 
     def list(self):
@@ -198,13 +194,10 @@ class Deployable(_Base):
             loc, msg, type
         }
         """
-        return self.make_http_request(
-            endpoint="/deployables/list",
-            method="GET"
-        )
+        return self.make_http_request(endpoint="/deployables/list", method="GET")
 
     def url(
-        self, deployable_id: str, dataset_id: str, application: str="cluster"
+        self, deployable_id: str, dataset_id: str, application: str = "cluster"
     ) -> str:
         """
         Generates the deployable URL.
