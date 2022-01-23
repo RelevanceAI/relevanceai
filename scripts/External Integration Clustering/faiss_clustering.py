@@ -22,14 +22,14 @@ def main(args):
         def fit_dataset(self, df, vector_field):
 
             vectors = df[vector_field].numpy().astype("float32")
-            self._fit_transform(self, vectors)
+            self.fit_transform(self, vectors)
             df.set_cluster_labels(
                 vector_field=vector_field,
                 alias=clusterer.get_alias(),
                 labels=clusterer.get_labels(),
             )
 
-        def _fit_transform(self, vectors):
+        def fit_transform(self, vectors):
             self.vectors = vectors
             return self.clusterer.train(vectors)
 
