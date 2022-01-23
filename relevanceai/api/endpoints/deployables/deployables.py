@@ -129,7 +129,7 @@ class Deployable(_Base):
             },
         )
 
-    def get(self, deloyable_id: str):
+    def get(self, deployable_id: str):
         """
         Get a specified deployable.
 
