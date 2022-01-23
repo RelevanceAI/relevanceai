@@ -160,7 +160,7 @@ class Series(BatchAPIClient):
             an array/matrix of all numeric values selected
         """
         documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
-        vectors = [np.array(sample[self.field]) for sample in documents]
+        vectors = [np.array(document[self.field]) for document in documents]
         vectors = np.array(vectors)
         return vectors
 
@@ -575,14 +575,24 @@ class Dataset(BatchAPIClient):
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
 
-    def set_cluster_labels(self, vector_field, alias, labels):
+    def _label_cluster(self, label: Union[int, str]):
+        if isinstance(label, (int, float)):
+            return "cluster-" + str(label)
+        return str(label)
+
+    def _label_clusters(self, labels):
+        return [self._label_cluster(x) for x in labels]
+
+    def set_cluster_labels(self, vector_fields, alias, labels):
         def add_cluster_labels(documents):
             docs = self.get_all_documents(self.dataset_id)
             docs = list(filter(DocUtils.list_doc_fields, docs))
-            set_cluster_field = f"_cluster_.{vector_field}.{alias}"
+            set_cluster_field = (
+                "_cluster_" + ".".join(vector_fields).lower() + "." + alias
+            )
             self.set_field_across_documents(
                 set_cluster_field,
-                [f"cluster-{label}" for label in list(labels)],
+                self._label_clusters(list(labels)),
                 docs,
             )
             return docs

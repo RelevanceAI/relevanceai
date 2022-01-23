@@ -1,3 +1,4 @@
+from abc import ABC
 from abc import abstractmethod
 
 from relevanceai.config import CONFIG
@@ -20,7 +21,7 @@ class _Base(Transport, LoguruLogger):
         super().__init__()
 
 
-class ClusterBase:
+class ClusterBase(ABC):
     def __init__(self, clusterer):
         self.clusterer = clusterer
 
@@ -33,4 +34,11 @@ class ClusterBase:
         raise NotImplementedError
 
     def metadata(self):
-        return self.clusterer.__dict__
+        if hasattr(self, __dict__):
+            return self.clusterer.__dict__
+
+        elif hasattr(self, __name__):
+            return self.__name__
+        
+        else:
+            return 'Clusterer'
