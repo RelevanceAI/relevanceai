@@ -554,7 +554,7 @@ class Dataset(BatchAPIClient):
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
 
-    def to_dict(self):
+    def to_dict(self, orient: str = "records"):
         """
         Returns the raw list of dicts from the QC
 
@@ -566,7 +566,10 @@ class Dataset(BatchAPIClient):
         -------
         list of documents in dictionary format
         """
-        return self.get_all_documents(self.dataset_id)
+        if orient == "records":
+            return self.get_all_documents(self.dataset_id)
+        elif orient == "dict":
+            raise NotImplementedError
 
 
 class Datasets(BatchAPIClient):
