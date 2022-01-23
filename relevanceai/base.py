@@ -39,6 +39,6 @@ class ClusterBase(ABC):
 
         elif hasattr(self, __name__):
             return self.__name__
-        
+
         else:
-            return 'Clusterer'
+            return "Clusterer"
