@@ -10,7 +10,7 @@ from relevanceai.base import ClusterBase
 from sklearn.cluster import KMeans
 
 
-def main():
+def main(args):
     client = Client()
 
     df = client.Dataset(args.dataset_id)
