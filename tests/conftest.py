@@ -12,7 +12,7 @@ import io
 import csv
 import tempfile
 
-from utils import generate_random_string, generate_random_vector, generate_random_label
+from .utils import generate_random_string, generate_random_vector, generate_random_label
 
 # We need to create separate datasets for different tests to avoid overwriting
 # Our original database
