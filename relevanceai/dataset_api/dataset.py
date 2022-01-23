@@ -568,7 +568,7 @@ class Dataset(BatchAPIClient):
         """
         if orient == "records":
             return self.get_all_documents(self.dataset_id)
-        elif orient == "dict":
+        else:
             raise NotImplementedError
 
 
