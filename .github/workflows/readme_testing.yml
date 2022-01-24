@@ -45,4 +45,4 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pip install -r readme-docs/requirements.txt
-          python scripts/test_notebooks.py readme-docs RelevanceAI 0.27.0
+          python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v 0.27.0
