@@ -39,6 +39,15 @@ class TestDatset:
         )
         assert True
 
+    def test_groupby_mean_method(self, test_client, test_dataset_df):
+        manual_mean = test_dataset_df.groupby(["sample_1_label"]).agg(
+            {"sample_1_value": "avg"}
+        )
+
+        assert manual_mean == test_dataset_df.groupby(["sample_1_label"]).mean(
+            "sample_1_value"
+        )
+
     def test_centroids(self, test_client, test_clustered_dataset):
         df = test_client.Dataset(test_clustered_dataset)
         closest = df.centroids(["sample_1_vector_"], "kmeans_10").closest()
