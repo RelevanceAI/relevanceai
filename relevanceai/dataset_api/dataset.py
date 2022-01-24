@@ -529,7 +529,7 @@ class Dataset(BatchAPIClient):
         """
         return self.insert_csv(self.dataset_id, filename, **kwargs)
 
-    def read_documents(
+    def insert(
         self,
         documents,
         bulk_fn: Callable = None,
@@ -549,10 +549,6 @@ class Dataset(BatchAPIClient):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
         )
-    
-    read = read_documents
-
-    insert = read_documents
 
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
@@ -578,8 +574,8 @@ class Dataset(BatchAPIClient):
         self.pull_update_push(
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
-    
-    def create(self, schema: dict={}):
+
+    def create(self, schema: dict = {}):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -623,9 +619,9 @@ class Dataset(BatchAPIClient):
 
     def delete(self):
         return self.delete(self.dataset_id)
-    
+
     def upsert_documents(
-        self, 
+        self,
         documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
@@ -635,7 +631,7 @@ class Dataset(BatchAPIClient):
         use_json_encoder: bool = True,
     ):
         return self.update_documents(
-            self.dataset_id, 
+            self.dataset_id,
             docs=documents,
             bulk_fn=bulk_fn,
             max_workers=max_workers,
@@ -644,8 +640,8 @@ class Dataset(BatchAPIClient):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
         )
-    
-    def get(self, document_id: str, include_vector: bool=True):
+
+    def get(self, document_id: str, include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
@@ -655,7 +651,7 @@ class Dataset(BatchAPIClient):
             ID of a document in a dataset.
         include_vector: bool
             Include vectors in the search results
-        
+
         Example
         --------
         >>> from relevanceai import Client, Dataset
@@ -664,8 +660,9 @@ class Dataset(BatchAPIClient):
         >>> df.get("sample_id", include_vector=False)
 
         """
-        self.datasets.documents.get(self.dataset_id, id=document_id, 
-            include_vector=include_vector)
+        return self.datasets.documents.get(
+            self.dataset_id, id=document_id, include_vector=include_vector
+        )
 
 
 class Datasets(BatchAPIClient):
