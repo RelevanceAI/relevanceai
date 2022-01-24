@@ -24,7 +24,6 @@ except ModuleNotFoundError as e:
     pass
 
 from relevanceai.vector_tools.client import VectorTools
-from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
 
 def str2bool(v):

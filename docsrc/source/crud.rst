@@ -118,8 +118,6 @@ Update
 Delete
 -------
 
-To delete a dataset, just run:
-
 .. code-block:: python
 
     from relevanceai import Client 
@@ -135,3 +133,13 @@ Listing Datasets
     from relevanceai import Client
     client = Client()
     client.list_datasets()
+
+Apply
+--------------------
+
+.. code-block:: python
+
+    from relevanceai import Client 
+    client = Client()
+    df = client.Dataset("sample_dataset")
+    df.apply(lambda document: document["value"] + 1)
