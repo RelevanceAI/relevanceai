@@ -1,0 +1,71 @@
+:py:mod:`relevanceai.api.endpoints.services.prediction`
+=======================================================
+
+.. py:module:: relevanceai.api.endpoints.services.prediction
+
+.. autoapi-nested-parse::
+
+   Prediction services
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.api.endpoints.services.prediction.PredictionClient
+
+
+
+
+.. py:class:: PredictionClient(project, api_key)
+
+   Bases: :py:obj:`relevanceai.base._Base`
+
+   Base class for all relevanceai client utilities
+
+   .. py:method:: KNN(self, dataset_id: str, vector: list, vector_field: str, target_field: str, k: int = 5, weighting: bool or list = True, impute_value: int = 0, predict_operation: str = 'most_frequent', include_search_results: bool = True)
+
+      Predict using KNN regression.
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param vector: Vector, a list/array of floats that represents a piece of data.
+      :type vector: list
+      :param vector_field: The vector field to search in. It can either be an array of strings (automatically equally weighted) (e.g. ['check_vector_', 'yellow_vector_']) or it is a dictionary mapping field to float where the weighting is explicitly specified (e.g. {'check_vector_': 0.2, 'yellow_vector_': 0.5})
+      :type vector_field: string
+      :param target_field: The field to perform regression on.
+      :type target_field: string
+      :param k: The number of results for KNN.
+      :type k: int
+      :param weighting: The weighting for each prediction
+      :type weighting: bool/list
+      :param impute_value: The value used to fill in the document when the data is missing.
+      :type impute_value: int
+      :param predict_operation: How to predict using the vectors. One of most_frequent or `sum_scores
+      :type predict_operation: string
+      :param include_search_results: Whether to include search results.
+      :type include_search_results: bool
+
+
+   .. py:method:: KNN_from_results(self, field: str, results: list, impute_value: int = 0, predict_operation: str = 'most_frequent')
+
+      Predict using KNN regression from search results
+
+      :param field: Field in results to use for the prediction. Can be multiplied with weighting.
+      :type field: string
+      :param results: List of results in a dictionary
+      :type results: dict
+      :param weighting: The weighting for each prediction
+      :type weighting: bool/list
+      :param impute_value: The value used to fill in the document when the data is missing.
+      :type impute_value: int
+      :param predict_operation: How to predict using the vectors. One of most_frequent or `sum_scores
+      :type predict_operation: string
+
+
+

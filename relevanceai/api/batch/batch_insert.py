@@ -70,6 +70,16 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
+
+        Example
+        --------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
+        >>> df.insert_documents(documents)
+
         """
 
         self.logger.info(f"You are currently inserting into {dataset_id}")
@@ -94,6 +104,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 *args,
                 **kwargs,
             )
+
+        print(
+            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+        )
 
         return self._write_documents(
             bulk_insert_func,
@@ -142,6 +156,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
         auto_generate_id: bool = True
             Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> csv_filename = "temp.csv"
+        >>> df.insert_csv(csv_filename)
+
         """
 
         csv_args.pop("index_col", None)
@@ -240,6 +263,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         """
         Update a list of documents with multi-threading automatically enabled.
         Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+        Example
+        ----------
 
         >>> from relevanceai import Client
         >>> url = "https://api-aueast.relevance.ai/v1/"

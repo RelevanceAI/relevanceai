@@ -138,4 +138,6 @@ test_projection/*
 # Excel
 .csv
 .xlsx
+
+# docs
 docs/

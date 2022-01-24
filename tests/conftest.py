@@ -8,11 +8,9 @@ import numpy as np
 from relevanceai import Client
 from datetime import datetime
 import pandas as pd
-import io
-import csv
 import tempfile
 
-from utils import (
+from .utils import (
     generate_random_string,
     generate_random_vector,
     generate_random_label,

@@ -315,6 +315,15 @@ class Dataset(BatchAPIClient):
         -------
         Pandas DataFrame or Dict, depending on args
             The first 'n' rows of the caller object.
+
+        Example
+        ---------
+
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
+        >>> df.head()
+
         """
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
@@ -410,6 +419,15 @@ class Dataset(BatchAPIClient):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
 
+
+        Example
+        ---------
+
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
+        >>> df.sample()
+
         """
         if n == 0 and frac is None:
             raise ValueError("Must provide one of n or frac")
@@ -436,6 +454,12 @@ class Dataset(BatchAPIClient):
     def apply(
         self,
         func: Callable,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 8,
+        filters: list = [],
+        select_fields: list = [],
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
         axis: int = 0,
     ):
         """
@@ -447,22 +471,102 @@ class Dataset(BatchAPIClient):
         --------------
         func: function
             Function to apply to each document
-
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
         axis: int
             Axis along which the function is applied.
             - 9 or 'index': apply function to each column
             - 1 or 'columns': apply function to each row
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> def update_doc(doc):
+        >>>     doc["value"] = 2
+        >>>     return doc
+        >>> df.apply(update_doc)
 
         """
         if axis == 1:
             raise ValueError("We do not support column-wise operations!")
 
         def bulk_fn(docs):
+            new_docs = []
             for d in docs:
-                func(d)
+                new_d = func(d)
+                new_docs.append(new_d)
             return docs
 
-        return self.pull_update_push(self.dataset_id, bulk_fn)
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_fn,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
+        )
+
+    def bulk_apply(
+        self,
+        bulk_func: Callable,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 8,
+        filters: list = [],
+        select_fields: list = [],
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
+    ):
+        """
+        Apply a bulk function along an axis of the DataFrame.
+
+        Parameters
+        ------------
+        bulk_func: function
+            Function to apply to a bunch of documents at a time
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> def update_documents(document):
+                for d in documents:
+        >>>         d["value"] = 10
+        >>>     return documents
+        >>> df.apply(update_documents)
+        """
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_func,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
+        )
 
     def all(
         self,
@@ -529,26 +633,58 @@ class Dataset(BatchAPIClient):
         """
         return self.insert_csv(self.dataset_id, filename, **kwargs)
 
-    def insert(
-        self,
-        documents,
-        bulk_fn: Callable = None,
-        max_workers: int = 8,
-        retry_chunk_mult: float = 0.5,
-        show_progress_bar: bool = False,
-        chunksize: int = 0,
-        use_json_encoder: bool = True,
-    ):
-        return self.insert_documents(
-            dataset_id=self.dataset_id,
-            docs=documents,
-            bulk_fn=bulk_fn,
-            max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
-            show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
-        )
+    # def insert_documents(
+    #     self,
+    #     documents,
+    #     bulk_fn: Callable = None,
+    #     max_workers: int = 8,
+    #     retry_chunk_mult: float = 0.5,
+    #     show_progress_bar: bool = False,
+    #     chunksize: int = 0,
+    #     use_json_encoder: bool = True,
+    # ):
+
+    #     """
+    #     Update a list of documents with multi-threading automatically enabled.
+    #     Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+    #     Parameters
+    #     ----------
+    #     dataset_id : string
+    #         Unique name of dataset
+    #     docs : list
+    #         A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+    #     bulk_fn : callable
+    #         Function to apply to documents before uploading
+    #     max_workers : int
+    #         Number of workers active for multi-threading
+    #     retry_chunk_mult: int
+    #         Multiplier to apply to chunksize if upload fails
+    #     chunksize : int
+    #         Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+    #     use_json_encoder : bool
+    #         Whether to automatically convert documents to json encodable format
+
+    #     Example
+    #     ----------
+
+    #     >>> from relevanceai import Client
+    #     >>> client = Client()
+    #     >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+    #     >>> df = client.Dataset("sample")
+    #     >>> df.insert_documents(dataset_id, documents)
+
+    #     """
+    #     return self.insert_documents(
+    #         dataset_id=self.dataset_id,
+    #         documents=documents,
+    #         bulk_fn=bulk_fn,
+    #         max_workers=max_workers,
+    #         retry_chunk_mult=retry_chunk_mult,
+    #         show_progress_bar=show_progress_bar,
+    #         chunksize=chunksize,
+    #         use_json_encoder=use_json_encoder,
+    #     )
 
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
@@ -614,11 +750,33 @@ class Dataset(BatchAPIClient):
         schema : dict
             Schema for specifying the field that are vectors and its length
 
+        Example
+        ----------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+        >>> df = client.Dataset("sample")
+        >>> df.create()
+
         """
         return self.datasets.create(self.dataset_id, schema=schema)
 
     def delete(self):
-        return self.delete(self.dataset_id)
+        """
+        Delete a dataset
+
+        Example
+        ---------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+        >>> df = client.Dataset("sample")
+        >>> df.delete()
+
+        """
+        return self.datasets.delete(self.dataset_id)
 
     def upsert_documents(
         self,
@@ -630,6 +788,40 @@ class Dataset(BatchAPIClient):
         show_progress_bar=False,
         use_json_encoder: bool = True,
     ):
+
+        """
+        Update a list of documents with multi-threading automatically enabled.
+        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        docs : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
+
+        Example
+        ----------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+        >>> df = client.Dataset("sample")
+        >>> df.upsert(dataset_id, documents)
+
+        """
         return self.update_documents(
             self.dataset_id,
             docs=documents,
@@ -641,13 +833,13 @@ class Dataset(BatchAPIClient):
             use_json_encoder=use_json_encoder,
         )
 
-    def get(self, document_ids: list, include_vector: bool = True):
+    def get(self, document_ids: Union[List, str], include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
         Parameters
         ----------
-        id : string
+        document_ids: Union[list, str]
             ID of a document in a dataset.
         include_vector: bool
             Include vectors in the search results

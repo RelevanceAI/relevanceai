@@ -1,0 +1,130 @@
+:py:mod:`relevanceai.transport`
+===============================
+
+.. py:module:: relevanceai.transport
+
+.. autoapi-nested-parse::
+
+   The Transport Class defines a transport as used by the Channel class to communicate with the network.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.transport.Transport
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   relevanceai.transport.DO_NOT_REPEAT_STATUS_CODES
+
+
+.. py:data:: DO_NOT_REPEAT_STATUS_CODES
+   
+
+   
+
+.. py:class:: Transport
+
+   Bases: :py:obj:`relevanceai.json_encoder.JSONEncoderUtils`
+
+   Base class for all relevanceai objects
+
+   .. py:attribute:: project
+      :annotation: :str
+
+      
+
+   .. py:attribute:: api_key
+      :annotation: :str
+
+      
+
+   .. py:attribute:: config
+      :annotation: :relevanceai.config.Config
+
+      
+
+   .. py:attribute:: logger
+      :annotation: :relevanceai.logger.AbstractLogger
+
+      
+
+   .. py:method:: _dashboard_request_url(self)
+      :property:
+
+
+   .. py:method:: auth_header(self)
+      :property:
+
+
+   .. py:method:: _search_dashboard_url(self)
+      :property:
+
+
+   .. py:method:: _is_search_in_path(url: str)
+      :staticmethod:
+
+
+   .. py:method:: DASHBOARD_TYPES(self)
+      :property:
+
+
+   .. py:method:: _log_to_dashboard(self, method: str, parameters: dict, endpoint: str, dashboard_type: str, verbose: bool = True)
+
+      Log search to dashboard
+
+
+   .. py:method:: _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None)
+
+      Link to a monitoring dashboard
+      Suburl must be one of
+      - "monitor"
+      - "lookups"
+      - "monitor/schema"
+
+
+   .. py:method:: _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str)
+
+      Log search to dashboard
+
+
+   .. py:method:: print_dashboard_url(self, dashboard_url)
+
+
+   .. py:method:: make_http_request(self, endpoint: str, method: str = 'GET', parameters: dict = {}, base_url: str = None, output_format=None)
+
+      Make the HTTP request
+      :param endpoint: The endpoint from the documentation to use
+      :type endpoint: string
+      :param method_type: POST or GET request
+      :type method_type: string
+
+
+   .. py:method:: _log_response_success(self, base_url, endpoint)
+
+
+   .. py:method:: _log_response_time(self, base_url, endpoint, time)
+
+
+   .. py:method:: _log_response_fail(self, base_url, endpoint, status_code, content)
+
+
+   .. py:method:: _log_connection_error(self, base_url, endpoint)
+
+
+   .. py:method:: _log_no_json(self, base_url, endpoint, status_code, content)
+
+
+

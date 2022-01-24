@@ -3,6 +3,22 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.28.2
+--------
+
+- Update RELEASES.md by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/287
+- Feature/make conda installable by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/288
+- Concatentate Numeric Features into Vector by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/289
+- from_csv and to_csv - Dataset API by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/281
+- Fixing hybrid search field by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/285
+- created mean method for GroupBy and corresponding test by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/291
+- Add link by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/299
+- Feature/pinning notebook version to 0.27.0 in notebook tests by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/301
+- Update centroid documents and restructure docs  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/300
+- make alias required by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/296
+- @ofrighil made their first contribution in https://github.com/RelevanceAI/RelevanceAI/pull/291
+
+
 v0.28.1
 --------
 
