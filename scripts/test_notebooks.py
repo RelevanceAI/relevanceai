@@ -117,16 +117,19 @@ CLIENT_INSTANTIATION_STR_REPLACE = (
 
 CLIENT_INSTANTIATION_BASE = f'"client = Client()"'
 
-README_NOTEBOOK_ERROR_FPATH = 'readme_notebook_errors.txt'
+README_NOTEBOOK_ERROR_FPATH = "readme_notebook_errors.txt"
 
 for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
 
-    try: 
+    try:
         print(notebook)
 
         ## Update to latest version
         notebook_find_replace(
-            notebook, PIP_INSTALL_SENT_REGEX, PIP_INSTALL_STR_REGEX, PIP_INSTALL_STR_REPLACE
+            notebook,
+            PIP_INSTALL_SENT_REGEX,
+            PIP_INSTALL_STR_REGEX,
+            PIP_INSTALL_STR_REPLACE,
         )
 
         ## Temporarily updating notebook with test creds
@@ -154,7 +157,10 @@ for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
             CLIENT_INSTANTIATION_BASE,
         )
     except:
-        
-        print(f"\nError with notebook: {notebook}", file=open(README_NOTEBOOK_ERROR_FPATH, "a"))
-        
+
+        print(
+            f"\nError with notebook: {notebook}",
+            file=open(README_NOTEBOOK_ERROR_FPATH, "a"),
+        )
+
         pass
