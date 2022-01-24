@@ -47,7 +47,9 @@ class Utils(APIClient, _Base, DocUtils):
         return [d for d in documents if d.get(vector_field)]
 
     def _convert_id_to_string(self, documents):
-        self.set_field_across_documents("_id", [str(i["_id"]) for i in documents], documents)
+        self.set_field_across_documents(
+            "_id", [str(i["_id"]) for i in documents], documents
+        )
 
     def _are_fields_in_schema(self, fields, dataset_id, schema=None):
         """

@@ -285,7 +285,9 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         # Get ground truth
         if ground_truth_field:
-            ground_truth = self.get_field_across_documents(ground_truth_field, documents)
+            ground_truth = self.get_field_across_documents(
+                ground_truth_field, documents
+            )
         else:
             ground_truth = None
 

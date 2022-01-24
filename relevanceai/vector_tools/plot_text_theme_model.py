@@ -158,7 +158,10 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             )
             documents = batch_doc["documents"]
             cursor = batch_doc["cursor"]
-            while batch_doc["documents"] != [] and len(documents) > max_doc_num - page_size:
+            while (
+                batch_doc["documents"] != []
+                and len(documents) > max_doc_num - page_size
+            ):
                 batch_doc = self._batch_load_documents(
                     fields=fields, filters=filters, page_size=page_size, cursor=cursor
                 )
@@ -193,7 +196,9 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
     ):
         self.logger.info(" * Kmeans Clustering")
         clusterer = KMeans(k=k)
-        clustered_documents = clusterer.fit_documents(vector_fields, documents, alias=alias)
+        clustered_documents = clusterer.fit_documents(
+            vector_fields, documents, alias=alias
+        )
         res = self.update_documents(
             self.dataset_id, clustered_documents, chunksize=self.upload_chunksize
         )

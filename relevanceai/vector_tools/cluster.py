@@ -112,11 +112,14 @@ class ClusterBase(LoguruLogger, DocUtils):
 
         new_documents = documents.copy()
 
-        self.set_field_across_documents(set_cluster_field, cluster_labels, new_documents)
+        self.set_field_across_documents(
+            set_cluster_field, cluster_labels, new_documents
+        )
 
         if return_only_clusters:
             return [
-                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in documents
+                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                for d in documents
             ]
         return documents
 

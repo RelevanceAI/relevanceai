@@ -247,7 +247,9 @@ def test_numpy_dataset(test_client, sample_numpy_documents, test_dataset_id):
 @pytest.fixture(scope="session")
 def test_pandas_dataset(test_client, sample_pandas_documents, pandas_test_dataset_id):
     """Sample pandas dataset"""
-    response = test_client.insert_documents(pandas_test_dataset_id, sample_pandas_documents)
+    response = test_client.insert_documents(
+        pandas_test_dataset_id, sample_pandas_documents
+    )
     yield response, len(sample_pandas_documents)
     test_client.datasets.delete(pandas_test_dataset_id)
 

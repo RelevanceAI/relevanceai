@@ -165,7 +165,9 @@ class Mongo2RelevanceAi(BatchAPIClient):
             Mongo2RelevanceAi.build_range(doc_cnt, chunk_size, start_idx)
         ):
             df = pd.DataFrame(self.fetch_mongo_collection_data(s_idx, e_idx))
-            documents = self.update_id(Mongo2RelevanceAi.parse_json(df.to_dict("records")))
+            documents = self.update_id(
+                Mongo2RelevanceAi.parse_json(df.to_dict("records"))
+            )
             documents = Mongo2RelevanceAi.remove_nan(
                 Mongo2RelevanceAi.flatten_inner_indxs(documents)
             )
