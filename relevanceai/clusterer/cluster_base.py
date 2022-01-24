@@ -5,10 +5,12 @@ from doc_utils import DocUtils
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict
 
+
 class ClusterBase(DocUtils, ABC):
     """
     Create an ABC
     """
+
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
@@ -20,7 +22,7 @@ class ClusterBase(DocUtils, ABC):
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
-    
+
     def _get_vectors_from_documents(self, vector_fields, docs, missing_treatment):
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
@@ -50,16 +52,13 @@ class ClusterBase(DocUtils, ABC):
             # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
         return vectors
-    
+
     def __getdoc__(self, documents):
-        """What you want in each doc
-        """
+        """What you want in each doc"""
         raise NotImplementedError
 
-    
     def _bulk_get_doc(self, documents):
         raise NotImplementedError
-        
 
     def fit_documents(
         self,
@@ -121,11 +120,14 @@ class ClusterBase(DocUtils, ABC):
 
         new_documents = documents.copy()
 
-        self.set_field_across_documents(set_cluster_field, cluster_labels, new_documents)
+        self.set_field_across_documents(
+            set_cluster_field, cluster_labels, new_documents
+        )
 
         if return_only_clusters:
             return [
-                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in documents
+                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                for d in documents
             ]
         return documents
 

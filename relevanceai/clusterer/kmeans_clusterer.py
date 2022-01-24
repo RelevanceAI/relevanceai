@@ -6,6 +6,7 @@ from typing import Union, List, Optional
 from relevanceai.clusterer.clusterer import ClusterFlow
 from relevanceai.clusterer.cluster_base import ClusterBase
 
+
 class KMeansModel(ClusterBase):
     def __init__(
         self,
@@ -31,6 +32,7 @@ class KMeansModel(ClusterBase):
 
     def _init_model(self):
         from sklearn.cluster import KMeans
+
         self.km = KMeans(
             n_clusters=self.n_clusters,
             init=self.init,
@@ -72,7 +74,9 @@ class KMeansClusterFlow(ClusterFlow):
     """
     KMeans Clustering Flow
     """
-    def __init__(self,
+
+    def __init__(
+        self,
         alias: str,
         k: Union[None, int] = 10,
         init: str = "k-means++",
@@ -84,8 +88,8 @@ class KMeansClusterFlow(ClusterFlow):
         copy_x: bool = True,
         algorithm: str = "auto",
         cluster_field: str = "_cluster_",
-        project: str=None,
-        api_key: str=None
+        project: str = None,
+        api_key: str = None,
     ):
         model = KMeansModel(
             k=k,
@@ -105,4 +109,3 @@ class KMeansClusterFlow(ClusterFlow):
             project=project,
             api_key=api_key,
         )
-    

@@ -15,7 +15,7 @@ class ClusterClient(_Base):
         vector_fields: list,
         metrics: list = [],
         groupby: list = [],
-        sort: list=[],
+        sort: list = [],
         filters: list = [],
         page_size: int = 20,
         page: int = 1,

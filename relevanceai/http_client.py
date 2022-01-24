@@ -3,9 +3,11 @@
 import getpass
 import json
 import os
+from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api.dataset import Dataset, Datasets
+from relevanceai.clusterer import ClusterFlow, KMeansClusterFlow, ClusterBase
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -156,3 +158,50 @@ class Client(BatchAPIClient, DocUtils):
 
     def list_datasets(self):
         return self.datasets.list()
+
+    """Clustering
+    """
+
+    def ClusterFlow(
+        self,
+        model: ClusterBase,
+        alias: str,
+        cluster_field: str = "_cluster_",
+    ):
+        return ClusterFlow(
+            model=model,
+            alias=alias,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
+
+    def KMeansClusterFlow(
+        self,
+        alias: str,
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        n_init: int = 10,
+        max_iter: int = 300,
+        tol: float = 1e-4,
+        verbose: bool = True,
+        random_state: Optional[int] = None,
+        copy_x: bool = True,
+        algorithm: str = "auto",
+        cluster_field: str = "_cluster_",
+    ):
+        return KMeansClusterFlow(
+            alias=alias,
+            k=k,
+            init=init,
+            n_init=n_init,
+            max_iter=max_iter,
+            tol=tol,
+            verbose=verbose,
+            random_state=random_state,
+            copy_x=copy_x,
+            algorithm=algorithm,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )

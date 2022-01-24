@@ -10,48 +10,43 @@ from cluster_base import ClusterBase
 from doc_utils import DocUtils
 from abc import abstractmethod
 
+
 class ClusterFlow(BatchAPIClient):
-    """ClusterFlow class allows users to be able to 
-    """
-    def __init__(self, 
+    """ClusterFlow class allows users to be able to"""
+
+    def __init__(
+        self,
         model: ClusterBase,
         alias: str,
-        cluster_field: str="_cluster_",
-        project: str=None,
-        api_key: str=None,
+        cluster_field: str = "_cluster_",
+        project: str = None,
+        api_key: str = None,
     ):
         self.alias = alias
         self.cluster_field = cluster_field
         self.model = model
         self.project = project
         self.api_key = api_key
-    
+
     def _init_dataset(self, dataset):
         if isinstance(dataset, Dataset):
             self.dataset_id = self.dataset.dataset_id
             self.dataset: Dataset = dataset
         else:
             self.dataset_id = dataset
-            self.dataset = Dataset(
-                project=self.project,
-                api_key=self.api_key
-            )
-    
+            self.dataset = Dataset(project=self.project, api_key=self.api_key)
+
     def fit(
         self,
         dataset: Union[Dataset, str],
         vector_fields: List,
     ):
         return self.fit_dataset(dataset, vector_fields=vector_fields)
-    
+
     def fit_dataset(
-        self,
-        dataset: Union[Dataset, str],
-        vector_fields: List,
-        filters: List=[]
+        self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
-        """Fit a dataset
-        """
+        """Fit a dataset"""
 
         # load the documents
         self.logger.warning(
@@ -62,9 +57,7 @@ class ClusterFlow(BatchAPIClient):
         self.vector_fields = vector_fields
 
         docs = self.get_all_documents(
-            dataset_id=self.dataset_id, 
-            filters=filters,
-            select_fields=vector_fields
+            dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
         clustered_docs = self.model.fit_documents(
@@ -86,7 +79,7 @@ class ClusterFlow(BatchAPIClient):
         self.model.vector_fields = vector_fields
 
         self._insert_centroid_documents()
-    
+
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
             if len(self.vector_fields) == 1:
@@ -111,22 +104,22 @@ class ClusterFlow(BatchAPIClient):
                 page_size=20,
             )
         return
-    
+
     # def list_closest_to_center(self):
     #     return self.datasets.cluster.centroids.list_closest_to_center(
     #         dataset_id=self.dataset_id,
     #         vector_fields=self.vector_fields
     #         alias=self.alias
     #     )
-    
+
     def list_furthest_from_center(self):
         """
-            Listing Furthest from center
+        Listing Furthest from center
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
-            alias=self.alias
+            alias=self.alias,
         )
 
     def list_closest_to_center(
@@ -196,18 +189,17 @@ class ClusterFlow(BatchAPIClient):
             # facets: List = [],
             min_score=min_score,
             include_vector=include_vector,
-            include_count=include_count
+            include_count=include_count,
         )
 
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
-    
-    def _get_vectors_from_documents(self, vector_fields: list,
-        documents: List[Dict]):
+
+    def _get_vectors_from_documents(self, vector_fields: list, documents: List[Dict]):
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
-            documents= list(filter(DocUtils.list_doc_fields, documents))
+            documents = list(filter(DocUtils.list_doc_fields, documents))
             vectors = self.get_field_across_documents(
                 vector_fields[0], documents, missing_treatment="skip"
             )
@@ -232,7 +224,7 @@ class ClusterFlow(BatchAPIClient):
 
             # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
-        
+
         return vectors
 
     def fit_documents(
@@ -273,18 +265,26 @@ class ClusterFlow(BatchAPIClient):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
 
-        return self.set_cluster_labels_across_documents(cluster_labels, documents, inplace=inplace,
-            return_only_clusters=return_only_clusters)
-        
-    
-    def set_cluster_labels_across_documents(self, cluster_labels: list, documents: List[Dict],
-        inplace: bool=True, return_only_clusters: bool=True):
+        return self.set_cluster_labels_across_documents(
+            cluster_labels,
+            documents,
+            inplace=inplace,
+            return_only_clusters=return_only_clusters,
+        )
+
+    def set_cluster_labels_across_documents(
+        self,
+        cluster_labels: list,
+        documents: List[Dict],
+        inplace: bool = True,
+        return_only_clusters: bool = True,
+    ):
         if inplace:
             self.set_cluster_labels_across_documents(cluster_labels, documents)
             if return_only_clusters:
                 return [
                     {"_id": d.get("_id"), self.cluster_field: d.get(self.cluster_field)}
-                    for d in documents 
+                    for d in documents
                 ]
             return documents
 
@@ -293,17 +293,21 @@ class ClusterFlow(BatchAPIClient):
         self.set_cluster_labels_across_documents(cluster_labels, new_documents)
         if return_only_clusters:
             return [
-                {"_id": d.get("_id"), self.cluster_field: d.get(self.cluster_field)} for d in new_documents
+                {"_id": d.get("_id"), self.cluster_field: d.get(self.cluster_field)}
+                for d in new_documents
             ]
         return new_documents
 
     def _set_cluster_labels_across_documents(self, cluster_labels, documents):
         if isinstance(self.vector_fields, list):
-            set_cluster_field = f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
+            set_cluster_field = (
+                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
+            )
         elif isinstance(self.vector_fields, str):
-            set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{self.alias}"
+            set_cluster_field = (
+                f"{self.cluster_field}.{self.vector_fields}.{self.alias}"
+            )
         self.set_field_across_documents(set_cluster_field, cluster_labels, documents)
-
 
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):
@@ -312,10 +316,11 @@ class ClusterFlow(BatchAPIClient):
 
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
-    
-    def aggregate(self, 
+
+    def aggregate(
+        self,
         metrics: list = [],
-        sort: list=[],
+        sort: list = [],
         groupby: list = [],
         filters: list = [],
         page_size: int = 20,
@@ -348,4 +353,16 @@ class ClusterFlow(BatchAPIClient):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias}vector
         """
-        return self.services.cluster.aggregate(dataset_id=self.dataset_id,vector_fields=self.vector_fields, groupby=groupby,metrics=metrics,sort=sort,filters=filters,alias=self.alias,page_size=page_size, page=page, asc=asc, flatten=flatten)
+        return self.services.cluster.aggregate(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            groupby=groupby,
+            metrics=metrics,
+            sort=sort,
+            filters=filters,
+            alias=self.alias,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+        )
