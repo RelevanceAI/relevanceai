@@ -188,6 +188,9 @@ class CentroidCluster(ClusterBase):
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
         return centroid_docs
+    
+    # Add for backwards compatibility
+    get_centroid_docs = get_centroid_documents
 
 
 class DensityCluster(ClusterBase):
