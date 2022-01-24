@@ -315,7 +315,7 @@ class Dataset(BatchAPIClient):
         -------
         Pandas DataFrame or Dict, depending on args
             The first 'n' rows of the caller object.
-        
+
         Example
         ---------
 
@@ -418,8 +418,8 @@ class Dataset(BatchAPIClient):
             Random Seed for retrieving random documents.
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
-        
-                
+
+
         Example
         ---------
 
@@ -483,7 +483,7 @@ class Dataset(BatchAPIClient):
             Axis along which the function is applied.
             - 9 or 'index': apply function to each column
             - 1 or 'columns': apply function to each row
-        
+
         Example
         ---------
         >>> from relevanceai import Client
@@ -505,11 +505,17 @@ class Dataset(BatchAPIClient):
                 new_docs.append(new_d)
             return docs
 
-        return self.pull_update_push(self.dataset_id, bulk_fn, retrieve_chunk_size=retrieve_chunk_size,
-            max_workers=max_workers, filters=filters, select_fields=select_fields, 
-            show_progress_bar=show_progress_bar, use_json_encoder=use_json_encoder
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_fn,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
         )
-    
+
     def bulk_apply(
         self,
         bulk_func: Callable,
@@ -539,7 +545,7 @@ class Dataset(BatchAPIClient):
             Axis along which the function is applied.
             - 9 or 'index': apply function to each column
             - 1 or 'columns': apply function to each row
-        
+
         Example
         ---------
         >>> from relevanceai import Client
@@ -551,12 +557,15 @@ class Dataset(BatchAPIClient):
         >>>     return documents
         >>> df.apply(update_documents)
         """
-        return self.pull_update_push(self.dataset_id, bulk_func, 
-            retrieve_chunk_size=retrieve_chunk_size, max_workers=max_workers,
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_func,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder
+            use_json_encoder=use_json_encoder,
         )
 
     def all(
@@ -623,7 +632,7 @@ class Dataset(BatchAPIClient):
             see client.insert_csv() for extra args
         """
         return self.insert_csv(self.dataset_id, filename, **kwargs)
-    
+
     # def insert_documents(
     #     self,
     #     documents,
@@ -638,7 +647,6 @@ class Dataset(BatchAPIClient):
     #     """
     #     Update a list of documents with multi-threading automatically enabled.
     #     Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
-
 
     #     Parameters
     #     ----------
@@ -657,11 +665,10 @@ class Dataset(BatchAPIClient):
     #     use_json_encoder : bool
     #         Whether to automatically convert documents to json encodable format
 
-
     #     Example
     #     ----------
 
-    #     >>> from relevanceai import Client 
+    #     >>> from relevanceai import Client
     #     >>> client = Client()
     #     >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
     #     >>> df = client.Dataset("sample")
@@ -742,7 +749,7 @@ class Dataset(BatchAPIClient):
         ----------
         schema : dict
             Schema for specifying the field that are vectors and its length
-        
+
         Example
         ----------
 
@@ -808,7 +815,7 @@ class Dataset(BatchAPIClient):
         Example
         ----------
 
-        >>> from relevanceai import Client 
+        >>> from relevanceai import Client
         >>> client = Client()
         >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
         >>> df = client.Dataset("sample")

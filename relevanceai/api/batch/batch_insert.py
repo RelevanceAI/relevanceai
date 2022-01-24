@@ -69,8 +69,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize : int
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
-            Whether to automatically convert documents to json encodable format 
-        
+            Whether to automatically convert documents to json encodable format
+
         Example
         --------
 
@@ -156,7 +156,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
         auto_generate_id: bool = True
             Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
-        
+
         Example
         ---------
         >>> from relevanceai import Client
