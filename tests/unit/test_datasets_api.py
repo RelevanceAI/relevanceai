@@ -4,7 +4,7 @@ from relevanceai import Client
 
 
 def test_read_df_check(test_read_df, sample_vector_docs):
-    assert len(test_read_df["inserted"]) == len(
+    assert test_read_df["inserted"] == len(
         sample_vector_docs
     ), "Did not insert properly"
 

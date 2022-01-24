@@ -16,10 +16,13 @@ overwrite otherwise it will insert if it is not.
     client = Client()
     documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
     df = client.Dataset("sample")
-    df.upsert(dataset_id, documents)
+    df.upsert_documents(dataset_id, documents)
 
 Creating (without insertion)
 ********************************
+
+Sometimes if the automatic schema detection is not working appropriately, it may
+be appropriate to specify the schema yourself. In this cases, you can use this
 
 .. code-block:: python
 
@@ -27,7 +30,7 @@ Creating (without insertion)
     client = Client()
     documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
     df = client.Dataset("sample")
-    df.read_documents(dataset_id, documents)
+    df.create()
 
 Creating via insertion
 ************************************
