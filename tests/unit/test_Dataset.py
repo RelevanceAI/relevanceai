@@ -1,5 +1,7 @@
 import pytest
 
+from sklearn.cluster import KMeans
+
 
 class TestDatset:
     def test_Dataset(self, test_client, test_sample_vector_dataset):
@@ -28,7 +30,10 @@ class TestDatset:
 
     def test_cluster(self, test_client, test_sample_vector_dataset):
         df = test_client.Dataset(test_sample_vector_dataset)
-        centroids = df.cluster(field="sample_1_vector_", overwrite=True)
+        model = KMeans()
+        centroids = df.cluster(
+            model, vector_fields=["sample_1_vector_"], overwrite=True
+        )
         assert True
 
     def test_groupby_agg(self, test_client, test_sample_vector_dataset):
