@@ -78,6 +78,9 @@ class Client(BatchAPIClient, DocUtils):
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
 
+    """Configurations
+    """
+
     @property
     def base_url(self):
         return CONFIG.get_field("api.base_url", CONFIG.config)
@@ -97,6 +100,9 @@ class Client(BatchAPIClient, DocUtils):
         if value.endswith("/"):
             value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
+
+    """Authentication Details
+    """
 
     def _token_to_auth(self):
         # if verbose:
@@ -141,4 +147,14 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         return self.admin._ping()
 
+    """Utility functions
+    """
+
     build_and_plot_clusters = build_and_plot_clusters
+
+    """CRUD-related utility functions
+    """
+    delete_dataset = self.dataset.delete
+
+
+

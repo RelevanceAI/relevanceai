@@ -197,7 +197,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         res = self.update_documents(
             self.dataset_id, clustered_docs, chunksize=self.upload_chunksize
         )
-        centers = clusterer.get_centroid_docs()
+        centers = clusterer.get_centroid_documents()
         self.services.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=centers,

@@ -150,7 +150,7 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_docs(self, centroid_vector_field_name="centroid_vector_") -> List:
+    def get_centroid_documents(self, centroid_vector_field_name="centroid_vector_") -> List:
         """
         Get the centroid documents to store.
         If single vector field returns this:
@@ -577,9 +577,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         # Update the centroid collection
         clusterer.vector_fields = vector_fields
         if len(vector_fields) == 1:
-            centers = clusterer.get_centroid_docs(vector_fields[0])
+            centers = clusterer.get_centroid_documents(vector_fields[0])
         else:
-            centers = clusterer.get_centroid_docs()
+            centers = clusterer.get_centroid_documents()
 
         # Change centroids insertion
         results = self.services.cluster.centroids.insert(
