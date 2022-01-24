@@ -125,7 +125,7 @@ Delete
     df = client.Dataset("sample_dataset")
     df.delete()
 
-Listing Datasets
+Listing datasets
 ------------------
 
 .. code-block:: python

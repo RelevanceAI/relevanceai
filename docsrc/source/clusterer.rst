@@ -16,7 +16,7 @@ You can run K Means clustering using
     df = client.Dataset("sample")
     cluster_flow.fit(df, vector_fields=["sample_vector_"])
 
-Custom Clustering
+Custom clustering
 -----------------------------
 
 Modifying fit_transform
@@ -80,5 +80,50 @@ requires more than 1 field of information. For example:
             
     cluster_flow = client.KMeansClusterFlow()
     df = client.Dataset("sample") 
-    cluster_flow.fit(df)
+    cluster_flow.fit(df, ["sample_vector_"])
+
+Listing closest to center
+------------------------------
+
+.. code-block:: python
+
+    from relevanceai import Client
+    client = Client()
+
+    df = client.Dataset("sample_dataset")
+    cluster_flow = client.KMeansClusterFlow()
+    cluster_flow.fit(df, ["sample_vector_"])
+    cluster_flow.list_closest_to_center()
+    
+
+Listing furthest from center
+------------------------------
+
+.. code-block:: python
+
+    from relevanceai import Client
+    client = Client()
+
+    df = client.Dataset("sample_dataset")
+    cluster_flow = client.KMeansClusterFlow()
+    cluster_flow.fit(df, ["sample_vector_"])
+    cluster_flow.list_closest_to_center()
+    
+
+Cluster aggregate
+------------
+
+.. code-block:: python
+
+    from relevanceai import Client
+    client = Client()
+
+    df = client.Dataset("sample_dataset")
+    cluster_flow = client.KMeansClusterFlow()
+    cluster_flow.fit(df, ["sample_vector_"])
+    cluster_flow.aggregate(
+        groupby=[], metrics=[
+            {"name": "average_score", "field": "final_score", "agg": "avg"},
+        ]
+    )
 
