@@ -150,7 +150,9 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_documents(self, centroid_vector_field_name="centroid_vector_") -> List:
+    def get_centroid_documents(
+        self, centroid_vector_field_name="centroid_vector_"
+    ) -> List:
         """
         Get the centroid documents to store.
         If single vector field returns this:
@@ -188,7 +190,7 @@ class CentroidCluster(ClusterBase):
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
         return centroid_docs
-    
+
     # Add for backwards compatibility
     get_centroid_docs = get_centroid_documents
 
