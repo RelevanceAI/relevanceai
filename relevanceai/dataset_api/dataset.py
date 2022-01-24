@@ -403,18 +403,14 @@ class Dataset(BatchAPIClient):
         """
         if isinstance(model, KMeans):
             centroids = self.vector_tools.cluster.kmeans_cluster(
-                dataset_id=self.dataset_id,
-                vector_fields=vector_fields,
-                **kwargs
+                dataset_id=self.dataset_id, vector_fields=vector_fields, **kwargs
             )
         elif isinstance(model, HDBSCAN):
             centroids = self.vector_tools.cluster.hdbscan_cluster(
-                dataset_id=self.dataset_id,
-                vector_fields=vector_fields,
-                **kwargs
+                dataset_id=self.dataset_id, vector_fields=vector_fields, **kwargs
             )
         else:
-            raise ValueError('method not supported')
+            raise ValueError("method not supported")
 
         return centroids
 
