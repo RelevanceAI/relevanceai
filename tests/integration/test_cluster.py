@@ -19,7 +19,7 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     docs["documents"] = cluster.fit_documents([VECTOR_FIELD], docs["documents"])
 
     # Centroids
-    cluster_centers = cluster.get_centroid_docs()
+    cluster_centers = cluster.get_centroid_documents()
     test_client.services.cluster.centroids.insert(
         test_sample_vector_dataset,
         vector_fields=[VECTOR_FIELD],
@@ -49,5 +49,6 @@ def test_cluster_integration_one_liner(
         dataset_id=test_sample_vector_dataset,
         vector_fields=VECTOR_FIELDS,
         overwrite=True,
+        alias="sample_cluster",
     )
     assert True
