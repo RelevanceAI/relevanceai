@@ -75,6 +75,11 @@ Preview Documents
     >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
     >>> df.head()
 
+Schema
+------------
+
+
+
 Listing Datasets
 ---------------------------
 

@@ -3,12 +3,10 @@ Clusterer class to run clustering.
 """
 import numpy as np
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.vector_tools.cluster import Cluster
 from typing import Union, List, Dict, Optional
 from relevanceai.dataset_api import Dataset
-from cluster_base import ClusterBase
+from relevanceai.clusterer.cluster_base import ClusterBase
 from doc_utils import DocUtils
-from abc import abstractmethod
 
 
 class ClusterFlow(BatchAPIClient):
