@@ -27,7 +27,7 @@ class ServicesClient(_Base):
         super().__init__(project, api_key)
 
     def document_diff(
-        self, doc: dict, docs_to_compare: list, difference_fields: list = []
+        self, doc: dict, documents_to_compare: list, difference_fields: list = []
     ):
         """
         Find differences between documents
@@ -36,7 +36,7 @@ class ServicesClient(_Base):
         ----------
         doc: dict
             Main document to compare other documents against.
-        docs_to_compare: list
+        documents_to_compare: list
             Other documents to compare against the main document.
         difference_fields: list
             Fields to compare. Defaults to [], which compares all fields.
@@ -47,7 +47,7 @@ class ServicesClient(_Base):
             method="POST",
             parameters={
                 "doc": doc,
-                "docs_to_compare": docs_to_compare,
+                "documents_to_compare": documents_to_compare,
                 "difference_fields": difference_fields,
             },
         )
