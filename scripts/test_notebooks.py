@@ -11,9 +11,9 @@ from nbconvert.preprocessors import ExecutePreprocessor
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-p", "--path", default=Path.cwd(), help='Path of tests')
-parser.add_argument("-n", "--package-name", default="RelevanceAI", help='Package Name')
-parser.add_argument("-v", "--version", default=None, help='Package Version')
+parser.add_argument("-p", "--path", default=Path.cwd(), help="Path of tests")
+parser.add_argument("-n", "--package-name", default="RelevanceAI", help="Package Name")
+parser.add_argument("-v", "--version", default=None, help="Package Version")
 args = parser.parse_args()
 
 ###############################################################################
@@ -59,8 +59,12 @@ def check_latest_version(name):
 ###############################################################################
 
 DOCS_PATH = Path(args.path) / "docs"
-RELEVANCEAI_SDK_VERSION = args.version if args.version else get_latest_version(args.package_name)
-print(f'Executing notebook test with {args.package_name}=={RELEVANCEAI_SDK_VERSION}\n\n')
+RELEVANCEAI_SDK_VERSION = (
+    args.version if args.version else get_latest_version(args.package_name)
+)
+print(
+    f"Executing notebook test with {args.package_name}=={RELEVANCEAI_SDK_VERSION}\n\n"
+)
 
 # RELEVANCEAI_SDK_VERSION = 'latest'
 PIP_INSTALL_SENT_REGEX = f'".*pip install .* {args.package_name}.*==.*"'
