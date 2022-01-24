@@ -2,14 +2,13 @@
 Pandas like dataset API
 """
 import math
-from multiprocessing.sharedctypes import Value
 import warnings
 import pandas as pd
 import numpy as np
 
 from doc_utils import DocUtils
 
-from typing import List, Union, Callable, Optional
+from typing import List, Union, Callable
 
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
@@ -18,7 +17,6 @@ from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
 from sklearn.cluster import KMeans
-from hdbscan import HDBSCAN
 
 
 class Series(BatchAPIClient):
@@ -403,10 +401,6 @@ class Dataset(BatchAPIClient):
         """
         if isinstance(model, KMeans):
             centroids = self.vector_tools.cluster.kmeans_cluster(
-                dataset_id=self.dataset_id, vector_fields=vector_fields, **kwargs
-            )
-        elif isinstance(model, HDBSCAN):
-            centroids = self.vector_tools.cluster.hdbscan_cluster(
                 dataset_id=self.dataset_id, vector_fields=vector_fields, **kwargs
             )
         else:
