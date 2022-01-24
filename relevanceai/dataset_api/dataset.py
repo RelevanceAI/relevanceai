@@ -527,7 +527,28 @@ class Dataset(BatchAPIClient):
         kwargs: Optional
             see client.insert_csv() for extra args
         """
-        self.insert_csv(self.dataset_id, filename, **kwargs)
+        return self.insert_csv(self.dataset_id, filename, **kwargs)
+
+    def read_documents(
+        self,
+        documents,
+        bulk_fn: Callable = None,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
+        chunksize: int = 0,
+        use_json_encoder: bool = True,
+    ):
+        return self.insert_documents(
+            dataset_id=self.dataset_id,
+            docs=documents,
+            bulk_fn=bulk_fn,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            chunksize=chunksize,
+            use_json_encoder=use_json_encoder,
+        )
 
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
@@ -553,6 +574,9 @@ class Dataset(BatchAPIClient):
         self.pull_update_push(
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
+
+    def delete(self):
+        return self.delete(self.dataset_id)
 
 
 class Datasets(BatchAPIClient):
