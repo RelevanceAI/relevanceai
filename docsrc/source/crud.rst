@@ -64,6 +64,36 @@ Getting by ID
     df = client.Dataset("sample_dataset")
     df.get("sample_id", include_vector=False)
 
+Getting Multiple IDs
+*******************
+
+.. code-block:: python
+
+    from relevanceai import Client, Dataset
+    client = Client()
+    df = client.Dataset("sample_dataset", image_fields=["image_url])
+    df.head()
+
+List documents
+***************
+
+.. code-block:: python
+
+    from relevanceai import Client, Dataset
+    client = Client()
+    df = client.Dataset("sample_dataset")
+    df.sample()
+
+Preview Documents 
+*******************
+
+.. code-block:: python
+
+    from relevanceai import Client, Dataset
+    client = Client()
+    df = client.Dataset("sample_dataset", image_fields=["image_url])
+    df.head()
+
 
 Update
 -------

@@ -641,7 +641,7 @@ class Dataset(BatchAPIClient):
             use_json_encoder=use_json_encoder,
         )
 
-    def get(self, document_id: str, include_vector: bool = True):
+    def get(self, document_ids: list, include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
@@ -660,9 +660,15 @@ class Dataset(BatchAPIClient):
         >>> df.get("sample_id", include_vector=False)
 
         """
-        return self.datasets.documents.get(
-            self.dataset_id, id=document_id, include_vector=include_vector
-        )
+        if isinstance(document_ids, str):
+            return self.datasets.documents.get(
+                self.dataset_id, id=document_ids, include_vector=include_vector
+            )
+        elif isinstance(document_ids, list):
+            return self.datasets.documents.bulk_get(
+                self.dataset_id, id=document_ids, include_vector=include_vector
+            )
+        raise TypeError("Document IDs needs to be a string or a list")
 
 
 class Datasets(BatchAPIClient):
