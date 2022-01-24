@@ -666,7 +666,7 @@ class Dataset(BatchAPIClient):
             )
         elif isinstance(document_ids, list):
             return self.datasets.documents.bulk_get(
-                self.dataset_id, id=document_ids, include_vector=include_vector
+                self.dataset_id, ids=document_ids, include_vector=include_vector
             )
         raise TypeError("Document IDs needs to be a string or a list")
 

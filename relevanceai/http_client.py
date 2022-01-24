@@ -154,5 +154,6 @@ class Client(BatchAPIClient, DocUtils):
 
     """CRUD-related utility functions
     """
+
     def list_datasets(self):
         return self.datasets.list()
