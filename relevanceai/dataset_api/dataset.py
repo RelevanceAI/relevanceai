@@ -2,6 +2,7 @@
 Pandas like dataset API
 """
 import math
+from multiprocessing.sharedctypes import Value
 import warnings
 import pandas as pd
 import numpy as np
@@ -15,6 +16,9 @@ from relevanceai.dataset_api.centroids import Centroids
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
+
+from sklearn.cluster import KMeans
+from hdbscan import HDBSCAN
 
 
 class Series(BatchAPIClient):
@@ -386,24 +390,32 @@ class Dataset(BatchAPIClient):
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
 
-    def cluster(self, field, n_clusters=10, overwrite=False):
+    def cluster(self, model, vector_fields, **kwargs):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
         Parameters
         ----------
-        field : str
-            The text field to select
-        n_cluster: int default = 10
-            the number of cluster to find wihtin the vector field
+        model : Class
+            The clustering model to use
+        vector_fields : str
+            The vector fields over which to cluster
         """
-        centroids = self.vector_tools.cluster.kmeans_cluster(
-            dataset_id=self.dataset_id,
-            vector_fields=[field],
-            k=n_clusters,
-            alias=f"kmeans_{n_clusters}",
-            overwrite=overwrite,
-        )
+        if isinstance(model, KMeans):
+            centroids = self.vector_tools.cluster.kmeans_cluster(
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
+                **kwargs
+            )
+        elif isinstance(model, HDBSCAN):
+            centroids = self.vector_tools.cluster.hdbscan_cluster(
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
+                **kwargs
+            )
+        else:
+            raise ValueError('method not supported')
+
         return centroids
 
     def sample(
