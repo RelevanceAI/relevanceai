@@ -74,7 +74,7 @@ class DocumentsClient(_Base):
     def bulk_get(
         self,
         dataset_id: str,
-        ids: str,
+        ids: list,
         include_vector: bool = True,
         select_fields: list = [],
     ):
