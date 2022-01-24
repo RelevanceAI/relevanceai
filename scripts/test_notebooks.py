@@ -11,9 +11,9 @@ from nbconvert.preprocessors import ExecutePreprocessor
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("path", default=Path.cwd(), help='Path of tests')
-parser.add_argument("package_name", default="RelevanceAI", help='Package Name')
-parser.add_argument("version", default=None, help='Package Version')
+parser.add_argument("-p", "--path", default=Path.cwd(), help='Path of tests')
+parser.add_argument("-n", "--package-name", default="RelevanceAI", help='Package Name')
+parser.add_argument("-v", "--version", default=None, help='Package Version')
 args = parser.parse_args()
 
 ###############################################################################
@@ -60,7 +60,7 @@ def check_latest_version(name):
 
 DOCS_PATH = Path(args.path) / "docs"
 RELEVANCEAI_SDK_VERSION = args.version if args.version else get_latest_version(args.package_name)
-print(f'Executing notebook test with {args.package_name}=={RELEVANCEAI_SDK_VERSION}')
+print(f'Executing notebook test with {args.package_name}=={RELEVANCEAI_SDK_VERSION}\n\n')
 
 # RELEVANCEAI_SDK_VERSION = 'latest'
 PIP_INSTALL_SENT_REGEX = f'".*pip install .* {args.package_name}.*==.*"'
@@ -79,7 +79,7 @@ def notebook_find_replace(notebook, find_sent_regex, find_str_regex, replace_str
                 find_sent = re.search(find_sent_regex, line)
                 if find_sent:
                     find_sent = find_sent.group()
-                    print(f"Found: {find_sent}\n")
+                    print(f"\nFound: {find_sent}\n")
 
                     # if find_str == replace_str: continue
                     print(f"Find string: {find_str_regex}")
@@ -132,7 +132,7 @@ for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
     ## Execute notebook with test creds
     with open(notebook, "r") as f:
         print(
-            f"Executing notebook: \n{notebook} with SDK version {RELEVANCEAI_SDK_VERSION}"
+            f"\nExecuting notebook: \n{notebook} with SDK version {RELEVANCEAI_SDK_VERSION}"
         )
         nb_in = nbformat.read(f, nbformat.NO_CONVERT)
         ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
