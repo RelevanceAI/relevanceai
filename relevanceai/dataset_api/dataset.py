@@ -549,6 +549,10 @@ class Dataset(BatchAPIClient):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
         )
+    
+    read = read_documents
+
+    insert = read_documents
 
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
@@ -577,6 +581,49 @@ class Dataset(BatchAPIClient):
 
     def delete(self):
         return self.delete(self.dataset_id)
+    
+    def upsert(
+        self, 
+        documents: list,
+        bulk_fn: Callable = None,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        chunksize: int = 0,
+        show_progress_bar=False,
+        use_json_encoder: bool = True,
+    ):
+        return self.update_documents(
+            self.dataset_id, 
+            docs=documents,
+            bulk_fn=bulk_fn,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            chunksize=chunksize,
+            use_json_encoder=use_json_encoder,
+        )
+    
+    def get(self, document_id: str, include_vector: bool=True):
+        """
+        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+
+        Parameters
+        ----------
+        id : string
+            ID of a document in a dataset.
+        include_vector: bool
+            Include vectors in the search results
+        
+        Example
+        --------
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> df.get("sample_id", include_vector=False)
+
+        """
+        self.datasets.documents.get(self.dataset_id, id=document_id, 
+            include_vector=include_vector)
 
 
 class Datasets(BatchAPIClient):

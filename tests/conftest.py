@@ -280,10 +280,10 @@ def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
 
 
 @pytest.fixture(scope="session")
-def test_read_docs(test_client: Client, sample_vector_docs):
+def test_read_df(test_client: Client, sample_vector_docs):
     DATASET_ID = "_sample_df_"
     df = test_client.Dataset(DATASET_ID)
-    results = df.read_documents(sample_vector_docs)
+    results = df.upsert(sample_vector_docs)
     yield results
     df.delete(DATASET_ID)
 
