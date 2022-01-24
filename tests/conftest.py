@@ -67,8 +67,8 @@ def pandas_test_dataset_id():
 @pytest.fixture(scope="session")
 def test_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
-    simple_docs = simple_doc * 1000
-    response = test_client.insert_documents(test_dataset_id, simple_docs)
+    simple_documents = simple_doc * 1000
+    response = test_client.insert_documents(test_dataset_id, simple_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
@@ -76,8 +76,8 @@ def test_sample_dataset(test_client, simple_doc, test_dataset_id):
 @pytest.fixture(scope="session")
 def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
-    simple_docs = simple_doc * 1000
-    response = test_client.insert_documents(test_dataset_id, simple_docs)
+    simple_documents = simple_doc * 1000
+    response = test_client.insert_documents(test_dataset_id, simple_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
@@ -88,7 +88,7 @@ def error_doc():
 
 
 @pytest.fixture(scope="session")
-def sample_vector_docs():
+def sample_vector_documents():
     def _sample_vector_doc(doc_id: str):
         return {
             "_id": doc_id,
@@ -117,7 +117,7 @@ def sample_vector_docs():
 
 
 @pytest.fixture(scope="session")
-def sample_datetime_docs():
+def sample_datetime_documents():
     def _sample_datetime_doc(doc_id: str):
         return {
             "_id": doc_id,
@@ -130,7 +130,7 @@ def sample_datetime_docs():
 
 
 @pytest.fixture(scope="session")
-def sample_numpy_docs():
+def sample_numpy_documents():
     def _sample_numpy_doc(doc_id: str):
         return {
             "_id": doc_id,
@@ -144,7 +144,7 @@ def sample_numpy_docs():
 
 
 @pytest.fixture(scope="session")
-def sample_pandas_docs():
+def sample_pandas_documents():
     def _sample_numpy_doc(doc_id: str):
         return {
             "_id": doc_id,
@@ -165,7 +165,7 @@ def sample_pandas_docs():
 
 
 @pytest.fixture(scope="session")
-def sample_nested_assorted_docs():
+def sample_nested_assorted_documents():
     def _sample_nested_assorted_doc(doc_id: str):
         return {
             "_id": doc_id,
@@ -202,21 +202,21 @@ def sample_nested_assorted_docs():
 
 
 @pytest.fixture(scope="session")
-def test_sample_vector_dataset(test_client, sample_vector_docs, test_dataset_id):
+def test_sample_vector_dataset(test_client, sample_vector_documents, test_dataset_id):
     """
     Use this dataset if you just want vector
     """
-    response = test_client.insert_documents(test_dataset_id, sample_vector_docs)
+    response = test_client.insert_documents(test_dataset_id, sample_vector_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_clustered_dataset(test_client, sample_vector_docs):
+def test_clustered_dataset(test_client, sample_vector_documents):
     """
     Use this test dataset if you want a dataset with clusters already.
     """
-    test_client.insert_documents(CLUSTER_DATASET_ID, sample_vector_docs)
+    test_client.insert_documents(CLUSTER_DATASET_ID, sample_vector_documents)
     test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id=CLUSTER_DATASET_ID,
         vector_fields=["sample_1_vector_"],
@@ -229,51 +229,51 @@ def test_clustered_dataset(test_client, sample_vector_docs):
 
 
 @pytest.fixture(scope="session")
-def test_datetime_dataset(test_client, sample_datetime_docs, test_dataset_id):
+def test_datetime_dataset(test_client, sample_datetime_documents, test_dataset_id):
     """Sample datetime dataset"""
-    response = test_client.insert_documents(test_dataset_id, sample_datetime_docs)
-    yield response, len(sample_datetime_docs)
+    response = test_client.insert_documents(test_dataset_id, sample_datetime_documents)
+    yield response, len(sample_datetime_documents)
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_numpy_dataset(test_client, sample_numpy_docs, test_dataset_id):
+def test_numpy_dataset(test_client, sample_numpy_documents, test_dataset_id):
     """Sample numpy dataset"""
-    response = test_client.insert_documents(test_dataset_id, sample_numpy_docs)
-    yield response, len(sample_numpy_docs)
+    response = test_client.insert_documents(test_dataset_id, sample_numpy_documents)
+    yield response, len(sample_numpy_documents)
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_pandas_dataset(test_client, sample_pandas_docs, pandas_test_dataset_id):
+def test_pandas_dataset(test_client, sample_pandas_documents, pandas_test_dataset_id):
     """Sample pandas dataset"""
-    response = test_client.insert_documents(pandas_test_dataset_id, sample_pandas_docs)
-    yield response, len(sample_pandas_docs)
+    response = test_client.insert_documents(pandas_test_dataset_id, sample_pandas_documents)
+    yield response, len(sample_pandas_documents)
     test_client.datasets.delete(pandas_test_dataset_id)
 
 
 @pytest.fixture(scope="session")
 def test_nested_assorted_dataset(
-    test_client, sample_nested_assorted_docs, test_dataset_id
+    test_client, sample_nested_assorted_documents, test_dataset_id
 ):
     """Sample nested assorted dataset"""
     response = test_client.insert_documents(
-        test_dataset_id, sample_nested_assorted_docs
+        test_dataset_id, sample_nested_assorted_documents
     )
-    yield response, len(sample_nested_assorted_docs)
+    yield response, len(sample_nested_assorted_documents)
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_csv_dataset(test_client, sample_vector_docs, test_dataset_id):
+def test_csv_dataset(test_client, sample_vector_documents, test_dataset_id):
     """Sample csv dataset"""
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
-        df = pd.DataFrame(sample_vector_docs)
+        df = pd.DataFrame(sample_vector_documents)
         df.to_csv(csvfile)
 
         response = test_client.insert_csv(test_dataset_id, csvfile.name)
-        yield response, len(sample_vector_docs)
+        yield response, len(sample_vector_documents)
         test_client.datasets.delete(test_dataset_id)
 
 

@@ -98,25 +98,25 @@ class Mongo2RelevanceAi(BatchAPIClient):
         response = self.datasets.create(dataset_id)
         return response
 
-    def update_id(self, docs: List[dict]):
+    def update_id(self, documents: List[dict]):
         # makes bson id format json campatible
-        for doc in docs:
+        for doc in documents:
             try:
                 doc["_id"] = doc["_id"]["$oid"]
             except Exception as e:
                 self.logger.info("Could not use the original id: " + str(e))
                 doc["_id"] = uuid.uuid4().__str__()
-        return docs
+        return documents
 
     @staticmethod
     def parse_json(data):
         return json.loads(json_util.dumps(data))
 
     @staticmethod
-    def flatten_inner_indxs(docs: List[dict]):
+    def flatten_inner_indxs(documents: List[dict]):
         # {f1:{f2:v}} => {f1-f2:v}
-        expanded = copy.deepcopy(docs)
-        for i, doc in enumerate(docs):
+        expanded = copy.deepcopy(documents)
+        for i, doc in enumerate(documents):
             for f, v in doc.items():
                 if isinstance(v, dict):
                     del expanded[i][f]
@@ -125,12 +125,12 @@ class Mongo2RelevanceAi(BatchAPIClient):
         return expanded
 
     @staticmethod
-    def remove_nan(docs: List[dict], replace_with: str = ""):
-        for doc in docs:
+    def remove_nan(documents: List[dict], replace_with: str = ""):
+        for doc in documents:
             for f, v in doc.items():
                 if isinstance(v, float) and math.isnan(v) or v == np.NaN:
                     doc[f] = replace_with
-        return docs
+        return documents
 
     @staticmethod
     def build_range(doc_cnt: int, chunk_size: int = 2000, start_idx: int = 0):
@@ -165,12 +165,12 @@ class Mongo2RelevanceAi(BatchAPIClient):
             Mongo2RelevanceAi.build_range(doc_cnt, chunk_size, start_idx)
         ):
             df = pd.DataFrame(self.fetch_mongo_collection_data(s_idx, e_idx))
-            docs = self.update_id(Mongo2RelevanceAi.parse_json(df.to_dict("records")))
-            docs = Mongo2RelevanceAi.remove_nan(
-                Mongo2RelevanceAi.flatten_inner_indxs(docs)
+            documents = self.update_id(Mongo2RelevanceAi.parse_json(df.to_dict("records")))
+            documents = Mongo2RelevanceAi.remove_nan(
+                Mongo2RelevanceAi.flatten_inner_indxs(documents)
             )
-            self.insert_documents(dataset_id, docs)
-            total_ingest_cnt += len(docs)
+            self.insert_documents(dataset_id, documents)
+            total_ingest_cnt += len(documents)
 
         self.logger.info(
             f"Successfully ingested {total_ingest_cnt} entities to {dataset_id}."

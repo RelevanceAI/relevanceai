@@ -57,7 +57,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         alpha: float = 0.2,
     ):
         # get documents
-        docs = self._get_documents(
+        documents = self._get_documents(
             vector_fields=vector_fields,
             text_fields=text_fields,
             max_doc_num=max_doc_num,
@@ -65,21 +65,21 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
         # perform kmeans clustering
         alias = alias + "_" + str(k)
-        centers, clustered_docs = self._kmeans_clustering(
-            docs=docs, vector_fields=vector_fields, k=k, alias=alias
+        centers, clustered_documents = self._kmeans_clustering(
+            documents=documents, vector_fields=vector_fields, k=k, alias=alias
         )
 
         clustering_results = self.get_field_across_documents(
-            ".".join([self.cluster_field, ".".join(vector_fields), alias]), docs
+            ".".join([self.cluster_field, ".".join(vector_fields), alias]), documents
         )
-        for i, cl_doc in enumerate(tqdm(clustered_docs)):
-            docs[i][
+        for i, cl_doc in enumerate(tqdm(clustered_documents)):
+            documents[i][
                 "_".join([self.cluster_field, "".join(vector_fields), alias])
             ] = clustering_results[i]
 
         # get cluster data
         cluster_data = self._get_cluster_datafield(
-            docs=docs,
+            documents=documents,
             vector_fields=vector_fields,
             text_fields=text_fields,
             alias=alias,
@@ -98,18 +98,18 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
         # dimensionality reduction
         # 1) Fit the model and reduce vector size
-        vectors: List = [[] for _ in docs]
+        vectors: List = [[] for _ in documents]
         for vector_field in vector_fields:
-            t = self.get_field_across_documents(vector_field, docs)
+            t = self.get_field_across_documents(vector_field, documents)
             vectors = [i + j for i, j in zip(vectors, t)]  # concatenate vectors
-        dr_docs = self._dim_reduction(
+        dr_documents = self._dim_reduction(
             vector_data=vectors,
             embedding_dims=self.embedding_dims,
             k=self.dim_red_k,
             n_epochs_without_progress=self.n_epochs_without_progress,
         )
-        for i, dr in enumerate(dr_docs):
-            docs[i][vector_field + "_dr_vector_"] = dr.tolist()
+        for i, dr in enumerate(dr_documents):
+            documents[i][vector_field + "_dr_vector_"] = dr.tolist()
         # 2) reduce center vector size
         vectors = [c["centroid_vector_"] for c in centers]
         dr_centers = self._dim_reduction(
@@ -124,8 +124,8 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
         # plot
         self._plot_clusters(
-            docs,
-            dr_docs,
+            documents,
+            dr_documents,
             centers,
             cluster_data,
             vector_fields,
@@ -153,23 +153,23 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         fields = vector_fields + text_fields
         if max_doc_num:
             page_size = 200 if max_doc_num > 200 else max_doc_num
-            batch_doc = self._batch_load_docs(
+            batch_doc = self._batch_load_documents(
                 fields=fields, filters=filters, page_size=page_size
             )
-            docs = batch_doc["documents"]
+            documents = batch_doc["documents"]
             cursor = batch_doc["cursor"]
-            while batch_doc["documents"] != [] and len(docs) > max_doc_num - page_size:
-                batch_doc = self._batch_load_docs(
+            while batch_doc["documents"] != [] and len(documents) > max_doc_num - page_size:
+                batch_doc = self._batch_load_documents(
                     fields=fields, filters=filters, page_size=page_size, cursor=cursor
                 )
-                docs.extend(batch_doc["documents"])
+                documents.extend(batch_doc["documents"])
         else:
-            docs = self.get_all_documents(
+            documents = self.get_all_documents(
                 dataset_id=self.dataset_id, filters=filters, select_fields=fields
             )
-        return docs
+        return documents
 
-    def _batch_load_docs(
+    def _batch_load_documents(
         self,
         fields: List[str],
         filters: List[dict] = [],
@@ -186,16 +186,16 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
     def _kmeans_clustering(
         self,
-        docs: List[dict],
+        documents: List[dict],
         vector_fields: List[str],
         k: int = 10,
         alias: str = "kmeans",
     ):
         self.logger.info(" * Kmeans Clustering")
         clusterer = KMeans(k=k)
-        clustered_docs = clusterer.fit_documents(vector_fields, docs, alias=alias)
+        clustered_documents = clusterer.fit_documents(vector_fields, documents, alias=alias)
         res = self.update_documents(
-            self.dataset_id, clustered_docs, chunksize=self.upload_chunksize
+            self.dataset_id, clustered_documents, chunksize=self.upload_chunksize
         )
         centers = clusterer.get_centroid_documents()
         self.services.cluster.centroids.insert(
@@ -204,12 +204,12 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             vector_fields=vector_fields,
             alias=alias,
         )
-        return centers, clustered_docs
+        return centers, clustered_documents
 
     @staticmethod
-    def _get_fields_value_by_id(docs: List[dict], id: str, fields: List[str]):
+    def _get_fields_value_by_id(documents: List[dict], id: str, fields: List[str]):
         vals = {}
-        for doc in docs:
+        for doc in documents:
             if doc["_id"] == id:
                 for field in fields:
                     vals[field] = DocUtils.get_field(field, doc) + " "
@@ -217,7 +217,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
     def _get_cluster_datafield(
         self,
-        docs: List[dict],
+        documents: List[dict],
         vector_fields: List[str],
         text_fields: List[str],
         alias: str,
@@ -227,14 +227,14 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
     ):
         self.logger.info(" * Extracting cluster info")
         cluster_data: dict = {}
-        for i, doc in tqdm(enumerate(docs)):
+        for i, doc in tqdm(enumerate(documents)):
             cluster_name = doc[
                 "_".join([self.cluster_field, "".join(vector_fields), alias])
             ]
             if cluster_name not in cluster_data:
                 cluster_data[cluster_name] = {"data": []}
             values = self._get_fields_value_by_id(
-                docs, id=doc["_id"], fields=text_fields
+                documents, id=doc["_id"], fields=text_fields
             )
             text = self.normalize_text(
                 txt=" ".join([v for k, v in values.items()]),
@@ -297,16 +297,16 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
                 k=k,
                 n_epochs_without_progress=n_epochs_without_progress,
             )
-            dr_docs = self.dr_model.fit_transform(vector_data)
+            dr_documents = self.dr_model.fit_transform(vector_data)
         else:
-            dr_docs = self.dr_model.transform(vector_data)
+            dr_documents = self.dr_model.transform(vector_data)
 
-        return dr_docs
+        return dr_documents
 
     def _plot_clusters(
         self,
-        docs: List[dict],
-        dr_docs: List,
+        documents: List[dict],
+        dr_documents: List,
         centers: List[dict],
         cluster_data: dict,
         vector_fields: List[str],
@@ -319,7 +319,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
     ):
         group = [
             x["_".join([self.cluster_field, "".join(vector_fields), alias])]
-            for x in docs
+            for x in documents
         ]
         le = preprocessing.LabelEncoder()
         color = le.fit_transform(group)
@@ -334,8 +334,8 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         plt.axis(plot_axis)
         plt.figure(figsize=figsize)
         plt.scatter(
-            [x[0] for x in dr_docs],
-            [x[1] for x in dr_docs],
+            [x[0] for x in dr_documents],
+            [x[1] for x in dr_documents],
             c=color,
             cmap=cmap,
             alpha=alpha,

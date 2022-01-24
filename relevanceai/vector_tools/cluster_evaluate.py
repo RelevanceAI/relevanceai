@@ -91,7 +91,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             ground_truth_field=ground_truth_field,
             description_fields=description_fields,
         )
-        self.plot_from_docs(
+        self.plot_from_documents(
             vectors=vectors,
             cluster_labels=cluster_labels,
             ground_truth=ground_truth,
@@ -135,7 +135,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             ground_truth_field=ground_truth_field,
         )
 
-        return self.metrics_from_docs(
+        return self.metrics_from_documents(
             vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
         )
 
@@ -181,16 +181,16 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         if ground_truth_field:
             if transpose:
-                return self.label_joint_distribution_from_docs(
+                return self.label_joint_distribution_from_documents(
                     cluster_labels, ground_truth
                 )
             else:
-                return self.label_joint_distribution_from_docs(
+                return self.label_joint_distribution_from_documents(
                     ground_truth, cluster_labels
                 )
 
         else:
-            return self.label_distribution_from_docs(cluster_labels)
+            return self.label_distribution_from_documents(cluster_labels)
 
     def centroid_distances(
         self,
@@ -225,7 +225,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         centroids = {i["_id"]: i[vector_field] for i in centroid_response["documents"]}
 
-        return self.centroid_distances_from_docs(
+        return self.centroid_distances_from_documents(
             centroids,
             distance_measure_mode=distance_measure_mode,
             callable_distance=callable_distance,
@@ -257,7 +257,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         else:
             vector_select_field = []
 
-        docs = self.get_all_documents(
+        documents = self.get_all_documents(
             dataset_id,
             chunk_size=1000,
             select_fields=["_id", cluster_field]
@@ -275,24 +275,24 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         )
 
         # Get cluster labels
-        cluster_labels = self.get_field_across_documents(cluster_field, docs)
+        cluster_labels = self.get_field_across_documents(cluster_field, documents)
 
         # Get vectors
         if get_vectors:
-            vectors = self.get_field_across_documents(vector_field, docs)
+            vectors = self.get_field_across_documents(vector_field, documents)
         else:
             vectors = None
 
         # Get ground truth
         if ground_truth_field:
-            ground_truth = self.get_field_across_documents(ground_truth_field, docs)
+            ground_truth = self.get_field_across_documents(ground_truth_field, documents)
         else:
             ground_truth = None
 
         # Get vector description
         if len(description_fields) > 0:
             vector_description: Optional[Dict] = {
-                field: self.get_field_across_documents(field, docs)
+                field: self.get_field_across_documents(field, documents)
                 for field in description_fields
             }
         else:
@@ -301,7 +301,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return vectors, cluster_labels, ground_truth, vector_description
 
     @staticmethod
-    def plot_from_docs(
+    def plot_from_documents(
         vectors: list,
         cluster_labels: list,
         ground_truth: list = None,
@@ -394,7 +394,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return
 
     @staticmethod
-    def metrics_from_docs(vectors, cluster_labels, ground_truth=None):
+    def metrics_from_documents(vectors, cluster_labels, ground_truth=None):
         """
         Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness
 
@@ -446,7 +446,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return metrics_list
 
     @staticmethod
-    def label_distribution_from_docs(label):
+    def label_distribution_from_documents(label):
         """
         Determine the distribution of a label
 
@@ -460,7 +460,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return dict(label_sparsity)
 
     @staticmethod
-    def label_joint_distribution_from_docs(label_1, label_2):
+    def label_joint_distribution_from_documents(label_1, label_2):
         """
         Determine the distribution of a label against another label
 
@@ -487,7 +487,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         return label_distribution
 
     @staticmethod
-    def centroid_distances_from_docs(
+    def centroid_distances_from_documents(
         centroids,
         distance_measure_mode: CENTROID_DISTANCES = "cosine",
         callable_distance=None,
