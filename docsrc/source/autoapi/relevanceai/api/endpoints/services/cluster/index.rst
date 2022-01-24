@@ -23,7 +23,7 @@ Classes
 
    Base class for all relevanceai client utilities
 
-   .. py:method:: aggregate(self, dataset_id: str, vector_fields: list, metrics: list = [], groupby: list = [], filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, alias: str = 'default')
+   .. py:method:: aggregate(self, dataset_id: str, vector_fields: list, metrics: list = [], groupby: list = [], sort: list = [], filters: list = [], page_size: int = 20, page: int = 1, asc: bool = False, flatten: bool = True, alias: str = 'default')
 
       Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
       It can only can be used after a vector field has been clustered.

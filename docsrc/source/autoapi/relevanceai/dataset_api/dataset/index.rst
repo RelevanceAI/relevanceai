@@ -320,36 +320,6 @@ Classes
       :type kwargs: Optional
 
 
-   .. py:method:: insert_documents(self, documents, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize: int = 0, use_json_encoder: bool = True)
-
-      Update a list of documents with multi-threading automatically enabled.
-      Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
-
-
-      :param dataset_id: Unique name of dataset
-      :type dataset_id: string
-      :param docs: A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
-      :type docs: list
-      :param bulk_fn: Function to apply to documents before uploading
-      :type bulk_fn: callable
-      :param max_workers: Number of workers active for multi-threading
-      :type max_workers: int
-      :param retry_chunk_mult: Multiplier to apply to chunksize if upload fails
-      :type retry_chunk_mult: int
-      :param chunksize: Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
-      :type chunksize: int
-      :param use_json_encoder: Whether to automatically convert documents to json encodable format
-      :type use_json_encoder: bool
-
-      .. rubric:: Example
-
-      >>> from relevanceai import Client
-      >>> client = Client()
-      >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-      >>> df = client.Dataset("sample")
-      >>> df.insert_documents(dataset_id, documents)
-
-
    .. py:method:: cat(self, vector_name: Union[str, None] = None, fields: List = [])
 
       Concatenates numerical fields along an axis and reuploads this vector for other operations
