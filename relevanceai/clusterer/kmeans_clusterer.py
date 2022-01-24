@@ -78,6 +78,8 @@ class KMeansClusterFlow(ClusterFlow):
     def __init__(
         self,
         alias: str,
+        project: str,
+        api_key: str,
         k: Union[None, int] = 10,
         init: str = "k-means++",
         n_init: int = 10,
@@ -88,8 +90,6 @@ class KMeansClusterFlow(ClusterFlow):
         copy_x: bool = True,
         algorithm: str = "auto",
         cluster_field: str = "_cluster_",
-        project: str = None,
-        api_key: str = None,
     ):
         model = KMeansModel(
             k=k,

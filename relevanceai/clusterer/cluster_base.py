@@ -23,7 +23,7 @@ class ClusterBase(DocUtils, ABC):
         """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
 
-    def _get_vectors_from_documents(self, vector_fields, docs, missing_treatment):
+    def _get_vectors_from_documents(self, vector_fields, docs):
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             docs = list(filter(DocUtils.list_doc_fields, docs))

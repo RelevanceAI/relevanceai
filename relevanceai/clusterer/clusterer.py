@@ -4,7 +4,7 @@ Clusterer class to run clustering.
 import numpy as np
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.vector_tools.cluster import Cluster
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Optional
 from relevanceai.dataset_api import Dataset
 from cluster_base import ClusterBase
 from doc_utils import DocUtils
@@ -18,15 +18,15 @@ class ClusterFlow(BatchAPIClient):
         self,
         model: ClusterBase,
         alias: str,
+        project: str,
+        api_key: str,
         cluster_field: str = "_cluster_",
-        project: str = None,
-        api_key: str = None,
     ):
         self.alias = alias
         self.cluster_field = cluster_field
         self.model = model
-        self.project = project
-        self.api_key = api_key
+        self.project: str = project
+        self.api_key: str = api_key
 
     def _init_dataset(self, dataset):
         if isinstance(dataset, Dataset):
