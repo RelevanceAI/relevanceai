@@ -150,7 +150,9 @@ class CentroidCluster(ClusterBase):
         """Get centers for the centroid-based clusters"""
         raise NotImplementedError
 
-    def get_centroid_docs(self, centroid_vector_field_name="centroid_vector_") -> List:
+    def get_centroid_documents(
+        self, centroid_vector_field_name="centroid_vector_"
+    ) -> List:
         """
         Get the centroid documents to store.
         If single vector field returns this:
@@ -188,6 +190,9 @@ class CentroidCluster(ClusterBase):
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
         return centroid_docs
+
+    # Add for backwards compatibility
+    get_centroid_docs = get_centroid_documents
 
 
 class DensityCluster(ClusterBase):
@@ -456,6 +461,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self,
         dataset_id: str,
         vector_fields: list,
+        alias: str,
         filters: List = [],
         k: Union[None, int] = 10,
         init: str = "k-means++",
@@ -466,7 +472,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str = "auto",
-        alias: str = None,
         cluster_field: str = "_cluster_",
         update_documents_chunksize: int = 50,
         overwrite: bool = False,
@@ -485,6 +490,8 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             name of the dataser
         vector_fields : list
             a list containing the vector field to be used for clustering
+        alias : string
+            "kmeans", string to be used in naming of the field showing the clustering results
         filters : list
             a list to filter documents of the dataset,
         k : int
@@ -505,8 +512,6 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             True bydefault
         algorithm : string
             "auto" by default
-        alias : string
-            "kmeans", string to be used in naming of the field showing the clustering results
         cluster_field: string
             "_cluster_", string to name the main cluster field
         overwrite : bool
@@ -577,9 +582,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         # Update the centroid collection
         clusterer.vector_fields = vector_fields
         if len(vector_fields) == 1:
-            centers = clusterer.get_centroid_docs(vector_fields[0])
+            centers = clusterer.get_centroid_documents(vector_fields[0])
         else:
-            centers = clusterer.get_centroid_docs()
+            centers = clusterer.get_centroid_documents()
 
         # Change centroids insertion
         results = self.services.cluster.centroids.insert(

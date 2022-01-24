@@ -1,4 +1,5 @@
 import pytest
+from ..utils import generate_random_string
 
 
 def test_kmeans(test_client, test_clustered_dataset):
@@ -11,6 +12,7 @@ def test_kmeans_dashboard(test_client, test_sample_vector_dataset):
     centroids = test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id=test_sample_vector_dataset,
         vector_fields=["sample_1_vector_"],
+        alias="kmeans_10",
         overwrite=True,
     )
     assert True
