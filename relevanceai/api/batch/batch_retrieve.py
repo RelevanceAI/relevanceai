@@ -91,7 +91,7 @@ class BatchRetrieveClient(APIClient, Chunker):
 
         return data
 
-    def get_all_documents(
+    def _get_all_documents(
         self,
         dataset_id: str,
         chunk_size: int = 1000,

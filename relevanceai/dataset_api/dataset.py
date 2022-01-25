@@ -195,8 +195,9 @@ class Series(BatchAPIClient):
             Sort in ascending order.
         bins : int, optional
             Groups categories into 'bins'. These bins are good for representing groups within continuous series
+
         Returns
-        -------
+        ----------
         Series
         """
         schema = self.datasets.schema(self.dataset_id)
@@ -496,7 +497,7 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(docs, orient="records")
 
-    def all(
+    def get_all_documents(
         self,
         chunk_size: int = 1000,
         filters: List = [],
@@ -510,7 +511,7 @@ class Read(BatchAPIClient):
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
         Parameters
-        ----------
+        ------------
         chunk_size : list
             Number of documents to retrieve per retrieval
         include_vector: bool
@@ -521,9 +522,20 @@ class Read(BatchAPIClient):
             Query for filtering the search results
         select_fields : list
             Fields to include in the search results, empty array/list means all fields.
+
+        Example
+        ----------
+
+        .. code-block
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            docs = df.get_all_documents()
+
         """
 
-        return self.get_all_documents(
+        return self._get_all_documents(
             dataset_id=self.dataset_id,
             chunk_size=chunk_size,
             filters=filters,
@@ -533,7 +545,9 @@ class Read(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def get(self, document_ids: Union[List, str], include_vector: bool = True):
+    def get_documents_by_ids(
+        self, document_ids: Union[List, str], include_vector: bool = True
+    ):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
@@ -549,7 +563,7 @@ class Read(BatchAPIClient):
         >>> from relevanceai import Client, Dataset
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset")
-        >>> df.get("sample_id", include_vector=False)
+        >>> df.get_documents_by_ids(["sample_id"], include_vector=False)
 
         """
         if isinstance(document_ids, str):
@@ -1071,7 +1085,7 @@ class Export(Read):
         kwargs: Optional
             see client.get_all_documents() for extra args
         """
-        documents = self.get_all_documents(self.dataset_id, **kwargs)
+        documents = self.get_all_documents(**kwargs)
         df = pd.DataFrame(documents)
         df.to_csv(filename)
 
@@ -1088,7 +1102,7 @@ class Export(Read):
         list of documents in dictionary format
         """
         if orient == "records":
-            return self.get_all_documents(self.dataset_id)
+            return self.get_all_documents()
         else:
             raise NotImplementedError
 

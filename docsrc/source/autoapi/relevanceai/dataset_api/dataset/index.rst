@@ -171,7 +171,7 @@ Module Contents
       >>> df.sample()
 
 
-   .. py:method:: all(self, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
+   .. py:method:: get_all_documents(self, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
 
       Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
@@ -186,8 +186,17 @@ Module Contents
       :param select_fields: Fields to include in the search results, empty array/list means all fields.
       :type select_fields: list
 
+      .. rubric:: Example
 
-   .. py:method:: get(self, document_ids: Union[List, str], include_vector: bool = True)
+      .. code-block
+
+          from relevanceai import Client
+          client = Client()
+          df = client.Dataset("sample")
+          docs = df.get_all_documents()
+
+
+   .. py:method:: get_documents(self, document_ids: Union[List, str], include_vector: bool = True)
 
       Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
@@ -201,7 +210,7 @@ Module Contents
       >>> from relevanceai import Client, Dataset
       >>> client = Client()
       >>> df = client.Dataset("sample_dataset")
-      >>> df.get("sample_id", include_vector=False)
+      >>> df.get_documents(["sample_id"], include_vector=False)
 
 
    .. py:method:: schema(self)
