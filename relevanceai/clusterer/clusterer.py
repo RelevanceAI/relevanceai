@@ -76,13 +76,13 @@ class Clusterer(BatchAPIClient):
         >>> class CustomClusterModel(ClusterBase):
         >>>     def __init__(self):
         >>>         pass
-        >>> 
+        >>>
         >>>     def fit_documents(self, documents, *args, **kw):
         >>>         X = self.get_field_across_documents("sample_vector_", documents)
         >>>         y = self.get_field_across_documents("entropy", documents)
         >>>         cluster_labels = self.fit_transform(documents, entropy)
         >>>         self.set_cluster_labels_across_documents(cluster_labels, documents)
-        >>> 
+        >>>
         >>>     def fit_transform(self, X, y):
         >>>         cluster_labels = []
         >>>         for y_value in y:
@@ -127,13 +127,13 @@ class Clusterer(BatchAPIClient):
         >>> class CustomClusterModel(ClusterBase):
         >>>     def __init__(self):
         >>>         pass
-        >>> 
+        >>>
         >>>     def fit_documents(self, documents, *args, **kw):
         >>>         X = self.get_field_across_documents("sample_vector_", documents)
         >>>         y = self.get_field_across_documents("entropy", documents)
         >>>         cluster_labels = self.fit_transform(documents, entropy)
         >>>         self.set_cluster_labels_across_documents(cluster_labels, documents)
-        >>> 
+        >>>
         >>>     def fit_transform(self, X, y):
         >>>         cluster_labels = []
         >>>         for y_value in y:
@@ -258,13 +258,13 @@ class Clusterer(BatchAPIClient):
         >>> class CustomClusterModel(ClusterBase):
         >>>     def __init__(self):
         >>>         pass
-        >>> 
+        >>>
         >>>     def fit_documents(self, documents, *args, **kw):
         >>>         X = self.get_field_across_documents("sample_vector_", documents)
         >>>         y = self.get_field_across_documents("entropy", documents)
         >>>         cluster_labels = self.fit_transform(documents, entropy)
         >>>         self.set_cluster_labels_across_documents(cluster_labels, documents)
-        >>> 
+        >>>
         >>>     def fit_transform(self, X, y):
         >>>         cluster_labels = []
         >>>         for y_value in y:
@@ -273,7 +273,7 @@ class Clusterer(BatchAPIClient):
         >>>         else:
         >>>             cluster_labels.append(random.randint(0, 100))
         >>>         return cluster_labels
-        >>>    
+        >>>
         >>> clusterer = client.CustomClusterModel()
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df, ["sample_vector_"])
@@ -303,7 +303,7 @@ class Clusterer(BatchAPIClient):
     ):
         """
         Utility function to allow users to set cluster labels
-        
+
         Parameters
         ------------
         cluster_labels: List[str, int]
@@ -315,7 +315,7 @@ class Clusterer(BatchAPIClient):
         inplace: bool
             If True, then the clusters are set in place.
         return_only_clusters: bool
-            If True, then the return_only_clusters will return documents with just the cluster field and ID. 
+            If True, then the return_only_clusters will return documents with just the cluster field and ID.
             This can be helpful when you want to upsert quickly without having to re-insert the entire document.
 
         """

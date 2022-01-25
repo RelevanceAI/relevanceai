@@ -155,7 +155,7 @@ class KMeansClusterer(Clusterer):
 
     >>> from relevanceai import Client
     >>> client = Client()
-    >>> 
+    >>>
     >>> clusterer = client.KMeansClusterer(alias="kmeans_cluster_sample")
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df, vector_fields=["sample_vector_"])
