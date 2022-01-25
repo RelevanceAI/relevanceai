@@ -9,10 +9,9 @@ Cluster
    :members:
    :exclude-members: __init__
 
-.. automodule:: relevanceai.clusterer.kmeans_clusterer
-    :members:
-    :exclude-members: __init__
-
 .. automodule:: relevanceai.clusterer.cluster_base
     :members:
     
+.. automodule:: relevanceai.clusterer.kmeans_clusterer
+    :members:
+    :exclude-members: __init__
