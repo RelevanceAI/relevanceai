@@ -1,7 +1,12 @@
 """
 Clusterer class to run clustering.
 """
+import os
+import json
+import getpass
+
 import numpy as np
+
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional
 from relevanceai.dataset_api import Dataset
@@ -10,6 +15,9 @@ from doc_utils import DocUtils
 
 
 class Clusterer(BatchAPIClient):
+
+    _cred_fn = ".creds.json"
+
     """
     Clusterer class allows users to set up any clustering model to fit on a Dataset.
 
@@ -29,16 +37,42 @@ class Clusterer(BatchAPIClient):
         self,
         model: ClusterBase,
         alias: str,
-        project: str,
-        api_key: str,
+        project: Union[str, None] = None,
+        api_key: Union[str, None] = None,
         cluster_field: str = "_cluster_",
     ):
         self.alias = alias
         self.cluster_field = cluster_field
         self.model = model
-        self.project: str = project
-        self.api_key: str = api_key
+
+        if project is None or api_key is None:
+            project, api_key = self._token_to_auth()
+        else:
+            self.project: str = project
+            self.api_key: str = api_key
+
         super().__init__(project=project, api_key=api_key)
+
+    def _token_to_auth(self):
+        SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
+        if not os.path.exists(self._cred_fn):
+            # We repeat it twice because of different behaviours
+            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
+            token = getpass.getpass(f"Auth token:")
+            project = token.split(":")[0]
+            api_key = token.split(":")[1]
+            self._write_credentials(project, api_key)
+        else:
+            data = self._read_credentials()
+            project = data["project"]
+            api_key = data["api_key"]
+        return project, api_key
+
+    def _read_credentials(self):
+        return json.load(open(self._cred_fn))
+
+    def _write_credentials(self, project, api_key):
+        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
 
     def _init_dataset(self, dataset):
         if isinstance(dataset, Dataset):

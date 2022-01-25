@@ -4,6 +4,9 @@ Pandas like dataset API
 import math
 import warnings
 import pandas as pd
+import numpy as np
+
+from doc_utils import DocUtils
 
 from typing import List, Union, Callable, Optional
 
@@ -155,6 +158,24 @@ class Series(BatchAPIClient):
         return self.pull_update_push(
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
+
+    def numpy(self) -> np.ndarray:
+        """
+        Iterates over all documents in dataset and returns all numeric values in a numpy array.
+
+        Parameters
+        ---------
+        None
+
+        Returns
+        -------
+        vectors: np.ndarray
+            an array/matrix of all numeric values selected
+        """
+        documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
+        vectors = [np.array(document[self.field]) for document in documents]
+        vectors = np.array(vectors)
+        return vectors
 
     def value_counts(
         self,
@@ -768,6 +789,30 @@ class Write(Read):
     #     warnings.warn("Functionality of this may change. Make sure to use insert_csv if possible")
     #     return self.insert_csv(self.dataset_id, filename, **kwargs)
 
+    def _label_cluster(self, label: Union[int, str]):
+        if isinstance(label, (int, float)):
+            return "cluster-" + str(label)
+        return str(label)
+
+    def _label_clusters(self, labels):
+        return [self._label_cluster(x) for x in labels]
+
+    def set_cluster_labels(self, vector_fields, alias, labels):
+        def add_cluster_labels(documents):
+            docs = self.get_all_documents(self.dataset_id)
+            docs = list(filter(DocUtils.list_doc_fields, docs))
+            set_cluster_field = (
+                "_cluster_" + ".".join(vector_fields).lower() + "." + alias
+            )
+            self.set_field_across_documents(
+                set_cluster_field,
+                self._label_clusters(list(labels)),
+                docs,
+            )
+            return docs
+
+        self.pull_update_push(self.dataset_id, add_cluster_labels)
+
     def create(self, schema: dict = {}):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
@@ -924,8 +969,37 @@ class Export(Read):
             raise NotImplementedError
     
 class Dataset(Export, Write):
-    pass
+    def vectorize(self, field, model):
+        """
+        Vectorizes a Particular field (text) of the dataset
 
+        Parameters
+        ----------
+        field : str
+            The text field to select
+        model
+            a Type deep learning model that vectorizes text
+        """
+        series = Series(self)
+        series(self.dataset_id, field).vectorize(model)
+
+    def cluster(self, model, alias, vector_fields, **kwargs):
+        """
+        Performs KMeans Clustering on over a vector field within the dataset.
+
+        Parameters
+        ----------
+        model : Class
+            The clustering model to use
+        vector_fields : str
+            The vector fields over which to cluster
+        """
+
+        from relevanceai.clusterer import Clusterer
+        clusterer = Clusterer(
+            model=model, alias=alias, api_key=self.api_key, project=self.project
+        )
+        return clusterer.fit(dataset=self, vector_fields=vector_fields)
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
