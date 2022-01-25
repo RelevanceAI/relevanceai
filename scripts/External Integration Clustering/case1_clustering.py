@@ -17,7 +17,7 @@ def main(args):
 
     model = KMeans()
 
-    centroids = df.cluster(model, [vector_field], k=n_clusters)
+    df.cluster(model, [vector_field], k=n_clusters)
 
 
 if __name__ == "__main__":
