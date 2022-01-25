@@ -548,7 +548,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
         )
-        docs = self.get_all_documents(
+        docs = self._get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=vector_fields
         )
 
