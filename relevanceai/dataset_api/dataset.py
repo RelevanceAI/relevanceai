@@ -57,6 +57,13 @@ class Series(BatchAPIClient):
                 random_state=random_state,
                 select_fields=select_fields,
             )
+        return Dataset(self.project, self.api_key)(self.dataset_id).sample(
+            n=n,
+            frac=frac,
+            filters=filters,
+            random_state=random_state,
+            select_fields=select_fields,
+        )
 
     def all(
         self,
@@ -95,7 +102,7 @@ class Series(BatchAPIClient):
             def encode_documents(documents):
                 return model([self.field], documents)
 
-        self.client.pull_update_push(self.dataset_id, encode_documents)
+        self.pull_update_push(self.dataset_id, encode_documents)
 
     def apply(
         self,
@@ -144,6 +151,75 @@ class Series(BatchAPIClient):
         return self.pull_update_push(
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
+
+    def value_counts(
+        self,
+        normalize: bool = False,
+        ascending: bool = False,
+        sort: bool = False,
+        bins: Optional[int] = None,
+    ):
+        """
+        Return a Series containing counts of unique values (or values with in a range if bins is set).
+
+        Parameters
+        ----------
+        normalize : bool, default False
+            If True then the object returned will contain the relative frequencies of the unique values.
+        ascending : bool, default False
+            Sort in ascending order.
+        bins : int, optional
+            Groups categories into 'bins'. These bins are good for representing groups within continuous series
+        Returns
+        -------
+        Series
+        """
+        schema = self.datasets.schema(self.dataset_id)
+        dtype = schema[self.field]
+
+        if dtype == "numeric":
+            agg_type = dtype
+        else:
+            agg_type = "category"
+
+        groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
+        aggregation = self.services.aggregate.aggregate(
+            self.dataset_id,
+            groupby=groupby_query,
+            page_size=10000,
+            asc=ascending,
+        )
+
+        total = self.get_number_of_documents(dataset_id=self.dataset_id)
+        aggregation = pd.DataFrame(aggregation)
+
+        if normalize:
+            aggregation["frequency"] /= total
+
+        if bins is not None:
+            vals = []
+            for agg in [[agg[0]] * int(agg[1]) for agg in aggregation.values]:
+                vals += agg
+
+            vals = pd.cut(vals, bins)
+
+            categories = [
+                "({}, {}]".format(interval.left, interval.right) for interval in vals
+            ]
+            unique_categories = list(set(categories))
+
+            if sort:
+                categories = sorted(
+                    categories, key=lambda x: float(x.split(",")[0][1:])
+                )
+
+            aggregation = pd.DataFrame(
+                [categories.count(cat) for cat in unique_categories],
+                index=unique_categories,
+            )
+            aggregation.columns = ["Frequency"]
+
+        return aggregation
 
     def __getitem__(self, loc: Union[int, str]):
         if isinstance(loc, int):
@@ -422,7 +498,6 @@ class Dataset(BatchAPIClient):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
 
-
         Example
         ---------
 
@@ -432,8 +507,6 @@ class Dataset(BatchAPIClient):
         >>> df.sample()
 
         """
-        if n == 0 and frac is None:
-            raise ValueError("Must provide one of n or frac")
 
         if frac and n:
             raise ValueError("Only one of n or frac can be provided")
@@ -611,6 +684,19 @@ class Dataset(BatchAPIClient):
             include_vector=include_vector,
             show_progress_bar=show_progress_bar,
         )
+
+    def value_counts(self, field: str):
+        """
+        Return a Series containing counts of unique values.
+        Parameters
+        ----------
+        field: str
+            dataset field to which to do value counts on
+        Returns
+        -------
+        Series
+        """
+        return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
     def to_csv(self, filename: str, **kwargs):
         """
@@ -882,6 +968,22 @@ class Dataset(BatchAPIClient):
         >>> df.schema()
         """
         return self.datasets.schema(self.dataset_id)
+    def to_dict(self, orient: str = "records"):
+        """
+        Returns the raw list of dicts from the QC
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        list of documents in dictionary format
+        """
+        if orient == "records":
+            return self.get_all_documents(self.dataset_id)
+        else:
+            raise NotImplementedError
 
 
 class Datasets(BatchAPIClient):
