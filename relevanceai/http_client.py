@@ -178,13 +178,13 @@ class Client(BatchAPIClient, DocUtils):
 
         .. code-block::
 
-            from relevanceai import Client 
+            from relevanceai import Client
             client = Client()
             client.list_datasets()
 
         """
         return self.datasets.list()
-    
+
     def delete_dataset(self, dataset_id):
         """
         Delete a dataset
@@ -193,16 +193,16 @@ class Client(BatchAPIClient, DocUtils):
         ------------
         dataset_id: str
             The ID of a dataset
-        
+
         Example
         ---------
 
         .. code-block::
 
-            from relevanceai import Client 
+            from relevanceai import Client
             client = Client()
             client.delete_dataset("sample_dataset")
-        
+
         """
         return self.datasets.delete(dataset_id)
 

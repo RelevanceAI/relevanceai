@@ -12,13 +12,14 @@ class ClusterBase(DocUtils, ABC):
     """
     A Cluster Base for models to be inherited.
     """
+
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
     def fit_transform(self, vectors: list) -> List[Union[str, float, int]]:
         """Edit this method to implement a ClusterBase.
-    
+
         Parameters
         -------------
         vectors: list
@@ -138,7 +139,7 @@ class ClusterBase(DocUtils, ABC):
             If True, the documents are edited inplace otherwise, a copy is made first
         kwargs: dict
             Any other keyword argument will go directly into the clustering algorithm
-        
+
         """
         self.vector_fields = vector_fields
 
@@ -182,7 +183,7 @@ class ClusterBase(DocUtils, ABC):
 
     @property
     def metadata(self) -> dict:
-        """If metadata is set - this willi be stored on RelevanceAI. 
+        """If metadata is set - this willi be stored on RelevanceAI.
         This is useful when you are looking to compare the metadata of your clusters.
         """
         return {}

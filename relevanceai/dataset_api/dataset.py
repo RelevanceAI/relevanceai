@@ -522,13 +522,13 @@ class Read(BatchAPIClient):
             Query for filtering the search results
         select_fields : list
             Fields to include in the search results, empty array/list means all fields.
-        
+
         Example
         ----------
-        
+
         .. code-block
 
-            from relevanceai import Client 
+            from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
             docs = df.get_all_documents()
@@ -545,7 +545,9 @@ class Read(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def get_documents(self, document_ids: Union[List, str], include_vector: bool = True):
+    def get_documents(
+        self, document_ids: Union[List, str], include_vector: bool = True
+    ):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
