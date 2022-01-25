@@ -519,7 +519,7 @@ class Clusterer(BatchAPIClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("_github_repo_vectorai")
-        >>> kmeans = client.KMeansClusterWorkflow(df)
+        >>> kmeans = client.KMeansClusterer(df)
         >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
         >>> kmeans.metadata
         # {"k": 10}
@@ -549,7 +549,7 @@ class Clusterer(BatchAPIClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("_github_repo_vectorai")
-        >>> kmeans = client.KMeansClusterWorkflow(df)
+        >>> kmeans = client.KMeansClusterer(df)
         >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
         >>> kmeans.metadata = {"k": 10}
         """
