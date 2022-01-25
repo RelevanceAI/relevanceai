@@ -18,6 +18,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Contents
 
+   client
    create
    clusterer
    cluster_base

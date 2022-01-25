@@ -497,7 +497,7 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(docs, orient="records")
 
-    def all(
+    def get_all_documents(
         self,
         chunk_size: int = 1000,
         filters: List = [],
@@ -511,7 +511,7 @@ class Read(BatchAPIClient):
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
         Parameters
-        ----------
+        ------------
         chunk_size : list
             Number of documents to retrieve per retrieval
         include_vector: bool
@@ -522,6 +522,17 @@ class Read(BatchAPIClient):
             Query for filtering the search results
         select_fields : list
             Fields to include in the search results, empty array/list means all fields.
+        
+        Example
+        ----------
+        
+        .. code-block
+
+            from relevanceai import Client 
+            client = Client()
+            df = client.Dataset("sample")
+            docs = df.get_all_documents()
+
         """
 
         return self.get_all_documents(

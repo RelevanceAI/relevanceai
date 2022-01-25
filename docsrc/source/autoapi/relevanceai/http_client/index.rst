@@ -29,7 +29,7 @@ Module Contents
 
 
 
-   Python Client for Relevance AI's relevanceai
+   Batch API client
 
    .. py:attribute:: FAIL_MESSAGE
       :annotation: = Your API key is invalid. Please login again
@@ -39,7 +39,7 @@ Module Contents
    .. py:attribute:: build_and_plot_clusters
       
 
-      CRUD-related utility functions
+      
 
    .. py:method:: base_url(self)
       :property:
@@ -50,8 +50,6 @@ Module Contents
 
 
    .. py:method:: login(self, authenticate: bool = True)
-
-      Preferred login method for demos and interactive usage.
 
 
    .. py:method:: auth_header(self)
@@ -65,6 +63,32 @@ Module Contents
 
 
    .. py:method:: list_datasets(self)
+
+      List Datasets
+
+      .. rubric:: Example
+
+      .. code-block::
+
+          from relevanceai import Client
+          client = Client()
+          client.list_datasets()
+
+
+   .. py:method:: delete_dataset(self, dataset_id)
+
+      Delete a dataset
+
+      :param dataset_id: The ID of a dataset
+      :type dataset_id: str
+
+      .. rubric:: Example
+
+      .. code-block::
+
+          from relevanceai import Client
+          client = Client()
+          client.delete_dataset("sample_dataset")
 
 
    .. py:method:: Clusterer(self, model: relevanceai.clusterer.ClusterBase, alias: str, cluster_field: str = '_cluster_')

@@ -33,8 +33,6 @@ def str2bool(v):
 
 
 class Client(BatchAPIClient, DocUtils):
-    """Python Client for Relevance AI's relevanceai"""
-
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
     _cred_fn = ".creds.json"
 
@@ -44,7 +42,6 @@ class Client(BatchAPIClient, DocUtils):
         api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
     ):
-
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
 
@@ -79,8 +76,7 @@ class Client(BatchAPIClient, DocUtils):
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
 
-    """Configurations
-    """
+    ### Configurations
 
     @property
     def base_url(self):
@@ -102,8 +98,7 @@ class Client(BatchAPIClient, DocUtils):
             value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
 
-    """Authentication Details
-    """
+    ### Authentication Details
 
     def _token_to_auth(self):
         # if verbose:
@@ -134,7 +129,6 @@ class Client(BatchAPIClient, DocUtils):
         self,
         authenticate: bool = True,
     ):
-        """Preferred login method for demos and interactive usage."""
         project, api_key = self._token_to_auth()
         return Client(project=project, api_key=api_key, authenticate=authenticate)
 
@@ -148,19 +142,49 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         return self.admin._ping()
 
-    """Utility functions
-    """
+    ### Utility functions
 
     build_and_plot_clusters = build_and_plot_clusters
 
-    """CRUD-related utility functions
-    """
+    ### CRUD-related utility functions
 
     def list_datasets(self):
-        return self.datasets.list()
+        """List Datasets
 
-    """Clustering
-    """
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client 
+            client = Client()
+            client.list_datasets()
+
+        """
+        return self.datasets.list()
+    
+    def delete_dataset(self, dataset_id):
+        """
+        Delete a dataset
+
+        Parameters
+        ------------
+        dataset_id: str
+            The ID of a dataset
+        
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client 
+            client = Client()
+            client.delete_dataset("sample_dataset")
+        
+        """
+        return self.datasets.delete(dataset_id)
+
+    ### Clustering
 
     def Clusterer(
         self,

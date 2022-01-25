@@ -5,7 +5,8 @@
 
 .. autoapi-nested-parse::
 
-   Document utilities
+   The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms
+   and models. A cluster base has the following abstractmethods that must be written:
 
 
 
@@ -16,7 +17,7 @@ Module Contents
 
 
 
-   A Cluster Base for models to be copied off.
+   A Cluster Base for models to be inherited.
 
    .. py:method:: fit_transform(self, vectors: list) -> List[Union[str, float, int]]
       :abstractmethod:

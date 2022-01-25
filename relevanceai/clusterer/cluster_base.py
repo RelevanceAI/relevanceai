@@ -1,4 +1,6 @@
-"""Document utilities
+"""
+The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
+and models. A cluster base has the following abstractmethods that must be written:
 """
 import numpy as np
 from doc_utils import DocUtils
@@ -8,9 +10,8 @@ from typing import Union, List, Dict
 
 class ClusterBase(DocUtils, ABC):
     """
-    A Cluster Base for models to be copied off.
+    A Cluster Base for models to be inherited.
     """
-
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
