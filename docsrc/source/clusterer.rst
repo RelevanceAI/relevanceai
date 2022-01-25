@@ -7,12 +7,9 @@ Clustering
 
 .. automodule:: relevanceai.clusterer.clusterer
    :members:
-   :show-inheritance:
 
 .. automodule:: relevanceai.clusterer.kmeans_clusterer
     :members:
-    :show-inheritance:
 
 .. automodule:: relevanceai.clusterer.cluster_base
     :members:
-    :show-inheritance:

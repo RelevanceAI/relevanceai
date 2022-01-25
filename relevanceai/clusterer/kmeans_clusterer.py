@@ -152,12 +152,14 @@ class KMeansClusterer(Clusterer):
 
     Example
     -----------
+
     >>> from relevanceai import Client
     >>> client = Client()
-
-    >>> clusterer = client.KMeansClusterer(5)
+    >>> 
+    >>> clusterer = client.KMeansClusterer(alias="kmeans_cluster_sample")
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df, vector_fields=["sample_vector_"])
+
     """
 
     def __init__(
@@ -225,5 +227,16 @@ class KMeansClusterer(Clusterer):
         dataset: Union[Dataset, str],
         vector_fields: List,
     ):
+        """
+        Train clustering algorithm on documents and then store the labels
+        inside the documents.
+
+        Parameters
+        -----------
+        dataset: Union[str, Dataset]
+            The dataset to fit it. If string, it will create a dataset
+        vector_field: list
+            The vector field of the documents
+        """
         self.fit_dataset(dataset, vector_fields=vector_fields)
         return self._insert_centroid_documents()
