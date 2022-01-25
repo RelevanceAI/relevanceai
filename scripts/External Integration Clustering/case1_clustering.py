@@ -13,11 +13,11 @@ def main(args):
 
     df = client.Dataset(args.dataset_id)
     vector_field = args.vector_field
-    n_clusters = args.n_clusters
+    n_clusters = int(args.n_clusters)
 
     model = KMeans()
 
-    centroids = df.cluster(model, [vector_field], k=10)
+    centroids = df.cluster(model, [vector_field], k=n_clusters)
 
 
 if __name__ == "__main__":

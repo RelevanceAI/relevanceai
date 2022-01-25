@@ -4,11 +4,13 @@ This script demonstrates a class based approach for clustering with faiss Kmeans
 
 import argparse
 
+import numpy as np
+
 from relevanceai import Client
-from relevanceai.base import ClusterBase
+from relevanceai.clusterer import Clusterer
+from relevanceai.clusterer import ClusterBase
 
 from faiss import Kmeans
-
 
 def main(args):
 
@@ -16,36 +18,28 @@ def main(args):
 
     df = client.Dataset(args.dataset_id)
     vector_field = args.vector_field
-    n_clusters = args.n_clusters
+    n_clusters = int(args.n_clusters)
 
-    class Clusterer(ClusterBase):
-        def fit_dataset(self, df, vector_field):
-
-            vectors = df[vector_field].numpy().astype("float32")
-            self.fit_transform(self, vectors)
-            df.set_cluster_labels(
-                vector_field=vector_field,
-                alias=clusterer.get_alias(),
-                labels=clusterer.get_labels(),
-            )
+    class FaissKMeans(ClusterBase):            
+        def __init__(self, model):
+            self.model = model
 
         def fit_transform(self, vectors):
-            self.vectors = vectors
-            return self.clusterer.train(vectors)
+            vectors = np.array(vectors).astype('float32')
 
-        def get_centroids(self):
-            return self.clusterer.centroids
+            self.model.train(vectors)
+            cluster_labels = self.model.assign(vectors)[1]
 
-        def get_alias(self):
-            return type(self.clusterer).__name__
+            return cluster_labels
 
-        def get_labels(self):
-            return self.clusterer.assign(self.vectors)[1]
+        def metadata(self):
+            return self.model.__dict__
 
-    kmeans = Kmeans(d=args.dimensions, k=n_clusters, gpu=True, niter=1000, nredo=100)
-    clusterer = Clusterer(kmeans)
+    model = FaissKMeans(model=Kmeans(d=4, k=n_clusters))
 
-    clusterer.fit_dataset(df, vector_field)
+    clusterer = Clusterer(model=model, alias=f"kmeans-{n_clusters}")
+
+    clusterer.fit(dataset=df, vector_fields=[vector_field])
 
 
 if __name__ == "__main__":
@@ -54,7 +48,6 @@ if __name__ == "__main__":
     parser.add_argument("dataset_id", help="The dataset_id of the dataset to cluster")
     parser.add_argument("vector_field", help="The vector field over which to cluster")
     parser.add_argument("n_clusters", help="The number of clusters to find")
-    parser.add_argument("dimensions", help="dimensions in vector_field")
 
     args = parser.parse_args()
     main(args)
