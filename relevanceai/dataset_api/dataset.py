@@ -16,8 +16,6 @@ from relevanceai.dataset_api.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
-from sklearn.cluster import KMeans
-
 
 class Series(BatchAPIClient):
     """
@@ -479,7 +477,7 @@ class Dataset(BatchAPIClient):
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
 
-    def cluster(self, model, vector_fields, **kwargs):
+    def cluster(self, model, alias, vector_fields, **kwargs):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
@@ -490,14 +488,11 @@ class Dataset(BatchAPIClient):
         vector_fields : str
             The vector fields over which to cluster
         """
-        if isinstance(model, KMeans):
-            centroids = self.vector_tools.cluster.kmeans_cluster(
-                dataset_id=self.dataset_id, vector_fields=vector_fields, **kwargs
-            )
-        else:
-            raise ValueError("method not supported")
+        
+        from relevanceai.clusterer import Clusterer
 
-        return centroids
+        clusterer = Clusterer(model=model, alias=alias)
+        clusterer.fit(dataset=self, vector_fields=vector_fields)
 
     def sample(
         self,

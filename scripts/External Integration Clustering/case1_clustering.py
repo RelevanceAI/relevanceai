@@ -5,7 +5,7 @@ This script demonstrates a function based approach for clustering with KMeans Us
 import argparse
 
 from relevanceai import Client
-from sklearn.cluster import KMeans
+from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
 
 def main(args):
@@ -15,9 +15,9 @@ def main(args):
     vector_field = args.vector_field
     n_clusters = int(args.n_clusters)
 
-    model = KMeans()
+    model = KMeansModel(k=3)
 
-    df.cluster(model, [vector_field], k=n_clusters)
+    df.cluster(model=model, alias='cat', vector_fields=[vector_field], k=n_clusters)
 
 
 if __name__ == "__main__":
