@@ -1,0 +1,19 @@
+:py:mod:`relevanceai.api.batch`
+===============================
+
+.. py:module:: relevanceai.api.batch
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   batch_insert/index.rst
+   batch_retrieve/index.rst
+   chunk/index.rst
+   local_logger/index.rst
+   mongo_to_relevance_ai/index.rst
+
+

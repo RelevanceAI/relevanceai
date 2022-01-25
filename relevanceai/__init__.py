@@ -1,6 +1,9 @@
 import warnings
 from relevanceai import vector_tools
 from relevanceai.http_client import Client
+
+# Cluster Base Utilities
+from relevanceai.clusterer.cluster_base import ClusterBase
 import requests
 
 # Import useful utility if possible as well

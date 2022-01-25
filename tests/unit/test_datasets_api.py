@@ -1,5 +1,12 @@
 import pandas as pd
 from relevanceai.http_client import Dataset
+from relevanceai import Client
+
+
+def test_read_df_check(test_read_df, sample_vector_docs):
+    assert test_read_df["inserted"] == len(
+        sample_vector_docs
+    ), "Did not insert properly"
 
 
 def test_datasets_api(test_dataset_df: Dataset):
@@ -9,6 +16,7 @@ def test_datasets_api(test_dataset_df: Dataset):
     test_dataset_df.info()
     test_dataset_df.describe()
     test_dataset_df.head()
+    test_dataset_df.schema()
     assert True
 
 
