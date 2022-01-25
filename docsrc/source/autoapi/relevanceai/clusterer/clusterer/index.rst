@@ -12,21 +12,11 @@
 Module Contents
 ---------------
 
-.. py:class:: Clusterer(model: relevanceai.clusterer.cluster_base.ClusterBase, alias: str, project: str, api_key: str, cluster_field: str = '_cluster_')
+.. py:class:: Clusterer(model: relevanceai.clusterer.cluster_base.ClusterBase, alias: str, project: Union[str, None] = None, api_key: Union[str, None] = None, cluster_field: str = '_cluster_')
 
 
 
-   Clusterer class allows users to set up any clustering model to fit on a Dataset.
-
-   You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-
-   .. rubric:: Example
-
-   >>> from relevanceai import Client
-   >>> client = Client()
-   >>> clusterer = client.KMeansClusterer(5)
-   >>> df = client.Dataset("sample")
-   >>> clusterer.fit(df, vector_fields=["sample_vector_"])
+   Batch API client
 
    .. py:method:: fit(self, dataset: Union[relevanceai.dataset_api.Dataset, str], vector_fields: List)
 

@@ -973,7 +973,7 @@ class Export(Read):
             raise NotImplementedError
 
 
-class Dataset(Export, Write):
+class Dataset(Export, Write, Stats):
     def vectorize(self, field, model):
         """
         Vectorizes a Particular field (text) of the dataset

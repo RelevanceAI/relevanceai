@@ -51,10 +51,8 @@ Module Contents
           "red_vector_": [0.23, 0.41, 0.3]
       }
 
-      Example
-
-
       ```
+
 
 
 

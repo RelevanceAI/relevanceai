@@ -66,6 +66,16 @@ Module Contents
       >>> df["sample_1_label"].apply(lambda x: x + 3)
 
 
+   .. py:method:: numpy(self) -> numpy.ndarray
+
+      Iterates over all documents in dataset and returns all numeric values in a numpy array.
+
+      :param None:
+
+      :returns: **vectors** -- an array/matrix of all numeric values selected
+      :rtype: np.ndarray
+
+
    .. py:method:: value_counts(self, normalize: bool = False, ascending: bool = False, sort: bool = False, bins: Optional[int] = None)
 
       Return a Series containing counts of unique values (or values with in a range if bins is set).
@@ -339,6 +349,9 @@ Module Contents
       >>> df.apply(update_documents)
 
 
+   .. py:method:: set_cluster_labels(self, vector_fields, alias, labels)
+
+
    .. py:method:: create(self, schema: dict = {})
 
       A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
@@ -470,6 +483,25 @@ Module Contents
    -------------------
 
    A Pandas Like datatset API for interacting with the RelevanceAI python package
+
+   .. py:method:: vectorize(self, field, model)
+
+      Vectorizes a Particular field (text) of the dataset
+
+      :param field: The text field to select
+      :type field: str
+      :param model: a Type deep learning model that vectorizes text
+
+
+   .. py:method:: cluster(self, model, alias, vector_fields, **kwargs)
+
+      Performs KMeans Clustering on over a vector field within the dataset.
+
+      :param model: The clustering model to use
+      :type model: Class
+      :param vector_fields: The vector fields over which to cluster
+      :type vector_fields: str
+
 
 
 .. py:class:: Datasets(project: str, api_key: str)
