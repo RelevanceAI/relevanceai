@@ -65,5 +65,5 @@ apidoc_module_first = True
 autosummary_imported_members = True
 autoapi_dirs = ["../../relevanceai"]
 autoapi_keep_files = True
-autoapi_options = {"undoc-members": "no","exclude-members": "__init__"}
+autoapi_options = {"undoc-members": "no", "exclude-members": "__init__"}
 autodoc_class_signature = "separated"

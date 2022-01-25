@@ -258,6 +258,7 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
+
 class Read(BatchAPIClient):
     """
 
@@ -575,6 +576,7 @@ class Read(BatchAPIClient):
         """
         return self.datasets.schema(self.dataset_id)
 
+
 class Stats(Read):
     def value_counts(self, field: str):
         """
@@ -595,6 +597,7 @@ class Stats(Read):
         dispersion and shape of a dataset's distribution, excluding NaN values.
         """
         return self.datasets.facets(self.dataset_id)
+
 
 class Write(Read):
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
@@ -621,7 +624,7 @@ class Write(Read):
         self.pull_update_push(
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
-    
+
     concat = cat
 
     def vectorize(self, field, model):
@@ -935,6 +938,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
+
 class Export(Read):
     def to_csv(self, filename: str, **kwargs):
         """
@@ -967,7 +971,8 @@ class Export(Read):
             return self.get_all_documents(self.dataset_id)
         else:
             raise NotImplementedError
-    
+
+
 class Dataset(Export, Write):
     def vectorize(self, field, model):
         """
@@ -996,10 +1001,12 @@ class Dataset(Export, Write):
         """
 
         from relevanceai.clusterer import Clusterer
+
         clusterer = Clusterer(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
         return clusterer.fit(dataset=self, vector_fields=vector_fields)
+
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
