@@ -16,7 +16,7 @@ Module Contents
 
 
 
-   Create an ABC
+   A Cluster Base for models to be copied off.
 
    .. py:method:: fit_transform(self, vectors: Union[numpy.ndarray, List])
 
@@ -51,10 +51,8 @@ Module Contents
           "red_vector_": [0.23, 0.41, 0.3]
       }
 
-      Example
-
-
       ```
+
 
 
 
@@ -77,12 +75,20 @@ Module Contents
 
    >>> from relevanceai import Client
    >>> client = Client()
-
-   >>> clusterer = client.KMeansClusterer()
+   >>>
+   >>> clusterer = client.KMeansClusterer(alias="kmeans_cluster_sample")
    >>> df = client.Dataset("sample")
    >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
    .. py:method:: fit(self, dataset: Union[relevanceai.dataset_api.Dataset, str], vector_fields: List)
+
+      Train clustering algorithm on documents and then store the labels
+      inside the documents.
+
+      :param dataset: The dataset to fit it. If string, it will create a dataset
+      :type dataset: Union[str, Dataset]
+      :param vector_field: The vector field of the documents
+      :type vector_field: list
 
 
 

@@ -16,7 +16,7 @@ Module Contents
 
 
 
-   Create an ABC
+   A Cluster Base for models to be copied off.
 
    .. py:method:: fit_transform(self, vectors) -> List[Union[str, float, int]]
       :abstractmethod:
@@ -43,10 +43,8 @@ Module Contents
       :type kwargs: dict
 
 
-   .. py:method:: metadata(self)
+   .. py:method:: metadata(self) -> dict
       :property:
-
-      You can also store the metadata of this clustering algorithm
 
 
 

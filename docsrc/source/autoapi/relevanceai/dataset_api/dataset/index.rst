@@ -16,6 +16,9 @@ Module Contents
 
 
 
+   Dataset Series Object
+   -----------------------------
+
    A wrapper class for being able to vectorize documents over field
 
    .. py:method:: sample(self, n: int = 1, frac: float = None, filters: list = [], random_state: int = 0, output_format='pandas')
@@ -63,10 +66,38 @@ Module Contents
       >>> df["sample_1_label"].apply(lambda x: x + 3)
 
 
+   .. py:method:: numpy(self) -> numpy.ndarray
 
-.. py:class:: Dataset(project: str, api_key: str)
+      Iterates over all documents in dataset and returns all numeric values in a numpy array.
+
+      :param None:
+
+      :returns: **vectors** -- an array/matrix of all numeric values selected
+      :rtype: np.ndarray
 
 
+   .. py:method:: value_counts(self, normalize: bool = False, ascending: bool = False, sort: bool = False, bins: Optional[int] = None)
+
+      Return a Series containing counts of unique values (or values with in a range if bins is set).
+
+      :param normalize: If True then the object returned will contain the relative frequencies of the unique values.
+      :type normalize: bool, default False
+      :param ascending: Sort in ascending order.
+      :type ascending: bool, default False
+      :param bins: Groups categories into 'bins'. These bins are good for representing groups within continuous series
+      :type bins: int, optional
+
+      :returns:
+      :rtype: Series
+
+
+
+.. py:class:: Read(project: str, api_key: str)
+
+
+
+   Dataset Read
+   -------------------
 
    A Pandas Like datatset API for interacting with the RelevanceAI python package
 
@@ -117,31 +148,6 @@ Module Contents
       >>> df.head()
 
 
-   .. py:method:: describe(self) -> dict
-
-      Descriptive statistics include those that summarize the central tendency
-      dispersion and shape of a dataset's distribution, excluding NaN values.
-
-
-   .. py:method:: vectorize(self, field, model)
-
-      Vectorizes a Particular field (text) of the dataset
-
-      :param field: The text field to select
-      :type field: str
-      :param model: a Type deep learning model that vectorizes text
-
-
-   .. py:method:: cluster(self, field, n_clusters=10, overwrite=False)
-
-      Performs KMeans Clustering on over a vector field within the dataset.
-
-      :param field: The text field to select
-      :type field: str
-      :param n_cluster: the number of cluster to find wihtin the vector field
-      :type n_cluster: int default = 10
-
-
    .. py:method:: sample(self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0, select_fields: list = [], output_format: str = 'json')
 
       Return a random sample of items from a dataset.
@@ -163,6 +169,121 @@ Module Contents
       >>> client = Client()
       >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
       >>> df.sample()
+
+
+   .. py:method:: all(self, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
+
+      Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
+
+      :param chunk_size: Number of documents to retrieve per retrieval
+      :type chunk_size: list
+      :param include_vector: Include vectors in the search results
+      :type include_vector: bool
+      :param sort: Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+      :type sort: list
+      :param filters: Query for filtering the search results
+      :type filters: list
+      :param select_fields: Fields to include in the search results, empty array/list means all fields.
+      :type select_fields: list
+
+
+   .. py:method:: get(self, document_ids: Union[List, str], include_vector: bool = True)
+
+      Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+
+      :param document_ids: ID of a document in a dataset.
+      :type document_ids: Union[list, str]
+      :param include_vector: Include vectors in the search results
+      :type include_vector: bool
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client, Dataset
+      >>> client = Client()
+      >>> df = client.Dataset("sample_dataset")
+      >>> df.get("sample_id", include_vector=False)
+
+
+   .. py:method:: schema(self)
+
+      Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client
+      >>> client = Client()
+      >>> df = client.Dataset("sample")
+      >>> df.schema()
+
+
+
+.. py:class:: Stats(project: str, api_key: str)
+
+
+
+   Dataset Read
+   -------------------
+
+   A Pandas Like datatset API for interacting with the RelevanceAI python package
+
+   .. py:method:: value_counts(self, field: str)
+
+      Return a Series containing counts of unique values.
+      :param field: dataset field to which to do value counts on
+      :type field: str
+
+      :returns:
+      :rtype: Series
+
+
+   .. py:method:: describe(self) -> dict
+
+      Descriptive statistics include those that summarize the central tendency
+      dispersion and shape of a dataset's distribution, excluding NaN values.
+
+
+
+.. py:class:: Write(project: str, api_key: str)
+
+
+
+   Dataset Read
+   -------------------
+
+   A Pandas Like datatset API for interacting with the RelevanceAI python package
+
+   .. py:attribute:: concat
+      
+
+      
+
+   .. py:method:: cat(self, vector_name: Union[str, None] = None, fields: List = [])
+
+      Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+      :param vector_name: name of the new concatenated vector field
+      :type vector_name: str, default None
+      :param fields: fields alone which the new vector will concatenate
+      :type fields: List
+
+
+   .. py:method:: vectorize(self, field, model)
+
+      Vectorizes a Particular field (text) of the dataset
+
+      :param field: The text field to select
+      :type field: str
+      :param model: a Type deep learning model that vectorizes text
+
+
+   .. py:method:: cluster(self, field, n_clusters=10, overwrite=False)
+
+      Performs KMeans Clustering on over a vector field within the dataset.
+
+      :param field: The text field to select
+      :type field: str
+      :param n_cluster: the number of cluster to find wihtin the vector field
+      :type n_cluster: int default = 10
 
 
    .. py:method:: apply(self, func: Callable, retrieve_chunk_size: int = 100, max_workers: int = 8, filters: list = [], select_fields: list = [], show_progress_bar: bool = True, use_json_encoder: bool = True, axis: int = 0)
@@ -228,50 +349,7 @@ Module Contents
       >>> df.apply(update_documents)
 
 
-   .. py:method:: all(self, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
-
-      Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
-
-      :param chunk_size: Number of documents to retrieve per retrieval
-      :type chunk_size: list
-      :param include_vector: Include vectors in the search results
-      :type include_vector: bool
-      :param sort: Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
-      :type sort: list
-      :param filters: Query for filtering the search results
-      :type filters: list
-      :param select_fields: Fields to include in the search results, empty array/list means all fields.
-      :type select_fields: list
-
-
-   .. py:method:: to_csv(self, filename: str, **kwargs)
-
-      Download a dataset from the QC to a local .csv file
-
-      :param filename: path to downloaded .csv file
-      :type filename: str
-      :param kwargs: see client.get_all_documents() for extra args
-      :type kwargs: Optional
-
-
-   .. py:method:: read_csv(self, filename: str, **kwargs)
-
-      Wrapper for client.insert_csv
-
-      :param filename: path to .csv file
-      :type filename: str
-      :param kwargs: see client.insert_csv() for extra args
-      :type kwargs: Optional
-
-
-   .. py:method:: cat(self, vector_name: Union[str, None] = None, fields: List = [])
-
-      Concatenates numerical fields along an axis and reuploads this vector for other operations
-
-      :param vector_name: name of the new concatenated vector field
-      :type vector_name: str, default None
-      :param fields: fields alone which the new vector will concatenate
-      :type fields: List
+   .. py:method:: set_cluster_labels(self, vector_fields, alias, labels)
 
 
    .. py:method:: create(self, schema: dict = {})
@@ -366,33 +444,63 @@ Module Contents
       >>> df.upsert(dataset_id, documents)
 
 
-   .. py:method:: get(self, document_ids: Union[List, str], include_vector: bool = True)
 
-      Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
-
-      :param document_ids: ID of a document in a dataset.
-      :type document_ids: Union[list, str]
-      :param include_vector: Include vectors in the search results
-      :type include_vector: bool
-
-      .. rubric:: Example
-
-      >>> from relevanceai import Client, Dataset
-      >>> client = Client()
-      >>> df = client.Dataset("sample_dataset")
-      >>> df.get("sample_id", include_vector=False)
+.. py:class:: Export(project: str, api_key: str)
 
 
-   .. py:method:: schema(self)
 
-      Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+   Dataset Read
+   -------------------
 
-      .. rubric:: Example
+   A Pandas Like datatset API for interacting with the RelevanceAI python package
 
-      >>> from relevanceai import Client
-      >>> client = Client()
-      >>> df = client.Dataset("sample")
-      >>> df.schema()
+   .. py:method:: to_csv(self, filename: str, **kwargs)
+
+      Download a dataset from the QC to a local .csv file
+
+      :param filename: path to downloaded .csv file
+      :type filename: str
+      :param kwargs: see client.get_all_documents() for extra args
+      :type kwargs: Optional
+
+
+   .. py:method:: to_dict(self, orient: str = 'records')
+
+      Returns the raw list of dicts from the QC
+
+      :param None:
+
+      :returns:
+      :rtype: list of documents in dictionary format
+
+
+
+.. py:class:: Dataset(project: str, api_key: str)
+
+
+
+   Dataset Read
+   -------------------
+
+   A Pandas Like datatset API for interacting with the RelevanceAI python package
+
+   .. py:method:: vectorize(self, field, model)
+
+      Vectorizes a Particular field (text) of the dataset
+
+      :param field: The text field to select
+      :type field: str
+      :param model: a Type deep learning model that vectorizes text
+
+
+   .. py:method:: cluster(self, model, alias, vector_fields, **kwargs)
+
+      Performs KMeans Clustering on over a vector field within the dataset.
+
+      :param model: The clustering model to use
+      :type model: Class
+      :param vector_fields: The vector fields over which to cluster
+      :type vector_fields: str
 
 
 
