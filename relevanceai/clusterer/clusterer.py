@@ -11,7 +11,7 @@ from doc_utils import DocUtils
 
 class Clusterer(BatchAPIClient):
     """
-    Clusterer allows users to be able to 
+    Clusterer allows users to be able to
 
     Parameters
     ----------
@@ -21,7 +21,7 @@ class Clusterer(BatchAPIClient):
         The number of clusters in your K Means
     cluster_field: str
         The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
-    
+
     You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
 
     Example
@@ -33,6 +33,7 @@ class Clusterer(BatchAPIClient):
     >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
     """
+
     def __init__(
         self,
         model: ClusterBase,
@@ -62,7 +63,7 @@ class Clusterer(BatchAPIClient):
         vector_fields: List,
     ):
         """
-        This function takes in the dataset and the relevant vector fields. 
+        This function takes in the dataset and the relevant vector fields.
         Under the hood, it runs fit_dataset. Sometimes, you may want to modify the behavior
         to adapt it to your needs.
 
@@ -73,10 +74,10 @@ class Clusterer(BatchAPIClient):
             The dataset to fit the clusterer on
         vector_fields: List[str],
             The vector fields to fit it on
-        
+
         Example
         ---------
-        >>> from relevanceai import Client 
+        >>> from relevanceai import Client
         >>> client = Client()
         >>> from relevanceai import ClusterBase
         >>> import random
@@ -87,9 +88,9 @@ class Clusterer(BatchAPIClient):
         >>> def fit_transform(self, X):
         >>>     return random.randint(0, 100)
         >>> clusterer = client.KMeansClusterer()
-        >>> df = client.Dataset("sample") 
+        >>> df = client.Dataset("sample")
         >>> clusterer.fit(df)
-        
+
         """
         return self.fit_dataset(dataset, vector_fields=vector_fields)
 
@@ -110,7 +111,7 @@ class Clusterer(BatchAPIClient):
 
         Example
         ---------
-        >>> from relevanceai import Client 
+        >>> from relevanceai import Client
         >>> client = Client()
         >>> from relevanceai import ClusterBase
         >>> import random
@@ -121,7 +122,7 @@ class Clusterer(BatchAPIClient):
         >>> def fit_transform(self, X):
         >>>     return random.randint(0, 100)
         >>> clusterer = client.KMeansClusterer()
-        >>> df = client.Dataset("sample") 
+        >>> df = client.Dataset("sample")
         >>> clusterer.fit(df)
         """
 
@@ -154,8 +155,6 @@ class Clusterer(BatchAPIClient):
 
         # Update the centroid collection
         self.model.vector_fields = vector_fields
-
-
 
     # def list_closest_to_center(self):
     #     return self.datasets.cluster.centroids.list_closest_to_center(
@@ -230,7 +229,7 @@ class Clusterer(BatchAPIClient):
         Example
         -----------
 
-        >>> from relevanceai import Client 
+        >>> from relevanceai import Client
         >>> client = Client()
         >>> from relevanceai import ClusterBase
         >>> import random
@@ -252,7 +251,7 @@ class Clusterer(BatchAPIClient):
         >>>         cluster_labels.append(random.randint(0, 100))
         >>>     return cluster_labels
         >>> clusterer = client.KMeansClusterer()
-        >>> df = client.Dataset("sample") 
+        >>> df = client.Dataset("sample")
         >>> clusterer.fit(df, ["sample_vector_"])
         """
         self.vector_fields = vector_fields
@@ -348,7 +347,7 @@ class Clusterer(BatchAPIClient):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-        
+
         Example
         ---------
         >>> from relevanceai import Client
@@ -476,7 +475,7 @@ class Clusterer(BatchAPIClient):
             Whether to sort results by ascending or descending order
         flatten: bool
             Whether to flatten
-        
+
         Example
         ---------
 
@@ -486,7 +485,7 @@ class Clusterer(BatchAPIClient):
         >>> clusterer = client.KMeansClusterer()
         >>> clusterer.fit(df, ["sample_vector_"])
         >>> clusterer.aggregate(
-        >>>     groupby=[], 
+        >>>     groupby=[],
         >>>     metrics=[
         >>>         {"name": "average_score", "field": "final_score", "agg": "avg"},
         >>>     ]
@@ -506,13 +505,13 @@ class Clusterer(BatchAPIClient):
             asc=asc,
             flatten=flatten,
         )
-    
+
     @property
     def metadata(self):
         """
         If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
         Otherwise, you can store the metadata about your cluster here.
-    
+
         Example
         ----------
 
@@ -530,9 +529,9 @@ class Clusterer(BatchAPIClient):
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
-    
+
     @metadata.setter
-    def metadata(self, metadata:dict):
+    def metadata(self, metadata: dict):
         """
         If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
         Otherwise, you can store the metadata about your cluster here.
@@ -557,5 +556,5 @@ class Clusterer(BatchAPIClient):
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
-            metadata=metadata
+            metadata=metadata,
         )

@@ -7,6 +7,7 @@ from relevanceai.clusterer.clusterer import Clusterer
 from relevanceai.clusterer.cluster_base import ClusterBase
 from relevanceai.dataset_api import Dataset
 
+
 class KMeansModel(ClusterBase):
     def __init__(
         self,
@@ -87,9 +88,9 @@ class KMeansModel(ClusterBase):
                 cluster_center_doc[vf] = deconcat_center
             cluster_centers.append(cluster_center_doc.copy())
         return cluster_centers
-    
+
     def get_centroid_documents(
-        self, centroid_vector_field_name: str="centroid_vector_"
+        self, centroid_vector_field_name: str = "centroid_vector_"
     ) -> List:
         """
         Get the centroid documents to store.
@@ -136,7 +137,7 @@ class KMeansModel(ClusterBase):
 
 class KMeansClusterer(Clusterer):
     """
-    Run KMeans Clustering. 
+    Run KMeans Clustering.
 
     Parameters
     ----------
@@ -146,7 +147,7 @@ class KMeansClusterer(Clusterer):
         The number of clusters in your K Means
     cluster_field: str
         The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
-    
+
     You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
 
     Example
@@ -158,6 +159,7 @@ class KMeansClusterer(Clusterer):
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df, vector_fields=["sample_vector_"])
     """
+
     def __init__(
         self,
         alias: str,
@@ -196,9 +198,7 @@ class KMeansClusterer(Clusterer):
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
             if len(self.vector_fields) == 1:
-                centers = self.model.get_centroid_documents(
-                    self.vector_fields[0]
-                )
+                centers = self.model.get_centroid_documents(self.vector_fields[0])
             else:
                 centers = self.model.get_centroid_documents()
 

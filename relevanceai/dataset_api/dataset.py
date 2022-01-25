@@ -30,8 +30,12 @@ class Series(BatchAPIClient):
         super().__init__(project=project, api_key=api_key)
 
     def sample(
-        self, n: int = 1, frac: float = None, filters: list = [], random_state: int = 0,
-        output_format="pandas"
+        self,
+        n: int = 1,
+        frac: float = None,
+        filters: list = [],
+        random_state: int = 0,
+        output_format="pandas",
     ):
         """
         Return a random sample of items from a dataset.
@@ -479,7 +483,7 @@ class Dataset(BatchAPIClient):
         filters: list = [],
         random_state: int = 0,
         select_fields: list = [],
-        output_format: str="json"
+        output_format: str = "json",
     ):
 
         """
@@ -529,7 +533,7 @@ class Dataset(BatchAPIClient):
         if output_format == "json":
             return docs
         elif output_format == "pandas":
-            return pd.DataFrame.from_dict(docs, orient='records')
+            return pd.DataFrame.from_dict(docs, orient="records")
 
     def apply(
         self,
@@ -968,6 +972,7 @@ class Dataset(BatchAPIClient):
         >>> df.schema()
         """
         return self.datasets.schema(self.dataset_id)
+
     def to_dict(self, orient: str = "records"):
         """
         Returns the raw list of dicts from the QC
