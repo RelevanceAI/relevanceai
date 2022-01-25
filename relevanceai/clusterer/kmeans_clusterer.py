@@ -58,7 +58,6 @@ class KMeansModel(ClusterBase):
         return cluster_labels
 
     @property
-    
     def metadata(self):
         """Editing the metadata of the function"""
         return {
