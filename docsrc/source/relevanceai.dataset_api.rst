@@ -30,7 +30,7 @@ relevanceai.dataset\_api.centroids module
 
 .. automodule:: relevanceai.dataset_api.centroids
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:
 
 relevanceai.dataset\_api.dataset module
@@ -38,7 +38,7 @@ relevanceai.dataset\_api.dataset module
 
 .. automodule:: relevanceai.dataset_api.dataset
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:
 
 relevanceai.dataset\_api.groupby module
@@ -46,7 +46,7 @@ relevanceai.dataset\_api.groupby module
 
 .. automodule:: relevanceai.dataset_api.groupby
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:
 
 Module contents
@@ -54,5 +54,5 @@ Module contents
 
 .. automodule:: relevanceai.dataset_api
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:

@@ -30,7 +30,12 @@ class Series(BatchAPIClient):
         super().__init__(project=project, api_key=api_key)
 
     def sample(
-        self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0
+        self,
+        n: int = 1,
+        frac: float = None,
+        filters: list = [],
+        random_state: int = 0,
+        output_format="pandas",
     ):
         """
         Return a random sample of items from a dataset.
@@ -48,6 +53,14 @@ class Series(BatchAPIClient):
 
         """
         select_fields = [self.field] if isinstance(self.field, str) else self.field
+        if output_format == "json":
+            return Dataset(self.project, self.api_key)(self.dataset_id).sample(
+                n=n,
+                frac=frac,
+                filters=filters,
+                random_state=random_state,
+                select_fields=select_fields,
+            )
         return Dataset(self.project, self.api_key)(self.dataset_id).sample(
             n=n,
             frac=frac,
@@ -93,7 +106,7 @@ class Series(BatchAPIClient):
             def encode_documents(documents):
                 return model([self.field], documents)
 
-        self.client.pull_update_push(self.dataset_id, encode_documents)
+        self.pull_update_push(self.dataset_id, encode_documents)
 
     def apply(
         self,
@@ -384,6 +397,15 @@ class Dataset(BatchAPIClient):
         -------
         Pandas DataFrame or Dict, depending on args
             The first 'n' rows of the caller object.
+
+        Example
+        ---------
+
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
+        >>> df.head()
+
         """
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
@@ -461,6 +483,7 @@ class Dataset(BatchAPIClient):
         filters: list = [],
         random_state: int = 0,
         select_fields: list = [],
+        output_format: str = "json",
     ):
 
         """
@@ -479,9 +502,15 @@ class Dataset(BatchAPIClient):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
 
+        Example
+        ---------
+
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
+        >>> df.sample()
+
         """
-        if n == 0 and frac is None:
-            raise ValueError("Must provide one of n or frac")
 
         if frac and n:
             raise ValueError("Only one of n or frac can be provided")
@@ -493,7 +522,7 @@ class Dataset(BatchAPIClient):
                 self.get_number_of_documents(self.dataset_id, filters=filters) * frac
             )
 
-        return self.datasets.documents.get_where(
+        docs = self.datasets.documents.get_where(
             dataset_id=self.dataset_id,
             filters=filters,
             page_size=n,
@@ -501,10 +530,20 @@ class Dataset(BatchAPIClient):
             is_random=True,
             select_fields=select_fields,
         )["documents"]
+        if output_format == "json":
+            return docs
+        elif output_format == "pandas":
+            return pd.DataFrame.from_dict(docs, orient="records")
 
     def apply(
         self,
         func: Callable,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 8,
+        filters: list = [],
+        select_fields: list = [],
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
         axis: int = 0,
     ):
         """
@@ -516,22 +555,102 @@ class Dataset(BatchAPIClient):
         --------------
         func: function
             Function to apply to each document
-
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
         axis: int
             Axis along which the function is applied.
             - 9 or 'index': apply function to each column
             - 1 or 'columns': apply function to each row
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> def update_doc(doc):
+        >>>     doc["value"] = 2
+        >>>     return doc
+        >>> df.apply(update_doc)
 
         """
         if axis == 1:
             raise ValueError("We do not support column-wise operations!")
 
         def bulk_fn(docs):
+            new_docs = []
             for d in docs:
-                func(d)
+                new_d = func(d)
+                new_docs.append(new_d)
             return docs
 
-        return self.pull_update_push(self.dataset_id, bulk_fn)
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_fn,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
+        )
+
+    def bulk_apply(
+        self,
+        bulk_func: Callable,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 8,
+        filters: list = [],
+        select_fields: list = [],
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
+    ):
+        """
+        Apply a bulk function along an axis of the DataFrame.
+
+        Parameters
+        ------------
+        bulk_func: function
+            Function to apply to a bunch of documents at a time
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> def update_documents(document):
+                for d in documents:
+        >>>         d["value"] = 10
+        >>>     return documents
+        >>> df.apply(update_documents)
+        """
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_func,
+            retrieve_chunk_size=retrieve_chunk_size,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
+        )
 
     def all(
         self,
@@ -609,7 +728,60 @@ class Dataset(BatchAPIClient):
         kwargs: Optional
             see client.insert_csv() for extra args
         """
-        self.insert_csv(self.dataset_id, filename, **kwargs)
+        return self.insert_csv(self.dataset_id, filename, **kwargs)
+
+    # def insert_documents(
+    #     self,
+    #     documents,
+    #     bulk_fn: Callable = None,
+    #     max_workers: int = 8,
+    #     retry_chunk_mult: float = 0.5,
+    #     show_progress_bar: bool = False,
+    #     chunksize: int = 0,
+    #     use_json_encoder: bool = True,
+    # ):
+
+    #     """
+    #     Update a list of documents with multi-threading automatically enabled.
+    #     Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+    #     Parameters
+    #     ----------
+    #     dataset_id : string
+    #         Unique name of dataset
+    #     docs : list
+    #         A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+    #     bulk_fn : callable
+    #         Function to apply to documents before uploading
+    #     max_workers : int
+    #         Number of workers active for multi-threading
+    #     retry_chunk_mult: int
+    #         Multiplier to apply to chunksize if upload fails
+    #     chunksize : int
+    #         Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+    #     use_json_encoder : bool
+    #         Whether to automatically convert documents to json encodable format
+
+    #     Example
+    #     ----------
+
+    #     >>> from relevanceai import Client
+    #     >>> client = Client()
+    #     >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+    #     >>> df = client.Dataset("sample")
+    #     >>> df.insert_documents(dataset_id, documents)
+
+    #     """
+    #     return self.insert_documents(
+    #         dataset_id=self.dataset_id,
+    #         documents=documents,
+    #         bulk_fn=bulk_fn,
+    #         max_workers=max_workers,
+    #         retry_chunk_mult=retry_chunk_mult,
+    #         show_progress_bar=show_progress_bar,
+    #         chunksize=chunksize,
+    #         use_json_encoder=use_json_encoder,
+    #     )
 
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
@@ -635,6 +807,171 @@ class Dataset(BatchAPIClient):
         self.pull_update_push(
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
+
+    def create(self, schema: dict = {}):
+        """
+        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
+        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+
+        For example:
+
+        >>>    {
+        >>>        "product_image_vector_": 1024,
+        >>>        "product_text_description_vector_" : 128
+        >>>    }
+
+        These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"]. \n
+
+        For example:
+
+        >>>    {
+        >>>        "product_text_description" : "text",
+        >>>        "price" : "numeric",
+        >>>        "created_date" : "date",
+        >>>        "product_texts_chunk_": "chunks",
+        >>>        "product_text_chunkvector_" : 1024
+        >>>    }
+
+        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+
+        Note:
+
+            - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
+            - "_id" is reserved as the key and id of a document.
+            - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
+
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+
+        Parameters
+        ----------
+        schema : dict
+            Schema for specifying the field that are vectors and its length
+
+        Example
+        ----------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+        >>> df = client.Dataset("sample")
+        >>> df.create()
+
+        """
+        return self.datasets.create(self.dataset_id, schema=schema)
+
+    def delete(self):
+        """
+        Delete a dataset
+
+        Example
+        ---------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+        >>> df = client.Dataset("sample")
+        >>> df.delete()
+
+        """
+        return self.datasets.delete(self.dataset_id)
+
+    def upsert_documents(
+        self,
+        documents: list,
+        bulk_fn: Callable = None,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        chunksize: int = 0,
+        show_progress_bar=False,
+        use_json_encoder: bool = True,
+    ):
+
+        """
+        Update a list of documents with multi-threading automatically enabled.
+        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        docs : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
+
+        Example
+        ----------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+        >>> df = client.Dataset("sample")
+        >>> df.upsert(dataset_id, documents)
+
+        """
+        return self.update_documents(
+            self.dataset_id,
+            docs=documents,
+            bulk_fn=bulk_fn,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            chunksize=chunksize,
+            use_json_encoder=use_json_encoder,
+        )
+
+    def get(self, document_ids: Union[List, str], include_vector: bool = True):
+        """
+        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+
+        Parameters
+        ----------
+        document_ids: Union[list, str]
+            ID of a document in a dataset.
+        include_vector: bool
+            Include vectors in the search results
+
+        Example
+        --------
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> df.get("sample_id", include_vector=False)
+
+        """
+        if isinstance(document_ids, str):
+            return self.datasets.documents.get(
+                self.dataset_id, id=document_ids, include_vector=include_vector
+            )
+        elif isinstance(document_ids, list):
+            return self.datasets.documents.bulk_get(
+                self.dataset_id, ids=document_ids, include_vector=include_vector
+            )
+        raise TypeError("Document IDs needs to be a string or a list")
+
+    def schema(self):
+        """
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+
+        Example
+        -----------------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample")
+        >>> df.schema()
+        """
+        return self.datasets.schema(self.dataset_id)
 
     def to_dict(self, orient: str = "records"):
         """

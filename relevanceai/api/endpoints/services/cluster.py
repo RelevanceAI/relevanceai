@@ -15,6 +15,7 @@ class ClusterClient(_Base):
         vector_fields: list,
         metrics: list = [],
         groupby: list = [],
+        sort: list = [],
         filters: list = [],
         page_size: int = 20,
         page: int = 1,
@@ -55,7 +56,7 @@ class ClusterClient(_Base):
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,
-            "aggregation_query": {"groupby": groupby, "metrics": metrics},
+            "aggregation_query": {"groupby": groupby, "metrics": metrics, "sort": sort},
             "filters": filters,
             "page_size": page_size,
             "page": page,

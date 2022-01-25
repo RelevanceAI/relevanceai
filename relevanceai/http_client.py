@@ -3,9 +3,11 @@
 import getpass
 import json
 import os
+from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api.dataset import Dataset, Datasets
+from relevanceai.clusterer import Clusterer, KMeansClusterer, ClusterBase
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -24,7 +26,6 @@ except ModuleNotFoundError as e:
     pass
 
 from relevanceai.vector_tools.client import VectorTools
-from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
 
 def str2bool(v):
@@ -154,4 +155,53 @@ class Client(BatchAPIClient, DocUtils):
 
     """CRUD-related utility functions
     """
-    # delete_dataset = self.dataset.delete
+
+    def list_datasets(self):
+        return self.datasets.list()
+
+    """Clustering
+    """
+
+    def Clusterer(
+        self,
+        model: ClusterBase,
+        alias: str,
+        cluster_field: str = "_cluster_",
+    ):
+        return Clusterer(
+            model=model,
+            alias=alias,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
+
+    def KMeansClusterer(
+        self,
+        alias: str,
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        n_init: int = 10,
+        max_iter: int = 300,
+        tol: float = 1e-4,
+        verbose: bool = True,
+        random_state: Optional[int] = None,
+        copy_x: bool = True,
+        algorithm: str = "auto",
+        cluster_field: str = "_cluster_",
+    ):
+        return KMeansClusterer(
+            alias=alias,
+            k=k,
+            init=init,
+            n_init=n_init,
+            max_iter=max_iter,
+            tol=tol,
+            verbose=verbose,
+            random_state=random_state,
+            copy_x=copy_x,
+            algorithm=algorithm,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
