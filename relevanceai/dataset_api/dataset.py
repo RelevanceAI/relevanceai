@@ -660,6 +660,126 @@ class Write(Read):
             overwrite=overwrite,
         )
         return centroids
+    
+    def insert_documents(
+        self,
+        documents: list,
+        bulk_fn: Callable = None,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
+        chunksize: int = 0,
+        use_json_encoder: bool = True,
+        *args,
+        **kwargs,
+    ):
+
+        """
+        Insert a list of documents with multi-threading automatically enabled.
+
+        - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+        - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+        - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+        - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+
+        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+
+        Parameters
+        ----------
+        documents: list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
+        Example
+        --------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
+        >>> df.insert_documents(documents)
+
+        """
+        return self._insert_documents(
+            docs=documents,
+            bulk_fn=bulk_fn,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            chunksize=chunksize,
+            use_json_encoder=use_json_encoder,
+            *args,
+            **kwargs,
+        )
+    
+    def insert_csv(
+        self,
+        filepath_or_buffer,
+        chunksize: int = 10000,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
+        index_col: int = None,
+        csv_args: dict = {},
+        col_for_id: str = None,
+        auto_generate_id: bool = True,
+    ):
+
+        """
+        Insert data from csv file
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        filepath_or_buffer :
+            Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
+        chunksize : int
+            Number of lines to read from csv per iteration
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        csv_args : dict
+            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+        index_col : None
+            Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
+        col_for_id : str
+            Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
+        auto_generate_id: bool = True
+            Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> csv_filename = "temp.csv"
+        >>> df.insert_csv(csv_filename)
+
+        """
+        return self._insert_csv(
+            dataset_id=self.dataset_id,
+            filepath_or_buffer=filepath_or_buffer,
+            chunksize=chunksize,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            index_col=index_col,
+            csv_args=csv_args,
+            col_for_id=col_for_id,
+            auto_generate_id=auto_generate_id
+        )
+
 
     def apply(
         self,

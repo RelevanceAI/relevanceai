@@ -10,8 +10,7 @@ Dataset
 
 .. autoclass:: relevanceai.dataset_api.dataset.Write
     :members:
-    :inherited-members:
-    :inheritance:
+    :special-members: relevanceai.dataset_api.dataset.Write.insert_csv
 
 .. autoclass:: relevanceai.dataset_api.dataset.Stats
     :members:
