@@ -118,8 +118,8 @@ CLIENT_INSTANTIATION_STR_REPLACE = (
 CLIENT_INSTANTIATION_BASE = f'"client = Client()"'
 
 README_NOTEBOOK_ERROR_FPATH = "readme_notebook_errors.txt"
-with open(README_NOTEBOOK_ERROR_FPATH, 'w') as f:
-    f.write('')
+with open(README_NOTEBOOK_ERROR_FPATH, "w") as f:
+    f.write("")
 
 for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
 
