@@ -195,8 +195,9 @@ class Series(BatchAPIClient):
             Sort in ascending order.
         bins : int, optional
             Groups categories into 'bins'. These bins are good for representing groups within continuous series
+
         Returns
-        -------
+        ----------
         Series
         """
         schema = self.datasets.schema(self.dataset_id)
@@ -533,7 +534,7 @@ class Read(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def get(self, document_ids: Union[List, str], include_vector: bool = True):
+    def get_documents(self, document_ids: Union[List, str], include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
@@ -549,7 +550,7 @@ class Read(BatchAPIClient):
         >>> from relevanceai import Client, Dataset
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset")
-        >>> df.get("sample_id", include_vector=False)
+        >>> df.get_documents(["sample_id"], include_vector=False)
 
         """
         if isinstance(document_ids, str):

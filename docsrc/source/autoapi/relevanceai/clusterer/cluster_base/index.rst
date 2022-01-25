@@ -18,10 +18,13 @@ Module Contents
 
    A Cluster Base for models to be copied off.
 
-   .. py:method:: fit_transform(self, vectors) -> List[Union[str, float, int]]
+   .. py:method:: fit_transform(self, vectors: list) -> List[Union[str, float, int]]
       :abstractmethod:
 
       Edit this method to implement a ClusterBase.
+
+      :param vectors: The vectors that are going to be clustered
+      :type vectors: list
 
       .. rubric:: Example
 
@@ -41,28 +44,27 @@ Module Contents
                       self.algorithm = algorithm
                       self.n_clusters = k
 
-      def _init_model(self):
-          from sklearn.cluster import KMeans
+          def _init_model(self):
+              from sklearn.cluster import KMeans
+              self.km = KMeans(
+                  n_clusters=self.n_clusters,
+                  init=self.init,
+                  verbose=self.verbose,
+                  max_iter=self.max_iter,
+                  tol=self.tol,
+                  random_state=self.random_state,
+                  copy_x=self.copy_x,
+                  algorithm=self.algorithm,
+              )
+              return
 
-          self.km = KMeans(
-              n_clusters=self.n_clusters,
-              init=self.init,
-              verbose=self.verbose,
-              max_iter=self.max_iter,
-              tol=self.tol,
-              random_state=self.random_state,
-              copy_x=self.copy_x,
-              algorithm=self.algorithm,
-          )
-          return
-
-      def fit_transform(self, vectors: Union[np.ndarray, List]):
-          if not hasattr(self, "km"):
-              self._init_model()
-          self.km.fit(vectors)
-          cluster_labels = self.km.labels_.tolist()
-          # cluster_centroids = km.cluster_centers_
-          return cluster_labels
+          def fit_transform(self, vectors: Union[np.ndarray, List]):
+              if not hasattr(self, "km"):
+                  self._init_model()
+              self.km.fit(vectors)
+              cluster_labels = self.km.labels_.tolist()
+              # cluster_centroids = km.cluster_centers_
+              return cluster_labels
 
 
    .. py:method:: fit_documents(self, vector_fields: list, documents: List[dict], alias: str = 'default', cluster_field: str = '_cluster_', return_only_clusters: bool = True, inplace: bool = True)
@@ -88,6 +90,9 @@ Module Contents
 
    .. py:method:: metadata(self) -> dict
       :property:
+
+      If metadata is set - this willi be stored on RelevanceAI.
+      This is useful when you are looking to compare the metadata of your clusters.
 
 
 
