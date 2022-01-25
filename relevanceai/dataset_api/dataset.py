@@ -660,8 +660,8 @@ class Write(Read):
             overwrite=overwrite,
         )
         return centroids
-    
-    def insert_documents(
+
+    def insert_documents(  # type: ignore
         self,
         documents: list,
         bulk_fn: Callable = None,
@@ -709,7 +709,8 @@ class Write(Read):
         >>> df.insert_documents(documents)
 
         """
-        return self._insert_documents(
+        return self._insert_documents(  # type: ignore
+            dataset_id=self.dataset_id,
             docs=documents,
             bulk_fn=bulk_fn,
             max_workers=max_workers,
@@ -720,8 +721,8 @@ class Write(Read):
             *args,
             **kwargs,
         )
-    
-    def insert_csv(
+
+    def insert_csv(  # type: ignore
         self,
         filepath_or_buffer,
         chunksize: int = 10000,
@@ -777,9 +778,8 @@ class Write(Read):
             index_col=index_col,
             csv_args=csv_args,
             col_for_id=col_for_id,
-            auto_generate_id=auto_generate_id
+            auto_generate_id=auto_generate_id,
         )
-
 
     def apply(
         self,

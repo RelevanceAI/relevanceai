@@ -200,7 +200,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "failed_documents": failed_documents,
             "failed_documents_detailed": failed_documents_detailed,
         }
-    
+
     _insert_csv = insert_csv
 
     def _insert_csv_chunk(
