@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.services.services.ServicesClient
-
-
-
-
 .. py:class:: ServicesClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 

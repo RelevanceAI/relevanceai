@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.services.prediction.PredictionClient
-
-
-
-
 .. py:class:: PredictionClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 

@@ -7,25 +7,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.logger.AbstractLogger
-   relevanceai.logger.LoguruLogger
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.logger.str2bool
-
-
-
 .. py:function:: str2bool(v)
 
 
@@ -71,15 +52,12 @@ Functions
 
 .. py:class:: LoguruLogger
 
-   Bases: :py:obj:`AbstractLogger`
+
 
    Using verbose loguru as base logger for now
 
    .. py:method:: logger(self)
       :property:
-
-
-   .. py:method:: _init_logger(self)
 
 
 

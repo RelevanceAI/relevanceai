@@ -7,19 +7,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.services.search.SearchClient
-
-
-
-
 .. py:class:: SearchClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 
@@ -614,9 +604,6 @@ Classes
       :type select_fields: list
       :param query: What to store as the query name in the dashboard
       :type query: string
-
-
-   .. py:method:: _init_experiment_helper(self, categories=['chunk', 'vector', 'diversity', 'traditional'])
 
 
    .. py:method:: make_suggestion(self)

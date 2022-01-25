@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.local_logger.PullUpdatePushLocalLogger
-
-
-
-
 .. py:class:: PullUpdatePushLocalLogger(filename: Union[str, bytes])
 
-   Bases: :py:obj:`relevanceai.logger.LoguruLogger`
+
 
    This logger class is specifically for pull_update_push to log
    failures locally as opposed to on the cloud.

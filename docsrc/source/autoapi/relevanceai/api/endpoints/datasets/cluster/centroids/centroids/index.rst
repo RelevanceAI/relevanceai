@@ -7,19 +7,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.datasets.cluster.centroids.centroids.CentroidsClient
-
-
-
-
 .. py:class:: CentroidsClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 

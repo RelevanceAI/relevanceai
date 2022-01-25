@@ -21,7 +21,6 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    create
    read
    clusterer
-   features
    changelog
 
 Indices and tables

@@ -7,36 +7,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.cluster_evaluate.sort_dict
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.cluster_evaluate.SILHOUETTE_INFO
-   relevanceai.vector_tools.cluster_evaluate.RAND_INFO
-   relevanceai.vector_tools.cluster_evaluate.HOMOGENEITY_INFO
-   relevanceai.vector_tools.cluster_evaluate.COMPLETENESS_INFO
-   relevanceai.vector_tools.cluster_evaluate.METRIC_DESCRIPTION
-
-
 .. py:data:: SILHOUETTE_INFO
    :annotation: = Multiline-String
 
@@ -124,7 +94,7 @@ Attributes
 
 .. py:class:: ClusterEvaluate(project, api_key)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`relevanceai.base._Base`, :py:obj:`doc_utils.DocUtils`
+
 
    Batch API client
 
@@ -190,11 +160,6 @@ Attributes
       :type distance_measure_mode: string
       :param callable_distance: Optional function to use for distance measure
       :type callable_distance: func
-
-
-   .. py:method:: _get_cluster_documents(self, dataset_id: str, vector_field: str, cluster_alias: str, ground_truth_field: str = None, description_fields: list = [], get_vectors=True)
-
-      Return vectors, cluster labels, ground truth labels and other fields
 
 
    .. py:method:: plot_from_docs(vectors: list, cluster_labels: list, ground_truth: list = None, vector_description: dict = None, marker_size: int = 5)
@@ -273,14 +238,6 @@ Attributes
 
 
    .. py:method:: homogeneity_score(ground_truth, cluster_labels)
-      :staticmethod:
-
-
-   .. py:method:: _generate_layout()
-      :staticmethod:
-
-
-   .. py:method:: _generate_plot(df, hover_label, marker_size)
       :staticmethod:
 
 

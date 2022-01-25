@@ -7,33 +7,11 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.dataset_api.centroids.Centroids
-
-
-
-
 .. py:class:: Centroids(project: str, api_key: str, dataset_id: str)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`
+
 
    Batch API client
-
-   .. py:method:: __call__(self, vector_fields: list, alias: str, cluster_field: str = '_cluster_')
-
-      Instaniates Centroids Class which stores centroid information to be called
-
-      :param vector_fields: The vector field where a clustering task was run.
-      :type vector_fields: list
-      :param alias: Alias is used to name a cluster
-      :type alias: string
-      :param cluster_field: Name of clusters in documents
-      :type cluster_field: string
-
 
    .. py:method:: closest(self, cluster_ids: List = [], centroid_vector_fields: List = [], select_fields: List = [], approx: int = 0, sum_fields: bool = True, page_size: int = 1, page: int = 1, similarity_metric: str = 'cosine', filters: List = [], min_score: int = 0, include_vector: bool = False, include_count: bool = True)
 

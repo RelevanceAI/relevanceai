@@ -16,6 +16,7 @@ def test_datasets_api(test_dataset_df: Dataset):
     test_dataset_df.info()
     test_dataset_df.describe()
     test_dataset_df.head()
+    test_dataset_df.schema()
     assert True
 
 

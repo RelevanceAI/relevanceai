@@ -7,16 +7,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.data_tools.base_text_processing.BaseTextProcessing
-
-
-
-
 .. py:class:: BaseTextProcessing
 
    .. py:method:: normalize_text(txt: str, lower: bool = True, remove_digit: bool = True, remove_punct: bool = True) -> str

@@ -12,25 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.print_formats.COLOR
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.print_formats.print_hashtag_message
-   relevanceai.print_formats.print_bold_message
-
-
-
 .. py:function:: print_hashtag_message(message) -> None
 
 

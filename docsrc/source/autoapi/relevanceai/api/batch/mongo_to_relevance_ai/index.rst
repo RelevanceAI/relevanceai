@@ -34,25 +34,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.mongo_to_relevance_ai.Mongo2RelevanceAi
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.mongo_to_relevance_ai.PYMONGO_AVAILABLE
-   relevanceai.api.batch.mongo_to_relevance_ai.BSON_AVAILABLE
-
-
 .. py:data:: PYMONGO_AVAILABLE
    :annotation: = True
 
@@ -65,7 +46,7 @@ Attributes
 
 .. py:class:: Mongo2RelevanceAi(connection_string: str, project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`
+
 
    Batch API client
 

@@ -7,19 +7,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.services.cluster.ClusterClient
-
-
-
-
 .. py:class:: ClusterClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 

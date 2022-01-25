@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.client.BatchAPIClient
-
-
-
-
 .. py:class:: BatchAPIClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.api.batch.batch_insert.BatchInsertClient`, :py:obj:`relevanceai.utils.Utils`, :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieveClient`, :py:obj:`relevanceai.api.endpoints.client.APIClient`
+
 
    Batch API client
 

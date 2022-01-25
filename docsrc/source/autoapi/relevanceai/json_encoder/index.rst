@@ -18,24 +18,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.json_encoder.JSONEncoderUtils
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.json_encoder.ENCODERS_BY_TYPE
-
-
 .. py:data:: ENCODERS_BY_TYPE
    
 

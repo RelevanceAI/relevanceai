@@ -12,16 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.chunk.Chunker
-
-
-
-
 .. py:class:: Chunker
 
    Update the chunk Mixins

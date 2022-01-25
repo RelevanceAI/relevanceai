@@ -12,18 +12,6 @@
 Module Contents
 ---------------
 
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.concurrency.chunk
-   relevanceai.concurrency.multithread
-   relevanceai.concurrency.multiprocess
-
-
-
 .. py:function:: chunk(iterables, n=20)
 
 

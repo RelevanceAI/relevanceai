@@ -7,38 +7,14 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.cluster.ClusterBase
-   relevanceai.vector_tools.cluster.CentroidCluster
-   relevanceai.vector_tools.cluster.DensityCluster
-   relevanceai.vector_tools.cluster.MiniBatchKMeans
-   relevanceai.vector_tools.cluster.KMeans
-   relevanceai.vector_tools.cluster.HDBSCANClusterer
-   relevanceai.vector_tools.cluster.Cluster
-
-
-
-
 .. py:class:: ClusterBase
 
-   Bases: :py:obj:`relevanceai.logger.LoguruLogger`, :py:obj:`doc_utils.DocUtils`
+
 
    Using verbose loguru as base logger for now
 
-   .. py:method:: __call__(self, *args, **kwargs)
-
-
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
-
-
-   .. py:method:: _concat_vectors_from_list(self, list_of_vectors: list)
-
-      Concatenate 2 vectors together in a pairwise fashion
 
 
    .. py:method:: fit_documents(self, vector_fields: list, docs: list, alias: str = 'default', cluster_field: str = '_cluster_', return_only_clusters: bool = True, inplace: bool = True)
@@ -72,16 +48,10 @@ Classes
       :property:
 
 
-   .. py:method:: _label_cluster(self, label: Union[int, str])
-
-
-   .. py:method:: _label_clusters(self, labels)
-
-
 
 .. py:class:: CentroidCluster
 
-   Bases: :py:obj:`ClusterBase`
+
 
    Using verbose loguru as base logger for now
 
@@ -89,9 +59,6 @@ Classes
       
 
       
-
-   .. py:method:: __call__(self, *args, **kwargs)
-
 
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
@@ -125,12 +92,9 @@ Classes
 
 .. py:class:: DensityCluster
 
-   Bases: :py:obj:`ClusterBase`
+
 
    Using verbose loguru as base logger for now
-
-   .. py:method:: __call__(self, *args, **kwargs)
-
 
    .. py:method:: fit_transform(self, vectors)
       :abstractmethod:
@@ -139,12 +103,9 @@ Classes
 
 .. py:class:: MiniBatchKMeans(k: Union[None, int] = 10, init: str = 'k-means++', verbose: bool = False, compute_labels: bool = True, max_no_improvement: int = 2)
 
-   Bases: :py:obj:`CentroidCluster`
+
 
    Using verbose loguru as base logger for now
-
-   .. py:method:: _init_model(self)
-
 
    .. py:method:: fit_transform(self, vectors: Union[numpy.ndarray, List])
 
@@ -164,12 +125,9 @@ Classes
 
 .. py:class:: KMeans(k=10, init='k-means++', n_init=10, max_iter=300, tol=0.0001, verbose=0, random_state=None, copy_x=True, algorithm='auto')
 
-   Bases: :py:obj:`MiniBatchKMeans`
+
 
    Using verbose loguru as base logger for now
-
-   .. py:method:: _init_model(self)
-
 
    .. py:method:: to_metadata(self)
 
@@ -179,7 +137,7 @@ Classes
 
 .. py:class:: HDBSCANClusterer(algorithm: str = 'best', alpha: float = 1.0, approx_min_span_tree: bool = True, gen_min_span_tree: bool = False, leaf_size: int = 40, memory=Memory(cachedir=None), metric: str = 'euclidean', min_samples: int = None, p: float = None, min_cluster_size: Union[None, int] = 10)
 
-   Bases: :py:obj:`DensityCluster`
+
 
    Using verbose loguru as base logger for now
 
@@ -189,16 +147,9 @@ Classes
 
 .. py:class:: Cluster(project, api_key)
 
-   Bases: :py:obj:`relevanceai.vector_tools.cluster_evaluate.ClusterEvaluate`, :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`ClusterBase`
+
 
    Batch API client
-
-   .. py:method:: _choose_k(vectors: numpy.ndarray)
-      :staticmethod:
-
-      "
-      Choose k clusters
-
 
    .. py:method:: cluster(vectors: numpy.ndarray, cluster: Union[relevanceai.vector_tools.constants.CLUSTER, ClusterBase], cluster_args: Dict = {}, k: Union[None, int] = None) -> numpy.ndarray
       :staticmethod:

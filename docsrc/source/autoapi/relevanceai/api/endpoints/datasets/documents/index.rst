@@ -7,19 +7,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.datasets.documents.DocumentsClient
-
-
-
-
 .. py:class:: DocumentsClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 

@@ -30,7 +30,8 @@ class Series(BatchAPIClient):
         super().__init__(project=project, api_key=api_key)
 
     def sample(
-        self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0
+        self, n: int = 1, frac: float = None, filters: list = [], random_state: int = 0,
+        output_format="pandas"
     ):
         """
         Return a random sample of items from a dataset.
@@ -48,13 +49,14 @@ class Series(BatchAPIClient):
 
         """
         select_fields = [self.field] if isinstance(self.field, str) else self.field
-        return Dataset(self.project, self.api_key)(self.dataset_id).sample(
-            n=n,
-            frac=frac,
-            filters=filters,
-            random_state=random_state,
-            select_fields=select_fields,
-        )
+        if output_format == "json":
+            return Dataset(self.project, self.api_key)(self.dataset_id).sample(
+                n=n,
+                frac=frac,
+                filters=filters,
+                random_state=random_state,
+                select_fields=select_fields,
+            )
 
     def all(
         self,
@@ -401,6 +403,7 @@ class Dataset(BatchAPIClient):
         filters: list = [],
         random_state: int = 0,
         select_fields: list = [],
+        output_format: str="json"
     ):
 
         """
@@ -442,7 +445,7 @@ class Dataset(BatchAPIClient):
                 self.get_number_of_documents(self.dataset_id, filters=filters) * frac
             )
 
-        return self.datasets.documents.get_where(
+        docs = self.datasets.documents.get_where(
             dataset_id=self.dataset_id,
             filters=filters,
             page_size=n,
@@ -450,6 +453,10 @@ class Dataset(BatchAPIClient):
             is_random=True,
             select_fields=select_fields,
         )["documents"]
+        if output_format == "json":
+            return docs
+        elif output_format == "pandas":
+            return pd.DataFrame.from_dict(docs, orient='records')
 
     def apply(
         self,

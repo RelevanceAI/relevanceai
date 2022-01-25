@@ -7,19 +7,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.client.VectorTools
-
-
-
-
 .. py:class:: VectorTools(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Vector Tools Client
 

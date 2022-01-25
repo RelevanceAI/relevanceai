@@ -3,9 +3,9 @@
 import numpy as np
 from typing import Union, List, Optional
 
-from relevanceai.clusterer.clusterer import ClusterFlow
+from relevanceai.clusterer.clusterer import Clusterer
 from relevanceai.clusterer.cluster_base import ClusterBase
-
+from relevanceai.dataset_api import Dataset
 
 class KMeansModel(ClusterBase):
     def __init__(
@@ -69,12 +69,95 @@ class KMeansModel(ClusterBase):
             "algorithm": self.algorithm,
         }
 
+    def get_centers(self):
+        """Returns centroids of clusters"""
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            return [list(i) for i in self.km.cluster_centers_]
 
-class KMeansClusterFlow(ClusterFlow):
-    """
-    KMeans Clustering Flow
-    """
+        # Returning for multiple vector fields
+        cluster_centers = []
+        for i, center in enumerate(self.km.cluster_centers_):
+            cluster_center_doc = {}
+            for j, vf in enumerate(self.vector_fields):
+                deconcat_center = center[
+                    self._vector_field_length[vf]["start"] : self._vector_field_length[
+                        vf
+                    ]["end"]
+                ].tolist()
+                cluster_center_doc[vf] = deconcat_center
+            cluster_centers.append(cluster_center_doc.copy())
+        return cluster_centers
+    
+    def get_centroid_documents(
+        self, centroid_vector_field_name: str="centroid_vector_"
+    ) -> List:
+        """
+        Get the centroid documents to store.
+        If single vector field returns this:
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+        If multiple vector fields returns this:
+        Returns multiple
+        ```
+        {
+            "_id": "document-id-1",
+            "blue_vector_": [0.12, 0.312, 0.42],
+            "red_vector_": [0.23, 0.41, 0.3]
+        }
 
+        Example
+
+
+        ```
+        """
+        self.centers = self.get_centers()
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            return [
+                {
+                    "_id": self._label_cluster(i),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
+
+
+class KMeansClusterer(Clusterer):
+    """
+    Run KMeans Clustering. 
+
+    Parameters
+    ----------
+    alias: str
+        The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+    k: str
+        The number of clusters in your K Means
+    cluster_field: str
+        The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+    
+    You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+
+    Example
+    -----------
+    >>> from relevanceai import Client
+    >>> client = Client()
+
+    >>> clusterer = client.KMeansClusterer()
+    >>> df = client.Dataset("sample")
+    >>> clusterer.fit(df, vector_fields=["sample_vector_"])
+    """
     def __init__(
         self,
         alias: str,
@@ -85,13 +168,13 @@ class KMeansClusterFlow(ClusterFlow):
         n_init: int = 10,
         max_iter: int = 300,
         tol: float = 1e-4,
-        verbose: bool = True,
+        verbose: bool = False,
         random_state: Optional[int] = None,
         copy_x: bool = True,
         algorithm: str = "auto",
         cluster_field: str = "_cluster_",
     ):
-        model = KMeansModel(
+        self.model: KMeansModel = KMeansModel(
             k=k,
             init=init,
             n_init=n_init,
@@ -103,9 +186,44 @@ class KMeansClusterFlow(ClusterFlow):
             algorithm=algorithm,
         )
         super().__init__(
-            model=model,
+            model=self.model,
             alias=alias,
             cluster_field=cluster_field,
             project=project,
             api_key=api_key,
         )
+
+    def _insert_centroid_documents(self):
+        if hasattr(self.model, "get_centroid_documents"):
+            if len(self.vector_fields) == 1:
+                centers = self.model.get_centroid_documents(
+                    self.vector_fields[0]
+                )
+            else:
+                centers = self.model.get_centroid_documents()
+
+            # Change centroids insertion
+            results = self.services.cluster.centroids.insert(
+                dataset_id=self.dataset_id,
+                cluster_centers=centers,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+            )
+            self.logger.info(results)
+
+            self.datasets.cluster.centroids.list_closest_to_center(
+                self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                centroid_vector_fields=self.vector_fields,
+                page_size=20,
+            )
+        return
+
+    def fit(
+        self,
+        dataset: Union[Dataset, str],
+        vector_fields: List,
+    ):
+        self.fit_dataset(dataset, vector_fields=vector_fields)
+        return self._insert_centroid_documents()

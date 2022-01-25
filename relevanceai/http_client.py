@@ -7,7 +7,7 @@ from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api.dataset import Dataset, Datasets
-from relevanceai.clusterer import ClusterFlow, KMeansClusterFlow, ClusterBase
+from relevanceai.clusterer import Clusterer, KMeansClusterer, ClusterBase
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -162,13 +162,13 @@ class Client(BatchAPIClient, DocUtils):
     """Clustering
     """
 
-    def ClusterFlow(
+    def Clusterer(
         self,
         model: ClusterBase,
         alias: str,
         cluster_field: str = "_cluster_",
     ):
-        return ClusterFlow(
+        return Clusterer(
             model=model,
             alias=alias,
             cluster_field=cluster_field,
@@ -176,7 +176,7 @@ class Client(BatchAPIClient, DocUtils):
             api_key=self.api_key,
         )
 
-    def KMeansClusterFlow(
+    def KMeansClusterer(
         self,
         alias: str,
         k: Union[None, int] = 10,
@@ -190,7 +190,7 @@ class Client(BatchAPIClient, DocUtils):
         algorithm: str = "auto",
         cluster_field: str = "_cluster_",
     ):
-        return KMeansClusterFlow(
+        return KMeansClusterer(
             alias=alias,
             k=k,
             init=init,

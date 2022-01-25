@@ -12,26 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.config.Config
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.config.PATH
-   relevanceai.config.CONFIG_PATH
-   relevanceai.config.CONFIG
-
-
 .. py:data:: PATH
    
 
@@ -44,7 +24,7 @@ Attributes
 
 .. py:class:: Config
 
-   Bases: :py:obj:`doc_utils.doc_utils.DocUtils`
+
 
    Set and change configuration settings
 
@@ -66,14 +46,6 @@ Attributes
        - output_format - The format of API responses
 
    - Dashboard - URLS to various things
-
-
-   .. py:method:: _read_config(self, config_path)
-
-      Set up custom config by reading in a file
-
-      :param config_path: Path to config
-      :type config_path: string
 
 
    .. py:method:: options(self)
@@ -103,16 +75,6 @@ Attributes
    .. py:method:: reset_to_default(self)
 
       Reset config to default
-
-
-   .. py:method:: __getitem__(self, key)
-
-      Get the config using client.config["api.base_url"]
-
-
-   .. py:method:: __setitem__(self, key: str, value: str)
-
-      Set the config using client.config["api.base_url"] = "https://..."
 
 
 

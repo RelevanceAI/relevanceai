@@ -7,28 +7,6 @@
 Module Contents
 ---------------
 
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.visualise.dash_components.callbacks.display_callbacks
-   relevanceai.visualise.dash_components.callbacks.neighbour_callbacks
-   relevanceai.visualise.dash_components.callbacks.update_graph
-   relevanceai.visualise.dash_components.callbacks.remove_duplicates
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.visualise.dash_components.callbacks.doc_utils
-   relevanceai.visualise.dash_components.callbacks.MAX_SIZE
-
-
 .. py:data:: doc_utils
    
 

@@ -12,25 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.batch_retrieve.BatchRetrieveClient
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.batch_retrieve.BYTE_TO_MB
-   relevanceai.api.batch.batch_retrieve.LIST_SIZE_MULTIPLIER
-
-
 .. py:data:: BYTE_TO_MB
    
 
@@ -43,7 +24,7 @@ Attributes
 
 .. py:class:: BatchRetrieveClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`
+
 
    API Client
 

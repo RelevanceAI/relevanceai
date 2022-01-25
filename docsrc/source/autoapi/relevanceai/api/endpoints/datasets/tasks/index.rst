@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.datasets.tasks.TasksClient
-
-
-
-
 .. py:class:: TasksClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 
@@ -58,12 +48,6 @@ Classes
       :type dataset_id: string
       :param show_active_only: Whether to show active only
       :type show_active_only: bool
-
-
-   .. py:method:: _loop_status_until_finish(self, dataset_id: str, task_id: str, verbose: bool = True, time_between_ping: int = 10)
-
-
-   .. py:method:: _check_status_until_finish(self, dataset_id: str, task_id: str, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10)
 
 
    .. py:method:: create_cluster_task(self, dataset_id, vector_field: str, n_clusters: int, alias: str = 'default', refresh: bool = False, n_iter: int = 10, n_init: int = 5, status_checker: bool = True, verbose: bool = True, time_between_ping: int = 10)

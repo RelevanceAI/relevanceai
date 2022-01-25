@@ -12,29 +12,7 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.progress_bar.ProgressBar
-   relevanceai.progress_bar.NullProgressBar
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.progress_bar.progress_bar
-
-
-
 .. py:class:: ProgressBar
-
-   .. py:method:: __call__(self, iterable)
-
 
    .. py:method:: is_in_ipython()
       :staticmethod:
@@ -53,7 +31,7 @@ Functions
 
 .. py:class:: NullProgressBar(iterable: int = None)
 
-   Bases: :py:obj:`contextlib.AbstractContextManager`
+
 
    Context manager that does no additional processing.
 
@@ -63,19 +41,6 @@ Functions
    cm = optional_cm if condition else nullcontext()
    with cm:
        # Perform operation, using optional_cm if condition is True
-
-   .. py:method:: __enter__(self)
-
-      Return `self` upon entering the runtime context.
-
-
-   .. py:method:: __exit__(self, *excinfo)
-
-      Raise any exception triggered within the runtime context.
-
-
-   .. py:method:: __iter__(self)
-
 
 
 .. py:function:: progress_bar(iterable, show_progress_bar: bool = False)

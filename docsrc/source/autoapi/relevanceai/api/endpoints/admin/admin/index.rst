@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.admin.admin.AdminClient
-
-
-
-
 .. py:class:: AdminClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Base class for all relevanceai client utilities
 
@@ -75,9 +65,6 @@ Classes
       :type receiver_project: str
       :param receiver_api_key: The project API key that will receive the dataset
       :type receiver_api_key: str
-
-
-   .. py:method:: _ping(self)
 
 
 

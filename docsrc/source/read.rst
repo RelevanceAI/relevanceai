@@ -1,11 +1,7 @@
+Read (Dataset)
+================
 ..
    Manually maintained. Relevant functions are copied from docsrc/source/autoapi/relevanceai/dataset_api/dataset/index.rst
-
-Read
-============
-
-Getting by ID/IDs
----------------------
 
 .. py:method:: get(self, document_ids: Union[List, str], include_vector: bool = True)
 
@@ -22,9 +18,6 @@ Getting by ID/IDs
     >>> client = Client()
     >>> df = client.Dataset("sample_dataset")
     >>> df.get("sample_id", include_vector=False)
-
-List documents/Sample Randomly
-----------------------------------------
 
 .. py:method:: sample(self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0, select_fields: list = [])
 
@@ -49,9 +42,6 @@ List documents/Sample Randomly
     >>> df.sample()
 
 
-Preview Documents 
-------------------------
-
 .. py:method:: head(self, n: int = 5, raw_json: bool = False, **kw) -> Union[dict, pandas.DataFrame]
 
     Return the first `n` rows.
@@ -75,19 +65,11 @@ Preview Documents
     >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
     >>> df.head()
 
-Schema
-------------
 
+.. py:method:: list_datasets(self) -> List
 
+    .. rubric:: Example
 
-Listing Datasets
----------------------------
-
-.. code-block:: python
-
-    from relevanceai import Client
-    client = Client()
-    client.list_datasets()
-
-Reference
----------------
+    >>> from relevanceai import Client
+    >>> client = Client()
+    >>> client.list_datasets()

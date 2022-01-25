@@ -7,25 +7,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.visualise.projector.Projector
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.visualise.projector.chained_assignment
-   relevanceai.visualise.projector.RELEVANCEAI_BLUE
-
-
 .. py:data:: chained_assignment
    
 
@@ -38,7 +19,7 @@ Attributes
 
 .. py:class:: Projector(project, api_key)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`relevanceai.base._Base`, :py:obj:`doc_utils.DocUtils`
+
 
    Projector class.
 
@@ -173,27 +154,7 @@ Attributes
       :type interactive: bool
 
 
-   .. py:method:: _get_plot_docs(self, dataset_id: str, vector_field: str, number_of_points_to_render: int = 1000, vector_label: relevanceai.vector_tools.constants.Union[None, str] = None, hover_label: list = [])
-
-
    .. py:method:: plot_from_docs(self, docs: relevanceai.vector_tools.constants.List[relevanceai.vector_tools.constants.Dict], vector_field: str, vector_label: relevanceai.vector_tools.constants.Union[None, str] = None, dr: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.DIM_REDUCTION, relevanceai.vector_tools.dim_reduction.DimReductionBase] = 'pca', dims: relevanceai.vector_tools.constants.Literal[2, 3] = 3, dr_args: relevanceai.vector_tools.constants.Union[None, relevanceai.vector_tools.constants.Dict] = None, cluster: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.CLUSTER, relevanceai.vector_tools.cluster.ClusterBase] = None, num_clusters: relevanceai.vector_tools.constants.Union[None, int] = 10, cluster_args: relevanceai.vector_tools.constants.Dict = {}, cluster_on_dr: bool = False, hover_label: list = [], show_image: bool = False, label_char_length: int = 50, marker_size: int = 5, dataset_name: relevanceai.vector_tools.constants.Union[None, str] = None, jupyter_dash=False, interactive: bool = True)
-
-
-   .. py:method:: _generate_plot_data(self, embedding_df: pandas.DataFrame, hover_label: relevanceai.vector_tools.constants.List[str], dims: int, marker_size: int, cluster: relevanceai.vector_tools.constants.Union[relevanceai.vector_tools.constants.Literal[kmeans], relevanceai.vector_tools.constants.Literal[kmedoids], relevanceai.vector_tools.constants.Literal[hdbscan], relevanceai.vector_tools.cluster.ClusterBase, None], label_char_length: int, vector_label: str)
-
-
-   .. py:method:: _generate_layout(self, plot_title)
-
-
-   .. py:method:: _generate_plot_info(self, embedding_df, hover_label, dims, marker_size, label_char_length, vector_label)
-
-
-   .. py:method:: _generate_hover_template(self, df: pandas.DataFrame, dims: int, hover_label: list, label_char_length: int)
-
-      Generating hover template
-
-
-   .. py:method:: _generate_plot_title(self, dims, dataset_name, number_of_points, vector_field, vector_label, label_char_length)
 
 
 

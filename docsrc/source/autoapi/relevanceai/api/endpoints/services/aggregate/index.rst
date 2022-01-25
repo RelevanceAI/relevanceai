@@ -7,19 +7,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.services.aggregate.AggregateClient
-
-
-
-
 .. py:class:: AggregateClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    Aggregate service
 

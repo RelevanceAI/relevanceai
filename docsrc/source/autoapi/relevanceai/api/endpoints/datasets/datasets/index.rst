@@ -12,19 +12,9 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.endpoints.datasets.datasets.DatasetsClient
-
-
-
-
 .. py:class:: DatasetsClient(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base._Base`
+
 
    All dataset-related functions
 

@@ -9,9 +9,30 @@ from relevanceai.clusterer.cluster_base import ClusterBase
 from doc_utils import DocUtils
 
 
-class ClusterFlow(BatchAPIClient):
-    """ClusterFlow class allows users to be able to"""
+class Clusterer(BatchAPIClient):
+    """
+    Clusterer allows users to be able to 
 
+    Parameters
+    ----------
+    alias: str
+        The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+    k: str
+        The number of clusters in your K Means
+    cluster_field: str
+        The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+    
+    You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+
+    Example
+    -----------
+    >>> from relevanceai import Client
+    >>> client = Client()
+    >>> clusterer = client.KMeansClusterer()
+    >>> df = client.Dataset("sample")
+    >>> clusterer.fit(df, vector_fields=["sample_vector_"])
+
+    """
     def __init__(
         self,
         model: ClusterBase,
@@ -25,10 +46,11 @@ class ClusterFlow(BatchAPIClient):
         self.model = model
         self.project: str = project
         self.api_key: str = api_key
+        super().__init__(project=project, api_key=api_key)
 
     def _init_dataset(self, dataset):
         if isinstance(dataset, Dataset):
-            self.dataset_id = self.dataset.dataset_id
+            self.dataset_id = dataset.dataset_id
             self.dataset: Dataset = dataset
         else:
             self.dataset_id = dataset
@@ -39,12 +61,69 @@ class ClusterFlow(BatchAPIClient):
         dataset: Union[Dataset, str],
         vector_fields: List,
     ):
+        """
+        This function takes in the dataset and the relevant vector fields. 
+        Under the hood, it runs fit_dataset. Sometimes, you may want to modify the behavior
+        to adapt it to your needs.
+
+        Parameters
+        -------------
+
+        dataset: Union[Dataset, str]
+            The dataset to fit the clusterer on
+        vector_fields: List[str],
+            The vector fields to fit it on
+        
+        Example
+        ---------
+        >>> from relevanceai import Client 
+        >>> client = Client()
+        >>> from relevanceai import ClusterBase
+        >>> import random
+        >>> class RandomClusterer(ClusterBase):
+        >>>     def __init__(self):
+        >>>     pass
+        >>> # update this to update documents
+        >>> def fit_transform(self, X):
+        >>>     return random.randint(0, 100)
+        >>> clusterer = client.KMeansClusterer()
+        >>> df = client.Dataset("sample") 
+        >>> clusterer.fit(df)
+        
+        """
         return self.fit_dataset(dataset, vector_fields=vector_fields)
 
     def fit_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
-        """Fit a dataset"""
+        """
+        This function fits a cluster model onto a dataset.
+
+        Parameters
+        ---------------
+        dataset: Union[Dataset, str],
+            The dataset object to fit it on
+        vector_fields: list
+            The vector fields to fit the model on
+        filters: list
+            The filters to run it on
+
+        Example
+        ---------
+        >>> from relevanceai import Client 
+        >>> client = Client()
+        >>> from relevanceai import ClusterBase
+        >>> import random
+        >>> class RandomClusterer(ClusterBase):
+        >>>     def __init__(self):
+        >>>     pass
+        >>> # update this to update documents
+        >>> def fit_transform(self, X):
+        >>>     return random.randint(0, 100)
+        >>> clusterer = client.KMeansClusterer()
+        >>> df = client.Dataset("sample") 
+        >>> clusterer.fit(df)
+        """
 
         # load the documents
         self.logger.warning(
@@ -76,32 +155,7 @@ class ClusterFlow(BatchAPIClient):
         # Update the centroid collection
         self.model.vector_fields = vector_fields
 
-        self._insert_centroid_documents()
 
-    def _insert_centroid_documents(self):
-        if hasattr(self.model, "get_centroid_documents"):
-            if len(self.vector_fields) == 1:
-                centers = self.model.get_centroid_documents(self.vector_fields[0])
-            else:
-                centers = self.model.get_centroid_documents()
-
-            # Change centroids insertion
-            results = self.services.cluster.centroids.insert(
-                dataset_id=self.dataset_id,
-                cluster_centers=centers,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-            )
-            self.logger.info(results)
-
-            self.datasets.cluster.centroids.list_closest_to_center(
-                self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                centroid_vector_fields=self.vector_fields,
-                page_size=20,
-            )
-        return
 
     # def list_closest_to_center(self):
     #     return self.datasets.cluster.centroids.list_closest_to_center(
@@ -109,86 +163,6 @@ class ClusterFlow(BatchAPIClient):
     #         vector_fields=self.vector_fields
     #         alias=self.alias
     #     )
-
-    def list_furthest_from_center(self):
-        """
-        Listing Furthest from center
-        """
-        return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=self.dataset_id,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-        )
-
-    def list_closest_to_center(
-        self,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 1,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: List = [],
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-    ):
-        """
-        List of documents closest from the centre.
-
-        Parameters
-        ----------
-        cluster_ids: lsit
-            Any of the cluster ids
-        centroid_vector_fields: list
-            Vector fields stored
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-        """
-
-        return self.datasets.cluster.centroids.list_closest_to_center(
-            dataset_id=self.dataset_id,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            select_fields=select_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            # facets: List = [],
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-        )
 
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
@@ -253,6 +227,33 @@ class ClusterFlow(BatchAPIClient):
         kwargs: dict
             Any other keyword argument will go directly into the clustering algorithm
 
+        Example
+        -----------
+
+        >>> from relevanceai import Client 
+        >>> client = Client()
+        >>> from relevanceai import ClusterBase
+        >>> import random
+        >>> class RandomClusterer(ClusterBase):
+        >>>     def __init__(self):
+        >>>     pass
+        >>> # update this to update documents
+        >>> def fit_documents(self, documents, *args, **kw):
+        >>>     X = self.get_field_across_documents("sample_vector_", documents)
+        >>>     y = self.get_field_across_documents("entropy", documents)
+        >>>     cluster_labels = self.fit_transform(documents, entropy)
+        >>>     self.set_cluster_labels_across_documents(cluster_labels, documents)
+        >>> def fit_transform(self, X, y):
+        >>>     cluster_labels = []
+        >>>     for y_value in y:
+        >>>     if y_value == "auto":
+        >>>         cluster_labels.append(1)
+        >>>     else:
+        >>>         cluster_labels.append(random.randint(0, 100))
+        >>>     return cluster_labels
+        >>> clusterer = client.KMeansClusterer()
+        >>> df = client.Dataset("sample") 
+        >>> clusterer.fit(df, ["sample_vector_"])
         """
         self.vector_fields = vector_fields
 
@@ -315,6 +316,133 @@ class ClusterFlow(BatchAPIClient):
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
 
+    def list_furthest_from_center(self):
+        """
+        List of documents furthest from the centre.
+
+        Parameters
+        ----------
+        cluster_ids: list
+            Any of the cluster ids
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("_github_repo_vectorai")
+        >>> cluster = client.ClusterWorkFlow()
+        >>> clusterer.fit(df)
+        >>> clusterer.list_furthest_from_center()
+
+        """
+        return self.datasets.cluster.centroids.list_furthest_from_center(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+
+    def list_closest_to_center(
+        self,
+        cluster_ids: List = [],
+        centroid_vector_fields: List = [],
+        select_fields: List = [],
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 1,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: List = [],
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+    ):
+        """
+        List of documents closest from the centre.
+
+        Parameters
+        ----------
+        cluster_ids: lsit
+            Any of the cluster ids
+        centroid_vector_fields: list
+            Vector fields stored
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+
+        Example
+        --------------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer.fit(df, ["sample_vector_"])
+        >>> clusterer.list_closest_to_center()
+
+        """
+        return self.datasets.cluster.centroids.list_closest_to_center(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+        )
+
     def aggregate(
         self,
         metrics: list = [],
@@ -348,8 +476,22 @@ class ClusterFlow(BatchAPIClient):
             Whether to sort results by ascending or descending order
         flatten: bool
             Whether to flatten
-        alias: string
-            Alias used to name a vector field. Belongs in field_{alias}vector
+        
+        Example
+        ---------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer.fit(df, ["sample_vector_"])
+        >>> clusterer.aggregate(
+        >>>     groupby=[], 
+        >>>     metrics=[
+        >>>         {"name": "average_score", "field": "final_score", "agg": "avg"},
+        >>>     ]
+        >>> )
+
         """
         return self.services.cluster.aggregate(
             dataset_id=self.dataset_id,
@@ -363,4 +505,57 @@ class ClusterFlow(BatchAPIClient):
             page=page,
             asc=asc,
             flatten=flatten,
+        )
+    
+    @property
+    def metadata(self):
+        """
+        If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
+        Otherwise, you can store the metadata about your cluster here.
+    
+        Example
+        ----------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("_github_repo_vectorai")
+        >>> kmeans = client.KMeansClusterWorkflow(df)
+        >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
+        >>> kmeans.metadata
+        # {"k": 10}
+
+        """
+        return self.services.cluster.centroids.metadata(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+    
+    @metadata.setter
+    def metadata(self, metadata:dict):
+        """
+        If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
+        Otherwise, you can store the metadata about your cluster here.
+
+        Parameters
+        ----------
+        metadata: dict
+           If None, it will retrieve the metadata, otherwise
+           it will overwrite the metadata of the cluster
+
+        Example
+        ----------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("_github_repo_vectorai")
+        >>> kmeans = client.KMeansClusterWorkflow(df)
+        >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
+        >>> kmeans.metadata = {"k": 10}
+        """
+        return self.services.cluster.centroids.metadata(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            metadata=metadata
         )

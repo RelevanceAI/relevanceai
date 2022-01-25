@@ -12,33 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.http_client.Client
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.http_client.str2bool
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.http_client.vis_requirements
-   relevanceai.http_client.vis_requirements
-
-
 .. py:data:: vis_requirements
    :annotation: = False
 
@@ -54,17 +27,12 @@ Attributes
 
 .. py:class:: Client(project=os.getenv('RELEVANCE_PROJECT'), api_key=os.getenv('RELEVANCE_API_KEY'), authenticate: bool = False)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`, :py:obj:`doc_utils.doc_utils.DocUtils`
+
 
    Python Client for Relevance AI's relevanceai
 
    .. py:attribute:: FAIL_MESSAGE
       :annotation: = Your API key is invalid. Please login again
-
-      
-
-   .. py:attribute:: _cred_fn
-      :annotation: = .creds.json
 
       
 
@@ -79,15 +47,6 @@ Attributes
 
    .. py:method:: base_ingest_url(self)
       :property:
-
-
-   .. py:method:: _token_to_auth(self)
-
-
-   .. py:method:: _write_credentials(self, project, api_key)
-
-
-   .. py:method:: _read_credentials(self)
 
 
    .. py:method:: login(self, authenticate: bool = True)
@@ -106,6 +65,12 @@ Attributes
 
 
    .. py:method:: list_datasets(self)
+
+
+   .. py:method:: Clusterer(self, model: relevanceai.clusterer.ClusterBase, alias: str, cluster_field: str = '_cluster_')
+
+
+   .. py:method:: KMeansClusterer(self, alias: str, k: Union[None, int] = 10, init: str = 'k-means++', n_init: int = 10, max_iter: int = 300, tol: float = 0.0001, verbose: bool = True, random_state: Optional[int] = None, copy_x: bool = True, algorithm: str = 'auto', cluster_field: str = '_cluster_')
 
 
 

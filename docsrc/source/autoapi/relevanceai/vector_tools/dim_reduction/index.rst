@@ -7,29 +7,11 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.dim_reduction.DimReductionBase
-   relevanceai.vector_tools.dim_reduction.PCA
-   relevanceai.vector_tools.dim_reduction.TSNE
-   relevanceai.vector_tools.dim_reduction.UMAP
-   relevanceai.vector_tools.dim_reduction.Ivis
-   relevanceai.vector_tools.dim_reduction.DimReduction
-
-
-
-
 .. py:class:: DimReductionBase
 
-   Bases: :py:obj:`relevanceai.logger.LoguruLogger`
+
 
    Using verbose loguru as base logger for now
-
-   .. py:method:: __call__(self, *args, **kwargs)
-
 
    .. py:method:: fit_transform(self, vectors: numpy.ndarray, dr_args: Dict[Any, Any], dims: int) -> numpy.ndarray
       :abstractmethod:
@@ -38,7 +20,7 @@ Classes
 
 .. py:class:: PCA
 
-   Bases: :py:obj:`DimReductionBase`
+
 
    Using verbose loguru as base logger for now
 
@@ -48,7 +30,7 @@ Classes
 
 .. py:class:: TSNE
 
-   Bases: :py:obj:`DimReductionBase`
+
 
    Using verbose loguru as base logger for now
 
@@ -58,7 +40,7 @@ Classes
 
 .. py:class:: UMAP
 
-   Bases: :py:obj:`DimReductionBase`
+
 
    Using verbose loguru as base logger for now
 
@@ -68,7 +50,7 @@ Classes
 
 .. py:class:: Ivis
 
-   Bases: :py:obj:`DimReductionBase`
+
 
    Using verbose loguru as base logger for now
 
@@ -78,7 +60,7 @@ Classes
 
 .. py:class:: DimReduction(project, api_key)
 
-   Bases: :py:obj:`relevanceai.base._Base`, :py:obj:`DimReductionBase`
+
 
    Base class for all relevanceai client utilities
 

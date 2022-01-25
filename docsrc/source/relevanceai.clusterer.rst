@@ -9,7 +9,7 @@ relevanceai.clusterer.cluster\_base module
 
 .. automodule:: relevanceai.clusterer.cluster_base
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:
 
 relevanceai.clusterer.clusterer module
@@ -17,7 +17,7 @@ relevanceai.clusterer.clusterer module
 
 .. automodule:: relevanceai.clusterer.clusterer
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:
 
 Module contents
@@ -25,5 +25,5 @@ Module contents
 
 .. automodule:: relevanceai.clusterer
    :members:
-   :undoc-members:
+   :no undoc-members:
    :show-inheritance:

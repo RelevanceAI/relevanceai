@@ -7,24 +7,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.nearest_neighbours.NearestNeighbours
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.vector_tools.nearest_neighbours.doc_utils
-
-
 .. py:data:: doc_utils
    
 
@@ -32,7 +14,7 @@ Attributes
 
 .. py:class:: NearestNeighbours(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.base._Base`, :py:obj:`doc_utils.doc_utils.DocUtils`
+
 
    Base class for all relevanceai client utilities
 

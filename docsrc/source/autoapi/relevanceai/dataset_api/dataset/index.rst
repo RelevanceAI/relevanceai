@@ -12,25 +12,13 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.dataset_api.dataset.Series
-   relevanceai.dataset_api.dataset.Dataset
-   relevanceai.dataset_api.dataset.Datasets
-
-
-
-
 .. py:class:: Series(project: str, api_key: str, dataset_id: str, field)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`
+
 
    A wrapper class for being able to vectorize documents over field
 
-   .. py:method:: sample(self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0)
+   .. py:method:: sample(self, n: int = 1, frac: float = None, filters: list = [], random_state: int = 0, output_format='pandas')
 
       Return a random sample of items from a dataset.
 
@@ -75,34 +63,12 @@ Classes
       >>> df["sample_1_label"].apply(lambda x: x + 3)
 
 
-   .. py:method:: __getitem__(self, loc: Union[int, str])
-
-
 
 .. py:class:: Dataset(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`
+
 
    A Pandas Like datatset API for interacting with the RelevanceAI python package
-
-   .. py:method:: __call__(self, dataset_id: str, image_fields: List = [], text_fields: List = [], audio_fields: List = [], highlight_fields: dict = {}, output_format: str = 'pandas')
-
-      Instaniates a Dataset
-
-      :param dataset_id: The dataset_id of concern
-      :type dataset_id: str
-      :param image_fields: The image_fields within the dataset that you would like to select
-      :type image_fields: str
-      :param text_fields: The text_fields within the dataset that you would like to select
-      :type text_fields: str
-      :param audio_fields: The audio_fields within the dataset that you would like to select
-      :type audio_fields: str
-      :param output_format: The output format of the dataset
-      :type output_format: str
-
-      :returns:
-      :rtype: Self
-
 
    .. py:method:: shape(self)
       :property:
@@ -113,25 +79,6 @@ Classes
 
       :returns: (N, C)
       :rtype: Tuple
-
-
-   .. py:method:: __getitem__(self, field)
-
-      Returns a Series Object that selects a particular field within a dataset
-
-      :param field: the particular field within the dataset
-
-      :returns: (N, C)
-      :rtype: Tuple
-
-
-   .. py:method:: _get_possible_dtypes(self, schema)
-
-
-   .. py:method:: _get_dtype_count(self, schema: dict)
-
-
-   .. py:method:: _get_schema(self)
 
 
    .. py:method:: info(self, dtype_count: bool = False) -> pandas.DataFrame
@@ -170,9 +117,6 @@ Classes
       >>> df.head()
 
 
-   .. py:method:: _show_json(self, docs, **kw)
-
-
    .. py:method:: describe(self) -> dict
 
       Descriptive statistics include those that summarize the central tendency
@@ -198,7 +142,7 @@ Classes
       :type n_cluster: int default = 10
 
 
-   .. py:method:: sample(self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0, select_fields: list = [])
+   .. py:method:: sample(self, n: int = 0, frac: float = None, filters: list = [], random_state: int = 0, select_fields: list = [], output_format: str = 'json')
 
       Return a random sample of items from a dataset.
 
@@ -439,10 +383,22 @@ Classes
       >>> df.get("sample_id", include_vector=False)
 
 
+   .. py:method:: schema(self)
+
+      Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client
+      >>> client = Client()
+      >>> df = client.Dataset("sample")
+      >>> df.schema()
+
+
 
 .. py:class:: Datasets(project: str, api_key: str)
 
-   Bases: :py:obj:`relevanceai.api.client.BatchAPIClient`
+
 
    Dataset class for multiple datasets
 

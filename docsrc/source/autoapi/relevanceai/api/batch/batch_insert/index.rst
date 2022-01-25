@@ -12,28 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.batch_insert.BatchInsertClient
-
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.api.batch.batch_insert.BYTE_TO_MB
-   relevanceai.api.batch.batch_insert.LIST_SIZE_MULTIPLIER
-   relevanceai.api.batch.batch_insert.SUCCESS_CODES
-   relevanceai.api.batch.batch_insert.RETRY_CODES
-   relevanceai.api.batch.batch_insert.HALF_CHUNK_CODES
-
-
 .. py:data:: BYTE_TO_MB
    
 
@@ -61,7 +39,7 @@ Attributes
 
 .. py:class:: BatchInsertClient(project, api_key)
 
-   Bases: :py:obj:`relevanceai.utils.Utils`, :py:obj:`relevanceai.api.batch.batch_retrieve.BatchRetrieveClient`, :py:obj:`relevanceai.api.endpoints.client.APIClient`, :py:obj:`relevanceai.api.batch.chunk.Chunker`
+
 
    API Client
 
@@ -129,9 +107,6 @@ Attributes
       >>> df = client.Dataset("sample_dataset")
       >>> csv_filename = "temp.csv"
       >>> df.insert_csv(csv_filename)
-
-
-   .. py:method:: _insert_csv_chunk(self, chunk, dataset_id, max_workers, retry_chunk_mult, show_progress_bar, col_for_id, auto_generate_id)
 
 
    .. py:method:: update_documents(self, dataset_id: str, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, chunksize: int = 0, show_progress_bar=False, use_json_encoder: bool = True, *args, **kwargs)
@@ -225,9 +200,6 @@ Attributes
 
 
    .. py:method:: delete_pull_update_push_logs(self, dataset_id=False)
-
-
-   .. py:method:: _write_documents(self, insert_function, docs: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize: int = 0)
 
 
    .. py:method:: rename_fields(self, dataset_id: str, field_mappings: dict, retrieve_chunk_size: int = 100, max_workers: int = 8, show_progress_bar: bool = True)

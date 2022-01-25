@@ -12,46 +12,6 @@
 Module Contents
 ---------------
 
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.datasets.ExampleDatasets
-
-
-
-Functions
-~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.datasets.select_fields_from_json
-   relevanceai.datasets.get_games_dataset
-   relevanceai.datasets.get_ecommerce_1_dataset
-   relevanceai.datasets.get_ecommerce_2_dataset
-   relevanceai.datasets.get_online_retail_dataset
-   relevanceai.datasets.get_news_dataset
-   relevanceai.datasets.get_ecommerce_3_dataset
-   relevanceai.datasets.get_flipkart_dataset
-   relevanceai.datasets.get_realestate_dataset
-   relevanceai.datasets.get_mission_statements_dataset
-   relevanceai.datasets.get_machine_learning_research_dataset
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   relevanceai.datasets.THIS_MODULE
-   relevanceai.datasets.DATASETS
-   relevanceai.datasets.get_dummy_ecommerce_dataset
-   relevanceai.datasets.get_sample_ecommerce_dataset
-   relevanceai.datasets.get_ecommerce_dataset
-
-
 .. py:data:: THIS_MODULE
    
 
@@ -81,18 +41,6 @@ Attributes
       :type number_of_documents: int
       :param select_fields: Fields to include in the dataset, empty array/list means all fields.
       :type select_fields: list
-
-
-   .. py:method:: _get_dummy_dataset(db_name, number_of_documents, select_fields=[])
-      :staticmethod:
-
-
-   .. py:method:: _get_online_dataset(url, number_of_documents, select_fields=[], encoding=None, csv=True)
-      :staticmethod:
-
-
-   .. py:method:: _get_api_dataset(url, number_of_documents, select_fields=[])
-      :staticmethod:
 
 
 
