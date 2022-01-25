@@ -3,7 +3,6 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
-
 v0.29.1
 ---------
 
@@ -11,7 +10,6 @@ v0.29.1
 - Include Client, Fix Clusterer, ClusterBase, update Cluster References
 - Add Write Documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/311
 - update clustering documentation and client documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/312
-
 
 v0.29.0
 --------
