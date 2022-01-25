@@ -34,7 +34,12 @@ def test_describe(test_client, test_sample_vector_dataset):
 
 def test_cluster(test_client, test_sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
-    centroids = df.cluster(field="sample_1_vector_", overwrite=True)
+    from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+
+    model = KMeansModel()
+    df.cluster(
+        model=model, alias="cat", vector_fields=["sample_1_vector_"], overwrite=True
+    )
     assert True
 
 

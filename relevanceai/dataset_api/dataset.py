@@ -490,7 +490,6 @@ class Dataset(BatchAPIClient):
         """
 
         from relevanceai.clusterer import Clusterer
-
         clusterer = Clusterer(model=model, alias=alias)
         clusterer.fit(dataset=self, vector_fields=vector_fields)
 
