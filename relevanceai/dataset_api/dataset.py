@@ -1084,7 +1084,7 @@ class Export(Read):
         kwargs: Optional
             see client.get_all_documents() for extra args
         """
-        documents = self.get_all_documents(self.dataset_id, **kwargs)
+        documents = self.get_all_documents(**kwargs)
         df = pd.DataFrame(documents)
         df.to_csv(filename)
 
@@ -1101,7 +1101,7 @@ class Export(Read):
         list of documents in dictionary format
         """
         if orient == "records":
-            return self.get_all_documents(self.dataset_id)
+            return self.get_all_documents()
         else:
             raise NotImplementedError
 
