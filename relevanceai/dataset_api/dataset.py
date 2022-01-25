@@ -411,7 +411,7 @@ class Read(BatchAPIClient):
 
         """
         head_documents = self.get_documents(
-            number_of_documents=n,
+            dataset_id=self.dataset_id, number_of_documents=n,
         )
         if raw_json:
             return head_documents
@@ -534,7 +534,7 @@ class Read(BatchAPIClient):
 
         """
 
-        return self.get_all_documents(
+        return self._get_all_documents(
             dataset_id=self.dataset_id,
             chunk_size=chunk_size,
             filters=filters,
@@ -544,7 +544,7 @@ class Read(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def get_documents(
+    def get_documents_by_ids(
         self, document_ids: Union[List, str], include_vector: bool = True
     ):
         """
@@ -562,7 +562,7 @@ class Read(BatchAPIClient):
         >>> from relevanceai import Client, Dataset
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset")
-        >>> df.get_documents(["sample_id"], include_vector=False)
+        >>> df.get_documents_by_ids(["sample_id"], include_vector=False)
 
         """
         if isinstance(document_ids, str):

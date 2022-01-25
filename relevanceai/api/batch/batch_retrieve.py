@@ -158,6 +158,8 @@ class BatchRetrieveClient(APIClient, Chunker):
             if length > 0:
                 full_data += x["documents"]
         return full_data
+    
+    _get_all_documents = get_all_documents
 
     def get_number_of_documents(self, dataset_id, filters=[]):
         """
