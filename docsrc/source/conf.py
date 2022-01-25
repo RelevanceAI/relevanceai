@@ -13,7 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../.."))
 
 
 # -- Project information -----------------------------------------------------
@@ -23,7 +23,7 @@ copyright = "2021, Relevance AI"
 author = "Relevance AI"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
+release = "0.28.2"
 
 
 # -- General configuration ---------------------------------------------------

@@ -8,7 +8,6 @@ from typing import Union, List, Dict
 
 class ClusterBase(DocUtils, ABC):
     """
-    Create an ABC
     """
 
     def __call__(self, *args, **kwargs):
@@ -132,10 +131,8 @@ class ClusterBase(DocUtils, ABC):
         return documents
 
     @property
-    @abstractmethod
-    def metadata(self):
-        """You can also store the metadata of this clustering algorithm"""
-        raise NotImplementedError
+    def metadata(self) -> dict:
+        return {}
 
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):

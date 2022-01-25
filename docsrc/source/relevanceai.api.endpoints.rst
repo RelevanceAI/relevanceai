@@ -1,82 +1,23 @@
-Core Endpoints
+relevanceai.api.endpoints package
 =================================
 
-.. automodule:: relevanceai.api.endpoints.admin
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Subpackages
+-----------
 
-.. automodule:: relevanceai.api.endpoints.aggregate
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: relevanceai.api.endpoints.centroids
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   relevanceai.api.endpoints.admin
+   relevanceai.api.endpoints.datasets
+   relevanceai.api.endpoints.services
+
+Submodules
+----------
+
+relevanceai.api.endpoints.client module
+---------------------------------------
 
 .. automodule:: relevanceai.api.endpoints.client
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.cluster
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.datasets
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.documents
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.encoders
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.monitor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.prediction
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.recommend
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.search
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.services
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.tagger
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.tasks
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: relevanceai.api.endpoints.wordclouds
    :members:
    :undoc-members:
    :show-inheritance:

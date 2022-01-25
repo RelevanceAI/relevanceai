@@ -16,7 +16,7 @@ Module Contents
 
 
 
-   Create an ABC
+   
 
    .. py:method:: fit_transform(self, vectors: Union[numpy.ndarray, List])
 
@@ -83,6 +83,46 @@ Module Contents
    >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
    .. py:method:: fit(self, dataset: Union[relevanceai.dataset_api.Dataset, str], vector_fields: List)
+
+      This function takes in the dataset and the relevant vector fields.
+      Under the hood, it runs fit_dataset. Sometimes, you may want to modify the behavior
+      to adapt it to your needs.
+
+      :param dataset: The dataset to fit the clusterer on
+      :type dataset: Union[Dataset, str]
+      :param vector_fields: The vector fields to fit it on
+      :type vector_fields: List[str],
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client
+      >>> client = Client()
+      >>> from relevanceai import ClusterBase
+      >>> import random
+      >>>
+      >>> class CustomClusterModel(ClusterBase):
+      >>>     def __init__(self):
+      >>>         pass
+      >>>
+      >>>     def fit_documents(self, documents, *args, **kw):
+      >>>         X = self.get_field_across_documents("sample_vector_", documents)
+      >>>         y = self.get_field_across_documents("entropy", documents)
+      >>>         cluster_labels = self.fit_transform(documents, entropy)
+      >>>         self.set_cluster_labels_across_documents(cluster_labels, documents)
+      >>>
+      >>>     def fit_transform(self, X, y):
+      >>>         cluster_labels = []
+      >>>         for y_value in y:
+      >>>         if y_value == "auto":
+      >>>             cluster_labels.append(1)
+      >>>         else:
+      >>>             cluster_labels.append(random.randint(0, 100))
+      >>>         return cluster_labels
+      >>>
+      >>> model = CustomClusterModel()
+      >>> clusterer = client.Clusterer(model)
+      >>> df = client.Dataset("sample")
+      >>> clusterer.fit(df)
 
 
 
