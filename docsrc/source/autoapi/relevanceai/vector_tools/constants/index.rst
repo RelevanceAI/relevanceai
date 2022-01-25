@@ -1,0 +1,44 @@
+:py:mod:`relevanceai.vector_tools.constants`
+============================================
+
+.. py:module:: relevanceai.vector_tools.constants
+
+
+Module Contents
+---------------
+
+.. py:data:: dict
+   
+
+   
+
+.. py:data:: DIM_REDUCTION
+   
+
+   
+
+.. py:data:: DIM_REDUCTION_DEFAULT_ARGS
+   :annotation: :Dict[Any, Any]
+
+   
+
+.. py:data:: CLUSTER
+   
+
+   
+
+.. py:data:: CLUSTER_DEFAULT_ARGS
+   :annotation: :Dict[Any, Any]
+
+   
+
+.. py:data:: NEAREST_NEIGHBOURS
+   
+
+   
+
+.. py:data:: CENTROID_DISTANCES
+   
+
+   
+
