@@ -52,13 +52,15 @@ Module Contents
       >>> client = Client()
       >>> from relevanceai import ClusterBase
       >>> import random
-      >>> class RandomClusterer(ClusterBase):
+      >>>
+      >>> class CustomClusterModel(ClusterBase):
       >>>     def __init__(self):
-      >>>     pass
-      >>> # update this to update documents
-      >>> def fit_transform(self, X):
-      >>>     return random.randint(0, 100)
-      >>> clusterer = client.KMeansClusterer(5)
+      >>>         pass
+      >>>
+      >>>     def fit_transform(self, X):
+      >>>         return random.randint(0, 100)
+      >>>
+      >>> clusterer = client.Clusterer(model)
       >>> df = client.Dataset("sample")
       >>> clusterer.fit(df)
 
@@ -80,13 +82,15 @@ Module Contents
       >>> client = Client()
       >>> from relevanceai import ClusterBase
       >>> import random
-      >>> class RandomClusterer(ClusterBase):
+      >>>
+      >>> class CustomClusterModel(ClusterBase):
       >>>     def __init__(self):
-      >>>     pass
-      >>> # update this to update documents
-      >>> def fit_transform(self, X):
-      >>>     return random.randint(0, 100)
-      >>> clusterer = client.KMeansClusterer(5)
+      >>>         pass
+      >>>
+      >>>     def fit_transform(self, X):
+      >>>         return random.randint(0, 100)
+      >>>
+      >>> clusterer = client.Clusterer(model)
       >>> df = client.Dataset("sample")
       >>> clusterer.fit(df)
 
@@ -117,7 +121,7 @@ Module Contents
       >>> client = Client()
       >>> from relevanceai import ClusterBase
       >>> import random
-      >>> class RandomClusterer(ClusterBase):
+      >>> class CustomClusterModel(ClusterBase):
       >>>     def __init__(self):
       >>>     pass
       >>> # update this to update documents
@@ -134,12 +138,26 @@ Module Contents
       >>>     else:
       >>>         cluster_labels.append(random.randint(0, 100))
       >>>     return cluster_labels
-      >>> clusterer = client.KMeansClusterer(5)
+      >>> clusterer = client.CustomClusterModel()
       >>> df = client.Dataset("sample")
       >>> clusterer.fit(df, ["sample_vector_"])
 
 
    .. py:method:: set_cluster_labels_across_documents(self, cluster_labels: list, documents: List[Dict], inplace: bool = True, return_only_clusters: bool = True)
+
+      Utility function to allow users to set cluster labels
+
+      :param cluster_labels: A list of integers of string. If it is an integer - it will automatically add a 'cluster-' prefix
+                             to help avoid incorrect data type parsing. You can override this behavior by setting clusters
+                             as strings.
+      :type cluster_labels: List[str, int]
+      :param documents: When the documents are in
+      :type documents: List[dict]
+      :param inplace: If True, then the clusters are set in place.
+      :type inplace: bool
+      :param return_only_clusters: If True, then the return_only_clusters will return documents with just the cluster field and ID.
+                                   This can be helpful when you want to upsert quickly without having to re-insert the entire document.
+      :type return_only_clusters: bool
 
 
    .. py:method:: list_furthest_from_center(self)

@@ -81,13 +81,15 @@ class Clusterer(BatchAPIClient):
         >>> client = Client()
         >>> from relevanceai import ClusterBase
         >>> import random
-        >>> class RandomClusterer(ClusterBase):
+        >>>
+        >>> class CustomClusterModel(ClusterBase):
         >>>     def __init__(self):
-        >>>     pass
-        >>> # update this to update documents
-        >>> def fit_transform(self, X):
-        >>>     return random.randint(0, 100)
-        >>> clusterer = client.KMeansClusterer(5)
+        >>>         pass
+        >>> 
+        >>>     def fit_transform(self, X):
+        >>>         return random.randint(0, 100)
+        >>> model = CustomClusterModel()
+        >>> clusterer = client.Clusterer(model)
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df)
 
@@ -111,19 +113,24 @@ class Clusterer(BatchAPIClient):
 
         Example
         ---------
+
         >>> from relevanceai import Client
         >>> client = Client()
         >>> from relevanceai import ClusterBase
         >>> import random
-        >>> class RandomClusterer(ClusterBase):
+        >>>
+        >>> class CustomClusterModel(ClusterBase):
         >>>     def __init__(self):
-        >>>     pass
-        >>> # update this to update documents
-        >>> def fit_transform(self, X):
-        >>>     return random.randint(0, 100)
-        >>> clusterer = client.KMeansClusterer(5)
+        >>>         pass
+        >>> 
+        >>>     def fit_transform(self, X):
+        >>>         return random.randint(0, 100)
+        >>>
+        >>> model = CustomClusterModel()
+        >>> clusterer = client.Clusterer(model)
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df)
+
         """
 
         # load the documents
@@ -229,28 +236,30 @@ class Clusterer(BatchAPIClient):
         Example
         -----------
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> from relevanceai import ClusterBase
+        >>> from relevanceai import Client, ClusterBase
         >>> import random
-        >>> class RandomClusterer(ClusterBase):
+        >>> client = Client()
+        >>> class CustomClusterModel(ClusterBase):
         >>>     def __init__(self):
-        >>>     pass
-        >>> # update this to update documents
-        >>> def fit_documents(self, documents, *args, **kw):
-        >>>     X = self.get_field_across_documents("sample_vector_", documents)
-        >>>     y = self.get_field_across_documents("entropy", documents)
-        >>>     cluster_labels = self.fit_transform(documents, entropy)
-        >>>     self.set_cluster_labels_across_documents(cluster_labels, documents)
-        >>> def fit_transform(self, X, y):
-        >>>     cluster_labels = []
-        >>>     for y_value in y:
-        >>>     if y_value == "auto":
-        >>>         cluster_labels.append(1)
-        >>>     else:
-        >>>         cluster_labels.append(random.randint(0, 100))
-        >>>     return cluster_labels
-        >>> clusterer = client.KMeansClusterer(5)
+        >>>         pass
+        >>> 
+        >>>     def fit_documents(self, documents, *args, **kw):
+        >>>         X = self.get_field_across_documents("sample_vector_", documents)
+        >>>         y = self.get_field_across_documents("entropy", documents)
+        >>>         cluster_labels = self.fit_transform(documents, entropy)
+        >>>         self.set_cluster_labels_across_documents(cluster_labels, documents)
+        >>> 
+        >>>     def fit_transform(self, X, y):
+        >>>         cluster_labels = []
+        >>>         for y_value in y:
+        >>>         if y_value == "auto":
+        >>>             cluster_labels.append(1)
+        >>>         else:
+        >>>             cluster_labels.append(random.randint(0, 100))
+        >>>         return cluster_labels
+        >>> 
+        >>>    
+        >>> clusterer = client.CustomClusterModel()
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df, ["sample_vector_"])
         """
