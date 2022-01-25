@@ -555,7 +555,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             ):
 
                 # Get completed documents
-                log_json = self.get_all_documents(logging_dataset_id)
+                log_json = self._get_all_documents(logging_dataset_id)
                 completed_documents_list = [i["_id"] for i in log_json]
 
                 # Get incomplete documents from raw collection
