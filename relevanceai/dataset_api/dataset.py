@@ -411,7 +411,6 @@ class Read(BatchAPIClient):
 
         """
         head_documents = self.get_documents(
-            dataset_id=self.dataset_id,
             number_of_documents=n,
         )
         if raw_json:
@@ -575,7 +574,7 @@ class Read(BatchAPIClient):
                 self.dataset_id, ids=document_ids, include_vector=include_vector
             )
         raise TypeError("Document IDs needs to be a string or a list")
-
+    
     def schema(self):
         """
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
