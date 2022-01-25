@@ -108,10 +108,8 @@ class KMeansModel(ClusterBase):
             "red_vector_": [0.23, 0.41, 0.3]
         }
 
-        Example
-
-
         ```
+
         """
         self.centers = self.get_centers()
         if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:

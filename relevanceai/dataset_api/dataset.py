@@ -16,13 +16,13 @@ from relevanceai.api.client import BatchAPIClient
 
 class Series(BatchAPIClient):
     """
+    Dataset Series Object
+    -----------------------------
+
     A wrapper class for being able to vectorize documents over field
     """
 
-    def __init__(self, project: str, api_key: str, dataset_id: str, field) -> None:
-        """
-        Initialise the class
-        """
+    def __init__(self, project: str, api_key: str, dataset_id: str, field):
         self.project = project
         self.api_key = api_key
         self.dataset_id = dataset_id
@@ -237,16 +237,16 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
-
-class Dataset(BatchAPIClient):
+class Read(BatchAPIClient):
     """
+
+    Dataset Read
+    -------------------
+
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
 
-    def __init__(self, project: str, api_key: str) -> None:
-        """
-        Initialise the class
-        """
+    def __init__(self, project: str, api_key: str):
         self.project = project
         self.api_key = api_key
         self.vector_tools = VectorTools(project=project, api_key=api_key)
@@ -261,26 +261,6 @@ class Dataset(BatchAPIClient):
         highlight_fields: dict = {},
         output_format: str = "pandas",
     ):
-        """
-        Instaniates a Dataset
-
-        Parameters
-        ----------
-        dataset_id : str
-            The dataset_id of concern
-        image_fields : str
-            The image_fields within the dataset that you would like to select
-        text_fields : str
-            The text_fields within the dataset that you would like to select
-        audio_fields : str
-            The audio_fields within the dataset that you would like to select
-        output_format : str
-            The output format of the dataset
-
-        Returns
-        -------
-        Self
-        """
         self.dataset_id = dataset_id
         self.image_fields = image_fields
         self.text_fields = text_fields
@@ -435,47 +415,6 @@ class Dataset(BatchAPIClient):
             text_fields=text_fields,
         )
 
-    def describe(self) -> dict:
-        """
-        Descriptive statistics include those that summarize the central tendency
-        dispersion and shape of a dataset's distribution, excluding NaN values.
-        """
-        return self.datasets.facets(self.dataset_id)
-
-    def vectorize(self, field, model):
-        """
-        Vectorizes a Particular field (text) of the dataset
-
-        Parameters
-        ----------
-        field : str
-            The text field to select
-        model
-            a Type deep learning model that vectorizes text
-        """
-        series = Series(self)
-        series(self.dataset_id, field).vectorize(model)
-
-    def cluster(self, field, n_clusters=10, overwrite=False):
-        """
-        Performs KMeans Clustering on over a vector field within the dataset.
-
-        Parameters
-        ----------
-        field : str
-            The text field to select
-        n_cluster: int default = 10
-            the number of cluster to find wihtin the vector field
-        """
-        centroids = self.vector_tools.cluster.kmeans_cluster(
-            dataset_id=self.dataset_id,
-            vector_fields=[field],
-            k=n_clusters,
-            alias=f"kmeans_{n_clusters}",
-            overwrite=overwrite,
-        )
-        return centroids
-
     def sample(
         self,
         n: int = 0,
@@ -534,6 +473,169 @@ class Dataset(BatchAPIClient):
             return docs
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(docs, orient="records")
+
+    def all(
+        self,
+        chunk_size: int = 1000,
+        filters: List = [],
+        sort: List = [],
+        select_fields: List = [],
+        include_vector: bool = True,
+        show_progress_bar: bool = True,
+    ):
+
+        """
+        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
+
+        Parameters
+        ----------
+        chunk_size : list
+            Number of documents to retrieve per retrieval
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        select_fields : list
+            Fields to include in the search results, empty array/list means all fields.
+        """
+
+        return self.get_all_documents(
+            dataset_id=self.dataset_id,
+            chunk_size=chunk_size,
+            filters=filters,
+            sort=sort,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            show_progress_bar=show_progress_bar,
+        )
+
+    def get(self, document_ids: Union[List, str], include_vector: bool = True):
+        """
+        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+
+        Parameters
+        ----------
+        document_ids: Union[list, str]
+            ID of a document in a dataset.
+        include_vector: bool
+            Include vectors in the search results
+
+        Example
+        --------
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> df.get("sample_id", include_vector=False)
+
+        """
+        if isinstance(document_ids, str):
+            return self.datasets.documents.get(
+                self.dataset_id, id=document_ids, include_vector=include_vector
+            )
+        elif isinstance(document_ids, list):
+            return self.datasets.documents.bulk_get(
+                self.dataset_id, ids=document_ids, include_vector=include_vector
+            )
+        raise TypeError("Document IDs needs to be a string or a list")
+
+    def schema(self):
+        """
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+
+        Example
+        -----------------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample")
+        >>> df.schema()
+        """
+        return self.datasets.schema(self.dataset_id)
+
+class Stats(Read):
+    def value_counts(self, field: str):
+        """
+        Return a Series containing counts of unique values.
+        Parameters
+        ----------
+        field: str
+            dataset field to which to do value counts on
+        Returns
+        -------
+        Series
+        """
+        return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
+
+    def describe(self) -> dict:
+        """
+        Descriptive statistics include those that summarize the central tendency
+        dispersion and shape of a dataset's distribution, excluding NaN values.
+        """
+        return self.datasets.facets(self.dataset_id)
+
+class Write(Read):
+    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+        """
+        Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+        Parameters
+        ----------
+        vector_name: str, default None
+            name of the new concatenated vector field
+        fields: List
+            fields alone which the new vector will concatenate
+        """
+        if vector_name is None:
+            vector_name = "_".join(fields) + "_cat_vector_"
+
+        def cat_fields(documents, field_name):
+            cat_vector_documents = [
+                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
+                for sample in documents
+            ]
+            return cat_vector_documents
+
+        self.pull_update_push(
+            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        )
+    
+    concat = cat
+
+    def vectorize(self, field, model):
+        """
+        Vectorizes a Particular field (text) of the dataset
+
+        Parameters
+        ----------
+        field : str
+            The text field to select
+        model
+            a Type deep learning model that vectorizes text
+        """
+        series = Series(self)
+        series(self.dataset_id, field).vectorize(model)
+
+    def cluster(self, field, n_clusters=10, overwrite=False):
+        """
+        Performs KMeans Clustering on over a vector field within the dataset.
+
+        Parameters
+        ----------
+        field : str
+            The text field to select
+        n_cluster: int default = 10
+            the number of cluster to find wihtin the vector field
+        """
+        centroids = self.vector_tools.cluster.kmeans_cluster(
+            dataset_id=self.dataset_id,
+            vector_fields=[field],
+            k=n_clusters,
+            alias=f"kmeans_{n_clusters}",
+            overwrite=overwrite,
+        )
+        return centroids
 
     def apply(
         self,
@@ -652,161 +754,19 @@ class Dataset(BatchAPIClient):
             use_json_encoder=use_json_encoder,
         )
 
-    def all(
-        self,
-        chunk_size: int = 1000,
-        filters: List = [],
-        sort: List = [],
-        select_fields: List = [],
-        include_vector: bool = True,
-        show_progress_bar: bool = True,
-    ):
-
-        """
-        Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
-
-        Parameters
-        ----------
-        chunk_size : list
-            Number of documents to retrieve per retrieval
-        include_vector: bool
-            Include vectors in the search results
-        sort: list
-            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
-        filters: list
-            Query for filtering the search results
-        select_fields : list
-            Fields to include in the search results, empty array/list means all fields.
-        """
-
-        return self.get_all_documents(
-            dataset_id=self.dataset_id,
-            chunk_size=chunk_size,
-            filters=filters,
-            sort=sort,
-            select_fields=select_fields,
-            include_vector=include_vector,
-            show_progress_bar=show_progress_bar,
-        )
-
-    def value_counts(self, field: str):
-        """
-        Return a Series containing counts of unique values.
-        Parameters
-        ----------
-        field: str
-            dataset field to which to do value counts on
-        Returns
-        -------
-        Series
-        """
-        return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
-
-    def to_csv(self, filename: str, **kwargs):
-        """
-        Download a dataset from the QC to a local .csv file
-
-        Parameters
-        ----------
-        filename: str
-            path to downloaded .csv file
-        kwargs: Optional
-            see client.get_all_documents() for extra args
-        """
-        documents = self.get_all_documents(self.dataset_id, **kwargs)
-        df = pd.DataFrame(documents)
-        df.to_csv(filename)
-
-    def read_csv(self, filename: str, **kwargs):
-        """
-        Wrapper for client.insert_csv
-
-        Parameters
-        ----------
-        filename: str
-            path to .csv file
-        kwargs: Optional
-            see client.insert_csv() for extra args
-        """
-        return self.insert_csv(self.dataset_id, filename, **kwargs)
-
-    # def insert_documents(
-    #     self,
-    #     documents,
-    #     bulk_fn: Callable = None,
-    #     max_workers: int = 8,
-    #     retry_chunk_mult: float = 0.5,
-    #     show_progress_bar: bool = False,
-    #     chunksize: int = 0,
-    #     use_json_encoder: bool = True,
-    # ):
-
+    # def insert_csv(self, filename: str, **kwargs):
     #     """
-    #     Update a list of documents with multi-threading automatically enabled.
-    #     Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+    #     Wrapper for client.insert_csv
 
     #     Parameters
     #     ----------
-    #     dataset_id : string
-    #         Unique name of dataset
-    #     docs : list
-    #         A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
-    #     bulk_fn : callable
-    #         Function to apply to documents before uploading
-    #     max_workers : int
-    #         Number of workers active for multi-threading
-    #     retry_chunk_mult: int
-    #         Multiplier to apply to chunksize if upload fails
-    #     chunksize : int
-    #         Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
-    #     use_json_encoder : bool
-    #         Whether to automatically convert documents to json encodable format
-
-    #     Example
-    #     ----------
-
-    #     >>> from relevanceai import Client
-    #     >>> client = Client()
-    #     >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-    #     >>> df = client.Dataset("sample")
-    #     >>> df.insert_documents(dataset_id, documents)
-
+    #     filename: str
+    #         path to .csv file
+    #     kwargs: Optional
+    #         see client.insert_csv() for extra args
     #     """
-    #     return self.insert_documents(
-    #         dataset_id=self.dataset_id,
-    #         documents=documents,
-    #         bulk_fn=bulk_fn,
-    #         max_workers=max_workers,
-    #         retry_chunk_mult=retry_chunk_mult,
-    #         show_progress_bar=show_progress_bar,
-    #         chunksize=chunksize,
-    #         use_json_encoder=use_json_encoder,
-    #     )
-
-    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
-        """
-        Concatenates numerical fields along an axis and reuploads this vector for other operations
-
-        Parameters
-        ----------
-        vector_name: str, default None
-            name of the new concatenated vector field
-        fields: List
-            fields alone which the new vector will concatenate
-        """
-        if vector_name is None:
-            vector_name = "_".join(fields) + "_cat_vector_"
-
-        def cat_fields(documents, field_name):
-            cat_vector_documents = [
-                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
-                for sample in documents
-            ]
-            return cat_vector_documents
-
-        self.pull_update_push(
-            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
-        )
+    #     warnings.warn("Functionality of this may change. Make sure to use insert_csv if possible")
+    #     return self.insert_csv(self.dataset_id, filename, **kwargs)
 
     def create(self, schema: dict = {}):
         """
@@ -930,48 +890,21 @@ class Dataset(BatchAPIClient):
             use_json_encoder=use_json_encoder,
         )
 
-    def get(self, document_ids: Union[List, str], include_vector: bool = True):
+class Export(Read):
+    def to_csv(self, filename: str, **kwargs):
         """
-        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+        Download a dataset from the QC to a local .csv file
 
         Parameters
         ----------
-        document_ids: Union[list, str]
-            ID of a document in a dataset.
-        include_vector: bool
-            Include vectors in the search results
-
-        Example
-        --------
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> df.get("sample_id", include_vector=False)
-
+        filename: str
+            path to downloaded .csv file
+        kwargs: Optional
+            see client.get_all_documents() for extra args
         """
-        if isinstance(document_ids, str):
-            return self.datasets.documents.get(
-                self.dataset_id, id=document_ids, include_vector=include_vector
-            )
-        elif isinstance(document_ids, list):
-            return self.datasets.documents.bulk_get(
-                self.dataset_id, ids=document_ids, include_vector=include_vector
-            )
-        raise TypeError("Document IDs needs to be a string or a list")
-
-    def schema(self):
-        """
-        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
-
-        Example
-        -----------------
-
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample")
-        >>> df.schema()
-        """
-        return self.datasets.schema(self.dataset_id)
+        documents = self.get_all_documents(self.dataset_id, **kwargs)
+        df = pd.DataFrame(documents)
+        df.to_csv(filename)
 
     def to_dict(self, orient: str = "records"):
         """
@@ -989,6 +922,9 @@ class Dataset(BatchAPIClient):
             return self.get_all_documents(self.dataset_id)
         else:
             raise NotImplementedError
+    
+class Dataset(Export, Write):
+    pass
 
 
 class Datasets(BatchAPIClient):

@@ -7,7 +7,9 @@ from typing import Union, List, Dict
 
 
 class ClusterBase(DocUtils, ABC):
-    """ """
+    """
+    A Cluster Base for models to be copied off.
+    """
 
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
