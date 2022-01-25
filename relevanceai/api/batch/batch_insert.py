@@ -95,6 +95,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 **kwargs,
             )
 
+        print(
+            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+        )
+
         return self._write_documents(
             bulk_insert_func,
             docs,
