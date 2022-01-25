@@ -78,7 +78,7 @@ Module Contents
    >>> from relevanceai import Client
    >>> client = Client()
 
-   >>> clusterer = client.KMeansClusterer()
+   >>> clusterer = client.KMeansClusterer(5)
    >>> df = client.Dataset("sample")
    >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 

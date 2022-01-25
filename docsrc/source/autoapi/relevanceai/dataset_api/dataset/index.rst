@@ -63,6 +63,21 @@ Module Contents
       >>> df["sample_1_label"].apply(lambda x: x + 3)
 
 
+   .. py:method:: value_counts(self, normalize: bool = False, ascending: bool = False, sort: bool = False, bins: Optional[int] = None)
+
+      Return a Series containing counts of unique values (or values with in a range if bins is set).
+
+      :param normalize: If True then the object returned will contain the relative frequencies of the unique values.
+      :type normalize: bool, default False
+      :param ascending: Sort in ascending order.
+      :type ascending: bool, default False
+      :param bins: Groups categories into 'bins'. These bins are good for representing groups within continuous series
+      :type bins: int, optional
+
+      :returns:
+      :rtype: Series
+
+
 
 .. py:class:: Dataset(project: str, api_key: str)
 
@@ -244,6 +259,16 @@ Module Contents
       :type select_fields: list
 
 
+   .. py:method:: value_counts(self, field: str)
+
+      Return a Series containing counts of unique values.
+      :param field: dataset field to which to do value counts on
+      :type field: str
+
+      :returns:
+      :rtype: Series
+
+
    .. py:method:: to_csv(self, filename: str, **kwargs)
 
       Download a dataset from the QC to a local .csv file
@@ -393,6 +418,16 @@ Module Contents
       >>> client = Client()
       >>> df = client.Dataset("sample")
       >>> df.schema()
+
+
+   .. py:method:: to_dict(self, orient: str = 'records')
+
+      Returns the raw list of dicts from the QC
+
+      :param None:
+
+      :returns:
+      :rtype: list of documents in dictionary format
 
 
 

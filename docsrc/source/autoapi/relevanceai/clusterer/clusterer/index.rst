@@ -16,7 +16,7 @@ Module Contents
 
 
 
-   Clusterer allows users to be able to
+   Clusterer class allows users to set up any clustering model to fit on a Dataset.
 
    :param alias: The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
    :type alias: str
@@ -31,7 +31,7 @@ Module Contents
 
    >>> from relevanceai import Client
    >>> client = Client()
-   >>> clusterer = client.KMeansClusterer()
+   >>> clusterer = client.KMeansClusterer(5)
    >>> df = client.Dataset("sample")
    >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
@@ -58,7 +58,7 @@ Module Contents
       >>> # update this to update documents
       >>> def fit_transform(self, X):
       >>>     return random.randint(0, 100)
-      >>> clusterer = client.KMeansClusterer()
+      >>> clusterer = client.KMeansClusterer(5)
       >>> df = client.Dataset("sample")
       >>> clusterer.fit(df)
 
@@ -86,7 +86,7 @@ Module Contents
       >>> # update this to update documents
       >>> def fit_transform(self, X):
       >>>     return random.randint(0, 100)
-      >>> clusterer = client.KMeansClusterer()
+      >>> clusterer = client.KMeansClusterer(5)
       >>> df = client.Dataset("sample")
       >>> clusterer.fit(df)
 
@@ -134,7 +134,7 @@ Module Contents
       >>>     else:
       >>>         cluster_labels.append(random.randint(0, 100))
       >>>     return cluster_labels
-      >>> clusterer = client.KMeansClusterer()
+      >>> clusterer = client.KMeansClusterer(5)
       >>> df = client.Dataset("sample")
       >>> clusterer.fit(df, ["sample_vector_"])
 
@@ -221,7 +221,7 @@ Module Contents
       >>> from relevanceai import Client
       >>> client = Client()
       >>> df = client.Dataset("sample_dataset")
-      >>> clusterer = client.KMeansClusterer()
+      >>> clusterer = client.KMeansClusterer(5)
       >>> clusterer.fit(df, ["sample_vector_"])
       >>> clusterer.list_closest_to_center()
 
@@ -254,7 +254,7 @@ Module Contents
       >>> from relevanceai import Client
       >>> client = Client()
       >>> df = client.Dataset("sample_dataset")
-      >>> clusterer = client.KMeansClusterer()
+      >>> clusterer = client.KMeansClusterer(5)
       >>> clusterer.fit(df, ["sample_vector_"])
       >>> clusterer.aggregate(
       >>>     groupby=[],
@@ -279,4 +279,6 @@ Module Contents
       >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
       >>> kmeans.metadata
       # {"k": 10}
+
+
 

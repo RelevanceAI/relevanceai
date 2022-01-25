@@ -11,7 +11,7 @@ from doc_utils import DocUtils
 
 class Clusterer(BatchAPIClient):
     """
-    Clusterer allows users to be able to
+    Clusterer class allows users to set up any clustering model to fit on a Dataset.
 
     Parameters
     ----------
@@ -28,7 +28,7 @@ class Clusterer(BatchAPIClient):
     -----------
     >>> from relevanceai import Client
     >>> client = Client()
-    >>> clusterer = client.KMeansClusterer()
+    >>> clusterer = client.KMeansClusterer(5)
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
@@ -87,7 +87,7 @@ class Clusterer(BatchAPIClient):
         >>> # update this to update documents
         >>> def fit_transform(self, X):
         >>>     return random.randint(0, 100)
-        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer = client.KMeansClusterer(5)
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df)
 
@@ -121,7 +121,7 @@ class Clusterer(BatchAPIClient):
         >>> # update this to update documents
         >>> def fit_transform(self, X):
         >>>     return random.randint(0, 100)
-        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer = client.KMeansClusterer(5)
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df)
         """
@@ -250,7 +250,7 @@ class Clusterer(BatchAPIClient):
         >>>     else:
         >>>         cluster_labels.append(random.randint(0, 100))
         >>>     return cluster_labels
-        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer = client.KMeansClusterer(5)
         >>> df = client.Dataset("sample")
         >>> clusterer.fit(df, ["sample_vector_"])
         """
@@ -277,6 +277,24 @@ class Clusterer(BatchAPIClient):
         inplace: bool = True,
         return_only_clusters: bool = True,
     ):
+        """
+        Utility function to allow users to set cluster labels
+        
+        Parameters
+        ------------
+        cluster_labels: List[str, int]
+            A list of integers of string. If it is an integer - it will automatically add a 'cluster-' prefix
+            to help avoid incorrect data type parsing. You can override this behavior by setting clusters
+            as strings.
+        documents: List[dict]
+            When the documents are in
+        inplace: bool
+            If True, then the clusters are set in place.
+        return_only_clusters: bool
+            If True, then the return_only_clusters will return documents with just the cluster field and ID. 
+            This can be helpful when you want to upsert quickly without having to re-insert the entire document.
+
+        """
         if inplace:
             self.set_cluster_labels_across_documents(cluster_labels, documents)
             if return_only_clusters:
@@ -419,7 +437,7 @@ class Clusterer(BatchAPIClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset")
-        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer = client.KMeansClusterer(5)
         >>> clusterer.fit(df, ["sample_vector_"])
         >>> clusterer.list_closest_to_center()
 
@@ -482,7 +500,7 @@ class Clusterer(BatchAPIClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset")
-        >>> clusterer = client.KMeansClusterer()
+        >>> clusterer = client.KMeansClusterer(5)
         >>> clusterer.fit(df, ["sample_vector_"])
         >>> clusterer.aggregate(
         >>>     groupby=[],

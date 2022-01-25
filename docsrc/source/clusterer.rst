@@ -2,31 +2,27 @@
     This is manually maintained and edited from docsrc/source/autoapi/relevanceai/clusterer/clusterer/.rst
 
 
-Cluster
+Clusterer
 =============================
 
-.. py:class:: Clusterer(model: relevanceai.clusterer.cluster_base.ClusterBase, alias: str, project: str, api_key: str, cluster_field: str = '_cluster_')
+Clusterer class allows users to set up any clustering model to fit on a Dataset.
 
+:param alias: The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+:type alias: str
+:param k: The number of clusters in your K Means
+:type k: str
+:param cluster_field: The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+:type cluster_field: str
+:param You can read about the other parameters here:
+:type You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
 
+.. rubric:: Example
 
-   Clusterer allows users to be able to
-
-   :param alias: The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
-   :type alias: str
-   :param k: The number of clusters in your K Means
-   :type k: str
-   :param cluster_field: The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
-   :type cluster_field: str
-   :param You can read about the other parameters here:
-   :type You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-
-   .. rubric:: Example
-
-   >>> from relevanceai import Client
-   >>> client = Client()
-   >>> clusterer = client.KMeansClusterer()
-   >>> df = client.Dataset("sample")
-   >>> clusterer.fit(df, vector_fields=["sample_vector_"])
+>>> from relevanceai import Client
+>>> client = Client()
+>>> clusterer = client.KMeansClusterer(5)
+>>> df = client.Dataset("sample")
+>>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
 .. py:method:: fit(self, dataset: Union[relevanceai.dataset_api.Dataset, str], vector_fields: List)
 
@@ -51,7 +47,7 @@ Cluster
     >>> # update this to update documents
     >>> def fit_transform(self, X):
     >>>     return random.randint(0, 100)
-    >>> clusterer = client.KMeansClusterer()
+    >>> clusterer = client.KMeansClusterer(5)
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df)
 
@@ -79,7 +75,7 @@ Cluster
     >>> # update this to update documents
     >>> def fit_transform(self, X):
     >>>     return random.randint(0, 100)
-    >>> clusterer = client.KMeansClusterer()
+    >>> clusterer = client.KMeansClusterer(5)
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df)
 
@@ -127,7 +123,7 @@ Cluster
     >>>     else:
     >>>         cluster_labels.append(random.randint(0, 100))
     >>>     return cluster_labels
-    >>> clusterer = client.KMeansClusterer()
+    >>> clusterer = client.KMeansClusterer(5)
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df, ["sample_vector_"])
 
@@ -214,7 +210,7 @@ Cluster
     >>> from relevanceai import Client
     >>> client = Client()
     >>> df = client.Dataset("sample_dataset")
-    >>> clusterer = client.KMeansClusterer()
+    >>> clusterer = client.KMeansClusterer(5)
     >>> clusterer.fit(df, ["sample_vector_"])
     >>> clusterer.list_closest_to_center()
 
@@ -247,7 +243,7 @@ Cluster
     >>> from relevanceai import Client
     >>> client = Client()
     >>> df = client.Dataset("sample_dataset")
-    >>> clusterer = client.KMeansClusterer()
+    >>> clusterer = client.KMeansClusterer(5)
     >>> clusterer.fit(df, ["sample_vector_"])
     >>> clusterer.aggregate(
     >>>     groupby=[],
@@ -272,5 +268,6 @@ Cluster
     >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
     >>> kmeans.metadata
     # {"k": 10}
-    >>> kmeans.metadata = {"v": 20}
+
+
 
