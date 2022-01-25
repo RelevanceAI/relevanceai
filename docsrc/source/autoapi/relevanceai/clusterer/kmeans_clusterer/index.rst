@@ -16,7 +16,7 @@ Module Contents
 
 
 
-   A Cluster Base for models to be copied off.
+   A Cluster Base for models to be inherited.
 
    .. py:method:: fit_transform(self, vectors: Union[numpy.ndarray, List])
 

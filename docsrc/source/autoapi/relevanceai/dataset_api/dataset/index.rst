@@ -171,7 +171,7 @@ Module Contents
       >>> df.sample()
 
 
-   .. py:method:: all(self, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
+   .. py:method:: get_all_documents(self, chunk_size: int = 1000, filters: List = [], sort: List = [], select_fields: List = [], include_vector: bool = True, show_progress_bar: bool = True)
 
       Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
@@ -186,8 +186,17 @@ Module Contents
       :param select_fields: Fields to include in the search results, empty array/list means all fields.
       :type select_fields: list
 
+      .. rubric:: Example
 
-   .. py:method:: get(self, document_ids: Union[List, str], include_vector: bool = True)
+      .. code-block
+
+          from relevanceai import Client
+          client = Client()
+          df = client.Dataset("sample")
+          docs = df.get_all_documents()
+
+
+   .. py:method:: get_documents(self, document_ids: Union[List, str], include_vector: bool = True)
 
       Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
 
@@ -201,7 +210,7 @@ Module Contents
       >>> from relevanceai import Client, Dataset
       >>> client = Client()
       >>> df = client.Dataset("sample_dataset")
-      >>> df.get("sample_id", include_vector=False)
+      >>> df.get_documents(["sample_id"], include_vector=False)
 
 
    .. py:method:: schema(self)
@@ -284,6 +293,70 @@ Module Contents
       :type field: str
       :param n_cluster: the number of cluster to find wihtin the vector field
       :type n_cluster: int default = 10
+
+
+   .. py:method:: insert_documents(self, documents: list, bulk_fn: Callable = None, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, chunksize: int = 0, use_json_encoder: bool = True, *args, **kwargs)
+
+      Insert a list of documents with multi-threading automatically enabled.
+
+      - When inserting the document you can optionally specify your own id for a document by using the field name "_id", if not specified a random id is assigned.
+      - When inserting or specifying vectors in a document use the suffix (ends with) "_vector_" for the field name. e.g. "product_description_vector_".
+      - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
+      - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
+
+      Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+
+      :param documents: A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+      :type documents: list
+      :param bulk_fn: Function to apply to documents before uploading
+      :type bulk_fn: callable
+      :param max_workers: Number of workers active for multi-threading
+      :type max_workers: int
+      :param retry_chunk_mult: Multiplier to apply to chunksize if upload fails
+      :type retry_chunk_mult: int
+      :param chunksize: Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+      :type chunksize: int
+      :param use_json_encoder: Whether to automatically convert documents to json encodable format
+      :type use_json_encoder: bool
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client
+      >>> client = Client()
+      >>> df = client.Dataset("sample_dataset")
+      >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
+      >>> df.insert_documents(documents)
+
+
+   .. py:method:: insert_csv(self, filepath_or_buffer, chunksize: int = 10000, max_workers: int = 8, retry_chunk_mult: float = 0.5, show_progress_bar: bool = False, index_col: int = None, csv_args: dict = {}, col_for_id: str = None, auto_generate_id: bool = True)
+
+      Insert data from csv file
+
+      :param dataset_id: Unique name of dataset
+      :type dataset_id: string
+      :param filepath_or_buffer: Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
+      :param chunksize: Number of lines to read from csv per iteration
+      :type chunksize: int
+      :param max_workers: Number of workers active for multi-threading
+      :type max_workers: int
+      :param retry_chunk_mult: Multiplier to apply to chunksize if upload fails
+      :type retry_chunk_mult: int
+      :param csv_args: Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+      :type csv_args: dict
+      :param index_col: Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
+      :type index_col: None
+      :param col_for_id: Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
+      :type col_for_id: str
+      :param auto_generate_id: Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
+      :type auto_generate_id: bool = True
+
+      .. rubric:: Example
+
+      >>> from relevanceai import Client
+      >>> client = Client()
+      >>> df = client.Dataset("sample_dataset")
+      >>> csv_filename = "temp.csv"
+      >>> df.insert_csv(csv_filename)
 
 
    .. py:method:: apply(self, func: Callable, retrieve_chunk_size: int = 100, max_workers: int = 8, filters: list = [], select_fields: list = [], show_progress_bar: bool = True, use_json_encoder: bool = True, axis: int = 0)

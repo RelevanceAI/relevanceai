@@ -4,6 +4,7 @@ from relevanceai.http_client import Client
 
 # Cluster Base Utilities
 from relevanceai.clusterer.cluster_base import ClusterBase
+from relevanceai.clusterer.clusterer import Clusterer
 import requests
 
 # Import useful utility if possible as well
@@ -12,7 +13,8 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "0.29.0"
+__version__ = "0.29.1"
+
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()

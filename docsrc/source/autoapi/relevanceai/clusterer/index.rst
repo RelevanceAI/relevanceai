@@ -17,6 +17,7 @@ Submodules
 
    cluster_base/index.rst
    clusterer/index.rst
+   faiss_kmeans_clusterer/index.rst
    kmeans_clusterer/index.rst
 
 

@@ -164,7 +164,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
                 )
                 docs.extend(batch_doc["documents"])
         else:
-            docs = self.get_all_documents(
+            docs = self._get_all_documents(
                 dataset_id=self.dataset_id, filters=filters, select_fields=fields
             )
         return docs

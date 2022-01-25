@@ -1,4 +1,6 @@
-"""Document utilities
+"""
+The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
+and models. A cluster base has the following abstractmethods that must be written:
 """
 import numpy as np
 from doc_utils import DocUtils
@@ -8,19 +10,67 @@ from typing import Union, List, Dict
 
 class ClusterBase(DocUtils, ABC):
     """
-    A Cluster Base for models to be copied off.
+    A Cluster Base for models to be inherited.
     """
 
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, vectors) -> List[Union[str, float, int]]:
-        """ """
+    def fit_transform(self, vectors: list) -> List[Union[str, float, int]]:
+        """Edit this method to implement a ClusterBase.
+
+        Parameters
+        -------------
+        vectors: list
+            The vectors that are going to be clustered
+
+        Example
+        ----------
+
+        .. code-block::
+
+            class KMeansModel(ClusterBase):
+                def __init__(self, k=10, init="k-means++", n_init=10,
+                    max_iter=300, tol=1e-4, verbose=0, random_state=None,
+                        copy_x=True,algorithm="auto"):
+                        self.init = init
+                        self.n_init = n_init
+                        self.max_iter = max_iter
+                        self.tol = tol
+                        self.verbose = verbose
+                        self.random_state = random_state
+                        self.copy_x = copy_x
+                        self.algorithm = algorithm
+                        self.n_clusters = k
+
+            def _init_model(self):
+                from sklearn.cluster import KMeans
+                self.km = KMeans(
+                    n_clusters=self.n_clusters,
+                    init=self.init,
+                    verbose=self.verbose,
+                    max_iter=self.max_iter,
+                    tol=self.tol,
+                    random_state=self.random_state,
+                    copy_x=self.copy_x,
+                    algorithm=self.algorithm,
+                )
+                return
+
+            def fit_transform(self, vectors: Union[np.ndarray, List]):
+                if not hasattr(self, "km"):
+                    self._init_model()
+                self.km.fit(vectors)
+                cluster_labels = self.km.labels_.tolist()
+                # cluster_centroids = km.cluster_centers_
+                return cluster_labels
+
+
+        """
         raise NotImplementedError
 
     def _concat_vectors_from_list(self, list_of_vectors: list):
-        """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
 
     def _get_vectors_from_documents(self, vector_fields, docs):
@@ -133,6 +183,9 @@ class ClusterBase(DocUtils, ABC):
 
     @property
     def metadata(self) -> dict:
+        """If metadata is set - this willi be stored on RelevanceAI.
+        This is useful when you are looking to compare the metadata of your clusters.
+        """
         return {}
 
     def _label_cluster(self, label: Union[int, str]):

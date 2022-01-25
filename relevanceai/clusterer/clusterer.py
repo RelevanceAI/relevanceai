@@ -191,7 +191,7 @@ class Clusterer(BatchAPIClient):
         self._init_dataset(dataset)
         self.vector_fields = vector_fields
 
-        docs = self.get_all_documents(
+        docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 

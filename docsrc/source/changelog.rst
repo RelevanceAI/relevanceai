@@ -3,6 +3,14 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.29.1
+---------
+
+- Moved get_all_documents in BatchAPIClient to _get_all_documents to resolve typing error
+- Include Client, Fix Clusterer, ClusterBase, update Cluster References
+- Add Write Documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/311
+- update clustering documentation and client documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/312
+
 v0.29.0
 --------
 
@@ -11,7 +19,6 @@ v0.29.0
 - Feature/add clusterer object by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/306
 - Feature/fix references docs by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/302
 - Feature/edit docs by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/309
-
 
 v0.28.2
 --------

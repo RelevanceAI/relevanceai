@@ -257,7 +257,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         else:
             vector_select_field = []
 
-        docs = self.get_all_documents(
+        docs = self._get_all_documents(
             dataset_id,
             chunk_size=1000,
             select_fields=["_id", cluster_field]
