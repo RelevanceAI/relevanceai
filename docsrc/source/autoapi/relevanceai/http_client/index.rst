@@ -5,7 +5,28 @@
 
 .. autoapi-nested-parse::
 
-   access the client via this class
+   Relevance AI's base Client class - primarily used to login and access
+   the Dataset class or Clusterer class.
+
+
+   The recomended way to log in is using:
+
+   .. code-block::
+
+       from relevanceai import Client
+       client = Client()
+       client.list_datasets()
+
+   If the user already knows their project and API key, they can
+   log in this way:
+
+   .. code-block::
+
+       from relevanceai import Client
+       project = ""
+       api_key = ""
+       client = Client(project=project, api_key=api_key)
+       client.list_datasets()
 
 
 
