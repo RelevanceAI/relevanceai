@@ -17,7 +17,7 @@ def main(args):
 
     model = KMeansModel(k=3)
 
-    df.cluster(model=model, alias='cat', vector_fields=[vector_field], k=n_clusters)
+    df.cluster(model=model, alias="cat", vector_fields=[vector_field], k=n_clusters)
 
 
 if __name__ == "__main__":

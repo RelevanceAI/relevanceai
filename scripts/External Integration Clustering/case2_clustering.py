@@ -17,7 +17,7 @@ def main(args):
     n_clusters = int(args.n_clusters)
 
     model = KMeansModel(k=3)
-    
+
     clusterer = Clusterer(model=model, alias=f"kmeans-{n_clusters}")
 
     clusterer.fit(dataset=df, vector_fields=[vector_field])

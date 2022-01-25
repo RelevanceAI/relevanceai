@@ -488,7 +488,7 @@ class Dataset(BatchAPIClient):
         vector_fields : str
             The vector fields over which to cluster
         """
-        
+
         from relevanceai.clusterer import Clusterer
 
         clusterer = Clusterer(model=model, alias=alias)

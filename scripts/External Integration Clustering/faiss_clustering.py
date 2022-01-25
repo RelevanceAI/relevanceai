@@ -12,6 +12,7 @@ from relevanceai.clusterer import ClusterBase
 
 from faiss import Kmeans
 
+
 def main(args):
 
     client = Client()
@@ -20,12 +21,12 @@ def main(args):
     vector_field = args.vector_field
     n_clusters = int(args.n_clusters)
 
-    class FaissKMeans(ClusterBase):            
+    class FaissKMeans(ClusterBase):
         def __init__(self, model):
             self.model = model
 
         def fit_transform(self, vectors):
-            vectors = np.array(vectors).astype('float32')
+            vectors = np.array(vectors).astype("float32")
 
             self.model.train(vectors)
             cluster_labels = self.model.assign(vectors)[1]
