@@ -141,3 +141,4 @@ test_projection/*
 
 # docs
 docs/
+docsrc/autoapi/*
