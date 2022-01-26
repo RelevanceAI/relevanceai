@@ -132,8 +132,12 @@ class Client(BatchAPIClient, DocUtils):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
             token = getpass.getpass(f"Auth token:")
-            project = token.split(":")[0]
-            api_key = token.split(":")[1]
+            split_token = token.split(":")
+            project = split_token[0]
+            api_key = split_token[1]
+            # If the base URl is included in the pasted token then include it
+            if len(split_token) > 2:
+                self.base_url = split_token[2]
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()

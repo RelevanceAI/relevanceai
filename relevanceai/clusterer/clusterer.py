@@ -171,6 +171,8 @@ class Clusterer(BatchAPIClient):
             The vector fields to fit the model on
         filters: list
             The filters to run it on
+        include_filters_for_vector_fields: bool
+            If True, only cluster on those with the vector fields inside it.
 
         Example
         ---------
@@ -216,6 +218,11 @@ class Clusterer(BatchAPIClient):
         self._init_dataset(dataset)
         self.vector_fields = vector_fields
 
+        # make sure to only get fields where vector fields exist
+        filters += [
+            {'field' : f, 'filter_type' : 'exists', "condition":"==", "condition_value":" "}
+            for f in vector_fields
+        ]
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
