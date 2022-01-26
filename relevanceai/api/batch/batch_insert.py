@@ -70,6 +70,16 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
+
+        Example
+        --------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
+        >>> df.insert_documents(documents)
+
         """
 
         self.logger.info(f"You are currently inserting into {dataset_id}")
@@ -109,6 +119,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunksize=chunksize,
         )
 
+    _insert_documents = insert_documents
+
     def insert_csv(
         self,
         dataset_id: str,
@@ -146,6 +158,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
         auto_generate_id: bool = True
             Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> csv_filename = "temp.csv"
+        >>> df.insert_csv(csv_filename)
+
         """
 
         csv_args.pop("index_col", None)
@@ -179,6 +200,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "failed_documents": failed_documents,
             "failed_documents_detailed": failed_documents_detailed,
         }
+
+    _insert_csv = insert_csv
 
     def _insert_csv_chunk(
         self,
@@ -244,6 +267,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         """
         Update a list of documents with multi-threading automatically enabled.
         Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+        Example
+        ----------
 
         >>> from relevanceai import Client
         >>> url = "https://api-aueast.relevance.ai/v1/"
@@ -529,7 +555,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             ):
 
                 # Get completed documents
-                log_json = self.get_all_documents(logging_dataset_id)
+                log_json = self._get_all_documents(logging_dataset_id)
                 completed_documents_list = [i["_id"] for i in log_json]
 
                 # Get incomplete documents from raw collection

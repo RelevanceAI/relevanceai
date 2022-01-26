@@ -1,11 +1,35 @@
-"""access the client via this class
+"""Relevance AI's base Client class - primarily used to login and access
+the Dataset class or Clusterer class.
+
+
+The recomended way to log in is using: 
+
+.. code-block::
+
+    from relevanceai import Client 
+    client = Client()
+    client.list_datasets()
+
+If the user already knows their project and API key, they can 
+log in this way: 
+
+.. code-block::
+    
+    from relevanceai import Client 
+    project = ""
+    api_key = ""
+    client = Client(project=project, api_key=api_key)
+    client.list_datasets()
+
 """
 import getpass
 import json
 import os
+from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api.dataset import Dataset, Datasets
+from relevanceai.clusterer import Clusterer, KMeansClusterer, ClusterBase
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -24,7 +48,6 @@ except ModuleNotFoundError as e:
     pass
 
 from relevanceai.vector_tools.client import VectorTools
-from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
 
 def str2bool(v):
@@ -32,8 +55,6 @@ def str2bool(v):
 
 
 class Client(BatchAPIClient, DocUtils):
-    """Python Client for Relevance AI's relevanceai"""
-
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
     _cred_fn = ".creds.json"
 
@@ -43,7 +64,6 @@ class Client(BatchAPIClient, DocUtils):
         api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
     ):
-
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
 
@@ -78,8 +98,7 @@ class Client(BatchAPIClient, DocUtils):
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
 
-    """Configurations
-    """
+    ### Configurations
 
     @property
     def base_url(self):
@@ -101,8 +120,7 @@ class Client(BatchAPIClient, DocUtils):
             value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
 
-    """Authentication Details
-    """
+    ### Authentication Details
 
     def _token_to_auth(self):
         # if verbose:
@@ -133,7 +151,6 @@ class Client(BatchAPIClient, DocUtils):
         self,
         authenticate: bool = True,
     ):
-        """Preferred login method for demos and interactive usage."""
         project, api_key = self._token_to_auth()
         return Client(project=project, api_key=api_key, authenticate=authenticate)
 
@@ -147,11 +164,90 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         return self.admin._ping()
 
-    """Utility functions
-    """
+    ### Utility functions
 
     build_and_plot_clusters = build_and_plot_clusters
 
-    """CRUD-related utility functions
-    """
-    # delete_dataset = self.dataset.delete
+    ### CRUD-related utility functions
+
+    def list_datasets(self):
+        """List Datasets
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.list_datasets()
+
+        """
+        return self.datasets.list()
+
+    def delete_dataset(self, dataset_id):
+        """
+        Delete a dataset
+
+        Parameters
+        ------------
+        dataset_id: str
+            The ID of a dataset
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.delete_dataset("sample_dataset")
+
+        """
+        return self.datasets.delete(dataset_id)
+
+    ### Clustering
+
+    def Clusterer(
+        self,
+        model: ClusterBase,
+        alias: str,
+        cluster_field: str = "_cluster_",
+    ):
+        return Clusterer(
+            model=model,
+            alias=alias,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
+
+    def KMeansClusterer(
+        self,
+        alias: str,
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        n_init: int = 10,
+        max_iter: int = 300,
+        tol: float = 1e-4,
+        verbose: bool = True,
+        random_state: Optional[int] = None,
+        copy_x: bool = True,
+        algorithm: str = "auto",
+        cluster_field: str = "_cluster_",
+    ):
+        return KMeansClusterer(
+            alias=alias,
+            k=k,
+            init=init,
+            n_init=n_init,
+            max_iter=max_iter,
+            tol=tol,
+            verbose=verbose,
+            random_state=random_state,
+            copy_x=copy_x,
+            algorithm=algorithm,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
