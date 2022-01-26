@@ -54,7 +54,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str,
+        alias: str,
         ground_truth_field: str = None,
         description_fields: list = [],
         marker_size: int = 5,
@@ -69,7 +69,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             Unique name of dataset
         vector_field: string
             The vector field that was clustered upon
-        cluster_alias: string
+        alias: string
             The alias of the clustered labels
         ground_truth_field: string
             The field to use as ground truth
@@ -87,7 +87,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ) = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
-            cluster_alias=cluster_alias,
+            alias=alias,
             ground_truth_field=ground_truth_field,
             description_fields=description_fields,
         )
@@ -104,7 +104,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str,
+        alias: str,
         ground_truth_field: str = None,
     ):
 
@@ -117,7 +117,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             Unique name of dataset
         vector_field: string
             The vector field that was clustered upon
-        cluster_alias: string
+        alias: string
             The alias of the clustered labels
         ground_truth_field: string
             The field to use as ground truth
@@ -131,7 +131,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ) = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
-            cluster_alias=cluster_alias,
+            alias=alias,
             ground_truth_field=ground_truth_field,
         )
 
@@ -143,7 +143,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str,
+        alias: str,
         ground_truth_field: str = None,
         transpose=False,
     ):
@@ -157,7 +157,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             Unique name of dataset
         vector_field: string
             The vector field that was clustered upon
-        cluster_alias: string
+        alias: string
             The alias of the clustered labels
         ground_truth_field: string
             The field to use as ground truth
@@ -174,7 +174,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ) = self._get_cluster_documents(
             dataset_id=dataset_id,
             vector_field=vector_field,
-            cluster_alias=cluster_alias,
+            alias=alias,
             ground_truth_field=ground_truth_field,
             get_vectors=False,
         )
@@ -196,7 +196,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str,
+        alias: str,
         distance_measure_mode: CENTROID_DISTANCES = "cosine",
         callable_distance=None,
     ):
@@ -210,7 +210,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             Unique name of dataset
         vector_field: string
             The vector field that was clustered upon
-        cluster_alias: string
+        alias: string
             The alias of the clustered labels
         distance_measure_mode : string
             Distance measure to compare cluster centroids
@@ -220,7 +220,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         """
 
         centroid_response = self.services.cluster.centroids.list(
-            dataset_id, [vector_field], cluster_alias, include_vector=True
+            dataset_id, [vector_field], alias, include_vector=True
         )
 
         centroids = {i["_id"]: i[vector_field] for i in centroid_response["documents"]}
@@ -235,7 +235,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         self,
         dataset_id: str,
         vector_field: str,
-        cluster_alias: str,
+        alias: str,
         ground_truth_field: str = None,
         description_fields: list = [],
         get_vectors=True,
@@ -245,7 +245,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         Return vectors, cluster labels, ground truth labels and other fields
         """
 
-        cluster_field = f"_cluster_.{vector_field}.{cluster_alias}"
+        cluster_field = f"_cluster_.{vector_field}.{alias}"
 
         if ground_truth_field:
             ground_truth_select_field = [ground_truth_field]
