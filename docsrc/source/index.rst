@@ -20,8 +20,12 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
 
    client
    create
+
+   :caption: Clustering
    clusterer
    cluster_base
+
+   :caption: Changelog
    changelog
 
 Indices and tables

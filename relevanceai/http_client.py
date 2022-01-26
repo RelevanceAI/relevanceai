@@ -183,6 +183,7 @@ class Client(BatchAPIClient, DocUtils):
             client.list_datasets()
 
         """
+        self.print_dashboard_message("You can view all your datasets at https://cloud.relevance.ai/datasets.")
         return self.datasets.list()
 
     def delete_dataset(self, dataset_id):

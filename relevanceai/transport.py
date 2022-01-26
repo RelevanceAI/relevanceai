@@ -54,7 +54,7 @@ class Transport(JSONEncoderUtils):
     @property
     def DASHBOARD_TYPES(self):
         return list(DASHBOARD_MAPPINGS.keys())
-
+    
     def _log_to_dashboard(
         self,
         method: str,
@@ -130,6 +130,10 @@ class Transport(JSONEncoderUtils):
             endpoint=endpoint,
             dashboard_type="multivector_search",
         )
+    
+    def print_dashboard_message(self, message: str):
+        if self.config["dashboard.show_dashboard_link"]:
+            print(message)
 
     def print_dashboard_url(self, dashboard_url):
         if self.config["dashboard.show_dashboard_link"]:

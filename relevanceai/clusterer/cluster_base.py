@@ -195,3 +195,7 @@ class ClusterBase(DocUtils, ABC):
 
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
+    
+    @staticmethod
+    def from_model(model):
+        return ClusterBase()
