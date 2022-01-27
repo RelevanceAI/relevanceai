@@ -805,7 +805,7 @@ class Read(BatchAPIClient):
         raise TypeError("Document IDs needs to be a string or a list")
 
     @property
-    def schema(self):
+    def schema(self) -> Dict:
         """
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
 
@@ -821,6 +821,25 @@ class Read(BatchAPIClient):
             df.schema
         """
         return self.datasets.schema(self.dataset_id)
+
+    @property
+    def columns(self) -> List[str]:
+        """
+        Returns a list of columns
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            df.columns
+
+        """
+        return list(self.schema)
 
     def filter(
         self,
@@ -969,7 +988,7 @@ class Write(Read):
         use_json_encoder: bool = True,
         *args,
         **kwargs,
-    ):
+    ) -> Dict:
 
         """
         Insert a list of documents with multi-threading automatically enabled.
@@ -1045,7 +1064,7 @@ class Write(Read):
         csv_args: dict = {},
         col_for_id: str = None,
         auto_generate_id: bool = True,
-    ):
+    ) -> Dict:
 
         """
         Insert data from csv file
@@ -1105,7 +1124,7 @@ class Write(Read):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
-    ):
+    ) -> Dict:
 
         """
         Update a list of documents with multi-threading automatically enabled.
@@ -1152,7 +1171,7 @@ class Write(Read):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df.upsert(dataset_id, documents)
+            df.upsert_documents(dataset_id, documents)
 
         """
         return self.update_documents(
@@ -1415,7 +1434,7 @@ class Write(Read):
 
         self.pull_update_push(self.dataset_id, add_cluster_labels)
 
-    def create(self, schema: dict = {}):
+    def create(self, schema: dict = {}) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -1462,7 +1481,6 @@ class Write(Read):
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
 
             documents = [
@@ -1493,7 +1511,6 @@ class Write(Read):
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
 
             dataset_id = "sample_dataset"
