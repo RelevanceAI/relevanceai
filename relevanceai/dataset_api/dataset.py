@@ -1141,7 +1141,7 @@ class Write(Read):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df.upsert(dataset_id, documents)
+            df.upsert_documents(dataset_id, documents)
 
         """
         return self.update_documents(
