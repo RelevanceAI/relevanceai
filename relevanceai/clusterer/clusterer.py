@@ -87,6 +87,10 @@ class Clusterer(BatchAPIClient):
             data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
+            return ClusterModel()
         raise TypeError("Model should be inherited from ClusterBase.")
 
     def _token_to_auth(self):
