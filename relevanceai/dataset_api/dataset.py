@@ -537,6 +537,7 @@ class Read(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -939,6 +940,19 @@ class Stats(Read):
         """
         Descriptive statistics include those that summarize the central tendency
         dispersion and shape of a dataset's distribution, excluding NaN values.
+
+
+        Example
+        -----------------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            field = "sample_field"
+            df.describe()
+
         """
         return self.datasets.facets(self.dataset_id)
 
