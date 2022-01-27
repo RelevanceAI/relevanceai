@@ -1085,6 +1085,76 @@ class Write(Read):
             auto_generate_id=auto_generate_id,
         )
 
+    def upsert_documents(
+        self,
+        documents: list,
+        bulk_fn: Callable = None,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        chunksize: int = 0,
+        show_progress_bar=False,
+        use_json_encoder: bool = True,
+    ):
+
+        """
+        Update a list of documents with multi-threading automatically enabled.
+        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        documents : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
+
+        Example
+        ----------
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            documents = [
+                {
+                    "_id": "321",
+                    "value": 10
+                },
+                {
+                    "_id": "4243",
+                    "value": 100
+                }
+            ]
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.upsert(dataset_id, documents)
+
+        """
+        return self.update_documents(
+            self.dataset_id,
+            documents=documents,
+            bulk_fn=bulk_fn,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            chunksize=chunksize,
+            use_json_encoder=use_json_encoder,
+        )
+
     def apply(
         self,
         func: Callable,
@@ -1153,76 +1223,6 @@ class Write(Read):
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder,
-        )
-
-    def upsert_documents(
-        self,
-        documents: list,
-        bulk_fn: Callable = None,
-        max_workers: int = 8,
-        retry_chunk_mult: float = 0.5,
-        chunksize: int = 0,
-        show_progress_bar=False,
-        use_json_encoder: bool = True,
-    ):
-
-        """
-        Update a list of documents with multi-threading automatically enabled.
-        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
-
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        documents : list
-            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
-        bulk_fn : callable
-            Function to apply to documents before uploading
-        max_workers : int
-            Number of workers active for multi-threading
-        retry_chunk_mult: int
-            Multiplier to apply to chunksize if upload fails
-        chunksize : int
-            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
-        use_json_encoder : bool
-            Whether to automatically convert documents to json encodable format
-
-
-        Example
-        ----------
-        .. code-block::
-
-            from relevanceai import Client
-
-            client = Client()
-
-            documents = [
-                {
-                    "_id": "321",
-                    "value": 10
-                },
-                {
-                    "_id": "4243",
-                    "value": 100
-                }
-            ]
-
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            df.upsert(dataset_id, documents)
-
-        """
-        return self.update_documents(
-            self.dataset_id,
-            documents=documents,
-            bulk_fn=bulk_fn,
-            max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
-            show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
             use_json_encoder=use_json_encoder,
         )
 
