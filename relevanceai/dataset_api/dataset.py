@@ -681,7 +681,7 @@ class Read(BatchAPIClient):
         fields = []
         filters = []
 
-        schema = list(self.schema())
+        schema = list(self.schema)
 
         if index:
             axis = 0
