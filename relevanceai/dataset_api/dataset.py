@@ -23,7 +23,7 @@ class Series(BatchAPIClient):
     -----------------------------
 
     A wrapper class for being able to vectorize documents over field
-    
+
     Parameters
     ----------
     project : str
@@ -41,71 +41,26 @@ class Series(BatchAPIClient):
     --------
     Assuming the following code as been executed:
 
-    >>> from relevanceai import client
-    >>> relevanceai.datasets import get_dummy_ecommerce_dataset
-    ...
-    >>> documents = get_dummy_ecommerce_dataset()
-    >>> client = Client()
-    ...
-    >>> df = client.Dataset()
+    .. code-block::
+        from relevanceai import client
+        relevanceai.datasets import get_dummy_ecommerce_dataset
+
+        documents = get_dummy_ecommerce_dataset()
+        client = Client()
+
+        df = client.Dataset('ecommerce')
+        df.create()
+        df.insert_documents(documents)
 
     Retrieve a Series from your dataset
 
-    >>> df = client.Dataset
-    >>> ser = pd.Series(data=d, index=['a', 'b', 'c'])
-    >>> ser
-    a   1
-    b   2
-    c   3
-    dtype: int64
+    .. code-block::
 
-    The keys of the dictionary match with the Index values, hence the Index
-    values have no effect.
-    >>> d = {'a': 1, 'b': 2, 'c': 3}
-    >>> ser = pd.Series(data=d, index=['x', 'y', 'z'])
-    >>> ser
-    x   NaN
-    y   NaN
-    z   NaN
-    dtype: float64
+        product_images = df['product_image'] # A Series object of every every product image url in dataset
+        
+        specific_image = product_images.get(')
 
-    Note that the Index is first build with the keys from the dictionary.
-    After this the Series is reindexed with the given Index values, hence we
-    get all NaN as a result.
 
-    Constructing Series from a list with `copy=False`.
-    >>> r = [1, 2]
-    >>> ser = pd.Series(r, copy=False)
-    >>> ser.iloc[0] = 999
-    >>> r
-    [1, 2]
-    >>> ser
-    0    999
-    1      2
-    dtype: int64
-
-    Due to input data type the Series has a `copy` of
-    the original data even though `copy=False`, so
-    the data is unchanged.
-
-    Constructing Series from a 1d ndarray with `copy=False`.
-
-    >>> r = np.array([1, 2])
-    >>> ser = pd.Series(r, copy=False)
-    >>> ser.iloc[0] = 999
-
-    >>> r
-    array([999,   2])
-
-    >>> ser
-    0    999
-    1      2
-    dtype: int64
-
-    Due to input data type the Series has a `view` on
-    the original data, so
-
-    the data is changed as well.
     """
 
     def __init__(self, project: str, api_key: str, dataset_id: str, field: str):
@@ -660,10 +615,14 @@ class Read(BatchAPIClient):
 
         Example
         --------
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> df.get_documents_by_ids(["sample_id"], include_vector=False)
+        .. code-block::
+
+            from relevanceai import Client, Dataset
+
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            df.get_documents_by_ids(["sample_id"], include_vector=False)
 
         """
         if isinstance(document_ids, str):
@@ -690,10 +649,11 @@ class Read(BatchAPIClient):
 
         Example
         --------
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> df.get(["sample_id"], include_vector=False)
+        .. code-block
+            from relevanceai import Client, Dataset
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            df.get(["sample_id"], include_vector=False)
 
         """
         if isinstance(document_ids, str):
@@ -712,11 +672,11 @@ class Read(BatchAPIClient):
 
         Example
         -----------------
-
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample")
-        >>> df.schema()
+        .. code-block
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            df.schema()
         """
         return self.datasets.schema(self.dataset_id)
 
@@ -845,12 +805,25 @@ class Write(Read):
 
         Example
         --------
+        .. code-block::
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
-        >>> df.insert_documents(documents)
+            from relevanceai import Client
+
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            documents = [
+                {
+                    "_id": "10",
+                    "value": 5
+                },
+                {
+                    "_id": "332",
+                    "value": 10
+                }
+            ]
+
+            df.insert_documents(documents)
 
         """
         return self._insert_documents(  # type: ignore
@@ -905,11 +878,17 @@ class Write(Read):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> csv_filename = "temp.csv"
-        >>> df.insert_csv(csv_filename)
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            csv_filename = "temp.csv"
+
+            df.insert_csv(csv_filename)
 
         """
         return self._insert_csv(
@@ -960,13 +939,19 @@ class Write(Read):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> def update_doc(doc):
-        >>>     doc["value"] = 2
-        >>>     return doc
-        >>> df.apply(update_doc)
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            def update_doc(doc):
+                doc["value"] = 2
+                return doc
+
+            df.apply(update_doc)
 
         """
         if axis == 1:
