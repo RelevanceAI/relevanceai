@@ -1,6 +1,7 @@
 """KMeans Clustering
 """
 import numpy as np
+import warnings
 from typing import Union, List, Optional
 
 from relevanceai.clusterer.clusterer import Clusterer
@@ -194,6 +195,7 @@ class KMeansClusterer(Clusterer):
             project=project,
             api_key=api_key,
         )
+        warnings.warn("Function has been deprecated.", DeprecationWarning)
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
