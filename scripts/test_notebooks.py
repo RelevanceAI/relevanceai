@@ -155,7 +155,7 @@ for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
         notebook_find_replace(
             notebook,
             CLIENT_INSTANTIATION_SENT_REGEX,
-            CLIENT_INSTANTIATION_STR_REGEX,
+            CLIENT_INSTANTIATION_SENT_REGEX,
             CLIENT_INSTANTIATION_BASE,
         )
     except:
