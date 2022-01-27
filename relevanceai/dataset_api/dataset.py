@@ -554,6 +554,7 @@ class Read(BatchAPIClient):
                 "Dtype": schema[column],
             }
             for column in schema
+            if column in health
         ]
         info_df = pd.DataFrame(info_json)
         if dtype_count:
