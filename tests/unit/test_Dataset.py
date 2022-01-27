@@ -36,11 +36,13 @@ def test_cluster(test_client, test_sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
+    vector_field = "sample_1_vector_"
+    alias = "test_alias"
+
     model = KMeansModel()
-    df.cluster(
-        model=model, alias="cat", vector_fields=["sample_1_vector_"], overwrite=True
-    )
-    assert True
+
+    df.cluster(model=model, alias=alias, vector_fields=[vector_field], overwrite=True)
+    assert f"_cluster_.{vector_field}.{alias}" in df.schema
 
 
 def test_groupby_agg(test_client, test_sample_vector_dataset):
