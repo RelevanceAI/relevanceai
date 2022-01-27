@@ -23,37 +23,35 @@ class Series(BatchAPIClient):
     -----------------------------
 
     A wrapper class for being able to vectorize documents over field
-    One-dimensional ndarray with axis labels (including time series).
-    Labels need not be unique but must be a hashable type. The object
-    supports both integer- and label-based indexing and provides a host of
-    methods for performing operations involving the index. Statistical
-    methods from ndarray have been overridden to automatically exclude
-    missing data (currently represented as NaN).
-
+    
     Parameters
     ----------
-    project : array-like, Iterable, dict, or scalar value
-        Contains data stored in Series. If data is a dict, argument order is
-        maintained.
-    api_key : array-like or Index (1d)
-        Values must be hashable and have the same length as `data`.
-        Non-unique index values are allowed. Will default to
-        RangeIndex (0, 1, 2, ..., n) if not provided. If data is dict-like
-        and index is None, then the keys in the data are used as the index. If the
-        index is not None, the resulting Series is reindexed with the index values.
-    dtype : str, numpy.dtype, or ExtensionDtype, optional
+    project : str
+        Project name on RelevanceAI
+    api_key : str
+        API key for RelevanceAI
+    dataset_id : str
         Data type for the output Series. If not specified, this will be
         inferred from `data`.
         See the :ref:`user guide <basics.dtypes>` for more usages.
-    name : str, optional
-        The name to give to the Series.
-    copy : bool, default False
-        Copy input data. Only affects Series or 1d ndarray input. See examples.
+    field : str
+        The name of the field with the Dataset.
 
     Examples
     --------
-    Constructing Series from a dictionary with an Index specified
-    >>> d = {'a': 1, 'b': 2, 'c': 3}
+    Assuming the following code as been executed:
+
+    >>> from relevanceai import client
+    >>> relevanceai.datasets import get_dummy_ecommerce_dataset
+    ...
+    >>> documents = get_dummy_ecommerce_dataset()
+    >>> client = Client()
+    ...
+    >>> df = client.Dataset()
+
+    Retrieve a Series from your dataset
+
+    >>> df = client.Dataset
     >>> ser = pd.Series(data=d, index=['a', 'b', 'c'])
     >>> ser
     a   1
