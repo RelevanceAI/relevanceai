@@ -12,6 +12,8 @@ v0.30.0
 - Renamed all `cluster_alias` references to `alias`
 - Changed functionality in CentroidClusterBase
 - Renamed chunk_size to chunskize in get_all_documents
+- Renamed `retrieve_chunk_size` to `retrieve_chunksize` in `df.apply` and `df.bulk_apply`
+
 
 - Add CentroidClustererbase and CentroidClusterBase classes to inherit from
 - Deprecated KMeansClusterer in documentation and functionality
