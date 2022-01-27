@@ -10,6 +10,23 @@ from relevanceai.dataset_api import Dataset
 
 
 class KMeansModel(ClusterBase):
+    """
+    Simple K means model powered by Scikit Learn. 
+
+    .. code-block::
+
+        from relevanceai import Client
+        client = Client()
+        df = client.Dataset("sample_dataset")
+
+        from relevanceai.clusterer import KMeansModel
+        model = KMeansModel(n_clusters=3)
+
+        clusterer = client.Clusterer(model=model, alias="kmeans")
+        clusterer.fit(df, vector_fields=["documentation_vector_"])
+        clusterer.list_closest_to_center()
+
+    """
     def __init__(
         self,
         k=10,
