@@ -29,7 +29,7 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_dataset_df: Da
 
     model = KMeansModel(model=KMeans())
 
-    clusterer = Clusterer(model=model, alias=alias)
+    clusterer = test_client.Clusterer(model=model, alias=alias)
 
     clusterer.fit(dataset=test_dataset_df, vector_fields=[vector_field])
 
