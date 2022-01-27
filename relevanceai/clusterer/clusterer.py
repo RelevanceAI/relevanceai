@@ -223,7 +223,8 @@ class Clusterer(BatchAPIClient):
         """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
         import requests
-        base_url = self.config['api.base_url']
+
+        base_url = self.config["api.base_url"]
         response = requests.post(
             base_url + "/services/cluster/centroids/delete",
             headers={"Authorization": self.project + ":" + self.api_key},
