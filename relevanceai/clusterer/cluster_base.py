@@ -217,7 +217,10 @@ class CentroidClusterBase(ClusterBase, ABC):
 
     @abstractmethod
     def get_centers(self) -> List[List[float]]:
-        """Add how you need to get centers here."""
+        """Add how you need to get centers here. This should return a list of vectors.
+        The SDK will then label each center `cluster-0`, `cluster-1`, `cluster-2`, etc... in order.
+        If you need more fine-grained control, please see get_centroid_documents.
+        """
         pass
 
     def get_centroid_documents(self) -> List:
