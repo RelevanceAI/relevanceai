@@ -1,11 +1,7 @@
-"""
-The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
-and models. A cluster base has the following abstractmethods that must be written:
-"""
 import numpy as np
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
-from typing import Union, List, Dict
+from typing import Union, List
 
 
 class ClusterBase(DocUtils, ABC):
@@ -65,7 +61,6 @@ class ClusterBase(DocUtils, ABC):
                 cluster_labels = self.km.labels_.tolist()
                 # cluster_centroids = km.cluster_centers_
                 return cluster_labels
-
 
         """
         raise NotImplementedError
@@ -195,3 +190,10 @@ class ClusterBase(DocUtils, ABC):
 
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
+
+
+class CentroidClusterBase(ClusterBase, ABC):
+    @abstractmethod
+    def get_centroid_documents(self):
+        """Get the centroid documents."""
+        pass

@@ -423,7 +423,10 @@ class Read(BatchAPIClient):
             try:
                 return self._show_json(head_documents, **kw)
             except Exception as e:
-                warnings.warn("Displaying using Pandas." + str(e))
+                warnings.warn(
+                    "Displaying using Pandas. To get image functionality please install RelevanceAI[notebook]. "
+                    + str(e)
+                )
                 return pd.json_normalize(head_documents).head(n=n)
 
     def _show_json(self, docs, **kw):
@@ -443,7 +446,7 @@ class Read(BatchAPIClient):
 
     def sample(
         self,
-        n: int = 0,
+        n: int = 1,
         frac: float = None,
         filters: list = [],
         random_state: int = 0,
@@ -567,6 +570,36 @@ class Read(BatchAPIClient):
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset")
         >>> df.get_documents_by_ids(["sample_id"], include_vector=False)
+
+        """
+        if isinstance(document_ids, str):
+            return self.datasets.documents.get(
+                self.dataset_id, id=document_ids, include_vector=include_vector
+            )
+        elif isinstance(document_ids, list):
+            return self.datasets.documents.bulk_get(
+                self.dataset_id, ids=document_ids, include_vector=include_vector
+            )
+        raise TypeError("Document IDs needs to be a string or a list")
+
+    def get(self, document_ids: Union[List, str], include_vector: bool = True):
+        """
+        Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
+        This has the same functionality as get_document_by_ids.
+
+        Parameters
+        ----------
+        document_ids: Union[list, str]
+            ID of a document in a dataset.
+        include_vector: bool
+            Include vectors in the search results
+
+        Example
+        --------
+        >>> from relevanceai import Client, Dataset
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> df.get(["sample_id"], include_vector=False)
 
         """
         if isinstance(document_ids, str):

@@ -1,7 +1,14 @@
 ClusterBase
 =============================
 
-.. code-block
+The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
+and models. A cluster base has the following abstractmethods (methods to be overwritten):
+
+- fit_transform
+- metadata (optional if you want to store cluster metadata)
+- get_cluster_documents(optional if you want to store cluster centroid documents)
+
+.. code-block::
 
     from relevanceai import ClusterBase
 
@@ -29,8 +36,13 @@ ClusterBase
 
     clusterer.fit(dataset=df, vector_fields=[vector_field])
 
-.. automodule:: relevanceai.clusterer.cluster_base
+.. autoclass:: relevanceai.clusterer.cluster_base.ClusterBase
+    :members:
+
+.. autoclass:: relevanceai.clusterer.cluster_base.CentroidClusterBase
     :members:
 
 .. autoclass:: relevanceai.clusterer.kmeans_clusterer.KMeansModel
     :members:
+    :show-inheritance:
+    :exclude-members: __init__

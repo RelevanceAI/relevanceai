@@ -3,6 +3,18 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.29.2
+---------
+
+- Deprecated KMeansClusterer in documentation and functionality
+- Add fix for clusterer for missing vectors in documents by forcing filters
+- Support for multi-region base URL based on frontend parsing
+- Added AutoAPI to gitignore as we no longer want to measure that
+- Add tighter sklearn integration
+- Add CentroidClusterBase
+- Clean up references around Clusterbase, Clusterer, Dataset
+- Add reference to Client object
+- Hotfix .sample()
 
 v0.29.1
 ---------
