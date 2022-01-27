@@ -24,6 +24,8 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    clusterer
    cluster_base
 
+   integrations
+
    changelog
 
 Indices and tables

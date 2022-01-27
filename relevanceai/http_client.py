@@ -137,8 +137,9 @@ class Client(BatchAPIClient, DocUtils):
             project = split_token[0]
             api_key = split_token[1]
             # If the base URl is included in the pasted token then include it
-            if len(split_token) > 2:
+            if len(split_token) == 3:
                 self.base_url = split_token[2]
+                self.base_ingest_url = split_token[2]
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()
@@ -259,3 +260,7 @@ class Client(BatchAPIClient, DocUtils):
             project=self.project,
             api_key=self.api_key,
         )
+
+    def _set_logger_to_verbose(self):
+        # Use this for debugging
+        self.config["logging.logging_level"] = "INFO"

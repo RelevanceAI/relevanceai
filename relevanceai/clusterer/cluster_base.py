@@ -192,8 +192,74 @@ class ClusterBase(DocUtils, ABC):
         return [self._label_cluster(x) for x in labels]
 
 
-class CentroidClusterBase(ClusterBase, ABC):
+class AdvancedCentroidClusterBase(ClusterBase, ABC):
+    """
+    This centroid cluster base assumes that you want to specify
+    quite advanced centroid documents.
+    """
+
     @abstractmethod
     def get_centroid_documents(self):
         """Get the centroid documents."""
         pass
+
+
+class CentroidClusterBase(ClusterBase, ABC):
+    """
+    Inherit this class if you have a centroids-based clustering approach.
+    The difference between this and `Clusterbase` is that you can also additionally
+    specify how to get your centers in the
+    `get_centers` base. This allows you to store your centers.
+    """
+
+    @abstractmethod
+    def get_centers(self) -> List[List[float]]:
+        """Add how you need to get centers here."""
+        pass
+
+    def get_centroid_documents(self) -> List:
+        """
+        Get the centroid documents to store. This enables you to use `list_closest_to_center()`
+        and `list_furthest_from_center`.
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+
+        If multiple vector fields returns this:
+        Returns multiple
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
+        """
+        self.centers = self.get_centers()
+
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            centroid_vector_field_name = self.vector_fields[0]
+            return [
+                {
+                    "_id": self._label_cluster(i),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs

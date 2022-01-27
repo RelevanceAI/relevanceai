@@ -3,13 +3,20 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
-v0.29.2
+v0.30.0
 ---------
 
 **BREAKING CHANGES**
+
 - Renamed all `docs` references to `documents`
 - Renamed all `cluster_alias` references to `alias`
+- Changed functionality in CentroidClusterBase
+- Renamed chunk_size to chunskize in get_all_documents
+- Renamed `retrieve_chunk_size` to `retrieve_chunksize` in `df.apply` and `df.bulk_apply`
+- Schema is now a property and not a method!
 
+- Added `head` to Series object
+- Add CentroidClustererbase and CentroidClusterBase classes to inherit from
 - Deprecated KMeansClusterer in documentation and functionality
 - Add fix for clusterer for missing vectors in documents by forcing filters
 - Support for multi-region base URL based on frontend parsing
@@ -19,6 +26,10 @@ v0.29.2
 - Clean up references around Clusterbase, Clusterer, Dataset
 - Add reference to Client object
 - Hotfix .sample()
+- Update the Base Ingest URL to gateway and set to appropriate default
+- Added support for base url token
+- Removed QC from references
+- Add integration reference
 
 v0.29.1
 ---------
