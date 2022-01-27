@@ -1,7 +1,7 @@
 import numpy as np
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
-from typing import Union, List
+from typing import Union, List, Dict
 
 
 class ClusterBase(DocUtils, ABC):
@@ -196,10 +196,13 @@ class AdvancedCentroidClusterBase(ClusterBase, ABC):
     """
     This centroid cluster base assumes that you want to specify
     quite advanced centroid documents.
+
+    You may want to use this if you want to get more control over
+    what is actually inserted as a centroid.
     """
 
     @abstractmethod
-    def get_centroid_documents(self):
+    def get_centroid_documents(self) -> List[Dict]:
         """Get the centroid documents."""
         pass
 

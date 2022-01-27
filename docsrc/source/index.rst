@@ -16,10 +16,10 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
 
 .. toctree::
    :maxdepth: 4
-   :caption: classes
+   :caption: Core
 
    client
-   create
+   dataset
 
 
 .. toctree::
