@@ -26,9 +26,44 @@ class Series(BatchAPIClient):
     -----------------------------
 
     A wrapper class for being able to vectorize documents over field
+
+    Parameters
+    ----------
+    project : str
+        Project name on RelevanceAI
+    api_key : str
+        API key for RelevanceAI
+    dataset_id : str
+        Data type for the output Series. If not specified, this will be
+        inferred from `data`.
+        See the :ref:`user guide <basics.dtypes>` for more usages.
+    field : str
+        The name of the field with the Dataset.
+
+    Examples
+    --------
+    Assuming the following code as been executed:
+
+    .. code-block::
+        from relevanceai import client
+        relevanceai.datasets import get_dummy_ecommerce_dataset
+
+        documents = get_dummy_ecommerce_dataset()
+        client = Client()
+
+        df = client.Dataset('ecommerce')
+        df.create()
+        df.insert_documents(documents)
+
+    Retrieve a Series from your dataset
+
+    .. code-block::
+
+        product_images = df['product_image'] # A Series object of every every product image url in dataset
+
     """
 
-    def __init__(self, project: str, api_key: str, dataset_id: str, field):
+    def __init__(self, project: str, api_key: str, dataset_id: str, field: str):
         self.project = project
         self.api_key = api_key
         self.dataset_id = dataset_id
@@ -57,6 +92,16 @@ class Series(BatchAPIClient):
             Query for filtering the search results
         random_state: int
             Random Seed for retrieving random documents.
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import client
+
+            client = Client()
+
+            df = client.Dataset(dataset_id)
+            df.sample(n=3)
 
         """
         select_fields = [self.field] if isinstance(self.field, str) else self.field
@@ -106,6 +151,22 @@ class Series(BatchAPIClient):
         ----------
         model : Machine learning model for vectorizing text`
             The dataset_id of concern
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
+
+            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            text_field = "text_field"
+            df.vectorize(text_field, model)
         """
         if hasattr(model, "encode_documents"):
 
@@ -145,8 +206,15 @@ class Series(BatchAPIClient):
 
         Example
         ---------------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> df["sample_1_label"].apply(lambda x: x + 3)
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df["sample_1_label"].apply(lambda x: x + 3)
 
         """
         if axis == 1:
@@ -179,6 +247,19 @@ class Series(BatchAPIClient):
         -------
         vectors: np.ndarray
             an array/matrix of all numeric values selected
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            arr = df[field].numpy()
         """
         documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
         vectors = [np.array(document[self.field]) for document in documents]
@@ -207,6 +288,19 @@ class Series(BatchAPIClient):
         Returns
         ----------
         Series
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            value_counts_df = df[field].value_counts()
         """
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
@@ -256,6 +350,36 @@ class Series(BatchAPIClient):
         return aggregation
 
     def __getitem__(self, loc: Union[int, str]):
+        """
+        Indexs a value with a series, usually to get a specific sample from a column in your dataset
+
+        Parameters
+        ----------
+        loc : int or str, preferably a str
+            if int, this operates exactly as indexing a regular python list
+            if str, this will be a string corresponding to the _id of the document
+
+        Returns
+        ----------
+        A single document
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            id = "sample_id"
+            index = 56
+
+            document = df[field][id]
+            document = df[field][index]
+        """
         if isinstance(loc, int):
             warnings.warn(
                 "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
@@ -315,6 +439,18 @@ class Read(BatchAPIClient):
         -------
         Tuple
             (N, C)
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            length, width = df.shape
         """
         schema = self.datasets.schema(self.dataset_id)
         n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
@@ -333,6 +469,19 @@ class Read(BatchAPIClient):
         -------
         Tuple
             (N, C)
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            series = df[field]
         """
         return Series(self.project, self.api_key, self.dataset_id, field)
 
@@ -375,6 +524,16 @@ class Read(BatchAPIClient):
         ---------
         Dict
             Dictionary of information
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
         """
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
@@ -417,12 +576,14 @@ class Read(BatchAPIClient):
 
         Example
         ---------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
-        >>> df.head()
+            client = Client()
 
+            df = client.Dataset("sample_dataset", image_fields=["image_url])
+
+            df.head()
         """
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
@@ -484,12 +645,14 @@ class Read(BatchAPIClient):
 
         Example
         ---------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
-        >>> df.sample()
+            client = Client()
 
+            df = client.Dataset("sample_dataset", image_fields=["image_url])
+
+            df.sample()
         """
 
         if frac and n:
@@ -544,14 +707,16 @@ class Read(BatchAPIClient):
 
         Example
         ----------
-
-        .. code-block
+        .. code-block::
 
             from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample")
-            documents = df.get_all_documents()
 
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            documents = df.get_all_documents()
         """
 
         return self._get_all_documents(
@@ -579,11 +744,16 @@ class Read(BatchAPIClient):
 
         Example
         --------
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> df.get_documents_by_ids(["sample_id"], include_vector=False)
+        .. code-block::
 
+            from relevanceai import Client, Dataset
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.get_documents_by_ids(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
             return self.datasets.documents.get(
@@ -609,11 +779,15 @@ class Read(BatchAPIClient):
 
         Example
         --------
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> df.get(["sample_id"], include_vector=False)
+        .. code-block::
+            from relevanceai import Client
 
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.get(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
             return self.datasets.documents.get(
@@ -632,11 +806,15 @@ class Read(BatchAPIClient):
 
         Example
         -----------------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample")
-        >>> df.schema
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.schema
         """
         return self.datasets.schema(self.dataset_id)
 
@@ -730,13 +908,28 @@ class Stats(Read):
     def value_counts(self, field: str):
         """
         Return a Series containing counts of unique values.
+
         Parameters
         ----------
         field: str
             dataset field to which to do value counts on
+
         Returns
         -------
         Series
+
+        Example
+        -----------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            value_counts_df = df.value_counts(field)
         """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
@@ -759,6 +952,29 @@ class Write(Read):
             name of the new concatenated vector field
         fields: List
             fields alone which the new vector will concatenate
+
+        Example
+        -----------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            fields = [
+                "numeric_field1",
+                "numeric_field2",
+                "numeric_field3"
+            ]
+
+            df.cat(fields)
+            df.concat(fields)
+
+            concat_vector_field_name = "concat_vector_"
+            df.cat(vector_name=concat_vector_field_name, fields=fields)
+            df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
@@ -786,29 +1002,18 @@ class Write(Read):
             The text field to select
         model
             a Type deep learning model that vectorizes text
+
+        Examples
+        --------
+        .. code-block::
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            text_field = "text_field"
+            df[text_field].vectorize(model)
         """
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
-
-    def cluster(self, field, n_clusters=10, overwrite=False):
-        """
-        Performs KMeans Clustering on over a vector field within the dataset.
-
-        Parameters
-        ----------
-        field : str
-            The text field to select
-        n_cluster: int default = 10
-            the number of cluster to find wihtin the vector field
-        """
-        centroids = self.vector_tools.cluster.kmeans_cluster(
-            dataset_id=self.dataset_id,
-            vector_fields=[field],
-            k=n_clusters,
-            alias=f"kmeans_{n_clusters}",
-            overwrite=overwrite,
-        )
-        return centroids
 
     def insert_documents(  # type: ignore
         self,
@@ -850,12 +1055,27 @@ class Write(Read):
 
         Example
         --------
+        .. code-block::
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
-        >>> df.insert_documents(documents)
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            documents = [
+                {
+                    "_id": "10",
+                    "value": 5
+                },
+                {
+                    "_id": "332",
+                    "value": 10
+                }
+            ]
+
+            df.insert_documents(documents)
 
         """
         return self._insert_documents(  # type: ignore
@@ -910,11 +1130,17 @@ class Write(Read):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> csv_filename = "temp.csv"
-        >>> df.insert_csv(csv_filename)
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            csv_filename = "temp.csv"
+
+            df.insert_csv(csv_filename)
 
         """
         return self._insert_csv(
@@ -965,13 +1191,19 @@ class Write(Read):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> def update_doc(doc):
-        >>>     doc["value"] = 2
-        >>>     return doc
-        >>> df.apply(update_doc)
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            def update_doc(doc):
+                doc["value"] = 2
+                return doc
+
+            df.apply(update_doc)
 
         """
         if axis == 1:
@@ -1027,14 +1259,19 @@ class Write(Read):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> def update_documents(document):
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            def update_documents(document):
                 for d in documents:
-        >>>         d["value"] = 10
-        >>>     return documents
-        >>> df.apply(update_documents)
+                    d["value"] = 10
+                return documents
+
+            df.apply(update_documents)
         """
         return self.pull_update_push(
             self.dataset_id,
@@ -1092,22 +1329,24 @@ class Write(Read):
 
         For example:
 
-        >>>    {
-        >>>        "product_image_vector_": 1024,
-        >>>        "product_text_description_vector_" : 128
-        >>>    }
+        .. code-block::
+            {
+                "product_image_vector_": 1024,
+                "product_text_description_vector_" : 128
+            }
 
         These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"]. \n
 
         For example:
 
-        >>>    {
-        >>>        "product_text_description" : "text",
-        >>>        "price" : "numeric",
-        >>>        "created_date" : "date",
-        >>>        "product_texts_chunk_": "chunks",
-        >>>        "product_text_chunkvector_" : 1024
-        >>>    }
+        .. code-block::
+            {
+                "product_text_description" : "text",
+                "price" : "numeric",
+                "created_date" : "date",
+                "product_texts_chunk_": "chunks",
+                "product_text_chunkvector_" : 1024
+            }
 
         You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
@@ -1126,13 +1365,27 @@ class Write(Read):
 
         Example
         ----------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-        >>> df = client.Dataset("sample")
-        >>> df.create()
+            client = Client()
 
+            documents = [
+                {
+                    "_id": "321",
+                    "value": 10
+                },
+                {
+                    "_id": "4243",
+                    "value": 100
+                }
+            ]
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            df.create()
+
+            df.insert_documents(documents)
         """
         return self.datasets.create(self.dataset_id, schema=schema)
 
@@ -1142,12 +1395,14 @@ class Write(Read):
 
         Example
         ---------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-        >>> df = client.Dataset("sample")
-        >>> df.delete()
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            df.delete()
 
         """
         return self.datasets.delete(self.dataset_id)
@@ -1188,12 +1443,26 @@ class Write(Read):
 
         Example
         ----------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-        >>> df = client.Dataset("sample")
-        >>> df.upsert(dataset_id, documents)
+            client = Client()
+
+            documents = [
+                {
+                    "_id": "321",
+                    "value": 10
+                },
+                {
+                    "_id": "4243",
+                    "value": 100
+                }
+            ]
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.upsert(dataset_id, documents)
 
         """
         return self.update_documents(
@@ -1219,6 +1488,19 @@ class Export(Read):
             path to downloaded .csv file
         kwargs: Optional
             see client.get_all_documents() for extra args
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            csv_fname = "path/to/csv/file.csv"
+            df.to_csv(csv_fname)
         """
         documents = self.get_all_documents(**kwargs)
         df = pd.DataFrame(documents)
@@ -1235,6 +1517,18 @@ class Export(Read):
         Returns
         -------
         list of documents in dictionary format
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            dict = df.to_dict(orient="records")
         """
         if orient == "records":
             return self.get_all_documents()
@@ -1253,6 +1547,22 @@ class Dataset(Export, Write, Stats):
             The text field to select
         model
             a Type deep learning model that vectorizes text
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
+
+            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            text_field = "text_field"
+            df.vectorize(text_field, model)
         """
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
@@ -1267,6 +1577,25 @@ class Dataset(Export, Write, Stats):
             The clustering model to use
         vector_fields : str
             The vector fields over which to cluster
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            vector_field = "vector_field_"
+            n_clusters = 10
+
+            model = KMeansModel(k=n_clusters)
+
+            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
 
         from relevanceai.clusterer import Clusterer
