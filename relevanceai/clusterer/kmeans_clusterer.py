@@ -226,6 +226,7 @@ class KMeansClusterer(Clusterer):
         self,
         dataset: Union[Dataset, str],
         vector_fields: List,
+        filters: list=[]
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -238,5 +239,5 @@ class KMeansClusterer(Clusterer):
         vector_field: list
             The vector field of the documents
         """
-        self.fit_dataset(dataset, vector_fields=vector_fields)
+        self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
         return self._insert_centroid_documents()
