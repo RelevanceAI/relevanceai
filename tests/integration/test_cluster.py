@@ -1,8 +1,37 @@
 """Test the clustering workflow from getting the documents, clustering and then inserting the relevant centroids
 """
-from relevanceai.vector_tools.cluster import KMeans
-from relevanceai import Client
+
 import pytest
+from relevanceai import Client
+
+from relevanceai.clusterer import Clusterer
+from relevanceai.clusterer import CentroidClusterBase
+
+
+def dataset_api_kmeans_integration(test_client, test_sample_dataset):
+    from sklearn.cluster import KMeans
+
+    df = test_client.Dataset(test_sample_dataset)
+    vector_field = "sample_1_vector_"
+    alias = "test_alias"
+
+    class KMeansModel(CentroidClusterBase):
+        def __init__(self, model):
+            self.model = model
+
+        def fit_transform(self, vectors):
+            return self.model.fit_predict(vectors)
+
+        def get_centers(self):
+            return self.model.cluster_centers_
+
+    model = KMeansModel(model=KMeans())
+
+    clusterer = Clusterer(model=model, alias=alias)
+
+    clusterer.fit(dataset=df, vector_fields=[vector_field])
+
+    assert f"_cluster_.{vector_field}.{alias}" in test_client.schema
 
 
 def test_cluster_integration(test_client, test_sample_vector_dataset):
@@ -11,6 +40,8 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     VECTOR_FIELD = "sample_1_vector_"
     ALIAS = "kmeans_10"
     documents = test_client.datasets.documents.list(test_sample_vector_dataset)
+
+    from relevanceai.vector_tools.cluster import KMeans
 
     # check if documents are inserted
     if len(documents["documents"]) == 0:
