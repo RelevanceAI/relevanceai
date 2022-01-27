@@ -183,8 +183,10 @@ class ClusterBase(DocUtils, ABC):
         """
         return {}
 
-    def _label_cluster(self, label: int):
-        return "cluster-" + str(label)
+    def _label_cluster(self, label: Union[int, str]):
+        if not isinstance(label, str):
+            return "cluster-" + str(label)
+        return label
 
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
