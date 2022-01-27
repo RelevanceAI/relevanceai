@@ -795,7 +795,7 @@ class Write(Read):
         retry_chunk_mult: int
             Multiplier to apply to chunksize if upload fails
         csv_args : dict
-            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/documents/reference/api/pandas.read_csv.html
+            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
         index_col : None
             Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
         col_for_id : str
