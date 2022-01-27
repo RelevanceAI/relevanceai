@@ -285,7 +285,7 @@ def test_read_df(test_client: Client, sample_vector_documents):
     df = test_client.Dataset(DATASET_ID)
     results = df.upsert_documents(sample_vector_documents)
     yield results
-    df.delete(DATASET_ID)
+    df.delete()
 
 
 @pytest.fixture(scope="session")
