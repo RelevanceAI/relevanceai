@@ -673,7 +673,7 @@ class Read(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai import Client 
+            from relevanceai import Client
             client = Client()
             df = client.Dataset("pokedex")
             filtered = df.filter(items=["Bulbasaur"])
