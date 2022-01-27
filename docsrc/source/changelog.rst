@@ -15,6 +15,8 @@ v0.30.0
 - Renamed `retrieve_chunk_size` to `retrieve_chunksize` in `df.apply` and `df.bulk_apply`
 - Schema is now a property and not a method!
 
+Non-breaking changes:  
+
 - Added `head` to Series object
 - Add CentroidClustererbase and CentroidClusterBase classes to inherit from
 - Deprecated KMeansClusterer in documentation and functionality

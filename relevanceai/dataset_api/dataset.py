@@ -1085,87 +1085,75 @@ class Write(Read):
             auto_generate_id=auto_generate_id,
         )
 
-    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+    def upsert_documents(
+        self,
+        documents: list,
+        bulk_fn: Callable = None,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        chunksize: int = 0,
+        show_progress_bar=False,
+        use_json_encoder: bool = True,
+    ):
+
         """
-        Concatenates numerical fields along an axis and reuploads this vector for other operations
+        Update a list of documents with multi-threading automatically enabled.
+        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
+
 
         Parameters
         ----------
-        vector_name: str, default None
-            name of the new concatenated vector field
-        fields: List
-            fields alone which the new vector will concatenate
+        dataset_id : string
+            Unique name of dataset
+        documents : list
+            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        bulk_fn : callable
+            Function to apply to documents before uploading
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        chunksize : int
+            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
 
         Example
-        -----------------
-        .. code-block::
-
-            from relevanceai import Client
-
-            client = Client()
-
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            fields = [
-                "numeric_field1",
-                "numeric_field2",
-                "numeric_field3"
-            ]
-
-            df.cat(fields)
-            df.concat(fields)
-
-            concat_vector_field_name = "concat_vector_"
-            df.cat(vector_name=concat_vector_field_name, fields=fields)
-            df.concat(vector_name=concat_vector_field_name, fields=fields)
-        """
-        if vector_name is None:
-            vector_name = "_".join(fields) + "_cat_vector_"
-
-        def cat_fields(documents, field_name):
-            cat_vector_documents = [
-                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
-                for sample in documents
-            ]
-            return cat_vector_documents
-
-        self.pull_update_push(
-            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
-        )
-
-    concat = cat
-
-    def vectorize(self, field, model):
-        """
-        Vectorizes a Particular field (text) of the dataset
-
-        Parameters
         ----------
-        field : str
-            The text field to select
-        model
-            a Type deep learning model that vectorizes text
-
-        Examples
-        --------
-
         .. code-block::
 
             from relevanceai import Client
+
             client = Client()
+
+            documents = [
+                {
+                    "_id": "321",
+                    "value": 10
+                },
+                {
+                    "_id": "4243",
+                    "value": 100
+                }
+            ]
+
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            from vectorhub.encoders.text.tfhub import USE2Vec
-            model = USE2Vec()
-
-            text_field = "text_field"
-            df[text_field].vectorize(model)
+            df.upsert(dataset_id, documents)
 
         """
-        series = Series(self)
-        series(self.dataset_id, field).vectorize(model)
+        return self.update_documents(
+            self.dataset_id,
+            documents=documents,
+            bulk_fn=bulk_fn,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            chunksize=chunksize,
+            use_json_encoder=use_json_encoder,
+        )
 
     def apply(
         self,
@@ -1296,6 +1284,88 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
+    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+        """
+        Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+        Parameters
+        ----------
+        vector_name: str, default None
+            name of the new concatenated vector field
+        fields: List
+            fields alone which the new vector will concatenate
+
+        Example
+        -----------------
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            fields = [
+                "numeric_field1",
+                "numeric_field2",
+                "numeric_field3"
+            ]
+
+            df.cat(fields)
+            df.concat(fields)
+
+            concat_vector_field_name = "concat_vector_"
+            df.cat(vector_name=concat_vector_field_name, fields=fields)
+            df.concat(vector_name=concat_vector_field_name, fields=fields)
+        """
+        if vector_name is None:
+            vector_name = "_".join(fields) + "_cat_vector_"
+
+        def cat_fields(documents, field_name):
+            cat_vector_documents = [
+                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
+                for sample in documents
+            ]
+            return cat_vector_documents
+
+        self.pull_update_push(
+            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        )
+
+    concat = cat
+
+    def vectorize(self, field, model):
+        """
+        Vectorizes a Particular field (text) of the dataset
+
+        Parameters
+        ----------
+        field : str
+            The text field to select
+        model
+            a Type deep learning model that vectorizes text
+
+        Examples
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            from vectorhub.encoders.text.tfhub import USE2Vec
+            model = USE2Vec()
+
+            text_field = "text_field"
+            df[text_field].vectorize(model)
+
+        """
+        series = Series(self)
+        series(self.dataset_id, field).vectorize(model)
+
     # def insert_csv(self, filename: str, **kwargs):
     #     """
     #     Wrapper for client.insert_csv
@@ -1421,76 +1491,6 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
-
-    def upsert_documents(
-        self,
-        documents: list,
-        bulk_fn: Callable = None,
-        max_workers: int = 8,
-        retry_chunk_mult: float = 0.5,
-        chunksize: int = 0,
-        show_progress_bar=False,
-        use_json_encoder: bool = True,
-    ):
-
-        """
-        Update a list of documents with multi-threading automatically enabled.
-        Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
-
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        documents : list
-            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
-        bulk_fn : callable
-            Function to apply to documents before uploading
-        max_workers : int
-            Number of workers active for multi-threading
-        retry_chunk_mult: int
-            Multiplier to apply to chunksize if upload fails
-        chunksize : int
-            Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
-        use_json_encoder : bool
-            Whether to automatically convert documents to json encodable format
-
-
-        Example
-        ----------
-        .. code-block::
-
-            from relevanceai import Client
-
-            client = Client()
-
-            documents = [
-                {
-                    "_id": "321",
-                    "value": 10
-                },
-                {
-                    "_id": "4243",
-                    "value": 100
-                }
-            ]
-
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            df.upsert(dataset_id, documents)
-
-        """
-        return self.update_documents(
-            self.dataset_id,
-            documents=documents,
-            bulk_fn=bulk_fn,
-            max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
-            show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
-        )
 
 
 class Export(Read):
