@@ -21,10 +21,25 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    client
    create
 
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Clustering
+
    clusterer
+   cluster_models
    cluster_base
 
-   integrations
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Integrations
+
+   sklearn_clustering_integration
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Appendix
 
    changelog
 

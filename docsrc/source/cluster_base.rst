@@ -1,5 +1,5 @@
-ClusterBase
-=============================
+Custom Cluster Models
+-------------------------
 
 The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
 and models. A cluster base has the following abstractmethods (methods to be overwritten):
@@ -44,8 +44,3 @@ and models. A cluster base has the following abstractmethods (methods to be over
 
 .. autoclass:: relevanceai.clusterer.cluster_base.AdvancedCentroidClusterBase
     :members:
-
-.. autoclass:: relevanceai.clusterer.kmeans_clusterer.KMeansModel
-    :members:
-    :show-inheritance:
-    :exclude-members: __init__
