@@ -25,8 +25,12 @@ import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional
-from relevanceai.dataset_api import Dataset
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
+
+# We use the second import because the first one seems to be causing errors with isinstance
+# from relevanceai.dataset_api import Dataset
+from relevanceai.dataset_api.dataset import Dataset
+
 from doc_utils import DocUtils
 
 
@@ -118,9 +122,13 @@ class Clusterer(BatchAPIClient):
         if isinstance(dataset, Dataset):
             self.dataset_id = dataset.dataset_id
             self.dataset: Dataset = dataset
-        else:
+        elif isinstance(dataset, str):
             self.dataset_id = dataset
             self.dataset = Dataset(project=self.project, api_key=self.api_key)
+        else:
+            raise ValueError(
+                "Dataset type needs to be either a string or Dataset instance."
+            )
 
     def fit(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
@@ -177,10 +185,7 @@ class Clusterer(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
-            if len(self.vector_fields) == 1:
-                centers = self.model.get_centroid_documents(self.vector_fields[0])
-            else:
-                centers = self.model.get_centroid_documents()
+            centers = self.model.get_centroid_documents()
 
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(
@@ -199,6 +204,37 @@ class Clusterer(BatchAPIClient):
                 page_size=20,
             )
         return
+
+    @property
+    def centroids(self):
+        """
+        See your centroids if there are any.
+        """
+        return self.services.cluster.centroids.list(
+            self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            page_size=10000,
+            # cursor: str = None,
+            include_vector=True,
+        )
+
+    def delete_centroids(self):
+        """Delete the centroids after clustering."""
+        # TODO: Fix delete centroids once its moved over to Node JS
+        import requests
+
+        base_url = self.config["api.base_url"]
+        response = requests.post(
+            base_url + "/services/cluster/centroids/delete",
+            headers={"Authorization": self.project + ":" + self.api_key},
+            params={
+                "dataset_id": "_github_repo_vectorai",
+                "vector_field": ["documentation_vector_"],
+                "alias": self.alias,
+            },
+        )
+        return response.json()["status"]
 
     def fit_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
