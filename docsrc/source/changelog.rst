@@ -41,6 +41,32 @@ Non-breaking changes:
 - Separation of references to clean up clustering and sidebar menu navigation
 - Fix reference examples
 
+AUTO-GENERATED RELEASE NOTES:  
+
+- Update README.md by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/314
+- Feature/refactor docsrc by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/315
+- hotfix sample by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/316
+- add installation suggestion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/317
+- Renaming docs to documents and cluster_alis to alias by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/308
+- added column value to df.info by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/321
+- update ingest to gateway by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/318
+- Feature/remove qc by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/322
+- Feature/separate centroid cluster bases by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/323
+- Feature/fix series object by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/324
+- Renaming datasets by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/320
+- add integration RST and code improvements by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/326
+- added df.filter to dataset api by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/319
+- Reference Quality check by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/325
+- Feature/fix docsrc 2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/328
+- Fixing notebook test by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/327
+- Feature/fix example custom cluster model by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/329
+- fixed centroids by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/330
+- add core by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/331
+- Update documentation on kmeans cluster model  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/332
+- Feature/fix references 3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/334
+- added kmeans integration by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/333
+
+
 v0.29.1
 ---------
 
