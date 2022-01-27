@@ -435,7 +435,8 @@ class Clusterer(BatchAPIClient):
             If True, then the return_only_clusters will return documents with just the cluster field and ID.
             This can be helpful when you want to upsert quickly without having to re-insert the entire document.
 
-        Example:
+        Example
+        -----------
 
         .. code-block::
 

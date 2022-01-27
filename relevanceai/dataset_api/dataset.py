@@ -665,17 +665,20 @@ class Read(BatchAPIClient):
             The axis on which to perform the search
 
         Returns
-        -------
+        ---------
         list of documents
 
         Example
-        -------
+        ----------
 
         .. code-block::
-        df = client.Dataset("pokedex")
-        filtered = df.filter(items=["Bulbasaur"])
-        filtered = df.filter(index="abilities", like="Blaze")
-        filtered = df.filter(index="type1", regex=".F")
+
+            from relevanceai import Client 
+            client = Client()
+            df = client.Dataset("pokedex")
+            filtered = df.filter(items=["Bulbasaur"])
+            filtered = df.filter(index="abilities", like="Blaze")
+            filtered = df.filter(index="type1", regex=".F")
 
         """
         fields = []
