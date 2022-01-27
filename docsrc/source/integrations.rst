@@ -1,3 +1,6 @@
+.. _integration:
+
+
 Integrations
 =================
 
