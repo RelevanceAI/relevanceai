@@ -126,7 +126,9 @@ class Clusterer(BatchAPIClient):
             self.dataset_id = dataset
             self.dataset = Dataset(project=self.project, api_key=self.api_key)
         else:
-            raise ValueError("Dataset type needs to be either a string or Dataset instance.")
+            raise ValueError(
+                "Dataset type needs to be either a string or Dataset instance."
+            )
 
     def fit(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
@@ -202,11 +204,11 @@ class Clusterer(BatchAPIClient):
                 page_size=20,
             )
         return
-    
+
     @property
     def centroids(self):
         """
-See your centroids if there are any.
+        See your centroids if there are any.
         """
         return self.services.cluster.centroids.list(
             self.dataset_id,
@@ -216,6 +218,22 @@ See your centroids if there are any.
             # cursor: str = None,
             include_vector=True,
         )
+    
+    def delete_centroids(self):
+        """Delete the centroids after clustering.
+        """
+        # TODO: Fix delete centroids once its moved over to Node JS
+        import requests
+        response = requests.post(
+            self.base_url + "/services/cluster/centroids/delete",
+            headers={"Authorization": self.project + ":" + self.api_key},
+            params={
+                "dataset_id": "_github_repo_vectorai", 
+                "vector_field": ["documentation_vector_"],
+                "alias": self.alias
+            }
+        )
+        return response.json()['status']
 
     def fit_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
