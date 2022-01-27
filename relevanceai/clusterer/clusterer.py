@@ -240,7 +240,9 @@ class Clusterer(BatchAPIClient):
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
         """
-        This function fits a cluster model onto a dataset.
+        This function fits a cluster model onto a dataset. It sits under `fit`
+        and is usually the only function that runs unless you have a get_centroid_documents
+        function.
 
         Parameters
         ---------------
@@ -258,34 +260,20 @@ class Clusterer(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai import Client
-            client = Client()
-            from relevanceai import ClusterBase
+            from relevanceai import ClusterBase, Client
             import random
+            client = Client()
 
             class CustomClusterModel(ClusterBase):
-                def __init__(self):
-                    pass
-
-                def fit_documents(self, documents, *args, **kw):
-                    X = self.get_field_across_documents("sample_vector_", documents)
-                    y = self.get_field_across_documents("entropy", documents)
-                    cluster_labels = self.fit_transform(documents, entropy)
-                    self.set_cluster_labels_across_documents(cluster_labels, documents)
-
-                def fit_transform(self, X, y):
-                    cluster_labels = []
-                    for y_value in y:
-                        if y_value == "auto":
-                            cluster_labels.append(1)
-                        else:
-                            cluster_labels.append(random.randint(0, 100))
+                def fit_transform(self, X):
+                    cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
                     return cluster_labels
 
             model = CustomClusterModel()
-            clusterer = client.Clusterer(model)
-            df = client.Dataset("sample")
-            clusterer.fit_dataset(df, vector_fields=["sample_vector_])
+            clusterer = client.Clusterer(model, alias="random")
+            df = client.Dataset("_github_repo_vectorai")
+
+            clusterer.fit_dataset(df, vector_fields=["documentation_vector_"])
 
         """
 
@@ -404,31 +392,20 @@ class Clusterer(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai import Client, ClusterBase
+            from relevanceai import ClusterBase, Client
             import random
             client = Client()
+
             class CustomClusterModel(ClusterBase):
-                def __init__(self):
-                    pass
-
-                def fit_documents(self, documents, *args, **kw):
-                    X = self.get_field_across_documents("sample_vector_", documents)
-                    y = self.get_field_across_documents("entropy", documents)
-                    cluster_labels = self.fit_transform(documents, entropy)
-                    self.set_cluster_labels_across_documents(cluster_labels, documents)
-
-                def fit_transform(self, X, y):
-                    cluster_labels = []
-                    for y_value in y:
-                        if y_value == "auto":
-                            cluster_labels.append(1)
-                        else:
-                            cluster_labels.append(random.randint(0, 100))
+                def fit_transform(self, X):
+                    cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
                     return cluster_labels
 
-            clusterer = client.CustomClusterModel()
-            df = client.Dataset("sample")
-            clusterer.fit(df, ["sample_vector_"])
+            model = CustomClusterModel()
+            clusterer = client.Clusterer(model, alias="random")
+            df = client.Dataset("_github_repo_vectorai")
+
+            clusterer.fit(df, vector_fields=["documentation_vector_"])
 
         """
         self.vector_fields = vector_fields
