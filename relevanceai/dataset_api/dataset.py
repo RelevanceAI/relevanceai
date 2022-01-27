@@ -45,6 +45,7 @@ class Series(BatchAPIClient):
     Assuming the following code as been executed:
 
     .. code-block::
+
         from relevanceai import client
         relevanceai.datasets import get_dummy_ecommerce_dataset
 
@@ -96,6 +97,7 @@ class Series(BatchAPIClient):
         Example
         -------
         .. code-block::
+
             from relevanceai import client
 
             client = Client()
@@ -155,6 +157,7 @@ class Series(BatchAPIClient):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
@@ -207,6 +210,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -251,6 +255,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -292,6 +297,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -366,6 +372,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -443,6 +450,7 @@ class Read(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -473,6 +481,7 @@ class Read(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -577,6 +586,7 @@ class Read(BatchAPIClient):
         Example
         ---------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -645,13 +655,12 @@ class Read(BatchAPIClient):
 
         Example
         ---------
+
         .. code-block::
+
             from relevanceai import Client
-
             client = Client()
-
             df = client.Dataset("sample_dataset", image_fields=["image_url])
-
             df.sample()
         """
 
@@ -707,15 +716,13 @@ class Read(BatchAPIClient):
 
         Example
         ----------
+
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             documents = df.get_all_documents()
         """
 
@@ -744,15 +751,13 @@ class Read(BatchAPIClient):
 
         Example
         --------
+
         .. code-block::
 
             from relevanceai import Client, Dataset
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             df.get_documents_by_ids(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
@@ -779,14 +784,13 @@ class Read(BatchAPIClient):
 
         Example
         --------
+
         .. code-block::
+
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             df.get(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
@@ -806,14 +810,13 @@ class Read(BatchAPIClient):
 
         Example
         -----------------
+
         .. code-block::
+
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             df.schema
         """
         return self.datasets.schema(self.dataset_id)
@@ -921,15 +924,14 @@ class Stats(Read):
         Example
         -----------------
         .. code-block::
+
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             field = "sample_field"
             value_counts_df = df.value_counts(field)
+
         """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
@@ -942,79 +944,6 @@ class Stats(Read):
 
 
 class Write(Read):
-    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
-        """
-        Concatenates numerical fields along an axis and reuploads this vector for other operations
-
-        Parameters
-        ----------
-        vector_name: str, default None
-            name of the new concatenated vector field
-        fields: List
-            fields alone which the new vector will concatenate
-
-        Example
-        -----------------
-        .. code-block::
-            from relevanceai import Client
-
-            client = Client()
-
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            fields = [
-                "numeric_field1",
-                "numeric_field2",
-                "numeric_field3"
-            ]
-
-            df.cat(fields)
-            df.concat(fields)
-
-            concat_vector_field_name = "concat_vector_"
-            df.cat(vector_name=concat_vector_field_name, fields=fields)
-            df.concat(vector_name=concat_vector_field_name, fields=fields)
-        """
-        if vector_name is None:
-            vector_name = "_".join(fields) + "_cat_vector_"
-
-        def cat_fields(documents, field_name):
-            cat_vector_documents = [
-                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
-                for sample in documents
-            ]
-            return cat_vector_documents
-
-        self.pull_update_push(
-            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
-        )
-
-    concat = cat
-
-    def vectorize(self, field, model):
-        """
-        Vectorizes a Particular field (text) of the dataset
-
-        Parameters
-        ----------
-        field : str
-            The text field to select
-        model
-            a Type deep learning model that vectorizes text
-
-        Examples
-        --------
-        .. code-block::
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            text_field = "text_field"
-            df[text_field].vectorize(model)
-        """
-        series = Series(self)
-        series(self.dataset_id, field).vectorize(model)
-
     def insert_documents(  # type: ignore
         self,
         documents: list,
@@ -1156,6 +1085,88 @@ class Write(Read):
             auto_generate_id=auto_generate_id,
         )
 
+    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+        """
+        Concatenates numerical fields along an axis and reuploads this vector for other operations
+
+        Parameters
+        ----------
+        vector_name: str, default None
+            name of the new concatenated vector field
+        fields: List
+            fields alone which the new vector will concatenate
+
+        Example
+        -----------------
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            fields = [
+                "numeric_field1",
+                "numeric_field2",
+                "numeric_field3"
+            ]
+
+            df.cat(fields)
+            df.concat(fields)
+
+            concat_vector_field_name = "concat_vector_"
+            df.cat(vector_name=concat_vector_field_name, fields=fields)
+            df.concat(vector_name=concat_vector_field_name, fields=fields)
+        """
+        if vector_name is None:
+            vector_name = "_".join(fields) + "_cat_vector_"
+
+        def cat_fields(documents, field_name):
+            cat_vector_documents = [
+                {"_id": sample["_id"], field_name: [sample[field] for field in fields]}
+                for sample in documents
+            ]
+            return cat_vector_documents
+
+        self.pull_update_push(
+            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        )
+
+    concat = cat
+
+    def vectorize(self, field, model):
+        """
+        Vectorizes a Particular field (text) of the dataset
+
+        Parameters
+        ----------
+        field : str
+            The text field to select
+        model
+            a Type deep learning model that vectorizes text
+
+        Examples
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            from vectorhub.encoders.text.tfhub import USE2Vec
+            model = USE2Vec()
+
+            text_field = "text_field"
+            df[text_field].vectorize(model)
+
+        """
+        series = Series(self)
+        series(self.dataset_id, field).vectorize(model)
+
     def apply(
         self,
         func: Callable,
@@ -1260,6 +1271,7 @@ class Write(Read):
         Example
         ---------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1340,6 +1352,7 @@ class Write(Read):
         For example:
 
         .. code-block::
+
             {
                 "product_text_description" : "text",
                 "price" : "numeric",
@@ -1366,6 +1379,7 @@ class Write(Read):
         Example
         ----------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1396,6 +1410,7 @@ class Write(Read):
         Example
         ---------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1444,6 +1459,7 @@ class Write(Read):
         Example
         ----------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1492,6 +1508,7 @@ class Export(Read):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1521,6 +1538,7 @@ class Export(Read):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1551,6 +1569,7 @@ class Dataset(Export, Write, Stats):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
@@ -1581,6 +1600,7 @@ class Dataset(Export, Write, Stats):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from relevanceai.clusterer import Clusterer
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel

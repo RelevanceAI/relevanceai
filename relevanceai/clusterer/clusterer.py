@@ -2,8 +2,6 @@
 Clusterer class to run clustering. It is intended to be integrated with 
 models that inherit from `ClusterBase`.
 
-Those that inherit from `ClusterBase`.
-
 You can run the Clusterer as such:
 
 .. code-block::
@@ -15,6 +13,8 @@ You can run the Clusterer as such:
     clusterer = client.Clusterer(model, alias="kmeans_2")
     df = client.Dataset("_github_repo_vectorai")
     clusterer.fit(df, ["documentation_vector_"])
+
+You can view other examples of how to interact with this class here :ref:`integration`.
 
 """
 import os
