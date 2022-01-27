@@ -139,6 +139,7 @@ class Client(BatchAPIClient, DocUtils):
             # If the base URl is included in the pasted token then include it
             if len(split_token) > 2:
                 self.base_url = split_token[2]
+                self.base_ingest_url = split_token[2]
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()
