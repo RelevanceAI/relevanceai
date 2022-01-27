@@ -218,22 +218,22 @@ class Clusterer(BatchAPIClient):
             # cursor: str = None,
             include_vector=True,
         )
-    
+
     def delete_centroids(self):
-        """Delete the centroids after clustering.
-        """
+        """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
         import requests
+
         response = requests.post(
             self.base_url + "/services/cluster/centroids/delete",
             headers={"Authorization": self.project + ":" + self.api_key},
             params={
-                "dataset_id": "_github_repo_vectorai", 
+                "dataset_id": "_github_repo_vectorai",
                 "vector_field": ["documentation_vector_"],
-                "alias": self.alias
-            }
+                "alias": self.alias,
+            },
         )
-        return response.json()['status']
+        return response.json()["status"]
 
     def fit_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
