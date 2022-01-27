@@ -259,3 +259,7 @@ class Client(BatchAPIClient, DocUtils):
             project=self.project,
             api_key=self.api_key,
         )
+    
+    def _set_logger_to_verbose(self):
+        # Use this for debugging
+        self.config['logging.logging_level'] = "INFO"
