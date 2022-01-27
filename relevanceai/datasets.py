@@ -132,7 +132,7 @@ def get_games_dataset(
     )
 
 
-def get_ecommerce_1_dataset(
+def get_ecommerce_dataset_encoded(
     number_of_documents: int = 739, select_fields: list = []
 ) -> List[Dict[Any, Any]]:
     """
@@ -165,7 +165,7 @@ def get_ecommerce_1_dataset(
     )
 
 
-def get_ecommerce_2_dataset(
+def get_ecommerce_dataset_clean(
     number_of_documents: int = 1000,
     select_fields: list = [
         "_id",
@@ -183,19 +183,12 @@ def get_ecommerce_2_dataset(
     Sample document:
 
     >>> {'_id': '711160239',
-    >>> '_unit_id': 711160239,
-    >>> 'relevance': 3.67,
-    >>> 'relevance:variance': 0.47100000000000003,
     >>> 'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
     >>> 'product_link': 'https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&var=&hash=item4adee9354f',
     >>> 'product_price': '$7.99 to $12.99',
     >>> 'product_title': '20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM"',
     >>> 'query': 'steel necklace',
-    >>> 'rank': 23,
-    >>> 'source': 'eBay',
-    >>> 'url': 'https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=steel%20necklace',
-    >>> 'product_description': 'eBay item number:321567405391\n\n\n\tSeller assumes all responsibility for this listing
-    >>> ...
+    >>> 'source': 'eBay'
     >>> }
 
     Parameters
@@ -291,7 +284,7 @@ def get_news_dataset(
     )
 
 
-def get_ecommerce_3_dataset(
+def get_online_ecommerce_dataset(
     number_of_documents: Union[None, int] = 1000, select_fields: list = []
 ) -> List:
     """
@@ -480,6 +473,8 @@ def get_machine_learning_research_dataset():
     raise NotImplementedError
 
 
-get_dummy_ecommerce_dataset = get_ecommerce_1_dataset
-get_sample_ecommerce_dataset = get_ecommerce_2_dataset
-get_ecommerce_dataset = get_ecommerce_3_dataset
+### For backwards compatability
+
+get_ecommerce_1_dataset = get_dummy_ecommerce_dataset = get_ecommerce_dataset_encoded
+get_ecommerce_2_dataset = get_sample_ecommerce_dataset = get_ecommerce_dataset_clean
+get_ecommerce_3_dataset = get_ecommerce_dataset = get_online_ecommerce_dataset
