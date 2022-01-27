@@ -389,7 +389,7 @@ class Clusterer(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
-            centers = self.model.get_centroid_documents()
+            centers = self.model.get_centroid_documents(".".join(self.vector_fields))
 
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(
