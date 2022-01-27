@@ -151,33 +151,12 @@ class Clusterer(BatchAPIClient):
         .. code-block::
 
             from relevanceai import Client
+            from relevanceai.cluster import KMeansModel
             client = Client()
-            from relevanceai import ClusterBase
-            import random
-
-            class CustomClusterModel(ClusterBase):
-                def __init__(self):
-                    pass
-
-                def fit_documents(self, documents, *args, **kw):
-                    X = self.get_field_across_documents("sample_vector_", documents)
-                    y = self.get_field_across_documents("entropy", documents)
-                    cluster_labels = self.fit_transform(documents, entropy)
-                    self.set_cluster_labels_across_documents(cluster_labels, documents)
-
-                def fit_transform(self, X, y):
-                    cluster_labels = []
-                    for y_value in y:
-                        if y_value == "auto":
-                            cluster_labels.append(1)
-                        else:
-                            cluster_labels.append(random.randint(0, 100))
-                    return cluster_labels
-
-            model = CustomClusterModel()
-            clusterer = client.Clusterer(model)
-            df = client.Dataset("sample")
-            clusterer.fit(df)
+            model = KMeansModel(n_clusters=2)
+            clusterer = client.Clusterer(model, alias="kmeans_2")
+            df = client.Dataset("sample_dataset")
+            clusterer.fit(df, ["sample_vector_"])
 
         """
         self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
