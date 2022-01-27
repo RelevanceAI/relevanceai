@@ -151,33 +151,12 @@ class Clusterer(BatchAPIClient):
         .. code-block::
 
             from relevanceai import Client
+            from relevanceai.cluster import KMeansModel
             client = Client()
-            from relevanceai import ClusterBase
-            import random
-
-            class CustomClusterModel(ClusterBase):
-                def __init__(self):
-                    pass
-
-                def fit_documents(self, documents, *args, **kw):
-                    X = self.get_field_across_documents("sample_vector_", documents)
-                    y = self.get_field_across_documents("entropy", documents)
-                    cluster_labels = self.fit_transform(documents, entropy)
-                    self.set_cluster_labels_across_documents(cluster_labels, documents)
-
-                def fit_transform(self, X, y):
-                    cluster_labels = []
-                    for y_value in y:
-                        if y_value == "auto":
-                            cluster_labels.append(1)
-                        else:
-                            cluster_labels.append(random.randint(0, 100))
-                    return cluster_labels
-
-            model = CustomClusterModel()
-            clusterer = client.Clusterer(model)
-            df = client.Dataset("sample")
-            clusterer.fit(df)
+            model = KMeansModel(n_clusters=2)
+            clusterer = client.Clusterer(model, alias="kmeans_2")
+            df = client.Dataset("sample_dataset")
+            clusterer.fit(df, ["sample_vector_"])
 
         """
         self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
@@ -281,7 +260,89 @@ class Clusterer(BatchAPIClient):
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
 
-        For more information about aggregations check out services.aggregate.aggregate.
+        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": <alias>, "field": <field in the collection>, "agg": "category"},
+                    {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
+                ],
+                "metrics" : [
+                    {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
+                    {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
+                ]
+            }
+
+        For example, one can use the following aggregations to group score based on region and player name.
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": "region", "field": "player_region", "agg": "category"},
+                    {"name": "player_name", "field": "name", "agg": "category"}
+                ],
+                "metrics" : [
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                    {"name": "max_score", "field": "final_score", "agg": "max"},
+                    {'name':'total_score','field':"final_score", 'agg':'sum'},
+                    {'name':'average_deaths','field':"final_deaths", 'agg':'avg'},
+                    {'name':'highest_deaths','field':"final_deaths", 'agg':'max'},
+                ]
+            }
+
+        "groupby" is the fields you want to split the data into. These are the available groupby types:
+
+            - category : groupby a field that is a category
+            - numeric: groupby a field that is a numeric
+
+        "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
+
+            - "avg", "max", "min", "sum", "cardinality"
+
+        The response returned has the following in descending order. \n
+
+        If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
+
+            .. code-block::
+
+                {
+                    'groupby':[
+                        {'name':'Manufacturer','field':'manufacturer','agg':'category',
+                        'group_size': 10, 'select_fields': ["name"]},
+                    ],
+                    'metrics':[
+                        {'name':'Price Average','field':'price','agg':'avg'},
+                    ],
+                }
+
+                # ouptut example:
+                {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
+
+        For array-aggregations, you can add "agg": "array" into the aggregation query.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        metrics: list
+            Fields and metrics you want to calculate
+        groupby: list
+            Fields you want to split the data into
+        filters: list
+            Query for filtering the search results
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+        alias: string
+            Alias used to name a vector field. Belongs in field_{alias} vector
 
         Parameters
         ----------
@@ -318,6 +379,7 @@ class Clusterer(BatchAPIClient):
                     {"name": "average_score", "field": "final_score", "agg": "avg"},
                 ]
             )
+
 
         """
         return self.services.cluster.aggregate(
