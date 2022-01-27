@@ -475,11 +475,6 @@ def get_machine_learning_research_dataset():
 
 ### For backwards compatability
 
-get_ecommerce_1_dataset = get_ecommerce_dataset_encoded
-get_ecommerce_2_dataset = get_ecommerce_dataset_clean
-get_ecommerce_3_dataset = get_online_ecommerce_dataset
-
-
-get_dummy_ecommerce_dataset = get_ecommerce_dataset_encoded
-get_sample_ecommerce_dataset = get_ecommerce_dataset_clean
-get_ecommerce_dataset = get_online_ecommerce_dataset
+get_ecommerce_1_dataset = get_dummy_ecommerce_dataset= get_ecommerce_dataset_encoded
+get_ecommerce_2_dataset = get_sample_ecommerce_dataset =  get_ecommerce_dataset_clean
+get_ecommerce_3_dataset = get_ecommerce_dataset = get_online_ecommerce_dataset
