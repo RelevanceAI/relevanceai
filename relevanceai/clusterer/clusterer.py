@@ -293,18 +293,18 @@ class Clusterer(BatchAPIClient):
                 ]
             }
 
-            "groupby" is the fields you want to split the data into. These are the available groupby types:
+        "groupby" is the fields you want to split the data into. These are the available groupby types:
 
-                - category : groupby a field that is a category
-                - numeric: groupby a field that is a numeric
+            - category : groupby a field that is a category
+            - numeric: groupby a field that is a numeric
 
-            "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
+        "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
 
-                - "avg", "max", "min", "sum", "cardinality"
+            - "avg", "max", "min", "sum", "cardinality"
 
-            The response returned has the following in descending order. \n
+        The response returned has the following in descending order. \n
 
-            If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
+        If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
 
             .. code-block::
 
@@ -321,7 +321,7 @@ class Clusterer(BatchAPIClient):
                 # ouptut example:
                 {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
 
-            For array-aggregations, you can add "agg": "array" into the aggregation query.
+        For array-aggregations, you can add "agg": "array" into the aggregation query.
 
         Parameters
         ----------
