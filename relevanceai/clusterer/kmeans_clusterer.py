@@ -33,14 +33,14 @@ class KMeansModel(ClusterBase):
 
         from relevanceai import Client
         client = Client()
-        df = client.Dataset("sample_dataset")
+        dataset_id = "_github_repo_vectorai"
+        df = client.Dataset(dataset_id)
 
         from relevanceai.clusterer import KMeansModel
-        model = KMeansModel(n_clusters=3)
+        model = KMeansModel(k=3)
 
         clusterer = client.Clusterer(model=model, alias="kmeans")
         clusterer.fit(df, vector_fields=["documentation_vector_"])
-        clusterer.list_closest_to_center()
 
     """
 
