@@ -13,6 +13,22 @@ class KMeansModel(ClusterBase):
     """
     Simple K means model powered by Scikit Learn. 
 
+    Run KMeans Clustering.
+
+    Parameters
+    ------------
+    alias: str
+        The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+    k: str
+        The number of clusters in your K Means
+    cluster_field: str
+        The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+
+    You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+
+    Example
+    -----------
+
     .. code-block::
 
         from relevanceai import Client
