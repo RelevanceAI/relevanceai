@@ -183,6 +183,210 @@ class Clusterer(BatchAPIClient):
         self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
         self._insert_centroid_documents()
 
+    def list_closest_to_center(
+        self,
+        cluster_ids: List = [],
+        centroid_vector_fields: List = [],
+        select_fields: List = [],
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 1,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: List = [],
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+    ):
+        """
+        List of documents closest from the centre.
+
+        Parameters
+        ----------
+        cluster_ids: lsit
+            Any of the cluster ids
+        centroid_vector_fields: list
+            Vector fields stored
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+
+        Example
+        --------------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            from relevanceai.clusterer import KMeansModel
+            kmeans = KMeans(n_clusters=5)
+            clusterer = client.Clusterer(kmeans)
+            clusterer.fit(df, ["sample_vector_"])
+            clusterer.list_closest_to_center()
+
+        """
+        return self.datasets.cluster.centroids.list_closest_to_center(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+        )
+
+    def aggregate(
+        self,
+        metrics: list = [],
+        sort: list = [],
+        groupby: list = [],
+        filters: list = [],
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+    ):
+        """
+        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
+        It can only can be used after a vector field has been clustered. \n
+
+        For more information about aggregations check out services.aggregate.aggregate.
+
+        Parameters
+        ----------
+        metrics: list
+            Fields and metrics you want to calculate
+        groupby: list
+            Fields you want to split the data into
+        filters: list
+            Query for filtering the search results
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            from relevanceai.cluster import KMeansModel
+            clusterer = client.Clusterer(5)
+            clusterer.fit(df, ["sample_vector_"])
+            clusterer.aggregate(
+                groupby=[],
+                metrics=[
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                ]
+            )
+
+        """
+        return self.services.cluster.aggregate(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            groupby=groupby,
+            metrics=metrics,
+            sort=sort,
+            filters=filters,
+            alias=self.alias,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+        )
+
+    def list_furthest_from_center(self):
+        """
+        List of documents furthest from the centre.
+
+        Parameters
+        ----------
+        cluster_ids: list
+            Any of the cluster ids
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+
+        Example
+        ---------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("_github_repo_vectorai")
+            from relevanceai.clusterer import KMeansModel
+            model = KMeansModel()
+            cluster = client.Clusterer(3)
+            clusterer.fit(df)
+            clusterer.list_furthest_from_center()
+
+        """
+        return self.datasets.cluster.centroids.list_furthest_from_center(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
             centers = self.model.get_centroid_documents()
@@ -495,210 +699,6 @@ class Clusterer(BatchAPIClient):
 
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
-
-    def list_furthest_from_center(self):
-        """
-        List of documents furthest from the centre.
-
-        Parameters
-        ----------
-        cluster_ids: list
-            Any of the cluster ids
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-
-        Example
-        ---------
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("_github_repo_vectorai")
-            from relevanceai.clusterer import KMeansModel
-            model = KMeansModel()
-            cluster = client.Clusterer(3)
-            clusterer.fit(df)
-            clusterer.list_furthest_from_center()
-
-        """
-        return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=self.dataset_id,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-        )
-
-    def list_closest_to_center(
-        self,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 1,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: List = [],
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-    ):
-        """
-        List of documents closest from the centre.
-
-        Parameters
-        ----------
-        cluster_ids: lsit
-            Any of the cluster ids
-        centroid_vector_fields: list
-            Vector fields stored
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-
-        Example
-        --------------
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-
-            from relevanceai.clusterer import KMeansModel
-            kmeans = KMeans(n_clusters=5)
-            clusterer = client.Clusterer(kmeans)
-            clusterer.fit(df, ["sample_vector_"])
-            clusterer.list_closest_to_center()
-
-        """
-        return self.datasets.cluster.centroids.list_closest_to_center(
-            dataset_id=self.dataset_id,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            select_fields=select_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-        )
-
-    def aggregate(
-        self,
-        metrics: list = [],
-        sort: list = [],
-        groupby: list = [],
-        filters: list = [],
-        page_size: int = 20,
-        page: int = 1,
-        asc: bool = False,
-        flatten: bool = True,
-    ):
-        """
-        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
-        It can only can be used after a vector field has been clustered. \n
-
-        For more information about aggregations check out services.aggregate.aggregate.
-
-        Parameters
-        ----------
-        metrics: list
-            Fields and metrics you want to calculate
-        groupby: list
-            Fields you want to split the data into
-        filters: list
-            Query for filtering the search results
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        asc: bool
-            Whether to sort results by ascending or descending order
-        flatten: bool
-            Whether to flatten
-
-        Example
-        ---------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-
-            from relevanceai.cluster import KMeansModel
-            clusterer = client.Clusterer(5)
-            clusterer.fit(df, ["sample_vector_"])
-            clusterer.aggregate(
-                groupby=[],
-                metrics=[
-                    {"name": "average_score", "field": "final_score", "agg": "avg"},
-                ]
-            )
-
-        """
-        return self.services.cluster.aggregate(
-            dataset_id=self.dataset_id,
-            vector_fields=self.vector_fields,
-            groupby=groupby,
-            metrics=metrics,
-            sort=sort,
-            filters=filters,
-            alias=self.alias,
-            page_size=page_size,
-            page=page,
-            asc=asc,
-            flatten=flatten,
-        )
 
     @property
     def metadata(self):
