@@ -96,7 +96,7 @@ class KMeansModel(ClusterBase):
         """
         Get the centroid documents to store.
         If single vector field returns this:
-        
+
         .. code-block::
 
             {

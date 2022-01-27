@@ -194,9 +194,10 @@ class ClusterBase(DocUtils, ABC):
 
 class AdvancedCentroidClusterBase(ClusterBase, ABC):
     """
-This centroid cluster base assumes that you want to specify
-quite advanced centroid documents.
+    This centroid cluster base assumes that you want to specify
+    quite advanced centroid documents.
     """
+
     @abstractmethod
     def get_centroid_documents(self):
         """Get the centroid documents."""
@@ -205,19 +206,18 @@ quite advanced centroid documents.
 
 class CentroidClusterBase(ClusterBase, ABC):
     """
-Inherit this class if you have a centroids-based clustering approach.
-The difference between this and `Clusterbase` is that you can also additionally
-specify how to get your centers in the 
-`get_centers` base. This allows you to store your centers.
+    Inherit this class if you have a centroids-based clustering approach.
+    The difference between this and `Clusterbase` is that you can also additionally
+    specify how to get your centers in the
+    `get_centers` base. This allows you to store your centers.
     """
+
     @abstractmethod
     def get_centers(self) -> List[List[float]]:
         """Add how you need to get centers here."""
         pass
 
-    def get_centroid_documents(
-        self
-    ) -> List:
+    def get_centroid_documents(self) -> List:
         """
         Get the centroid documents to store. This enables you to use `list_closest_to_center()`
         and `list_furthest_from_center`.
@@ -263,4 +263,3 @@ specify how to get your centers in the
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
         return centroid_docs
-
