@@ -434,15 +434,15 @@ class Read(BatchAPIClient):
                 )
                 return pd.json_normalize(head_documents).head(n=n)
 
-    def _show_json(self, docs, **kw):
+    def _show_json(self, documents, **kw):
         from jsonshower import show_json
 
         if not self.text_fields:
-            text_fields = pd.json_normalize(docs).columns.tolist()
+            text_fields = pd.json_normalize(documents).columns.tolist()
         else:
             text_fields = self.text_fields
         return show_json(
-            docs,
+            documents,
             image_fields=self.image_fields,
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
@@ -495,7 +495,7 @@ class Read(BatchAPIClient):
                 self.get_number_of_documents(self.dataset_id, filters=filters) * frac
             )
 
-        docs = self.datasets.documents.get_where(
+        documents = self.datasets.documents.get_where(
             dataset_id=self.dataset_id,
             filters=filters,
             page_size=n,
@@ -504,9 +504,9 @@ class Read(BatchAPIClient):
             select_fields=select_fields,
         )["documents"]
         if output_format == "json":
-            return docs
+            return documents
         elif output_format == "pandas":
-            return pd.DataFrame.from_dict(docs, orient="records")
+            return pd.DataFrame.from_dict(documents, orient="records")
 
     def get_all_documents(
         self,
@@ -542,7 +542,7 @@ class Read(BatchAPIClient):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
-            docs = df.get_all_documents()
+            documents = df.get_all_documents()
 
         """
 
@@ -766,7 +766,7 @@ class Write(Read):
         """
         return self._insert_documents(  # type: ignore
             dataset_id=self.dataset_id,
-            docs=documents,
+            documents=documents,
             bulk_fn=bulk_fn,
             max_workers=max_workers,
             retry_chunk_mult=retry_chunk_mult,
@@ -883,12 +883,12 @@ class Write(Read):
         if axis == 1:
             raise ValueError("We do not support column-wise operations!")
 
-        def bulk_fn(docs):
-            new_docs = []
-            for d in docs:
+        def bulk_fn(documents):
+            new_documents = []
+            for d in documents:
                 new_d = func(d)
-                new_docs.append(new_d)
-            return docs
+                new_documents.append(new_d)
+            return documents
 
         return self.pull_update_push(
             self.dataset_id,
@@ -977,17 +977,17 @@ class Write(Read):
 
     def set_cluster_labels(self, vector_fields, alias, labels):
         def add_cluster_labels(documents):
-            docs = self.get_all_documents(self.dataset_id)
-            docs = list(filter(DocUtils.list_doc_fields, docs))
+            documents = self.get_all_documents(self.dataset_id)
+            documents = list(filter(DocUtils.list_doc_fields, documents))
             set_cluster_field = (
                 "_cluster_" + ".".join(vector_fields).lower() + "." + alias
             )
             self.set_field_across_documents(
                 set_cluster_field,
                 self._label_clusters(list(labels)),
-                docs,
+                documents,
             )
-            return docs
+            return documents
 
         self.pull_update_push(self.dataset_id, add_cluster_labels)
 
@@ -1078,7 +1078,7 @@ class Write(Read):
         ----------
         dataset_id : string
             Unique name of dataset
-        docs : list
+        documents : list
             A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         bulk_fn : callable
             Function to apply to documents before uploading
@@ -1104,7 +1104,7 @@ class Write(Read):
         """
         return self.update_documents(
             self.dataset_id,
-            docs=documents,
+            documents=documents,
             bulk_fn=bulk_fn,
             max_workers=max_workers,
             retry_chunk_mult=retry_chunk_mult,

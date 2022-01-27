@@ -313,7 +313,7 @@ class CentroidsClient(_Base):
         )
         return self.make_http_request(endpoint, method=method, parameters=parameters)
 
-    docs_closest_to_center = list_closest_to_center
+    documents_closest_to_center = list_closest_to_center
 
     def list_furthest_from_center(
         self,
@@ -408,7 +408,7 @@ class CentroidsClient(_Base):
         )
         return response
 
-    docs_furthest_from_center = list_furthest_from_center
+    documents_furthest_from_center = list_furthest_from_center
 
     def delete(
         self,
