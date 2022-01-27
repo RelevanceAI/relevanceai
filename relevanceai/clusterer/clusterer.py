@@ -214,7 +214,7 @@ class Clusterer(BatchAPIClient):
             self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
-            page_size=100000,
+            page_size=10000,
             # cursor: str = None,
             include_vector=True,
         )
@@ -223,9 +223,9 @@ class Clusterer(BatchAPIClient):
         """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
         import requests
-
+        base_url = self.config['api.base_url']
         response = requests.post(
-            self.base_url + "/services/cluster/centroids/delete",
+            base_url + "/services/cluster/centroids/delete",
             headers={"Authorization": self.project + ":" + self.api_key},
             params={
                 "dataset_id": "_github_repo_vectorai",
