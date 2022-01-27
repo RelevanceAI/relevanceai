@@ -96,20 +96,24 @@ class KMeansModel(ClusterBase):
         """
         Get the centroid documents to store.
         If single vector field returns this:
+        
+        .. code-block::
+
             {
                 "_id": "document-id-1",
                 "centroid_vector_": [0.23, 0.24, 0.23]
             }
-        If multiple vector fields returns this:
-        Returns multiple
-        ```
-        {
-            "_id": "document-id-1",
-            "blue_vector_": [0.12, 0.312, 0.42],
-            "red_vector_": [0.23, 0.41, 0.3]
-        }
 
-        ```
+        If multiple vector fields returns this returns multiple:
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
 
         """
         self.centers = self.get_centers()
