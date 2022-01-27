@@ -223,10 +223,7 @@ class KMeansClusterer(Clusterer):
         return
 
     def fit(
-        self,
-        dataset: Union[Dataset, str],
-        vector_fields: List,
-        filters: list=[]
+        self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
     ):
         """
         Train clustering algorithm on documents and then store the labels
