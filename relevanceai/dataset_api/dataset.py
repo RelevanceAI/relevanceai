@@ -45,6 +45,7 @@ class Series(BatchAPIClient):
     Assuming the following code as been executed:
 
     .. code-block::
+
         from relevanceai import client
         relevanceai.datasets import get_dummy_ecommerce_dataset
 
@@ -96,6 +97,7 @@ class Series(BatchAPIClient):
         Example
         -------
         .. code-block::
+
             from relevanceai import client
 
             client = Client()
@@ -155,6 +157,7 @@ class Series(BatchAPIClient):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
@@ -207,6 +210,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -251,6 +255,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -292,6 +297,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -366,6 +372,7 @@ class Series(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -442,6 +449,7 @@ class Read(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -472,6 +480,7 @@ class Read(BatchAPIClient):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -576,6 +585,7 @@ class Read(BatchAPIClient):
         Example
         ---------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -644,13 +654,12 @@ class Read(BatchAPIClient):
 
         Example
         ---------
+
         .. code-block::
+
             from relevanceai import Client
-
             client = Client()
-
             df = client.Dataset("sample_dataset", image_fields=["image_url])
-
             df.sample()
         """
 
@@ -706,15 +715,13 @@ class Read(BatchAPIClient):
 
         Example
         ----------
+
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             documents = df.get_all_documents()
         """
 
@@ -743,15 +750,13 @@ class Read(BatchAPIClient):
 
         Example
         --------
+
         .. code-block::
 
             from relevanceai import Client, Dataset
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             df.get_documents_by_ids(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
@@ -778,14 +783,13 @@ class Read(BatchAPIClient):
 
         Example
         --------
+
         .. code-block::
+
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             df.get(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
@@ -809,12 +813,9 @@ class Read(BatchAPIClient):
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             df.schema
         """
         return self.datasets.schema(self.dataset_id)
@@ -924,14 +925,12 @@ class Stats(Read):
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
-
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
-
             field = "sample_field"
             value_counts_df = df.value_counts(field)
+
         """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 

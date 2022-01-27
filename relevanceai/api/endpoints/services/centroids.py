@@ -427,6 +427,7 @@ class CentroidsClient(_Base):
             The vector field where a clustering task was run.
         alias: string
             Alias is used to name a cluster
+
         """
         return self.make_http_request(
             "/services/cluster/centroids/delete",
