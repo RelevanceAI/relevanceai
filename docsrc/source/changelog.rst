@@ -7,7 +7,6 @@ Here you will find a list of changes for each package update.
 v0.29.1
 ---------
 
-- 
 - Moved get_all_documents in BatchAPIClient to _get_all_documents to resolve typing error
 - Include Client, Fix Clusterer, ClusterBase, update Cluster References
 - Add Write Documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/311

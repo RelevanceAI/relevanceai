@@ -244,7 +244,7 @@ class Clusterer(BatchAPIClient):
             model = CustomClusterModel()
             clusterer = client.Clusterer(model)
             df = client.Dataset("sample")
-            clusterer.fit(df, vector_fields=["sample_vector_])
+            clusterer.fit_dataset(df, vector_fields=["sample_vector_])
 
         """
 
@@ -687,13 +687,18 @@ class Clusterer(BatchAPIClient):
         Example
         ----------
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("_github_repo_vectorai")
-        >>> kmeans = client.KMeansClusterer(df)
-        >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
-        >>> kmeans.metadata
-        # {"k": 10}
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("_github_repo_vectorai")
+            from relevanceai.clusterer import KMeansModel
+
+            model = KMeansModel()
+            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans.fit(df, vector_fields=["sample_1_vector_"])
+            kmeans.metadata
+            # {"k": 10}
 
         """
         return self.services.cluster.centroids.metadata(
@@ -717,12 +722,20 @@ class Clusterer(BatchAPIClient):
         Example
         ----------
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("_github_repo_vectorai")
-        >>> kmeans = client.KMeansClusterer(df)
-        >>> kmeans.fit(df, vector_fields=["sample_1_vector_"])
-        >>> kmeans.metadata = {"k": 10}
+        .. code-block::
+
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("_github_repo_vectorai")
+            from relevanceai.clusterer import KMeansModel
+
+            model = KMeansModel()
+            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans.fit(df, vector_fields=["sample_1_vector_"])
+            kmeans.metadata
+            # {"k": 10}
+
         """
         return self.services.cluster.centroids.metadata(
             dataset_id=self.dataset_id,

@@ -39,8 +39,10 @@ and models. A cluster base has the following abstractmethods (methods to be over
 .. autoclass:: relevanceai.clusterer.cluster_base.ClusterBase
     :members:
 
+.. autoclass:: relevanceai.clusterer.cluster_base.CentroidClusterBase
+    :members:
+
 .. autoclass:: relevanceai.clusterer.kmeans_clusterer.KMeansModel
     :members:
     :show-inheritance:
     :exclude-members: __init__
-
