@@ -1,6 +1,7 @@
 """KMeans Clustering
 """
 import numpy as np
+import warnings
 from typing import Union, List, Optional
 
 from relevanceai.clusterer.clusterer import Clusterer
@@ -9,6 +10,40 @@ from relevanceai.dataset_api import Dataset
 
 
 class KMeansModel(ClusterBase):
+    """
+    Simple K means model powered by Scikit Learn.
+
+    Run KMeans Clustering.
+
+    Parameters
+    ------------
+    alias: str
+        The name to call your cluster.  This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+    k: str
+        The number of clusters in your K Means
+    cluster_field: str
+        The field from which to store the cluster. This will be used to store your clusters in the form of {cluster_field{.vector_field.alias}
+
+    You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+
+    Example
+    -----------
+
+    .. code-block::
+
+        from relevanceai import Client
+        client = Client()
+        dataset_id = "_github_repo_vectorai"
+        df = client.Dataset(dataset_id)
+
+        from relevanceai.clusterer import KMeansModel
+        model = KMeansModel(k=3)
+
+        clusterer = client.Clusterer(model=model, alias="kmeans")
+        clusterer.fit(df, vector_fields=["documentation_vector_"])
+
+    """
+
     def __init__(
         self,
         k=10,
@@ -89,32 +124,35 @@ class KMeansModel(ClusterBase):
             cluster_centers.append(cluster_center_doc.copy())
         return cluster_centers
 
-    def get_centroid_documents(
-        self, centroid_vector_field_name: str = "centroid_vector_"
-    ) -> List:
+    def get_centroid_documents(self) -> List:
         """
         Get the centroid documents to store.
         If single vector field returns this:
+
+        .. code-block::
+
             {
                 "_id": "document-id-1",
                 "centroid_vector_": [0.23, 0.24, 0.23]
             }
-        If multiple vector fields returns this:
-        Returns multiple
-        ```
-        {
-            "_id": "document-id-1",
-            "blue_vector_": [0.12, 0.312, 0.42],
-            "red_vector_": [0.23, 0.41, 0.3]
-        }
 
-        ```
+        If multiple vector fields returns this returns multiple:
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
 
         """
         self.centers = self.get_centers()
         if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
             if isinstance(self.centers, np.ndarray):
                 self.centers = self.centers.tolist()
+            centroid_vector_field_name = self.vector_fields[0]
             return [
                 {
                     "_id": self._label_cluster(i),
@@ -194,13 +232,11 @@ class KMeansClusterer(Clusterer):
             project=project,
             api_key=api_key,
         )
+        warnings.warn("Function has been deprecated.", DeprecationWarning)
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
-            if len(self.vector_fields) == 1:
-                centers = self.model.get_centroid_documents(self.vector_fields[0])
-            else:
-                centers = self.model.get_centroid_documents()
+            centers = self.model.get_centroid_documents()
 
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(
@@ -221,9 +257,7 @@ class KMeansClusterer(Clusterer):
         return
 
     def fit(
-        self,
-        dataset: Union[Dataset, str],
-        vector_fields: List,
+        self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -236,5 +270,5 @@ class KMeansClusterer(Clusterer):
         vector_field: list
             The vector field of the documents
         """
-        self.fit_dataset(dataset, vector_fields=vector_fields)
+        self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
         return self._insert_centroid_documents()

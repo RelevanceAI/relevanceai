@@ -1,7 +1,3 @@
-"""
-The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
-and models. A cluster base has the following abstractmethods that must be written:
-"""
 import numpy as np
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
@@ -65,7 +61,6 @@ class ClusterBase(DocUtils, ABC):
                 cluster_labels = self.km.labels_.tolist()
                 # cluster_centroids = km.cluster_centers_
                 return cluster_labels
-
 
         """
         raise NotImplementedError
@@ -189,9 +184,88 @@ class ClusterBase(DocUtils, ABC):
         return {}
 
     def _label_cluster(self, label: Union[int, str]):
-        if isinstance(label, (int, float)):
+        if not isinstance(label, str):
             return "cluster-" + str(label)
-        return str(label)
+        return label
 
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
+
+
+class AdvancedCentroidClusterBase(ClusterBase, ABC):
+    """
+    This centroid cluster base assumes that you want to specify
+    quite advanced centroid documents.
+
+    You may want to use this if you want to get more control over
+    what is actually inserted as a centroid.
+    """
+
+    @abstractmethod
+    def get_centroid_documents(self) -> List[Dict]:
+        """Get the centroid documents."""
+        pass
+
+
+class CentroidClusterBase(ClusterBase, ABC):
+    """
+    Inherit this class if you have a centroids-based clustering approach.
+    The difference between this and `Clusterbase` is that you can also additionally
+    specify how to get your centers in the
+    `get_centers` base. This allows you to store your centers.
+    """
+
+    @abstractmethod
+    def get_centers(self) -> List[List[float]]:
+        """Add how you need to get centers here. This should return a list of vectors.
+        The SDK will then label each center `cluster-0`, `cluster-1`, `cluster-2`, etc... in order.
+        If you need more fine-grained control, please see get_centroid_documents.
+        """
+        pass
+
+    def get_centroid_documents(self) -> List:
+        """
+        Get the centroid documents to store. This enables you to use `list_closest_to_center()`
+        and `list_furthest_from_center`.
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+
+        If multiple vector fields returns this:
+        Returns multiple
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
+        """
+        self.centers = self.get_centers()
+
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            centroid_vector_field_name = self.vector_fields[0]
+            return [
+                {
+                    "_id": self._label_cluster(i),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs

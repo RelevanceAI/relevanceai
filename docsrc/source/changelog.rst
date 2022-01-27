@@ -3,6 +3,70 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.30.0
+---------
+
+**BREAKING CHANGES**
+
+- Renamed all `docs` references to `documents`
+- Renamed all `cluster_alias` references to `alias`
+- Changed functionality in CentroidClusterBase
+- Renamed chunk_size to chunskize in get_all_documents
+- Renamed `retrieve_chunk_size` to `retrieve_chunksize` in `df.apply` and `df.bulk_apply`
+- Schema is now a property and not a method!
+- `get_centroid_documents` now no longer takes a field
+- Removal of any mention of `centroid_vector_` as those should now be replaced with the 
+actual vector field name the centroids are derived from
+
+Non-breaking changes:  
+
+- Added `head` to Series object
+- Add CentroidClustererbase and CentroidClusterBase classes to inherit from
+- Deprecated KMeansClusterer in documentation and functionality
+- Add fix for clusterer for missing vectors in documents by forcing filters
+- Support for multi-region base URL based on frontend parsing
+- Added AutoAPI to gitignore as we no longer want to measure that
+- Add tighter sklearn integration
+- Add CentroidClusterBase
+- Clean up references around Clusterbase, Clusterer, Dataset
+- Add reference to Client object
+- Hotfix .sample()
+- Update the Base Ingest URL to gateway and set to appropriate default
+- Added support for base url token
+- Removed QC from references
+- Add integration reference
+- Fixed centroid insertion for Dataset
+- Refactor of tests based
+- Add clustering test around clustering
+- Separation of references to clean up clustering and sidebar menu navigation
+- Fix reference examples
+
+AUTO-GENERATED RELEASE NOTES:  
+
+- Update README.md by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/314
+- Feature/refactor docsrc by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/315
+- hotfix sample by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/316
+- add installation suggestion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/317
+- Renaming docs to documents and cluster_alis to alias by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/308
+- added column value to df.info by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/321
+- update ingest to gateway by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/318
+- Feature/remove qc by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/322
+- Feature/separate centroid cluster bases by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/323
+- Feature/fix series object by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/324
+- Renaming datasets by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/320
+- add integration RST and code improvements by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/326
+- added df.filter to dataset api by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/319
+- Reference Quality check by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/325
+- Feature/fix docsrc 2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/328
+- Fixing notebook test by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/327
+- Feature/fix example custom cluster model by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/329
+- fixed centroids by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/330
+- add core by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/331
+- Update documentation on kmeans cluster model  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/332
+- Feature/fix references 3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/334
+- added kmeans integration by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/333
+
+
 v0.29.1
 ---------
 
@@ -10,6 +74,7 @@ v0.29.1
 - Include Client, Fix Clusterer, ClusterBase, update Cluster References
 - Add Write Documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/311
 - update clustering documentation and client documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/312
+
 
 v0.29.0
 --------

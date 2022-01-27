@@ -61,6 +61,20 @@ class DocumentsClient(_Base):
             ID of a document in a dataset.
         include_vector: bool
             Include vectors in the search results
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client, Dataset
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.get(["sample_id"], include_vector=False)
         """
 
         return self.make_http_request(

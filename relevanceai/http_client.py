@@ -29,7 +29,8 @@ from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api.dataset import Dataset, Datasets
-from relevanceai.clusterer import Clusterer, KMeansClusterer, ClusterBase
+from relevanceai.clusterer import Clusterer, ClusterBase
+from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -132,8 +133,13 @@ class Client(BatchAPIClient, DocUtils):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
             token = getpass.getpass(f"Auth token:")
-            project = token.split(":")[0]
-            api_key = token.split(":")[1]
+            split_token = token.split(":")
+            project = split_token[0]
+            api_key = split_token[1]
+            # If the base URl is included in the pasted token then include it
+            if len(split_token) == 3:
+                self.base_url = split_token[2]
+                self.base_ingest_url = split_token[2]
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()
@@ -170,6 +176,61 @@ class Client(BatchAPIClient, DocUtils):
 
     ### CRUD-related utility functions
 
+    def create_dataset(self, dataset_id: str, schema: dict = {}):
+        """
+        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
+        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+
+        For example:
+
+        .. code-block::
+            {
+                "product_image_vector_": 1024,
+                "product_text_description_vector_" : 128
+            }
+
+        These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"]. \n
+
+        For example:
+
+        .. code-block::
+
+            {
+                "product_text_description" : "text",
+                "price" : "numeric",
+                "created_date" : "date",
+                "product_texts_chunk_": "chunks",
+                "product_text_chunkvector_" : 1024
+            }
+
+        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+
+        Note:
+
+            - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
+            - "_id" is reserved as the key and id of a document.
+            - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
+
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+
+        Parameters
+        ----------
+        dataset_id: str
+            The unique name of your dataset
+        schema : dict
+            Schema for specifying the field that are vectors and its length
+
+        Example
+        ----------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.create_dataset("sample_dataset")
+
+        """
+        return self.datasets.create(dataset_id, schema=schema)
+
     def list_datasets(self):
         """List Datasets
 
@@ -183,6 +244,9 @@ class Client(BatchAPIClient, DocUtils):
             client.list_datasets()
 
         """
+        self.print_dashboard_message(
+            "You can view all your datasets at https://cloud.relevance.ai/datasets."
+        )
         return self.datasets.list()
 
     def delete_dataset(self, dataset_id):
@@ -251,3 +315,7 @@ class Client(BatchAPIClient, DocUtils):
             project=self.project,
             api_key=self.api_key,
         )
+
+    def _set_logger_to_verbose(self):
+        # Use this for debugging
+        self.config["logging.logging_level"] = "INFO"

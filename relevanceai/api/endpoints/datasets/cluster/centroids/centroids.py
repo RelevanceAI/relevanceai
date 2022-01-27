@@ -22,7 +22,6 @@ class CentroidsClient(_Base):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        # facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -88,7 +87,8 @@ class CentroidsClient(_Base):
             "include_vector": include_vector,
             "include_count": include_count,
         }
-        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
+        # JOSH CHANGE THIS PLEASE
+        endpoint = "/services/cluster/centroids/list_closest_to_center"
         method = "POST"
         self._log_to_dashboard(
             method=method,
