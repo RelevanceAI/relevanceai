@@ -1,13 +1,13 @@
 .. _integration:
 
 
-Integrations
+Scikit Learn
 =================
 
 Relevance AI comes with a number of integrations. Below are a few examples of such 
 integrations. It is also relatively easy to build your own!
 
-Scikit-Learn (Clustering)
+Clustering
 -----------------------------
 
 DBSCAN Example
