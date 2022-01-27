@@ -1,6 +1,7 @@
 """Test the clustering workflow from getting the documents, clustering and then inserting the relevant centroids
 """
 from relevanceai.vector_tools.cluster import KMeans
+from relevanceai import Client
 import pytest
 
 
@@ -42,7 +43,7 @@ def test_cluster_integration(test_client, test_sample_vector_dataset):
     "vector_fields", [["sample_1_vector_"], ["sample_2_vector_", "sample_1_vector_"]]
 )
 def test_cluster_integration_one_liner(
-    test_client, test_sample_vector_dataset, vector_fields
+    test_client: Client, test_sample_vector_dataset, vector_fields
 ):
     """Smoke Test for the entire clustering workflow."""
     # Retrieve a previous dataset

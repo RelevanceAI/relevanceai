@@ -69,7 +69,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             # In multifield clusering, we get all the vectors in each document
             # (skip if they are missing any of the vectors)
             # Then run clustering on the result
-            documents = list(self.filter_documents_for_fields(vector_fields, documents))
+            # documents = list(DocUtils().filter_documents_for_fields(vector_fields, documents))
             all_vectors = self.get_fields_across_documents(
                 vector_fields, documents, missing_treatment="skip_if_any_missing"
             )
