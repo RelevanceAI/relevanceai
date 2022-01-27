@@ -197,7 +197,7 @@ class AdvancedCentroidClusterBase(ClusterBase, ABC):
     This centroid cluster base assumes that you want to specify
     quite advanced centroid documents.
 
-    You may want to use this if you want to get more control over 
+    You may want to use this if you want to get more control over
     what is actually inserted as a centroid.
     """
 
