@@ -7,6 +7,7 @@ import subprocess
 import sys
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
+import sys
 
 import argparse
 
@@ -116,36 +117,52 @@ CLIENT_INSTANTIATION_STR_REPLACE = (
 
 CLIENT_INSTANTIATION_BASE = f'"client = Client()"'
 
+README_NOTEBOOK_ERROR_FPATH = "readme_notebook_errors.txt"
+with open(README_NOTEBOOK_ERROR_FPATH, "w") as f:
+    f.write("")
 
 for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
-    print(notebook)
 
-    ## Update to latest version
-    notebook_find_replace(
-        notebook, PIP_INSTALL_SENT_REGEX, PIP_INSTALL_STR_REGEX, PIP_INSTALL_STR_REPLACE
-    )
+    try:
+        print(notebook)
 
-    ## Temporarily updating notebook with test creds
-    notebook_find_replace(
-        notebook,
-        CLIENT_INSTANTIATION_SENT_REGEX,
-        CLIENT_INSTANTIATION_STR_REGEX,
-        CLIENT_INSTANTIATION_STR_REPLACE,
-    )
-
-    ## Execute notebook with test creds
-    with open(notebook, "r") as f:
-        print(
-            f"\nExecuting notebook: \n{notebook} with SDK version {RELEVANCEAI_SDK_VERSION}"
+        ## Update to latest version
+        notebook_find_replace(
+            notebook,
+            PIP_INSTALL_SENT_REGEX,
+            PIP_INSTALL_STR_REGEX,
+            PIP_INSTALL_STR_REPLACE,
         )
-        nb_in = nbformat.read(f, nbformat.NO_CONVERT)
-        ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
-        nb_out = ep.preprocess(nb_in)
 
-    ## Replace creds with previous
-    notebook_find_replace(
-        notebook,
-        CLIENT_INSTANTIATION_SENT_REGEX,
-        CLIENT_INSTANTIATION_STR_REGEX,
-        CLIENT_INSTANTIATION_BASE,
-    )
+        ## Temporarily updating notebook with test creds
+        notebook_find_replace(
+            notebook,
+            CLIENT_INSTANTIATION_SENT_REGEX,
+            CLIENT_INSTANTIATION_STR_REGEX,
+            CLIENT_INSTANTIATION_STR_REPLACE,
+        )
+
+        ## Execute notebook with test creds
+        with open(notebook, "r") as f:
+            print(
+                f"\nExecuting notebook: \n{notebook} with SDK version {RELEVANCEAI_SDK_VERSION}"
+            )
+            nb_in = nbformat.read(f, nbformat.NO_CONVERT)
+            ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
+            nb_out = ep.preprocess(nb_in)
+
+        ## Replace creds with previous
+        notebook_find_replace(
+            notebook,
+            CLIENT_INSTANTIATION_SENT_REGEX,
+            CLIENT_INSTANTIATION_STR_REGEX,
+            CLIENT_INSTANTIATION_BASE,
+        )
+    except:
+
+        print(
+            f"\nError with notebook: {notebook}",
+            file=open(README_NOTEBOOK_ERROR_FPATH, "a"),
+        )
+
+        pass

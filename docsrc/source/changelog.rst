@@ -6,6 +6,10 @@ Here you will find a list of changes for each package update.
 v0.29.2
 ---------
 
+**BREAKING CHANGES**
+- Renamed all `docs` references to `documents`
+- Renamed all `cluster_alias` references to `alias`
+
 - Deprecated KMeansClusterer in documentation and functionality
 - Add fix for clusterer for missing vectors in documents by forcing filters
 - Support for multi-region base URL based on frontend parsing
