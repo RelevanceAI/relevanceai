@@ -1,6 +1,7 @@
 """
 Pandas like dataset API
 """
+import re
 import math
 import warnings
 import pandas as pd
@@ -8,13 +9,15 @@ import numpy as np
 
 from doc_utils import DocUtils
 
-from typing import List, Union, Callable, Optional
+from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
+
+from .helpers import build_filters
 
 
 class Series(BatchAPIClient):
@@ -589,6 +592,87 @@ class Read(BatchAPIClient):
         >>> df.schema()
         """
         return self.datasets.schema(self.dataset_id)
+
+    def filter(
+        self,
+        index: Union[str, None] = None,
+        items: Union[List, None] = None,
+        like: Union[str, None] = None,
+        regex: Union[str, None] = None,
+        axis: Union[int, str] = 0,
+    ):
+        """
+        Returns a subset of the dataset, filtered by the parameters given
+
+        Parameters
+        ----------
+        items : str, default None
+            the column on which to filter, if None then defaults to the _id column
+        items : list-like
+            Keep labels from axis which are in items.
+        like : str
+            Keep labels from axis for which "like in label == True".
+        regex : str (regular expression)
+            Keep labels from axis for which re.search(regex, label) == True.
+        axis : {0 or `index`, 1 or `columns`},
+            The axis on which to perform the search
+
+        Returns
+        -------
+        list of documents
+
+        Example
+        -------
+
+        >>> df = client.Dataset("pokedex")
+        >>> filtered = df.filter(items=["Bulbasaur"])
+        >>> filtered = df.filter(index="abilities", like="Blaze")
+        >>> filtered = df.filter(index="type1", regex=".F")
+
+        """
+        fields = []
+        filters = []
+
+        schema = list(self.schema())
+
+        if index:
+            axis = 0
+        else:
+            axis = 1
+            index = "_id"
+
+        rows = axis in [0, "index"]
+        columns = axis in [1, "columns"]
+
+        if items is not None:
+            if columns:
+                fields += items
+
+            elif rows:
+                filters += build_filters(items, filter_type="exact_match", index=index)
+
+        elif like:
+            if columns:
+                fields += [column for column in schema if like in column]
+
+            elif rows:
+                filters += build_filters(like, filter_type="contains", index=index)
+
+        elif regex:
+            if columns:
+                query = re.compile(regex)
+                re_fields = list(filter(query.match, schema))
+                fields += re_fields
+
+            elif rows:
+                filters += build_filters(regex, filter_type="regexp", index=index)
+
+        else:
+            raise TypeError("Must pass either `items`, `like` or `regex`")
+
+        filters = [{"filter_type": "or", "condition_value": filters}]
+
+        return self.get_all_documents(select_fields=fields, filters=filters)
 
 
 class Stats(Read):
