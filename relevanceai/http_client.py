@@ -29,7 +29,8 @@ from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api.dataset import Dataset, Datasets
-from relevanceai.clusterer import Clusterer, KMeansClusterer, ClusterBase
+from relevanceai.clusterer import Clusterer, ClusterBase
+from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -187,7 +188,9 @@ class Client(BatchAPIClient, DocUtils):
             client.list_datasets()
 
         """
-        self.print_dashboard_message("You can view all your datasets at https://cloud.relevance.ai/datasets.")
+        self.print_dashboard_message(
+            "You can view all your datasets at https://cloud.relevance.ai/datasets."
+        )
         return self.datasets.list()
 
     def delete_dataset(self, dataset_id):

@@ -576,9 +576,7 @@ class Read(BatchAPIClient):
             )
         raise TypeError("Document IDs needs to be a string or a list")
 
-    def get(
-        self, document_ids: Union[List, str], include_vector: bool = True
-    ):
+    def get(self, document_ids: Union[List, str], include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
         This has the same functionality as get_document_by_ids.

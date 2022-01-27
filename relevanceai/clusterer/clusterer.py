@@ -25,7 +25,7 @@ import numpy as np
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional
 from relevanceai.dataset_api import Dataset
-from relevanceai.clusterer.cluster_base import ClusterBase
+from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 from doc_utils import DocUtils
 
 
@@ -56,7 +56,7 @@ class Clusterer(BatchAPIClient):
 
     def __init__(
         self,
-        model: ClusterBase,
+        model: Union[ClusterBase, CentroidClusterBase],
         alias: str,
         project: Union[str, None] = None,
         api_key: Union[str, None] = None,
@@ -73,7 +73,6 @@ class Clusterer(BatchAPIClient):
             self.api_key: str = api_key
 
         super().__init__(project=project, api_key=api_key)
-    
 
     def _assign_model(self, model):
         # Check if this is a model that will fit
@@ -84,11 +83,8 @@ class Clusterer(BatchAPIClient):
             return model
         elif hasattr(model, "fit_transform"):
             # Support for SKLEARN interface
-            data = {
-                "fit_transform": model.fit_transform,
-                "metadata": model.__dict__
-            }
-            ClusterModel = type('ClusterBase', (ClusterBase,), data)
+            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
         raise TypeError("Model should be inherited from ClusterBase.")
 
@@ -122,10 +118,7 @@ class Clusterer(BatchAPIClient):
             self.dataset = Dataset(project=self.project, api_key=self.api_key)
 
     def fit(
-        self,
-        dataset: Union[Dataset, str],
-        vector_fields: List,
-        filters: list=[]
+        self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
     ):
         """
         This function takes in the dataset and the relevant vector fields.
@@ -167,6 +160,7 @@ class Clusterer(BatchAPIClient):
                         else:
                             cluster_labels.append(random.randint(0, 100))
                     return cluster_labels
+
         >>> model = CustomClusterModel()
         >>> clusterer = client.Clusterer(model)
         >>> df = client.Dataset("sample")
@@ -264,7 +258,12 @@ class Clusterer(BatchAPIClient):
 
         # make sure to only get fields where vector fields exist
         filters += [
-            {'field' : f, 'filter_type' : 'exists', "condition":"==", "condition_value":" "}
+            {
+                "field": f,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
             for f in vector_fields
         ]
         docs = self._get_all_documents(
@@ -427,7 +426,7 @@ class Clusterer(BatchAPIClient):
         return_only_clusters: bool
             If True, then the return_only_clusters will return documents with just the cluster field and ID.
             This can be helpful when you want to upsert quickly without having to re-insert the entire document.
-        
+
         Example:
 
         .. code-block::
@@ -580,12 +579,17 @@ class Clusterer(BatchAPIClient):
 
         Example
         --------------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> clusterer = client.KMeansClusterer(5)
-        >>> clusterer.fit(df, ["sample_vector_"])
-        >>> clusterer.list_closest_to_center()
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            from relevanceai.clusterer import KMeansModel
+            kmeans = KMeans(n_clusters=5)
+            clusterer = client.Clusterer(kmeans)
+            clusterer.fit(df, ["sample_vector_"])
+            clusterer.list_closest_to_center()
 
         """
         return self.datasets.cluster.centroids.list_closest_to_center(
@@ -643,17 +647,21 @@ class Clusterer(BatchAPIClient):
         Example
         ---------
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> clusterer = client.KMeansClusterer(5)
-        >>> clusterer.fit(df, ["sample_vector_"])
-        >>> clusterer.aggregate(
-        >>>     groupby=[],
-        >>>     metrics=[
-        >>>         {"name": "average_score", "field": "final_score", "agg": "avg"},
-        >>>     ]
-        >>> )
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            from relevanceai.cluster import KMeansModel
+            clusterer = client.Clusterer(5)
+            clusterer.fit(df, ["sample_vector_"])
+            clusterer.aggregate(
+                groupby=[],
+                metrics=[
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                ]
+            )
 
         """
         return self.services.cluster.aggregate(

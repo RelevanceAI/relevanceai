@@ -1,12 +1,3 @@
-"""
-The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
-and models. A cluster base has the following abstractmethods:
-
-- fit_transform
-- metadata
-
-
-"""
 import numpy as np
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
@@ -17,6 +8,7 @@ class ClusterBase(DocUtils, ABC):
     """
     A Cluster Base for models to be inherited.
     """
+
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
@@ -199,9 +191,9 @@ class ClusterBase(DocUtils, ABC):
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
 
+
 class CentroidClusterBase(ClusterBase, ABC):
     @abstractmethod
     def get_centroid_documents(self):
-        """Get centroid documents
-        """
+        """Get the centroid documents."""
         pass
