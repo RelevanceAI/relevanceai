@@ -440,7 +440,7 @@ class Read(BatchAPIClient):
 
     def sample(
         self,
-        n: int = 0,
+        n: int = 1,
         frac: float = None,
         filters: list = [],
         random_state: int = 0,

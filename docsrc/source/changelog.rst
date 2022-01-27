@@ -14,7 +14,7 @@ v0.29.2
 - Add CentroidClusterBase
 - Clean up references around Clusterbase, Clusterer, Dataset
 - Add reference to Client object
-
+- Hotfix .sample()
 
 v0.29.1
 ---------
