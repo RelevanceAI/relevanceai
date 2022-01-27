@@ -2,7 +2,7 @@
 Helper functions for the pandas like dataset api
 """
 
-from typing import Dict
+from typing import Union, List
 
 
 def base_filter(field, filter_type, condition, condition_value):
@@ -14,7 +14,7 @@ def base_filter(field, filter_type, condition, condition_value):
     }
 
 
-def build_filters(value: str, filter_type: str, index: str):
+def build_filters(value: Union[List, str], filter_type: str, index: str):
     """
     Given a filter_dict, create a list of json-like filters with filter_type to interact with SDK
 
