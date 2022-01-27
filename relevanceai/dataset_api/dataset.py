@@ -420,7 +420,10 @@ class Read(BatchAPIClient):
             try:
                 return self._show_json(head_documents, **kw)
             except Exception as e:
-                warnings.warn("Displaying using Pandas." + str(e))
+                warnings.warn(
+                    "Displaying using Pandas. To get image functionality please install RelevanceAI[notebook]. "
+                    + str(e)
+                )
                 return pd.json_normalize(head_documents).head(n=n)
 
     def _show_json(self, docs, **kw):
