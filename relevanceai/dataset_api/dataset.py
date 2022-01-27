@@ -811,7 +811,7 @@ class Read(BatchAPIClient):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df.schema()
+            df.schema
         """
         return self.datasets.schema(self.dataset_id)
 
@@ -832,7 +832,7 @@ class Stats(Read):
 
         Example
         -----------------
-        .. code-block ::
+        .. code-block::
             from relevanceai import Client
 
             client = Client()
@@ -926,26 +926,6 @@ class Write(Read):
         """
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
-
-    def cluster(self, field, n_clusters=10, overwrite=False):
-        """
-        Performs KMeans Clustering on over a vector field within the dataset.
-
-        Parameters
-        ----------
-        field : str
-            The text field to select
-        n_cluster: int default = 10
-            the number of cluster to find wihtin the vector field
-        """
-        centroids = self.vector_tools.cluster.kmeans_cluster(
-            dataset_id=self.dataset_id,
-            vector_fields=[field],
-            k=n_clusters,
-            alias=f"kmeans_{n_clusters}",
-            overwrite=overwrite,
-        )
-        return centroids
 
     def insert_documents(  # type: ignore
         self,
@@ -1521,12 +1501,13 @@ class Dataset(Export, Write, Stats):
 
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
+
             vector_field = "vector_field_"
             n_clusters = 10
 
-            model = KMeansModel()
+            model = KMeansModel(k=n_clusters)
 
-            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field], k=n_clusters)
+            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
 
         from relevanceai.clusterer import Clusterer
