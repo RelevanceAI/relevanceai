@@ -54,6 +54,14 @@ class Series(BatchAPIClient):
         random_state: int
             Random Seed for retrieving random documents.
 
+        Example
+        -------
+
+        >>> from relevanceai import client
+        >>> client = Client()
+        >>> df = client.Dataset(dataset_id)
+        >>> df.sample(n=3)
+
         """
         select_fields = [self.field] if isinstance(self.field, str) else self.field
         if output_format == "json":
