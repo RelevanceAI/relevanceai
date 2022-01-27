@@ -436,6 +436,18 @@ class Read(BatchAPIClient):
         -------
         Tuple
             (N, C)
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            length, width = df.shape
         """
         schema = self.datasets.schema(self.dataset_id)
         n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
@@ -454,6 +466,19 @@ class Read(BatchAPIClient):
         -------
         Tuple
             (N, C)
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            series = df[field]
         """
         return Series(self.project, self.api_key, self.dataset_id, field)
 
@@ -496,6 +521,16 @@ class Read(BatchAPIClient):
         ---------
         Dict
             Dictionary of information
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
         """
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
@@ -546,7 +581,6 @@ class Read(BatchAPIClient):
             df = client.Dataset("sample_dataset", image_fields=["image_url])
 
             df.head()
-
         """
         head_documents = self.get_documents(
             dataset_id=self.dataset_id,
@@ -616,7 +650,6 @@ class Read(BatchAPIClient):
             df = client.Dataset("sample_dataset", image_fields=["image_url])
 
             df.sample()
-
         """
 
         if frac and n:
@@ -677,10 +710,10 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample")
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
 
             documents = df.get_all_documents()
-
         """
 
         return self._get_all_documents(
@@ -713,10 +746,11 @@ class Read(BatchAPIClient):
             from relevanceai import Client, Dataset
 
             client = Client()
-            df = client.Dataset("sample_dataset")
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
 
             df.get_documents_by_ids(["sample_id"], include_vector=False)
-
         """
         if isinstance(document_ids, str):
             return self.datasets.documents.get(
@@ -747,10 +781,10 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
 
             df.get(["sample_id"], include_vector=False)
-
         """
         if isinstance(document_ids, str):
             return self.datasets.documents.get(
@@ -774,7 +808,9 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample")
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
             df.schema()
         """
         return self.datasets.schema(self.dataset_id)
@@ -784,13 +820,28 @@ class Stats(Read):
     def value_counts(self, field: str):
         """
         Return a Series containing counts of unique values.
+
         Parameters
         ----------
         field: str
             dataset field to which to do value counts on
+
         Returns
         -------
         Series
+
+        Example
+        -----------------
+        .. code-block ::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            value_counts_df = df.value_counts(field)
         """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
@@ -813,6 +864,16 @@ class Write(Read):
             name of the new concatenated vector field
         fields: List
             fields alone which the new vector will concatenate
+
+        Example
+        -----------------
+        .. code-block ::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
         """
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
