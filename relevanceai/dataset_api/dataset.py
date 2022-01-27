@@ -163,7 +163,7 @@ class Series(BatchAPIClient):
             df = client.Dataset(dataset_id)
 
             text_field = "text_field"
-            df[text_field].vectorize(model)
+            df.vectorize(text_field, model)
         """
         if hasattr(model, "encode_documents"):
 
@@ -867,13 +867,26 @@ class Write(Read):
 
         Example
         -----------------
-        .. code-block ::
+        .. code-block::
             from relevanceai import Client
 
             client = Client()
 
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
+
+            fields = [
+                "numeric_field1",
+                "numeric_field2",
+                "numeric_field3"
+            ]
+
+            df.cat(fields)
+            df.concat(fields)
+
+            concat_vector_field_name = "concat_vector_"
+            df.cat(vector_name=concat_vector_field_name, fields=fields)
+            df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
@@ -901,6 +914,15 @@ class Write(Read):
             The text field to select
         model
             a Type deep learning model that vectorizes text
+
+        Examples
+        --------
+        .. code-block::
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            text_field = "text_field"
+            df[text_field].vectorize(model)
         """
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
