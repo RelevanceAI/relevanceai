@@ -15,6 +15,7 @@ v0.29.2
 - Clean up references around Clusterbase, Clusterer, Dataset
 - Add reference to Client object
 - Hotfix .sample()
+- Update the Base Ingest URL
 
 v0.29.1
 ---------
