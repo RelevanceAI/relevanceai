@@ -391,7 +391,6 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
-
 class Read(BatchAPIClient):
     """
 
@@ -806,7 +805,9 @@ class Read(BatchAPIClient):
 
         Example
         -----------------
+        
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -921,6 +922,7 @@ class Stats(Read):
         Example
         -----------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -956,6 +958,7 @@ class Write(Read):
         Example
         -----------------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1005,12 +1008,20 @@ class Write(Read):
 
         Examples
         --------
+
         .. code-block::
+             
+            from relevanceai import Client 
+            client = Client()
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
+            from vectorhub.encoders.text.tfhub import USE2Vec
+            model = USE2Vec()
+
             text_field = "text_field"
             df[text_field].vectorize(model)
+
         """
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
