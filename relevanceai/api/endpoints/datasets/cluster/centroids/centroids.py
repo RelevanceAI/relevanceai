@@ -87,9 +87,8 @@ class CentroidsClient(_Base):
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
-            "include_facets": include_facets,
         }
-        endpoint = f"/datasets/{dataset_id}/centroids/list_closest_to_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
         self._log_to_dashboard(
             method=method,
