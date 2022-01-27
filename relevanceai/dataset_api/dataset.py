@@ -463,9 +463,15 @@ class Read(BatchAPIClient):
         """
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
-        info_df = pd.DataFrame()
-        info_df["Non-Null Count"] = [health[key]["missing"] for key in schema]
-        info_df["Dtype"] = [schema[key] for key in schema]
+        info_json = [
+            {
+                "Column": column,
+                "Non-Null Count": health[column]["missing"],
+                "Dtype": schema[column],
+            }
+            for column in schema
+        ]
+        info_df = pd.DataFrame(info_json)
         if dtype_count:
             dtypes_info = self._get_dtype_count(schema)
             print(dtypes_info)
