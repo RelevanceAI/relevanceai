@@ -61,7 +61,7 @@ class DocumentsClient(_Base):
             ID of a document in a dataset.
         include_vector: bool
             Include vectors in the search results
-        
+
         Example
         ---------
 

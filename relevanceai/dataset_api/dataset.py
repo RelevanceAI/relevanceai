@@ -398,6 +398,7 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
+
 class Read(BatchAPIClient):
     """
 
@@ -809,7 +810,7 @@ class Read(BatchAPIClient):
 
         Example
         -----------------
-        
+
         .. code-block::
 
             from relevanceai import Client
@@ -1084,7 +1085,6 @@ class Write(Read):
             auto_generate_id=auto_generate_id,
         )
 
-
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
         Concatenates numerical fields along an axis and reuploads this vector for other operations
@@ -1151,8 +1151,8 @@ class Write(Read):
         --------
 
         .. code-block::
-             
-            from relevanceai import Client 
+
+            from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
