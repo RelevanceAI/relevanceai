@@ -63,12 +63,12 @@ class ExampleDatasets:
             project,
             api_key,
         )
-        docs = client.get_documents(
+        documents = client.get_documents(
             db_name,
             number_of_documents=number_of_documents,
             select_fields=select_fields,
         )
-        return docs
+        return documents
 
     @staticmethod
     def _get_online_dataset(
@@ -207,13 +207,13 @@ def get_ecommerce_2_dataset(
     """
     if number_of_documents is None:
         number_of_documents = 1000
-    docs = ExampleDatasets._get_dummy_dataset(
+    documents = ExampleDatasets._get_dummy_dataset(
         "quickstart_data_sample", number_of_documents, select_fields
     )
-    for d in docs:
+    for d in documents:
         if "image_first" in d:
             d["image"] = d.pop("image_first")
-    return docs
+    return documents
 
 
 def get_online_retail_dataset(
@@ -341,11 +341,11 @@ def get_ecommerce_3_dataset(
         df["url"] = df["url"].str.replace("http://", "https://")
     if "_unit_id" in df.columns:
         df["_id"] = df["_unit_id"].astype(str)
-    docs = [
+    documents = [
         {k: v for k, v in doc.items() if not pd.isna(v)}
         for doc in df.to_dict(orient="records")
     ]
-    return docs
+    return documents
 
 
 def get_flipkart_dataset(
@@ -424,17 +424,17 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
     if number_of_documents is None:
         number_of_documents = 50
 
-    docs = ExampleDatasets._get_dummy_dataset(
+    documents = ExampleDatasets._get_dummy_dataset(
         "realestate", number_of_documents, select_fields
     )
 
     # todo: fix the clustering results in the original dataset
     # insert_documents fails if they are included
-    for doc in docs:
+    for doc in documents:
         if "_clusters_" in doc:
             del doc["_clusters_"]
 
-    return docs
+    return documents
 
 
 def get_mission_statements_dataset(

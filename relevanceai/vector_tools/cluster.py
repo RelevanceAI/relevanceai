@@ -30,7 +30,7 @@ class ClusterBase(LoguruLogger, DocUtils):
     def fit_documents(
         self,
         vector_fields: list,
-        docs: list,
+        documents: list,
         alias: str = "default",
         cluster_field: str = "_cluster_",
         return_only_clusters: bool = True,
@@ -44,7 +44,7 @@ class ClusterBase(LoguruLogger, DocUtils):
         -----------
         vector_field: list
             The vector field of the documents
-        docs: list
+        documents: list
             List of documents to run clustering on
         alias: str
             What the clusters can be called
@@ -61,17 +61,17 @@ class ClusterBase(LoguruLogger, DocUtils):
         self.vector_fields = vector_fields
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
-            docs = list(filter(DocUtils.list_doc_fields, docs))
+            documents = list(filter(DocUtils.list_doc_fields, documents))
             vectors = self.get_field_across_documents(
-                vector_fields[0], docs, missing_treatment="skip"
+                vector_fields[0], documents, missing_treatment="skip"
             )
         else:
             # In multifield clusering, we get all the vectors in each document
             # (skip if they are missing any of the vectors)
             # Then run clustering on the result
-            docs = list(self.filter_docs_for_fields(vector_fields, docs))
+            # documents = list(DocUtils().filter_documents_for_fields(vector_fields, documents))
             all_vectors = self.get_fields_across_documents(
-                vector_fields, docs, missing_treatment="skip_if_any_missing"
+                vector_fields, documents, missing_treatment="skip_if_any_missing"
             )
             # Store the vector field lengths to de-concatenate them later
             self._vector_field_length: dict = {}
@@ -101,24 +101,27 @@ class ClusterBase(LoguruLogger, DocUtils):
             self.set_field_across_documents(
                 set_cluster_field,
                 cluster_labels,
-                docs,
+                documents,
             )
             if return_only_clusters:
                 return [
                     {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
-                    for d in docs
+                    for d in documents
                 ]
-            return docs
+            return documents
 
-        new_docs = docs.copy()
+        new_documents = documents.copy()
 
-        self.set_field_across_documents(set_cluster_field, cluster_labels, new_docs)
+        self.set_field_across_documents(
+            set_cluster_field, cluster_labels, new_documents
+        )
 
         if return_only_clusters:
             return [
-                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)} for d in docs
+                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                for d in documents
             ]
-        return docs
+        return documents
 
     def to_metadata(self):
         """You can also store the metadata of this clustering algorithm"""
@@ -183,16 +186,16 @@ class CentroidCluster(ClusterBase):
             ]
         # For one or more vectors, separate out the vector fields
         # centroid documents are created using multiple vector fields
-        centroid_docs = []
+        centroid_documents = []
         for i, c in enumerate(self.centers):
             centroid_doc = {"_id": self._label_cluster(i)}
             for j, vf in enumerate(self.vector_fields):
                 centroid_doc[vf] = self.centers[i][vf]
-            centroid_docs.append(centroid_doc.copy())
-        return centroid_docs
+            centroid_documents.append(centroid_doc.copy())
+        return centroid_documents
 
     # Add for backwards compatibility
-    get_centroid_docs = get_centroid_documents
+    get_centroid_documents = get_centroid_documents
 
 
 class DensityCluster(ClusterBase):
@@ -548,7 +551,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
         )
-        docs = self._get_all_documents(
+        documents = self._get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=vector_fields
         )
 
@@ -564,9 +567,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             copy_x=copy_x,
             algorithm=algorithm,
         )
-        clustered_docs = clusterer.fit_documents(
+        clustered_documents = clusterer.fit_documents(
             vector_fields,
-            docs,
+            documents,
             alias=alias,
             cluster_field=cluster_field,
             return_only_clusters=True,
@@ -575,7 +578,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
 
         # Updating the db
         results = self.update_documents(
-            dataset_id, clustered_docs, chunksize=update_documents_chunksize
+            dataset_id, clustered_documents, chunksize=update_documents_chunksize
         )
         self.logger.info(results)
 
@@ -683,7 +686,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                 ".".join([cluster_field, vector_fields[0], alias])
             )
         # load the documents
-        docs = self._get_all_documents(
+        documents = self._get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=vector_fields
         )
 
@@ -706,17 +709,17 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             p=p,
             min_cluster_size=min_cluster_size,
         )
-        clustered_docs = clusterer.fit_documents(
-            vector_fields, docs, alias=alias, return_only_clusters=True
+        clustered_documents = clusterer.fit_documents(
+            vector_fields, documents, alias=alias, return_only_clusters=True
         )
 
         # Updating the db
-        # formatted_clustered_docs = [
+        # formatted_clustered_documents = [
         #     {cluster_field:{vector_fields[0]:{alias:res}},
-        #     '_id':docs[i]['_id']}
-        #     for i,res in enumerate(clustered_docs)]
+        #     '_id':documents[i]['_id']}
+        #     for i,res in enumerate(clustered_documents)]
         results = self.update_documents(
-            dataset_id, clustered_docs, chunksize=update_documents_chunksize
+            dataset_id, clustered_documents, chunksize=update_documents_chunksize
         )
         self.logger.info(results)
-        return clustered_docs
+        return clustered_documents
