@@ -24,6 +24,15 @@ class Centroids(BatchAPIClient):
             Alias is used to name a cluster
         cluster_field: string
             Name of clusters in documents
+
+        Example
+        --------
+        .. code-block
+            from relevanceai import Client, Dataset
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            df.get(["sample_id"], include_vector=False)
+
         """
 
         self.vector_fields = vector_fields

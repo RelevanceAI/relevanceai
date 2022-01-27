@@ -148,6 +148,22 @@ class Series(BatchAPIClient):
         ----------
         model : Machine learning model for vectorizing text`
             The dataset_id of concern
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
+
+            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            text_field = "text_field"
+            df[text_field].vectorize(model)
         """
         if hasattr(model, "encode_documents"):
 
@@ -192,6 +208,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
+            dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
             df["sample_1_label"].apply(lambda x: x + 3)
@@ -227,6 +244,19 @@ class Series(BatchAPIClient):
         -------
         vectors: np.ndarray
             an array/matrix of all numeric values selected
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            arr = df[field].numpy()
         """
         documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
         vectors = [np.array(document[self.field]) for document in documents]
@@ -255,6 +285,19 @@ class Series(BatchAPIClient):
         Returns
         ----------
         Series
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            value_counts_df = df[field].value_counts()
         """
         schema = self.datasets.schema(self.dataset_id)
         dtype = schema[self.field]
@@ -304,6 +347,36 @@ class Series(BatchAPIClient):
         return aggregation
 
     def __getitem__(self, loc: Union[int, str]):
+        """
+        Indexs a value with a series, usually to get a specific sample from a column in your dataset
+
+        Parameters
+        ----------
+        loc : int or str, preferably a str
+            if int, this operates exactly as indexing a regular python list
+            if str, this will be a string corresponding to the _id of the document
+
+        Returns
+        ----------
+        A single document
+
+        Example
+        ---------------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            field = "sample_field"
+            id = "sample_id"
+            index = 56
+
+            document = df[field][id]
+            document = df[field][index]
+        """
         if isinstance(loc, int):
             warnings.warn(
                 "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
@@ -669,10 +742,13 @@ class Read(BatchAPIClient):
 
         Example
         --------
-        .. code-block
-            from relevanceai import Client, Dataset
+        .. code-block ::
+            from relevanceai import Client
+
             client = Client()
+
             df = client.Dataset("sample_dataset")
+
             df.get(["sample_id"], include_vector=False)
 
         """
@@ -693,9 +769,11 @@ class Read(BatchAPIClient):
 
         Example
         -----------------
-        .. code-block
+        .. code-block ::
             from relevanceai import Client
+
             client = Client()
+
             df = client.Dataset("sample")
             df.schema()
         """
@@ -831,7 +909,9 @@ class Write(Read):
             from relevanceai import Client
 
             client = Client()
-            df = client.Dataset("sample_dataset")
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
 
             documents = [
                 {
