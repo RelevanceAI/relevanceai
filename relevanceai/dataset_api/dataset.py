@@ -57,9 +57,6 @@ class Series(BatchAPIClient):
     .. code-block::
 
         product_images = df['product_image'] # A Series object of every every product image url in dataset
-        
-        specific_image = product_images.get(')
-
 
     """
 
@@ -95,11 +92,13 @@ class Series(BatchAPIClient):
 
         Example
         -------
+        .. code-block::
+            from relevanceai import client
 
-        >>> from relevanceai import client
-        >>> client = Client()
-        >>> df = client.Dataset(dataset_id)
-        >>> df.sample(n=3)
+            client = Client()
+
+            df = client.Dataset(dataset_id)
+            df.sample(n=3)
 
         """
         select_fields = [self.field] if isinstance(self.field, str) else self.field
@@ -188,8 +187,14 @@ class Series(BatchAPIClient):
 
         Example
         ---------------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> df["sample_1_label"].apply(lambda x: x + 3)
+            client = Client()
+
+            df = client.Dataset(dataset_id)
+
+            df["sample_1_label"].apply(lambda x: x + 3)
 
         """
         if axis == 1:
@@ -460,11 +465,14 @@ class Read(BatchAPIClient):
 
         Example
         ---------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
-        >>> df.head()
+            client = Client()
+
+            df = client.Dataset("sample_dataset", image_fields=["image_url])
+
+            df.head()
 
         """
         head_documents = self.get_documents(
@@ -527,11 +535,14 @@ class Read(BatchAPIClient):
 
         Example
         ---------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client, Dataset
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset", image_fields=["image_url])
-        >>> df.sample()
+            client = Client()
+
+            df = client.Dataset("sample_dataset", image_fields=["image_url])
+
+            df.sample()
 
         """
 
@@ -594,7 +605,7 @@ class Read(BatchAPIClient):
             client = Client()
 
             df = client.Dataset("sample")
-            
+
             documents = df.get_all_documents()
 
         """
@@ -1017,14 +1028,19 @@ class Write(Read):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
-        >>> def update_documents(document):
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            def update_documents(document):
                 for d in documents:
-        >>>         d["value"] = 10
-        >>>     return documents
-        >>> df.apply(update_documents)
+                    d["value"] = 10
+                return documents
+
+            df.apply(update_documents)
         """
         return self.pull_update_push(
             self.dataset_id,
@@ -1082,22 +1098,24 @@ class Write(Read):
 
         For example:
 
-        >>>    {
-        >>>        "product_image_vector_": 1024,
-        >>>        "product_text_description_vector_" : 128
-        >>>    }
+        .. code-block::
+            {
+                "product_image_vector_": 1024,
+                "product_text_description_vector_" : 128
+            }
 
         These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"]. \n
 
         For example:
 
-        >>>    {
-        >>>        "product_text_description" : "text",
-        >>>        "price" : "numeric",
-        >>>        "created_date" : "date",
-        >>>        "product_texts_chunk_": "chunks",
-        >>>        "product_text_chunkvector_" : 1024
-        >>>    }
+        .. code-block::
+            {
+                "product_text_description" : "text",
+                "price" : "numeric",
+                "created_date" : "date",
+                "product_texts_chunk_": "chunks",
+                "product_text_chunkvector_" : 1024
+            }
 
         You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
@@ -1116,13 +1134,18 @@ class Write(Read):
 
         Example
         ----------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-        >>> df = client.Dataset("sample")
-        >>> df.create()
+            client = Client()
 
+            documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            df.create()
+
+            df.insert_documents(documents)
         """
         return self.datasets.create(self.dataset_id, schema=schema)
 
