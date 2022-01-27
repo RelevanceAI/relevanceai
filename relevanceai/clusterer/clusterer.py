@@ -1,5 +1,20 @@
 """
-Clusterer class to run clustering.
+Clusterer class to run clustering. It is intended to be integrated with 
+models that inherit from `ClusterBase`.
+
+Those that inherit from `ClusterBase`.
+
+You can run the Clusterer as such:
+
+.. code-block::
+
+    from relevanceai import Client 
+    client = Client()
+    model = KMeans(n_clusters=2)
+    clusterer = client.Clusterer(model, alias="kmeans_2")
+    df = client.Dataset("_github_repo_vectorai")
+    clusterer.fit(df, ["documentation_vector_"])
+
 """
 import os
 import json
@@ -29,8 +44,11 @@ class Clusterer(BatchAPIClient):
     .. code-block::
 
         from relevanceai import Client
-        client = Client()
-        clusterer = client.KMeansClusterer(5)
+        from sklearn.cluster import KMeans
+
+        model = KMeans(n_clusters=2)
+        clusterer = client.Clusterer(model, alias="kmeans_2")
+
         df = client.Dataset("sample")
         clusterer.fit(df, vector_fields=["sample_vector_"])
 
@@ -155,7 +173,33 @@ class Clusterer(BatchAPIClient):
         >>> clusterer.fit(df)
 
         """
-        return self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
+        self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
+        self._insert_centroid_documents()
+
+    def _insert_centroid_documents(self):
+        if hasattr(self.model, "get_centroid_documents"):
+            if len(self.vector_fields) == 1:
+                centers = self.model.get_centroid_documents(self.vector_fields[0])
+            else:
+                centers = self.model.get_centroid_documents()
+
+            # Change centroids insertion
+            results = self.services.cluster.centroids.insert(
+                dataset_id=self.dataset_id,
+                cluster_centers=centers,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+            )
+            self.logger.info(results)
+
+            self.datasets.cluster.centroids.list_closest_to_center(
+                self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                centroid_vector_fields=self.vector_fields,
+                page_size=20,
+            )
+        return
 
     def fit_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
@@ -383,6 +427,14 @@ class Clusterer(BatchAPIClient):
         return_only_clusters: bool
             If True, then the return_only_clusters will return documents with just the cluster field and ID.
             This can be helpful when you want to upsert quickly without having to re-insert the entire document.
+        
+        Example:
+
+        .. code-block::
+
+            labels = list(range(10))
+            documents = [{"_id": str(x)} for x in range(10)]
+            clusterer.set_cluster_labels_across_documents(labels, documents)
 
         """
         if inplace:
@@ -458,12 +510,16 @@ class Clusterer(BatchAPIClient):
 
         Example
         ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("_github_repo_vectorai")
-        >>> cluster = client.KMeansClusterer(3)
-        >>> clusterer.fit(df)
-        >>> clusterer.list_furthest_from_center()
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("_github_repo_vectorai")
+            from relevanceai.clusterer import KMeansModel
+            model = KMeansModel()
+            cluster = client.Clusterer(3)
+            clusterer.fit(df)
+            clusterer.list_furthest_from_center()
 
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(

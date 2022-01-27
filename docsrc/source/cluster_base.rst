@@ -32,5 +32,8 @@ ClusterBase
 .. automodule:: relevanceai.clusterer.cluster_base
     :members:
 
-.. autoclass:: relevanceai.clusterer.kmeans_clusterer.KMeansModel
+.. automodule:: relevanceai.clusterer.kmeans_clusterer
     :members:
+    :show-inheritance:
+    :exclude-members: __init__
+
