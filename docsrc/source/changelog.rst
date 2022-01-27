@@ -14,6 +14,9 @@ v0.30.0
 - Renamed chunk_size to chunskize in get_all_documents
 - Renamed `retrieve_chunk_size` to `retrieve_chunksize` in `df.apply` and `df.bulk_apply`
 - Schema is now a property and not a method!
+- `get_centroid_documents` now no longer takes a field
+- Removal of any mention of `centroid_vector_` as those should now be replaced with the 
+actual vector field name the centroids are derived from
 
 Non-breaking changes:  
 
@@ -33,6 +36,10 @@ Non-breaking changes:
 - Removed QC from references
 - Add integration reference
 - Fixed centroid insertion for Dataset
+- Refactor of tests based
+- Add clustering test around clustering
+- Separation of references to clean up clustering and sidebar menu navigation
+- Fix reference examples
 
 v0.29.1
 ---------
