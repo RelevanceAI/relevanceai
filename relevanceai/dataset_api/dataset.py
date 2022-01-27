@@ -820,7 +820,7 @@ class Read(BatchAPIClient):
             df.schema
         """
         return self.datasets.schema(self.dataset_id)
-    
+
     @property
     def columns(self) -> List[str]:
         """
@@ -831,7 +831,7 @@ class Read(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai import Client 
+            from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
