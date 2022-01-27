@@ -124,7 +124,7 @@ class KMeansModel(ClusterBase):
             cluster_centers.append(cluster_center_doc.copy())
         return cluster_centers
 
-    def get_centroid_documents(self, centroid_vector_field_name: str) -> List:
+    def get_centroid_documents(self) -> List:
         """
         Get the centroid documents to store.
         If single vector field returns this:
@@ -152,6 +152,7 @@ class KMeansModel(ClusterBase):
         if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
             if isinstance(self.centers, np.ndarray):
                 self.centers = self.centers.tolist()
+            centroid_vector_field_name = self.vector_fields[0]
             return [
                 {
                     "_id": self._label_cluster(i),
@@ -235,10 +236,7 @@ class KMeansClusterer(Clusterer):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
-            if len(self.vector_fields) == 1:
-                centers = self.model.get_centroid_documents(self.vector_fields[0])
-            else:
-                centers = self.model.get_centroid_documents()
+            centers = self.model.get_centroid_documents()
 
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(

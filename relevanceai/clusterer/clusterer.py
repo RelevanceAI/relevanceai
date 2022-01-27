@@ -389,7 +389,11 @@ class Clusterer(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
-            centers = self.model.get_centroid_documents()
+            centers = self.get_centroid_documents()
+
+            if hasattr(self.model, "get_centers"):
+                center_vectors = self.model.get_centers()
+                centers = self.get_centroid_documents()
 
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(
@@ -408,6 +412,53 @@ class Clusterer(BatchAPIClient):
                 page_size=20,
             )
         return
+
+    def get_centroid_documents(self) -> List:
+        """
+        Get the centroid documents to store. This enables you to use `list_closest_to_center()`
+        and `list_furthest_from_center`.
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+
+        If multiple vector fields returns this:
+        Returns multiple
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
+        """
+        self.centers = self.model.get_centers()
+
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            centroid_vector_field_name = self.vector_fields[0]
+            return [
+                {
+                    "_id": self._label_cluster(i),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
 
     @property
     def centroids(self):
