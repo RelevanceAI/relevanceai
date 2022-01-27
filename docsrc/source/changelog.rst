@@ -30,6 +30,7 @@ v0.30.0
 - Added support for base url token
 - Removed QC from references
 - Add integration reference
+- Fixed centroid insertion for Dataset
 
 v0.29.1
 ---------

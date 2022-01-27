@@ -196,10 +196,11 @@ class Clusterer(BatchAPIClient):
             )
             self.logger.info(results)
 
-            self.datasets.cluster.centroids.list_closest_to_center(
+            self.services.cluster.centroids.list_closest_to_center(
                 self.dataset_id,
                 vector_fields=self.vector_fields,
                 alias=self.alias,
+                cluster_ids=[],
                 centroid_vector_fields=self.vector_fields,
                 page_size=20,
             )
@@ -583,7 +584,7 @@ class Clusterer(BatchAPIClient):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        # facets: List = [],
+        facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -637,7 +638,7 @@ class Clusterer(BatchAPIClient):
             clusterer.list_closest_to_center()
 
         """
-        return self.datasets.cluster.centroids.list_closest_to_center(
+        return self.services.cluster.centroids.list_closest_to_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -650,6 +651,7 @@ class Clusterer(BatchAPIClient):
             page=page,
             similarity_metric=similarity_metric,
             filters=filters,
+            facets=facets,
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
