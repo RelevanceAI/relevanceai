@@ -262,7 +262,7 @@ class Clusterer(BatchAPIClient):
 
         Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
 
-        .. code-block:: 
+        .. code-block::
 
             {
                 "groupby" : [
@@ -274,7 +274,7 @@ class Clusterer(BatchAPIClient):
                     {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
                 ]
             }
-        
+
         For example, one can use the following aggregations to group score based on region and player name.
 
         .. code-block::
@@ -317,7 +317,7 @@ class Clusterer(BatchAPIClient):
                         {'name':'Price Average','field':'price','agg':'avg'},
                     ],
                 }
-            
+
                 # ouptut example:
                 {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
 
@@ -379,7 +379,7 @@ class Clusterer(BatchAPIClient):
                     {"name": "average_score", "field": "final_score", "agg": "avg"},
                 ]
             )
-        
+
 
         """
         return self.services.cluster.aggregate(
