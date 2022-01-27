@@ -1076,13 +1076,10 @@ class Write(Read):
         .. code-block::
 
             from relevanceai import Client
-
             client = Client()
-
             df = client.Dataset("sample_dataset")
 
             csv_filename = "temp.csv"
-
             df.insert_csv(csv_filename)
 
         """
