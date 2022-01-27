@@ -97,3 +97,11 @@ def test_value_counts(test_client, test_sample_vector_dataset):
     value_counts = df["sample_1_label"].value_counts()
     value_counts = df["sample_1_label"].value_counts(normalize=True)
     assert True
+
+
+def test_filter(test_client, test_sample_vector_dataset):
+    df = test_client.Dataset(test_sample_vector_dataset)
+    items = df.filter(items=["sample_1_label"])
+    like = df.filter(like="sample_1_label")
+    regex = df.filter(regex="s$")
+    assert True

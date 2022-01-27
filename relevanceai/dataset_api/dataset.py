@@ -17,7 +17,7 @@ from relevanceai.dataset_api.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
-from .helpers import build_filters
+from relevanceai.dataset_api.helpers import _build_filters
 
 
 class Series(BatchAPIClient):
@@ -689,14 +689,14 @@ class Read(BatchAPIClient):
                 fields += items
 
             elif rows:
-                filters += build_filters(items, filter_type="exact_match", index=index)
+                filters += _build_filters(items, filter_type="exact_match", index=index)
 
         elif like:
             if columns:
                 fields += [column for column in schema if like in column]
 
             elif rows:
-                filters += build_filters(like, filter_type="contains", index=index)
+                filters += _build_filters(like, filter_type="contains", index=index)
 
         elif regex:
             if columns:
@@ -705,7 +705,7 @@ class Read(BatchAPIClient):
                 fields += re_fields
 
             elif rows:
-                filters += build_filters(regex, filter_type="regexp", index=index)
+                filters += _build_filters(regex, filter_type="regexp", index=index)
 
         else:
             raise TypeError("Must pass either `items`, `like` or `regex`")
