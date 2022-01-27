@@ -508,7 +508,7 @@ class Read(BatchAPIClient):
 
     def get_all_documents(
         self,
-        chunk_size: int = 1000,
+        chunksize: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
@@ -521,7 +521,7 @@ class Read(BatchAPIClient):
 
         Parameters
         ------------
-        chunk_size : list
+        chunksize: list
             Number of documents to retrieve per retrieval
         include_vector: bool
             Include vectors in the search results
@@ -546,7 +546,7 @@ class Read(BatchAPIClient):
 
         return self._get_all_documents(
             dataset_id=self.dataset_id,
-            chunk_size=chunk_size,
+            chunk_size=chunksize,
             filters=filters,
             sort=sort,
             select_fields=select_fields,
