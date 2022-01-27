@@ -1271,6 +1271,7 @@ class Write(Read):
         Example
         ---------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1351,6 +1352,7 @@ class Write(Read):
         For example:
 
         .. code-block::
+
             {
                 "product_text_description" : "text",
                 "price" : "numeric",
@@ -1377,6 +1379,7 @@ class Write(Read):
         Example
         ----------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1407,6 +1410,7 @@ class Write(Read):
         Example
         ---------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1455,6 +1459,7 @@ class Write(Read):
         Example
         ----------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1503,6 +1508,7 @@ class Export(Read):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1532,6 +1538,7 @@ class Export(Read):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
 
             client = Client()
@@ -1562,6 +1569,7 @@ class Dataset(Export, Write, Stats):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
@@ -1592,6 +1600,7 @@ class Dataset(Export, Write, Stats):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from relevanceai.clusterer import Clusterer
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
