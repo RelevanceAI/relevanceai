@@ -1,23 +1,25 @@
-"""Test the clustering workflow from getting the documents, clustering and then inserting the relevant centroids
+"""
+Test the clustering workflow from getting the documents, clustering and then inserting the relevant centroids
 """
 
 import pytest
+
 from relevanceai import Client
+from relevanceai.dataset_api import Dataset
 
 from relevanceai.clusterer import Clusterer
 from relevanceai.clusterer import CentroidClusterBase
 
 
-def dataset_api_kmeans_integration(test_client, test_sample_dataset):
+def test_dataset_api_kmeans_integration(test_client: Client, test_dataset_df: Dataset):
     from sklearn.cluster import KMeans
 
-    df = test_client.Dataset(test_sample_dataset)
     vector_field = "sample_1_vector_"
     alias = "test_alias"
 
     class KMeansModel(CentroidClusterBase):
         def __init__(self, model):
-            self.model = model
+            self.model: KMeans = model
 
         def fit_transform(self, vectors):
             return self.model.fit_predict(vectors)
@@ -29,9 +31,9 @@ def dataset_api_kmeans_integration(test_client, test_sample_dataset):
 
     clusterer = Clusterer(model=model, alias=alias)
 
-    clusterer.fit(dataset=df, vector_fields=[vector_field])
+    clusterer.fit(dataset=test_dataset_df, vector_fields=[vector_field])
 
-    assert f"_cluster_.{vector_field}.{alias}" in test_client.schema
+    assert f"_cluster_.{vector_field}.{alias}" in test_dataset_df.schema
 
 
 def test_cluster_integration(test_client, test_sample_vector_dataset):
