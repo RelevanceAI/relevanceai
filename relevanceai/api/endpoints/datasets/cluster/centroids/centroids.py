@@ -22,7 +22,6 @@ class CentroidsClient(_Base):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: List = [],
-        # facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
