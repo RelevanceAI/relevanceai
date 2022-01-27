@@ -1139,7 +1139,16 @@ class Write(Read):
 
             client = Client()
 
-            documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
+            documents = [
+                {
+                    "_id": "321",
+                    "value": 10
+                },
+                {
+                    "_id": "4243",
+                    "value": 100
+                }
+            ]
 
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
@@ -1155,12 +1164,14 @@ class Write(Read):
 
         Example
         ---------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-        >>> df = client.Dataset("sample")
-        >>> df.delete()
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            df.delete()
 
         """
         return self.datasets.delete(self.dataset_id)
@@ -1201,12 +1212,26 @@ class Write(Read):
 
         Example
         ----------
+        .. code-block::
+            from relevanceai import Client
 
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> documents = [{"_id": "321", "value": 10}, "_id": "4243", "value": 100]
-        >>> df = client.Dataset("sample")
-        >>> df.upsert(dataset_id, documents)
+            client = Client()
+
+            documents = [
+                {
+                    "_id": "321",
+                    "value": 10
+                },
+                {
+                    "_id": "4243",
+                    "value": 100
+                }
+            ]
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.upsert(dataset_id, documents)
 
         """
         return self.update_documents(
@@ -1232,6 +1257,19 @@ class Export(Read):
             path to downloaded .csv file
         kwargs: Optional
             see client.get_all_documents() for extra args
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            csv_fname = "path/to/csv/file.csv"
+            df.to_csv(csv_fname)
         """
         documents = self.get_all_documents(**kwargs)
         df = pd.DataFrame(documents)
@@ -1248,6 +1286,18 @@ class Export(Read):
         Returns
         -------
         list of documents in dictionary format
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            dict = df.to_dict(orient="records")
         """
         if orient == "records":
             return self.get_all_documents()
@@ -1266,6 +1316,22 @@ class Dataset(Export, Write, Stats):
             The text field to select
         model
             a Type deep learning model that vectorizes text
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
+
+            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            text_field = "text_field"
+            df.vectorize(text_field, model)
         """
         series = Series(self)
         series(self.dataset_id, field).vectorize(model)
@@ -1280,6 +1346,24 @@ class Dataset(Export, Write, Stats):
             The clustering model to use
         vector_fields : str
             The vector fields over which to cluster
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+            vector_field = "vector_field_"
+            n_clusters = 10
+
+            model = KMeansModel()
+
+            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field], k=n_clusters)
         """
 
         from relevanceai.clusterer import Clusterer
