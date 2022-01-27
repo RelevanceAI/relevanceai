@@ -1,5 +1,5 @@
-ClusterBase
-=============================
+Custom Cluster Models
+-------------------------
 
 The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
 and models. A cluster base has the following abstractmethods (methods to be overwritten):

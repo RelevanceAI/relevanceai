@@ -124,9 +124,7 @@ class KMeansModel(ClusterBase):
             cluster_centers.append(cluster_center_doc.copy())
         return cluster_centers
 
-    def get_centroid_documents(
-        self, centroid_vector_field_name: str = "centroid_vector_"
-    ) -> List:
+    def get_centroid_documents(self, centroid_vector_field_name: str) -> List:
         """
         Get the centroid documents to store.
         If single vector field returns this:
