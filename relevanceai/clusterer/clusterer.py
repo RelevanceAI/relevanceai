@@ -162,10 +162,10 @@ class Clusterer(BatchAPIClient):
                             cluster_labels.append(random.randint(0, 100))
                     return cluster_labels
 
-        >>> model = CustomClusterModel()
-        >>> clusterer = client.Clusterer(model)
-        >>> df = client.Dataset("sample")
-        >>> clusterer.fit(df)
+            model = CustomClusterModel()
+            clusterer = client.Clusterer(model)
+            df = client.Dataset("sample")
+            clusterer.fit(df)
 
         """
         self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
@@ -362,31 +362,34 @@ class Clusterer(BatchAPIClient):
         Example
         -----------
 
-        >>> from relevanceai import Client, ClusterBase
-        >>> import random
-        >>> client = Client()
-        >>> class CustomClusterModel(ClusterBase):
-        >>>     def __init__(self):
-        >>>         pass
-        >>>
-        >>>     def fit_documents(self, documents, *args, **kw):
-        >>>         X = self.get_field_across_documents("sample_vector_", documents)
-        >>>         y = self.get_field_across_documents("entropy", documents)
-        >>>         cluster_labels = self.fit_transform(documents, entropy)
-        >>>         self.set_cluster_labels_across_documents(cluster_labels, documents)
-        >>>
-        >>>     def fit_transform(self, X, y):
-        >>>         cluster_labels = []
-        >>>         for y_value in y:
-        >>>         if y_value == "auto":
-        >>>             cluster_labels.append(1)
-        >>>         else:
-        >>>             cluster_labels.append(random.randint(0, 100))
-        >>>         return cluster_labels
-        >>>
-        >>> clusterer = client.CustomClusterModel()
-        >>> df = client.Dataset("sample")
-        >>> clusterer.fit(df, ["sample_vector_"])
+        .. code-block::
+
+            from relevanceai import Client, ClusterBase
+            import random
+            client = Client()
+            class CustomClusterModel(ClusterBase):
+                def __init__(self):
+                    pass
+
+                def fit_documents(self, documents, *args, **kw):
+                    X = self.get_field_across_documents("sample_vector_", documents)
+                    y = self.get_field_across_documents("entropy", documents)
+                    cluster_labels = self.fit_transform(documents, entropy)
+                    self.set_cluster_labels_across_documents(cluster_labels, documents)
+
+                def fit_transform(self, X, y):
+                    cluster_labels = []
+                    for y_value in y:
+                        if y_value == "auto":
+                            cluster_labels.append(1)
+                        else:
+                            cluster_labels.append(random.randint(0, 100))
+                    return cluster_labels
+
+            clusterer = client.CustomClusterModel()
+            df = client.Dataset("sample")
+            clusterer.fit(df, ["sample_vector_"])
+
         """
         self.vector_fields = vector_fields
 
