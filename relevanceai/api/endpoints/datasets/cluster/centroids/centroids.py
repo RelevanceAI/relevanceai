@@ -85,7 +85,7 @@ class CentroidsClient(_Base):
             "filters": filters,
             "min_score": min_score,
             "include_vector": include_vector,
-            "include_count": include_count
+            "include_count": include_count,
         }
         endpoint = "/services/cluster/centroids/list_closest_to_center"
         method = "POST"
