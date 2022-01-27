@@ -74,7 +74,7 @@ class Series(BatchAPIClient):
 
     def all(
         self,
-        chunk_size: int = 1000,
+        chunksize: int = 1000,
         filters: List = [],
         sort: List = [],
         include_vector: bool = True,
@@ -82,7 +82,7 @@ class Series(BatchAPIClient):
     ):
         select_fields = [self.field] if isinstance(self.field, str) else self.field
         return Dataset(self.project, self.api_key)(self.dataset_id).all(
-            chunk_size=chunk_size,
+            chunksize=chunksize,
             filters=filters,
             sort=sort,
             select_fields=select_fields,
@@ -508,7 +508,7 @@ class Read(BatchAPIClient):
 
     def get_all_documents(
         self,
-        chunk_size: int = 1000,
+        chunksize: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
@@ -521,7 +521,7 @@ class Read(BatchAPIClient):
 
         Parameters
         ------------
-        chunk_size : list
+        chunksize: list
             Number of documents to retrieve per retrieval
         include_vector: bool
             Include vectors in the search results
@@ -546,7 +546,7 @@ class Read(BatchAPIClient):
 
         return self._get_all_documents(
             dataset_id=self.dataset_id,
-            chunk_size=chunk_size,
+            chunksize=chunksize,
             filters=filters,
             sort=sort,
             select_fields=select_fields,
@@ -837,7 +837,7 @@ class Write(Read):
     def apply(
         self,
         func: Callable,
-        retrieve_chunk_size: int = 100,
+        retrieve_chunksize: int = 100,
         max_workers: int = 8,
         filters: list = [],
         select_fields: list = [],
@@ -854,7 +854,7 @@ class Write(Read):
         --------------
         func: function
             Function to apply to each document
-        retrieve_chunk_size: int
+        retrieve_chunksize: int
             The number of documents that are received from the original collection with each loop iteration.
         max_workers: int
             The number of processors you want to parallelize with
@@ -891,7 +891,7 @@ class Write(Read):
         return self.pull_update_push(
             self.dataset_id,
             bulk_fn,
-            retrieve_chunk_size=retrieve_chunk_size,
+            retrieve_chunk_size=retrieve_chunksize,
             max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
@@ -902,7 +902,7 @@ class Write(Read):
     def bulk_apply(
         self,
         bulk_func: Callable,
-        retrieve_chunk_size: int = 100,
+        retrieve_chunksize: int = 100,
         max_workers: int = 8,
         filters: list = [],
         select_fields: list = [],
@@ -916,7 +916,7 @@ class Write(Read):
         ------------
         bulk_func: function
             Function to apply to a bunch of documents at a time
-        retrieve_chunk_size: int
+        retrieve_chunksize: int
             The number of documents that are received from the original collection with each loop iteration.
         max_workers: int
             The number of processors you want to parallelize with
@@ -943,7 +943,7 @@ class Write(Read):
         return self.pull_update_push(
             self.dataset_id,
             bulk_func,
-            retrieve_chunk_size=retrieve_chunk_size,
+            retrieve_chunk_size=retrieve_chunksize,
             max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
