@@ -546,7 +546,7 @@ class Read(BatchAPIClient):
 
         return self._get_all_documents(
             dataset_id=self.dataset_id,
-            chunk_size=chunksize,
+            chunksize=chunksize,
             filters=filters,
             sort=sort,
             select_fields=select_fields,
