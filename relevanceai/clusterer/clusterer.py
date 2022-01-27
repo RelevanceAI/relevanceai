@@ -8,9 +8,11 @@ You can run the Clusterer as such:
 
 .. code-block::
 
+
+    from relevanceai.cluster import KMeansModel
     from relevanceai import Client 
     client = Client()
-    model = KMeans(n_clusters=2)
+    model = KMeansModel(n_clusters=2)
     clusterer = client.Clusterer(model, alias="kmeans_2")
     df = client.Dataset("_github_repo_vectorai")
     clusterer.fit(df, ["documentation_vector_"])
