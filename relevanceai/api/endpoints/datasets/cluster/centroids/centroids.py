@@ -25,7 +25,6 @@ class CentroidsClient(_Base):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        include_facets: bool = False,
     ):
         """
         List of documents closest from the centre.
