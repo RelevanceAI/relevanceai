@@ -38,6 +38,7 @@ class Series(BatchAPIClient):
         frac: float = None,
         filters: list = [],
         random_state: int = 0,
+        include_vector: bool = True,
         output_format="pandas",
     ):
         """
@@ -63,6 +64,7 @@ class Series(BatchAPIClient):
                 filters=filters,
                 random_state=random_state,
                 select_fields=select_fields,
+                include_vector=include_vector,
             )
         return Dataset(self.project, self.api_key)(self.dataset_id).sample(
             n=n,
@@ -70,7 +72,10 @@ class Series(BatchAPIClient):
             filters=filters,
             random_state=random_state,
             select_fields=select_fields,
+            include_vector=include_vector,
         )
+
+    head = sample
 
     def all(
         self,
@@ -454,6 +459,7 @@ class Read(BatchAPIClient):
         filters: list = [],
         random_state: int = 0,
         select_fields: list = [],
+        include_vector: bool = True,
         output_format: str = "json",
     ):
 
@@ -500,6 +506,7 @@ class Read(BatchAPIClient):
             random_state=random_state,
             is_random=True,
             select_fields=select_fields,
+            include_vector=include_vector,
         )["documents"]
         if output_format == "json":
             return documents
@@ -615,6 +622,7 @@ class Read(BatchAPIClient):
             )
         raise TypeError("Document IDs needs to be a string or a list")
 
+    @property
     def schema(self):
         """
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
@@ -625,7 +633,7 @@ class Read(BatchAPIClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("sample")
-        >>> df.schema()
+        >>> df.schema
         """
         return self.datasets.schema(self.dataset_id)
 
