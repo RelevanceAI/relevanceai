@@ -195,7 +195,7 @@ class ClusterBase(DocUtils, ABC):
 class AdvancedCentroidClusterBase(ClusterBase, ABC):
     """
 This centroid cluster base assumes that you want to specify
-quite a lot in the centroid documents
+quite advanced centroid documents.
     """
     @abstractmethod
     def get_centroid_documents(self):
@@ -212,7 +212,7 @@ specify how to get your centers in the
     """
     @abstractmethod
     def get_centers(self) -> List[List[float]]:
-        """Get the centroid documents."""
+        """Add how you need to get centers here."""
         pass
 
     def get_centroid_documents(
