@@ -1199,7 +1199,7 @@ class Write(Read):
 class Export(Read):
     def to_csv(self, filename: str, **kwargs):
         """
-        Download a dataset from the QC to a local .csv file
+        Download a dataset from Relevance AI to a local .csv file
 
         Parameters
         ----------
@@ -1214,7 +1214,7 @@ class Export(Read):
 
     def to_dict(self, orient: str = "records"):
         """
-        Returns the raw list of dicts from the QC
+        Returns the raw list of dicts from Relevance AI
 
         Parameters
         ----------

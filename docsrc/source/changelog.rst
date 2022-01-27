@@ -19,6 +19,9 @@ v0.29.2
 - Clean up references around Clusterbase, Clusterer, Dataset
 - Add reference to Client object
 - Hotfix .sample()
+- Update the Base Ingest URL to gateway and set to appropriate default
+- Added support for base url token
+- Removed QC from references
 
 v0.29.1
 ---------
