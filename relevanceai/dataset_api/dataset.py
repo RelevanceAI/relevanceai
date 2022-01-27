@@ -612,6 +612,13 @@ class Read(BatchAPIClient):
                 )
                 return pd.json_normalize(head_documents).head(n=n)
 
+    def _repr_html_(self):
+        return pd.json_normalize(
+            self.get_documents(
+                dataset_id=self.dataset_id
+            )
+        )._repr_html_()
+
     def _show_json(self, documents, **kw):
         from jsonshower import show_json
 
