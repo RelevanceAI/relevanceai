@@ -663,10 +663,11 @@ class Read(BatchAPIClient):
         Example
         -------
 
-        >>> df = client.Dataset("pokedex")
-        >>> filtered = df.filter(items=["Bulbasaur"])
-        >>> filtered = df.filter(index="abilities", like="Blaze")
-        >>> filtered = df.filter(index="type1", regex=".F")
+        .. code-block::
+        df = client.Dataset("pokedex")
+        filtered = df.filter(items=["Bulbasaur"])
+        filtered = df.filter(index="abilities", like="Blaze")
+        filtered = df.filter(index="type1", regex=".F")
 
         """
         fields = []

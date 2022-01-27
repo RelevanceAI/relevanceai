@@ -5,7 +5,7 @@ Helper functions for the pandas like dataset api
 from typing import Union, List
 
 
-def base_filter(field, filter_type, condition, condition_value):
+def _create_base_filter(field, filter_type, condition, condition_value):
     return {
         "field": field,
         "filter_type": filter_type,
@@ -14,7 +14,7 @@ def base_filter(field, filter_type, condition, condition_value):
     }
 
 
-def build_filters(value: Union[List, str], filter_type: str, index: str):
+def _build_filters(value: Union[List, str], filter_type: str, index: str):
     """
     Given a filter_dict, create a list of json-like filters with filter_type to interact with SDK
 
@@ -41,12 +41,12 @@ def build_filters(value: Union[List, str], filter_type: str, index: str):
     """
     filters = []
     if isinstance(value, str):
-        filter = base_filter(index, filter_type, "==", value)
+        filter = _create_base_filter(index, filter_type, "==", value)
         filters.append(filter)
 
     elif isinstance(value, list):
         for subvalue in value:
-            filter = base_filter(index, filter_type, "==", subvalue)
+            filter = _create_base_filter(index, filter_type, "==", subvalue)
             filters.append(filter)
 
     return filters
