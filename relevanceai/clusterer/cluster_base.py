@@ -207,7 +207,8 @@ class CentroidClusterBase(ClusterBase, ABC):
     """
 Inherit this class if you have a centroids-based clustering approach.
 The difference between this and `Clusterbase` is that you can also additionally
-specify what centroids
+specify how to get your centers in the 
+`get_centers` base. This allows you to store your centers.
     """
     @abstractmethod
     def get_centers(self) -> List[List[float]]:
