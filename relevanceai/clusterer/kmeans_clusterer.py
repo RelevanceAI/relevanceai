@@ -11,7 +11,7 @@ from relevanceai.dataset_api import Dataset
 
 class KMeansModel(ClusterBase):
     """
-    Simple K means model powered by Scikit Learn. 
+    Simple K means model powered by Scikit Learn.
 
     Run KMeans Clustering.
 
@@ -43,6 +43,7 @@ class KMeansModel(ClusterBase):
         clusterer.list_closest_to_center()
 
     """
+
     def __init__(
         self,
         k=10,
