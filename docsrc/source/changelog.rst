@@ -7,6 +7,7 @@ v0.29.2
 ---------
 
 **BREAKING CHANGES**
+
 - Renamed all `docs` references to `documents`
 - Renamed all `cluster_alias` references to `alias`
 
