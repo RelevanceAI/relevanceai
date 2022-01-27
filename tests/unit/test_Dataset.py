@@ -42,7 +42,7 @@ def test_cluster(test_client, test_sample_vector_dataset):
     model = KMeansModel()
 
     df.cluster(model=model, alias=alias, vector_fields=[vector_field], overwrite=True)
-    assert f"_cluster_.{vector_field}.{alias}" in test_client.schema
+    assert f"_cluster_.{vector_field}.{alias}" in df.schema
 
 
 def test_groupby_agg(test_client, test_sample_vector_dataset):
