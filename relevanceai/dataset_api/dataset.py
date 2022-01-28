@@ -267,7 +267,7 @@ class Series(BatchAPIClient):
             arr = df[field].numpy()
         """
         documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
-        vectors = [np.array(document[self.field]) for document in documents]
+        vectors = self.get_field_across_documents(self.field, documents)
         vectors = np.array(vectors)
         return vectors
 
@@ -983,7 +983,7 @@ class Stats(Read):
 
 
 class Write(Read):
-    def insert_documents(  # type: ignore
+    def insert_documents(
         self,
         documents: list,
         bulk_fn: Callable = None,
