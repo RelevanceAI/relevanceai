@@ -23,8 +23,10 @@ import getpass
 
 import numpy as np
 
+from scipy.spatial import distance
+
 from relevanceai.api.client import BatchAPIClient
-from typing import Union, List, Dict, Optional
+from typing import Union, List, Dict, Optional, Callable
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 
 # We use the second import because the first one seems to be causing errors with isinstance
@@ -878,3 +880,34 @@ class Clusterer(BatchAPIClient):
             alias=self.alias,
             metadata=metadata,
         )
+
+
+    def evaluate(self):
+        raise NotImplementedError
+
+    def silhouette_score(self, metric: Union[str, Callable, None] = 'euclidean'):
+        from sklearn.metrics import silhouette_score
+
+        vector_field = self.vector_fields[0]
+        cluster_field = f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
+
+        samples = self._get_vectors_from_documents(self.dataset_id)
+
+        vectors = np.array([sample[vector_field] for sample in samples])
+        labels = np.array([sample[cluster_field] for sample in samples])
+        
+        score = silhouette_score(vectors, labels, metric)
+
+        return score
+
+    @staticmethod
+    def adjusted_rand_score(self, ground_truth, cluster_labels):
+        return adjusted_rand_score(ground_truth, cluster_labels)
+
+    @staticmethod
+    def completeness_score(ground_truth, cluster_labels):
+        return completeness_score(ground_truth, cluster_labels)
+
+    @staticmethod
+    def homogeneity_score(ground_truth, cluster_labels):
+        return homogeneity_score(ground_truth, cluster_labels)
