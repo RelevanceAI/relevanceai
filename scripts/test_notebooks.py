@@ -161,12 +161,15 @@ def excecute_notebook(notebook):
             CLIENT_INSTANTIATION_BASE,
         )
         return
-    except:
+    except Exception as e:
         print(
             f"\nError with notebook: {notebook}",
             file=open(README_NOTEBOOK_ERROR_FPATH, "a"),
         )
-        return notebook
+        import traceback
+
+        exception_reason = traceback.format_exc()
+        return {"notebook": notebook.__str__(), "Exception reason": exception_reason}
 
 
 from relevanceai.concurrency import multiprocess
