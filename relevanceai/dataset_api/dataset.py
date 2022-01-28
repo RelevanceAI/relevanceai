@@ -636,7 +636,7 @@ class Read(BatchAPIClient):
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
             text_fields=text_fields,
-            **kw
+            **kw,
         )
 
     def sample(
