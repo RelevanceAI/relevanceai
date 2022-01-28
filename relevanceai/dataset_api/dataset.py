@@ -6,6 +6,7 @@ import math
 import warnings
 import pandas as pd
 import numpy as np
+import json
 
 from doc_utils import DocUtils
 
@@ -1207,11 +1208,9 @@ class Write(Read):
             df.insert_pandas_dataframe(pandas_df)
 
         """
-        import pandas as pd
-
         documents = [
             {k: v for k, v in doc.items() if not pd.isna(v)}
-            for doc in df.to_dict(orient="records")
+            for doc in json.loads(df.to_json(orient="records"))
         ]
         return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
 
