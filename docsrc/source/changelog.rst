@@ -16,7 +16,7 @@ Non-breaking changes:
 
 - Fixed incorrect reference in `update_documents`
 - Fixed bulk getting the wrong document in `df.get()` and added subsequent unit test
-
+- Fixed references with apply
 
 v0.30.0
 ---------
