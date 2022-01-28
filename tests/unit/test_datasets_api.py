@@ -39,7 +39,7 @@ def test_df_insert_csv_successful(test_csv_df: Dataset):
     assert response["inserted"] == original_length, "incorrect insertion"
 
 
-def test_df_get_smoke(test_csv_df: Dataset):
+def test_df_get_smoke(test_dataset_df: Dataset):
     """Test the df"""
     # This is to cover the 255 error before
-    assert test_csv_df.get(["321", "3421"])
+    assert test_dataset_df.get(["321", "3421"])

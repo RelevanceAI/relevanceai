@@ -310,4 +310,4 @@ def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_
 
         response = test_dataset_df.insert_csv(csvfile.name)
         yield response, len(sample_vector_documents)
-        test_dataset_df.delete(test_dataset_id)
+        test_dataset_df.delete()

@@ -112,7 +112,7 @@ class DocumentsClient(_Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_get",
             parameters={
-                "id": ids,
+                "ids": ids,
                 "include_vector": include_vector,
                 "select_fields": select_fields,
             },
