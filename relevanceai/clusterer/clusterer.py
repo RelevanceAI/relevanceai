@@ -1,12 +1,12 @@
 """
-Clusterer class to run clustering. It is intended to be integrated with 
+Clusterer class to run clustering. It is intended to be integrated with
 models that inherit from `ClusterBase`.
 
 You can run the Clusterer as such:
 
 .. code-block::
 
-    from relevanceai import Client 
+    from relevanceai import Client
     from relevanceai.cluster import KMeansModel
     client = Client()
     model = KMeansModel(n_clusters=2)
@@ -925,7 +925,7 @@ class Clusterer(BatchAPIClient):
         ----------
         ground_truth_index : str
             the index of the true label of each sample in dataset
-        
+
         metric : str or Callable
             A string referencing suportted distance functions, or custom method for calculating the distance between 2 vectors
 
