@@ -121,7 +121,9 @@ README_NOTEBOOK_ERROR_FPATH = "readme_notebook_errors.txt"
 with open(README_NOTEBOOK_ERROR_FPATH, "w") as f:
     f.write("")
 
-ALL_NOTEBOOKS = list(Path(DOCS_PATH).glob("**/*.ipynb"))
+ALL_NOTEBOOKS = [
+    x[0] if isinstance(x, list) else x for x in list(Path(DOCS_PATH).glob("**/*.ipynb"))
+]
 
 
 def excecute_notebook(notebook):
