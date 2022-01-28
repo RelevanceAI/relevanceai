@@ -185,6 +185,6 @@ results = multiprocess(execute_notebook, ALL_NOTEBOOKS, chunksize=1)
 results = [r for r in results if r is not None]
 if len(results) > 0:
     for r in results:
-        print(r["notebook"])
-        print(r["Exception reason"])
+        print(r.get("notebook"))
+        print(r.get("Exception reason"))
     raise ValueError(f"You have errored notebooks {results}")
