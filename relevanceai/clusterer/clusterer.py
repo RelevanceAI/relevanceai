@@ -87,7 +87,7 @@ class Clusterer(BatchAPIClient):
         # with first -class integration for kmeans
         from sklearn.cluster import KMeans, MiniBatchKMeans
 
-        if isinstance(model, KMeans, MiniBatchKMeans):
+        if isinstance(model, (KMeans, MiniBatchKMeans)):
             data = {
                 "fit_transform": model.fit_transform,
                 "metadata": model.__dict__,
