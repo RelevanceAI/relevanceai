@@ -5,12 +5,6 @@ Here you will find a list of changes for each package update.
 
 v0.30.1
 --------
-**BREAKING CHANGES**
-
-- `insert_csv` can now no longer be done via client. Needs to be done via `df.insert_csv`. Remapped to `client._insert_csv`
-to avoid conflicting type errors.
-- `insert_documents` can now no longer be done via client. NEeds to be done via `df.insert_documents`.
-
 
 Non-breaking changes:
 
@@ -24,6 +18,17 @@ Non-breaking changes:
 Developer changes:
 - Forced precommits
 - Added minimum pytest coverage
+
+Auto Generated Release Notes:
+
+* Fixing _get_all_documents by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/338
+* Updating df.filter docstring by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/341
+* Fix test for inserting csv by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/339
+* Feature/add precommit and force pytest by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/344
+* Feature/add tests by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/346
+* specify pandas dataframe by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/349
+* Accelerate testing  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/348
+* typo and example by @ChakavehSaedi in https://github.com/RelevanceAI/RelevanceAI/pull/351
 
 v0.30.0
 ---------
