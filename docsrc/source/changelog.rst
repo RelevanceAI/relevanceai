@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.30.2
+---------
+
+- Include more native sklearn integration with additional test
+
 v0.30.1
 --------
 

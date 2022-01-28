@@ -13,8 +13,10 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
     vector_field = "sample_1_vector_"
     alias = "test_alias"
 
-    model = KMeans()
+    # check they're not in first
+    assert f"_cluster_.{vector_field}.{alias}" not in df.schema
 
+    model = KMeans()
     clusterer = df.cluster(
         model=model, alias=alias, vector_fields=[vector_field], overwrite=True
     )
