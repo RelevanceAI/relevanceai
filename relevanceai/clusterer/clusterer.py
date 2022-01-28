@@ -85,25 +85,25 @@ class Clusterer(BatchAPIClient):
     def _assign_sklearn_model(self, model):
         # Add support for not just sklearn models but sklearn models
         # with first -class integration for kmeans
+        from sklearn.cluster import KMeans, MiniBatchKMeans
 
-        data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+        if isinstance(model, KMeans, MiniBatchKMeans):
+            data = {
+                "fit_transform": model.fit_transform,
+                "metadata": model.__dict__,
+                "get_centers": model.cluster_centers_,
+            }
+            ClusterModel = type("CentroidClusterbase", (CentroidClusterBase), data)
+            return ClusterModel()
 
         if hasattr(model, "fit_documents"):
             return model
         elif hasattr(model, "fit_transform"):
-            # Support for SKLEARN interface
             data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
-            # kmeans has cluster_centers_
-            if not hasattr(model, "cluster_centers_"):
-                ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            else:
-                data["get_centers"] = model.cluster_centers_
-                ClusterModel = type("CentroidClusterbase", (CentroidClusterBase), data)
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
         elif hasattr(model, "fit_predict"):
             data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
-            if hasattr(model, "cluster_centers_"):
-                data["get_centers"] = model.cluster_centers_
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
 
