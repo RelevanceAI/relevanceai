@@ -88,13 +88,19 @@ class Clusterer(BatchAPIClient):
         from sklearn.cluster import KMeans, MiniBatchKMeans
 
         if isinstance(model, (KMeans, MiniBatchKMeans)):
-            data = {
-                "fit_transform": model.fit_transform,
-                "metadata": model.__dict__,
-                "get_centers": model.cluster_centers_,
-            }
-            ClusterModel = type("CentroidClusterbase", (CentroidClusterBase), data)
-            return ClusterModel()
+
+            class CentroidClusterModel(CentroidClusterbase):
+                def __init__(self, model):
+                    self.model = model
+
+                def fit_transform(self, X):
+                    return self.model.fit_transform(X)
+
+                def get_centers(self):
+                    return self.model.cluster_centers_
+
+            new_model = CentroidClusterModel(model)
+            return new_model
 
         if hasattr(model, "fit_documents"):
             return model
