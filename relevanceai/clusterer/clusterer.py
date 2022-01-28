@@ -1010,11 +1010,9 @@ class Clusterer(BatchAPIClient):
                 nar_score = norm(ar_score, min=-1, max=1)
                 scores = [ns_score, nar_score, c_score, h_score]
                 average_score = sum(scores) / len(scores)
-                stats["average"] = (
-                    {
-                        "score": average_score,
-                        "description": METRIC_DESCRIPTION["average"],
-                    },
-                )
+                stats["average"] = {
+                    "score": average_score,
+                    "description": METRIC_DESCRIPTION["average"],
+                }
 
         return stats
