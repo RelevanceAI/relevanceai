@@ -15,20 +15,24 @@ It is instantiated like this:
     df = client.Dataset("sample_dataset")
     df.head()
 
-.. autoclass:: relevanceai.dataset_api.dataset.Write
+.. autoclass:: relevanceai.dataset_api.dataset_write.Write
     :members:
     :special-members: relevanceai.dataset_api.dataset.Write.insert_csv
 
-.. autoclass:: relevanceai.dataset_api.dataset.Read
+.. autoclass:: relevanceai.dataset_api.dataset_read.Read
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset.Stats
+.. autoclass:: relevanceai.dataset_api.dataset_stats.Stats
     :members:
 
-.. autoclass:: relevanceai.dataset_api.dataset.Export
+.. autoclass:: relevanceai.dataset_api.dataset_export.Export
     :members:
 
-.. autoclass:: relevanceai.dataset_api.dataset.Series
+.. autoclass:: relevanceai.dataset_api.dataset_series.Series
+    :members:
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset_api.dataset_operations.Operations
     :members:
     :exclude-members: __init__
