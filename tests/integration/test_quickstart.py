@@ -1,9 +1,10 @@
 """Simple test to ensure the quickstarts work
 """
 import time
+from relevanceai import Client
 
 
-def test_quickstart(test_client):
+def test_quickstart(test_client: Client):
     QUICKSTART_DATASET = "quickstart"
     documents = [
         {"_id": "1", "example_vector_": [0.1, 0.1, 0.1]},
@@ -13,7 +14,7 @@ def test_quickstart(test_client):
         {"_id": "5", "example_vector_": [0.5, 0.5, 0.5]},
     ]
 
-    test_client.insert_documents(dataset_id=QUICKSTART_DATASET, documents=documents)
+    test_client._insert_documents(dataset_id=QUICKSTART_DATASET, documents=documents)
     time.sleep(2)
     results = test_client.services.search.vector(
         dataset_id=QUICKSTART_DATASET,
