@@ -47,3 +47,8 @@ def test_groupby_mean_method(test_client, test_dataset_df):
     assert manual_mean == test_dataset_df.groupby(["sample_1_label"]).mean(
         "sample_1_value"
     )
+
+
+def test_smoke(test_dataset_df):
+    test_dataset_df.health
+    assert True

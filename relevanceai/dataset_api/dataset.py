@@ -1037,6 +1037,24 @@ class Stats(Read):
         """
         return self.datasets.facets(self.dataset_id)
 
+    @property
+    def health(self) -> dict:
+        """
+        Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            df.health
+
+        """
+        return self.datasets.monitor.health(self.dataset_id)
+
 
 class Write(Read):
     def insert_documents(
@@ -1174,6 +1192,28 @@ class Write(Read):
             col_for_id=col_for_id,
             auto_generate_id=auto_generate_id,
         )
+
+    def insert_pandas_dataframe(self, df: pd.DataFrame, *args, **kwargs):
+        """
+        Insert a dataframe into the dataset.
+        Takes additional args and kwargs based on `insert_documents`.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
+            df.insert_pandas_dataframe(pandas_df)
+
+        """
+        import pandas as pd
+
+        documents = [
+            {k: v for k, v in doc.items() if not pd.isna(v)}
+            for doc in df.to_dict(orient="records")
+        ]
+        return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
 
     def upsert_documents(
         self,
