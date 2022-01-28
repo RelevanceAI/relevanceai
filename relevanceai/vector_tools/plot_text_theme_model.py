@@ -4,7 +4,7 @@ from random import randint
 from typing import List, Tuple
 from sklearn import preprocessing
 from tqdm.auto import tqdm
-from typing import List
+from typing import List, Union
 from doc_utils import DocUtils
 from relevanceai.logger import LoguruLogger
 from relevanceai.api.client import BatchAPIClient
@@ -199,7 +199,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         clustered_documents = clusterer.fit_documents(
             vector_fields, documents, alias=alias
         )
-        res = self.update_documents(
+        res = self._update_documents(
             self.dataset_id, clustered_documents, chunksize=self.upload_chunksize
         )
         centers = clusterer.get_centroid_documents()
@@ -277,7 +277,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
 
     def _dim_reduction(
         self,
-        vector_data: List,
+        vector_data: Union[List, np.ndarray],
         embedding_dims=2,
         k=800,
         n_epochs_without_progress=100,

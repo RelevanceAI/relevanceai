@@ -1,6 +1,5 @@
 import pandas as pd
 from relevanceai.http_client import Dataset
-from relevanceai import Client
 
 
 def test_read_df_check(test_read_df, sample_vector_documents):
@@ -31,3 +30,15 @@ def test_apply(test_dataset_df: Dataset):
 def test_info(test_dataset_df: Dataset):
     info = test_dataset_df.info()
     assert isinstance(info, pd.DataFrame)
+
+
+def test_df_insert_csv_successful(test_csv_df: Dataset):
+    """Test Insert CSv successful"""
+    response, original_length = test_csv_df
+    assert response["inserted"] == original_length, "incorrect insertion"
+
+
+def test_df_get_smoke(test_dataset_df: Dataset):
+    """Test the df"""
+    # This is to cover the 255 error before
+    assert test_dataset_df.get(["321", "3421"])

@@ -6,6 +6,7 @@ import uuid
 import random
 import numpy as np
 from relevanceai import Client
+from relevanceai.http_client import Dataset
 from datetime import datetime
 import pandas as pd
 import tempfile
@@ -65,19 +66,19 @@ def pandas_test_dataset_id():
 
 
 @pytest.fixture(scope="session")
-def test_sample_dataset(test_client, simple_doc, test_dataset_id):
+def test_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_documents = simple_doc * 1000
-    response = test_client.insert_documents(test_dataset_id, simple_documents)
+    response = test_client._insert_documents(test_dataset_id, simple_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_large_sample_dataset(test_client, simple_doc, test_dataset_id):
+def test_large_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_documents = simple_doc * 1000
-    response = test_client.insert_documents(test_dataset_id, simple_documents)
+    response = test_client._insert_documents(test_dataset_id, simple_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
@@ -202,21 +203,23 @@ def sample_nested_assorted_documents():
 
 
 @pytest.fixture(scope="session")
-def test_sample_vector_dataset(test_client, sample_vector_documents, test_dataset_id):
+def test_sample_vector_dataset(
+    test_client: Client, sample_vector_documents, test_dataset_id
+):
     """
     Use this dataset if you just want vector
     """
-    response = test_client.insert_documents(test_dataset_id, sample_vector_documents)
+    response = test_client._insert_documents(test_dataset_id, sample_vector_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_clustered_dataset(test_client, sample_vector_documents):
+def test_clustered_dataset(test_client: Client, sample_vector_documents):
     """
     Use this test dataset if you want a dataset with clusters already.
     """
-    test_client.insert_documents(CLUSTER_DATASET_ID, sample_vector_documents)
+    test_client._insert_documents(CLUSTER_DATASET_ID, sample_vector_documents)
     test_client.vector_tools.cluster.kmeans_cluster(
         dataset_id=CLUSTER_DATASET_ID,
         vector_fields=["sample_1_vector_"],
@@ -229,25 +232,29 @@ def test_clustered_dataset(test_client, sample_vector_documents):
 
 
 @pytest.fixture(scope="session")
-def test_datetime_dataset(test_client, sample_datetime_documents, test_dataset_id):
+def test_datetime_dataset(
+    test_client: Client, sample_datetime_documents, test_dataset_id
+):
     """Sample datetime dataset"""
-    response = test_client.insert_documents(test_dataset_id, sample_datetime_documents)
+    response = test_client._insert_documents(test_dataset_id, sample_datetime_documents)
     yield response, len(sample_datetime_documents)
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_numpy_dataset(test_client, sample_numpy_documents, test_dataset_id):
+def test_numpy_dataset(test_client: Client, sample_numpy_documents, test_dataset_id):
     """Sample numpy dataset"""
-    response = test_client.insert_documents(test_dataset_id, sample_numpy_documents)
+    response = test_client._insert_documents(test_dataset_id, sample_numpy_documents)
     yield response, len(sample_numpy_documents)
     test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_pandas_dataset(test_client, sample_pandas_documents, pandas_test_dataset_id):
+def test_pandas_dataset(
+    test_client: Client, sample_pandas_documents, pandas_test_dataset_id
+):
     """Sample pandas dataset"""
-    response = test_client.insert_documents(
+    response = test_client._insert_documents(
         pandas_test_dataset_id, sample_pandas_documents
     )
     yield response, len(sample_pandas_documents)
@@ -256,10 +263,10 @@ def test_pandas_dataset(test_client, sample_pandas_documents, pandas_test_datase
 
 @pytest.fixture(scope="session")
 def test_nested_assorted_dataset(
-    test_client, sample_nested_assorted_documents, test_dataset_id
+    test_client: Client, sample_nested_assorted_documents, test_dataset_id
 ):
     """Sample nested assorted dataset"""
-    response = test_client.insert_documents(
+    response = test_client._insert_documents(
         test_dataset_id, sample_nested_assorted_documents
     )
     yield response, len(sample_nested_assorted_documents)
@@ -292,3 +299,15 @@ def test_read_df(test_client: Client, sample_vector_documents):
 def test_dataset_df(test_client: Client, test_sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     return df
+
+
+@pytest.fixture(scope="session")
+def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_id):
+    """Sample csv dataset"""
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
+        df = pd.DataFrame(sample_vector_documents)
+        df.to_csv(csvfile)
+
+        response = test_dataset_df.insert_csv(csvfile.name)
+        yield response, len(sample_vector_documents)
+        test_dataset_df.delete()

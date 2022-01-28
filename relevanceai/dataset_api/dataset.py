@@ -218,7 +218,7 @@ class Series(BatchAPIClient):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df["sample_1_label"].apply(lambda x: x + 3)
+            df["sample_1_label"].apply(lambda x: x + 3, output_field="output_field")
 
         """
         if axis == 1:
@@ -267,7 +267,7 @@ class Series(BatchAPIClient):
             arr = df[field].numpy()
         """
         documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
-        vectors = [np.array(document[self.field]) for document in documents]
+        vectors = self.get_field_across_documents(self.field, documents)
         vectors = np.array(vectors)
         return vectors
 
@@ -550,11 +550,17 @@ class Read(BatchAPIClient):
         info_json = [
             {
                 "Column": column,
+                "Dtype": schema[column],
+            }
+            if column not in health
+            else {
+                "Column": column,
                 "Non-Null Count": health[column]["missing"],
                 "Dtype": schema[column],
             }
             for column in schema
         ]
+
         info_df = pd.DataFrame(info_json)
         if dtype_count:
             dtypes_info = self._get_dtype_count(schema)
@@ -977,7 +983,7 @@ class Stats(Read):
 
 
 class Write(Read):
-    def insert_documents(  # type: ignore
+    def insert_documents(
         self,
         documents: list,
         bulk_fn: Callable = None,
@@ -1169,10 +1175,10 @@ class Write(Read):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df.upsert_documents(dataset_id, documents)
+            df.upsert_documents(documents)
 
         """
-        return self.update_documents(
+        return self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
