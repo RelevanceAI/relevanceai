@@ -13,11 +13,10 @@ from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
+from relevanceai.dataset_api.helpers import _build_filters
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
-
-from relevanceai.dataset_api.helpers import _build_filters
 
 
 class Series(BatchAPIClient):
@@ -237,6 +236,63 @@ class Series(BatchAPIClient):
 
         return self.pull_update_push(
             self.dataset_id, bulk_fn, select_fields=[self.field]
+        )
+
+    def bulk_apply(
+        self,
+        bulk_func: Callable,
+        retrieve_chunksize: int = 100,
+        max_workers: int = 8,
+        filters: list = [],
+        select_fields: list = [],
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
+    ):
+        """
+        Apply a bulk function along an axis of the DataFrame.
+
+        Parameters
+        ------------
+        bulk_func: function
+            Function to apply to a bunch of documents at a time
+        retrieve_chunksize: int
+            The number of documents that are received from the original collection with each loop iteration.
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        Example
+        ---------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            def update_documents(documents):
+                for d in documents:
+                    d["value"] = 10
+                return documents
+
+            df.bulk_apply(update_documents)
+        """
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_func,
+            retrieve_chunk_size=retrieve_chunksize,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
         )
 
     def numpy(self) -> np.ndarray:
@@ -1300,7 +1356,7 @@ class Write(Read):
 
             df = client.Dataset("sample_dataset")
 
-            def update_documents(document):
+            def update_documents(documents):
                 for d in documents:
                     d["value"] = 10
                 return documents
