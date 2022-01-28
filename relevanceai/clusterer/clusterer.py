@@ -7,7 +7,7 @@ You can run the Clusterer as such:
 .. code-block::
 
     from relevanceai import Client 
-    from relevanceai.cluster import KMeansModel
+    from relevanceai.clusterer import KMeansModel
     client = Client()
     model = KMeansModel(n_clusters=2)
     clusterer = client.Clusterer(model, alias="kmeans_2")
@@ -49,7 +49,7 @@ class Clusterer(BatchAPIClient):
     .. code-block::
 
         from relevanceai import Client
-        from sklearn.cluster import KMeans
+        from relevanceai.clusterer import KMeansModel
 
         model = KMeans(n_clusters=2)
         clusterer = client.Clusterer(model, alias="kmeans_2")
@@ -151,7 +151,7 @@ class Clusterer(BatchAPIClient):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.cluster import KMeansModel
+            from relevanceai.clusterer import KMeansModel
             client = Client()
             model = KMeansModel(n_clusters=2)
             clusterer = client.Clusterer(model, alias="kmeans_2")
@@ -370,7 +370,7 @@ class Clusterer(BatchAPIClient):
             client = Client()
             df = client.Dataset("sample_dataset")
 
-            from relevanceai.cluster import KMeansModel
+            from relevanceai.clusterer import KMeansModel
             clusterer = client.Clusterer(5)
             clusterer.fit(df, ["sample_vector_"])
             clusterer.aggregate(
@@ -626,7 +626,7 @@ class Clusterer(BatchAPIClient):
         )
 
         # Updating the db
-        results = self.update_documents(
+        results = self._update_documents(
             self.dataset_id, clustered_docs, chunksize=10000
         )
         self.logger.info(results)

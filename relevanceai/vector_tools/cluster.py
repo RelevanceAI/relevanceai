@@ -577,7 +577,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         )
 
         # Updating the db
-        results = self.update_documents(
+        results = self._update_documents(
             dataset_id, clustered_documents, chunksize=update_documents_chunksize
         )
         self.logger.info(results)

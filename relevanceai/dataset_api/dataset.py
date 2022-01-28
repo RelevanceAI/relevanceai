@@ -13,11 +13,10 @@ from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
+from relevanceai.dataset_api.helpers import _build_filters
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
-
-from relevanceai.dataset_api.helpers import _build_filters
 
 
 class Series(BatchAPIClient):
@@ -218,7 +217,7 @@ class Series(BatchAPIClient):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df["sample_1_label"].apply(lambda x: x + 3)
+            df["sample_1_label"].apply(lambda x: x + 3, output_field="output_field")
 
         """
         if axis == 1:
@@ -237,6 +236,63 @@ class Series(BatchAPIClient):
 
         return self.pull_update_push(
             self.dataset_id, bulk_fn, select_fields=[self.field]
+        )
+
+    def bulk_apply(
+        self,
+        bulk_func: Callable,
+        retrieve_chunksize: int = 100,
+        max_workers: int = 8,
+        filters: list = [],
+        select_fields: list = [],
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
+    ):
+        """
+        Apply a bulk function along an axis of the DataFrame.
+
+        Parameters
+        ------------
+        bulk_func: function
+            Function to apply to a bunch of documents at a time
+        retrieve_chunksize: int
+            The number of documents that are received from the original collection with each loop iteration.
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+        axis: int
+            Axis along which the function is applied.
+            - 9 or 'index': apply function to each column
+            - 1 or 'columns': apply function to each row
+
+        Example
+        ---------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            def update_documents(documents):
+                for d in documents:
+                    d["value"] = 10
+                return documents
+
+            df.bulk_apply(update_documents)
+        """
+        return self.pull_update_push(
+            self.dataset_id,
+            bulk_func,
+            retrieve_chunk_size=retrieve_chunksize,
+            max_workers=max_workers,
+            filters=filters,
+            select_fields=select_fields,
+            show_progress_bar=show_progress_bar,
+            use_json_encoder=use_json_encoder,
         )
 
     def numpy(self) -> np.ndarray:
@@ -266,8 +322,8 @@ class Series(BatchAPIClient):
             field = "sample_field"
             arr = df[field].numpy()
         """
-        documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
-        vectors = [np.array(document[self.field]) for document in documents]
+        documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
+        vectors = self.get_field_across_documents(self.field, documents)
         vectors = np.array(vectors)
         return vectors
 
@@ -544,11 +600,17 @@ class Read(BatchAPIClient):
 
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
+            df.info()
         """
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
         info_json = [
             {
+                "Column": column,
+                "Dtype": schema[column],
+            }
+            if column not in health
+            else {
                 "Column": column,
                 "Non-Null Count": health[column]["missing"],
                 "Dtype": schema[column],
@@ -556,6 +618,7 @@ class Read(BatchAPIClient):
             for column in schema
             if column in health
         ]
+
         info_df = pd.DataFrame(info_json)
         if dtype_count:
             dtypes_info = self._get_dtype_count(schema)
@@ -877,10 +940,10 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("pokedex")
-            filtered = df.filter(items=["Bulbasaur"])
-            filtered = df.filter(index="abilities", like="Blaze")
-            filtered = df.filter(index="type1", regex=".F")
+            df = client.Dataset("ecommerce-example-encoded")
+            filtered = df.filter(items=["product_title", "query", "product_price"])
+            filtered = df.filter(index="query", like="routers")
+            filtered = df.filter(index="product_title", regex=".*Hard.*Drive.*")
 
         """
         fields = []
@@ -976,9 +1039,27 @@ class Stats(Read):
         """
         return self.datasets.facets(self.dataset_id)
 
+    @property
+    def health(self) -> dict:
+        """
+        Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            df.health
+
+        """
+        return self.datasets.monitor.health(self.dataset_id)
+
 
 class Write(Read):
-    def insert_documents(  # type: ignore
+    def insert_documents(
         self,
         documents: list,
         bulk_fn: Callable = None,
@@ -1072,8 +1153,6 @@ class Write(Read):
 
         Parameters
         ----------
-        dataset_id : string
-            Unique name of dataset
         filepath_or_buffer :
             Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
         chunksize : int
@@ -1115,6 +1194,28 @@ class Write(Read):
             col_for_id=col_for_id,
             auto_generate_id=auto_generate_id,
         )
+
+    def insert_pandas_dataframe(self, df: pd.DataFrame, *args, **kwargs):
+        """
+        Insert a dataframe into the dataset.
+        Takes additional args and kwargs based on `insert_documents`.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
+            df.insert_pandas_dataframe(pandas_df)
+
+        """
+        import pandas as pd
+
+        documents = [
+            {k: v for k, v in doc.items() if not pd.isna(v)}
+            for doc in df.to_dict(orient="records")
+        ]
+        return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
 
     def upsert_documents(
         self,
@@ -1172,10 +1273,10 @@ class Write(Read):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df.upsert_documents(dataset_id, documents)
+            df.upsert_documents(documents)
 
         """
-        return self.update_documents(
+        return self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -1297,7 +1398,7 @@ class Write(Read):
 
             df = client.Dataset("sample_dataset")
 
-            def update_documents(document):
+            def update_documents(documents):
                 for d in documents:
                     d["value"] = 10
                 return documents

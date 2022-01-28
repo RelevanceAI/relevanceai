@@ -3,6 +3,33 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.30.1
+--------
+
+Non-breaking changes:
+
+- Fixed incorrect reference in `update_documents`
+- Fixed bulk getting the wrong document in `df.get()` and added subsequent unit test
+- Fixed references with apply
+- Added health endpoints
+- Addded `insert_pandas_dataframe` endpoints
+- Test folder refactor and clean up
+
+Developer changes:
+- Forced precommits
+- Added minimum pytest coverage
+
+Auto Generated Release Notes:
+
+* Fixing _get_all_documents by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/338
+* Updating df.filter docstring by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/341
+* Fix test for inserting csv by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/339
+* Feature/add precommit and force pytest by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/344
+* Feature/add tests by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/346
+* specify pandas dataframe by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/349
+* Accelerate testing  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/348
+* typo and example by @ChakavehSaedi in https://github.com/RelevanceAI/RelevanceAI/pull/351
+
 v0.30.0
 ---------
 
@@ -15,10 +42,10 @@ v0.30.0
 - Renamed `retrieve_chunk_size` to `retrieve_chunksize` in `df.apply` and `df.bulk_apply`
 - Schema is now a property and not a method!
 - `get_centroid_documents` now no longer takes a field
-- Removal of any mention of `centroid_vector_` as those should now be replaced with the 
+- Removal of any mention of `centroid_vector_` as those should now be replaced with the
 actual vector field name the centroids are derived from
 
-Non-breaking changes:  
+Non-breaking changes:
 
 - Added `head` to Series object
 - Add CentroidClustererbase and CentroidClusterBase classes to inherit from
@@ -41,7 +68,7 @@ Non-breaking changes:
 - Separation of references to clean up clustering and sidebar menu navigation
 - Fix reference examples
 
-AUTO-GENERATED RELEASE NOTES:  
+AUTO-GENERATED RELEASE NOTES:
 
 - Update README.md by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/314
 - Feature/refactor docsrc by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/315
@@ -159,16 +186,16 @@ v0.26.4
 v0.26.3
 ---------
 
-- Cluster labels are now lower case 
+- Cluster labels are now lower case
 - Bug fix on centroids furthest from center
-- Changed error message 
+- Changed error message
 - Fixed Dodgy string parsing
 - Fixed bug with kmeans_cluster 1 liner by supporting getting multiple centers
 
 v0.26.2
 ---------
 
-- Add CSV insertion 
+- Add CSV insertion
 - Make JSON encoder utility class for easier customisation
 - Added smarter parsing of CSV
 
