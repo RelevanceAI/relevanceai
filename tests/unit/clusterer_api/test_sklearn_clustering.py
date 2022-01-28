@@ -4,6 +4,7 @@ Sklearn Integration Test
 
 import pandas as pd
 from relevanceai.http_client import Dataset, Client
+from ...utils import generate_random_string
 
 
 def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
@@ -11,7 +12,7 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
     from sklearn.cluster import KMeans
 
     vector_field = "sample_1_vector_"
-    alias = "test_alias"
+    alias = generate_random_string()
 
     # check they're not in first
     assert f"_cluster_.{vector_field}.{alias}" not in df.schema
