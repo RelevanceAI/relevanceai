@@ -20,6 +20,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 
+
 class Operations(Write):
     def vectorize(self, field, model):
         """

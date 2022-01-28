@@ -20,6 +20,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 
+
 class Stats(Read):
     def value_counts(self, field: str):
         """
@@ -85,4 +86,3 @@ class Stats(Read):
 
         """
         return self.datasets.monitor.health(self.dataset_id)
-

@@ -19,6 +19,7 @@ from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_read import Read
 
+
 class Write(Read):
     def insert_documents(
         self,
@@ -582,4 +583,3 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
-

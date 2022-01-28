@@ -23,9 +23,10 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_operations import Operations
 
+
 class Dataset(Export, Stats, Operations):
-    """Dataset class
-    """
+    """Dataset class"""
+
 
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""

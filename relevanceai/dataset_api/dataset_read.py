@@ -18,6 +18,7 @@ from relevanceai.dataset_api.helpers import _build_filters
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
+
 class Read(BatchAPIClient):
     """
 
