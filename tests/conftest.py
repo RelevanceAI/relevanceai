@@ -298,7 +298,6 @@ def test_dataset_df(test_client: Client, test_sample_vector_dataset):
 @pytest.fixture(scope="session")
 def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_id):
     """Sample csv dataset"""
-
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(sample_vector_documents)
         df.to_csv(csvfile)
