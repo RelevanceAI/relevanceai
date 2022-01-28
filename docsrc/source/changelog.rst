@@ -10,6 +10,12 @@ v0.30.1
 - `insert_csv` can now no longer be done via client. Needs to be done via `df.insert_csv`. Remapped to `client._insert_csv`
 to avoid conflicting type errors.
 
+Non-breaking changes:
+
+- Fixed incorrect reference in `update_documents`
+
+
+
 v0.30.0
 ---------
 

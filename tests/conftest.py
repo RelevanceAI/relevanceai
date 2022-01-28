@@ -6,6 +6,7 @@ import uuid
 import random
 import numpy as np
 from relevanceai import Client
+from relevanceai.http_client import Dataset
 from datetime import datetime
 import pandas as pd
 import tempfile
@@ -292,3 +293,16 @@ def test_read_df(test_client: Client, sample_vector_documents):
 def test_dataset_df(test_client: Client, test_sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     return df
+
+
+@pytest.fixture(scope="session")
+def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_id):
+    """Sample csv dataset"""
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
+        df = pd.DataFrame(sample_vector_documents)
+        df.to_csv(csvfile)
+
+        response = test_dataset_df.insert_csv(test_dataset_id, csvfile.name)
+        yield response, len(sample_vector_documents)
+        test_dataset_df.delete(test_dataset_id)
