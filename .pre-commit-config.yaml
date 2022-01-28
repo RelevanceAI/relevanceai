@@ -1,4 +1,5 @@
 repos:
+### General ###
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
@@ -9,16 +10,23 @@ repos:
     -   id: check-case-conflict
     -   id: check-merge-conflict
     -   id: check-added-large-files
-    -   id: check-executables-have-shebangs
-    -   id: double-quote-string-fixer
     -   id: fix-encoding-pragma
 
+# ### Secrets ###
+# -   repo: https://github.com/Yelp/detect-secrets
+#     rev: v0.14.3
+#     hooks:
+#     -   id: detect-secrets
+#         args: ['--baseline', '.secrets.baseline']
+#         exclude: .*/hashes/.*
+
+### Formatting ###
 -   repo: https://github.com/psf/black
     rev: 21.12b0
     hooks:
     -   id: black
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.720'
+    rev: v0.931
     hooks:
     -   id: mypy
         args: [relevanceai]
