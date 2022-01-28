@@ -1071,8 +1071,6 @@ class Write(Read):
 
         Parameters
         ----------
-        dataset_id : string
-            Unique name of dataset
         filepath_or_buffer :
             Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
         chunksize : int

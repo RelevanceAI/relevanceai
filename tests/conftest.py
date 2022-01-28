@@ -267,14 +267,14 @@ def test_nested_assorted_dataset(
 
 
 @pytest.fixture(scope="session")
-def test_csv_dataset(test_client, sample_vector_documents, test_dataset_id):
+def test_csv_dataset(test_client: Client, sample_vector_documents, test_dataset_id):
     """Sample csv dataset"""
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(sample_vector_documents)
         df.to_csv(csvfile)
 
-        response = test_client.insert_csv(test_dataset_id, csvfile.name)
+        response = test_client._insert_csv(test_dataset_id, csvfile.name)
         yield response, len(sample_vector_documents)
         test_client.datasets.delete(test_dataset_id)
 
