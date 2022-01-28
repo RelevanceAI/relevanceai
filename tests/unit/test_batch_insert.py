@@ -2,6 +2,7 @@
 """
 import numpy as np
 import pytest
+from relevanceai import Client
 
 
 class TestInsert:
@@ -9,10 +10,10 @@ class TestInsert:
 
     def test_batch_insert(self, sample_vector_documents, test_dataset_id, test_client):
         """Batch insert"""
-        results = test_client.insert_documents(test_dataset_id, sample_vector_documents)
+        results = test_client._insert_documents(test_dataset_id, sample_vector_documents)
         assert len(results["failed_documents"]) == 0
 
-    def test_health(self, test_dataset_id, test_client):
+    def test_health(self, test_dataset_id, test_client: Client):
         """Batch insert"""
         health = test_client.datasets.monitor.health(test_dataset_id)
         assert health["_chunk_.label"]["exists"] == 100
