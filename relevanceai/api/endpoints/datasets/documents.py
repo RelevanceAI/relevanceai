@@ -116,7 +116,7 @@ class DocumentsClient(_Base):
                 "include_vector": include_vector,
                 "select_fields": select_fields,
             },
-            method="POST"
+            method="POST",
         )
 
     def get_where(
