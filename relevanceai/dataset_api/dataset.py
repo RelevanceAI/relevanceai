@@ -218,7 +218,7 @@ class Series(BatchAPIClient):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            df["sample_1_label"].apply(lambda x: x + 3)
+            df["sample_1_label"].apply(lambda x: x + 3, output_field="output_field")
 
         """
         if axis == 1:
@@ -266,7 +266,7 @@ class Series(BatchAPIClient):
             field = "sample_field"
             arr = df[field].numpy()
         """
-        documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
+        documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
         vectors = [np.array(document[self.field]) for document in documents]
         vectors = np.array(vectors)
         return vectors
@@ -1172,7 +1172,7 @@ class Write(Read):
             df.upsert_documents(documents)
 
         """
-        return self.update_documents(
+        return self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,

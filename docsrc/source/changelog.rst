@@ -9,12 +9,14 @@ v0.30.1
 
 - `insert_csv` can now no longer be done via client. Needs to be done via `df.insert_csv`. Remapped to `client._insert_csv`
 to avoid conflicting type errors.
+- `insert_documents` can now no longer be done via client. NEeds to be done via `df.insert_documents`.
+
 
 Non-breaking changes:
 
 - Fixed incorrect reference in `update_documents`
 - Fixed bulk getting the wrong document in `df.get()` and added subsequent unit test
-
+- Fixed references with apply
 
 v0.30.0
 ---------

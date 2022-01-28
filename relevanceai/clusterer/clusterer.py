@@ -626,7 +626,7 @@ class Clusterer(BatchAPIClient):
         )
 
         # Updating the db
-        results = self.update_documents(
+        results = self._update_documents(
             self.dataset_id, clustered_docs, chunksize=10000
         )
         self.logger.info(results)
