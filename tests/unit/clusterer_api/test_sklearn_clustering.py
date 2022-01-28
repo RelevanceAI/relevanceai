@@ -12,7 +12,7 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
     from sklearn.cluster import KMeans
 
     vector_field = "sample_1_vector_"
-    alias = generate_random_string()
+    alias = generate_random_string().lower()
 
     # check they're not in first
     assert f"_cluster_.{vector_field}.{alias}" not in df.schema
