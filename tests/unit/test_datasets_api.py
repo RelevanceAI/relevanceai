@@ -1,6 +1,5 @@
 import pandas as pd
 from relevanceai.http_client import Dataset
-from relevanceai import Client
 
 
 def test_read_df_check(test_read_df, sample_vector_documents):
