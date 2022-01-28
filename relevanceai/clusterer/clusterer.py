@@ -1,12 +1,12 @@
 """
-Clusterer class to run clustering. It is intended to be integrated with 
+Clusterer class to run clustering. It is intended to be integrated with
 models that inherit from `ClusterBase`.
 
 You can run the Clusterer as such:
 
 .. code-block::
 
-    from relevanceai import Client 
+    from relevanceai import Client
     from relevanceai.clusterer import KMeansModel
     client = Client()
     model = KMeansModel(n_clusters=2)
@@ -23,13 +23,15 @@ import getpass
 
 import numpy as np
 
-from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional
+
+from relevanceai.api.client import BatchAPIClient
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
 from relevanceai.dataset_api.dataset import Dataset
+from relevanceai.integration_checks import is_sklearn_available
 
 from doc_utils import DocUtils
 
@@ -79,9 +81,37 @@ class Clusterer(BatchAPIClient):
 
         super().__init__(project=project, api_key=api_key)
 
+    # Adding first-class sklearn integration
+    def _assign_sklearn_model(self, model):
+        # Add support for not just sklearn models but sklearn models
+        # with first -class integration for kmeans
+
+        data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+
+        if hasattr(model, "fit_documents"):
+            return model
+        elif hasattr(model, "fit_transform"):
+            # Support for SKLEARN interface
+            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+            if hasattr(model, "cluster_centers_"):
+                data["get_centers"] = model.cluster_centers_
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
+            return ClusterModel()
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+            if hasattr(model, "cluster_centers_"):
+                data["get_centers"] = model.cluster_centers_
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
+            return ClusterModel()
+
     def _assign_model(self, model):
         # Check if this is a model that will fit
         # otherwise - forces a Clusterbase
+        if is_sklearn_available() and "sklearn" in str(type(model)):
+            model = self._assign_sklearn_model(model)
+            if model is not None:
+                return model
+
         if isinstance(model, ClusterBase):
             return model
         elif hasattr(model, "fit_documents"):
