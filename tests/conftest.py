@@ -303,6 +303,6 @@ def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_
         df = pd.DataFrame(sample_vector_documents)
         df.to_csv(csvfile)
 
-        response = test_dataset_df.insert_csv(test_dataset_id, csvfile.name)
+        response = test_dataset_df.insert_csv(csvfile.name)
         yield response, len(sample_vector_documents)
         test_dataset_df.delete(test_dataset_id)
