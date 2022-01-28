@@ -1752,7 +1752,8 @@ class Dataset(Export, Write, Stats):
         clusterer = Clusterer(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
-        return clusterer.fit(dataset=self, vector_fields=vector_fields)
+        clusterer.fit(dataset=self, vector_fields=vector_fields)
+        return clusterer
 
 
 class Datasets(BatchAPIClient):
