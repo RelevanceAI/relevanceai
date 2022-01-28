@@ -2,20 +2,20 @@
 the Dataset class or Clusterer class.
 
 
-The recomended way to log in is using: 
+The recomended way to log in is using:
 
 .. code-block::
 
-    from relevanceai import Client 
+    from relevanceai import Client
     client = Client()
     client.list_datasets()
 
-If the user already knows their project and API key, they can 
-log in this way: 
+If the user already knows their project and API key, they can
+log in this way:
 
 .. code-block::
-    
-    from relevanceai import Client 
+
+    from relevanceai import Client
     project = ""
     api_key = ""
     client = Client(project=project, api_key=api_key)
@@ -90,6 +90,12 @@ class Client(BatchAPIClient, DocUtils):
 
         self.Dataset = Dataset(project=project, api_key=api_key)
         self.Datasets = Datasets(project=project, api_key=api_key)
+
+        # Add non breaking changes to support old ways of inserting documents and csv
+        self.insert_documents = Dataset(
+            project=project, api_key=api_key
+        )._insert_documents
+        self.insert_csv = Dataset(project=project, api_key=api_key)._insert_csv
 
     # @property
     # def output_format(self):
