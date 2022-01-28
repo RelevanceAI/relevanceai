@@ -169,9 +169,9 @@ def excecute_notebook(notebook):
         return notebook
 
 
-from relevancai.concurrency import multiprocess
+from relevanceai.concurrency import multiprocess
 
-results = multiprocess(execute_notebook, ALL_NOTEBOOKS)
+results = multiprocess(excecute_notebook, ALL_NOTEBOOKS)
 results = [r for r in results if r is not None]
 if len(results) > 0:
     raise ValueError(f"You have errored notebooks {results}")
