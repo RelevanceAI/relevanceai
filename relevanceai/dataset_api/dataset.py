@@ -872,7 +872,7 @@ class Read(BatchAPIClient):
         Example
         ----------
 
-        .. code-block::  
+        .. code-block::
 
             from relevanceai import Client
             client = Client()
