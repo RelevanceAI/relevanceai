@@ -121,8 +121,10 @@ README_NOTEBOOK_ERROR_FPATH = "readme_notebook_errors.txt"
 with open(README_NOTEBOOK_ERROR_FPATH, "w") as f:
     f.write("")
 
-for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
+ALL_NOTEBOOKS = list(Path(DOCS_PATH).glob("**/*.ipynb"))
 
+
+def excecute_notebook(notebook):
     try:
         print(notebook)
 
@@ -158,11 +160,18 @@ for notebook in Path(DOCS_PATH).glob("**/*.ipynb"):
             CLIENT_INSTANTIATION_SENT_REGEX,
             CLIENT_INSTANTIATION_BASE,
         )
+        return
     except:
-
         print(
             f"\nError with notebook: {notebook}",
             file=open(README_NOTEBOOK_ERROR_FPATH, "a"),
         )
+        return notebook
 
-        pass
+
+from relevancai.concurrency import multiprocess
+
+results = multiprocess(execute_notebook, ALL_NOTEBOOKS)
+results = [r for r in results if r is not None]
+if len(results) > 0:
+    raise ValueError(f"You have errored notebooks {results}")
