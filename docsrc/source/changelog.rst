@@ -3,6 +3,13 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.30.1
+--------
+**BREAKING CHANGES**
+
+- `insert_csv` can now no longer be done via client. Needs to be done via `df.insert_csv`. Remapped to `client._insert_csv`
+to avoid conflicting type errors.
+
 v0.30.0
 ---------
 
