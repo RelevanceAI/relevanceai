@@ -14,16 +14,16 @@ def test_apply(test_dataset_df: Dataset):
     assert test_dataset_df["sample_1_label_2"][0].endswith(RANDOM_STRING)
 
 
-def test_apply(test_dataset_df: Dataset):
+def test_bulk_apply(test_dataset_df: Dataset):
     RANDOM_STRING = "you are the queen"
     LABEL = "sample_output"
 
     def bulk_fn(docs):
         for d in docs:
-            d[LABEL] = d["sample_1_label"] + RANDOM_STRING
+            d[LABEL] = d.get("sample_1_label", "") + RANDOM_STRING
         return docs
 
-    test_dataset_df["sample_1_label"].bulk_apply(bulk_fn, output_field=LABEL)
+    test_dataset_df.bulk_apply(bulk_fn)
     assert test_dataset_df[LABEL][0].endswith(RANDOM_STRING)
 
 
