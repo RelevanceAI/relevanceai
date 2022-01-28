@@ -98,13 +98,15 @@ class Clusterer(BatchAPIClient):
                 ClusterModel = type("ClusterBase", (ClusterBase,), data)
             else:
                 data["get_centers"] = model.cluster_centers_
-                ClusterModel = type("CentroidClusterbase", (CentroidClusterBase), data)
+                ClusterModel = type("CentroidClusterbase", (CentroidClusterBase,), data)
             return ClusterModel()
         elif hasattr(model, "fit_predict"):
             data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
-            if hasattr(model, "cluster_centers_"):
+            if not hasattr(model, "cluster_centers_"):
+                ClusterModel = type("ClusterBase", (ClusterBase,), data)
+            else:
                 data["get_centers"] = model.cluster_centers_
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
+                ClusterModel = type("CentroidClusterbase", (CentroidClusterBase,), data)
             return ClusterModel()
 
     def _assign_model(self, model):
