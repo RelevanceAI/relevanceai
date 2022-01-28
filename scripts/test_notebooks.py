@@ -126,9 +126,13 @@ ALL_NOTEBOOKS = [
 ]
 
 
-def excecute_notebook(notebook):
+def execute_notebook(notebook):
     try:
         print(notebook)
+
+        # to support the multiprocessing function
+        if isinstance(notebook, list):
+            notebook = notebook[0]
 
         ## Update to latest version
         notebook_find_replace(
@@ -176,7 +180,11 @@ def excecute_notebook(notebook):
 
 from relevanceai.concurrency import multiprocess
 
-results = multiprocess(excecute_notebook, ALL_NOTEBOOKS)
-results = [r for r in results if r is not None]
+results = multiprocess(execute_notebook, ALL_NOTEBOOKS, chunksize=1)
+# results = [execute_notebook(n) for n in ALL_NOTEBOOKS]
+# results = [r for r in results if r is not None]
 if len(results) > 0:
+    for r in results:
+        print(r["notebook"])
+        print(r["Exception reason"])
     raise ValueError(f"You have errored notebooks {results}")
