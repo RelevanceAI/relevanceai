@@ -327,6 +327,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
         )
+    
+    update_documents = _update_documents
 
     def pull_update_push(
         self,

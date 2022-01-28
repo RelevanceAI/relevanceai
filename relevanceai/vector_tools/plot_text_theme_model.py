@@ -199,7 +199,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         clustered_documents = clusterer.fit_documents(
             vector_fields, documents, alias=alias
         )
-        res = self.update_documents(
+        res = self._update_documents(
             self.dataset_id, clustered_documents, chunksize=self.upload_chunksize
         )
         centers = clusterer.get_centroid_documents()
