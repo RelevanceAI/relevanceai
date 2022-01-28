@@ -918,12 +918,45 @@ class Clusterer(BatchAPIClient):
         random_state: Union[int, None] = None,
         average_score: bool = False,
     ):
+        """
+        Evaluate your clusters using the silhouette score, or if true labels are provided, using completeness, randomness and homogeniety as well
+
+        Parameters
+        ----------
+        ground_truth_index : str
+            the index of the true label of each sample in dataset
+        
+        metric : str or Callable
+            A string referencing suportted distance functions, or custom method for calculating the distance between 2 vectors
+
+        random_state : int, default None
+            for reproducability
+
+        average_score : bool
+            a boolean that determines whether to average the evaluation metrics in a new a score. only applicable if ground_truth_index is not None
+
+        Example
+        ----------
+
+        .. code-block::
+
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("_github_repo_vectorai")
+            from relevanceai.clusterer import KMeansModel
+
+            model = KMeansModel()
+            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans.fit(df, vector_fields=["sample_1_vector_"])
+
+            kmeans.evaluate()
+            kmeans.evaluate("truth_index")
+        """
 
         vector_field = self.vector_fields[0]
         cluster_field = self.cluster_field
         alias = self.alias
-
-        centroid_documents = self.get_centroid_documents()
 
         samples = self._get_all_documents(self.dataset_id, include_vector=True)
 
