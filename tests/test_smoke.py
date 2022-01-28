@@ -1,3 +1,8 @@
+"""
+Simple tests to ensure import errors don't happen
+"""
+
+
 def test_client_smoke():
     """Simple test to ensure there are no breaking installations."""
     # Import the client

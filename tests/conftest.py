@@ -27,18 +27,18 @@ SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_project():
     # test projects
     return os.getenv("TEST_PROJECT")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_api_key():
     return os.getenv("TEST_API_KEY")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def simple_doc():
     return [
         {
@@ -49,23 +49,23 @@ def simple_doc():
     ]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_client(test_project, test_api_key):
     client = Client(test_project, test_api_key)
     return client
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_dataset_id():
     return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def pandas_test_dataset_id():
     return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_PANDAS_DATASET_SUFFIX
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_documents = simple_doc * 1000
@@ -74,7 +74,7 @@ def test_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_large_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_documents = simple_doc * 1000
@@ -83,12 +83,12 @@ def test_large_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def error_doc():
     return [{"_id": 3, "value": np.nan}]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def sample_vector_documents():
     def _sample_vector_doc(doc_id: str):
         return {
@@ -117,7 +117,7 @@ def sample_vector_documents():
     return [_sample_vector_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def sample_datetime_documents():
     def _sample_datetime_doc(doc_id: str):
         return {
@@ -130,7 +130,7 @@ def sample_datetime_documents():
     return [_sample_datetime_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def sample_numpy_documents():
     def _sample_numpy_doc(doc_id: str):
         return {
@@ -144,7 +144,7 @@ def sample_numpy_documents():
     return [_sample_numpy_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def sample_pandas_documents():
     def _sample_numpy_doc(doc_id: str):
         return {
@@ -165,7 +165,7 @@ def sample_pandas_documents():
     return [_sample_numpy_doc(doc_id=uuid.uuid4().__str__()) for _ in range(N)]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def sample_nested_assorted_documents():
     def _sample_nested_assorted_doc(doc_id: str):
         return {
