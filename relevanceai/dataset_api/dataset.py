@@ -266,7 +266,7 @@ class Series(BatchAPIClient):
             field = "sample_field"
             arr = df[field].numpy()
         """
-        documents = self.get_all_documents(self.dataset_id, select_fields=[self.field])
+        documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
         vectors = [np.array(document[self.field]) for document in documents]
         vectors = np.array(vectors)
         return vectors
