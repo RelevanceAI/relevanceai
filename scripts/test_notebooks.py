@@ -182,7 +182,7 @@ from relevanceai.concurrency import multiprocess
 
 results = multiprocess(execute_notebook, ALL_NOTEBOOKS, chunksize=1)
 # results = [execute_notebook(n) for n in ALL_NOTEBOOKS]
-# results = [r for r in results if r is not None]
+results = [r for r in results if r is not None]
 if len(results) > 0:
     for r in results:
         print(r["notebook"])
