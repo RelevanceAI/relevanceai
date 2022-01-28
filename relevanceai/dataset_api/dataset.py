@@ -613,9 +613,15 @@ class Read(BatchAPIClient):
                 return pd.json_normalize(head_documents).head(n=n)
 
     def _repr_html_(self):
-        return pd.json_normalize(
-            self.get_documents(dataset_id=self.dataset_id)
-        )._repr_html_()
+        documents = self.get_documents(dataset_id=self.dataset_id)
+        try:
+            return self._show_json(documents, return_html=True)
+        except Exception as e:
+            warnings.warn(
+                "Displaying using Pandas. To get image functionality please install RelevanceAI[notebook]. "
+                + str(e)
+            )
+            return pd.json_normalize(documents)._repr_html_()
 
     def _show_json(self, documents, **kw):
         from jsonshower import show_json
@@ -630,6 +636,7 @@ class Read(BatchAPIClient):
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
             text_fields=text_fields,
+            **kw
         )
 
     def sample(
