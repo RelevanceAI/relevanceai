@@ -9,3 +9,9 @@ repos:
     rev: 21.12b0
     hooks:
     -   id: black
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.720
+    hooks:
+    -   id: mypy
+        verbose: true
+        entry: bash -c 'mypy "$@" || true' --
