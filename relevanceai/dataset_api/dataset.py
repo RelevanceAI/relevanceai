@@ -876,10 +876,10 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("pokedex")
-            filtered = df.filter(items=["Bulbasaur"])
-            filtered = df.filter(index="abilities", like="Blaze")
-            filtered = df.filter(index="type1", regex=".F")
+            df = client.Dataset("ecommerce-example-encoded")
+            filtered = df.filter(items=["product_title", "query", "product_price"])
+            filtered = df.filter(index="query", like="routers")
+            filtered = df.filter(index="product_title", regex=".*Hard.*Drive.*")
 
         """
         fields = []
