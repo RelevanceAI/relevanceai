@@ -600,6 +600,7 @@ class Read(BatchAPIClient):
 
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
+            df.info()
         """
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
