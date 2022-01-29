@@ -19,7 +19,6 @@ from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
-from relevanceai.clusterer import Clusterer
 
 
 class Operations(Write):
@@ -93,6 +92,8 @@ class Operations(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
+        from relevanceai.clusterer import Clusterer
+
         clusterer = Clusterer(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )

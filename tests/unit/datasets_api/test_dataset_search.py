@@ -7,7 +7,7 @@ MULTIVECTOR_QUERY = [
 ]
 
 CHUNK_MULTIVECTOR_QUERY = [
-    {"vector": generate_random_string(N=100), "fields": ["_chunk_.label_chunkvector_"]}
+    {"vector": generate_random_vector(N=100), "fields": ["_chunk_.label_chunkvector_"]}
 ]
 
 
@@ -34,5 +34,6 @@ def test_multistep_chunk_search(test_dataset_df: Dataset):
     results = test_dataset_df.search.multistep_chunk_search(
         multivector_query=CHUNK_MULTIVECTOR_QUERY,
         first_step_multivector_query=MULTIVECTOR_QUERY,
+        chunk_field="_chunk_",
     )
     assert True
