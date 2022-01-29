@@ -12,6 +12,7 @@ from doc_utils import DocUtils
 from typing import Dict, List, Union, Callable
 
 from relevanceai.dataset_api.dataset_read import Read
+from relevanceai.dataset_api.dataset_series import Series
 
 
 class Write(Read):
@@ -420,37 +421,6 @@ class Write(Read):
         )
 
     concat = cat
-
-    def vectorize(self, field, model):
-        """
-        Vectorizes a Particular field (text) of the dataset
-
-        Parameters
-        ----------
-        field : str
-            The text field to select
-        model
-            a Type deep learning model that vectorizes text
-
-        Examples
-        --------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            from vectorhub.encoders.text.tfhub import USE2Vec
-            model = USE2Vec()
-
-            text_field = "text_field"
-            df[text_field].vectorize(model)
-
-        """
-        series = Series(self)
-        series(self.dataset_id, field).vectorize(model)
 
     # def insert_csv(self, filename: str, **kwargs):
     #     """
