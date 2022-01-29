@@ -3,7 +3,7 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
-v0.30.2
+v0.31.0
 ---------
 
 - Include more native sklearn integration. KMeans and MiniBatchKMeans now supported natively.
@@ -12,6 +12,9 @@ v0.30.2
 - `groupby` and `agg` now supported
 - Added warnings to `vectorize` method
 - Bug Fix to list_closest_to_center to now return results
+- Add `send_dataset`
+- Add `clone_dataset` 
+- Add references to available example datasets
 
 Developer changes:
 
