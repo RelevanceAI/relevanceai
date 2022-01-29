@@ -9,6 +9,7 @@ v0.30.2
 - Include more native sklearn integration. KMeans and MiniBatchKMeans now supported natively.
 - Fix to `vectorize` and `sample` in Series
 - Fixes to cluster aggregation for the clusterer class and cluster metrics for the clusterer class
+- `groupby` and `agg` now supported
 
 Developer changes:
 

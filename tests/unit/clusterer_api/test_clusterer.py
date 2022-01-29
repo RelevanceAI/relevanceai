@@ -3,8 +3,25 @@
 """
 
 import pandas as pd
+import pytest
 from relevanceai.clusterer import kmeans_clusterer
 from relevanceai.http_client import Dataset, Client, Clusterer
+from relevanceai.dataset_api.cluster_groupby import ClusterGroupby
+
+CLUSTER_ALIAS = "kmeans_10"
+VECTOR_FIELDS = ["sample_1_vector_"]
+
+
+@pytest.fixture
+def test_clusterer(test_client, test_clustered_dataset: Dataset):
+    df: Dataset = test_client.Dataset(test_clustered_dataset)
+
+    model = get_model()
+
+    clusterer: Clusterer = df.cluster(
+        model=model, vector_fields=VECTOR_FIELDS, alias=CLUSTER_ALIAS
+    )
+    return clusterer
 
 
 def get_model():
@@ -26,21 +43,18 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
     assert f"_cluster_.{vector_field}.{alias}" in df.schema
 
 
-def test_centroids(test_client, test_clustered_dataset: Dataset):
-    CLUSTER_ALIAS = "kmeans_10"
-    VECTOR_FIELDS = ["sample_1_vector_"]
+def test_closest(test_clusterer):
+    closest = test_clusterer.list_closest_to_center()
+    assert True
 
-    df: Dataset = test_client.Dataset(test_clustered_dataset)
 
-    model = get_model()
+def test_furthest(test_clusterer):
+    furthest = test_clusterer.list_furthest_from_center()
+    assert True
 
-    clusterer: Clusterer = df.cluster(
-        model=model, vector_fields=VECTOR_FIELDS, alias=CLUSTER_ALIAS
-    )
-    closest = clusterer.list_closest_to_center()
-    furthest = clusterer.list_furthest_from_center()
-    agg = clusterer.agg({"sample_2_label": "avg"})
-    groupby_agg = clusterer.groupby(["sample_3_description"]).agg(
-        {"sample_2_label": "avg"}
-    )
+
+def test_agg(test_clusterer: Clusterer):
+    agg = test_clusterer.agg({"sample_2_label": "avg"})
+    cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
+    groupby_agg = cluster_groupby.agg({"sample_2_label": "avg"})
     assert True
