@@ -24,7 +24,6 @@ class Write(Read):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
-        *args,
         **kwargs,
     ) -> Dict:
 
@@ -78,7 +77,7 @@ class Write(Read):
             df.insert_documents(documents)
 
         """
-        return self._insert_documents(  # type: ignore
+        return self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -87,11 +86,10 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
-            *args,
             **kwargs,
         )
 
-    def insert_csv(  # type: ignore
+    def insert_csv(
         self,
         filepath_or_buffer,
         chunksize: int = 10000,
