@@ -28,7 +28,7 @@ import os
 from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.dataset_api.dataset import Dataset, Datasets
+from relevanceai.dataset_api import Dataset, Datasets
 from relevanceai.clusterer import Clusterer, ClusterBase
 from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 

@@ -84,36 +84,6 @@ class Read(BatchAPIClient):
         n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
         return (n_documents, len(schema))
 
-    def __getitem__(self, field):
-        """
-        Returns a Series Object that selects a particular field within a dataset
-
-        Parameters
-        ----------
-        field
-            the particular field within the dataset
-
-        Returns
-        -------
-        Tuple
-            (N, C)
-
-        Example
-        ---------------
-        .. code-block::
-
-            from relevanceai import Client
-
-            client = Client()
-
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-
-            field = "sample_field"
-            series = df[field]
-        """
-        return Series(self.project, self.api_key, self.dataset_id, field)
-
     def _get_possible_dtypes(self, schema):
         possible_dtypes = []
         for v in schema.values():

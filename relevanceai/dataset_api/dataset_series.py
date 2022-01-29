@@ -10,7 +10,6 @@ import numpy as np
 from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.dataset_api.dataset_api import Dataset
 from relevanceai.warnings import warn_function_is_work_in_progress
 
 
@@ -100,24 +99,34 @@ class Series(BatchAPIClient):
             df.sample(n=3)
 
         """
-        select_fields = [self.field] if isinstance(self.field, str) else self.field
-        if output_format == "json":
-            return Dataset(self.project, self.api_key)(self.dataset_id).sample(
-                n=n,
-                frac=frac,
-                filters=filters,
-                random_state=random_state,
-                select_fields=select_fields,
-                include_vector=include_vector,
+        select_fields = [self.field]
+
+        if frac and n:
+            raise ValueError("Only one of n or frac can be provided")
+
+        if frac:
+            if frac > 1 or frac < 0:
+                raise ValueError("Fraction must be between 0 and 1")
+            n = math.ceil(
+                self.get_number_of_documents(self.dataset_id, filters=filters) * frac
             )
-        return Dataset(self.project, self.api_key)(self.dataset_id).sample(
-            n=n,
-            frac=frac,
+
+        documents = self.datasets.documents.get_where(
+            dataset_id=self.dataset_id,
             filters=filters,
+            page_size=n,
             random_state=random_state,
+            is_random=True,
             select_fields=select_fields,
             include_vector=include_vector,
-        )
+        )["documents"]
+
+        if output_format == "json":
+            return documents
+        elif output_format == "pandas":
+            return pd.DataFrame.from_dict(documents, orient="records")
+        else:
+            raise ValueError("Incorrect output format")
 
     head = sample
 
@@ -130,7 +139,8 @@ class Series(BatchAPIClient):
         show_progress_bar: bool = True,
     ):
         select_fields = [self.field] if isinstance(self.field, str) else self.field
-        return Dataset(self.project, self.api_key)(self.dataset_id).all(
+        return self._get_all_documents(
+            dataset_id=self.dataset_id,
             chunksize=chunksize,
             filters=filters,
             sort=sort,

@@ -30,10 +30,9 @@ from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
-from relevanceai.dataset_api.dataset import Dataset
 from relevanceai.integration_checks import is_sklearn_available
 from relevanceai.dataset_api.groupby import Groupby, Agg
-
+from relevanceai.dataset_api import Dataset
 
 from doc_utils import DocUtils
 
