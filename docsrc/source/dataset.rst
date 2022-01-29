@@ -37,6 +37,6 @@ It is instantiated like this:
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset_search.search
+.. autoclass:: relevanceai.dataset_api.dataset_search.Search
    :members:
    :exclude-members: __init__
