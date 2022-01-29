@@ -17,6 +17,7 @@ from relevanceai.dataset_api.helpers import _build_filters
 
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.dataset_api.dataset_api import Dataset
 
 
 class Series(BatchAPIClient):
