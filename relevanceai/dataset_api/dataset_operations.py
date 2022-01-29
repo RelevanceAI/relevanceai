@@ -92,7 +92,6 @@ class Operations(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-
         from relevanceai.clusterer import Clusterer
 
         clusterer = Clusterer(
