@@ -1,6 +1,7 @@
 """
 All admin-related tasks.
 """
+from typing import Optional
 from relevanceai.base import _Base
 
 
@@ -28,8 +29,8 @@ class AdminClient(_Base):
         self,
         dataset_id: str,
         source_dataset_id: str,
-        source_project: str,
-        source_api_key: str,
+        source_project: Optional[str],
+        source_api_key: Optional[str],
         project: str = None,
         api_key: str = None,
     ):
