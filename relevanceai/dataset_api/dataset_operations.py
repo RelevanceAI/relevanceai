@@ -22,7 +22,7 @@ from relevanceai.dataset_api.dataset_series import Series
 
 
 class Operations(Write):
-    def vectorize(self, field, model):
+    def vectorize(self, field: str, model):
         """
         Vectorizes a Particular field (text) of the dataset
 
@@ -50,7 +50,12 @@ class Operations(Write):
             text_field = "text_field"
             df.vectorize(text_field, model)
         """
-        return Series(self).vectorize(model)
+        return Series(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            field=field,
+        ).vectorize(model)
 
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
