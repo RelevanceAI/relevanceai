@@ -37,16 +37,19 @@ class AdminClient(_Base):
 
         Example
         -----------
-        >>> client = Client()
-        >>> client.admin.send_dataset(
-            dataset_id="research",
-            receiver_project="...",
-            receiver_api_key="..."
-        )
 
+        .. code-block::
+
+            client = Client()
+            client.admin.send_dataset(
+                dataset_id="research",
+                receiver_project="...",
+                receiver_api_key="..."
+            )
 
         Parameters
-        ----------
+        -------------
+
         dataset_id:
             The dataset to copy
         source_dataset_id:
