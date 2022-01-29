@@ -18,6 +18,7 @@ from relevanceai.dataset_api.helpers import _build_filters
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_api import Dataset
+from relevanceai.warnings import warn_function_is_work_in_progress
 
 
 class Series(BatchAPIClient):
@@ -171,6 +172,8 @@ class Series(BatchAPIClient):
             text_field = "text_field"
             df.vectorize(text_field, model)
         """
+        warn_function_is_work_in_progress()
+
         if hasattr(model, "encode_documents"):
 
             def encode_documents(documents):
@@ -179,9 +182,11 @@ class Series(BatchAPIClient):
         else:
 
             def encode_documents(documents):
-                return model([self.field], documents)
+                return model(documents)
 
-        return self.pull_update_push(self.dataset_id, encode_documents)
+        return self.pull_update_push(
+            self.dataset_id, encode_documents, select_fields=[self.field]
+        )
 
     def apply(
         self,
