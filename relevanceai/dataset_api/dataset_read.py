@@ -7,14 +7,11 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from doc_utils import DocUtils
+from typing import Dict, List, Union
 
-from typing import Dict, List, Union, Callable, Optional
-
+from relevanceai.dataset_api.helpers import _build_filters
 from relevanceai.dataset_api.groupby import Groupby, Agg
 from relevanceai.dataset_api.centroids import Centroids
-from relevanceai.dataset_api.helpers import _build_filters
-
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
@@ -34,28 +31,10 @@ class Read(BatchAPIClient):
         self.fields = fields
         self.dataset_id = dataset_id
         self.vector_tools = VectorTools(project=project, api_key=api_key)
-        super().__init__(project=project, api_key=api_key)
-
-    def __call__(
-        self,
-        dataset_id: str,
-        image_fields: List = [],
-        text_fields: List = [],
-        audio_fields: List = [],
-        highlight_fields: dict = {},
-        output_format: str = "pandas",
-    ):
-        self.dataset_id = dataset_id
-        self.image_fields = image_fields
-        self.text_fields = text_fields
-        self.audio_fields = audio_fields
-        self.highlight_fields = highlight_fields
-        self.output_format = output_format
         self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
         self.agg = Agg(self.project, self.api_key, self.dataset_id)
         self.centroids = Centroids(self.project, self.api_key, self.dataset_id)
-
-        return self
+        super().__init__(project=project, api_key=api_key)
 
     @property
     def shape(self):

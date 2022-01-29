@@ -1,6 +1,7 @@
 """
 Pandas like dataset API
 """
+from typing import List
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 
@@ -70,3 +71,20 @@ class Stats(Read):
 
         """
         return self.datasets.monitor.health(self.dataset_id)
+
+    def __call__(
+        self,
+        dataset_id: str,
+        image_fields: List = [],
+        text_fields: List = [],
+        audio_fields: List = [],
+        highlight_fields: dict = {},
+        output_format: str = "pandas",
+    ):
+        self.dataset_id = dataset_id
+        self.image_fields = image_fields
+        self.text_fields = text_fields
+        self.audio_fields = audio_fields
+        self.highlight_fields = highlight_fields
+        self.output_format = output_format
+        return self
