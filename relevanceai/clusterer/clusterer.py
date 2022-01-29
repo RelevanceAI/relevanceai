@@ -32,6 +32,8 @@ from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 # from relevanceai.dataset_api import Dataset
 from relevanceai.dataset_api.dataset import Dataset
 from relevanceai.integration_checks import is_sklearn_available
+from relevanceai.dataset_api.groupby import Groupby, Agg
+
 
 from doc_utils import DocUtils
 
@@ -80,6 +82,10 @@ class Clusterer(BatchAPIClient):
             self.api_key: str = api_key
 
         super().__init__(project=project, api_key=api_key)
+
+    def __call__(self):
+        self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
+        self.agg = Agg(self.project, self.api_key, self.dataset_id)
 
     # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):
