@@ -8,6 +8,7 @@ from relevanceai.dataset_api.dataset_export import Export
 from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
+from relevanceai.dataset_api.dataset_search import Search
 
 
 class Dataset(Export, Stats, Operations):
@@ -19,6 +20,9 @@ class Dataset(Export, Stats, Operations):
         self.fields = fields
         self.dataset_id = dataset_id
         super().__init__(
+            project=project, api_key=api_key, fields=fields, dataset_id=dataset_id
+        )
+        self.search = Search(
             project=project, api_key=api_key, fields=fields, dataset_id=dataset_id
         )
 
