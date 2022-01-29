@@ -43,18 +43,19 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
     assert f"_cluster_.{vector_field}.{alias}" in df.schema
 
 
-def test_closest(test_clusterer):
+def test_closest(test_clusterer: Clusterer):
     closest = test_clusterer.list_closest_to_center()
-    assert True
+    assert len(closest["results"]) > 0
 
 
-def test_furthest(test_clusterer):
+def test_furthest(test_clusterer: Clusterer):
     furthest = test_clusterer.list_furthest_from_center()
-    assert True
+    assert len(furthest["results"]) > 0
 
 
 def test_agg(test_clusterer: Clusterer):
-    agg = test_clusterer.agg({"sample_2_label": "avg"})
+    agg = test_clusterer.agg({"sample_2_value": "avg"})
     cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
-    groupby_agg = cluster_groupby.agg({"sample_2_label": "avg"})
-    assert True
+    groupby_agg = cluster_groupby.agg({"sample_2_value": "avg"})
+    assert isinstance(groupby_agg, dict)
+    assert len(groupby_agg) > 0

@@ -88,14 +88,17 @@ class Client(BatchAPIClient, DocUtils):
             )
         self.vector_tools = VectorTools(project, api_key)
 
-        self.Dataset = Dataset(project=project, api_key=api_key)
-        self.Datasets = Datasets(project=project, api_key=api_key)
+        # Legacy functions (?) - forgot what they were for
+        # self.Dataset = Dataset(project=project, api_key=api_key)
+        # self.Datasets = Datasets(project=project, api_key=api_key)
 
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
-            project=project, api_key=api_key
+            project=project, api_key=api_key, dataset_id=""
         )._insert_documents
-        self.insert_csv = Dataset(project=project, api_key=api_key)._insert_csv
+        self.insert_csv = Dataset(
+            project=project, api_key=api_key, dataset_id=""
+        )._insert_csv
 
     # @property
     # def output_format(self):
@@ -275,6 +278,14 @@ class Client(BatchAPIClient, DocUtils):
 
         """
         return self.datasets.delete(dataset_id)
+
+    def Dataset(self, dataset_id: str, fields: list = []):
+        return Dataset(
+            dataset_id=dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            fields=fields,
+        )
 
     ### Clustering
 

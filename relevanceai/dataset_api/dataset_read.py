@@ -28,9 +28,11 @@ class Read(BatchAPIClient):
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
 
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, dataset_id: str, fields: list = []):
         self.project = project
         self.api_key = api_key
+        self.fields = fields
+        self.dataset_id = dataset_id
         self.vector_tools = VectorTools(project=project, api_key=api_key)
         super().__init__(project=project, api_key=api_key)
 
@@ -261,6 +263,8 @@ class Read(BatchAPIClient):
             df = client.Dataset("sample_dataset", image_fields=["image_url])
             df.sample()
         """
+        if not select_fields and self.fields:
+            select_fields = self.fields
 
         if frac and n:
             raise ValueError("Only one of n or frac can be provided")
