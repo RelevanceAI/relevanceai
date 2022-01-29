@@ -9,14 +9,8 @@ import numpy as np
 
 from doc_utils import DocUtils
 
-from typing import Dict, List, Union, Callable, Optional
+from typing import Dict, List, Union, Callable
 
-from relevanceai.dataset_api.groupby import Groupby, Agg
-from relevanceai.dataset_api.centroids import Centroids
-from relevanceai.dataset_api.helpers import _build_filters
-
-from relevanceai.vector_tools.client import VectorTools
-from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_read import Read
 
 
