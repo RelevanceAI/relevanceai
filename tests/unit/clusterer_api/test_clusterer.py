@@ -8,9 +8,10 @@ from relevanceai.http_client import Dataset, Client, Clusterer
 
 
 def get_model():
+    # get a kmeans model
     from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
-    return KMeansModel()
+    return KMeansModel(verbose=False)
 
 
 def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):

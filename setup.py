@@ -60,7 +60,6 @@ test_requirements = (
         "mypy",
         "types-requests",
         "pytest-sugar",
-        "pytest-xdist",
         "pytest-rerunfailures",
     ]
     + excel_requirements

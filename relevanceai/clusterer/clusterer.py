@@ -98,6 +98,33 @@ class Clusterer(BatchAPIClient):
             alias=self.alias,
         )
 
+    def groupby(self):
+        return ClusterGroupby(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+        )
+
+    def agg(self, groupby_call):
+        """Aggregate the cluster class."""
+        self.groupby = ClusterGroupby(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+        )
+        return ClusterAgg(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            groupby_call=groupby_call,
+        )
+
     # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):
         # Add support for not just sklearn models but sklearn models
