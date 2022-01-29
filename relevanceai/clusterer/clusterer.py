@@ -89,7 +89,7 @@ class Clusterer(BatchAPIClient):
 
         if isinstance(model, (KMeans, MiniBatchKMeans)):
 
-            class CentroidClusterModel(CentroidClusterbase):
+            class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
                     self.model = model
 
