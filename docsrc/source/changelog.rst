@@ -11,6 +11,7 @@ v0.30.2
 - Fixes to cluster aggregation for the clusterer class and cluster metrics for the clusterer class
 - `groupby` and `agg` now supported
 - Added warnings to `vectorize` method
+- Bug Fix to list_closest_to_center to now return results
 
 Developer changes:
 
