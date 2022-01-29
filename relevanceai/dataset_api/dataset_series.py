@@ -145,7 +145,7 @@ class Series(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def vectorize(self, model) -> None:
+    def vectorize(self, model):
         """
         Vectorises over a field give a model architecture
 
@@ -181,7 +181,7 @@ class Series(BatchAPIClient):
             def encode_documents(documents):
                 return model([self.field], documents)
 
-        self.pull_update_push(self.dataset_id, encode_documents)
+        return self.pull_update_push(self.dataset_id, encode_documents)
 
     def apply(
         self,
@@ -454,38 +454,3 @@ class Series(BatchAPIClient):
         elif isinstance(loc, str):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
-
-    def vectorize(self, model):
-        """
-        Vectorises over a field give a model architecture
-        Parameters
-        ----------
-
-        model : Machine learning model for vectorizing text`
-            The dataset_id of concern
-
-        Example
-        -------
-        .. code-block::
-
-            from relevanceai import Client
-            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
-            client = Client()
-            dataset_id = "sample_dataset"
-            df = client.Dataset(dataset_id)
-            text_field = "text_field"
-            df.vectorize(text_field, model)
-        """
-        # Assume it is a vectorhub model and then if not assume it's just a normal callable
-        if hasattr(model, "encode_documents"):
-
-            def encode_documents(documents):
-                return model.encode_documents(self.field, documents)
-
-        else:
-
-            def encode_documents(documents):
-                return model([self.field], documents)
-
-        return self.pull_update_push(self.dataset_id, encode_documents)

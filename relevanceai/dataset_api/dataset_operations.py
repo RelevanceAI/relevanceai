@@ -50,8 +50,7 @@ class Operations(Write):
             text_field = "text_field"
             df.vectorize(text_field, model)
         """
-        series = Series(self)
-        series(self.dataset_id, field).vectorize(model)
+        return Series(self).vectorize(model)
 
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
