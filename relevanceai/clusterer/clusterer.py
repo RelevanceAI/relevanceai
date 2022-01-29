@@ -31,7 +31,7 @@ from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
 from relevanceai.integration_checks import is_sklearn_available
-from relevanceai.dataset_api.groupby import Groupby, Agg
+from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
 
 from doc_utils import DocUtils
@@ -83,8 +83,20 @@ class Clusterer(BatchAPIClient):
         super().__init__(project=project, api_key=api_key)
 
     def __call__(self):
-        self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
-        self.agg = Agg(self.project, self.api_key, self.dataset_id)
+        self.groupby = ClusterGroupby(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+        )
+        self.agg = ClusterAgg(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
 
     # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):

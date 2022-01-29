@@ -52,7 +52,17 @@ hdbscan = ["hdbscan>=0.8.27"]
 # vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
 test_requirements = (
-    ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
+    [
+        "pytest",
+        "pytest-dotenv",
+        "pytest-cov",
+        "pytest-mock",
+        "mypy",
+        "types-requests",
+        "pytest-sugar",
+        "pytest-xdist",
+        "pytest-rerunfailures",
+    ]
     + excel_requirements
     + vis_requirements
     + requirements
