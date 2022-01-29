@@ -26,6 +26,10 @@ class Operations(Write):
         """
         Vectorizes a Particular field (text) of the dataset
 
+        .. warning::
+            This function is currently in beta and is likely to change in the future.
+            We recommend not using this in any production systems.
+
         Parameters
         ----------
         field : str
