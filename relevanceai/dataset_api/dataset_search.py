@@ -120,6 +120,17 @@ class Search(Read):
             Search history ID, only used for storing search histories.
         query: string
             What to store as the query name in the dashboard
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            results = df.search.vector_search(multivector_query=MULTIVECTOR_QUERY)
+
         """
 
         return self.services.search.vector(
@@ -227,6 +238,16 @@ class Search(Read):
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
 
 
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            results = df.search.vector_search(multivector_query=MULTIVECTOR_QUERY)
+
         """
         return self.services.search.hybrid(
             dataset_id=self.dataset_id,
@@ -330,6 +351,20 @@ class Search(Read):
             Whether to scale up the metric by 100
         query: string
             What to store as the query name in the dashboard
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            results = df.search.chunk_search(
+                chunk_field="_chunk_",
+                multivector_query=MULTIVECTOR_QUERY
+            )
+
         """
         return self.services.search.chunk(
             dataset_id=self.dataset_id,
@@ -434,6 +469,20 @@ class Search(Read):
             Size of each page of results
         query: string
             What to store as the query name in the dashboard
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            results = df.search.multistep_chunk(
+                chunk_field="_chunk_",
+                multivector_query=MULTIVECTOR_QUERY,
+                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
+            )
 
         """
         return self.services.search.multistep_chunk(

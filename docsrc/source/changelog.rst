@@ -15,6 +15,8 @@ v0.31.0
 - Add `send_dataset`
 - Add `clone_dataset` 
 - Add references to available example datasets
+- Added `vector_search`, `chunk_search` , `multistep_chunk_search`, `hybrid_search`
+as part of the search endpoints
 
 Developer changes:
 
