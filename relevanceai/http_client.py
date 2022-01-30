@@ -2,20 +2,20 @@
 the Dataset class or Clusterer class.
 
 
-The recomended way to log in is using: 
+The recomended way to log in is using:
 
 .. code-block::
 
-    from relevanceai import Client 
+    from relevanceai import Client
     client = Client()
     client.list_datasets()
 
-If the user already knows their project and API key, they can 
-log in this way: 
+If the user already knows their project and API key, they can
+log in this way:
 
 .. code-block::
-    
-    from relevanceai import Client 
+
+    from relevanceai import Client
     project = ""
     api_key = ""
     client = Client(project=project, api_key=api_key)
@@ -28,7 +28,7 @@ import os
 from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.dataset_api.dataset import Dataset, Datasets
+from relevanceai.dataset_api import Dataset, Datasets
 from relevanceai.clusterer import Clusterer, ClusterBase
 from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 
@@ -88,8 +88,17 @@ class Client(BatchAPIClient, DocUtils):
             )
         self.vector_tools = VectorTools(project, api_key)
 
-        self.Dataset = Dataset(project=project, api_key=api_key)
-        self.Datasets = Datasets(project=project, api_key=api_key)
+        # Legacy functions (?) - forgot what they were for
+        # self.Dataset = Dataset(project=project, api_key=api_key)
+        # self.Datasets = Datasets(project=project, api_key=api_key)
+
+        # Add non breaking changes to support old ways of inserting documents and csv
+        self.insert_documents = Dataset(
+            project=project, api_key=api_key, dataset_id=""
+        )._insert_documents
+        self.insert_csv = Dataset(
+            project=project, api_key=api_key, dataset_id=""
+        )._insert_csv
 
     # @property
     # def output_format(self):
@@ -270,6 +279,14 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.delete(dataset_id)
 
+    def Dataset(self, dataset_id: str, fields: list = []):
+        return Dataset(
+            dataset_id=dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            fields=fields,
+        )
+
     ### Clustering
 
     def Clusterer(
@@ -319,3 +336,99 @@ class Client(BatchAPIClient, DocUtils):
     def _set_logger_to_verbose(self):
         # Use this for debugging
         self.config["logging.logging_level"] = "INFO"
+
+    def send_dataset(
+        self,
+        dataset_id: str,
+        receiver_project: str,
+        receiver_api_key: str,
+    ):
+        """
+        Send an individual a dataset. For this, you must know their API key.
+
+
+        Parameters
+        -----------
+
+        dataset_id: str
+            The name of the dataset
+        receiver_project: str
+            The project name that will receive the dataset
+        receiver_api_key: str
+            The project API key that will receive the dataset
+
+
+        Example
+        --------
+
+        .. code-block::
+
+            client = Client()
+            client.send_dataset(
+                dataset_id="research",
+                receiver_project="...",
+                receiver_api_key="..."
+            )
+
+        """
+        return self.admin.send_dataset(
+            dataset_id=dataset_id,
+            receiver_project=receiver_project,
+            receiver_api_key=receiver_api_key,
+        )
+
+    def clone_dataset(
+        self,
+        source_dataset_id: str,
+        new_dataset_id: str = None,
+        source_project: str = None,
+        source_api_key: str = None,
+        project: str = None,
+        api_key: str = None,
+    ):
+        """
+        Clone a dataset from another user's projects into your project.
+
+        Parameters
+        ----------
+        dataset_id:
+            The dataset to copy
+        source_dataset_id:
+            The original dataset
+        source_project:
+            The original project to copy from
+        source_api_key:
+            The original API key of the project
+        project:
+            The original project
+        api_key:
+            The original API key
+
+        Example
+        -----------
+
+        .. code-block::
+
+            client = Client()
+            client.send_dataset(
+                dataset_id="research",
+                source_project="...",
+                source_api_key="..."
+            )
+
+        """
+        if source_api_key is None:
+            source_api_key = self.api_key
+            source_project = self.project
+
+        if new_dataset_id is None:
+            new_dataset_id = source_dataset_id
+
+        return self.admin.copy_foreign_dataset(
+            dataset_id=new_dataset_id,
+            source_dataset_id=source_dataset_id,
+            source_project=source_project,
+            source_api_key=source_api_key,
+            project=project,
+            api_key=api_key,
+        )

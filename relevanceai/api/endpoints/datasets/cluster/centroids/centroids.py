@@ -87,8 +87,7 @@ class CentroidsClient(_Base):
             "include_vector": include_vector,
             "include_count": include_count,
         }
-        # JOSH CHANGE THIS PLEASE
-        endpoint = "/services/cluster/centroids/list_closest_to_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
         self._log_to_dashboard(
             method=method,

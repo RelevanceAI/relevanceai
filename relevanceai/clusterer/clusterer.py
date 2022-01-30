@@ -7,7 +7,7 @@ You can run the Clusterer as such:
 .. code-block::
 
     from relevanceai import Client
-    from relevanceai.cluster import KMeansModel
+    from relevanceai.clusterer import KMeansModel
     client = Client()
     model = KMeansModel(n_clusters=2)
     clusterer = client.Clusterer(model, alias="kmeans_2")
@@ -37,7 +37,9 @@ from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
-from relevanceai.dataset_api.dataset import Dataset
+from relevanceai.integration_checks import is_sklearn_available
+from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
+from relevanceai.dataset_api import Dataset
 
 from doc_utils import DocUtils
 
@@ -81,7 +83,7 @@ class Clusterer(BatchAPIClient):
     .. code-block::
 
         from relevanceai import Client
-        from sklearn.cluster import KMeans
+        from relevanceai.clusterer import KMeansModel
 
         model = KMeans(n_clusters=2)
         clusterer = client.Clusterer(model, alias="kmeans_2")
@@ -111,9 +113,89 @@ class Clusterer(BatchAPIClient):
 
         super().__init__(project=project, api_key=api_key)
 
+    def __call__(self):
+        self.groupby = ClusterGroupby(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+        )
+        self.agg = ClusterAgg(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+
+    def groupby(self):
+        return ClusterGroupby(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+        )
+
+    def agg(self, groupby_call):
+        """Aggregate the cluster class."""
+        self.groupby = ClusterGroupby(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+        )
+        return ClusterAgg(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            groupby_call=groupby_call,
+        )
+
+    # Adding first-class sklearn integration
+    def _assign_sklearn_model(self, model):
+        # Add support for not just sklearn models but sklearn models
+        # with first -class integration for kmeans
+        from sklearn.cluster import KMeans, MiniBatchKMeans
+
+        if isinstance(model, (KMeans, MiniBatchKMeans)):
+
+            class CentroidClusterModel(CentroidClusterBase):
+                def __init__(self, model):
+                    self.model = model
+
+                def fit_transform(self, X):
+                    return self.model.fit_transform(X)
+
+                def get_centers(self):
+                    return self.model.cluster_centers_
+
+            new_model = CentroidClusterModel(model)
+            return new_model
+
+        if hasattr(model, "fit_documents"):
+            return model
+        elif hasattr(model, "fit_transform"):
+            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
+            return ClusterModel()
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+            ClusterModel = type("ClusterBase", (ClusterBase,), data)
+            return ClusterModel()
+
     def _assign_model(self, model):
         # Check if this is a model that will fit
         # otherwise - forces a Clusterbase
+        if is_sklearn_available() and "sklearn" in str(type(model)):
+            model = self._assign_sklearn_model(model)
+            if model is not None:
+                return model
+
         if isinstance(model, ClusterBase):
             return model
         elif hasattr(model, "fit_documents"):
@@ -183,7 +265,7 @@ class Clusterer(BatchAPIClient):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.cluster import KMeansModel
+            from relevanceai.clusterer import KMeansModel
             client = Client()
             model = KMeansModel(n_clusters=2)
             clusterer = client.Clusterer(model, alias="kmeans_2")
@@ -402,7 +484,7 @@ class Clusterer(BatchAPIClient):
             client = Client()
             df = client.Dataset("sample_dataset")
 
-            from relevanceai.cluster import KMeansModel
+            from relevanceai.clusterer import KMeansModel
             clusterer = client.Clusterer(5)
             clusterer.fit(df, ["sample_vector_"])
             clusterer.aggregate(
