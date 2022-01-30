@@ -32,14 +32,14 @@ def test_centroids(test_client, test_clustered_dataset):
     assert True
 
 
-def test_groupby_agg(test_client, test_sample_vector_dataset):
+def test_groupby_agg(test_client: Client, test_sample_vector_dataset: Dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     agg = df.agg({"sample_1_label": "avg"})
     groupby_agg = df.groupby(["sample_1_description"]).agg({"sample_1_label": "avg"})
     assert True
 
 
-def test_groupby_mean_method(test_client, test_dataset_df):
+def test_groupby_mean_method(test_client, test_dataset_df: Dataset):
     manual_mean = test_dataset_df.groupby(["sample_1_label"]).agg(
         {"sample_1_value": "avg"}
     )
