@@ -28,13 +28,13 @@ requirements = [
     "numpy>=1.19.0",
     "joblib>=1.0.0",
     "scikit-learn",
+    "typing-extensions",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
     "plotly>=5.3.1",
-    "typing-extensions",
     "typeguard",
     "dash",
     "pillow",
@@ -52,7 +52,16 @@ hdbscan = ["hdbscan>=0.8.27"]
 # vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
 test_requirements = (
-    ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
+    [
+        "pytest",
+        "pytest-dotenv",
+        "pytest-cov",
+        "pytest-mock",
+        "mypy",
+        "types-requests",
+        "pytest-sugar",
+        "pytest-rerunfailures",
+    ]
     + excel_requirements
     + vis_requirements
     + requirements
@@ -87,7 +96,7 @@ dev_vis_requirements = (
 from pathlib import Path
 
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text()
+long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 name = "RelevanceAI"
 version = get_version("relevanceai/__init__.py")

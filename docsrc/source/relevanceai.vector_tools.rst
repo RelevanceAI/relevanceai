@@ -20,6 +20,14 @@ relevanceai.vector\_tools.cluster module
    :undoc-members:
    :show-inheritance:
 
+relevanceai.vector\_tools.cluster\_evaluate module
+--------------------------------------------------
+
+.. automodule:: relevanceai.vector_tools.cluster_evaluate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 relevanceai.vector\_tools.constants module
 ------------------------------------------
 
@@ -32,6 +40,22 @@ relevanceai.vector\_tools.dim\_reduction module
 -----------------------------------------------
 
 .. automodule:: relevanceai.vector_tools.dim_reduction
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+relevanceai.vector\_tools.nearest\_neighbours module
+----------------------------------------------------
+
+.. automodule:: relevanceai.vector_tools.nearest_neighbours
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+relevanceai.vector\_tools.plot\_text\_theme\_model module
+---------------------------------------------------------
+
+.. automodule:: relevanceai.vector_tools.plot_text_theme_model
    :members:
    :undoc-members:
    :show-inheritance:

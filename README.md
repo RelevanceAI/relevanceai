@@ -21,7 +21,7 @@ There are two main ways of documentations to take a look at:
 
 | API type      | Link |
 | ------------- | ----------- |
-| Guides | [Documentation](https://docs.relevance.ai/) | 
+| Guides | [Documentation](https://docs.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/)        |
 
 
@@ -33,7 +33,7 @@ pip install -U relevanceai
 Or you can install it via conda to:
 
 ```{bash}
-conda install pip 
+conda install pip
 pip install -c relevanceai
 ```
 
@@ -44,7 +44,7 @@ You can also install on conda (only available on Linux environments at the momen
 ### Login into your project space
 
 ```{python}
-from relevanceai import Client 
+from relevanceai import Client
 
 client = Client(<project_name>, <api_key>)
 ```
@@ -75,7 +75,7 @@ client.insert_documents(dataset_id="quickstart", docs=docs)
 
 ```{python}
 client.services.search.vector(
-    dataset_id="quickstart", 
+    dataset_id="quickstart",
     multivector_query=[
         {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
     ],
@@ -97,11 +97,18 @@ Then run testing using:
 Make sure to set your test credentials!
 
 ```{bash}
-export TEST_PROJECT = xxx 
-export TEST_API_KEY = xxx 
+export TEST_PROJECT = xxx
+export TEST_API_KEY = xxx
 
 python -m pytest
 mypy relevanceai
+```
+
+Set up precommit
+
+```{bash}
+pip install precommit
+pre-commit install
 ```
 
 ## 🧰 Config
@@ -124,103 +131,15 @@ To restore all options to their default, run the following:
 
 ### Changing the base URL
 
-You can change the base URL as such: 
+You can change the base URL as such:
 
 ```{python}
 client.base_url = "https://.../latest"
 ```
 
-You can also update the ingest base URL: 
+You can also update the ingest base URL:
 
 ```{python}
 client.ingest_base_url = "https://.../latest
 ```
 
-
-
-# RelevanceAI
-
-[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
-
-For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
-
-If you are looking for an SDK reference, you can find that [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).
-
-Built mainly for data scientists/engineers looking to experiment with vectors/embeddings.
-
-## Installation 
-
-The easiest way is to install this package is to run `pip install --upgrade relevanceai`.
-
-You can also install on conda (only available on Linux environments at the moment): `conda install -c relevance relevanceai`.
-
-## How to use the RelevanceAI client
-
-For example:
-
-```python
-## To instantiate the client 
-from relevanceai import Client
-client = Client()
-```
-
-## Development
-
-### Getting Started
-
-To get started with development, ensure you have `pytest` and `mypy` installed. These will help ensure typechecking and testing.
-
-```python
-python -m pip install pytest mypy
-```
-
-
-Then run testing using:
-
-Make sure to set your test credentials!
-
-```
-export TEST_PROJECT = xxx 
-export TEST_API_KEY = xxx 
-```
-
-```python
-python -m pytest
-mypy relevanceai
-```
-
-## Config
-
-The config contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://relevanceai.github.io/RelevanceAI/docs/html/index.html).  
-
-To view setting options, run the following:
-
-```python
-client.config.options
-```
-
-The syntax for selecting an option is *section.key*. For example, to disable logging, run the following to modify *logging.enable_logging*:
-
-```python
-client.config.set_option('logging.enable_logging', False)
-```
-
-To restore all options to their default, run the following:
-
-```python
-client.config.reset_to_default()
-```
-
-## Changing Base URL 
-
-You can change the base URL as such: 
-
-```
-client.base_url = "https://.../latest"
-```
-
-You can also update the ingest base URL: 
-
-```
-client.ingest_base_url = "https://.../latest
-```

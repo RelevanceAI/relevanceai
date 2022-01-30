@@ -131,8 +131,13 @@ class Transport(JSONEncoderUtils):
             dashboard_type="multivector_search",
         )
 
+    def print_dashboard_message(self, message: str):
+        if self.config["dashboard.show_dashboard_link"]:
+            print(message)
+
     def print_dashboard_url(self, dashboard_url):
-        print(f"You can now visit the dashboard at {dashboard_url}")
+        if self.config["dashboard.show_dashboard_link"]:
+            print(f"You can now visit the dashboard at {dashboard_url}")
 
     def make_http_request(
         self,

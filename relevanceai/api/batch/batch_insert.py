@@ -30,10 +30,10 @@ HALF_CHUNK_CODES = [413, 524]
 
 
 class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
-    def insert_documents(
+    def _insert_documents(
         self,
         dataset_id: str,
-        docs: list,
+        documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
@@ -58,7 +58,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ----------
         dataset_id : string
             Unique name of dataset
-        docs : list
+        documents : list
             A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         bulk_fn : callable
             Function to apply to documents before uploading
@@ -70,6 +70,16 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
+
+        Example
+        --------
+
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
+        >>> df.insert_documents(documents)
+
         """
 
         self.logger.info(f"You are currently inserting into {dataset_id}")
@@ -81,23 +91,27 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         self.datasets.create(dataset_id)
 
         # Turn _id into string
-        self._convert_id_to_string(docs)
+        self._convert_id_to_string(documents)
 
         if use_json_encoder:
-            docs = self.json_encoder(docs)
+            documents = self.json_encoder(documents)
 
-        def bulk_insert_func(docs):
+        def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
                 dataset_id,
-                docs,
+                documents,
                 return_documents=True,
                 *args,
                 **kwargs,
             )
 
+        print(
+            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+        )
+
         return self._write_documents(
             bulk_insert_func,
-            docs,
+            documents,
             bulk_fn,
             max_workers,
             retry_chunk_mult,
@@ -105,7 +119,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunksize=chunksize,
         )
 
-    def insert_csv(
+    def _insert_csv(
         self,
         dataset_id: str,
         filepath_or_buffer,
@@ -135,13 +149,22 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         retry_chunk_mult: int
             Multiplier to apply to chunksize if upload fails
         csv_args : dict
-            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/documents/reference/api/pandas.read_csv.html
         index_col : None
             Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
         col_for_id : str
             Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
         auto_generate_id: bool = True
             Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset")
+        >>> csv_filename = "temp.csv"
+        >>> df.insert_csv(csv_filename)
+
         """
 
         csv_args.pop("index_col", None)
@@ -208,25 +231,26 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if "_id" not in chunk.columns:
             raise MissingFieldError("Need _id as a column")
 
-        # Convert vector fields
-        vector_columns = [i for i in chunk.columns if i.endswith("_vector_")]
+        # add fix for when lists are read in as strings
+        EXCEPTION_COLUMNS = ("_vector_", "_chunk_")
+        vector_columns = [i for i in chunk.columns if i.endswith(EXCEPTION_COLUMNS)]
         for i in vector_columns:
             chunk[i] = chunk[i].apply(literal_eval)
 
         chunk_json = chunk.to_dict(orient="records")
-        response = self.insert_documents(
+        response = self._insert_documents(
             dataset_id=dataset_id,
-            docs=chunk_json,
+            documents=chunk_json,
             max_workers=max_workers,
             retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
         )
         return response
 
-    def update_documents(
+    def _update_documents(
         self,
         dataset_id: str,
-        docs: list,
+        documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
@@ -240,23 +264,26 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         Update a list of documents with multi-threading automatically enabled.
         Edits documents by providing a key value pair of fields you are adding or changing, make sure to include the "_id" in the documents.
 
+        Example
+        ----------
+
         >>> from relevanceai import Client
         >>> url = "https://api-aueast.relevance.ai/v1/"
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
         >>> client = Client(project, api_key)
-        >>> docs = client.datasets.documents.get_where(collection, select_fields=['title'])
-        >>> while len(docs['documents']) > 0:
-        >>>     docs['documents'] = model.encode_documents_in_bulk(['product_name'], docs['documents'])
-        >>>     client.update_documents(collection, docs['documents'])
-        >>>     docs = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=docs['cursor'])
+        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
+        >>> while len(documents['documents']) > 0:
+        >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
+        >>>     client.update_documents(collection, documents['documents'])
+        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=documents['cursor'])
 
         Parameters
         ----------
         dataset_id : string
             Unique name of dataset
-        docs : list
+        documents : list
             A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         bulk_fn : callable
             Function to apply to documents before uploading
@@ -277,15 +304,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         )
 
         # Turn _id into string
-        self._convert_id_to_string(docs)
+        self._convert_id_to_string(documents)
 
         if use_json_encoder:
-            docs = self.json_encoder(docs)
+            documents = self.json_encoder(documents)
 
-        def bulk_update_func(docs):
+        def bulk_update_func(documents):
             return self.datasets.documents.bulk_update(
                 dataset_id,
-                docs,
+                documents,
                 return_documents=True,
                 *args,
                 **kwargs,
@@ -293,7 +320,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         return self._write_documents(
             bulk_update_func,
-            docs,
+            documents,
             bulk_fn,
             max_workers,
             retry_chunk_mult,
@@ -301,11 +328,13 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunksize=chunksize,
         )
 
+    update_documents = _update_documents
+
     def pull_update_push(
         self,
-        original_collection: str,
+        dataset_id: str,
         update_function,
-        updated_collection: str = None,
+        updated_dataset_id: str = None,
         log_file: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
@@ -321,14 +350,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         Parameters
         ----------
-        original_collection : string
+        dataset_id: string
             The dataset_id of the collection where your original documents are
-        logging_collection: string
-            The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
-        updated_collection: string
-            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+        updated_dataset_id: string
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
         retrieve_chunk_size: int
@@ -348,7 +375,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check if a logging_collection has been supplied
         if log_file is None:
             log_file = (
-                original_collection
+                dataset_id
                 + "_"
                 + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
                 + "_pull_update_push"
@@ -363,7 +390,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Trust the process
         # Get document lengths to calculate iterations
-        original_length = self.get_number_of_documents(original_collection, filters)
+        original_length = self.get_number_of_documents(dataset_id, filters)
 
         # get the remaining number in case things break
         remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
@@ -386,7 +413,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ):
 
             orig_json = self.datasets.documents.get_where(
-                original_collection,
+                dataset_id,
                 filters=retrieve_filters,
                 page_size=retrieve_chunk_size,
                 select_fields=select_fields,
@@ -404,18 +431,18 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             updated_documents = [i["_id"] for i in documents]
 
             # Upload documents
-            if updated_collection is None:
-                insert_json = self.update_documents(
-                    dataset_id=original_collection,
-                    docs=updated_data,
+            if updated_dataset_id is None:
+                insert_json = self._update_documents(
+                    dataset_id=dataset_id,
+                    documents=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
                     use_json_encoder=use_json_encoder,
                 )
             else:
-                insert_json = self.insert_documents(
-                    dataset_id=updated_collection,
-                    docs=updated_data,
+                insert_json = self._insert_documents(
+                    dataset_id=updated_dataset_id,
+                    documents=updated_data,
                     max_workers=max_workers,
                     show_progress_bar=False,
                     use_json_encoder=use_json_encoder,
@@ -440,10 +467,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
     def pull_update_push_to_cloud(
         self,
-        original_collection: str,
+        dataset_id: str,
         update_function,
-        updated_collection: str = None,
-        logging_collection: str = None,
+        updated_dataset_id: str = None,
+        logging_dataset_id: str = None,
         updating_args: dict = {},
         retrieve_chunk_size: int = 100,
         retrieve_chunk_size_failure_retry_multiplier: float = 0.5,
@@ -461,11 +488,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         Parameters
         ----------
-        original_collection : string
+        original_dataset_id: string
             The dataset_id of the collection where your original documents are
-        logging_collection: string
+        logging_dataset_id: string
             The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
-        updated_collection: string
+        updated_dataset_id: string
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
@@ -483,9 +510,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             Whether to automatically convert documents to json encodable format
         """
         # Check if a logging_collection has been supplied
-        if logging_collection is None:
-            logging_collection = (
-                original_collection
+        if logging_dataset_id is None:
+            logging_dataset_id = (
+                dataset_id
                 + "_"
                 + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
                 + "_pull_update_push"
@@ -493,9 +520,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Check collections and create completed list if needed
         collection_list = self.datasets.list()
-        if logging_collection not in collection_list["datasets"]:
+        if logging_dataset_id not in collection_list["datasets"]:
             self.logger.info("Creating a logging collection for you.")
-            self.logger.info(self.datasets.create(logging_collection))
+            self.logger.info(self.datasets.create(logging_dataset_id))
 
         # Track failed documents
         failed_documents: List[Dict] = []
@@ -504,8 +531,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         for _ in range(number_of_retrieve_retries):
 
             # Get document lengths to calculate iterations
-            original_length = self.get_number_of_documents(original_collection, filters)
-            completed_length = self.get_number_of_documents(logging_collection)
+            original_length = self.get_number_of_documents(dataset_id, filters)
+            completed_length = self.get_number_of_documents(logging_dataset_id)
             remaining_length = original_length - completed_length
             iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
@@ -518,7 +545,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 self.logger.success(f"Pull, Update, Push is complete!")
                 return {
                     "failed_documents": failed_documents,
-                    "logging_collection": logging_collection,
+                    "logging_collection": logging_dataset_id,
                 }
 
             for _ in progress_bar(
@@ -526,7 +553,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             ):
 
                 # Get completed documents
-                log_json = self.get_all_documents(logging_collection)
+                log_json = self._get_all_documents(logging_dataset_id)
                 completed_documents_list = [i["_id"] for i in log_json]
 
                 # Get incomplete documents from raw collection
@@ -540,7 +567,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 ]
 
                 orig_json = self.datasets.documents.get_where(
-                    original_collection,
+                    dataset_id,
                     filters=retrieve_filters,
                     page_size=retrieve_chunk_size,
                     select_fields=select_fields,
@@ -560,18 +587,18 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 self.logger.debug(f"{len(updated_data)}")
 
                 # Upload documents
-                if updated_collection is None:
-                    insert_json = self.update_documents(
-                        dataset_id=original_collection,
-                        docs=updated_data,
+                if updated_dataset_id is None:
+                    insert_json = self._update_documents(
+                        dataset_id=dataset_id,
+                        documents=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
                         use_json_encoder=use_json_encoder,
                     )
                 else:
-                    insert_json = self.insert_documents(
-                        dataset_id=updated_collection,
-                        docs=updated_data,
+                    insert_json = self._insert_documents(
+                        dataset_id=updated_dataset_id,
+                        documents=updated_data,
                         max_workers=max_workers,
                         show_progress_bar=False,
                         use_json_encoder=use_json_encoder,
@@ -586,8 +613,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 success_documents = list(set(updated_documents) - set(failed_documents))
                 upload_documents = [{"_id": i} for i in success_documents]
 
-                self.insert_documents(
-                    logging_collection,
+                self._insert_documents(
+                    logging_dataset_id,
                     upload_documents,
                     max_workers=max_workers,
                 )
@@ -610,24 +637,24 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     )
                     return {
                         "failed_documents": failed_documents,
-                        "logging_collection": logging_collection,
+                        "logging_collection": logging_dataset_id,
                     }
 
         self.logger.success(f"Pull, Update, Push is complete!")
         return {
             "failed_documents": failed_documents,
-            "logging_collection": logging_collection,
+            "logging_collection": logging_dataset_id,
         }
 
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
         import pandas as pd
 
-        docs = [
+        documents = [
             {k: v for k, v in doc.items() if not pd.isna(v)}
             for doc in dataframe.to_dict(orient="records")
         ]
-        return self.insert_documents(dataset_id, docs, *args, **kwargs)
+        return self._insert_documents(dataset_id, documents, *args, **kwargs)
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 
@@ -649,7 +676,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     def _write_documents(
         self,
         insert_function,
-        docs: list,
+        documents: list,
         bulk_fn: Callable = None,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
@@ -658,7 +685,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     ):
 
         # Get one document to test the size
-        if len(docs) == 0:
+        if len(documents) == 0:
             self.logger.warning("No document is detected")
             return {
                 "inserted": 0,
@@ -667,15 +694,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             }
 
         # Insert documents
-        test_doc = json.dumps(docs[0], indent=4)
+        test_doc = json.dumps(documents[0], indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
             chunksize = (
                 int(target_chunk_mb / doc_mb) + 1
-                if int(target_chunk_mb / doc_mb) + 1 < len(docs)
-                else len(docs)
+                if int(target_chunk_mb / doc_mb) + 1 < len(documents)
+                else len(documents)
             )
             chunksize = max(chunksize, max_chunk_size)
 
@@ -683,7 +710,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         inserted: List[str] = []
 
         # Initialise failed documents
-        failed_ids = [i["_id"] for i in docs]
+        failed_ids = [i["_id"] for i in documents]
 
         # Initialise failed documents detailed
         failed_ids_detailed: List[str] = []
@@ -697,7 +724,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 if bulk_fn is not None:
                     insert_json = multiprocess(
                         func=bulk_fn,
-                        iterables=docs,
+                        iterables=documents,
                         post_func_hook=insert_function,
                         max_workers=max_workers,
                         chunksize=chunksize,
@@ -706,7 +733,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 else:
                     insert_json = multithread(
                         insert_function,
-                        docs,
+                        documents,
                         max_workers=max_workers,
                         chunksize=chunksize,
                         show_progress_bar=show_progress_bar,
@@ -751,11 +778,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     else:
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
-                # Update docs to retry which have failed
+                # Update documents to retry which have failed
                 self.logger.warning(
                     f"Failed to upload {failed_ids}. Automatically retrying for you with chunksize {chunksize}"
                 )
-                docs = [i for i in docs if i["_id"] in failed_ids]
+                documents = [i for i in documents if i["_id"] in failed_ids]
 
             else:
                 break
@@ -835,13 +862,13 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     modified_dict[kk] = v
             return modified_dict
 
-        sample_docs = self.datasets.documents.list(dataset_id)
+        sample_documents = self.datasets.documents.list(dataset_id)
 
-        def update_function(sample_docs):
-            for i, d in enumerate(sample_docs):
-                sample_docs[i] = rename_dict_fields(
+        def update_function(sample_documents):
+            for i, d in enumerate(sample_documents):
+                sample_documents[i] = rename_dict_fields(
                     d, field_mappings=field_mappings, track=""
                 )
-            return sample_docs
+            return sample_documents
 
         self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)

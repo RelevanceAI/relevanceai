@@ -1,25 +1,27 @@
-Visualisations
+relevanceai.visualise package
 =============================
 
-.. automodule:: relevanceai.visualise.cluster
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Subpackages
+-----------
 
-.. automodule:: relevanceai.visualise.constants
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: relevanceai.visualise.dim_reduction
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   relevanceai.visualise.dash_components
+
+Submodules
+----------
+
+relevanceai.visualise.projector module
+--------------------------------------
 
 .. automodule:: relevanceai.visualise.projector
    :members:
    :undoc-members:
    :show-inheritance:
+
+Module contents
+---------------
 
 .. automodule:: relevanceai.visualise
    :members:

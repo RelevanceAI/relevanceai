@@ -1,0 +1,48 @@
+# # This workflows will upload a Python Package using Twine when a release is created
+# # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Testing ReadMe Repo branch creation upon release
+
+on:
+  pull_request:
+    branches: [ development, main ]
+
+jobs:
+  deploy:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest] 
+        python-version: [ '3.7' ]
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+          # - os: macos-latest
+          #   path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/main
+          path: readme-docs
+          
+          
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run tests
+        env:
+          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install -e .[tests]
+          python -m pip install -r readme-docs/requirements.txt
+          python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v 0.27.0

@@ -1,11 +1,36 @@
-"""access the client via this class
+"""Relevance AI's base Client class - primarily used to login and access
+the Dataset class or Clusterer class.
+
+
+The recomended way to log in is using:
+
+.. code-block::
+
+    from relevanceai import Client
+    client = Client()
+    client.list_datasets()
+
+If the user already knows their project and API key, they can
+log in this way:
+
+.. code-block::
+
+    from relevanceai import Client
+    project = ""
+    api_key = ""
+    client = Client(project=project, api_key=api_key)
+    client.list_datasets()
+
 """
 import getpass
 import json
 import os
+from typing import Union, Optional
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.dataset_api.dataset import Dataset, Datasets
+from relevanceai.dataset_api import Dataset, Datasets
+from relevanceai.clusterer import Clusterer, ClusterBase
+from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -24,7 +49,6 @@ except ModuleNotFoundError as e:
     pass
 
 from relevanceai.vector_tools.client import VectorTools
-from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
 
 def str2bool(v):
@@ -32,8 +56,6 @@ def str2bool(v):
 
 
 class Client(BatchAPIClient, DocUtils):
-    """Python Client for Relevance AI's relevanceai"""
-
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
     _cred_fn = ".creds.json"
 
@@ -43,7 +65,6 @@ class Client(BatchAPIClient, DocUtils):
         api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
     ):
-
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
 
@@ -67,8 +88,17 @@ class Client(BatchAPIClient, DocUtils):
             )
         self.vector_tools = VectorTools(project, api_key)
 
-        self.Dataset = Dataset(project=project, api_key=api_key)
-        self.Datasets = Datasets(project=project, api_key=api_key)
+        # Legacy functions (?) - forgot what they were for
+        # self.Dataset = Dataset(project=project, api_key=api_key)
+        # self.Datasets = Datasets(project=project, api_key=api_key)
+
+        # Add non breaking changes to support old ways of inserting documents and csv
+        self.insert_documents = Dataset(
+            project=project, api_key=api_key, dataset_id=""
+        )._insert_documents
+        self.insert_csv = Dataset(
+            project=project, api_key=api_key, dataset_id=""
+        )._insert_csv
 
     # @property
     # def output_format(self):
@@ -77,6 +107,8 @@ class Client(BatchAPIClient, DocUtils):
     # @output_format.setter
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
+
+    ### Configurations
 
     @property
     def base_url(self):
@@ -98,6 +130,8 @@ class Client(BatchAPIClient, DocUtils):
             value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
 
+    ### Authentication Details
+
     def _token_to_auth(self):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
@@ -108,8 +142,13 @@ class Client(BatchAPIClient, DocUtils):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
             token = getpass.getpass(f"Auth token:")
-            project = token.split(":")[0]
-            api_key = token.split(":")[1]
+            split_token = token.split(":")
+            project = split_token[0]
+            api_key = split_token[1]
+            # If the base URl is included in the pasted token then include it
+            if len(split_token) == 3:
+                self.base_url = split_token[2]
+                self.base_ingest_url = split_token[2]
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()
@@ -127,7 +166,6 @@ class Client(BatchAPIClient, DocUtils):
         self,
         authenticate: bool = True,
     ):
-        """Preferred login method for demos and interactive usage."""
         project, api_key = self._token_to_auth()
         return Client(project=project, api_key=api_key, authenticate=authenticate)
 
@@ -141,4 +179,256 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         return self.admin._ping()
 
+    ### Utility functions
+
     build_and_plot_clusters = build_and_plot_clusters
+
+    ### CRUD-related utility functions
+
+    def create_dataset(self, dataset_id: str, schema: dict = {}):
+        """
+        A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
+        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+
+        For example:
+
+        .. code-block::
+            {
+                "product_image_vector_": 1024,
+                "product_text_description_vector_" : 128
+            }
+
+        These are the field types supported in our datasets: ["text", "numeric", "date", "dict", "chunks", "vector", "chunkvector"]. \n
+
+        For example:
+
+        .. code-block::
+
+            {
+                "product_text_description" : "text",
+                "price" : "numeric",
+                "created_date" : "date",
+                "product_texts_chunk_": "chunks",
+                "product_text_chunkvector_" : 1024
+            }
+
+        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+
+        Note:
+
+            - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
+            - "_id" is reserved as the key and id of a document.
+            - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
+
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+
+        Parameters
+        ----------
+        dataset_id: str
+            The unique name of your dataset
+        schema : dict
+            Schema for specifying the field that are vectors and its length
+
+        Example
+        ----------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.create_dataset("sample_dataset")
+
+        """
+        return self.datasets.create(dataset_id, schema=schema)
+
+    def list_datasets(self):
+        """List Datasets
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.list_datasets()
+
+        """
+        self.print_dashboard_message(
+            "You can view all your datasets at https://cloud.relevance.ai/datasets."
+        )
+        return self.datasets.list()
+
+    def delete_dataset(self, dataset_id):
+        """
+        Delete a dataset
+
+        Parameters
+        ------------
+        dataset_id: str
+            The ID of a dataset
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.delete_dataset("sample_dataset")
+
+        """
+        return self.datasets.delete(dataset_id)
+
+    def Dataset(self, dataset_id: str, fields: list = []):
+        return Dataset(
+            dataset_id=dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            fields=fields,
+        )
+
+    ### Clustering
+
+    def Clusterer(
+        self,
+        model: ClusterBase,
+        alias: str,
+        cluster_field: str = "_cluster_",
+    ):
+        return Clusterer(
+            model=model,
+            alias=alias,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
+
+    def KMeansClusterer(
+        self,
+        alias: str,
+        k: Union[None, int] = 10,
+        init: str = "k-means++",
+        n_init: int = 10,
+        max_iter: int = 300,
+        tol: float = 1e-4,
+        verbose: bool = True,
+        random_state: Optional[int] = None,
+        copy_x: bool = True,
+        algorithm: str = "auto",
+        cluster_field: str = "_cluster_",
+    ):
+        return KMeansClusterer(
+            alias=alias,
+            k=k,
+            init=init,
+            n_init=n_init,
+            max_iter=max_iter,
+            tol=tol,
+            verbose=verbose,
+            random_state=random_state,
+            copy_x=copy_x,
+            algorithm=algorithm,
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+        )
+
+    def _set_logger_to_verbose(self):
+        # Use this for debugging
+        self.config["logging.logging_level"] = "INFO"
+
+    def send_dataset(
+        self,
+        dataset_id: str,
+        receiver_project: str,
+        receiver_api_key: str,
+    ):
+        """
+        Send an individual a dataset. For this, you must know their API key.
+
+
+        Parameters
+        -----------
+
+        dataset_id: str
+            The name of the dataset
+        receiver_project: str
+            The project name that will receive the dataset
+        receiver_api_key: str
+            The project API key that will receive the dataset
+
+
+        Example
+        --------
+
+        .. code-block::
+
+            client = Client()
+            client.send_dataset(
+                dataset_id="research",
+                receiver_project="...",
+                receiver_api_key="..."
+            )
+
+        """
+        return self.admin.send_dataset(
+            dataset_id=dataset_id,
+            receiver_project=receiver_project,
+            receiver_api_key=receiver_api_key,
+        )
+
+    def clone_dataset(
+        self,
+        source_dataset_id: str,
+        new_dataset_id: str = None,
+        source_project: str = None,
+        source_api_key: str = None,
+        project: str = None,
+        api_key: str = None,
+    ):
+        """
+        Clone a dataset from another user's projects into your project.
+
+        Parameters
+        ----------
+        dataset_id:
+            The dataset to copy
+        source_dataset_id:
+            The original dataset
+        source_project:
+            The original project to copy from
+        source_api_key:
+            The original API key of the project
+        project:
+            The original project
+        api_key:
+            The original API key
+
+        Example
+        -----------
+
+        .. code-block::
+
+            client = Client()
+            client.send_dataset(
+                dataset_id="research",
+                source_project="...",
+                source_api_key="..."
+            )
+
+        """
+        if source_api_key is None:
+            source_api_key = self.api_key
+            source_project = self.project
+
+        if new_dataset_id is None:
+            new_dataset_id = source_dataset_id
+
+        return self.admin.copy_foreign_dataset(
+            dataset_id=new_dataset_id,
+            source_dataset_id=source_dataset_id,
+            source_project=source_project,
+            source_api_key=source_api_key,
+            project=project,
+            api_key=api_key,
+        )

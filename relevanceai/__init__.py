@@ -1,6 +1,10 @@
 import warnings
 from relevanceai import vector_tools
 from relevanceai.http_client import Client
+
+# Cluster Base Utilities
+from relevanceai.clusterer.cluster_base import ClusterBase
+from relevanceai.clusterer.clusterer import Clusterer
 import requests
 
 # Import useful utility if possible as well
@@ -9,7 +13,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "0.27.0"
+__version__ = "0.31.0"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()
@@ -21,7 +25,7 @@ try:
 
     if __version__ != latest_version and latest_version is not None:
         warnings.warn(
-            "Your RelevanceAI version ({version}) is not the latest. Please install the latest version ({latest_version}) by running pip install -U relevanceai".format(
+            "Your RelevanceAI version ({version}) is not the latest. Please install the latest version ({latest_version}) by running pip install -U relevanceai.".format(
                 version=__version__, latest_version=latest_version
             )
         )

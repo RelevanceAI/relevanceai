@@ -247,9 +247,9 @@ class CentroidsClient(_Base):
         ----------
         dataset_id: string
             Unique name of dataset
-        vector_field: string
+        vector_field: list
             The vector field where a clustering task was run.
-        cluster_ids: lsit
+        cluster_ids: list
             Any of the cluster ids
         alias: string
             Alias is used to name a cluster
@@ -313,7 +313,7 @@ class CentroidsClient(_Base):
         )
         return self.make_http_request(endpoint, method=method, parameters=parameters)
 
-    docs_closest_to_center = list_closest_to_center
+    documents_closest_to_center = list_closest_to_center
 
     def list_furthest_from_center(
         self,
@@ -408,7 +408,7 @@ class CentroidsClient(_Base):
         )
         return response
 
-    docs_furthest_from_center = list_furthest_from_center
+    documents_furthest_from_center = list_furthest_from_center
 
     def delete(
         self,
@@ -427,6 +427,7 @@ class CentroidsClient(_Base):
             The vector field where a clustering task was run.
         alias: string
             Alias is used to name a cluster
+
         """
         return self.make_http_request(
             "/services/cluster/centroids/delete",

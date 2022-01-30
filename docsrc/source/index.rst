@@ -13,15 +13,41 @@ You own any data you upload to Relevance AI.
 Everything you upload to Relevance AI is yours, including any vectors, code, configuration, metadata, output metrics, search results, visualisations and model weights. You can choose to log, export, publish, or delete any of these. We collect aggregate statistics across our users to improve our product— we might do a database query to count how many users have used a specific endpoint to help decide if we want to improve our support for that endpoint. We treat your private data, source code, or trade secrets as confidential and private, as consistent with our Terms of Service and Privacy Policy.‌"
 
 
+
 .. toctree::
    :maxdepth: 4
-   :caption: Contents
+   :caption: Core
 
-   relevanceai.api.batch
-   relevanceai.api.endpoints
-   relevanceai.visualise
-   vectortools
-   features
+   client
+   dataset
+
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Clustering
+
+   clusterer
+   cluster_models
+   cluster_base
+
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Integrations
+
+   sklearn_clustering_integration
+   faiss_kmeans_integration
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Available Datasets
+
+   available_datasets
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Appendix
+
    changelog
 
 Indices and tables
