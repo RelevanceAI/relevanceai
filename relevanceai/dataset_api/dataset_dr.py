@@ -81,5 +81,8 @@ class DR(Write):
         model = PCA()
         # Returns a list of documents with the dr vector
         return model.fit_transform_documents(
-            vector_field=vector_fields[0], documents=documents, alias=alias
+            vector_field=vector_fields[0],
+            documents=documents,
+            alias=alias,
+            dims=n_components,
         )

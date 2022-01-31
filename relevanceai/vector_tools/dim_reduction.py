@@ -25,10 +25,10 @@ class DimReductionBase(LoguruLogger, DocUtils):
     ) -> np.ndarray:
         raise NotImplementedError
 
-    def fit(self):
+    def fit(self, *args, **kw):
         raise NotImplementedError
 
-    def transform(self):
+    def transform(self, *args, **kw):
         raise NotImplementedError
 
     def transform_documents(self, vector_field: str, documents: List[Dict]):
@@ -43,8 +43,8 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return ".".join(
             [
                 "_dr_",
-                vector_field,
                 alias,
+                vector_field,
             ]
         )
 
