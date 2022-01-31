@@ -995,7 +995,7 @@ class Clusterer(BatchAPIClient):
 
     def evaluate(
         self,
-        ground_truth_index: Union[str, None] = None,
+        ground_truth_column: Union[str, None] = None,
         metric: Union[str, Callable] = "euclidean",
         random_state: Union[int, None] = None,
         average_score: bool = False,
@@ -1033,7 +1033,7 @@ class Clusterer(BatchAPIClient):
             kmeans.fit(df, vector_fields=["sample_1_vector_"])
 
             kmeans.evaluate()
-            kmeans.evaluate("truth_index")
+            kmeans.evaluate("truth_column")
         """
 
         vector_field = self.vector_fields[0]
@@ -1058,9 +1058,9 @@ class Clusterer(BatchAPIClient):
             "description": METRIC_DESCRIPTION["silhouette"],
         }
 
-        if ground_truth_index:
+        if ground_truth_column:
             ground_truth_labels = {
-                key: value[0][ground_truth_index]
+                key: value[0][ground_truth_column]
                 for key, value in self.list_closest_to_center(page_size=1).items()
                 if value
             }
@@ -1068,7 +1068,7 @@ class Clusterer(BatchAPIClient):
                 ground_truth_labels[sample[cluster_field][vector_field][alias]]
                 for sample in samples
             ]
-            true_labels = [sample[ground_truth_index] for sample in samples]
+            true_labels = [sample[ground_truth_column] for sample in samples]
 
             ar_score = adjusted_rand_score(true_labels, pred_labels)
             c_score = completeness_score(true_labels, pred_labels)
