@@ -191,8 +191,35 @@ class LabelExperiment(Operations):
         similarity_metric="cosine",
         score_field: str = "_search_score",
     ):
+
         """
-        Label a dataset from a vector field
+        Label a dataset based on a model.
+
+        .. warning::
+            This function is currently in beta and is likely to change in the future.
+            We recommend not using this in any production systems.
+
+        Parameters
+        -------------
+
+        vector_fields: list
+            The list of vector field
+        label_dataset: str
+            The dataset to label with
+        alias: str
+            The alias of the labels (for example - "ranking_labels")
+        label_dataset: str
+            The dataset to use fo rlabelling
+        label_vector_field: str
+            The vector field of the label dataset
+        label_fields: list
+            The label field of the dataset to use
+        number_of_labels: int
+            The numebr of labels to get
+        similarity_metric: str
+            The similarity metric to adopt
+        score_field: str
+            The field to use for scoring
         """
         vector = self.get_field(vector_field, document)
         labels = self.label_vector(
@@ -223,6 +250,37 @@ class LabelExperiment(Operations):
         score_field: str = "_search_score",
     ):
 
+        """
+        Label a dataset based on a model.
+
+        .. warning::
+            This function is currently in beta and is likely to change in the future.
+            We recommend not using this in any production systems.
+
+        Parameters
+        -------------
+
+        vector_fields: list
+            The list of vector field
+        label_dataset: str
+            The dataset to label with
+        alias: str
+            The alias of the labels (for example - "ranking_labels")
+        label_dataset: str
+            The dataset to use fo rlabelling
+        label_vector_field: str
+            The vector field of the label dataset
+        label_fields: list
+            The label field of the dataset to use
+        number_of_labels: int
+            The numebr of labels to get
+        similarity_metric: str
+            The similarity metric to adopt
+        score_field: str
+            The field to use for scoring
+
+
+        """
         # Download documents in the label dataset
         label_documents: list = self._get_all_documents(
             label_dataset, select_fields=[label_vector_field] + label_fields

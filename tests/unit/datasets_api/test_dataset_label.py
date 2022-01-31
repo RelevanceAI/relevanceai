@@ -6,13 +6,13 @@ from ...utils import generate_random_vector
 
 def test_dataset_labelling(test_dataset_df: Dataset):
     results = test_dataset_df.label(
-        vector_field="documentation_vector_",
+        vector_field="sample_1_vector_",
         alias="example",
         label_dataset=test_dataset_df.dataset_id,
-        label_fields=["path"],
-        label_vector_field="documentation_vector_",
+        label_fields=["sample_1_label"],
+        label_vector_field="sample_1_vector_",
     )
-    assert "_label_.example" in test_dataset_df.schema, "schema"
+    assert "_label_.example" in test_dataset_df.schema, "schema is incorrect"
     assert len(results["failed_documents"]) == 0, "failed to label documents :("
 
 
