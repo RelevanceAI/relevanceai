@@ -34,9 +34,10 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.transform(documents)
 
     def fit_documents(self, vector_field: str, documents: List[Dict]):
-        vectors = self.get_field_across_documents(vector_field, documents,
-            missing_treatment="skip")
-        return self.fit(documents)
+        vectors = self.get_field_across_documents(
+            vector_field, documents, missing_treatment="skip"
+        )
+        return self.fit(vectors)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
         return ".".join(
@@ -55,8 +56,12 @@ class DimReductionBase(LoguruLogger, DocUtils):
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
-        vectors = self.get_field_across_documents(vector_field, documents, 
-            missing_treatment="skip")
+        documents = self.filter_docs_for_fields(
+            [vector_field], documents
+        )
+        vectors = self.get_field_across_documents(
+            vector_field, documents, missing_treatment="skip"
+        )
         dr_vectors = self.fit_transform(vectors, dims=dims)
         dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
         self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
