@@ -13,7 +13,7 @@ def test_apply(test_client: Client, test_sample_vector_dataset):
         lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
     )
     filtered_documents = df.datasets.documents.get_where(
-        test_sample_vector_dataset,
+        df.dataset_id,
         filters=[
             {
                 "field": "sample_1_label_2",
@@ -26,21 +26,22 @@ def test_apply(test_client: Client, test_sample_vector_dataset):
     assert len(filtered_documents["documents"]) > 0
 
 
-def test_bulk_apply(test_dataset_df: Dataset):
+def test_bulk_apply(test_client: Client, test_sample_vector_dataset):
     RANDOM_STRING = "you are the queen"
     LABEL = "sample_output"
+    df = test_client.Dataset(test_sample_vector_dataset)
 
     def bulk_fn(docs):
         for d in docs:
             d[LABEL] = d.get("sample_1_label", "") + RANDOM_STRING
         return docs
 
-    test_dataset_df.bulk_apply(bulk_fn)
-    filtered_documents = test_dataset_df.datasets.documents.get_where(
-        test_dataset_df.dataset_id,
+    df.bulk_apply(bulk_fn)
+    filtered_documents = df.datasets.documents.get_where(
+        df.dataset_id,
         filters=[
             {
-                "field": "sample_1_label_2",
+                "field": "sample_1_label",
                 "filter_type": "contains",
                 "condition": "==",
                 "condition_value": RANDOM_STRING,
