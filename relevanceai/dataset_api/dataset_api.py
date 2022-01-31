@@ -24,7 +24,7 @@ class Dataset(Export, Stats, Operations, DR):
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
-        highlight_fields: Dict[str, List]= {},
+        highlight_fields: Dict[str, List] = {},
         text_fields: List[str] = [],
         **kw
     ):
