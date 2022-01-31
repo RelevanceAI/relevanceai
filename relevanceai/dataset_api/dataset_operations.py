@@ -372,11 +372,13 @@ class Operations(Write):
         # Download documents in the label dataset
         filters += [
             {
-                "field": label_fields,
+                "field": label_field,
                 "filter_type": "exists",
                 "condition": ">=",
                 "condition_value": " ",
-            },
+            }
+            for label_field in label_fields
+        ] + [
             {
                 "field": label_vector_field,
                 "filter_type": "exists",
@@ -384,6 +386,9 @@ class Operations(Write):
                 "condition_value": " ",
             },
         ]
+        import pdb
+
+        pdb.set_trace()
         label_documents: list = self._get_all_documents(
             label_dataset_id,
             select_fields=[label_vector_field] + label_fields,
