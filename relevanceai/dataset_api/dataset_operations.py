@@ -163,18 +163,24 @@ class LabelExperiment(Operations):
         label_vector_field: str,
         similarity_metric: NEAREST_NEIGHBOURS,
         number_of_labels: int,
-        score_field: str,
         label_fields: List[str],
+        score_field="_label_score",
     ):
         nearest_neighbors: List[Dict] = NearestNeighbours.get_nearest_neighbours(
             label_documents,
             vector,
             label_vector_field,
             similarity_metric,
-            score_field="_search_score",
+            score_field=score_field,
         )[:number_of_labels]
         labels = self.subset_documents([score_field] + label_fields, nearest_neighbors)
-        return labels
+        # Preprocess labels for easier frontend access
+        new_labels = {}
+        for lf in label_fields:
+            new_labels[lf] = [
+                {"label": l.get(lf), score_field: l.get(score_field)} for l in labels
+            ]
+        return new_labels
 
     def label_document(
         self,
