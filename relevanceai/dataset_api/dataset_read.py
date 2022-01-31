@@ -7,6 +7,8 @@ import warnings
 import pandas as pd
 import numpy as np
 
+from functools import lru_cache
+
 from typing import Dict, List, Union
 
 from relevanceai.dataset_api.helpers import _build_filters
@@ -82,6 +84,7 @@ class Read(BatchAPIClient):
         }
         return dtypes
 
+    @lru_cache(maxsize=32)
     def _get_schema(self):
         # stores schema in memory to save users API usage/reloading
         if hasattr(self, "_schema"):
