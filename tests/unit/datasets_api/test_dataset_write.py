@@ -41,7 +41,7 @@ def test_bulk_apply(test_client: Client, test_sample_vector_dataset):
         df.dataset_id,
         filters=[
             {
-                "field": "sample_1_label",
+                "field": "sample_output",
                 "filter_type": "contains",
                 "condition": "==",
                 "condition_value": RANDOM_STRING,
