@@ -9,7 +9,7 @@ def test_dataset_labelling(test_dataset_df: Dataset):
     results = test_dataset_df.label(
         vector_field="sample_1_vector_",
         alias="example",
-        label_dataset=test_dataset_df.dataset_id,
+        label_dataset_id=test_dataset_df.dataset_id,
         label_fields=["sample_1_label"],
         label_vector_field="sample_1_vector_",
         filters=[
@@ -37,7 +37,7 @@ def test_labelling_vector(test_dataset_df: Dataset):
         generate_random_vector(100),
         label_vector_field="sample_1_vector_",
         alias=ALIAS,
-        label_dataset=test_dataset_df.dataset_id,
+        label_dataset_id=test_dataset_df.dataset_id,
         label_fields=["sample_1_label"],
         number_of_labels=1,
     )
@@ -50,7 +50,7 @@ def test_labelling_document(test_dataset_df: Dataset):
         {},
         label_vector_field="sample_1_vector_",
         alias="sample",
-        label_dataset=test_dataset_df.dataset_id,
+        label_dataset_id=test_dataset_df.dataset_id,
         label_fields=["path"],
         number_of_labels=1,
     )
