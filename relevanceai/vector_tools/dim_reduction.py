@@ -15,7 +15,7 @@ from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 
 
-class DimReductionBase(LoguruLogger):
+class DimReductionBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
         return self.fit_transform(*args, **kwargs)
 
@@ -24,9 +24,43 @@ class DimReductionBase(LoguruLogger):
         self, vectors: np.ndarray, dr_args: Dict[Any, Any], dims: int
     ) -> np.ndarray:
         raise NotImplementedError
-
+    
+    def fit(self):
+        raise NotImplementedError
+    
+    def transform(self):
+        raise NotImplementedError
+    
+    def transform_documents(self, vector_field: str, documents: List[Dict]):
+        vectors = self.get_field_across_documents(vector_field, documents)
+        return self.transform(documents)
+    
+    def fit_documents(self, vector_field: str, documents: List[Dict]):
+        vectors = self.get_field_across_documents(vector_field, documents)
+        return self.fit(documents)
+    
+    def get_dr_vector_field_name(self, vector_field: str, alias: str):
+        return ".".join(["_dr_", ], vector_field, alias)
+    
+    def fit_transform_documents(self, vector_field: str, documents: List[Dict], alias: str,
+        exclude_original_vectors: bool=True):
+        vectors = self.get_field_across_documents(vector_field, documents)
+        dr_vectors = self.fit_transform(vectors)
+        dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
+        dr_docs = self.set_field_across_documents(
+            dr_vector_field_name, dr_vectors, documents
+        )
+        if exclude_original_vectors:
+            dr_docs = self.subset_documents(
+                ["_id", dr_vector_field_name]
+            )
+        return dr_docs
 
 class PCA(DimReductionBase):
+    def fit(self, dims: int=3, vectors: np.ndarray):
+        pca = PCA(n_components=min(3, vectors.shape[1]))
+        return pca.fit(vectors)
+
     def fit_transform(
         self,
         vectors: np.ndarray,
