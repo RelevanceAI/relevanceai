@@ -6,25 +6,49 @@ import pandas as pd
 from relevanceai.http_client import Dataset, Client
 
 
-def test_apply(test_dataset_df: Dataset):
+def test_apply(test_client: Client, test_sample_vector_dataset):
     RANDOM_STRING = "you are the kingj"
-    test_dataset_df["sample_1_label"].apply(
+    df = test_client.Dataset(test_sample_vector_dataset)
+    df["sample_1_label"].apply(
         lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
     )
-    assert test_dataset_df["sample_1_label_2"][0].endswith(RANDOM_STRING)
+    filtered_documents = df.datasets.documents.get_where(
+        df.dataset_id,
+        filters=[
+            {
+                "field": "sample_1_label_2",
+                "filter_type": "contains",
+                "condition": "==",
+                "condition_value": RANDOM_STRING,
+            }
+        ],
+    )
+    assert len(filtered_documents["documents"]) > 0
 
 
-def test_bulk_apply(test_dataset_df: Dataset):
+def test_bulk_apply(test_client: Client, test_sample_vector_dataset):
     RANDOM_STRING = "you are the queen"
     LABEL = "sample_output"
+    df = test_client.Dataset(test_sample_vector_dataset)
 
     def bulk_fn(docs):
         for d in docs:
             d[LABEL] = d.get("sample_1_label", "") + RANDOM_STRING
         return docs
 
-    test_dataset_df.bulk_apply(bulk_fn)
-    assert test_dataset_df[LABEL][0].endswith(RANDOM_STRING)
+    df.bulk_apply(bulk_fn)
+    filtered_documents = df.datasets.documents.get_where(
+        df.dataset_id,
+        filters=[
+            {
+                "field": "sample_output",
+                "filter_type": "contains",
+                "condition": "==",
+                "condition_value": RANDOM_STRING,
+            }
+        ],
+    )
+    assert len(filtered_documents["documents"]) > 0
 
 
 def test_df_insert_csv_successful(test_csv_df: Dataset):
