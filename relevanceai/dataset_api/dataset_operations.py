@@ -1,25 +1,10 @@
 """
 Pandas like dataset API
 """
-import re
-import math
-import warnings
-import pandas as pd
-import numpy as np
-
-from doc_utils import DocUtils
-
 from typing import Dict, List, Union, Callable, Optional
-
-from relevanceai.dataset_api.groupby import Groupby, Agg
-from relevanceai.dataset_api.centroids import Centroids
-from relevanceai.dataset_api.helpers import _build_filters
-
-from relevanceai.vector_tools.client import VectorTools
-from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
-
+from relevanceai.vector_tools.nearest_neighbours import NearestNeighbours
 
 class Operations(Write):
     def vectorize(self, field: str, model):
@@ -29,7 +14,7 @@ class Operations(Write):
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-
+        
         Parameters
         ----------
         field : str
@@ -38,7 +23,7 @@ class Operations(Write):
             a Type deep learning model that vectorizes text
 
         Example
-        -------
+            -------
         .. code-block::
 
             from relevanceai import Client
@@ -99,3 +84,37 @@ class Operations(Write):
         )
         clusterer.fit(dataset=self, vector_fields=vector_fields)
         return clusterer
+    
+    def label(self, vector_fields: list, label_dataset: str, alias: str,
+        number_of_labels: int=1, **kwargs):
+        """
+        Label a dataset based on a model.
+
+        .. warning::
+            This function is currently in beta and is likely to change in the future.
+            We recommend not using this in any production systems.
+        
+        Parameters
+        -------------
+
+        vector_fields: list
+            The list of vector field
+        label_dataset: str
+            The dataset to label with
+        alias: str
+            The alias of the labels (for example - "ranking_labels")
+        """
+        # Download documents in the label dataset
+        label_documents = self.get_all_documents(label_dataset)
+
+        # Build a index
+        nearest_neighbors = NearestNeighbours.get_nearest_neighbours(
+            label_documents, click_vec, vector_field, distance_measure_mode
+        )[:number_of_labels]
+
+        # Store things according to 
+        # {"_label_": {"field": {"alias": [{"label": 3, "similarity_score": 0.4}]}
+
+        # Update the original documents
+        def bulk_label(docs):
+            return docs
