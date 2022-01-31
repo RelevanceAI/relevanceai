@@ -23,14 +23,6 @@ import getpass
 
 import numpy as np
 
-from scipy.spatial import distance
-from sklearn.metrics import (
-    adjusted_rand_score,
-    completeness_score,
-    silhouette_score,
-    homogeneity_score,
-)
-
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional, Callable
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
@@ -1036,6 +1028,13 @@ class Clusterer(BatchAPIClient):
             kmeans.evaluate("truth_column")
         """
 
+        from sklearn.metrics import (
+            adjusted_rand_score,
+            completeness_score,
+            silhouette_score,
+            homogeneity_score,
+        )
+
         vector_field = self.vector_fields[0]
         cluster_field = self.cluster_field
         alias = self.alias
@@ -1058,21 +1057,28 @@ class Clusterer(BatchAPIClient):
             "description": METRIC_DESCRIPTION["silhouette"],
         }
 
-        if ground_truth_column:
-            ground_truth_labels = {
+        if (
+            ground_truth_column
+        ):  # if the ground truth column was provided, we can run these cluster evaluation measures
+
+            ground_truth_labels = {  # convert cluster1 etc. to respective label found in ground truth column
                 key: value[0][ground_truth_column]
                 for key, value in self.list_closest_to_center(page_size=1).items()
                 if value
             }
-            pred_labels = [
-                ground_truth_labels[sample[cluster_field][vector_field][alias]]
-                for sample in samples
-            ]
-            true_labels = [sample[ground_truth_column] for sample in samples]
+            pred_labels = (
+                [  # get the predicted clusters and return their respective true labels
+                    ground_truth_labels[sample[cluster_field][vector_field][alias]]
+                    for sample in samples
+                ]
+            )
+            true_labels = [
+                sample[ground_truth_column] for sample in samples
+            ]  # same for actual labels
 
-            ar_score = adjusted_rand_score(true_labels, pred_labels)
-            c_score = completeness_score(true_labels, pred_labels)
-            h_score = homogeneity_score(true_labels, pred_labels)
+            ar_score = adjusted_rand_score(true_labels, pred_labels)  # compute metric
+            c_score = completeness_score(true_labels, pred_labels)  # compute metric
+            h_score = homogeneity_score(true_labels, pred_labels)  # compute metric
 
             stats["random"] = {
                 "score": ar_score,
@@ -1087,7 +1093,7 @@ class Clusterer(BatchAPIClient):
                 "description": METRIC_DESCRIPTION["homogeneity"],
             }
 
-            if average_score:
+            if average_score:  # If the user wants an average as well
                 ns_score = norm(s_score, min=-1, max=1)
                 nar_score = norm(ar_score, min=-1, max=1)
 
