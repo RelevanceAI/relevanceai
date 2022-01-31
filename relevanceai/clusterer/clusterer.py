@@ -166,10 +166,10 @@ class Clusterer(BatchAPIClient):
 
             class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
-                    self.model = model
+                    self.model: Union[KMeans, MiniBatchKMeans] = model
 
                 def fit_transform(self, X):
-                    return self.model.fit_transform(X)
+                    return self.model.fit_predict(X)
 
                 def get_centers(self):
                     return self.model.cluster_centers_
