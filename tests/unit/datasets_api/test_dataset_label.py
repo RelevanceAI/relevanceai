@@ -1,14 +1,14 @@
 """Testing for dataset labels 
 """
-from ...utils import generate_random_vector
 from relevanceai.http_client import Dataset
+from ...utils import generate_random_vector
 
 
 def test_dataset_labelling(test_dataset_df: Dataset):
     results = test_dataset_df.label(
         vector_field="documentation_vector_",
         alias="example",
-        label_dataset="_github_repo_clip",
+        label_dataset=test_dataset_df.dataset_id,
         label_fields=["path"],
         label_vector_field="documentation_vector_",
     )
