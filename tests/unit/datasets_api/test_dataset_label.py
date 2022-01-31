@@ -13,6 +13,7 @@ def test_dataset_labelling(test_dataset_df: Dataset):
         label_vector_field="documentation_vector_",
     )
     assert "_label_.example" in test_dataset_df.schema, "schema"
+    assert len(results["failed_documents"]) == 0, "failed to label documents :("
 
 
 def test_labelling_vector(test_dataset_df: Dataset):
