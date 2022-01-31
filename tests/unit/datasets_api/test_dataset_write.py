@@ -25,6 +25,7 @@ def test_apply(test_client: Client, test_sample_vector_dataset):
     )
     assert True
 
+
 def test_bulk_apply(test_dataset_df: Dataset):
     RANDOM_STRING = "you are the queen"
     LABEL = "sample_output"
