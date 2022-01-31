@@ -63,10 +63,10 @@ class Series(BatchAPIClient):
         api_key: str,
         dataset_id: str,
         field: str,
-        image_fields: list[str] = [],
-        audio_fields: list[str] = [],
-        highlight_fields: list[str] = [],
-        text_fields: list[str] = [],
+        image_fields: List[str] = [],
+        audio_fields: List[str] = [],
+        highlight_fields: List[str] = [],
+        text_fields: List[str] = [],
     ):
         super().__init__(project=project, api_key=api_key)
         self.project = project

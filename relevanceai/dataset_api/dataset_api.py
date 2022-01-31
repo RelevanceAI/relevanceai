@@ -24,8 +24,9 @@ class Dataset(Export, Stats, Operations, DR):
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
-        highlight_fields: List[str] = [],
+        highlight_fields: List[str] = {},
         text_fields: List[str] = [],
+        **kw
     ):
         self.project = project
         self.api_key = api_key
@@ -36,7 +37,14 @@ class Dataset(Export, Stats, Operations, DR):
         self.highlight_fields = highlight_fields
         self.text_fields = text_fields
         super().__init__(
-            project=project, api_key=api_key, fields=fields, dataset_id=dataset_id
+            project=project,
+            api_key=api_key,
+            fields=fields,
+            dataset_id=dataset_id,
+            image_fields=image_fields,
+            audio_fields=audio_fields,
+            highlight_fields=highlight_fields,
+            text_fields=text_fields,
         )
         self.search = Search(
             project=project, api_key=api_key, fields=fields, dataset_id=dataset_id
