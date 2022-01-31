@@ -18,7 +18,13 @@ def test_dataset_labelling(test_dataset_df: Dataset):
                 "filter_type": "exists",
                 "condition": ">=",
                 "condition_value": " ",
-            }
+            },
+            {
+                "field": "sample_1_vector_",
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            },
         ],
     )
     assert "_label_.example" in test_dataset_df.schema, "schema is incorrect"

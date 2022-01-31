@@ -301,6 +301,20 @@ class LabelExperiment(Operations):
 
         """
         # Download documents in the label dataset
+        filters += [
+            {
+                "field": label_fields,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            },
+            {
+                "field": label_vector_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            },
+        ]
         label_documents: list = self._get_all_documents(
             label_dataset,
             select_fields=[label_vector_field] + label_fields,
