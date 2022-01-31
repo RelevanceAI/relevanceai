@@ -409,7 +409,17 @@ class Operations(Write):
             [label_and_store(d) for d in documents]
             return documents
 
-        return self.bulk_apply(bulk_label_documents)
+        return self.bulk_apply(
+            bulk_label_documents,
+            filters=[
+                {
+                    "field": vector_field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                },
+            ],
+        )
 
     def vector_search(
         self,
