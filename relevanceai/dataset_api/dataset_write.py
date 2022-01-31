@@ -190,8 +190,6 @@ class Write(Read):
 
         Parameters
         ----------
-        dataset_id : string
-            Unique name of dataset
         documents : list
             A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         bulk_fn : callable

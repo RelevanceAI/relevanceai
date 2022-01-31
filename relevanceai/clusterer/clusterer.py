@@ -23,9 +23,8 @@ import getpass
 
 import numpy as np
 
-from typing import Union, List, Dict, Optional
-
 from relevanceai.api.client import BatchAPIClient
+from typing import Union, List, Dict, Optional, Callable
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 
 # We use the second import because the first one seems to be causing errors with isinstance
@@ -35,6 +34,30 @@ from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
 
 from doc_utils import DocUtils
+
+SILHOUETTE_INFO = """
+Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
+<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
+
+RANDOM_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
+<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs that have a matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>"""
+
+HOMOGENEITY_INFO = """Good clusters only have elements from the same ground truth within the same cluster<br/>
+<b>Homogeneity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
+
+COMPLETENESS_INFO = """Good clusters have all elements from the same ground truth within the same cluster <br/>
+<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
+
+AVERAGE_SCORE = """Averages other metrics by first normalising values between 0 and 1 <br/>
+<b>Average</b> is a metric from <b>0 to 1</b> that averages other metrics by first normalising values between 0 and 1."""
+
+METRIC_DESCRIPTION = {
+    "silhouette": SILHOUETTE_INFO,
+    "random": RANDOM_INFO,
+    "homogeneity": HOMOGENEITY_INFO,
+    "completeness": COMPLETENESS_INFO,
+    "average": AVERAGE_SCORE,
+}
 
 
 class Clusterer(BatchAPIClient):
@@ -961,3 +984,124 @@ class Clusterer(BatchAPIClient):
             alias=self.alias,
             metadata=metadata,
         )
+
+    def evaluate(
+        self,
+        ground_truth_column: Union[str, None] = None,
+        metric: Union[str, Callable] = "euclidean",
+        random_state: Union[int, None] = None,
+        average_score: bool = False,
+    ):
+        """
+        Evaluate your clusters using the silhouette score, or if true labels are provided, using completeness, randomness and homogeniety as well
+
+        Parameters
+        ----------
+        ground_truth_index : str
+            the index of the true label of each sample in dataset
+
+        metric : str or Callable
+            A string referencing suportted distance functions, or custom method for calculating the distance between 2 vectors
+
+        random_state : int, default None
+            for reproducability
+
+        average_score : bool
+            a boolean that determines whether to average the evaluation metrics in a new a score. only applicable if ground_truth_index is not None
+
+        Example
+        ----------
+
+        .. code-block::
+
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("_github_repo_vectorai")
+            from relevanceai.clusterer import KMeansModel
+
+            model = KMeansModel()
+            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans.fit(df, vector_fields=["sample_1_vector_"])
+
+            kmeans.evaluate()
+            kmeans.evaluate("truth_column")
+        """
+
+        from sklearn.metrics import (
+            adjusted_rand_score,
+            completeness_score,
+            silhouette_score,
+            homogeneity_score,
+        )
+
+        vector_field = self.vector_fields[0]
+        cluster_field = self.cluster_field
+        alias = self.alias
+
+        samples = self._get_all_documents(self.dataset_id, include_vector=True)
+
+        vectors = [sample[vector_field] for sample in samples]
+        pred_labels = [sample[cluster_field][vector_field][alias] for sample in samples]
+
+        def norm(value, min, max):
+            return (value - min) / (max - min)
+
+        s_score = silhouette_score(
+            vectors, pred_labels, metric=metric, random_state=random_state
+        )
+
+        stats = {}
+        stats["silhouette"] = {
+            "score": s_score,
+            "description": METRIC_DESCRIPTION["silhouette"],
+        }
+
+        if (
+            ground_truth_column
+        ):  # if the ground truth column was provided, we can run these cluster evaluation measures
+
+            ground_truth_labels = {  # convert cluster1 etc. to respective label found in ground truth column
+                key: value[0][ground_truth_column]
+                for key, value in self.list_closest_to_center(page_size=1).items()
+                if value
+            }
+            pred_labels = (
+                [  # get the predicted clusters and return their respective true labels
+                    ground_truth_labels[sample[cluster_field][vector_field][alias]]
+                    for sample in samples
+                ]
+            )
+            true_labels = [
+                sample[ground_truth_column] for sample in samples
+            ]  # same for actual labels
+
+            ar_score = adjusted_rand_score(true_labels, pred_labels)  # compute metric
+            c_score = completeness_score(true_labels, pred_labels)  # compute metric
+            h_score = homogeneity_score(true_labels, pred_labels)  # compute metric
+
+            stats["random"] = {
+                "score": ar_score,
+                "description": METRIC_DESCRIPTION["random"],
+            }
+            stats["completeness"] = {
+                "score": c_score,
+                "description": METRIC_DESCRIPTION["completeness"],
+            }
+            stats["homogeneity"] = {
+                "score": h_score,
+                "description": METRIC_DESCRIPTION["homogeneity"],
+            }
+
+            if average_score:  # If the user wants an average as well
+                ns_score = norm(s_score, min=-1, max=1)
+                nar_score = norm(ar_score, min=-1, max=1)
+
+                average_score = (ns_score + nar_score + c_score + h_score) / 4
+
+                stats["average"] = {
+                    "score": average_score,
+                    "description": METRIC_DESCRIPTION["average"],
+                }
+
+        return stats
