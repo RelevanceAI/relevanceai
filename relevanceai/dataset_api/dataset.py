@@ -96,7 +96,7 @@ class Series(BatchAPIClient):
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
             )
-            return pd.json_normalize(document)._repr_html_()
+            return pd.json_normalize(document).set_index("_id")._repr_html_()
 
     def _show_json(self, document, **kw):
         from jsonshower import show_json
@@ -674,7 +674,7 @@ class Read(BatchAPIClient):
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
             )
-            return pd.json_normalize(documents)._repr_html_()
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
     def _show_json(self, documents, **kw):
         from jsonshower import show_json
