@@ -30,7 +30,7 @@ HALF_CHUNK_CODES = [413, 524]
 
 
 class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
-    def insert_documents(
+    def _insert_documents(
         self,
         dataset_id: str,
         documents: list,
@@ -119,9 +119,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunksize=chunksize,
         )
 
-    _insert_documents = insert_documents
-
-    def insert_csv(
+    def _insert_csv(
         self,
         dataset_id: str,
         filepath_or_buffer,
@@ -201,8 +199,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "failed_documents_detailed": failed_documents_detailed,
         }
 
-    _insert_csv = insert_csv
-
     def _insert_csv_chunk(
         self,
         chunk,
@@ -242,7 +238,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunk[i] = chunk[i].apply(literal_eval)
 
         chunk_json = chunk.to_dict(orient="records")
-        response = self.insert_documents(
+        response = self._insert_documents(
             dataset_id=dataset_id,
             documents=chunk_json,
             max_workers=max_workers,
@@ -251,7 +247,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         )
         return response
 
-    def update_documents(
+    def _update_documents(
         self,
         dataset_id: str,
         documents: list,
@@ -331,6 +327,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
         )
+
+    update_documents = _update_documents
 
     def pull_update_push(
         self,
@@ -434,7 +432,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
             # Upload documents
             if updated_dataset_id is None:
-                insert_json = self.update_documents(
+                insert_json = self._update_documents(
                     dataset_id=dataset_id,
                     documents=updated_data,
                     max_workers=max_workers,
@@ -442,7 +440,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     use_json_encoder=use_json_encoder,
                 )
             else:
-                insert_json = self.insert_documents(
+                insert_json = self._insert_documents(
                     dataset_id=updated_dataset_id,
                     documents=updated_data,
                     max_workers=max_workers,
@@ -590,7 +588,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
                 # Upload documents
                 if updated_dataset_id is None:
-                    insert_json = self.update_documents(
+                    insert_json = self._update_documents(
                         dataset_id=dataset_id,
                         documents=updated_data,
                         max_workers=max_workers,
@@ -598,7 +596,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         use_json_encoder=use_json_encoder,
                     )
                 else:
-                    insert_json = self.insert_documents(
+                    insert_json = self._insert_documents(
                         dataset_id=updated_dataset_id,
                         documents=updated_data,
                         max_workers=max_workers,
@@ -615,7 +613,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 success_documents = list(set(updated_documents) - set(failed_documents))
                 upload_documents = [{"_id": i} for i in success_documents]
 
-                self.insert_documents(
+                self._insert_documents(
                     logging_dataset_id,
                     upload_documents,
                     max_workers=max_workers,
@@ -656,7 +654,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             {k: v for k, v in doc.items() if not pd.isna(v)}
             for doc in dataframe.to_dict(orient="records")
         ]
-        return self.insert_documents(dataset_id, documents, *args, **kwargs)
+        return self._insert_documents(dataset_id, documents, *args, **kwargs)
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 

@@ -1,9 +1,6 @@
-from pathlib import Path
+"""Pytests for the projector - not really good
+"""
 import pytest
-import json
-import uuid
-from pprint import pprint
-import typing
 from typing_extensions import get_args
 
 from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
