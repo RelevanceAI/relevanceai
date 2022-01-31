@@ -6,13 +6,24 @@ import pandas as pd
 from relevanceai.http_client import Dataset, Client
 
 
-def test_apply(test_dataset_df: Dataset):
+def test_apply(test_client: Client, test_sample_vector_dataset):
     RANDOM_STRING = "you are the kingj"
-    test_dataset_df["sample_1_label"].apply(
+    df = test_client.Dataset(test_sample_vector_dataset)
+    df["sample_1_label"].apply(
         lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
     )
-    assert test_dataset_df["sample_1_label_2"][0].endswith(RANDOM_STRING)
-
+    df.datasets.documents.get_where(
+        test_sample_vector_dataset,
+        filters=[
+            {
+                "field": "sample_1_label_2",
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": RANDOM_STRING,
+            }
+        ],
+    )
+    assert True
 
 def test_bulk_apply(test_dataset_df: Dataset):
     RANDOM_STRING = "you are the queen"
@@ -24,7 +35,18 @@ def test_bulk_apply(test_dataset_df: Dataset):
         return docs
 
     test_dataset_df.bulk_apply(bulk_fn)
-    assert test_dataset_df[LABEL][0].endswith(RANDOM_STRING)
+    test_dataset_df.datasets.documents.get_where(
+        test_dataset_df.dataset_id,
+        filters=[
+            {
+                "field": "sample_1_label_2",
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": RANDOM_STRING,
+            }
+        ],
+    )
+    assert True
 
 
 def test_df_insert_csv_successful(test_csv_df: Dataset):

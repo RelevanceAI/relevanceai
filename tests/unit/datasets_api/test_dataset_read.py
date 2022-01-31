@@ -70,26 +70,6 @@ def test_datasets_schema(test_dataset_df: Dataset):
     assert True
 
 
-def test_apply(test_client: Client, test_sample_vector_dataset):
-    RANDOM_STRING = "you are the kingj"
-    df = test_client.Dataset(test_sample_vector_dataset)
-    df["sample_1_label"].apply(
-        lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
-    )
-    df.datasets.documents.get_where(
-        test_sample_vector_dataset,
-        filters=[
-            {
-                "field": "sample_1_label_2",
-                "filter_type": "exists",
-                "condition": "==",
-                "condition_value": RANDOM_STRING,
-            }
-        ],
-    )
-    assert True
-
-
 def test_info(test_dataset_df: Dataset):
     info = test_dataset_df.info()
     assert isinstance(info, pd.DataFrame)
