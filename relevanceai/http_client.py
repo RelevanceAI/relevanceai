@@ -64,9 +64,10 @@ class Client(BatchAPIClient, DocUtils):
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
+        token: str=None
     ):
         if project is None or api_key is None:
-            project, api_key = self._token_to_auth()
+            project, api_key = self._token_to_auth(token)
 
         super().__init__(project, api_key)
 
@@ -132,7 +133,7 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Authentication Details
 
-    def _token_to_auth(self):
+    def _token_to_auth(self, token=None):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
         #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
@@ -141,14 +142,17 @@ class Client(BatchAPIClient, DocUtils):
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(f"Auth token:")
+            if not token:
+                token = getpass.getpass(f"Auth token:")
             split_token = token.split(":")
             project = split_token[0]
             api_key = split_token[1]
             # If the base URl is included in the pasted token then include it
             if len(split_token) == 3:
-                self.base_url = split_token[2]
-                self.base_ingest_url = split_token[2]
+                region = split_token[2]
+                url = f"https://api.{region}.relevance.ai/latest"
+                self.base_url = url
+                self.base_ingest_url = url
             self._write_credentials(project, api_key)
         else:
             data = self._read_credentials()
