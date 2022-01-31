@@ -40,3 +40,7 @@ It is instantiated like this:
 .. autoclass:: relevanceai.dataset_api.dataset_search.Search
    :members:
    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset_api.dataset_dr.DR
+   :members:
+   :exclude-members: __init__

@@ -9,9 +9,10 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
+from relevanceai.dataset_api.dataset_dr import DR
 
 
-class Dataset(Export, Stats, Operations):
+class Dataset(Export, Stats, Operations, DR):
     """Dataset class"""
 
     def __init__(self, project: str, api_key: str, dataset_id: str, fields: list = []):
