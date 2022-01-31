@@ -17,6 +17,10 @@ from relevanceai.dataset_api.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 
+from relevanceai.config import CONFIG
+
+MAXSIZE = CONFIG.get_field("cache.maxsize", CONFIG.config)
+
 
 class Read(BatchAPIClient):
     """
@@ -84,7 +88,7 @@ class Read(BatchAPIClient):
         }
         return dtypes
 
-    @lru_cache(maxsize=32)
+    @lru_cache(maxsize=MAXSIZE)
     def _get_schema(self):
         # stores schema in memory to save users API usage/reloading
         if hasattr(self, "_schema"):
