@@ -2,7 +2,7 @@
 Pandas like dataset API
 """
 import warnings
-from typing import Union, List
+from typing import Union, List, Dict
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_export import Export
@@ -24,7 +24,7 @@ class Dataset(Export, Stats, Operations, DR):
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
-        highlight_fields: List[str] = {},
+        highlight_fields: Dict[str, List]= {},
         text_fields: List[str] = [],
         **kw
     ):

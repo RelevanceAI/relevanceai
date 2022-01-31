@@ -65,7 +65,7 @@ class Series(BatchAPIClient):
         field: str,
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
-        highlight_fields: List[str] = [],
+        highlight_fields: Dict[str, List] = {},
         text_fields: List[str] = [],
     ):
         super().__init__(project=project, api_key=api_key)

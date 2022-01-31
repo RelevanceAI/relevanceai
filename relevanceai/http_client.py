@@ -25,7 +25,7 @@ log in this way:
 import getpass
 import json
 import os
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Dict
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api import Dataset, Datasets
@@ -295,7 +295,7 @@ class Client(BatchAPIClient, DocUtils):
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
-        highlight_fields: List[str] = {},
+        highlight_fields: Dict[str, List] = {},
         text_fields: List[str] = [],
     ):
         return Dataset(

@@ -33,7 +33,7 @@ class Read(BatchAPIClient):
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
-        highlight_fields: List[str] = {},
+        highlight_fields: Dict[str, list]= {},
         text_fields: List[str] = [],
     ):
         self.project = project
