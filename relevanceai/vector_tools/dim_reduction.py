@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import json
 
-from doc_utils.doc_utils import DocUtils
+from doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
@@ -34,7 +34,8 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.transform(documents)
 
     def fit_documents(self, vector_field: str, documents: List[Dict]):
-        vectors = self.get_field_across_documents(vector_field, documents)
+        vectors = self.get_field_across_documents(vector_field, documents,
+            missing_treatment="skip")
         return self.fit(documents)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
@@ -54,7 +55,8 @@ class DimReductionBase(LoguruLogger, DocUtils):
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
-        vectors = self.get_field_across_documents(vector_field, documents)
+        vectors = self.get_field_across_documents(vector_field, documents, 
+            missing_treatment="skip")
         dr_vectors = self.fit_transform(vectors, dims=dims)
         dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
         self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
