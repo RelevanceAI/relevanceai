@@ -12,6 +12,14 @@ def test_dataset_labelling(test_dataset_df: Dataset):
         label_dataset=test_dataset_df.dataset_id,
         label_fields=["sample_1_label"],
         label_vector_field="sample_1_vector_",
+        filters=[
+            {
+                "field": "sample_1_label",
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+        ],
     )
     assert "_label_.example" in test_dataset_df.schema, "schema is incorrect"
     assert len(results["failed_documents"]) == 0, "failed to label documents :("

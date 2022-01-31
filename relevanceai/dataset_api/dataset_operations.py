@@ -248,6 +248,7 @@ class LabelExperiment(Operations):
         label_vector_field: str,
         label_fields: List[str],
         number_of_labels: int = 1,
+        filters: list = [],
         similarity_metric="cosine",
         score_field: str = "_search_score",
     ):
@@ -301,7 +302,9 @@ class LabelExperiment(Operations):
         """
         # Download documents in the label dataset
         label_documents: list = self._get_all_documents(
-            label_dataset, select_fields=[label_vector_field] + label_fields
+            label_dataset,
+            select_fields=[label_vector_field] + label_fields,
+            filters=filters,
         )
 
         def label_and_store(d: dict):
