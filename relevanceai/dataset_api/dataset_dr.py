@@ -1,10 +1,10 @@
 from relevanceai.dataset_api.dataset_write import Write
 
 
-class Dimensionality_Reduction(Write):
+class DR(Write):
     """Relevance AI offers quick and easy dimensionality reduction"""
 
-    def quick_dimensionality_reduction(
+    def reduce_dimensions(
         self,
         vector_fields: list,
         alias: str,
@@ -31,7 +31,22 @@ class Dimensionality_Reduction(Write):
         algorithm: str
             The algorithm to run. The only supported algorithm is `pca` at this
             current point in time.
-        n_components:
+        n_components: int
+            The number of components
+        
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            df.reduce_dimensions(
+                ["sample_vector_"],
+                alias="pca",
+                number_of_documents=1000
+            )
 
         """
         if len(vector_fields) > 1:
@@ -39,8 +54,8 @@ class Dimensionality_Reduction(Write):
 
         print("Getting documents...")
         documents = self.get_documents(
-            self.dataset_id,
-            vector_fields,
+            dataset_id=self.dataset_id,
+            select_fields=vector_fields,
             filters=filters,
             number_of_documents=number_of_documents,
         )
@@ -52,14 +67,14 @@ class Dimensionality_Reduction(Write):
         else:
             raise ValueError("DR algorithm not supported.")
 
-        return self.update_documents(dr_docs)
+        return self.update_documents(self.dataset_id, dr_docs)
 
     def _run_pca(
         self, vector_fields: list, documents: list, alias: str, n_components: int = 3
     ):
         from relevanceai.vector_tools.dim_reduction import PCA
 
-        model = PCA(n_components=n_components)
+        model = PCA()
         # Returns a list of documents with the dr vector
         return model.fit_transform_documents(
             vector_field=vector_fields[0], documents=documents, alias=alias

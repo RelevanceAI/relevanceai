@@ -43,9 +43,9 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return ".".join(
             [
                 "_dr_",
-            ],
-            vector_field,
-            alias,
+                vector_field,
+                alias,
+            ]
         )
 
     def fit_transform_documents(
@@ -54,15 +54,16 @@ class DimReductionBase(LoguruLogger, DocUtils):
         documents: List[Dict],
         alias: str,
         exclude_original_vectors: bool = True,
+        dims: int=3
     ):
         vectors = self.get_field_across_documents(vector_field, documents)
-        dr_vectors = self.fit_transform(vectors)
+        dr_vectors = self.fit_transform(vectors, dims=dims)
         dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
-        dr_docs = self.set_field_across_documents(
+        self.set_field_across_documents(
             dr_vector_field_name, dr_vectors, documents
         )
         if exclude_original_vectors:
-            dr_docs = self.subset_documents(["_id", dr_vector_field_name])
+            dr_docs = self.subset_documents(["_id", dr_vector_field_name], documents)
         return dr_docs
 
 
@@ -80,7 +81,8 @@ class PCA(DimReductionBase):
         from sklearn.decomposition import PCA
 
         self.logger.debug(f"{dr_args}")
-        pca = PCA(n_components=min(dims, vectors.shape[1]), **dr_args)
+        vector_length = len(vectors[0])
+        pca = PCA(n_components=min(dims, vector_length), **dr_args)
         return pca.fit_transform(vectors)
 
 
