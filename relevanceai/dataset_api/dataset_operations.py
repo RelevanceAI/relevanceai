@@ -386,9 +386,6 @@ class Operations(Write):
                 "condition_value": " ",
             },
         ]
-        import pdb
-
-        pdb.set_trace()
         label_documents: list = self._get_all_documents(
             label_dataset_id,
             select_fields=[label_vector_field] + label_fields,
