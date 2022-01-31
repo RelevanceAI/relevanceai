@@ -85,7 +85,7 @@ class Operations(Write):
         clusterer.fit(dataset=self, vector_fields=vector_fields)
         return clusterer
     
-    def label(self, vector_fields: list, label_dataset: str, alias: str,
+    def label(self, vector_field: list, label_dataset: str, alias: str,
         number_of_labels: int=1, **kwargs):
         """
         Label a dataset based on a model.
@@ -105,7 +105,10 @@ class Operations(Write):
             The alias of the labels (for example - "ranking_labels")
         """
         # Download documents in the label dataset
-        label_documents = self.get_all_documents(label_dataset)
+        label_documents: list = self.get_all_documents(
+            label_dataset, 
+            select_fields=[vector_fields]
+        )
 
         # Build a index
         nearest_neighbors = NearestNeighbours.get_nearest_neighbours(
