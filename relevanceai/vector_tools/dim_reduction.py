@@ -56,9 +56,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
-        documents = self.filter_docs_for_fields(
-            [vector_field], documents
-        )
+        documents = self.filter_docs_for_fields([vector_field], documents)
         vectors = self.get_field_across_documents(
             vector_field, documents, missing_treatment="skip"
         )
