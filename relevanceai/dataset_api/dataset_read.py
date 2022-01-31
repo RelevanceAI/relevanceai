@@ -19,7 +19,7 @@ from relevanceai.api.client import BatchAPIClient
 
 from relevanceai.config import CONFIG
 
-MAXSIZE = CONFIG.get_field("cache.maxsize", CONFIG.config)
+MAXSIZE = int(CONFIG.get_field("cache.maxsize", CONFIG.config))
 
 
 class Read(BatchAPIClient):
