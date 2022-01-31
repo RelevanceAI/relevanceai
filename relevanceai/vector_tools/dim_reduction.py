@@ -20,9 +20,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.fit_transform(*args, **kwargs)
 
     # @abstractmethod
-    def fit_transform(
-        self, vectors: np.ndarray, dr_args: Dict[Any, Any], dims: int
-    ) -> np.ndarray:
+    def fit_transform(self, *args, **kw) -> np.ndarray:
         raise NotImplementedError
 
     def fit(self, *args, **kw):
@@ -66,8 +64,10 @@ class DimReductionBase(LoguruLogger, DocUtils):
 
 
 class PCA(DimReductionBase):
-    def fit(self, vectors: np.ndarray, dims: int = 3):
-        pca = PCA(n_components=min(dims, vectors.shape[1]))
+    def fit(self, vectors: np.ndarray, dims: int = 3, *args, **kw):
+        from sklearn.decomposition import PCA as SKLEARN_PCA
+
+        pca = SKLEARN_PCA(n_components=min(dims, vectors.shape[1]))
         return pca.fit(vectors)
 
     def fit_transform(
@@ -76,11 +76,11 @@ class PCA(DimReductionBase):
         dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
         dims: int = 3,
     ) -> np.ndarray:
-        from sklearn.decomposition import PCA
+        from sklearn.decomposition import PCA as SKLEARN_PCA
 
         self.logger.debug(f"{dr_args}")
         vector_length = len(vectors[0])
-        pca = PCA(n_components=min(dims, vector_length), **dr_args)
+        pca = SKLEARN_PCA(n_components=min(dims, vector_length), **dr_args)
         return pca.fit_transform(vectors)
 
 
