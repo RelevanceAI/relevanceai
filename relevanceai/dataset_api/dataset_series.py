@@ -35,7 +35,7 @@ class Series(BatchAPIClient):
 
     Examples
     --------
-    Assuming the following code as been executed:
+    Assuming the following code has been executed:
 
     .. code-block::
 
