@@ -4,7 +4,10 @@ Pandas like dataset API
 from typing import Dict, List
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
-from relevanceai.vector_tools.nearest_neighbours import NearestNeighbours
+from relevanceai.vector_tools.nearest_neighbours import (
+    NearestNeighbours,
+    NEAREST_NEIGHBOURS,
+)
 
 
 class Operations(Write):
@@ -94,9 +97,9 @@ class LabelExperiment(Operations):
         alias: str,
         label_dataset: str,
         label_vector_field: str,
-        label_field: str,
+        label_fields: list,
         number_of_labels: int = 1,
-        similarity_metric: str = "cosine",
+        similarity_metric: NEAREST_NEIGHBOURS = "cosine",
         score_field: str = "_search_score",
         **kwargs
     ):
@@ -120,7 +123,7 @@ class LabelExperiment(Operations):
             The dataset to use fo rlabelling
         label_vector_field: str
             The vector field of the label dataset
-        label_field: str
+        label_fields: list
             The label field of the dataset to use
         number_of_labels: int
             The numebr of labels to get
@@ -131,7 +134,7 @@ class LabelExperiment(Operations):
         """
         # Download documents in the label dataset
         label_documents: list = self._get_all_documents(
-            label_dataset, select_fields=[label_vector_field, label_field]
+            label_dataset, select_fields=[label_vector_field, label_fields]
         )
 
         # Build a index
@@ -142,7 +145,7 @@ class LabelExperiment(Operations):
             similarity_metric=similarity_metric,
             number_of_labels=number_of_labels,
             score_field=score_field,
-            label_field=label_field,
+            label_fields=label_fields,
         )
 
         # Store things according to
@@ -160,7 +163,7 @@ class LabelExperiment(Operations):
         label_documents: List[Dict],
         vector: List[float],
         label_vector_field: str,
-        similarity_metric: str,
+        similarity_metric: NEAREST_NEIGHBOURS,
         number_of_labels: int,
         score_field: str,
         label_fields: List[str],

@@ -14,6 +14,7 @@ from relevanceai.dataset_api.dataset_dr import DR
 
 class Dataset(Export, Stats, LabelExperiment, DR):
     """Dataset class"""
+
     def __init__(self, project: str, api_key: str, dataset_id: str, fields: list = []):
         self.project = project
         self.api_key = api_key
