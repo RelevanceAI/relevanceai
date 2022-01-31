@@ -1,5 +1,6 @@
 """
-Datasets to mock
+Relevance AI Platform offers free datasets for users.
+These datasets have been licensed under Apache 2.0.
 """
 
 from typing import List, Union, Dict, Any

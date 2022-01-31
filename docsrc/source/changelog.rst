@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.31.1
+---------
+
+- Fix bug with clusterer using `fit_predict` now
+
 v0.31.0
 ---------
 
