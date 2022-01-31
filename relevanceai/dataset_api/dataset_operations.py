@@ -6,6 +6,7 @@ from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.vector_tools.nearest_neighbours import NearestNeighbours
 
+
 class Operations(Write):
     def vectorize(self, field: str, model):
         """
@@ -14,7 +15,7 @@ class Operations(Write):
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-        
+
         Parameters
         ----------
         field : str
@@ -85,23 +86,27 @@ class Operations(Write):
         clusterer.fit(dataset=self, vector_fields=vector_fields)
         return clusterer
 
+
 class LabelExperiment(Operations):
-    def label_vector(self, 
+    def label_vector(
+        self,
         vector,
-        alias: str, 
+        alias: str,
         label_dataset: str,
         label_vector_field: str,
         label_field: str,
-        number_of_labels: int=1, similarity_metric="cosine", 
-        score_field: str="_search_score", 
-        **kwargs):
+        number_of_labels: int = 1,
+        similarity_metric: str = "cosine",
+        score_field: str = "_search_score",
+        **kwargs
+    ):
         """
         Label a dataset based on a model.
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-        
+
         Parameters
         -------------
 
@@ -111,6 +116,18 @@ class LabelExperiment(Operations):
             The dataset to label with
         alias: str
             The alias of the labels (for example - "ranking_labels")
+        label_dataset: str
+            The dataset to use fo rlabelling
+        label_vector_field: str
+            The vector field of the label dataset
+        label_field: str
+            The label field of the dataset to use
+        number_of_labels: int
+            The numebr of labels to get
+        similarity_metric: str
+            The similarity metric to adopt
+        score_field: str
+            The field to use for scoring
         """
         # Download documents in the label dataset
         label_documents: list = self._get_all_documents(
@@ -119,56 +136,110 @@ class LabelExperiment(Operations):
 
         # Build a index
         labels = self._get_nearest_labels(
-            label_documents=label_documents, vector=vector,
+            label_documents=label_documents,
+            vector=vector,
             label_vector_field=label_vector_field,
             similarity_metric=similarity_metric,
             number_of_labels=number_of_labels,
             score_field=score_field,
-            label_field=label_field
+            label_field=label_field,
         )
 
-        # Store things according to 
+        # Store things according to
         # {"_label_": {"field": {"alias": [{"label": 3, "similarity_score": 0.4}]}
         return {"_label_": {label_vector_field: {alias: labels}}}
-    
-    def _get_nearest_labels(self, label_documents: List[Dict], vector: List[float], label_vector_field: str, similarity_metric: str, number_of_labels: int, score_field: str, label_field: str):
+
+    def store_labels_in_document(
+        self, labels: list, label_vector_field: str, alias: str
+    ):
+        # return {"_label_": {label_vector_field: {alias: labels}}}
+        return {"_label_": {alias: labels}}
+
+    def _get_nearest_labels(
+        self,
+        label_documents: List[Dict],
+        vector: List[float],
+        label_vector_field: str,
+        similarity_metric: str,
+        number_of_labels: int,
+        score_field: str,
+        label_fields: List[str],
+    ):
         nearest_neighbors: List[Dict] = NearestNeighbours.get_nearest_neighbours(
-            label_documents, vector, label_vector_field, similarity_metric,
-            score_field="_search_score"
+            label_documents,
+            vector,
+            label_vector_field,
+            similarity_metric,
+            score_field="_search_score",
         )[:number_of_labels]
-        labels = self.subset_documents(
-            ["_id", label_field, score_field], nearest_neighbors)
+        labels = self.subset_documents([score_field] + label_fields, nearest_neighbors)
         return labels
 
     def label_document(
-        self, 
+        self,
         document: dict,
         vector_field: str,
         vector: List[float],
-        alias: str, 
+        alias: str,
         label_dataset: str,
         label_vector_field: str,
-        label_field: str,
-        number_of_labels: int=1, similarity_metric="cosine", 
-        score_field: str="_search_score", 
+        label_fields: List[str],
+        number_of_labels: int = 1,
+        similarity_metric="cosine",
+        score_field: str = "_search_score",
     ):
         """
         Label a dataset from a vector field
         """
         vector = self.get_field(vector_field, document)
-        return self.label_vector(
-            vector_field=vector_field, vector=vector,
+        labels = self.label_vector(
+            vector_field=vector_field,
+            vector=vector,
             alias=alias,
             label_dataset=label_dataset,
             label_vector_field=label_vector_field,
-            label_field=label_field,
+            label_fields=label_fields,
             number_of_labels=number_of_labels,
             score_field=score_field,
+            similarity_metric=similarity_metric,
         )
-    
-    def label_dataset(
-        self, 
-        dataset_id: str,
+        document.update(
+            self.store_labels_in_document(labels, label_vector_field, alias)
+        )
+        return document
 
+    def label(
+        self,
+        vector_field: str,
+        alias: str,
+        label_dataset: str,
+        label_vector_field: str,
+        label_fields: List[str],
+        number_of_labels: int = 1,
+        similarity_metric="cosine",
+        score_field: str = "_search_score",
     ):
-        pass
+
+        # Download documents in the label dataset
+        label_documents: list = self._get_all_documents(
+            label_dataset, select_fields=[label_vector_field] + label_fields
+        )
+
+        def label_and_store(d: dict):
+            labels = self._get_nearest_labels(
+                label_documents=label_documents,
+                vector=self.get_field(vector_field, d),
+                label_vector_field=label_vector_field,
+                similarity_metric=similarity_metric,
+                number_of_labels=number_of_labels,
+                score_field=score_field,
+                label_fields=label_fields,
+            )
+            d.update(self.store_labels_in_document(labels, label_vector_field, alias))
+            return d
+
+        def bulk_label_documents(documents):
+            [label_and_store(d) for d in documents]
+            return documents
+
+        return self.bulk_apply(bulk_label_documents)
