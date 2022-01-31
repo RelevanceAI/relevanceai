@@ -134,7 +134,7 @@ class LabelExperiment(Operations):
         """
         # Download documents in the label dataset
         label_documents: list = self._get_all_documents(
-            label_dataset, select_fields=[label_vector_field, label_fields]
+            label_dataset, select_fields=[label_vector_field] + label_fields
         )
 
         # Build a index
@@ -150,11 +150,9 @@ class LabelExperiment(Operations):
 
         # Store things according to
         # {"_label_": {"field": {"alias": [{"label": 3, "similarity_score": 0.4}]}
-        return {"_label_": {label_vector_field: {alias: labels}}}
+        return self.store_labels_in_document(labels, alias)
 
-    def store_labels_in_document(
-        self, labels: list, label_vector_field: str, alias: str
-    ):
+    def store_labels_in_document(self, labels: list, alias: str):
         # return {"_label_": {label_vector_field: {alias: labels}}}
         return {"_label_": {alias: labels}}
 
@@ -233,9 +231,7 @@ class LabelExperiment(Operations):
             score_field=score_field,
             similarity_metric=similarity_metric,
         )
-        document.update(
-            self.store_labels_in_document(labels, label_vector_field, alias)
-        )
+        document.update(self.store_labels_in_document(labels, alias))
         return document
 
     def label(
@@ -260,8 +256,8 @@ class LabelExperiment(Operations):
         Parameters
         -------------
 
-        vector_fields: list
-            The list of vector field
+        vector_field: str
+            The vector field to match with
         label_dataset: str
             The dataset to label with
         alias: str
@@ -279,6 +275,22 @@ class LabelExperiment(Operations):
         score_field: str
             The field to use for scoring
 
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            result = df.label_vector(
+                generate_random_vector(100),
+                label_vector_field="sample_1_vector_",
+                alias="sample",
+                label_dataset=test_dataset_df.dataset_id,
+                label_fields=["path"],
+                number_of_labels=1,
+            )
 
         """
         # Download documents in the label dataset
@@ -296,7 +308,7 @@ class LabelExperiment(Operations):
                 score_field=score_field,
                 label_fields=label_fields,
             )
-            d.update(self.store_labels_in_document(labels, label_vector_field, alias))
+            d.update(self.store_labels_in_document(labels, alias))
             return d
 
         def bulk_label_documents(documents):
