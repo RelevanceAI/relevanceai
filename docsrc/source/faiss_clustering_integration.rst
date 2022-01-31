@@ -11,12 +11,11 @@ Clustering
 -----------------------------
 
 Faiss Kmeans Example
-################
+#######################
 
 .. code-block::
 
     import numpy as np
-
     from relevanceai import Client
     from relevanceai.clusterer import Clusterer
     from relevanceai.clusterer import ClusterBase
