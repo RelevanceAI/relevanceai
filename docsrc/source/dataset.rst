@@ -41,6 +41,6 @@ It is instantiated like this:
    :members:
    :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset_dr.Dimensionality_Reduction.reduce_dimensions
+.. autoclass:: relevanceai.dataset_api.dataset_dr.DR
    :members:
    :exclude-members: __init__

@@ -54,14 +54,12 @@ class DimReductionBase(LoguruLogger, DocUtils):
         documents: List[Dict],
         alias: str,
         exclude_original_vectors: bool = True,
-        dims: int=3
+        dims: int = 3,
     ):
         vectors = self.get_field_across_documents(vector_field, documents)
         dr_vectors = self.fit_transform(vectors, dims=dims)
         dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
-        self.set_field_across_documents(
-            dr_vector_field_name, dr_vectors, documents
-        )
+        self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
         if exclude_original_vectors:
             dr_docs = self.subset_documents(["_id", dr_vector_field_name], documents)
         return dr_docs

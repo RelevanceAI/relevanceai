@@ -33,7 +33,7 @@ class DR(Write):
             current point in time.
         n_components: int
             The number of components
-        
+
         Example
         ----------
 
@@ -62,8 +62,12 @@ class DR(Write):
 
         print("Run PCA...")
         if algorithm == "pca":
-            dr_docs = self._run_pca(vector_fields=vector_fields, 
-                documents=documents, alias=alias, n_components=n_components)
+            dr_docs = self._run_pca(
+                vector_fields=vector_fields,
+                documents=documents,
+                alias=alias,
+                n_components=n_components,
+            )
         else:
             raise ValueError("DR algorithm not supported.")
 
