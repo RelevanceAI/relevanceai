@@ -25,7 +25,17 @@ class Read(BatchAPIClient):
     A Pandas Like datatset API for interacting with the RelevanceAI python package
     """
 
-    def __init__(self, project: str, api_key: str, dataset_id: str, fields: list = []):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        fields: list = [],
+        image_fields: List[str] = [],
+        audio_fields: List[str] = [],
+        highlight_fields: Dict[str, list] = {},
+        text_fields: List[str] = [],
+    ):
         self.project = project
         self.api_key = api_key
         self.fields = fields
@@ -34,6 +44,10 @@ class Read(BatchAPIClient):
         self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
         self.agg = Agg(self.project, self.api_key, self.dataset_id)
         self.centroids = Centroids(self.project, self.api_key, self.dataset_id)
+        self.image_fields = image_fields
+        self.audio_fields = audio_fields
+        self.highlight_fields = highlight_fields
+        self.text_fields = text_fields
         super().__init__(project=project, api_key=api_key)
 
     @property
@@ -203,7 +217,19 @@ class Read(BatchAPIClient):
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
             text_fields=text_fields,
+            **kw,
         )
+
+    def _repr_html_(self):
+        documents = self.get_documents(dataset_id=self.dataset_id)
+        try:
+            return self._show_json(documents, return_html=True)
+        except Exception as e:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+                + str(e)
+            )
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
     def sample(
         self,
