@@ -13,18 +13,18 @@ def test_dataset_labelling(test_dataset_df: Dataset):
         label_fields=["sample_1_label"],
         label_vector_field="sample_1_vector_",
         filters=[
-            {
-                "field": "sample_1_label",
-                "filter_type": "exists",
-                "condition": ">=",
-                "condition_value": " ",
-            },
-            {
-                "field": "sample_1_vector_",
-                "filter_type": "exists",
-                "condition": ">=",
-                "condition_value": " ",
-            },
+            # {
+            #     "field": "sample_1_label",
+            #     "filter_type": "exists",
+            #     "condition": ">=",
+            #     "condition_value": " ",
+            # },
+            # {
+            #     "field": "sample_1_vector_",
+            #     "filter_type": "exists",
+            #     "condition": ">=",
+            #     "condition_value": " ",
+            # },
         ],
     )
     assert "_label_.example" in test_dataset_df.schema, "schema is incorrect"
