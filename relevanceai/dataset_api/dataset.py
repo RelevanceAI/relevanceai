@@ -64,12 +64,56 @@ class Series(BatchAPIClient):
 
     """
 
-    def __init__(self, project: str, api_key: str, dataset_id: str, field: str):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        field: str,
+        image_fields: list[str] = [],
+        audio_fields: list[str] = [],
+        highlight_fields: list[str] = [],
+        text_fields: list[str] = [],
+    ):
+        super().__init__(project=project, api_key=api_key)
         self.project = project
         self.api_key = api_key
         self.dataset_id = dataset_id
         self.field = field
-        super().__init__(project=project, api_key=api_key)
+        self.image_fields = image_fields
+        self.audio_fields = audio_fields
+        self.highlight_fields = highlight_fields
+        self.text_fields = text_fields
+
+    def _repr_html_(self):
+        document = self.get_documents(
+            dataset_id=self.dataset_id, select_fields=[self.field]
+        )
+        try:
+            return self._show_json(document, return_html=True)
+        except Exception:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+                + str(e)
+            )
+            return pd.json_normalize(document)._repr_html_()
+
+    def _show_json(self, document, **kw):
+        from jsonshower import show_json
+
+        if not self.text_fields:
+            text_fields = pd.json_normalize(document).columns.tolist()
+        else:
+            text_fields = self.text_fields
+
+        return show_json(
+            document,
+            image_fields=self.image_fields,
+            audio_fields=self.audio_fields,
+            highlight_fields=self.highlight_fields,
+            text_fields=text_fields,
+            **kw,
+        )
 
     def sample(
         self,
@@ -492,7 +536,16 @@ class Read(BatchAPIClient):
             field = "sample_field"
             series = df[field]
         """
-        return Series(self.project, self.api_key, self.dataset_id, field)
+        return Series(
+            self.project,
+            self.api_key,
+            self.dataset_id,
+            field,
+            self.image_fields,
+            self.audio_fields,
+            self.highlight_fields,
+            self.text_fields,
+        )
 
     def _get_possible_dtypes(self, schema):
         possible_dtypes = []
@@ -607,7 +660,7 @@ class Read(BatchAPIClient):
                 return self._show_json(head_documents, **kw)
             except Exception as e:
                 warnings.warn(
-                    "Displaying using Pandas. To get image functionality please install RelevanceAI[notebook]. "
+                    "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                     + str(e)
                 )
                 return pd.json_normalize(head_documents).head(n=n)
@@ -618,7 +671,7 @@ class Read(BatchAPIClient):
             return self._show_json(documents, return_html=True)
         except Exception as e:
             warnings.warn(
-                "Displaying using Pandas. To get image functionality please install RelevanceAI[notebook]. "
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
             )
             return pd.json_normalize(documents)._repr_html_()
