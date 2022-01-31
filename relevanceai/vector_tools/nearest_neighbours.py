@@ -19,6 +19,7 @@ class NearestNeighbours(_Base, DocUtils):
         vector_field: str,
         distance_measure_mode: NEAREST_NEIGHBOURS = "cosine",
         callable_distance=None,
+        score_field: str="nearest_neighbour_distance"
     ):
 
         import scipy.spatial.distance as spatial_distance
@@ -48,9 +49,9 @@ class NearestNeighbours(_Base, DocUtils):
             raise ValueError("Need valid distance measure mode or callable distance")
 
         doc_utils.set_field_across_documents(
-            "nearest_neighbour_distance", sort_key, documents
+            score_field, sort_key, documents
         )
 
         return sorted(
-            documents, reverse=reverse, key=lambda x: x["nearest_neighbour_distance"]
+            documents, reverse=reverse, key=lambda x: x[score_field]
         )

@@ -6,12 +6,12 @@ from typing import Union, List
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_export import Export
 from relevanceai.dataset_api.dataset_stats import Stats
-from relevanceai.dataset_api.dataset_operations import Operations
+from relevanceai.dataset_api.dataset_operations import Operations, LabelExperiment
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
 
 
-class Dataset(Export, Stats, Operations):
+class Dataset(Export, Stats, LabelExperiment):
     """Dataset class"""
 
     def __init__(self, project: str, api_key: str, dataset_id: str, fields: list = []):
