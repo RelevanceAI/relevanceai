@@ -64,7 +64,7 @@ class Client(BatchAPIClient, DocUtils):
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
-        token: str=None
+        token: str = None,
     ):
         if project is None or api_key is None:
             project, api_key = self._token_to_auth(token)
@@ -133,6 +133,19 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Authentication Details
 
+    def _process_token(self, token: str):
+        split_token = token.split(":")
+        project = split_token[0]
+        api_key = split_token[1]
+        # If the base URl is included in the pasted token then include it
+        if len(split_token) == 3:
+            region = split_token[2]
+            url = f"https://api.{region}.relevance.ai/latest"
+            self.base_url = url
+            self.base_ingest_url = url
+        self._write_credentials(project, api_key)
+        return project, api_key
+
     def _token_to_auth(self, token=None):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
@@ -144,16 +157,9 @@ class Client(BatchAPIClient, DocUtils):
             print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
             if not token:
                 token = getpass.getpass(f"Auth token:")
-            split_token = token.split(":")
-            project = split_token[0]
-            api_key = split_token[1]
-            # If the base URl is included in the pasted token then include it
-            if len(split_token) == 3:
-                region = split_token[2]
-                url = f"https://api.{region}.relevance.ai/latest"
-                self.base_url = url
-                self.base_ingest_url = url
-            self._write_credentials(project, api_key)
+            return self._process_token(token)
+        elif token:
+            return self._process_token(token)
         else:
             data = self._read_credentials()
             project = data["project"]
