@@ -566,3 +566,7 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
+
+    def insert_df(self, dataframe, *args, **kwargs):
+        """Insert a dataframe for eachd doc"""
+        return self.insert_pandas_dataframe(dataframe, *args, **kwargs)
