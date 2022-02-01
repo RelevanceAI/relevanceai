@@ -267,7 +267,6 @@ def get_news_dataset(
     """
     Download an example news dataset \n
     Total Len: 250 \n
-    Sample document:
 
     Parameters
     ----------
@@ -313,7 +312,6 @@ def get_online_ecommerce_dataset(
     """
     Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance) \n
     Total Len: 15528 \n
-    Sample document:
 
     Parameters
     ----------
@@ -375,18 +373,18 @@ def get_flipkart_dataset(
     """
     Download an example flipkart ecommerce dataset \n
     Total Len: 19920 \n
-    Sample document:
 
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             '_id': 0,
             'product_name': "Alisha Solid Women's Cycling Shorts",
@@ -407,14 +405,13 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
     """
     Download an example real-estate dataset \n
     Total Len: 5885 \n
-    Sample document:
 
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
@@ -474,15 +471,12 @@ def get_mission_statements_dataset(
     """Function to download a sample company mission statement dataset.
     Total Len: 1433
 
-    Download an example ompany mission statement dataset \n
-    Total Len: 1433 \n
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
@@ -506,10 +500,3 @@ def get_mission_statements_dataset(
 def get_machine_learning_research_dataset():
     """Here we get our Machine Learning research dataset."""
     raise NotImplementedError
-
-
-### For backwards compatability
-
-get_ecommerce_1_dataset = get_dummy_ecommerce_dataset = get_ecommerce_dataset_encoded
-get_ecommerce_2_dataset = get_sample_ecommerce_dataset = get_ecommerce_dataset_clean
-get_ecommerce_3_dataset = get_ecommerce_dataset = get_online_ecommerce_dataset
