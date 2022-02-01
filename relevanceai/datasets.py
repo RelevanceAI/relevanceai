@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Relevance AI Platform offers free datasets for users.
 These datasets have been licensed under Apache 2.0.
@@ -500,3 +501,10 @@ def get_mission_statements_dataset(
 def get_machine_learning_research_dataset():
     """Here we get our Machine Learning research dataset."""
     raise NotImplementedError
+
+
+### For backwards compatability
+
+get_ecommerce_1_dataset = get_dummy_ecommerce_dataset = get_ecommerce_dataset_encoded
+get_ecommerce_2_dataset = get_sample_ecommerce_dataset = get_ecommerce_dataset_clean
+get_ecommerce_3_dataset = get_ecommerce_dataset = get_online_ecommerce_dataset
