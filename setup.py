@@ -23,7 +23,7 @@ requirements = [
     "tqdm>=4.49.0",
     "pandas>=1.0.0",
     "loguru>=0.5.3",
-    "document-utils>=1.6.1",
+    "document-utils>=1.7.0",
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
@@ -52,7 +52,16 @@ hdbscan = ["hdbscan>=0.8.27"]
 # vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
 test_requirements = (
-    ["pytest", "pytest-dotenv", "pytest-cov", "pytest-mock", "mypy", "types-requests"]
+    [
+        "pytest",
+        "pytest-dotenv",
+        "pytest-cov",
+        "pytest-mock",
+        "mypy",
+        "types-requests",
+        "pytest-sugar",
+        "pytest-rerunfailures",
+    ]
     + excel_requirements
     + vis_requirements
     + requirements

@@ -36,7 +36,13 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :caption: Integrations
 
    sklearn_clustering_integration
-   external_clustering_integration
+   faiss_clustering_integration 
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Available Datasets
+
+   available_datasets
 
 .. toctree::
    :maxdepth: 4

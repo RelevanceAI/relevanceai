@@ -3,6 +3,47 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.32.0
+---------
+
+*BREAKING CHANGES*
+
+- Move search to inside operations to keep consistency
+
+New Features:
+
+- Added Dimensionality Reduction
+- Added Labelling
+
+Non-breaking changes:
+
+- Fix bug with clusterer using `fit_predict` now
+
+
+v0.31.0
+---------
+
+- Include more native sklearn integration. KMeans and MiniBatchKMeans now supported natively.
+- Fix to `vectorize` and `sample` in Series
+- Fixes to cluster aggregation for the clusterer class and cluster metrics for the clusterer class
+- `groupby` and `agg` now supported
+- Added warnings to `vectorize` method
+- Bug Fix to list_closest_to_center to now return results
+- Add `send_dataset`
+- Add `clone_dataset` 
+- Add references to available example datasets
+- Added `vector_search`, `chunk_search` , `multistep_chunk_search`, `hybrid_search`
+as part of the search endpoints
+
+Developer changes:
+
+- Added warnings module (boba-and-beer)
+- Folder factor for datasets API (boba-and-beer)
+- 2x Test speed up by introducing pytest-xdist with file distribution strategy (boba-and-beer)
+
+Tests are now run modularly. In other words, if you want tests to run together, keep
+them in the same file. If you want them to run in parallel, keep them in separate files.
+
 v0.30.1
 --------
 
@@ -12,7 +53,7 @@ Non-breaking changes:
 - Fixed bulk getting the wrong document in `df.get()` and added subsequent unit test
 - Fixed references with apply
 - Added health endpoints
-- Addded `insert_pandas_dataframe` endpoints
+- Added `insert_pandas_dataframe` endpoints
 - Test folder refactor and clean up
 
 Developer changes:
