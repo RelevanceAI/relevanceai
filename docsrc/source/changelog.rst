@@ -3,6 +3,37 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.32.0
+---------
+
+*BREAKING CHANGES*
+
+- Move search to inside operations to keep consistency
+
+New Features:
+
+- Added Dimensionality Reduction
+- Added Labelling
+
+Non-breaking changes:
+
+- Fix bug with clusterer using `fit_predict` now
+* Feature/pro 1107 bug with clusterer by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/360
+* Added Cluster Metrics to Clusterer by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/347
+* Feature/fix auth by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/361
+* removing dataset_id as a required parameter by @ChakavehSaedi in https://github.com/RelevanceAI/RelevanceAI/pull/366
+* add dimensionality reduction by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/362
+* added faiss kmeans integrations example by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/364
+* adding pretty html for df by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/337
+* Feature/add df label by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/365
+* Fix conflicts by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/369
+* Nice code blocks for datatsets by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/368
+* black files by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/370
+
+
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v0.31.0...v0.32.0
+
+
 v0.31.0
 ---------
 
@@ -13,7 +44,7 @@ v0.31.0
 - Added warnings to `vectorize` method
 - Bug Fix to list_closest_to_center to now return results
 - Add `send_dataset`
-- Add `clone_dataset` 
+- Add `clone_dataset`
 - Add references to available example datasets
 - Added `vector_search`, `chunk_search` , `multistep_chunk_search`, `hybrid_search`
 as part of the search endpoints

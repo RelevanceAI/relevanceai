@@ -3,4 +3,5 @@ Available Datasets
 
 .. automodule:: relevanceai.datasets
    :members:
-   :exclude-members: __init__
+   :exclude-members:
+      __init__

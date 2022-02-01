@@ -35,7 +35,7 @@ class Series(BatchAPIClient):
 
     Examples
     --------
-    Assuming the following code as been executed:
+    Assuming the following code has been executed:
 
     .. code-block::
 
@@ -57,12 +57,56 @@ class Series(BatchAPIClient):
 
     """
 
-    def __init__(self, project: str, api_key: str, dataset_id: str, field: str):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        field: str,
+        image_fields: List[str] = [],
+        audio_fields: List[str] = [],
+        highlight_fields: Dict[str, List] = {},
+        text_fields: List[str] = [],
+    ):
+        super().__init__(project=project, api_key=api_key)
         self.project = project
         self.api_key = api_key
         self.dataset_id = dataset_id
         self.field = field
-        super().__init__(project=project, api_key=api_key)
+        self.image_fields = image_fields
+        self.audio_fields = audio_fields
+        self.highlight_fields = highlight_fields
+        self.text_fields = text_fields
+
+    def _repr_html_(self):
+        document = self.get_documents(
+            dataset_id=self.dataset_id, select_fields=[self.field]
+        )
+        try:
+            return self._show_json(document, return_html=True)
+        except Exception:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+                + str(e)
+            )
+            return pd.json_normalize(document).set_index("_id")._repr_html_()
+
+    def _show_json(self, document, **kw):
+        from jsonshower import show_json
+
+        if not self.text_fields:
+            text_fields = pd.json_normalize(document).columns.tolist()
+        else:
+            text_fields = self.text_fields
+
+        return show_json(
+            document,
+            image_fields=self.image_fields,
+            audio_fields=self.audio_fields,
+            highlight_fields=self.highlight_fields,
+            text_fields=text_fields,
+            **kw,
+        )
 
     def sample(
         self,
