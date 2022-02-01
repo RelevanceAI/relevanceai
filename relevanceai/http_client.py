@@ -454,3 +454,13 @@ class Client(BatchAPIClient, DocUtils):
             project=project,
             api_key=api_key,
         )
+
+    @property
+    def references(self):
+        from relevanceai.__init__ import __version__
+
+        REFERENCE_URL = f"https://relevanceai.readthedocs.io/en/{__version__}/"
+        MESSAGE = f"You can find your references here {REFERENCE_URL}."
+        print(MESSAGE)
+
+    docs = references
