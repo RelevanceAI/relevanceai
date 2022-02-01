@@ -105,25 +105,29 @@ def get_games_dataset(
     Total Len: 365 \n
     Sample document:
 
-    >>> {'id': 1,
-    >>> 'title': 'Dauntless',
-    >>> 'thumbnail': 'https://www.freetogame.com/g/1/thumbnail.jpg',
-    >>> 'short_description': 'A free-to-play, co-op action RPG with gameplay similar to Monster Hunter.',
-    >>> 'game_url': 'https://www.freetogame.com/open/dauntless',
-    >>> 'genre': 'MMORPG',
-    >>> 'platform': 'PC (Windows)',
-    >>> 'publisher': 'Phoenix Labs',
-    >>> 'developer': 'Phoenix Labs, Iron Galaxy',
-    >>> 'release_date': '2019-05-21',
-    >>> 'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
-    >>> }
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            'id': 1,
+            'title': 'Dauntless',
+            'thumbnail': 'https://www.freetogame.com/g/1/thumbnail.jpg',
+            'short_description': 'A free-to-play, co-op action RPG with gameplay similar to Monster Hunter.',
+            'game_url': 'https://www.freetogame.com/open/dauntless',
+            'genre': 'MMORPG',
+            'platform': 'PC (Windows)',
+            'publisher': 'Phoenix Labs',
+            'developer': 'Phoenix Labs, Iron Galaxy',
+            'release_date': '2019-05-21',
+            'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
+        }
     """
     if number_of_documents is None:
         number_of_documents = 365
@@ -141,23 +145,27 @@ def get_ecommerce_dataset_encoded(
     Total Len: 739 \n
     Sample document:
 
-    >>> {'_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
-    >>> 'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
-    >>> 'product_image_clip_vector_': [...],
-    >>> 'product_link': 'https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&var=&hash=item4adee9354f',
-    >>> 'product_price': '$7.99 to $12.99',
-    >>> 'product_title': '20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM"',
-    >>> 'product_title_clip_vector_': [...],
-    >>> 'query': 'steel necklace',
-    >>> 'source': 'eBay'
-    >>> }
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            '_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
+            'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
+            'product_image_clip_vector_': [...],
+            'product_link': 'https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&var=&hash=item4adee9354f',
+            'product_price': '$7.99 to $12.99',
+            'product_title': '20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM"',
+            'product_title_clip_vector_': [...],
+            'query': 'steel necklace',
+            'source': 'eBay'
+        }
     """
     if number_of_documents is None:
         number_of_documents = 739
@@ -183,21 +191,25 @@ def get_ecommerce_dataset_clean(
     Total Len: 739 \n
     Sample document:
 
-    >>> {'_id': '711160239',
-    >>> 'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
-    >>> 'product_link': 'https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&var=&hash=item4adee9354f',
-    >>> 'product_price': '$7.99 to $12.99',
-    >>> 'product_title': '20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM"',
-    >>> 'query': 'steel necklace',
-    >>> 'source': 'eBay'
-    >>> }
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            '_id': '711160239',
+            'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
+            'product_link': 'https://www.ebay.com/itm/20-36-Mens-Silver-Stainless-Steel-Braided-Wheat-Chain-Necklace-Jewelry-3-4-5-6MM-/321567405391?pt=LH_DefaultDomain_0&var=&hash=item4adee9354f',
+            'product_price': '$7.99 to $12.99',
+            'product_title': '20-36Mens Silver Stainless Steel Braided Wheat Chain Necklace Jewelry 3/4/5/6MM"',
+            'query': 'steel necklace',
+            'source': 'eBay'
+        }
     """
     if number_of_documents is None:
         number_of_documents = 1000
@@ -219,21 +231,26 @@ def get_online_retail_dataset(
 
     Sample document:
 
-    >>> {'Country': 'United Kingdom',
-    >>> 'CustomerID': 17850.0,
-    >>> 'Description': 'WHITE HANGING HEART T-LIGHT HOLDER',
-    >>> 'InvoiceDate': Timestamp('2010-12-01 08:26:00'),
-    >>> 'InvoiceNo': 536365,
-    >>> 'Quantity': 6,
-    >>> 'StockCode': '85123A',
-    >>> 'UnitPrice': 2.55}
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            'Country': 'United Kingdom',
+            'CustomerID': 17850.0,
+            'Description': 'WHITE HANGING HEART T-LIGHT HOLDER',
+            'InvoiceDate': Timestamp('2010-12-01 08:26:00'),
+            'InvoiceNo': 536365,
+            'Quantity': 6,
+            'StockCode': '85123A',
+            'UnitPrice': 2.55
+        }
     """
     if number_of_documents is None:
         number_of_documents = 1000
@@ -253,28 +270,33 @@ def get_news_dataset(
     Total Len: 250 \n
     Sample document:
 
-    >>> {'authors': 'Ruth Harris',
-    >>> 'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.
-    >>> 'domain': 'awm.com',
-    >>> 'id': 141,
-    >>> 'inserted_at': '2018-02-02 01:19:41.756632',
-    >>> 'keywords': nan,
-    >>> 'meta_description': nan,
-    >>> 'meta_keywords': "['']",
-    >>> 'scraped_at': '2018-01-25 16:17:44.789555',
-    >>> 'summary': nan,
-    >>> 'tags': nan,
-    >>> 'title': 'Church Congregation Brings Gift to Waitresses Working on Christmas Eve, Has Them Crying (video)',
-    >>> 'type': 'unreliable',
-    >>> 'updated_at': '2018-02-02 01:19:41.756664',
-    >>> 'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'}
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            'authors': 'Ruth Harris',
+            'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.
+            'domain': 'awm.com',
+            'id': 141,
+            'inserted_at': '2018-02-02 01:19:41.756632',
+            'keywords': nan,
+            'meta_description': nan,
+            'meta_keywords': "['']",
+            'scraped_at': '2018-01-25 16:17:44.789555',
+            'summary': nan,
+            'tags': nan,
+            'title': 'Church Congregation Brings Gift to Waitresses Working on Christmas Eve, Has Them Crying (video)',
+            'type': 'unreliable',
+            'updated_at': '2018-02-02 01:19:41.756664',
+            'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'
+        }
     """
     if number_of_documents is None:
         number_of_documents = 250
@@ -293,30 +315,34 @@ def get_online_ecommerce_dataset(
     Total Len: 15528 \n
     Sample document:
 
-    >>> {'_unit_id': 711158459,
-    >>> 'product_description': 'The PlayStation 4 system opens the door to an '
-    >>>                     'incredible journey through immersive new gaming '
-    >>>                     'worlds and a deeply connected gaming community. Step '
-    >>>                     'into living, breathing worlds where you are hero of '
-    >>>                     '...',
-    >>> 'product_image': 'http://thumbs2.ebaystatic.com/d/l225/m/mzvzEUIknaQclZ801YCY1ew.jpg',
-    >>> 'product_link': 'http://www.ebay.com/itm/Sony-PlayStation-4-PS4-Latest-Model-500-GB-Jet-Black-Console-/321459436277?pt=LH_DefaultDomain_0&hash=item4ad879baf5',
-    >>> 'product_price': '$329.98 ',
-    >>> 'product_title': 'Sony PlayStation 4 (PS4) (Latest Model)- 500 GB Jet Black '
-    >>>                 'Console',
-    >>> 'query': 'playstation 4',
-    >>> 'rank': 1,
-    >>> 'relevance': 3.67,
-    >>> 'relevance:variance': 0.471,
-    >>> 'source': 'eBay',
-    >>> 'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'}
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            '_unit_id': 711158459,
+            'product_description': 'The PlayStation 4 system opens the door to an '
+                                'incredible journey through immersive new gaming '
+                                'worlds and a deeply connected gaming community. Step '
+                                'into living, breathing worlds where you are hero of '
+                                '...',
+            'product_image': 'http://thumbs2.ebaystatic.com/d/l225/m/mzvzEUIknaQclZ801YCY1ew.jpg',
+            'product_link': 'http://www.ebay.com/itm/Sony-PlayStation-4-PS4-Latest-Model-500-GB-Jet-Black-Console-/321459436277?pt=LH_DefaultDomain_0&hash=item4ad879baf5',
+            'product_price': '$329.98 ',
+            'product_title': 'Sony PlayStation 4 (PS4) (Latest Model)- 500 GB Jet Black 'Console'',
+            'query': 'playstation 4',
+            'rank': 1,
+            'relevance': 3.67,
+            'relevance:variance': 0.471,
+            'source': 'eBay',
+            'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'
+        }
     """
     if number_of_documents is None:
         number_of_documents = 1000
@@ -350,17 +376,22 @@ def get_flipkart_dataset(
     Total Len: 19920 \n
     Sample document:
 
-    >>> {'_id': 0,
-    >>> 'product_name': "Alisha Solid Women's Cycling Shorts",
-    >>> 'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
-    >>> 'retail_price': 999.0}
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            '_id': 0,
+            'product_name': "Alisha Solid Women's Cycling Shorts",
+            'description': "Key Features of Alisha Solid Women's Cycling Shorts Cotton Lycra Navy, Red, Navy,Specifications of Alisha Solid Women's Cycling Shorts Shorts Details Number of Contents in Sales Package Pack of 3 Fabric Cotton Lycra Type Cycling Shorts General Details Pattern Solid Ideal For Women's Fabric Care Gentle Machine Wash in Lukewarm Water, Do Not Bleach Additional Details Style Code ALTHT_3P_21 In the Box 3 shorts",
+            'retail_price': 999.0
+        }
     """
     if number_of_documents is None:
         number_of_documents = 19920
@@ -377,43 +408,47 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
     Total Len: 5885 \n
     Sample document:
 
-    >>> {'propertyDetails': {'area': 'North Shore - Lower',
-    >>> 'carspaces': 1,
-    >>> 'streetNumber': '28',
-    >>> 'latitude': -33.8115768,
-    >>> 'allPropertyTypes': ['ApartmentUnitFlat'],
-    >>> 'postcode': '2066',
-    >>> 'unitNumber': '6',
-    >>> 'bathrooms': 1.0,
-    >>> 'bedrooms': 1.0,
-    >>> 'features': ['BuiltInWardrobes', 'InternalLaundry','Intercom', 'Dishwasher'],
-    >>> 'street': 'Epping Road',
-    >>> 'propertyType': 'ApartmentUnitFlat',
-    >>> 'suburb': 'LANE COVE',
-    >>> 'state': 'NSW',
-    >>> 'region': 'Sydney Region',
-    >>> 'displayableAddress': '6/28 Epping Road, Lane Cove',
-    >>> 'longitude': 151.166611},
-    >>> 'listingSlug': '6-28-epping-road-lane-cove-nsw-2066-14688794',
-    >>> 'id': 14688794,
-    >>> 'headline': 'Extra large one bedroom unit',
-    >>> 'summaryDescription': '<b></b><br />This modern and spacious one-bedroom apartment situated on the top floor, the quiet rear side of a small 2 story boutique block, enjoys a wonderfully private, leafy, and greenly outlook from 2 sides and balcony. A short stroll to city buse...',
-    >>> 'advertiser': 'Ray White Lane Cove',
-    >>> 'image_url': 'https://bucket-api.domain.com.au/v1/bucket/image/14688794_1_1_201203_101135-w1600-h1065',
-    >>> 'insert_date_': '2021-03-01T14:19:22.805086',
-    >>> 'labels': [],
-    >>> 'image_url_5': 'https://bucket-api.domain.com.au/v1/bucket/image/14688794_5_1_201203_101135-w1600-h1067',
-    >>> 'image_url_4': 'https://bucket-api.domain.com.au/v1/bucket/image/14688794_4_1_201203_101135-w1600-h1067',
-    >>> 'priceDetails': {'displayPrice': 'Deposit Taken ! Inspection Cancelled thank you !!!'}
-    >>> ...
-    >>> }
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            'propertyDetails': {'area': 'North Shore - Lower',
+            'carspaces': 1,
+            'streetNumber': '28',
+            'latitude': -33.8115768,
+            'allPropertyTypes': ['ApartmentUnitFlat'],
+            'postcode': '2066',
+            'unitNumber': '6',
+            'bathrooms': 1.0,
+            'bedrooms': 1.0,
+            'features': ['BuiltInWardrobes', 'InternalLaundry','Intercom', 'Dishwasher'],
+            'street': 'Epping Road',
+            'propertyType': 'ApartmentUnitFlat',
+            'suburb': 'LANE COVE',
+            'state': 'NSW',
+            'region': 'Sydney Region',
+            'displayableAddress': '6/28 Epping Road, Lane Cove',
+            'longitude': 151.166611},
+            'listingSlug': '6-28-epping-road-lane-cove-nsw-2066-14688794',
+            'id': 14688794,
+            'headline': 'Extra large one bedroom unit',
+            'summaryDescription': '<b></b><br />This modern and spacious one-bedroom apartment situated on the top floor, the quiet rear side of a small 2 story boutique block, enjoys a wonderfully private, leafy, and greenly outlook from 2 sides and balcony. A short stroll to city buse...',
+            'advertiser': 'Ray White Lane Cove',
+            'image_url': 'https://bucket-api.domain.com.au/v1/bucket/image/14688794_1_1_201203_101135-w1600-h1065',
+            'insert_date_': '2021-03-01T14:19:22.805086',
+            'labels': [],
+            'image_url_5': 'https://bucket-api.domain.com.au/v1/bucket/image/14688794_5_1_201203_101135-w1600-h1067',
+            'image_url_4': 'https://bucket-api.domain.com.au/v1/bucket/image/14688794_4_1_201203_101135-w1600-h1067',
+            'priceDetails': {'displayPrice': 'Deposit Taken ! Inspection Cancelled thank you !!!'}
+        ...
+        }
     """
     if number_of_documents is None:
         number_of_documents = 50
@@ -436,22 +471,9 @@ def get_mission_statements_dataset(
 ) -> List:
     """Function to download a sample company mission statement dataset.
     Total Len: 1433
-    Sample document:
-    {'_id': 0,
-    'company': 'Starbucks',
-    'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'},
-    """
 
-    """
     Download an example ompany mission statement dataset \n
-    Total Len: 1433 \n 
-    Sample document:
-
-    >>> {'_id': 0,
-    >>> 'company': 'Starbucks',
-    >>> 'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'
-    >>> },
-    
+    Total Len: 1433 \n
 
     Parameters
     ----------
@@ -459,6 +481,15 @@ def get_mission_statements_dataset(
         Number of documents to download
     select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+        {
+            '_id': 0,
+            'company': 'Starbucks',
+            'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'
+        }
     """
     if number_of_documents is None:
         number_of_documents = 514330
