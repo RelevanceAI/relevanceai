@@ -271,6 +271,7 @@ class Write(Read):
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
+        run_head: bool = False,
     ):
         """
         Apply a function along an axis of the DataFrame.
@@ -320,6 +321,9 @@ class Write(Read):
                 new_d = func(d)
                 new_documents.append(new_d)
             return documents
+
+        if run_head:
+            self.head()
 
         return self.pull_update_push(
             self.dataset_id,
