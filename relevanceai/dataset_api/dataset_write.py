@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -168,8 +169,6 @@ class Write(Read):
             df.insert_pandas_dataframe(pandas_df)
 
         """
-        import pandas as pd
-
         if col_for_id is not None:
             df["_id"] = df[col_for_id]
 

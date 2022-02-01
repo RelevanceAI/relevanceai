@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -69,7 +70,7 @@ class Stats(Read):
         elif return_type == "dict":
             return facets
         else:
-            raise ValueError("invalid return_type")
+            raise ValueError("invalid return_type, should be `dict` or `pandas`")
 
     @property
     def health(self) -> dict:
