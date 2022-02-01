@@ -164,13 +164,37 @@ class Write(Read):
             df.insert_pandas_dataframe(pandas_df)
 
         """
-        import pandas as pd
+        # Initialise output
+        inserted = 0
+        failed_documents = []
+        failed_documents_detailed = []
 
-        documents = [
-            {k: v for k, v in doc.items() if not pd.isna(v)}
-            for doc in df.to_dict(orient="records")
-        ]
-        return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        # Chunk inserts
+        for chunk in df:
+            response = self._insert_csv_chunk(
+                chunk=chunk,
+                dataset_id=self.dataset_id,
+                max_workers=8 if "max_workers" not in kwargs else kwargs["max_workers"],
+                retry_chunk_mult=0.5
+                if "retry_chunk_mult" not in kwargs
+                else kwargs["retry_chunk_mult"],
+                show_progress_bar=False
+                if "show_progress_bar" not in kwargs
+                else kwargs["show_progress_bar"],
+                col_for_id=None if "col_for_id" not in kwargs else kwargs["col_for_id"],
+                auto_generate_id=None
+                if "auto_generate_id" not in kwargs
+                else kwargs["auto_generate_id"],
+            )
+            inserted += response["inserted"]
+            failed_documents += response["failed_documents"]
+            failed_documents_detailed += response["failed_documents_detailed"]
+
+        return {
+            "inserted": inserted,
+            "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
+        }
 
     def upsert_documents(
         self,
