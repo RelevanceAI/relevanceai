@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Clusterer class to run clustering. It is intended to be integrated with
 models that inherit from `ClusterBase`.
@@ -160,7 +161,7 @@ class Clusterer(BatchAPIClient):
                 def __init__(self, model):
                     self.model: Union[KMeans, MiniBatchKMeans] = model
 
-                def fit_transform(self, X):
+                def fit_predict(self, X):
                     return self.model.fit_predict(X)
 
                 def get_centers(self):
@@ -192,13 +193,13 @@ class Clusterer(BatchAPIClient):
             return model
         elif hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_transform"):
+        elif hasattr(model, "fit_predict"):
             # Support for SKLEARN interface
-            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
         elif hasattr(model, "fit_predict"):
-            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
         raise TypeError("Model should be inherited from ClusterBase.")
@@ -688,7 +689,7 @@ class Clusterer(BatchAPIClient):
             client = Client()
 
             class CustomClusterModel(ClusterBase):
-                def fit_transform(self, X):
+                def fit_predict(self, X):
                     cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
                     return cluster_labels
 
@@ -746,6 +747,9 @@ class Clusterer(BatchAPIClient):
     #         vector_fields=self.vector_fields
     #         alias=self.alias
     #     )
+
+    def fit_dataset_by_batch(self, df):
+        raise NotImplementedError
 
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
@@ -820,7 +824,7 @@ class Clusterer(BatchAPIClient):
             client = Client()
 
             class CustomClusterModel(ClusterBase):
-                def fit_transform(self, X):
+                def fit_predict(self, X):
                     cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
                     return cluster_labels
 
@@ -835,7 +839,7 @@ class Clusterer(BatchAPIClient):
 
         vectors = self._get_vectors_from_documents(vector_fields, documents)
 
-        cluster_labels = self.model.fit_transform(vectors)
+        cluster_labels = self.model.fit_predict(vectors)
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)

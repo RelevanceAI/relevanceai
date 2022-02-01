@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This script demonstrates a class based approach for clustering with faiss Kmeans Using the new Pandas-Like Dataset API for RelevanceAI Python Package
 """
@@ -25,7 +26,7 @@ def main(args):
         def __init__(self, model):
             self.model = model
 
-        def fit_transform(self, vectors):
+        def fit_predict(self, vectors):
             vectors = np.array(vectors).astype("float32")
 
             self.model.train(vectors)
