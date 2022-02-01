@@ -103,18 +103,18 @@ def get_games_dataset(
     """
     Download an example games dataset (https://www.freetogame.com/) \n
     Total Len: 365 \n
-    Sample document:
 
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             'id': 1,
             'title': 'Dauntless',
@@ -143,18 +143,18 @@ def get_ecommerce_dataset_encoded(
     """
     Download an example e-commerce dataset \n
     Total Len: 739 \n
-    Sample document:
 
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             '_id': 'b7fc9acbc9ddd18855f96863d37a4fe9',
             'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
@@ -189,18 +189,18 @@ def get_ecommerce_dataset_clean(
     """
     Download an example e-commerce dataset \n
     Total Len: 739 \n
-    Sample document:
 
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             '_id': '711160239',
             'product_image': 'https://thumbs4.ebaystatic.com/d/l225/pict/321567405391_1.jpg',
@@ -229,18 +229,17 @@ def get_online_retail_dataset(
     Download an example online retail dataset from UCI machine learning \n
     Total Len: 541909 \n
 
-    Sample document:
-
     Parameters
     ----------
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             'Country': 'United Kingdom',
             'CustomerID': 17850.0,
@@ -275,11 +274,12 @@ def get_news_dataset(
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             'authors': 'Ruth Harris',
             'content': 'Sometimes the power of Christmas will make you do wild and wonderful things. You do not need to believe in the Holy Trinity to believe in the positive power of doing good for others.
@@ -320,11 +320,12 @@ def get_online_ecommerce_dataset(
     number_of_documents: int
         Number of documents to download
     select_fields : list
-            Fields to include in the dataset, empty array/list means all fields.
+        Fields to include in the dataset, empty array/list means all fields.
 
     Example
     -------
     .. code-block::
+
         {
             '_unit_id': 711158459,
             'product_description': 'The PlayStation 4 system opens the door to an '
@@ -418,6 +419,7 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
     Example
     -------
     .. code-block::
+
         {
             'propertyDetails': {'area': 'North Shore - Lower',
             'carspaces': 1,
@@ -485,6 +487,7 @@ def get_mission_statements_dataset(
     Example
     -------
     .. code-block::
+
         {
             '_id': 0,
             'company': 'Starbucks',
