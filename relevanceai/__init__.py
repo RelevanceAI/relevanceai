@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import warnings
 from relevanceai import vector_tools
 from relevanceai.http_client import Client
@@ -13,7 +14,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "0.31.0"
+__version__ = "0.32.0"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()

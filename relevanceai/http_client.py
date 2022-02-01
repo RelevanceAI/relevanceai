@@ -154,9 +154,9 @@ class Client(BatchAPIClient, DocUtils):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
-            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
-                token = getpass.getpass(f"Auth token:")
+                token = getpass.getpass(f"Activation token:")
             return self._process_token(token)
         elif token:
             return self._process_token(token)
@@ -454,3 +454,13 @@ class Client(BatchAPIClient, DocUtils):
             project=project,
             api_key=api_key,
         )
+
+    @property
+    def references(self):
+        from relevanceai.__init__ import __version__
+
+        REFERENCE_URL = f"https://relevanceai.readthedocs.io/en/{__version__}/"
+        MESSAGE = f"You can find your references here {REFERENCE_URL}."
+        print(MESSAGE)
+
+    docs = references
