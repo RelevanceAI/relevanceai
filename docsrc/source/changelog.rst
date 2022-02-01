@@ -10,6 +10,12 @@ v0.33.0
 
 - Clustering `fit_transform` is not a `fit_predict` to align with SKLearn's methods
 
+Non-breaking changes:
+
+- Create a CentroidClusterBase and update it to ClusterBase and a CentroidBase
+
+
+
 v0.32.0
 ---------
 

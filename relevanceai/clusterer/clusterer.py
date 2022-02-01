@@ -26,7 +26,11 @@ import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional, Callable
-from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
+from relevanceai.clusterer.cluster_base import (
+    ClusterBase,
+    CentroidClusterBase,
+    BatchClusterBase,
+)
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
@@ -88,7 +92,7 @@ class Clusterer(BatchAPIClient):
 
     def __init__(
         self,
-        model: Union[ClusterBase, CentroidClusterBase],
+        model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase],
         alias: str,
         project: Union[str, None] = None,
         api_key: Union[str, None] = None,
@@ -155,7 +159,7 @@ class Clusterer(BatchAPIClient):
         # with first -class integration for kmeans
         from sklearn.cluster import KMeans, MiniBatchKMeans
 
-        if isinstance(model, (KMeans, MiniBatchKMeans)):
+        if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
@@ -170,6 +174,23 @@ class Clusterer(BatchAPIClient):
             new_model = CentroidClusterModel(model)
             return new_model
 
+        elif model.__class__ == MiniBatchKMeans:
+
+            class BatchCentroidClusterModel(CentroidClusterBase, BatchClusterBase):
+                def __init__(self, model):
+                    self.model: MiniBatchKMeans = model
+
+                def partial_fit(self, X):
+                    return self.model.partial_fit(X)
+
+                def predict(self, X):
+                    return self.model.predict(X)
+
+                def get_centers(self):
+                    return self.model.cluster_centers_
+
+            new_model = BatchCentroidClusterModel(model)
+            return new_model
         if hasattr(model, "fit_documents"):
             return model
         elif hasattr(model, "fit_transform"):
@@ -723,7 +744,7 @@ class Clusterer(BatchAPIClient):
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
-        clustered_docs = self.model.fit_documents(
+        clustered_docs = self.model.fit_predict_documents(
             vector_fields,
             docs,
             alias=self.alias,
@@ -756,6 +777,7 @@ class Clusterer(BatchAPIClient):
         return [np.concatenate(x) for x in list_of_vectors]
 
     def _get_vectors_from_documents(self, vector_fields: list, documents: List[Dict]):
+
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             documents = list(filter(DocUtils.list_doc_fields, documents))
@@ -786,7 +808,163 @@ class Clusterer(BatchAPIClient):
 
         return vectors
 
-    def fit_documents(
+    def partial_fit_documents(
+        self,
+        vector_fields: list,
+        documents: List[Dict],
+    ):
+        """
+        Train clustering algorithm on documents and then store the labels
+        inside the documents.
+
+        Parameters
+        -----------
+        vector_field: list
+            The vector field of the documents
+        docs: list
+            List of documents to run clustering on
+        alias: str
+            What the clusters can be called
+        cluster_field: str
+            What the cluster fields should be called
+        return_only_clusters: bool
+            If True, return only clusters, otherwise returns the original document
+        inplace: bool
+            If True, the documents are edited inplace otherwise, a copy is made first
+        kwargs: dict
+            Any other keyword argument will go directly into the clustering algorithm
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import ClusterBase, Client
+            import random
+            client = Client()
+
+            class CustomClusterModel(ClusterBase):
+                def fit_predict(self, X):
+                    cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
+                    return cluster_labels
+
+            model = CustomClusterModel()
+            clusterer = client.Clusterer(model, alias="random")
+            df = client.Dataset("_github_repo_vectorai")
+
+            clusterer.parital_fit(df, vector_fields=["documentation_vector_"])
+
+        """
+        self.vector_fields = vector_fields
+
+        vectors = self._get_vectors_from_documents(vector_fields, documents)
+
+        self.model.partial_fit(vectors)
+
+    def _chunk_dataset(
+        self, dataset: Dataset, select_fields: list = [], chunksize: int = 100
+    ):
+        cursor = None
+        docs = self.get_documents(
+            dataset.dataset_id,
+            include_cursor=True,
+            number_of_documents=chunksize,
+            select_fields=select_fields,
+        )
+
+        while len(docs["documents"]) > 0:
+            yield docs["documents"]
+            docs = self.get_documents(
+                self.dataset.dataset_id,
+                cursor=docs["cursor"],
+                include_cursor=True,
+                select_fields=select_fields,
+                number_of_documents=chunksize,
+            )
+
+    def fit_dataset_by_partial(
+        self, dataset, vector_fields: List[str], chunksize: int = 100
+    ):
+        """
+        Fit The dataset by partial documents
+
+        """
+        self.vector_fields = vector_fields
+        if len(vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support multiple vector fields on partial fit"
+            )
+        self.dataset = dataset
+        for c in self._chunk_dataset(dataset, self.vector_fields, chunksize=chunksize):
+            vectors = self._get_vectors_from_documents(vector_fields, c)
+            self.model.partial_fit(vectors)
+
+    def predict_documents(
+        self,
+        vector_fields,
+        documents,
+        return_only_clusters: bool = True,
+        inplace: bool = True,
+    ):
+        """
+        Predict the documents
+        """
+        if len(vector_fields) > 1:
+            raise ValueError("Currently do not suport more than 1 vector field.")
+        vectors = self._get_vectors_from_documents(vector_fields, documents)
+        cluster_labels = self.model.predict(vectors)
+        cluster_labels = self._label_clusters(cluster_labels)
+        return self.set_cluster_labels_across_documents(
+            cluster_labels,
+            documents,
+            inplace=inplace,
+            return_only_clusters=return_only_clusters,
+        )
+
+    def predict_dataset(
+        self, dataset, vector_fields: Optional[List[str]] = None, chunksize: int = 20
+    ):
+        """
+        Predict the dataset.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+
+            from sklearn import MiniBatchKMeans
+            model = MiniBatchKMeans()
+
+            clusterer = client.Clusterer(model, alias="minibatch")
+            clusterer.fit_dataset_by_partial(df)
+            clusterer.predict_dataset(df)
+
+        """
+        if not vector_fields:
+            vector_fields = self.vector_fields
+
+        all_responses = {
+            "inserted": 0,
+            "failed_documents": [],
+            "failed_documents_detailed": [],
+        }
+        for c in self._chunk_dataset(dataset, self.vector_fields, chunksize=chunksize):
+            cluster_predictions = self.predict_documents(
+                vector_fields=vector_fields, documents=c
+            )
+            response = self.dataset.upsert_documents(cluster_predictions)
+            for k, v in response.items():
+                if isinstance(all_responses[k], int):
+                    all_responses["inserted"] += v
+                elif isinstance(all_responses[k], list):
+                    all_responses[k] += v
+        return all_responses
+
+    def fit_predict_documents(
         self,
         vector_fields: list,
         documents: List[Dict],
@@ -886,7 +1064,7 @@ class Clusterer(BatchAPIClient):
 
         """
         if inplace:
-            self.set_cluster_labels_across_documents(cluster_labels, documents)
+            self._set_cluster_labels_across_documents(cluster_labels, documents)
             if return_only_clusters:
                 return [
                     {"_id": d.get("_id"), self.cluster_field: d.get(self.cluster_field)}
@@ -896,7 +1074,7 @@ class Clusterer(BatchAPIClient):
 
         new_documents = documents.copy()
 
-        self.set_cluster_labels_across_documents(cluster_labels, new_documents)
+        self._set_cluster_labels_across_documents(cluster_labels, new_documents)
         if return_only_clusters:
             return [
                 {"_id": d.get("_id"), self.cluster_field: d.get(self.cluster_field)}
