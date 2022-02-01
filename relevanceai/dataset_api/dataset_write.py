@@ -418,11 +418,9 @@ class Write(Read):
                 "numeric_field3"
             ]
 
-            df.cat(fields)
             df.concat(fields)
 
             concat_vector_field_name = "concat_vector_"
-            df.cat(vector_name=concat_vector_field_name, fields=fields)
             df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
         if vector_name is None:
