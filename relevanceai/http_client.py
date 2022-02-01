@@ -154,9 +154,9 @@ class Client(BatchAPIClient, DocUtils):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
-            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
-                token = getpass.getpass(f"Auth token:")
+                token = getpass.getpass(f"Activation token:")
             return self._process_token(token)
         elif token:
             return self._process_token(token)
