@@ -311,3 +311,14 @@ def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_
         response = test_dataset_df.insert_csv(csvfile.name)
         yield response, len(sample_vector_documents)
         test_dataset_df.delete()
+
+
+@pytest.fixture(scope="session")
+def test_pd_df(sample_vector_documents):
+    """Sample pandas dataframe for insertion testing"""
+    vector_docs = [
+        {key: value for key, value in document.items() if key != "_id"}
+        for document in sample_vector_documents
+    ]
+    df = pd.DataFrame(vector_docs)
+    yield df
