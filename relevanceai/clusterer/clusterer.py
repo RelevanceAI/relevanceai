@@ -862,14 +862,20 @@ class Clusterer(BatchAPIClient):
         self.model.partial_fit(vectors)
 
     def _chunk_dataset(
-        self, dataset: Dataset, select_fields: list = [], chunksize: int = 100
+        self,
+        dataset: Dataset,
+        select_fields: list = [],
+        chunksize: int = 100,
+        filters: list = [],
     ):
         cursor = None
+
         docs = self.get_documents(
             dataset.dataset_id,
             include_cursor=True,
             number_of_documents=chunksize,
             select_fields=select_fields,
+            filters=filters,
         )
 
         while len(docs["documents"]) > 0:
@@ -880,6 +886,7 @@ class Clusterer(BatchAPIClient):
                 include_cursor=True,
                 select_fields=select_fields,
                 number_of_documents=chunksize,
+                filters=filters,
             )
 
     def fit_dataset_by_partial(
@@ -895,7 +902,20 @@ class Clusterer(BatchAPIClient):
                 "We currently do not support multiple vector fields on partial fit"
             )
         self.dataset = dataset
-        for c in self._chunk_dataset(dataset, self.vector_fields, chunksize=chunksize):
+
+        filters = [
+            {
+                "field": f,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for f in vector_fields
+        ]
+
+        for c in self._chunk_dataset(
+            dataset, self.vector_fields, chunksize=chunksize, filters=filters
+        ):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
 
@@ -952,7 +972,20 @@ class Clusterer(BatchAPIClient):
             "failed_documents": [],
             "failed_documents_detailed": [],
         }
-        for c in self._chunk_dataset(dataset, self.vector_fields, chunksize=chunksize):
+
+        filters = [
+            {
+                "field": f,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for f in vector_fields
+        ]
+
+        for c in self._chunk_dataset(
+            dataset, self.vector_fields, chunksize=chunksize, filters=filters
+        ):
             cluster_predictions = self.predict_documents(
                 vector_fields=vector_fields, documents=c
             )
