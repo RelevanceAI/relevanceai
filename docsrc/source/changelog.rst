@@ -3,10 +3,22 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
-v0.31.1
+v0.32.0
 ---------
 
+*BREAKING CHANGES*
+
+- Move search to inside operations to keep consistency
+
+New Features:
+
+- Added Dimensionality Reduction
+- Added Labelling
+
+Non-breaking changes:
+
 - Fix bug with clusterer using `fit_predict` now
+
 
 v0.31.0
 ---------

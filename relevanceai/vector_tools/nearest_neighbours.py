@@ -19,8 +19,8 @@ class NearestNeighbours(_Base, DocUtils):
         vector_field: str,
         distance_measure_mode: NEAREST_NEIGHBOURS = "cosine",
         callable_distance=None,
+        score_field: str = "nearest_neighbour_distance",
     ):
-
         import scipy.spatial.distance as spatial_distance
 
         if callable_distance:
@@ -31,6 +31,7 @@ class NearestNeighbours(_Base, DocUtils):
             reverse = False
 
         elif distance_measure_mode == "cosine":
+            # TOOD: multiprocess this cos this is weak
             sort_key = [
                 1 - spatial_distance.cosine(i, vector)
                 for i in doc_utils.get_field_across_documents(vector_field, documents)
@@ -47,10 +48,6 @@ class NearestNeighbours(_Base, DocUtils):
         else:
             raise ValueError("Need valid distance measure mode or callable distance")
 
-        doc_utils.set_field_across_documents(
-            "nearest_neighbour_distance", sort_key, documents
-        )
+        doc_utils.set_field_across_documents(score_field, sort_key, documents)
 
-        return sorted(
-            documents, reverse=reverse, key=lambda x: x["nearest_neighbour_distance"]
-        )
+        return sorted(documents, reverse=reverse, key=lambda x: x[score_field])

@@ -10,10 +10,11 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
-from relevanceai.dataset_api.dataset_dr import DR
+
+# from relevanceai.dataset_api.dataset_dr import DR
 
 
-class Dataset(Export, Stats, Operations, DR):
+class Dataset(Export, Stats, Operations):
     """Dataset class"""
 
     def __init__(

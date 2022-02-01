@@ -243,6 +243,7 @@ class Write(Read):
     def apply(
         self,
         func: Callable,
+        apply_args: dict,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
         filters: list = [],
@@ -296,7 +297,7 @@ class Write(Read):
         def bulk_fn(documents):
             new_documents = []
             for d in documents:
-                new_d = func(d)
+                new_d = func(d, **apply_args)
                 new_documents.append(new_d)
             return documents
 
