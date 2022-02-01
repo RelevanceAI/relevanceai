@@ -168,13 +168,15 @@ def execute_notebook(notebook):
         )
         return
     except Exception as e:
-        print(
-            f"\nError with notebook: {notebook}",
-            file=open(README_NOTEBOOK_ERROR_FPATH, "a"),
-        )
+
         import traceback
 
         exception_reason = traceback.format_exc()
+        print(
+            f"{notebook}\n{exception_reason}\n\n",
+            file=open(README_NOTEBOOK_ERROR_FPATH, "a"),
+        )
+
         return {"notebook": notebook.__str__(), "Exception reason": exception_reason}
 
 
@@ -187,4 +189,4 @@ if len(results) > 0:
     for r in results:
         print(r.get("notebook"))
         print(r.get("Exception reason"))
-    raise ValueError(f"You have errored notebooks {results}")
+    # raise ValueError(f"You have errored notebooks {results}")
