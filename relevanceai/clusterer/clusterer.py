@@ -955,6 +955,20 @@ class Clusterer(BatchAPIClient):
         """
         Fit The dataset by partial documents
 
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            clusterer = client.Clusterer(alias="minibatch_50", model=model)
+            clusterer.fit_dataset_by_partial(df, ["documentation_vector_"])
+            clusterer.predict_dataset(df, ['documentation_vector_'])
+            new_model.vector_fields = ['documentation_vector_']
+            clusterer.insert_centroid_documents(new_model.get_centroid_documents(), df)
+
         """
         self.vector_fields = vector_fields
         if len(vector_fields) > 1:
