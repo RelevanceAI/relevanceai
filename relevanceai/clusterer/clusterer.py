@@ -94,6 +94,7 @@ class Clusterer(BatchAPIClient):
         self,
         alias: str,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
+        dataset_id: Optional[str] = None,
         project: Union[str, None] = None,
         api_key: Union[str, None] = None,
         cluster_field: str = "_cluster_",
@@ -101,6 +102,7 @@ class Clusterer(BatchAPIClient):
         self.alias = alias
         self.cluster_field = cluster_field
         self.model = self._assign_model(model)
+        self.dataset_id = dataset_id
 
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
@@ -294,6 +296,7 @@ class Clusterer(BatchAPIClient):
 
     def list_closest_to_center(
         self,
+        dataset: Optional[Union[str, Dataset]] = None,
         cluster_ids: List = [],
         centroid_vector_fields: List = [],
         select_fields: List = [],
@@ -360,7 +363,7 @@ class Clusterer(BatchAPIClient):
 
         """
         return self.datasets.cluster.centroids.list_closest_to_center(
-            dataset_id=self.dataset_id,
+            dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields,
             alias=self.alias,
             cluster_ids=cluster_ids,
@@ -606,9 +609,27 @@ class Clusterer(BatchAPIClient):
                 page_size=20,
             )
         return
-    
-    def insert_centroid_documents(self, centroid_documents: List[Dict],
-        dataset: Union[str, Dataset]=None):
+
+    def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
+        """Helper method to get multiple dataset values"""
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.dataset_id
+        elif isinstance(dataset, str):
+            dataset_id = dataset
+        elif dataset is None:
+            if hasattr(self, "dataset_id"):
+                print(
+                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
+                )
+                dataset_id = self.dataset_id
+        else:
+            raise ValueError("Please supply dataset.")
+        return dataset_id
+
+    def insert_centroid_documents(
+        self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
+    ):
         """
         Insert the centroid documents
 
@@ -629,17 +650,13 @@ class Clusterer(BatchAPIClient):
             client = Client()
             clusterer = client.Clusterer(alias="example")
             # available if you inherit from centroidbase
-            centroids = model.get_centroid_documents() 
+            centroids = model.get_centroid_documents()
             clusterer.insert_centroid_documents(centroids)
 
         """
-        if isinstance(dataset, Dataset):
-            dataset_id = dataset.dataset_id
-        elif isinstance(dataset, str):
-            dataset_id = dataset
 
         results = self.services.cluster.centroids.insert(
-            dataset_id=dataset_id,
+            dataset_id=self._retrieve_dataset_id(dataset),
             cluster_centers=centroid_documents,
             vector_fields=self.vector_fields,
             alias=self.alias,
