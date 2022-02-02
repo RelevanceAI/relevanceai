@@ -606,6 +606,45 @@ class Clusterer(BatchAPIClient):
                 page_size=20,
             )
         return
+    
+    def insert_centroid_documents(self, centroid_documents: List[Dict],
+        dataset: Union[str, Dataset]=None):
+        """
+        Insert the centroid documents
+
+        Parameters
+        ------------
+
+        centroid_documents: List[Dict]
+            Insert centroid documents
+        dataset: Union[str, Dataset]
+            Dataset to insert
+
+        Example
+        ------------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            clusterer = client.Clusterer(alias="example")
+            # available if you inherit from centroidbase
+            centroids = model.get_centroid_documents() 
+            clusterer.insert_centroid_documents(centroids)
+
+        """
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.dataset_id
+        elif isinstance(dataset, str):
+            dataset_id = dataset
+
+        results = self.services.cluster.centroids.insert(
+            dataset_id=dataset_id,
+            cluster_centers=centroid_documents,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+        return results
 
     def get_centroid_documents(self) -> List:
         """
