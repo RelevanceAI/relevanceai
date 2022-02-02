@@ -313,8 +313,8 @@ class Client(BatchAPIClient, DocUtils):
 
     def Clusterer(
         self,
-        model: ClusterBase,
         alias: str,
+        model: ClusterBase = None,
         cluster_field: str = "_cluster_",
     ):
         return Clusterer(

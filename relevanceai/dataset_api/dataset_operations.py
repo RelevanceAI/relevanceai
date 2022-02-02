@@ -494,6 +494,7 @@ class Operations(Write):
 
         Parameters
         ----------
+
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         positive_document_ids : dict
@@ -727,6 +728,7 @@ class Operations(Write):
 
         Parameters
         ----------
+
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         chunk_field : string
@@ -837,6 +839,7 @@ class Operations(Write):
 
         Parameters
         ----------
+
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         chunk_field : string

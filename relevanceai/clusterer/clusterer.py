@@ -223,6 +223,8 @@ class Clusterer(BatchAPIClient):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
+        elif model is None:
+            return model
         raise TypeError("Model should be inherited from ClusterBase.")
 
     def _token_to_auth(self):
@@ -311,7 +313,8 @@ class Clusterer(BatchAPIClient):
 
         Parameters
         ----------
-        cluster_ids: lsit
+
+        cluster_ids: list
             Any of the cluster ids
         centroid_vector_fields: list
             Vector fields stored
@@ -342,6 +345,7 @@ class Clusterer(BatchAPIClient):
 
         Example
         --------------
+
         .. code-block::
 
             from relevanceai import Client
