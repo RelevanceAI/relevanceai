@@ -102,7 +102,9 @@ class Clusterer(BatchAPIClient):
         self.alias = alias
         self.cluster_field = cluster_field
         self.model = self._assign_model(model)
-        self.dataset_id = dataset_id
+
+        if dataset_id is not None:
+            self.dataset_id: str = dataset_id
 
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
@@ -382,6 +384,7 @@ class Clusterer(BatchAPIClient):
 
     def aggregate(
         self,
+        dataset: Optional[Union[str, Dataset]],
         metrics: list = [],
         sort: list = [],
         groupby: list = [],
@@ -518,7 +521,7 @@ class Clusterer(BatchAPIClient):
 
         """
         return self.services.cluster.aggregate(
-            dataset_id=self.dataset_id,
+            dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields,
             groupby=groupby,
             metrics=metrics,
@@ -614,15 +617,16 @@ class Clusterer(BatchAPIClient):
         """Helper method to get multiple dataset values"""
 
         if isinstance(dataset, Dataset):
-            dataset_id = dataset.dataset_id
+            dataset_id: str = dataset.dataset_id
         elif isinstance(dataset, str):
             dataset_id = dataset
         elif dataset is None:
             if hasattr(self, "dataset_id"):
+                # let's not surprise users
                 print(
                     f"No dataset supplied - using last stored one '{self.dataset_id}'."
                 )
-                dataset_id = self.dataset_id
+                dataset_id = str(self.dataset_id)
         else:
             raise ValueError("Please supply dataset.")
         return dataset_id
