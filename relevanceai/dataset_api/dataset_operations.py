@@ -1051,6 +1051,10 @@ class Operations(Write):
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             model = KMeansModel(k=n_clusters)
+        elif algorithm.lower() == "hdbscan":
+            raise ValueError(
+                "HDBSCAN is soon to be released as an alternative clustering algorithm"
+            )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
