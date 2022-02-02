@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -1009,3 +1010,52 @@ class Operations(Write):
             alias=alias,
             dims=n_components,
         )
+
+    def auto_cluster(self, alias: str, vector_fields: List):
+        """
+        Handles the logic for aquiring the clusterer object for clustering. Derives the clustering method (and n clusters if applicable) from provided alias.
+
+        Parameters
+        ----------
+        alias : str
+            The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
+        vector_fields : List
+            A list vector fields over which to cluster
+
+        Example
+        -------
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            vector_field = "vector_field_"
+            n_clusters = 10
+
+            clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+        """
+        cluster_args = alias.split("-")
+        algorithm = cluster_args[0]
+        try:
+            n_clusters = int(cluster_args[1])
+        except:
+            pass
+
+        from relevanceai.clusterer import Clusterer
+
+        if algorithm.lower() == "kmeans":
+            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+
+            model = KMeansModel(k=n_clusters)
+        else:
+            raise ValueError("Only KMeans clustering is supported at the moment.")
+
+        clusterer = Clusterer(
+            model=model, alias=alias, api_key=self.api_key, project=self.project
+        )
+        clusterer.fit(dataset=self, vector_fields=vector_fields)
+        return clusterer
