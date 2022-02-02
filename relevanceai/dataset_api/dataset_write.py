@@ -570,7 +570,7 @@ class Write(Read):
     def insert_df(self, dataframe, *args, **kwargs):
         """
         Insert a dataframe into the dataset.
-        Takes additional args and kwargs based on `insert_documents`.
+        Takes in additional args and kwargs based on `insert_documents`.
 
         Parameters
         ----------
