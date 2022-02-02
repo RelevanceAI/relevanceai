@@ -92,8 +92,8 @@ class Clusterer(BatchAPIClient):
 
     def __init__(
         self,
-        model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase],
         alias: str,
+        model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
         project: Union[str, None] = None,
         api_key: Union[str, None] = None,
         cluster_field: str = "_cluster_",
