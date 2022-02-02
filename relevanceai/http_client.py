@@ -140,9 +140,10 @@ class Client(BatchAPIClient, DocUtils):
         # If the base URl is included in the pasted token then include it
         if len(split_token) == 3:
             region = split_token[2]
-            url = f"https://api.{region}.relevance.ai/latest"
-            self.base_url = url
-            self.base_ingest_url = url
+            if region != "old-australia-east":
+                url = f"https://api.{region}.relevance.ai/latest"
+                self.base_url = url
+                self.base_ingest_url = url
         self._write_credentials(project, api_key)
         return project, api_key
 
