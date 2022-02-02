@@ -3,6 +3,13 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.33.0
+---------
+
+*BREAKING CHANGES*
+
+- Clustering `fit_transform` is not a `fit_predict` to align with SKLearn's methods
+
 v0.32.0
 ---------
 

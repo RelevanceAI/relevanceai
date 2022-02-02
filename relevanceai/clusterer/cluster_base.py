@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from this import d
 import numpy as np
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
@@ -10,10 +12,10 @@ class ClusterBase(DocUtils, ABC):
     """
 
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, vectors: list) -> List[Union[str, float, int]]:
+    def fit_predict(self, vectors: list) -> List[Union[str, float, int]]:
         """Edit this method to implement a ClusterBase.
 
         Parameters
@@ -54,7 +56,7 @@ class ClusterBase(DocUtils, ABC):
                 )
                 return
 
-            def fit_transform(self, vectors: Union[np.ndarray, List]):
+            def fit_predict(self, vectors: Union[np.ndarray, List]):
                 if not hasattr(self, "km"):
                     self._init_model()
                 self.km.fit(vectors)
@@ -140,7 +142,7 @@ class ClusterBase(DocUtils, ABC):
 
         vectors = self._get_vectors_from_documents(vector_fields, documents)
 
-        cluster_labels = self.fit_transform(vectors)
+        cluster_labels = self.fit_predict(vectors)
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
@@ -269,3 +271,11 @@ class CentroidClusterBase(ClusterBase, ABC):
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
         return centroid_docs
+
+
+class BatchClusterBase(ClusterBase):
+    def fit_on_batch(self, vectors):
+        pass
+
+    def predict(self):
+        pass

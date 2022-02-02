@@ -16,10 +16,10 @@ from relevanceai.vector_tools.cluster_evaluate import ClusterEvaluate
 
 class ClusterBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, vectors):
+    def fit_predict(self, vectors):
         """ """
         raise NotImplementedError
 
@@ -87,7 +87,7 @@ class ClusterBase(LoguruLogger, DocUtils):
             # Store the vector lengths
             vectors = self._concat_vectors_from_list(all_vectors)
 
-        cluster_labels = self.fit_transform(vectors)
+        cluster_labels = self.fit_predict(vectors)
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
@@ -142,10 +142,10 @@ class ClusterBase(LoguruLogger, DocUtils):
 
 class CentroidCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
     @abstractmethod
-    def fit_transform(self, vectors):
+    def fit_predict(self, vectors):
         raise NotImplementedError
 
     @abstractmethod
@@ -200,9 +200,9 @@ class CentroidCluster(ClusterBase):
 
 class DensityCluster(ClusterBase):
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
-    def fit_transform(self, vectors):
+    def fit_predict(self, vectors):
         raise NotImplementedError
 
 
@@ -249,7 +249,7 @@ class MiniBatchKMeans(CentroidCluster):
         )
         return
 
-    def fit_transform(self, vectors: Union[np.ndarray, List]):
+    def fit_predict(self, vectors: Union[np.ndarray, List]):
         """
         Fit and transform transform the vectors
         """
@@ -292,7 +292,7 @@ class MiniBatchKMeans(CentroidCluster):
 
 
 # class KMedoids(CentroidCluster):
-#     def fit_transform(self,
+#     def fit_predict(self,
 #         vectors: np.ndarray,
 #         cluster_args: Optional[Dict[Any, Any]] = CLUSTER_DEFAULT_ARGS['kmedoids'],
 #         k: Union[None, int] = 10,
@@ -387,7 +387,7 @@ class HDBSCANClusterer(DensityCluster):
         self.p = p
         self.min_cluster_size = min_cluster_size
 
-    def fit_transform(
+    def fit_predict(
         self,
         vectors: np.ndarray,
     ) -> np.ndarray:
@@ -451,13 +451,13 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                 if cluster == "kmeans":
                     if k not in cluster_args:
                         cluster_args["k"] = k
-                    return KMeans(**cluster_args).fit_transform(vectors=vectors)
+                    return KMeans(**cluster_args).fit_predict(vectors=vectors)
                 elif cluster == "kmedoids":
                     raise NotImplementedError
             elif cluster == "hdbscan":
-                return HDBSCANClusterer(**cluster_args).fit_transform(vectors=vectors)
+                return HDBSCANClusterer(**cluster_args).fit_predict(vectors=vectors)
         elif isinstance(cluster, ClusterBase):
-            return cluster().fit_transform(vectors=vectors, cluster_args=cluster_args)
+            return cluster().fit_predict(vectors=vectors, cluster_args=cluster_args)
         raise ValueError("Not valid cluster input.")
 
     def kmeans_cluster(

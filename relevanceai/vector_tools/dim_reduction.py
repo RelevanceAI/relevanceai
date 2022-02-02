@@ -17,7 +17,7 @@ from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFA
 
 class DimReductionBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
     # @abstractmethod
     def fit_transform(self, *args, **kw) -> np.ndarray:
