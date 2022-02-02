@@ -963,6 +963,7 @@ class Clusterer(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
+            df = client.Dataset("sample")
             clusterer = client.Clusterer(alias="minibatch_50", model=model)
             clusterer.fit_dataset_by_partial(df, ["documentation_vector_"])
             clusterer.predict_dataset(df, ['documentation_vector_'])
