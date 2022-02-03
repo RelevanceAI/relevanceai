@@ -541,7 +541,7 @@ class Clusterer(BatchAPIClient):
         )
 
     def list_furthest_from_center(
-        self, dataset: Union[str, Dataset], vector_fields: list
+        self, dataset: Union[str, Dataset] = None, vector_fields: list = None
     ):
         """
         List of documents furthest from the centre.
