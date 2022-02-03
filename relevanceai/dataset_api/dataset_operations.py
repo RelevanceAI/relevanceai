@@ -1090,9 +1090,7 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
-            clusterer.fit_predict_update(
-                dataset=self, vector_fields=vector_fields
-            )
+            clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
