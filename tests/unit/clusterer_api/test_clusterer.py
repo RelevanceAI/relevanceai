@@ -13,7 +13,7 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture
-def test_ClusterOps(test_client, test_clustered_dataset: Dataset):
+def test_clusterer(test_client: Client, test_clustered_dataset: Dataset):
     df: Dataset = test_client.Dataset(test_clustered_dataset)
 
     model = get_model()
