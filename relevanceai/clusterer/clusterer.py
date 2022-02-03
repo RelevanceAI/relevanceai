@@ -818,11 +818,9 @@ class Clusterer(BatchAPIClient):
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
-        clustered_docs = self.model.fit_predict_documents(
+        clustered_docs = self.fit_predict_documents(
             vector_fields,
             docs,
-            alias=self.alias,
-            cluster_field=self.cluster_field,
             return_only_clusters=True,
             inplace=False,
         )
