@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from this import d
 import numpy as np
+
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict
