@@ -34,6 +34,11 @@ in 1 go
 - Fixed arguments in the `clusterer` object to now take an optional vector_fields and dataset
 
 
+v0.32.1
+---------
+
+- Apply hotfix to pull_update_push
+
 v0.32.0
 ---------
 
