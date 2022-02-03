@@ -1,5 +1,5 @@
 """Relevance AI's base Client class - primarily used to login and access
-the Dataset class or Clusterer class.
+the Dataset class or ClusterOps class.
 
 
 The recomended way to log in is using:
@@ -29,8 +29,7 @@ from typing import Union, Optional, List, Dict
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api import Dataset, Datasets
-from relevanceai.clusterer import Clusterer, ClusterBase
-from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
+from relevanceai.clusterer import ClusterOps, ClusterBase
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -140,9 +139,10 @@ class Client(BatchAPIClient, DocUtils):
         # If the base URl is included in the pasted token then include it
         if len(split_token) == 3:
             region = split_token[2]
-            url = f"https://api.{region}.relevance.ai/latest"
-            self.base_url = url
-            self.base_ingest_url = url
+            if region != "old-australia-east":
+                url = f"https://api.{region}.relevance.ai/latest"
+                self.base_url = url
+                self.base_ingest_url = url
         self._write_credentials(project, api_key)
         return project, api_key
 
@@ -154,9 +154,9 @@ class Client(BatchAPIClient, DocUtils):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
-            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
-                token = getpass.getpass(f"Auth token:")
+                token = getpass.getpass(f"Activation token:")
             return self._process_token(token)
         elif token:
             return self._process_token(token)
@@ -311,45 +311,19 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Clustering
 
-    def Clusterer(
+    def ClusterOps(
         self,
-        model: ClusterBase,
         alias: str,
+        model=None,
+        dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
     ):
-        return Clusterer(
+        return ClusterOps(
             model=model,
             alias=alias,
-            cluster_field=cluster_field,
-            project=self.project,
-            api_key=self.api_key,
-        )
-
-    def KMeansClusterer(
-        self,
-        alias: str,
-        k: Union[None, int] = 10,
-        init: str = "k-means++",
-        n_init: int = 10,
-        max_iter: int = 300,
-        tol: float = 1e-4,
-        verbose: bool = True,
-        random_state: Optional[int] = None,
-        copy_x: bool = True,
-        algorithm: str = "auto",
-        cluster_field: str = "_cluster_",
-    ):
-        return KMeansClusterer(
-            alias=alias,
-            k=k,
-            init=init,
-            n_init=n_init,
-            max_iter=max_iter,
-            tol=tol,
-            verbose=verbose,
-            random_state=random_state,
-            copy_x=copy_x,
-            algorithm=algorithm,
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
