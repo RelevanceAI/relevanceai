@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -54,12 +55,16 @@ class Operations(Write):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
+        .. warning::
+            Deprecated in v0.33 in favour of df.auto_cluster.
+
         Parameters
         ----------
         model : Class
             The clustering model to use
         vector_fields : str
             The vector fields over which to cluster
+
 
         Example
         -------
@@ -86,7 +91,7 @@ class Operations(Write):
         clusterer = Clusterer(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
-        clusterer.fit(dataset=self, vector_fields=vector_fields)
+        clusterer.fit_predict_update_dataset(dataset=self, vector_fields=vector_fields)
         return clusterer
 
     def label_vector(
@@ -1021,3 +1026,89 @@ class Operations(Write):
             alias=alias,
             dims=n_components,
         )
+
+    def auto_cluster(self, alias: str, vector_fields: List):
+        """
+        Handles the logic for aquiring the clusterer object for clustering. Derives the clustering method (and n clusters if applicable) from provided alias.
+
+        Parameters
+        ----------
+        alias : str
+            The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
+            Supported aliases at the moment are 'kmeans','kmeans-10', 'kmeans-X' (where X is a number), 'minibatchkmeans',
+                'minibatchkmeans-10', 'minibatchkmeans-X' (where X is a number)
+        vector_fields : List
+            A list vector fields over which to cluster
+
+        Example
+        -------
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            vector_field = "vector_field_"
+            n_clusters = 10
+
+            clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+            clusterer.list_closest_to_center()
+
+            # Run k means clustering with 8 clusters
+            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 8 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 8 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
+        """
+        cluster_args = alias.split("-")
+        algorithm = cluster_args[0]
+        n_clusters = int(cluster_args[1])
+
+        from relevanceai.clusterer import Clusterer
+
+        if algorithm.lower() == "kmeans":
+            from sklearn.cluster import KMeans
+
+            model = KMeans(n_clusters=n_clusters)
+            clusterer: Clusterer = Clusterer(
+                model=model,
+                alias=alias,
+                api_key=self.api_key,
+                project=self.project,
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
+            )
+            clusterer.fit_predict_update_dataset(
+                dataset=self, vector_fields=vector_fields
+            )
+
+        elif algorithm.lower() == "hdbscan":
+            raise ValueError(
+                "HDBSCAN is soon to be released as an alternative clustering algorithm"
+            )
+        elif algorithm.lower() == "minibatchkmeans":
+            from sklearn.cluster import MiniBatchKMeans
+
+            model = MiniBatchKMeans(n_clusters=n_clusters)
+            clusterer = Clusterer(
+                model=model,
+                alias=alias,
+                api_key=self.api_key,
+                project=self.project,
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
+            )
+            clusterer.fit_predict_update_dataset_by_partial(
+                dataset=self, vector_fields=vector_fields
+            )
+        else:
+            raise ValueError("Only KMeans clustering is supported at the moment.")
+
+        return clusterer

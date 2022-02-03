@@ -299,5 +299,5 @@ class BatchClusterBase(ClusterBase, ABC):
         """
         pass
 
-    def fit_predict(self):
+    def fit_predict(self, X):
         pass

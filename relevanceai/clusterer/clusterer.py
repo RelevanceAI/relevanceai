@@ -267,38 +267,6 @@ class Clusterer(BatchAPIClient):
                 "Dataset type needs to be either a string or Dataset instance."
             )
 
-    def fit(
-        self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
-    ):
-        """
-        This function takes in the dataset and the relevant vector fields.
-        Under the hood, it runs fit_dataset. Sometimes, you may want to modify the behavior
-        to adapt it to your needs.
-
-        Parameters
-        -------------
-
-        dataset: Union[Dataset, str]
-            The dataset to fit the clusterer on
-        vector_fields: List[str],
-            The vector fields to fit it on
-
-        Example
-        ---------
-        .. code-block::
-
-            from relevanceai import Client
-            from relevanceai.clusterer import KMeansModel
-            client = Client()
-            model = KMeansModel(n_clusters=2)
-            clusterer = client.Clusterer(model, alias="kmeans_2")
-            df = client.Dataset("sample_dataset")
-            clusterer.fit(df, ["sample_vector_"])
-
-        """
-        self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
-        self._insert_centroid_documents()
-
     def list_closest_to_center(
         self,
         dataset: Optional[Union[str, Dataset]] = None,
@@ -755,7 +723,7 @@ class Clusterer(BatchAPIClient):
         )
         return response.json()["status"]
 
-    def fit_dataset(
+    def fit_predict_update_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
         """
@@ -792,7 +760,7 @@ class Clusterer(BatchAPIClient):
             clusterer = client.Clusterer(model, alias="random")
             df = client.Dataset("_github_repo_vectorai")
 
-            clusterer.fit_dataset(df, vector_fields=["documentation_vector_"])
+            clusterer.fit_predict_update(df, vector_fields=["documentation_vector_"])
 
         """
 
@@ -814,10 +782,12 @@ class Clusterer(BatchAPIClient):
             }
             for f in vector_fields
         ]
+        print("Retrieving all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
+        print("Fitting and predicting on all documents")
         clustered_docs = self.fit_predict_documents(
             vector_fields,
             docs,
@@ -826,6 +796,7 @@ class Clusterer(BatchAPIClient):
         )
 
         # Updating the db
+        print("Updating the database...")
         results = self._update_documents(
             self.dataset_id, clustered_docs, chunksize=10000
         )
@@ -833,6 +804,49 @@ class Clusterer(BatchAPIClient):
 
         # Update the centroid collection
         self.model.vector_fields = vector_fields
+
+        print("Inserting centroid documents...")
+        self._insert_centroid_documents()
+
+    def fit_dataset(
+        self,
+        dataset,
+        vector_fields,
+        filters: list = [],
+        return_only_clusters: bool = True,
+        inplace=False,
+    ):
+        """ """
+        # load the documents
+        self.logger.warning(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
+
+        self._init_dataset(dataset)
+        self.vector_fields = vector_fields
+
+        # make sure to only get fields where vector fields exist
+        filters += [
+            {
+                "field": f,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for f in vector_fields
+        ]
+        print("Retrieving all documents")
+        docs = self._get_all_documents(
+            dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
+        )
+
+        print("Fitting and predicting on all documents")
+        return self.fit_predict_documents(
+            vector_fields,
+            docs,
+            return_only_clusters=True,
+            inplace=inplace,
+        )
 
     # def list_closest_to_center(self):
     #     return self.datasets.cluster.centroids.list_closest_to_center(
