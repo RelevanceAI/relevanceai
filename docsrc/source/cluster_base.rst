@@ -4,19 +4,18 @@ Custom Cluster Models
 The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
 and models. A cluster base has the following abstractmethods (methods to be overwritten):
 
-- fit_transform
-- metadata (optional if you want to store cluster metadata)
-- get_cluster_documents(optional if you want to store cluster centroid documents)
+- :code:`fit_transform`
+- :code:`metadata` (optional if you want to store cluster metadata)
+- :code:`get_centers` (optional if you want to store cluster centroid documents)
 
-
-`Centroidbase` is the most basic class to inherit. Use this class if you have an 
+:code:`Centroidbase` is the most basic class to inherit. Use this class if you have an 
 in-memory fitting algorithm.
 
 If your clusters return centroids, you will want to inherit
-`CentroidClusterBase`.
+:code:`CentroidClusterBase`.
 
 If your clusters can fit on batches, you will want to inherit 
-`BatchClusterBase`.
+:code:`BatchClusterBase`.
 
 If you have both Batches and Centroids, you will want to inherit both.
 
@@ -55,3 +54,4 @@ If you have both Batches and Centroids, you will want to inherit both.
     clusterer.fit_predict_update(dataset=df, vector_fields=vector_fields)
 
 .. automodule:: relevanceai.clusterer.cluster_base
+   :members:
