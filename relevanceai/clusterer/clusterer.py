@@ -1014,7 +1014,7 @@ class Clusterer(BatchAPIClient):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
 
-    def fit_predict_dataset_by_partial(
+    def fit_predict_update_dataset_by_partial(
         self,
         dataset: Union[Dataset, str],
         vector_fields: List[str],

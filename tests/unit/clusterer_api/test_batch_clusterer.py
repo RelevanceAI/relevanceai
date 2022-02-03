@@ -36,7 +36,7 @@ def test_cluster(
     vector_field = "sample_1_vector_"
     alias = CLUSTER_ALIAS
 
-    test_batch_clusterer.fit_predict_dataset_by_partial(
+    test_batch_clusterer.fit_predict_update_dataset_by_partial(
         dataset=df,
         vector_fields=[vector_field],
     )
