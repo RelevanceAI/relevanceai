@@ -8,7 +8,7 @@ and models. A cluster base has the following abstractmethods (methods to be over
 - :code:`metadata` (optional if you want to store cluster metadata)
 - :code:`get_centers` (optional if you want to store cluster centroid documents)
 
-:code:`Centroidbase` is the most basic class to inherit. Use this class if you have an 
+:code:`CentroidBase` is the most basic class to inherit. Use this class if you have an 
 in-memory fitting algorithm.
 
 If your clusters return centroids, you will want to inherit
