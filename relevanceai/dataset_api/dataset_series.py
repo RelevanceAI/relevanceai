@@ -82,11 +82,6 @@ class Series(BatchAPIClient):
     def _repr_html_(self):
         fields = [self.field]
 
-        if any("_cluster_" in field for field in fields):
-            fields += self._format_select_fields()
-            fields = [field for field in fields if field != "_cluster_"]
-            return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
-
         documents = self.get_documents(dataset_id=self.dataset_id, select_fields=fields)
         try:
             return self._show_json(documents, return_html=True)
@@ -96,6 +91,11 @@ class Series(BatchAPIClient):
                 + str(e)
             )
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
+
+    def list_aliases(self):
+        fields = self._format_select_fields()
+        fields = [field for field in fields if field != "_cluster_"]
+        return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
 
     def _format_select_fields(self):
         fields = [
