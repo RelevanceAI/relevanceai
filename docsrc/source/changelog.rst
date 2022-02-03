@@ -35,7 +35,16 @@ and insert the centroids if there are expected centroids in the dataset
 - Introduced `fit_partial_predict_update` to allow for fitting, predicting and updating the dataset
 in 1 go
 - Fixed arguments in the `clusterer` object to now take an optional vector_fields and dataset
+- Feature/fix clustering transform by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/372
+- add fix for dim reduction by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/374
+- removed python manta on startup by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/376
+- Feature/add support for batch by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/375
+- Hotfix/pull update filter error by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/379
+- auto_cluster function by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/373
+- Feature/try fix cluster references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/380
 
+
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v0.32.0...v0.33.0
 
 v0.32.1
 ---------
