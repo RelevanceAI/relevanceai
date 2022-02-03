@@ -23,7 +23,7 @@ If you have both Batches and Centroids, you will want to inherit both.
 
     import numpy as np 
     from faiss import Kmeans
-    from relevanceai import Client, CentroidClusterBase, ClusterBase
+    from relevanceai import Client, CentroidClusterBase
 
     client = Client()
     df = client.Dataset("_github_repo_vectorai")

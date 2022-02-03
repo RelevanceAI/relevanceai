@@ -91,7 +91,7 @@ class Operations(Write):
         clusterer = Clusterer(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
-        clusterer.fit_predict_update_dataset(dataset=self, vector_fields=vector_fields)
+        clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
     def label_vector(
