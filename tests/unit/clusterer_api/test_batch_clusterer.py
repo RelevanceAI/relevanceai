@@ -14,7 +14,7 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture(scope="session")
-def test_batch_ClusterOps(test_client: Client, test_sample_vector_dataset: Dataset):
+def test_batch_clusterer(test_client: Client, test_sample_vector_dataset: Dataset):
     from sklearn.cluster import MiniBatchKMeans
 
     clusterer = test_client.ClusterOps(
