@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Batch Retrieve"""
 
 from typing import List
@@ -23,6 +24,7 @@ class BatchRetrieveClient(APIClient, Chunker):
         sort: list = [],
         select_fields: list = [],
         include_vector: bool = True,
+        include_cursor: bool = False,
     ):
 
         """
@@ -89,12 +91,14 @@ class BatchRetrieveClient(APIClient, Chunker):
                 _page += 1
             data = data[:number_of_documents]
 
+        if include_cursor:
+            return {"documents": data, "cursor": resp["cursor"]}
         return data
 
-    def get_all_documents(
+    def _get_all_documents(
         self,
         dataset_id: str,
-        chunk_size: int = 1000,
+        chunksize: int = 1000,
         filters: List = [],
         sort: List = [],
         select_fields: List = [],
@@ -114,7 +118,7 @@ class BatchRetrieveClient(APIClient, Chunker):
         ----------
         dataset_id : string
             Unique name of dataset
-        chunk_size : list
+        chunksize: list
             Number of documents to retrieve per retrieval
         include_vector: bool
             Include vectors in the search results
@@ -135,7 +139,7 @@ class BatchRetrieveClient(APIClient, Chunker):
         number_of_documents = self.get_number_of_documents(
             dataset_id=dataset_id, filters=filters
         )
-        iterations_required = math.ceil(number_of_documents / chunk_size)
+        iterations_required = math.ceil(number_of_documents / chunksize)
 
         # While there is still data to fetch, fetch it at the latest cursor
 
@@ -146,7 +150,7 @@ class BatchRetrieveClient(APIClient, Chunker):
                 dataset_id,
                 filters=filters,
                 cursor=cursor,
-                page_size=chunk_size,
+                page_size=chunksize,
                 sort=sort,
                 select_fields=select_fields,
                 include_vector=include_vector,

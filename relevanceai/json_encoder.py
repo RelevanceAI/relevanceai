@@ -66,8 +66,8 @@ class JSONEncoderUtils:
         --------
 
         YOu can use our JSON encoder easily.
-        >>> docs = [{"value": np.nan}]
-        >>> client.json_encoder(docs)
+        >>> documents = [{"value": np.nan}]
+        >>> client.json_encoder(documents)
 
         If you want to use FastAPI's json encoder, do this:
         >>> from fastapi import jsonable_encoder

@@ -61,6 +61,20 @@ class DocumentsClient(_Base):
             ID of a document in a dataset.
         include_vector: bool
             Include vectors in the search results
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client, Dataset
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            df.get(["sample_id"], include_vector=False)
         """
 
         return self.make_http_request(
@@ -74,9 +88,9 @@ class DocumentsClient(_Base):
     def bulk_get(
         self,
         dataset_id: str,
-        ids: str,
+        ids: List,
         include_vector: bool = True,
-        select_fields: list = [],
+        select_fields: List = [],
     ):
 
         """
@@ -98,10 +112,11 @@ class DocumentsClient(_Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_get",
             parameters={
-                "id": ids,
+                "ids": ids,
                 "include_vector": include_vector,
                 "select_fields": select_fields,
             },
+            method="POST",
         )
 
     def get_where(

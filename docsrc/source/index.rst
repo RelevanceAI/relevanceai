@@ -16,14 +16,38 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
 
 .. toctree::
    :maxdepth: 4
-   :caption: Contents
+   :caption: Core
 
-   relevanceai.api.batch
-   relevanceai.api.endpoints
-   relevanceai.visualise
-   relevanceai.dataset_api
-   relevanceai.vector_tools
-   features
+   client
+   dataset
+
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Clustering
+
+   auto_clustering
+   clusterer
+   cluster_base
+
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Integrations
+
+   sklearn_clustering_integration
+   faiss_clustering_integration 
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Available Datasets
+
+   available_datasets
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Appendix
+
    changelog
 
 Indices and tables

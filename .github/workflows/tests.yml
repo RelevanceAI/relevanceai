@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest] 
+        os: [ ubuntu-latest]
         python-version: [ '3.7' ]
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
@@ -49,4 +49,4 @@ jobs:
           python -m pip install pytest-sugar
           python -m pip install pytest-rerunfailures
           python -m pip install pytest-xdist
-          python -m pytest --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests
+          python -m pytest --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=60

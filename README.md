@@ -21,7 +21,7 @@ There are two main ways of documentations to take a look at:
 
 | API type      | Link |
 | ------------- | ----------- |
-| Guides | [Documentation](https://docs.relevance.ai/) | 
+| Guides | [Documentation](https://docs.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/)        |
 
 
@@ -33,7 +33,7 @@ pip install -U relevanceai
 Or you can install it via conda to:
 
 ```{bash}
-conda install pip 
+conda install pip
 pip install -c relevanceai
 ```
 
@@ -44,9 +44,9 @@ You can also install on conda (only available on Linux environments at the momen
 ### Login into your project space
 
 ```{python}
-from relevanceai import Client 
+from relevanceai import Client
 
-client = relevanceai.Client(<project_name>, <api_key>)
+client = Client(<project_name>, <api_key>)
 ```
 
 This is a data example in the right format to be uploaded to relevanceai. Every document you upload should:
@@ -75,7 +75,7 @@ client.insert_documents(dataset_id="quickstart", docs=docs)
 
 ```{python}
 client.services.search.vector(
-    dataset_id="quickstart", 
+    dataset_id="quickstart",
     multivector_query=[
         {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
     ],
@@ -97,11 +97,18 @@ Then run testing using:
 Make sure to set your test credentials!
 
 ```{bash}
-export TEST_PROJECT = xxx 
-export TEST_API_KEY = xxx 
+export TEST_PROJECT = xxx
+export TEST_API_KEY = xxx
 
 python -m pytest
 mypy relevanceai
+```
+
+Set up precommit
+
+```{bash}
+pip install precommit
+pre-commit install
 ```
 
 ## 🧰 Config
@@ -124,15 +131,14 @@ To restore all options to their default, run the following:
 
 ### Changing the base URL
 
-You can change the base URL as such: 
+You can change the base URL as such:
 
 ```{python}
 client.base_url = "https://.../latest"
 ```
 
-You can also update the ingest base URL: 
+You can also update the ingest base URL:
 
 ```{python}
 client.ingest_base_url = "https://.../latest
 ```
-

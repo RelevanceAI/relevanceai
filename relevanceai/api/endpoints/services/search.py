@@ -36,7 +36,9 @@ class SearchClient(_Base):
         """
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
 
-        1. Multivector search that allows you to search with multiple vectors and give each vector a different weight. e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do. You can also give weightings of each vector field towards the search, e.g. image_vector_ weights 100%, whilst description_vector_ 50% \n
+        1. Multivector search that allows you to search with multiple vectors and give each vector a different weight.
+        e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do.
+        You can also give weightings of each vector field towards the search, e.g. image_vector_ weights 100%, whilst description_vector_ 50% \n
             An example of a simple multivector query:
 
             >>> [
@@ -239,7 +241,6 @@ class SearchClient(_Base):
             "/services/search/hybrid",
             method="POST",
             parameters={
-                "dataset_id": "ecommerce-experiments",
                 "dataset_id": dataset_id,
                 "multivector_query": multivector_query,
                 "text": text,
@@ -715,8 +716,6 @@ class SearchClient(_Base):
 
         Parameters
         ----------
-        dataset_id : string
-            Unique name of dataset
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         chunk_field : string

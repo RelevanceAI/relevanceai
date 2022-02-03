@@ -24,6 +24,18 @@ class Centroids(BatchAPIClient):
             Alias is used to name a cluster
         cluster_field: string
             Name of clusters in documents
+
+        Example
+        --------
+        .. code-block
+            from relevanceai import Client
+
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+
+            df.get(["sample_id"], include_vector=False)
+
         """
 
         self.vector_fields = vector_fields
@@ -104,6 +116,26 @@ class Centroids(BatchAPIClient):
             Include vectors in the search results
         include_count: bool
             Include the total count of results in the search results
+
+        Example
+        -----------------
+        .. code-block::
+            from relevanceai import Client
+            from relevanceai.clusterer import ClusterOps
+            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            vector_field = "vector_field_"
+            n_clusters = 10
+
+            model = KMeansModel(k=n_clusters)
+
+            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
+
 
         """
 

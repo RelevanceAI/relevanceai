@@ -64,6 +64,17 @@ class Groupby(BatchAPIClient):
             {"name": k, "field": k, "agg": v} for k, v in self.groupby_fields.items()
         ]
 
+    def mean(self, field: str):
+        """
+        Convenience method to call avg metric on groupby.
+
+        Parameters
+        ----------
+        field: str
+            The field name to apply the mean aggregation.
+        """
+        return self.agg({field: "avg"})
+
 
 class Agg(BatchAPIClient):
     def __init__(self, project, api_key, dataset_id, groupby_call=[]):
