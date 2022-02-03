@@ -1021,7 +1021,8 @@ class Clusterer(BatchAPIClient):
         chunksize: int = 100,
     ):
         """
-        Fit predict on a dataset.
+        Fit, predict and update on a dataset.
+        Users can also start to run these separately one by one.
 
         Parameters
         --------------
@@ -1040,11 +1041,16 @@ class Clusterer(BatchAPIClient):
 
         .. code-block::
 
+            # Real-life example from Research Dashboard
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
+            df = client.Dataset("research2vec")
             clusterer = client.Clusterer(alias="minibatch_50", model=model)
-            clusterere.fit
+            clusterer.fit_predict_dataset_by_partial(
+                df,
+                vector_fields=['title_trainedresearchqgen_vector_'],
+                chunksize=1000
+            )
 
         """
         print("Fitting dataset...")

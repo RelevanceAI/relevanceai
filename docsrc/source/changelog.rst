@@ -29,6 +29,8 @@ partial_fit
 - Introduced `fit_update_dataset`
 - Introduced `fit_update_dataset_by_partial` which will fit the dataset, predict the dataset
 and insert the centroids if there are expected centroids in the dataset
+- Introduced `fit_predict_update_dataset_by_partial` to allow for fitting, predicting and updating the dataset
+in 1 go
 - Fixed arguments in the `clusterer` object to now take an optional vector_fields and dataset
 
 
