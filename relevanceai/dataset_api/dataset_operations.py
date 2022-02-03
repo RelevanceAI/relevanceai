@@ -1074,7 +1074,12 @@ class Operations(Write):
 
             model = KMeans(n_clusters=n_clusters)
             clusterer: Clusterer = Clusterer(
-                model=model, alias=alias, api_key=self.api_key, project=self.project
+                model=model,
+                alias=alias,
+                api_key=self.api_key,
+                project=self.project,
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
             )
             clusterer.fit_predict_update_dataset(
                 dataset=self, vector_fields=vector_fields
@@ -1089,7 +1094,12 @@ class Operations(Write):
 
             model = MiniBatchKMeans(n_clusters=n_clusters)
             clusterer = Clusterer(
-                model=model, alias=alias, api_key=self.api_key, project=self.project
+                model=model,
+                alias=alias,
+                api_key=self.api_key,
+                project=self.project,
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
             )
             clusterer.fit_predict_update_dataset_by_partial(
                 dataset=self, vector_fields=vector_fields
