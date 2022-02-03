@@ -6,16 +6,24 @@ Auto clustering is the easiest way to cluster.
 .. code-block::
 
     from relevanceai import Client
+
     client = Client()
-    df = client.Dataset("sample")
 
-    # Now to run KMeans with 10 clusters
-    clusterer = df.auto_cluster(
-        alias="kmeans-10", 
-        vector_fields=["sample_vector_"]
-    )
+    dataset_id = "sample_dataset"
+    df = client.Dataset(dataset_id)
 
+    # run kmeans with default 10 clusters
+    clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
     clusterer.list_closest_to_center()
+
+    # Run k means clustering with 8 clusters
+    clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+
+    # Run minibatch k means clustering with 8 clusters
+    clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
+    # Run minibatch k means clustering with 20 clusters
+    clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
 You can read more about how to cluster using the `auto_cluster` below!
 

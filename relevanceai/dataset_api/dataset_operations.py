@@ -1025,14 +1025,14 @@ class Operations(Write):
 
     def auto_cluster(self, alias: str, vector_fields: List[str]):
         """
-        Automatically cluster in 1 line of code. 
-        It will retrieve documents, run fitting on the documents and then 
+        Automatically cluster in 1 line of code.
+        It will retrieve documents, run fitting on the documents and then
         update the database.
-        There are only 2 supported clustering algorithms at the moment: 
-        - kmeans 
+        There are only 2 supported clustering algorithms at the moment:
+        - kmeans
         - minibatchkmeans
 
-        In order to choose the number of clusters, simply add a number 
+        In order to choose the number of clusters, simply add a number
         after the dash like `kmeans-8` or `minibatchkmeans-50`.
 
         Under the hood, it uses scikit learn defaults or best practices.

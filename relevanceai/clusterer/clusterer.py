@@ -1068,7 +1068,9 @@ class Clusterer(BatchAPIClient):
 
         """
         print("Fitting dataset...")
-        self.fit_dataset_by_partial(dataset=dataset, vector_fields=vector_fields)
+        self.fit_dataset_by_partial(
+            dataset=dataset, vector_fields=vector_fields, chunksize=chunksize
+        )
         print("Updating your dataset...")
         self.predict_dataset(dataset=dataset)
         # if hasattr(self, "get_centers"):
