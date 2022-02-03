@@ -980,6 +980,15 @@ class Operations(Write):
             raise ValueError("We only support 1 vector field at the moment.")
 
         print("Getting documents...")
+        filters += [
+            {
+                "field": vf,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vf in vector_fields
+        ]
         documents = self.get_documents(
             dataset_id=self.dataset_id,
             select_fields=vector_fields,

@@ -140,9 +140,10 @@ class Client(BatchAPIClient, DocUtils):
         # If the base URl is included in the pasted token then include it
         if len(split_token) == 3:
             region = split_token[2]
-            url = f"https://api.{region}.relevance.ai/latest"
-            self.base_url = url
-            self.base_ingest_url = url
+            if region != "old-australia-east":
+                url = f"https://api.{region}.relevance.ai/latest"
+                self.base_url = url
+                self.base_ingest_url = url
         self._write_credentials(project, api_key)
         return project, api_key
 
@@ -314,12 +315,16 @@ class Client(BatchAPIClient, DocUtils):
     def Clusterer(
         self,
         alias: str,
-        model: ClusterBase = None,
+        model=None,
+        dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
     ):
         return Clusterer(
             model=model,
             alias=alias,
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
