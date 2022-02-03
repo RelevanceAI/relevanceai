@@ -400,12 +400,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Get incomplete documents from raw collection
         retrieve_filters = filters + [
-            {
-                "field": "ids",
-                "filter_type": "ids",
-                "condition": "!=",
-                "condition_value": completed_documents_list,
-            }
+            # {
+            #     "field": "ids",
+            #     "filter_type": "ids",
+            #     "condition": "!=",
+            #     "condition_value": completed_documents_list,
+            # }
         ]
 
         for _ in progress_bar(
