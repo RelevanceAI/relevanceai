@@ -7,7 +7,7 @@ import pytest
 from relevanceai import Client
 from relevanceai.dataset_api import Dataset
 
-from relevanceai.clusterer import Clusterer
+from relevanceai.clusterer import ClusterOps
 from relevanceai.clusterer import CentroidClusterBase
 
 

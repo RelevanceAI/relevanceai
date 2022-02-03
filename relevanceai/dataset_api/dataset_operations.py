@@ -71,7 +71,7 @@ class Operations(Write):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
@@ -86,12 +86,12 @@ class Operations(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.clusterer import Clusterer
+        from relevanceai.clusterer import ClusterOps
 
-        clusterer = Clusterer(
+        clusterer = ClusterOps(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
-        clusterer.fit_predict_update_dataset(dataset=self, vector_fields=vector_fields)
+        clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
     def label_vector(
@@ -145,7 +145,7 @@ class Operations(Write):
 
 
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
@@ -1027,9 +1027,19 @@ class Operations(Write):
             dims=n_components,
         )
 
-    def auto_cluster(self, alias: str, vector_fields: List):
+    def auto_cluster(self, alias: str, vector_fields: List[str]):
         """
-        Handles the logic for aquiring the clusterer object for clustering. Derives the clustering method (and n clusters if applicable) from provided alias.
+        Automatically cluster in 1 line of code.
+        It will retrieve documents, run fitting on the documents and then
+        update the database.
+        There are only 2 supported clustering algorithms at the moment:
+        - kmeans
+        - minibatchkmeans
+
+        In order to choose the number of clusters, simply add a number
+        after the dash like `kmeans-8` or `minibatchkmeans-50`.
+
+        Under the hood, it uses scikit learn defaults or best practices.
 
         Parameters
         ----------
@@ -1041,7 +1051,8 @@ class Operations(Write):
             A list vector fields over which to cluster
 
         Example
-        -------
+        ----------
+
         .. code-block::
 
             from relevanceai import Client
@@ -1051,9 +1062,7 @@ class Operations(Write):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
 
-            vector_field = "vector_field_"
-            n_clusters = 10
-
+            # run kmeans with default 10 clusters
             clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
             clusterer.list_closest_to_center()
 
@@ -1063,21 +1072,21 @@ class Operations(Write):
             # Run minibatch k means clustering with 8 clusters
             clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
 
-            # Run minibatch k means clustering with 8 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+            # Run minibatch k means clustering with 20 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
         """
         cluster_args = alias.split("-")
         algorithm = cluster_args[0]
         n_clusters = int(cluster_args[1])
 
-        from relevanceai.clusterer import Clusterer
+        from relevanceai.clusterer import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans
 
             model = KMeans(n_clusters=n_clusters)
-            clusterer: Clusterer = Clusterer(
+            clusterer: ClusterOps = ClusterOps(
                 model=model,
                 alias=alias,
                 api_key=self.api_key,
@@ -1085,9 +1094,7 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
-            clusterer.fit_predict_update_dataset(
-                dataset=self, vector_fields=vector_fields
-            )
+            clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
@@ -1097,7 +1104,7 @@ class Operations(Write):
             from sklearn.cluster import MiniBatchKMeans
 
             model = MiniBatchKMeans(n_clusters=n_clusters)
-            clusterer = Clusterer(
+            clusterer = ClusterOps(
                 model=model,
                 alias=alias,
                 api_key=self.api_key,
@@ -1105,7 +1112,7 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
-            clusterer.fit_predict_update_dataset_by_partial(
+            clusterer.fit_partial_predict_update(
                 dataset=self, vector_fields=vector_fields
             )
         else:

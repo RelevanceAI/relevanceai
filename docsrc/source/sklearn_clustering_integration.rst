@@ -26,7 +26,7 @@ DBSCAN Example
 
     model = DBSCAN()
 
-    clusterer = client.Clusterer(model, alias="dbscan")
+    clusterer = client.ClusterOps(model, alias="dbscan")
 
     # check that cluster is now in schema
     df.schema
@@ -42,8 +42,8 @@ K Means Example
 
     df = client.Dataset('sample')
 
-    clusterer = client.Clusterer(model)
-    clusterer.fit_predict_update_dataset(df, vector_fields=["sample_vector_"])
+    clusterer = client.ClusterOps(model)
+    clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
     clusterer.list_closest_to_center()
 
 Mini Batch K-Means Example
@@ -57,6 +57,6 @@ Mini Batch K-Means Example
 
     df = client.Dataset('sample')
 
-    clusterer = client.Clusterer(model)
-    clusterer.fit_predict_update_dataset_by_partial(df, vector_fields=['sample_vector_'])
+    clusterer = client.ClusterOps(model)
+    clusterer.fit_partial_predict_update(df, vector_fields=['sample_vector_'])
     clusterer.list_closest_to_center()

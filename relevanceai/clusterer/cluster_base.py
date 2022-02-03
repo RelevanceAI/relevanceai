@@ -8,6 +8,17 @@ from typing import Union, List, Dict, Callable
 class ClusterBase(DocUtils, ABC):
     """
     A Cluster Base for models to be inherited.
+    The most basic class to inherit.
+    Use this class if you have an in-memory fitting algorithm.
+
+    If your clusters return centroids, you will want to inherit
+    `CentroidClusterBase`.
+
+    If your clusters can fit on batches, you will want to inherit
+    `BatchClusterBase`.
+
+    If you have both Batches and Centroids, you will want to inherit both.
+
     """
 
     def __call__(self, *args, **kwargs):
@@ -209,6 +220,10 @@ class AdvancedCentroidClusterBase(ClusterBase, ABC):
 
 
 class CentroidBase(ABC):
+    """
+    Simple centroid base for clusters.
+    """
+
     vector_fields: list
     _label_cluster: Callable
 
@@ -270,7 +285,7 @@ class CentroidBase(ABC):
 
 class CentroidClusterBase(ClusterBase, CentroidBase, ABC):
     """
-    Inherit this class if you have a centroids-based clustering approach.
+    Inherit this class if you have a centroids-based clustering.
     The difference between this and `Clusterbase` is that you can also additionally
     specify how to get your centers in the
     `get_centers` base. This allows you to store your centers.

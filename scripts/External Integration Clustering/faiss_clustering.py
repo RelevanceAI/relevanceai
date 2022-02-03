@@ -8,7 +8,7 @@ import argparse
 import numpy as np
 
 from relevanceai import Client
-from relevanceai.clusterer import Clusterer
+from relevanceai.clusterer import ClusterOps
 from relevanceai.clusterer import ClusterBase
 
 from faiss import Kmeans
@@ -39,7 +39,7 @@ def main(args):
 
     model = FaissKMeans(model=Kmeans(d=4, k=n_clusters))
 
-    clusterer = Clusterer(model=model, alias=f"kmeans-{n_clusters}")
+    clusterer = ClusterOps(model=model, alias=f"kmeans-{n_clusters}")
 
     clusterer.fit(dataset=df, vector_fields=[vector_field])
 
