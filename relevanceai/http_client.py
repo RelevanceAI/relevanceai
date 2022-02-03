@@ -30,7 +30,6 @@ from typing import Union, Optional, List, Dict
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api import Dataset, Datasets
 from relevanceai.clusterer import ClusterOps, ClusterBase
-from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -325,36 +324,6 @@ class Client(BatchAPIClient, DocUtils):
             alias=alias,
             dataset_id=dataset_id,
             vector_fields=vector_fields,
-            cluster_field=cluster_field,
-            project=self.project,
-            api_key=self.api_key,
-        )
-
-    def KMeansClusterOps(
-        self,
-        alias: str,
-        k: Union[None, int] = 10,
-        init: str = "k-means++",
-        n_init: int = 10,
-        max_iter: int = 300,
-        tol: float = 1e-4,
-        verbose: bool = True,
-        random_state: Optional[int] = None,
-        copy_x: bool = True,
-        algorithm: str = "auto",
-        cluster_field: str = "_cluster_",
-    ):
-        return KMeansClusterOps(
-            alias=alias,
-            k=k,
-            init=init,
-            n_init=n_init,
-            max_iter=max_iter,
-            tol=tol,
-            verbose=verbose,
-            random_state=random_state,
-            copy_x=copy_x,
-            algorithm=algorithm,
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
