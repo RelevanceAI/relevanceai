@@ -14,7 +14,10 @@ Now, users
 
 *BREAKING CHANGES*
 
-- Clustering `fit_transform` is not a `fit_predict` to align with SKLearn's methods
+- Clustering :code:`fit_transform` is not a :code:`fit_predict` to align with SKLearn's methods
+- Rename :code:`Clusterer` to :code:`ClusterOps` 
+- :code:`fit` has now been broken down into :code:`fit_predict_update`
+
 
 Non-breaking changes:
 
