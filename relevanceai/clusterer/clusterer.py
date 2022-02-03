@@ -723,7 +723,7 @@ class Clusterer(BatchAPIClient):
         )
         return response.json()["status"]
 
-    def fit_predict_update_dataset(
+    def fit_predict_update(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
         """
@@ -1028,7 +1028,7 @@ class Clusterer(BatchAPIClient):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
 
-    def fit_predict_update_dataset_by_partial(
+    def fit_partial_predict_update(
         self,
         dataset: Union[Dataset, str],
         vector_fields: List[str],

@@ -1090,7 +1090,7 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
-            clusterer.fit_predict_update_dataset(
+            clusterer.fit_predict_update(
                 dataset=self, vector_fields=vector_fields
             )
 
@@ -1110,7 +1110,7 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
-            clusterer.fit_predict_update_dataset_by_partial(
+            clusterer.fit_partial_predict_update(
                 dataset=self, vector_fields=vector_fields
             )
         else:

@@ -32,7 +32,7 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_dataset_df: Da
 
     clusterer = test_client.Clusterer(model=model, alias=alias)
 
-    clusterer.fit_predict_update_dataset(
+    clusterer.fit_predict_update(
         dataset=test_dataset_df, vector_fields=[vector_field]
     )
 

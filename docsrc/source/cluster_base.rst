@@ -22,41 +22,36 @@ If you have both Batches and Centroids, you will want to inherit both.
 
 .. code-block::
 
-    from relevanceai import CentroidClusterBase
-
+    import numpy as np 
     from faiss import Kmeans
+    from relevanceai import Client, CentroidClusterBase, ClusterBase
 
-    class FaissKMeans(ClusterBase):
+    client = Client()
+    df = client.Dataset("_github_repo_vectorai")
+
+    class FaissKMeans(CentroidClusterBase):
         def __init__(self, model):
             self.model = model
 
-        def fit_transform(self, vectors):
+        def fit_predict(self, vectors):
             vectors = np.array(vectors).astype("float32")
             self.model.train(vectors)
             cluster_labels = self.model.assign(vectors)[1]
-
             return cluster_labels
 
         def metadata(self):
             return self.model.__dict__
-        
+
         def get_centers(self):
-            return 
+            return self.model.centroids
 
     n_clusters = 10
-    model = FaissKMeans(model=Kmeans(d=4, k=n_clusters))
+    d = 512
+    alias = f"faiss-kmeans-{n_clusters}"
+    vector_fields = ["documentation_vector_"]
 
-    clusterer = Clusterer(model=model, alias=f"kmeans-{n_clusters}")
-
-    clusterer.fit(dataset=df, vector_fields=[vector_field])
+    model = FaissKMeans(model=Kmeans(d=d, k=n_clusters))
+    clusterer = client.Clusterer(model=model, alias=alias)
+    clusterer.fit_predict_update(dataset=df, vector_fields=vector_fields)
 
 .. automodule:: relevanceai.clusterer.cluster_base
-
-.. autoclass:: relevanceai.clusterer.cluster_base.ClusterBase
-    :members:
-
-.. autoclass:: relevanceai.clusterer.cluster_base.CentroidClusterBase
-    :members:
-
-.. autoclass:: relevanceai.clusterer.cluster_base.AdvancedCentroidClusterBase
-    :members:
