@@ -314,12 +314,16 @@ class Client(BatchAPIClient, DocUtils):
     def Clusterer(
         self,
         alias: str,
-        model: ClusterBase = None,
+        model=None,
+        dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
     ):
         return Clusterer(
             model=model,
             alias=alias,
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
