@@ -1031,6 +1031,8 @@ class Operations(Write):
         ----------
         alias : str
             The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
+            Supported aliases at the moment are 'kmeans','kmeans-10', 'kmeans-X' (where X is a number), 'minibatchkmeans',
+                'minibatchkmeans-10', 'minibatchkmeans-X' (where X is a number)
         vector_fields : List
             A list vector fields over which to cluster
 
@@ -1049,29 +1051,50 @@ class Operations(Write):
             n_clusters = 10
 
             clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+            clusterer.list_closest_to_center()
+
+            # Run k means clustering with 8 clusters
+            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 8 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 8 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
         """
         cluster_args = alias.split("-")
         algorithm = cluster_args[0]
-        try:
-            n_clusters = int(cluster_args[1])
-        except:
-            pass
+        n_clusters = int(cluster_args[1])
 
         from relevanceai.clusterer import Clusterer
 
         if algorithm.lower() == "kmeans":
-            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+            from sklearn.cluster import KMeans
 
-            model = KMeansModel(k=n_clusters)
+            model = KMeans(n_clusters=n_clusters)
+            clusterer: Clusterer = Clusterer(
+                model=model, alias=alias, api_key=self.api_key, project=self.project
+            )
+            clusterer.fit_predict_update_dataset(
+                dataset=self, vector_fields=vector_fields
+            )
+
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
                 "HDBSCAN is soon to be released as an alternative clustering algorithm"
             )
+        elif algorithm.lower() == "minibatchkmeans":
+            from sklearn.cluster import MiniBatchKMeans
+
+            model = MiniBatchKMeans(n_clusters=n_clusters)
+            clusterer = Clusterer(
+                model=model, alias=alias, api_key=self.api_key, project=self.project
+            )
+            clusterer.fit_predict_update_dataset_by_partial(
+                dataset=self, vector_fields=vector_fields
+            )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
-        clusterer = Clusterer(
-            model=model, alias=alias, api_key=self.api_key, project=self.project
-        )
-        clusterer.fit(dataset=self, vector_fields=vector_fields)
         return clusterer

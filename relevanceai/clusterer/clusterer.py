@@ -755,7 +755,7 @@ class Clusterer(BatchAPIClient):
         )
         return response.json()["status"]
 
-    def fit_dataset(
+    def fit_predict_update_dataset(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
         """
@@ -792,7 +792,7 @@ class Clusterer(BatchAPIClient):
             clusterer = client.Clusterer(model, alias="random")
             df = client.Dataset("_github_repo_vectorai")
 
-            clusterer.fit_dataset(df, vector_fields=["documentation_vector_"])
+            clusterer.fit_predict_update(df, vector_fields=["documentation_vector_"])
 
         """
 
