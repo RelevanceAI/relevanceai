@@ -95,6 +95,7 @@ class Clusterer(BatchAPIClient):
         alias: str,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
         dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         project: Union[str, None] = None,
         api_key: Union[str, None] = None,
         cluster_field: str = "_cluster_",
@@ -105,6 +106,8 @@ class Clusterer(BatchAPIClient):
 
         if dataset_id is not None:
             self.dataset_id: str = dataset_id
+        if vector_fields is not None:
+            self.vector_fields = vector_fields
 
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
@@ -299,6 +302,7 @@ class Clusterer(BatchAPIClient):
     def list_closest_to_center(
         self,
         dataset: Optional[Union[str, Dataset]] = None,
+        vector_fields: Optional[List] = None,
         cluster_ids: List = [],
         centroid_vector_fields: List = [],
         select_fields: List = [],
@@ -366,7 +370,9 @@ class Clusterer(BatchAPIClient):
         """
         return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self._retrieve_dataset_id(dataset),
-            vector_fields=self.vector_fields,
+            vector_fields=self.vector_fields
+            if vector_fields is None
+            else vector_fields,
             alias=self.alias,
             cluster_ids=cluster_ids,
             centroid_vector_fields=centroid_vector_fields,
@@ -534,7 +540,9 @@ class Clusterer(BatchAPIClient):
             flatten=flatten,
         )
 
-    def list_furthest_from_center(self):
+    def list_furthest_from_center(
+        self, dataset: Union[str, Dataset], vector_fields: list
+    ):
         """
         List of documents furthest from the centre.
 
@@ -582,8 +590,10 @@ class Clusterer(BatchAPIClient):
 
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=self.dataset_id,
-            vector_fields=self.vector_fields,
+            dataset_id=self._retrieve_dataset_id(dataset),
+            vector_fields=self.vector_fields
+            if vector_fields is None
+            else vector_fields,
             alias=self.alias,
         )
 
@@ -627,8 +637,8 @@ class Clusterer(BatchAPIClient):
                     f"No dataset supplied - using last stored one '{self.dataset_id}'."
                 )
                 dataset_id = str(self.dataset_id)
-        else:
-            raise ValueError("Please supply dataset.")
+            else:
+                raise ValueError("Please supply dataset.")
         return dataset_id
 
     def insert_centroid_documents(
@@ -728,7 +738,7 @@ class Clusterer(BatchAPIClient):
             include_vector=True,
         )
 
-    def delete_centroids(self):
+    def delete_centroids(self, dataset: Union[str, Dataset], vector_fields: List):
         """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
         import requests
@@ -738,8 +748,8 @@ class Clusterer(BatchAPIClient):
             base_url + "/services/cluster/centroids/delete",
             headers={"Authorization": self.project + ":" + self.api_key},
             params={
-                "dataset_id": "_github_repo_vectorai",
-                "vector_field": ["documentation_vector_"],
+                "dataset_id": self._retrieve_dataset_id(dataset),
+                "vector_field": vector_fields,
                 "alias": self.alias,
             },
         )
@@ -832,9 +842,6 @@ class Clusterer(BatchAPIClient):
     #         vector_fields=self.vector_fields
     #         alias=self.alias
     #     )
-
-    def fit_dataset_by_batch(self, df):
-        raise NotImplementedError
 
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
@@ -932,6 +939,7 @@ class Clusterer(BatchAPIClient):
         chunksize: int = 100,
         filters: list = [],
     ):
+        """Utility function for chunking a dataset"""
         cursor = None
 
         docs = self.get_documents(
@@ -954,10 +962,14 @@ class Clusterer(BatchAPIClient):
             )
 
     def fit_dataset_by_partial(
-        self, dataset, vector_fields: List[str], chunksize: int = 100
+        self,
+        dataset: Union[str, Dataset],
+        vector_fields: List[str],
+        chunksize: int = 100,
     ):
         """
-        Fit The dataset by partial documents
+        Fit The dataset by partial documents.
+        This is useful if you are retrieving a dataset
 
 
         Example
@@ -980,7 +992,13 @@ class Clusterer(BatchAPIClient):
             raise ValueError(
                 "We currently do not support multiple vector fields on partial fit"
             )
-        self.dataset = dataset
+
+        if isinstance(dataset, str):
+            self.dataset = Dataset(
+                project=self.project, api_key=self.api_key, dataset_id=dataset
+            )
+        else:
+            self.dataset = dataset
 
         filters = [
             {
@@ -993,10 +1011,52 @@ class Clusterer(BatchAPIClient):
         ]
 
         for c in self._chunk_dataset(
-            dataset, self.vector_fields, chunksize=chunksize, filters=filters
+            self.dataset, self.vector_fields, chunksize=chunksize, filters=filters
         ):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
+
+    def fit_predict_dataset_by_partial(
+        self,
+        dataset: Union[Dataset, str],
+        vector_fields: List[str],
+        chunksize: int = 100,
+    ):
+        """
+        Fit predict on a dataset.
+
+        Parameters
+        --------------
+
+        dataset: Union[Dataset]
+            The dataset class
+
+        vector_fields: List[str]
+            The list of vector fields
+
+        chunksize: int
+            The size of the chunks
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            clusterer = client.Clusterer(alias="minibatch_50", model=model)
+            clusterere.fit
+
+        """
+        print("Fitting dataset...")
+        self.fit_dataset_by_partial(dataset=dataset, vector_fields=vector_fields)
+        print("Updating your dataset...")
+        self.predict_dataset(dataset=dataset)
+        # if hasattr(self, "get_centers"):
+        #     print("Inserting your centroids...")
+        print("Inserting centroids...")
+        self.insert_centroid_documents(self.get_centroid_documents(), dataset=dataset)
 
     def predict_documents(
         self,
@@ -1206,7 +1266,7 @@ class Clusterer(BatchAPIClient):
         self.set_field_across_documents(set_cluster_field, cluster_labels, documents)
 
     def _label_cluster(self, label: Union[int, str]):
-        if isinstance(label, (int, float)):
+        if not isinstance(label, str):
             return "cluster-" + str(label)
         return str(label)
 
