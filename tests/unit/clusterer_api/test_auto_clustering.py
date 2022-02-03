@@ -8,7 +8,7 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture(scope="session")
-def minibatch_ClusterOps(test_client: Client, test_sample_vector_dataset: Dataset):
+def minibatch_clusterer(test_client: Client, test_sample_vector_dataset: Dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     clusterer: ClusterOps = df.auto_cluster(
         "minibatchkmeans-20", vector_fields=VECTOR_FIELDS
@@ -26,7 +26,7 @@ def test_batch_clusterer_centroids(minibatch_clusterer: ClusterOps):
 
 
 @pytest.fixture(scope="session")
-def kmeans_ClusterOps(test_client: Client, test_sample_vector_dataset: Dataset):
+def kmeans_clusterer(test_client: Client, test_sample_vector_dataset: Dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     clusterer: ClusterOps = df.auto_cluster("kmeans-20", vector_fields=VECTOR_FIELDS)
     yield clusterer
