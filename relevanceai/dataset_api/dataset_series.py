@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -79,17 +80,30 @@ class Series(BatchAPIClient):
         self.text_fields = text_fields
 
     def _repr_html_(self):
-        document = self.get_documents(
-            dataset_id=self.dataset_id, select_fields=[self.field]
-        )
+        fields = [self.field]
+
+        if any("_cluster_" in field for field in fields):
+            fields += self._format_select_fields()
+            fields = [field for field in fields if field != "_cluster_"]
+            return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
+
+        documents = self.get_documents(dataset_id=self.dataset_id, select_fields=fields)
         try:
-            return self._show_json(document, return_html=True)
+            return self._show_json(documents, return_html=True)
         except Exception:
             warnings.warn(
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
             )
-            return pd.json_normalize(document).set_index("_id")._repr_html_()
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
+
+    def _format_select_fields(self):
+        fields = [
+            field
+            for field in self.datasets.schema(self.dataset_id)
+            if "_cluster_" in field
+        ]
+        return fields
 
     def _show_json(self, document, **kw):
         from jsonshower import show_json
