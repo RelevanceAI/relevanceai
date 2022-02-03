@@ -3,6 +3,11 @@ Changelog
 
 Here you will find a list of changes for each package update.
 
+v0.32.1
+---------
+
+- Apply hotfix to pull_update_push
+
 v0.32.0
 ---------
 
