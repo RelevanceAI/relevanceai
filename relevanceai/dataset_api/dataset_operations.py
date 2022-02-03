@@ -55,12 +55,16 @@ class Operations(Write):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
+        .. warning::
+            Deprecated in v0.33 in favour of df.auto_cluster.
+
         Parameters
         ----------
         model : Class
             The clustering model to use
         vector_fields : str
             The vector fields over which to cluster
+
 
         Example
         -------
@@ -87,7 +91,7 @@ class Operations(Write):
         clusterer = Clusterer(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
-        clusterer.fit(dataset=self, vector_fields=vector_fields)
+        clusterer.fit_predict_update_dataset(dataset=self, vector_fields=vector_fields)
         return clusterer
 
     def label_vector(
