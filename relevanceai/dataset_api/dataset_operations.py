@@ -71,7 +71,7 @@ class Operations(Write):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
@@ -86,9 +86,9 @@ class Operations(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.clusterer import Clusterer
+        from relevanceai.clusterer import ClusterOps
 
-        clusterer = Clusterer(
+        clusterer = ClusterOps(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
@@ -145,7 +145,7 @@ class Operations(Write):
 
 
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
@@ -1080,13 +1080,13 @@ class Operations(Write):
         algorithm = cluster_args[0]
         n_clusters = int(cluster_args[1])
 
-        from relevanceai.clusterer import Clusterer
+        from relevanceai.clusterer import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans
 
             model = KMeans(n_clusters=n_clusters)
-            clusterer: Clusterer = Clusterer(
+            clusterer: ClusterOps = ClusterOps(
                 model=model,
                 alias=alias,
                 api_key=self.api_key,
@@ -1104,7 +1104,7 @@ class Operations(Write):
             from sklearn.cluster import MiniBatchKMeans
 
             model = MiniBatchKMeans(n_clusters=n_clusters)
-            clusterer = Clusterer(
+            clusterer = ClusterOps(
                 model=model,
                 alias=alias,
                 api_key=self.api_key,

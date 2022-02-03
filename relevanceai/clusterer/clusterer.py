@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Clusterer class to run clustering. It is intended to be integrated with
+ClusterOps class to run clustering. It is intended to be integrated with
 models that inherit from `ClusterBase`.
 
-You can run the Clusterer as such:
+You can run the ClusterOps as such:
 
 .. code-block::
 
@@ -11,7 +11,7 @@ You can run the Clusterer as such:
     from relevanceai.clusterer import KMeansModel
     client = Client()
     model = KMeansModel(n_clusters=2)
-    clusterer = client.Clusterer(model, alias="kmeans_2")
+    clusterer = client.ClusterOps(model, alias="kmeans_2")
     df = client.Dataset("_github_repo_vectorai")
     clusterer.fit(df, ["documentation_vector_"])
 
@@ -65,12 +65,12 @@ METRIC_DESCRIPTION = {
 }
 
 
-class Clusterer(BatchAPIClient):
+class ClusterOps(BatchAPIClient):
 
     _cred_fn = ".creds.json"
 
     """
-    Clusterer class allows users to set up any clustering model to fit on a Dataset.
+    ClusterOps class allows users to set up any clustering model to fit on a Dataset.
 
     You can read about the other parameters here: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
 
@@ -83,7 +83,7 @@ class Clusterer(BatchAPIClient):
         from relevanceai.clusterer import KMeansModel
 
         model = KMeans(n_clusters=2)
-        clusterer = client.Clusterer(model, alias="kmeans_2")
+        clusterer = client.ClusterOps(model, alias="kmeans_2")
 
         df = client.Dataset("sample")
         clusterer.fit(df, vector_fields=["sample_vector_"])
@@ -331,7 +331,7 @@ class Clusterer(BatchAPIClient):
 
             from relevanceai.clusterer import KMeansModel
             kmeans = KMeans(n_clusters=5)
-            clusterer = client.Clusterer(kmeans)
+            clusterer = client.ClusterOps(kmeans)
             clusterer.fit(df, ["sample_vector_"])
             clusterer.list_closest_to_center()
 
@@ -483,7 +483,7 @@ class Clusterer(BatchAPIClient):
             df = client.Dataset("sample_dataset")
 
             from relevanceai.clusterer import KMeansModel
-            clusterer = client.Clusterer(5)
+            clusterer = client.ClusterOps(5)
             clusterer.fit(df, ["sample_vector_"])
             clusterer.aggregate(
                 groupby=[],
@@ -552,7 +552,7 @@ class Clusterer(BatchAPIClient):
             df = client.Dataset("_github_repo_vectorai")
             from relevanceai.clusterer import KMeansModel
             model = KMeansModel()
-            cluster = client.Clusterer(3)
+            cluster = client.ClusterOps(3)
             clusterer.fit(df)
             clusterer.list_furthest_from_center()
 
@@ -630,7 +630,7 @@ class Clusterer(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            clusterer = client.Clusterer(alias="example")
+            clusterer = client.ClusterOps(alias="example")
             # available if you inherit from centroidbase
             centroids = model.get_centroid_documents()
             clusterer.insert_centroid_documents(centroids)
@@ -757,7 +757,7 @@ class Clusterer(BatchAPIClient):
                     return cluster_labels
 
             model = CustomClusterModel()
-            clusterer = client.Clusterer(model, alias="random")
+            clusterer = client.ClusterOps(model, alias="random")
             df = client.Dataset("_github_repo_vectorai")
 
             clusterer.fit_predict_update(df, vector_fields=["documentation_vector_"])
@@ -932,7 +932,7 @@ class Clusterer(BatchAPIClient):
                     return cluster_labels
 
             model = CustomClusterModel()
-            clusterer = client.Clusterer(model, alias="random")
+            clusterer = client.ClusterOps(model, alias="random")
             df = client.Dataset("_github_repo_vectorai")
 
             clusterer.parital_fit(df, vector_fields=["documentation_vector_"])
@@ -992,7 +992,7 @@ class Clusterer(BatchAPIClient):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
-            clusterer = client.Clusterer(alias="minibatch_50", model=model)
+            clusterer = client.ClusterOps(alias="minibatch_50", model=model)
             clusterer.fit_dataset_by_partial(df, ["documentation_vector_"])
             clusterer.predict_dataset(df, ['documentation_vector_'])
             new_model.vector_fields = ['documentation_vector_']
@@ -1059,7 +1059,7 @@ class Clusterer(BatchAPIClient):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("research2vec")
-            clusterer = client.Clusterer(alias="minibatch_50", model=model)
+            clusterer = client.ClusterOps(alias="minibatch_50", model=model)
             clusterer.fit_predict_dataset_by_partial(
                 df,
                 vector_fields=['title_trainedresearchqgen_vector_'],
@@ -1118,7 +1118,7 @@ class Clusterer(BatchAPIClient):
             from sklearn import MiniBatchKMeans
             model = MiniBatchKMeans()
 
-            clusterer = client.Clusterer(model, alias="minibatch")
+            clusterer = client.ClusterOps(model, alias="minibatch")
             clusterer.fit_dataset_by_partial(df)
             clusterer.predict_dataset(df)
 
@@ -1199,7 +1199,7 @@ class Clusterer(BatchAPIClient):
                     return cluster_labels
 
             model = CustomClusterModel()
-            clusterer = client.Clusterer(model, alias="random")
+            clusterer = client.ClusterOps(model, alias="random")
             df = client.Dataset("_github_repo_vectorai")
 
             clusterer.fit(df, vector_fields=["documentation_vector_"])
@@ -1310,7 +1310,7 @@ class Clusterer(BatchAPIClient):
             from relevanceai.clusterer import KMeansModel
 
             model = KMeansModel()
-            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans = client.ClusterOps(model, alias="kmeans_sample")
             kmeans.fit(df, vector_fields=["sample_1_vector_"])
             kmeans.metadata
             # {"k": 10}
@@ -1346,7 +1346,7 @@ class Clusterer(BatchAPIClient):
             from relevanceai.clusterer import KMeansModel
 
             model = KMeansModel()
-            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans = client.ClusterOps(model, alias="kmeans_sample")
             kmeans.fit(df, vector_fields=["sample_1_vector_"])
             kmeans.metadata
             # {"k": 10}
@@ -1395,7 +1395,7 @@ class Clusterer(BatchAPIClient):
             from relevanceai.clusterer import KMeansModel
 
             model = KMeansModel()
-            kmeans = client.Clusterer(model, alias="kmeans_sample")
+            kmeans = client.ClusterOps(model, alias="kmeans_sample")
             kmeans.fit(df, vector_fields=["sample_1_vector_"])
 
             kmeans.evaluate()

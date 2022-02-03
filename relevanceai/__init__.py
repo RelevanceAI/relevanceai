@@ -5,7 +5,7 @@ from relevanceai.http_client import Client
 
 # Cluster Base Utilities
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
-from relevanceai.clusterer.clusterer import Clusterer
+from relevanceai.clusterer.clusterer import ClusterOps
 import requests
 
 # Import useful utility if possible as well

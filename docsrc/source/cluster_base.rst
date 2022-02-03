@@ -50,7 +50,7 @@ If you have both Batches and Centroids, you will want to inherit both.
     vector_fields = ["documentation_vector_"]
 
     model = FaissKMeans(model=Kmeans(d=d, k=n_clusters))
-    clusterer = client.Clusterer(model=model, alias=alias)
+    clusterer = client.ClusterOps(model=model, alias=alias)
     clusterer.fit_predict_update(dataset=df, vector_fields=vector_fields)
 
 .. automodule:: relevanceai.clusterer.cluster_base

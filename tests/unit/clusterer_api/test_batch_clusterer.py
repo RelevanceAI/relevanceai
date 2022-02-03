@@ -6,7 +6,7 @@
 import pandas as pd
 import pytest
 from relevanceai.clusterer import kmeans_clusterer
-from relevanceai.http_client import Dataset, Client, Clusterer
+from relevanceai.http_client import Dataset, Client, ClusterOps
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "minibatch"
@@ -14,10 +14,10 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture(scope="session")
-def test_batch_clusterer(test_client: Client, test_sample_vector_dataset: Dataset):
+def test_batch_ClusterOps(test_client: Client, test_sample_vector_dataset: Dataset):
     from sklearn.cluster import MiniBatchKMeans
 
-    clusterer = test_client.Clusterer(
+    clusterer = test_client.ClusterOps(
         alias=CLUSTER_ALIAS,
         model=MiniBatchKMeans(),
         dataset_id=test_sample_vector_dataset,
@@ -28,7 +28,7 @@ def test_batch_clusterer(test_client: Client, test_sample_vector_dataset: Datase
 
 
 def test_cluster(
-    test_batch_clusterer: Clusterer,
+    test_batch_clusterer: ClusterOps,
     test_sample_vector_dataset: Dataset,
     test_client: Client,
 ):
@@ -43,7 +43,7 @@ def test_cluster(
     assert f"_cluster_.{vector_field}.{alias}" in df.schema
 
 
-def test_closest(test_batch_clusterer: Clusterer, test_sample_vector_dataset: Dataset):
+def test_closest(test_batch_clusterer: ClusterOps, test_sample_vector_dataset: Dataset):
     test_batch_clusterer.vector_fields = VECTOR_FIELDS
     closest = test_batch_clusterer.list_closest_to_center(
         dataset=test_sample_vector_dataset, vector_fields=VECTOR_FIELDS
@@ -51,7 +51,9 @@ def test_closest(test_batch_clusterer: Clusterer, test_sample_vector_dataset: Da
     assert len(closest["results"]) > 0
 
 
-def test_furthest(test_batch_clusterer: Clusterer, test_sample_vector_dataset: Dataset):
+def test_furthest(
+    test_batch_clusterer: ClusterOps, test_sample_vector_dataset: Dataset
+):
     test_batch_clusterer.vector_fields = VECTOR_FIELDS
     furthest = test_batch_clusterer.list_furthest_from_center(
         dataset=test_sample_vector_dataset,

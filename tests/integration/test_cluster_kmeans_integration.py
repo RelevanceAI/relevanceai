@@ -8,7 +8,7 @@ import pytest
 from relevanceai import Client
 from relevanceai.dataset_api import Dataset
 
-from relevanceai.clusterer import Clusterer
+from relevanceai.clusterer import ClusterOps
 from relevanceai.clusterer import CentroidClusterBase
 
 
@@ -30,7 +30,7 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_dataset_df: Da
 
     model = KMeansModel(model=KMeans())
 
-    clusterer = test_client.Clusterer(model=model, alias=alias)
+    clusterer = test_client.ClusterOps(model=model, alias=alias)
 
     clusterer.fit_predict_update(dataset=test_dataset_df, vector_fields=[vector_field])
 

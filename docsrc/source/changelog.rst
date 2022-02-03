@@ -21,7 +21,7 @@ Non-breaking changes:
 - Create a CentroidClusterBase and update it to ClusterBase and a CentroidBase
 - Added a `fit_update`
 - Added support for batch clustering using MiniBatchKMeans
-- Added functional Insert_centroid_documents to the `Clusterer` object
+- Added functional Insert_centroid_documents to the `ClusterOps` object
 - Introduced fit_partial to the clusterer
 - Introduced fit_partial_documents
 - Introduced `fit_dataset_by_partial` to allow users to be able to fit on a dataset if they want to use
@@ -55,7 +55,7 @@ Non-breaking changes:
 
 - Fix bug with clusterer using `fit_predict` now
 * Feature/pro 1107 bug with clusterer by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/360
-* Added Cluster Metrics to Clusterer by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/347
+* Added Cluster Metrics to ClusterOps by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/347
 * Feature/fix auth by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/361
 * removing dataset_id as a required parameter by @ChakavehSaedi in https://github.com/RelevanceAI/RelevanceAI/pull/366
 * add dimensionality reduction by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/362
@@ -146,7 +146,7 @@ Non-breaking changes:
 - Added AutoAPI to gitignore as we no longer want to measure that
 - Add tighter sklearn integration
 - Add CentroidClusterBase
-- Clean up references around Clusterbase, Clusterer, Dataset
+- Clean up references around Clusterbase, ClusterOps, Dataset
 - Add reference to Client object
 - Hotfix .sample()
 - Update the Base Ingest URL to gateway and set to appropriate default
@@ -189,7 +189,7 @@ v0.29.1
 ---------
 
 - Moved get_all_documents in BatchAPIClient to _get_all_documents to resolve typing error
-- Include Client, Fix Clusterer, ClusterBase, update Cluster References
+- Include Client, Fix ClusterOps, ClusterBase, update Cluster References
 - Add Write Documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/311
 - update clustering documentation and client documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/312
 

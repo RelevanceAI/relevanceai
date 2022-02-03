@@ -1,5 +1,5 @@
 """Relevance AI's base Client class - primarily used to login and access
-the Dataset class or Clusterer class.
+the Dataset class or ClusterOps class.
 
 
 The recomended way to log in is using:
@@ -29,7 +29,7 @@ from typing import Union, Optional, List, Dict
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api import Dataset, Datasets
-from relevanceai.clusterer import Clusterer, ClusterBase
+from relevanceai.clusterer import ClusterOps, ClusterBase
 from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
 
 from relevanceai.errors import APIError
@@ -312,7 +312,7 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Clustering
 
-    def Clusterer(
+    def ClusterOps(
         self,
         alias: str,
         model=None,
@@ -320,7 +320,7 @@ class Client(BatchAPIClient, DocUtils):
         vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
     ):
-        return Clusterer(
+        return ClusterOps(
             model=model,
             alias=alias,
             dataset_id=dataset_id,
@@ -330,7 +330,7 @@ class Client(BatchAPIClient, DocUtils):
             api_key=self.api_key,
         )
 
-    def KMeansClusterer(
+    def KMeansClusterOps(
         self,
         alias: str,
         k: Union[None, int] = 10,
@@ -344,7 +344,7 @@ class Client(BatchAPIClient, DocUtils):
         algorithm: str = "auto",
         cluster_field: str = "_cluster_",
     ):
-        return KMeansClusterer(
+        return KMeansClusterOps(
             alias=alias,
             k=k,
             init=init,

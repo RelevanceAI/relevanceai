@@ -1,4 +1,4 @@
-Clusterer
+ClusterOps
 =============================
 
 .. automodule:: relevanceai.clusterer.clusterer
