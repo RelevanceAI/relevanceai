@@ -1,14 +1,38 @@
 Changelog
 =================
 
-Here you will find a list of changes for each package update.
+Here you will find a list of changes for each package update related to the Relevance AI
+Python library.
 
 v0.33.0
 ---------
 
+The most important part of this change is adding more modularity to the clustering functions.
+This is important because previous functions tried to abstract away too much.
+Now, users
+
+
 *BREAKING CHANGES*
 
 - Clustering `fit_transform` is not a `fit_predict` to align with SKLearn's methods
+
+Non-breaking changes:
+
+- Create a CentroidClusterBase and update it to ClusterBase and a CentroidBase
+- Added a `fit_update`
+- Added support for batch clustering using MiniBatchKMeans
+- Added functional Insert_centroid_documents to the `Clusterer` object
+- Introduced fit_partial to the clusterer
+- Introduced fit_partial_documents
+- Introduced `fit_dataset_by_partial` to allow users to be able to fit on a dataset if they want to use
+partial_fit
+- Introduced `fit_update_dataset`
+- Introduced `fit_update_dataset_by_partial` which will fit the dataset, predict the dataset
+and insert the centroids if there are expected centroids in the dataset
+- Introduced `fit_predict_update_dataset_by_partial` to allow for fitting, predicting and updating the dataset
+in 1 go
+- Fixed arguments in the `clusterer` object to now take an optional vector_fields and dataset
+
 
 v0.32.0
 ---------
