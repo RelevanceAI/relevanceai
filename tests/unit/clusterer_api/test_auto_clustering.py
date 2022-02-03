@@ -35,9 +35,6 @@ def kmeans_clusterer(test_client: Client, test_sample_vector_dataset: Dataset):
 
 def test_kmeans_closest(kmeans_clusterer: Clusterer):
     """Batch K Means Clusterer object"""
-    import pdb
-
-    pdb.set_trace()
     assert len(kmeans_clusterer.list_closest_to_center()) > 0
 
 

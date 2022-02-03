@@ -814,10 +814,12 @@ class Clusterer(BatchAPIClient):
             }
             for f in vector_fields
         ]
+        print("Retrieving all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
+        print("Fitting and predicting on all documents")
         clustered_docs = self.fit_predict_documents(
             vector_fields,
             docs,
@@ -826,6 +828,7 @@ class Clusterer(BatchAPIClient):
         )
 
         # Updating the db
+        print("Updating the database...")
         results = self._update_documents(
             self.dataset_id, clustered_docs, chunksize=10000
         )
@@ -833,6 +836,9 @@ class Clusterer(BatchAPIClient):
 
         # Update the centroid collection
         self.model.vector_fields = vector_fields
+
+        print("Inserting centroid documents...")
+        self._insert_centroid_documents()
 
     # def list_closest_to_center(self):
     #     return self.datasets.cluster.centroids.list_closest_to_center(
