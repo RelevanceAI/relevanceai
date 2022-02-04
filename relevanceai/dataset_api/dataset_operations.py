@@ -1128,7 +1128,7 @@ class Operations(Write):
                 vector_fields=vector_fields,
             )
 
-            clusterer.fit_partial_predict_update(
+            clusterer.partial_fit_predict_update(
                 dataset=self, vector_fields=vector_fields, chunksize=chunksize
             )
         else:

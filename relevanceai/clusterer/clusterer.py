@@ -1029,7 +1029,7 @@ class ClusterOps(BatchAPIClient):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
 
-    def fit_partial_predict_update(
+    def partial_fit_predict_update(
         self,
         dataset: Union[Dataset, str],
         vector_fields: List[str],
@@ -1061,7 +1061,7 @@ class ClusterOps(BatchAPIClient):
             client = Client()
             df = client.Dataset("research2vec")
             clusterer = client.ClusterOps(alias="minibatch_50", model=model)
-            clusterer.fit_predict_dataset_by_partial(
+            clusterer.partial_fit_predict_update(
                 df,
                 vector_fields=['title_trainedresearchqgen_vector_'],
                 chunksize=1000
