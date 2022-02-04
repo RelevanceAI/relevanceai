@@ -982,9 +982,13 @@ class Operations(Write):
         if len(vector_fields) > 1:
             raise ValueError("We only support 1 vector field at the moment.")
 
-        split_alias = alias.split("-")
-        algorithm = split_alias[0]
-        n_components = split_alias[1]
+        dr_args = alias.split("-")
+
+        if len(dr_args) != 2:
+            raise ValueError("""Your DR alias should be in the form of `pca-3`.""")
+
+        algorithm = dr_args[0]
+        n_components = dr_args[1]
 
         print("Getting documents...")
         filters += [
@@ -1017,7 +1021,13 @@ class Operations(Write):
         else:
             raise ValueError("DR algorithm not supported.")
 
-        return self.update_documents(self.dataset_id, dr_docs)
+        results = self.update_documents(self.dataset_id, dr_docs)
+
+        if n_components == 3:
+            projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
+            print(f"You can now view your {projector_url}")
+
+        return results
 
     def reduce_dimensions(
         self,
@@ -1071,14 +1081,6 @@ class Operations(Write):
         if len(vector_fields) > 1:
             raise ValueError("We only support 1 vector field at the moment.")
 
-        dr_args = alias.split("-")
-
-        if len(dr_args) != 2:
-            raise ValueError("""Your DR alias should be in the form of `pca-3`.""")
-
-        algorithm = dr_args[0]
-        n_components = dr_args[1]
-
         print("Getting documents...")
         if filters is None:
             filters = []
@@ -1113,9 +1115,7 @@ class Operations(Write):
             )
 
         results = self.update_documents(self.dataset_id, dr_docs)
-        if n_components == 3:
-            projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
-            print(f"You can now view your {projector_url}")
+
         return results
 
     def _run_pca(
