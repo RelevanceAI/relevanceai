@@ -28,7 +28,7 @@ You can easily access our documentation while using the SDK using:
 from relevanceai import Client
 client = Client()
 
-# Easy one line of code ot access our docs
+# Easy one line of code to access our docs
 client.docs
 
 ```
