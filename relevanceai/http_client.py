@@ -21,6 +21,13 @@ log in this way:
     client = Client(project=project, api_key=api_key)
     client.list_datasets()
 
+If you need to change your token, simply run: 
+
+.. code-block::
+
+    from relevanceai import Client 
+    client = Client(token="...")
+
 """
 import getpass
 import json

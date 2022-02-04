@@ -667,6 +667,7 @@ class Operations(Write):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
+            MULTIVECTOR_QUERY = [{"vector": [0, 1, 2], "fields": ["sample_vector_"]}]
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
