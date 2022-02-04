@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v0.33.1
+---------
+
+- Hotfix auto_cluster when having more clusters than batch size
+- Add dashboard link after clustering
+
 v0.33.0
 ---------
 
@@ -15,7 +21,7 @@ Now, users
 *BREAKING CHANGES*
 
 - Clustering :code:`fit_transform` is not a :code:`fit_predict` to align with SKLearn's methods
-- Rename :code:`Clusterer` to :code:`ClusterOps` 
+- Rename :code:`Clusterer` to :code:`ClusterOps`
 - :code:`fit` has now been broken down into :code:`fit_predict_update`
 - Removed KMeansClusterer
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ClusterOps class to run clustering. It is intended to be integrated with
 models that inherit from `ClusterBase`.
@@ -21,6 +20,7 @@ You can view other examples of how to interact with this class here :ref:`integr
 import os
 import json
 import getpass
+import warnings
 
 import numpy as np
 
@@ -102,6 +102,11 @@ class ClusterOps(BatchAPIClient):
     ):
         self.alias = alias
         self.cluster_field = cluster_field
+        if model is None:
+            warnings.warn(
+                "No model is specified, you will not be able to train a clustering algorithm."
+            )
+
         self.model = self._assign_model(model)
 
         if dataset_id is not None:

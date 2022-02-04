@@ -2,6 +2,7 @@
 """
 Pandas like dataset API
 """
+import warnings
 from typing import Dict, List
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
@@ -104,7 +105,7 @@ class Operations(Write):
         number_of_labels: int = 1,
         similarity_metric: NEAREST_NEIGHBOURS = "cosine",
         score_field: str = "_search_score",
-        **kwargs
+        **kwargs,
     ):
         """
         Label a dataset based on a model.
@@ -1027,7 +1028,7 @@ class Operations(Write):
             dims=n_components,
         )
 
-    def auto_cluster(self, alias: str, vector_fields: List[str]):
+    def auto_cluster(self, alias: str, vector_fields: List[str], chunksize: int = 1024):
         """
         Automatically cluster in 1 line of code.
         It will retrieve documents, run fitting on the documents and then
@@ -1078,7 +1079,20 @@ class Operations(Write):
         """
         cluster_args = alias.split("-")
         algorithm = cluster_args[0]
-        n_clusters = int(cluster_args[1])
+        if len(cluster_args) > 1:
+            n_clusters = int(cluster_args[1])
+        else:
+            print("No clusters are detected, defaulting to 8")
+            n_clusters = 8
+        if n_clusters >= chunksize:
+            raise ValueError("Number of clustesr exceed chunksize.")
+
+        num_docs = self.get_number_of_documents(self.dataset_id)
+
+        if num_docs <= n_clusters:
+            warnings.warn(
+                "You seem to have more clusters than documents. We recommend reducing the number of clusters."
+            )
 
         from relevanceai.clusterer import ClusterOps
 
@@ -1104,6 +1118,7 @@ class Operations(Write):
             from sklearn.cluster import MiniBatchKMeans
 
             model = MiniBatchKMeans(n_clusters=n_clusters)
+
             clusterer = ClusterOps(
                 model=model,
                 alias=alias,
@@ -1112,10 +1127,15 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
+
             clusterer.fit_partial_predict_update(
-                dataset=self, vector_fields=vector_fields
+                dataset=self, vector_fields=vector_fields, chunksize=chunksize
             )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
+        # Get users excited about being able to build a dashboard!
+        print(
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
         return clusterer
