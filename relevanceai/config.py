@@ -82,6 +82,8 @@ class Config(DocUtils):
         """Reset config to default"""
         self._read_config(CONFIG_PATH)
 
+    reset = reset_to_default
+
     # NOT NEEDED used to generate original config
     # @staticmethod
     # def _create_default():

@@ -3,7 +3,7 @@
 Pandas like dataset API
 """
 import warnings
-from typing import Dict, List
+from typing import Dict, List, Optional
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.vector_tools.nearest_neighbours import (
@@ -667,6 +667,7 @@ class Operations(Write):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
+            MULTIVECTOR_QUERY = [{"vector": [0, 1, 2], "fields": ["sample_vector_"]}]
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
@@ -932,6 +933,105 @@ class Operations(Write):
             query=query,
         )
 
+    def auto_reduce_dimensions(
+        self,
+        alias: str,
+        vector_fields: list,
+        filters: Optional[list] = None,
+        number_of_documents: Optional[int] = None,
+    ):
+        """
+        Run dimensionality reduction quickly on a dataset on a small number of documents.
+        This is useful if you want to quickly see a projection of your dataset.
+        Currently, the only supported algorithm is `PCA`.
+
+        .. warning::
+            This function is currently in beta and is likely to change in the future.
+            We recommend not using this in any production systems.
+
+
+        .. note::
+            **New in v0.32.0**
+
+        Parameters
+        ----------
+        vector_fields: list
+            The vector fields to run dimensionality reduction on
+        number_of_documents: int
+            The number of documents to get
+        algorithm: str
+            The algorithm to run. The only supported algorithm is `pca` at this
+            current point in time.
+        n_components: int
+            The number of components
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            df.auto_reduce_dimensions(
+                "pca-3",
+                ["sample_vector_"],
+            )
+
+        """
+        if len(vector_fields) > 1:
+            raise ValueError("We only support 1 vector field at the moment.")
+
+        dr_args = alias.split("-")
+
+        if len(dr_args) != 2:
+            raise ValueError("""Your DR alias should be in the form of `pca-3`.""")
+
+        algorithm = dr_args[0]
+        n_components = int(dr_args[1])
+
+        print("Getting documents...")
+        if filters is None:
+            filters = []
+        filters += [
+            {
+                "field": vf,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vf in vector_fields
+        ]
+
+        if number_of_documents is None:
+            number_of_documents = self.get_number_of_documents(self.dataset_id, filters)
+
+        documents = self.get_documents(
+            dataset_id=self.dataset_id,
+            select_fields=vector_fields,
+            filters=filters,
+            number_of_documents=number_of_documents,
+        )
+
+        print("Run PCA...")
+        if algorithm == "pca":
+            dr_docs = self._run_pca(
+                vector_fields=vector_fields,
+                documents=documents,
+                alias=alias,
+                n_components=n_components,
+            )
+        else:
+            raise ValueError("DR algorithm not supported.")
+
+        results = self.update_documents(self.dataset_id, dr_docs)
+
+        if n_components == 3:
+            projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
+            print(f"You can now view your {projector_url}")
+
+        return results
+
     def reduce_dimensions(
         self,
         vector_fields: list,
@@ -974,9 +1074,9 @@ class Operations(Write):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
-            df.reduce_dimensions(
+            df.auto_reduce_dimensions(
+                alias="pca-3",
                 ["sample_vector_"],
-                alias="pca",
                 number_of_documents=1000
             )
 
@@ -985,6 +1085,8 @@ class Operations(Write):
             raise ValueError("We only support 1 vector field at the moment.")
 
         print("Getting documents...")
+        if filters is None:
+            filters = []
         filters += [
             {
                 "field": vf,
@@ -1009,10 +1111,15 @@ class Operations(Write):
                 alias=alias,
                 n_components=n_components,
             )
-        else:
-            raise ValueError("DR algorithm not supported.")
 
-        return self.update_documents(self.dataset_id, dr_docs)
+        else:
+            raise ValueError(
+                "DR algorithm not supported. Only supported algorithms are `pca`."
+            )
+
+        results = self.update_documents(self.dataset_id, dr_docs)
+
+        return results
 
     def _run_pca(
         self, vector_fields: list, documents: list, alias: str, n_components: int = 3
