@@ -1,7 +1,7 @@
-Reloading Clusterers
+Reloading ClusterOps
 ======================
 
-You can reload reload clusterers in 2 ways.
+You can reload reload ClusterOps instances in 2 ways.
 
 .. code-block::
 
