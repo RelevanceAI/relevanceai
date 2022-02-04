@@ -31,6 +31,12 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    cluster_base
    reloading_clusterers
 
+.. toctree::
+   :maxdepth: 4
+   :caption: Dimensionality Reduction
+
+   auto_reduce_dimensions
+
 
 .. toctree::
    :maxdepth: 4

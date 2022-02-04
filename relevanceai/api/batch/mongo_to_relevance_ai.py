@@ -188,9 +188,7 @@ class MongoImporter(BatchAPIClient):
             MongoImporter.build_range(document_count, chunk_size, start_idx)
         ):
             df = pd.DataFrame(self.fetch_mongo_collection_data(s_idx, e_idx))
-            documents = self.update_id(
-                MongoImporter.parse_json(df.to_dict("records"))
-            )
+            documents = self.update_id(MongoImporter.parse_json(df.to_dict("records")))
             documents = MongoImporter.remove_nan(
                 MongoImporter.flatten_inner_indxs(documents)
             )
