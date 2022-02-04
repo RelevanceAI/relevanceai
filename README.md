@@ -24,6 +24,17 @@ There are two main ways of documentations to take a look at:
 | Guides | [Documentation](https://docs.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/)        |
 
+You can easily access our documentation while using the SDK using:
+
+```{python}
+from relevanceai import Client
+client = Client()
+
+# Easy one line of code ot access our docs
+client.docs
+
+```
+
 
 ## 🛠️ Installation
 
