@@ -12,3 +12,18 @@ def test_reduce_dimensiosn(test_dataset_df: Dataset):
     assert (
         vector_field_name in test_dataset_df.schema
     ), "Did not reduce dimensions properly"
+
+
+def test_auto_reduce_dimensiosn(test_dataset_df: Dataset):
+
+    OUTPUT_VECTOR_FIELD = "sample_1_vector_"
+    ALIAS = "pca-3"
+
+    test_dataset_df.auto_reduce_dimensions(
+        vector_fields=[OUTPUT_VECTOR_FIELD], alias=ALIAS
+    )
+
+    vector_field_name = ".".join(["_dr_", ALIAS, OUTPUT_VECTOR_FIELD])
+    assert (
+        vector_field_name in test_dataset_df.schema
+    ), "Did not reduce dimensions properly"
