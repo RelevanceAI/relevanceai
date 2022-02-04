@@ -938,7 +938,7 @@ class Operations(Write):
         alias: str,
         vector_fields: list,
         filters: Optional[list] = None,
-        number_of_documents: int = None,
+        number_of_documents: Optional[int] = None,
     ):
         """
         Run dimensionality reduction quickly on a dataset on a small number of documents.
@@ -988,9 +988,10 @@ class Operations(Write):
             raise ValueError("""Your DR alias should be in the form of `pca-3`.""")
 
         algorithm = dr_args[0]
-        n_components = dr_args[1]
+        n_components = int(dr_args[1])
 
         print("Getting documents...")
+        if filters is None: filters = []
         filters += [
             {
                 "field": vf,
