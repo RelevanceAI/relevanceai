@@ -991,7 +991,8 @@ class Operations(Write):
         n_components = int(dr_args[1])
 
         print("Getting documents...")
-        if filters is None: filters = []
+        if filters is None:
+            filters = []
         filters += [
             {
                 "field": vf,
