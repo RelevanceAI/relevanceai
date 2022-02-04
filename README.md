@@ -3,21 +3,19 @@
 [![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
-For guides, tutorials on how to use this package, visit https://docs.relevance.ai/docs.
+For guides and tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
 ## 🔥 Features
 
-Features of the library include:
-- Quick vector search with free dashboard to preview results
-- Vector clustering with support with built-in easy customisation
+- Fast vector search with free dashboard to preview and visualise results
+- Vector clustering with support for libraries like scikit-learn and easy built-in customisation
+- Store nested documents with support for multiple vectors and metadata in one object
 - Multi-vector search with filtering, facets, weighting
-- Hybrid search (weighting exact text matching and vector search together)
+- Hybrid search with support for weighting keyword matching and vector search
 ... and more!
 
 
 ## 🧠 Documentation
-
-There are two main ways of documentations to take a look at:
 
 | API type      | Link |
 | ------------- | ----------- |
@@ -27,17 +25,16 @@ There are two main ways of documentations to take a look at:
 
 ## 🛠️ Installation
 
+Using pip:
+
 ```{bash}
 pip install -U relevanceai
 ```
-Or you can install it via conda to:
+Using conda:
 
 ```{bash}
-conda install pip
-pip install -c relevanceai
+conda install -c relevance relevanceai
 ```
-
-You can also install on conda (only available on Linux environments at the moment): `conda install -c relevance relevanceai`.
 
 ## ⏩ Quickstart
 
@@ -49,10 +46,10 @@ from relevanceai import Client
 client = Client(<project_name>, <api_key>)
 ```
 
-This is a data example in the right format to be uploaded to relevanceai. Every document you upload should:
-- Be a list of dictionaries
-- Every dictionary has a field called _id
-- Vector fields end in _vector_
+Prepare your documents for insertion by following the below format:
+- Each document should be a dictionary
+- Include a field `_id` as a primary key, otherwise it's automatically generated 
+- Suffix vector fields with `_vector_`
 
 ```{python}
 docs = [
@@ -64,24 +61,34 @@ docs = [
 ]
 ```
 
-### Upload data into a new dataset
-The documents will be uploaded into a new dataset that you can name in whichever way you want. If the dataset name does not exist yet, it will be created automatically. If the dataset already exist, the uploaded _id will be replacing the old data.
+### Insert data into a dataset
+
+Create a dataset object with the name of the dataset you'd like to use. If it doesn't exist, it'll be created for you.
+> Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
 
 ```{python}
-client.insert_documents(dataset_id="quickstart", docs=docs)
+ds = client.Dataset("quickstart")
+ds.insert_documents(docs)
 ```
 
-### Perform a vector search
+### Perform vector search
 
 ```{python}
-client.services.search.vector(
-    dataset_id="quickstart",
-    multivector_query=[
-        {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
-    ],
+results = ds.vector_search(
+    multivector_query=[{"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]}],
     page_size=3,
-    query="sample search" # Stored on the dashboard but not required
+    query="sample search" # optional, name to display in dashboard
+)
 ```
+
+### Cluster dataset with Auto Cluster
+
+Generate 12 clusters using kmeans
+```{python}
+clusterop = ds.auto_cluster("kmeans-12", vector_fields=["example_vector_"])
+clusterop.list_closest_to_center()
+```
+> Quick tip! After each of these steps, the output will provide a URL to the Relevance AI dashboard where you can see a visualisation of your results
 
 ## 🚧 Development
 
@@ -94,7 +101,7 @@ python -m pip install pytest mypy
 
 Then run testing using:
 
-Make sure to set your test credentials!
+> Don't forget to set your test credentials!
 
 ```{bash}
 export TEST_PROJECT = xxx
@@ -113,7 +120,7 @@ pre-commit install
 
 ## 🧰 Config
 
-The config contains the adjustable global settings for the SDK. For a description of all the settings, see here.
+The config object contains the adjustable global settings for the SDK. For a description of all the settings, see here.
 
 To view setting options, run the following:
 
