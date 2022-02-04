@@ -1,16 +1,18 @@
 """
 Migrate from mongo database to Relevance Ai:
 
-    #Create an object of MongoImporter class
+.. code-block::
+
+    # Create an object of MongoImporter class
     connection_string= "..."
     project= "..."
     api_key= "..."
     mongo_importer = MongoImporter(connection_string, project, api_key)
 
-    #Get a summary of the mondo database using "mongo_summary"
+    # Get a summary of the mondo database using "mongo_summary"
     mongo_importer.mongo_summary()
 
-    #Set the desired source mongo collection using "set_mongo_collection"
+    # Set the desired source mongo collection using "set_mongo_collection"
     db_name = '...'
     collection_name = '...'
     mongo_importer.set_mongo_collection(db_name, dataset_id)
@@ -18,11 +20,13 @@ Migrate from mongo database to Relevance Ai:
     # Get total number of entries in the mongo collection using "mongo_document_count"
     document_count = mongo_importer.mongo_document_count()
 
-    #Migrate data from mongo to Relevance Ai using "migrate_mongo2relevance_ai"
+    # Migrate data from mongo to Relevance AI using "migrate_mongo2relevance_ai"
     chunk_size = 5000      # migrate batches of 5000 (default 2000)
     start_idx= 12000       # loads from mongo starting at index 12000 (default 0)
     dataset_id = "..."     # dataset id in the Relevance Ai platform
-    mongo_importer.migrate(dataset_id, document_count, chunk_size = chunk_size, start_idx= start_idx)
+    mongo_importer.migrate(
+        dataset_id, document_count, chunk_size=chunk_size,
+        start_idx=start_idx)
 
 """
 
