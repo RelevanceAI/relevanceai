@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v0.33.2
+--------
+
+- Update References for data imports
+- Add :code-block:`auto_reduce_dimensions` with projector links
+
 v0.33.1
 ---------
 

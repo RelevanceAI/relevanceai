@@ -1001,7 +1001,8 @@ class Operations(Write):
             for vf in vector_fields
         ]
 
-        number_of_documents = self.get_number_of_documents(self.dataset_id, filters)
+        if number_of_documents is None:
+            number_of_documents = self.get_number_of_documents(self.dataset_id, filters)
 
         documents = self.get_documents(
             dataset_id=self.dataset_id,
