@@ -9,10 +9,9 @@ You can run the ClusterOps as such:
     from relevanceai import Client
     from relevanceai.clusterer import KMeansModel
     client = Client()
-    model = KMeansModel(n_clusters=2)
-    clusterer = client.ClusterOps(model, alias="kmeans_2")
+    clusterops = client.ClusterOps(model, alias="kmeans_2")
     df = client.Dataset("_github_repo_vectorai")
-    clusterer.fit(df, ["documentation_vector_"])
+    clusterer.fit_predict_update(df, ["documentation_vector_"])
 
 You can view other examples of how to interact with this class here :ref:`integration`.
 
