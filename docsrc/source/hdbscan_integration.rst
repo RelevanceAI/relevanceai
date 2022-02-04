@@ -15,16 +15,15 @@ HDBSCAN Example
 
 .. code-block::
 
+    import hdbscan
     from relevanceai import Client
-    from sklearn.cluster import DBSCAN
-
+    
     # instantiate the client
     client = Client()
 
     # Retrieve the relevant dataset
     df = client.Dataset("sample_dataset")
 
-    import hdbscan
     model = hdbscan.HDBSCAN()
 
     clusterer = client.ClusterOps(model, alias="hdbscan")
