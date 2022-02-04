@@ -554,11 +554,8 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("_github_repo_vectorai")
-            from relevanceai.clusterer import KMeansModel
-            model = KMeansModel()
-            cluster = client.ClusterOps(3)
-            clusterer.fit(df)
+            df = client.Dataset("sample")
+            clusterer = df.auto_cluster("kmeans-3", ["sample_vector_"])
             clusterer.list_furthest_from_center()
 
         """
@@ -978,7 +975,7 @@ class ClusterOps(BatchAPIClient):
                 filters=filters,
             )
 
-    def fit_dataset_by_partial(
+    def partial_fit_dataset(
         self,
         dataset: Union[str, Dataset],
         vector_fields: List[str],
@@ -986,7 +983,6 @@ class ClusterOps(BatchAPIClient):
     ):
         """
         Fit The dataset by partial documents.
-        This is useful if you are retrieving a dataset
 
 
         Example
@@ -998,7 +994,7 @@ class ClusterOps(BatchAPIClient):
             client = Client()
             df = client.Dataset("sample")
             clusterer = client.ClusterOps(alias="minibatch_50", model=model)
-            clusterer.fit_dataset_by_partial(df, ["documentation_vector_"])
+            clusterer.partial_fit_dataset(df, ["documentation_vector_"])
             clusterer.predict_dataset(df, ['documentation_vector_'])
             new_model.vector_fields = ['documentation_vector_']
             clusterer.insert_centroid_documents(new_model.get_centroid_documents(), df)
@@ -1073,11 +1069,11 @@ class ClusterOps(BatchAPIClient):
 
         """
         print("Fitting dataset...")
-        self.fit_dataset_by_partial(
+        self.partial_fit_dataset(
             dataset=dataset, vector_fields=vector_fields, chunksize=chunksize
         )
         print("Updating your dataset...")
-        self.predict_dataset(dataset=dataset)
+        self.predict_update(dataset=dataset)
         # if hasattr(self, "get_centers"):
         #     print("Inserting your centroids...")
         print("Inserting centroids...")
@@ -1105,7 +1101,7 @@ class ClusterOps(BatchAPIClient):
             return_only_clusters=return_only_clusters,
         )
 
-    def predict_dataset(
+    def predict_update(
         self, dataset, vector_fields: Optional[List[str]] = None, chunksize: int = 20
     ):
         """
@@ -1124,7 +1120,7 @@ class ClusterOps(BatchAPIClient):
             model = MiniBatchKMeans()
 
             clusterer = client.ClusterOps(model, alias="minibatch")
-            clusterer.fit_dataset_by_partial(df)
+            clusterer.partial_fit_dataset(df)
             clusterer.predict_dataset(df)
 
         """

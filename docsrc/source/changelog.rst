@@ -7,8 +7,13 @@ Python library.
 v0.33.1
 ---------
 
+*BREAKING CHANGES*
+- :code-block:`predict_dataset` has been corrected to :code-block:`predict_update`
+- :code-block:`fit_dataset_by_partial` has been corrected to :code-block:`partial_fit_dataset`
+
 - Hotfix auto_cluster when having more clusters than batch size
 - Add dashboard link after clustering
+- Fix references
 
 v0.33.0
 ---------
