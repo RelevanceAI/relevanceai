@@ -1136,6 +1136,7 @@ class Operations(Write):
 
         # Get users excited about being able to build a dashboard!
         print(
-            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
         )
         return clusterer
