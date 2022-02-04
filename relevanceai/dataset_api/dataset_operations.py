@@ -1072,6 +1072,10 @@ class Operations(Write):
             raise ValueError("We only support 1 vector field at the moment.")
 
         dr_args = alias.split("-")
+
+        if len(dr_args) != 2:
+            raise ValueError("""Your DR alias should be in the form of `pca-3`.""")
+
         algorithm = dr_args[0]
         n_components = dr_args[1]
 
