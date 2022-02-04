@@ -14,7 +14,7 @@ v0.33.1
 
 - Hotfix auto_cluster when having more clusters than batch size
 - Add dashboard link after clustering
-- Fix references
+- Fix references when listing closest and furthest
 
 v0.33.0
 ---------
