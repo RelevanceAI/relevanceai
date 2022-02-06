@@ -196,9 +196,7 @@ class Deployable(_Base):
         """
         return self.make_http_request(endpoint="/deployables/list", method="GET")
 
-    def url(
-        self, deployable_id: str, dataset_id: str, application: str = "cluster"
-    ) -> str:
+    def url(self, deployable_id: str, dataset_id: str, application: str) -> str:
         """
         Generates the deployable URL.
 
