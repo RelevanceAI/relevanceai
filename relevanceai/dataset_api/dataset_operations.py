@@ -3,9 +3,11 @@
 Pandas like dataset API
 """
 import warnings
+from collections import Counter
 from typing import Dict, List, Optional, Callable
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
+from relevanceai.data_tools.base_text_processing import MLStripper
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -543,8 +545,230 @@ class Operations(Write):
             select_fields=[vector_field],
         )
 
-    def label_by_ngram(self):
-        """# TODO"""
+    def _set_up_nltk(self, stopwords_dict: str = "english",
+        additional_stopwords: list=[]):
+        """Additional stopwords to include
+        """
+        import nltk
+        from nltk.corpus import stopwords
+        self._is_set_up = True
+        nltk.download('stopwords')
+        nltk.download('punkt')
+        self.eng_stopwords = stopwords.words(stopwords_dict)
+        self.eng_stopwords.extend(additional_stopwords)
+        self.eng_stopwords = set(self.eng_stopwords)
+    
+    def clean_html(self, html):
+        """Cleans HTML from text"""
+        s = MLStripper()
+        if html is None:
+            return ""
+        s.feed(html)
+        return s.get_data()
+
+
+    def get_word_count(self, text_fields: List[str]):
+        """
+        Create labels from a given text field.
+
+        Parameters
+        ------------
+        
+
+        Example
+        ------------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            df.get_word_count()
+
+        """
+        import nltk
+        from itertools import chain
+        from nltk.corpus import stopwords
+        from nltk import word_tokenize 
+        from nltk.util import ngrams
+
+        raise NotImplementedError
+
+    def generate_text_list_from_documents(
+        self,
+        documents: list=[],
+        fields: list=[], 
+        clean_html: bool=False
+    ):
+        """
+        Generate a list of text from documents to feed into the counter
+        model.
+        Parameters
+        -------------
+        documents: list
+            A list of documents 
+        fields: list 
+            A list of fields 
+        clean_html: bool
+            If True, also cleans the text in a given text document to remove HTML. Will be slower 
+            if processing on a large document
+        """
+        text = []
+        for f in fields:
+            if clean_html:
+                _text = self.clean_html(
+                    self.get_field_across_documents(
+                        f, documents, missing_treatment="ignore"))
+            else:
+                _text = self.get_field_across_documents(f, documents, missing_treatment="ignore")
+            text.append("".join(_text))
+        return text
+
+    def generate_text_list(
+        self,
+        collection_name: str,
+        filters: list=[], 
+        batch_size: int=20, 
+        fields: list=[], 
+        cursor: str=None
+    ):
+        documents = self.retrieve_documents(
+            collection_name=collection_name,
+            size=batch_size,
+            includes=fields,
+            include_id=False,
+            scroll="30m",
+            filter_query=self.construct_filter_query(filters),
+            verbose=False,
+            scroll_id=cursor
+        )
+        return self.generate_text_list_from_documents(documents)
+
+    
+    def get_ngrams(self, text, most_common: int=5, n: int=2, 
+        stopwords_dict: str ="english", additional_stopwords: list=[],
+        min_word_length: int=2):
+        try:
+            return self._get_ngrams(text=text, most_common=most_common,
+                n=n, addiitonal_stopwords=additional_stopwords, 
+                min_word_length=min_word_length)
+        except:
+            # Specify that this shouldn't necessarily error out.
+            self.set_up(stopwords_dict=stopwords_dict,
+                additional_stopwords=additional_stopwords)
+            return self._get_ngrams(text=text, most_common=most_common,
+                n=n, min_word_length=min_word_length)
+    
+    def _get_ngrams(self, text, n: int=2, additional_stopwords=[], 
+        min_word_length: int=2,
+    ):
+        """Get the bigrams
+        """
+        if additional_stopwords:
+            [self.eng_stopwords.add(s) for s in additional_stopwords]
+
+        n_grams = []
+        for line in text:
+            token = word_tokenize(line)
+            n_grams.append(list(ngrams(token, n)))
+
+        def length_longer_than_min_word_length(x):
+            return len(x.strip()) >= min_word_length
+        
+        def is_not_stopword(x):
+            return x.strip() not in self.eng_stopwords
+
+        def is_clean(text_list):
+            return all(length_longer_than_min_word_length(x) and \
+                is_not_stopword(x) for x in text_list)
+            
+        counter = Counter([" ".join(x) for x in chain(*n_grams) if is_clean(x)])
+        return counter
+        # return dict(counter.most_common(most_common))
+    
+    def get_wordcloud(
+        self,
+        dataset_id: str,
+        fields: list,
+        n: int=2,
+        most_common: int=10,
+        filters: list=[],
+        additional_stopwords: list=[],
+        min_word_length: int=2,
+        batch_size: int=1000,
+        document_limit: int=None
+    ):
+        """
+        wordcloud return object looks like:
+        {
+            "word 1": 10,
+            "word": 20
+        }
+        Parameters:
+            document_limit: int
+                document limit is set to limit the number of documents that are
+                retrieved
+        """
+        counter = Counter()
+        if not hasattr(self, "_is_set_up"):
+            self._set_up()
+
+        # Mock a dummy documents so I can loop immediately without weird logic
+        documents = {"documents": [[]], "cursor": None}
+        while len(documents['documents']) > 0 and \
+            (document_limit is None or sum(counter.values()) < document_limit):
+            documents = self.get_documents(
+                collection_name=dataset_id,
+                filter_query=filters,
+                scroll_id=documents['cursor'],
+                size=batch_size,
+                includes=fields
+            )
+            string = self.generate_text_list_from_documents(
+                documents["documents"], fields=fields,
+            )
+
+            ngram_counter = self._get_ngrams(
+                string,
+                n=n, 
+                additional_stopwords=additional_stopwords,
+                min_word_length=min_word_length
+            )
+            counter.update(ngram_counter)
+        
+        return counter.most_common(most_common)
+
+    def label_from_text_field(self, label_fields: List[str]):
+        """
+        Label by the most popular keywords.
+        Get top X keywords or bigram for a text field. 
+        default X to 1000 or something scaled towards number of documents.
+
+        Vectorize those into keywords
+        Label every document with those top keywords
+        
+        Parameters
+        ------------
+
+        label_field: str
+            The field to label
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client 
+            client = Client()
+            df = client.Dataset("sample")
+            df.label_from_text_field(n=1)
+
+        """
+        # TODO 
+        # Algorithm for getting most common keywords
+
+        # create_labels_from_text_field
+
         raise NotImplementedError
 
     def label_with_model_from_dataset(self):
@@ -1139,7 +1363,7 @@ class Operations(Write):
 
         print("Run PCA...")
         if algorithm == "pca":
-            dr_docs = self._run_pca(
+            dr_documents = self._run_pca(
                 vector_fields=vector_fields,
                 documents=documents,
                 alias=alias,
@@ -1148,7 +1372,7 @@ class Operations(Write):
         else:
             raise ValueError("DR algorithm not supported.")
 
-        results = self.update_documents(self.dataset_id, dr_docs)
+        results = self.update_documents(self.dataset_id, dr_documents)
 
         if n_components == 3:
             projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
@@ -1229,7 +1453,7 @@ class Operations(Write):
 
         print("Run PCA...")
         if algorithm == "pca":
-            dr_docs = self._run_pca(
+            dr_documents = self._run_pca(
                 vector_fields=vector_fields,
                 documents=documents,
                 alias=alias,
@@ -1241,7 +1465,7 @@ class Operations(Write):
                 "DR algorithm not supported. Only supported algorithms are `pca`."
             )
 
-        results = self.update_documents(self.dataset_id, dr_docs)
+        results = self.update_documents(self.dataset_id, dr_documents)
 
         return results
 
@@ -1318,9 +1542,9 @@ class Operations(Write):
         if n_clusters >= chunksize:
             raise ValueError("Number of clustesr exceed chunksize.")
 
-        num_docs = self.get_number_of_documents(self.dataset_id)
+        num_documents = self.get_number_of_documents(self.dataset_id)
 
-        if num_docs <= n_clusters:
+        if num_documents <= n_clusters:
             warnings.warn(
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
