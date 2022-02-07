@@ -270,7 +270,6 @@ class Write(Read):
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
-        run_head: bool = False,
         **apply_args,
     ):
         """
@@ -328,9 +327,6 @@ class Write(Read):
                 new_d = func(d, **apply_args)
                 new_documents.append(new_d)
             return documents
-
-        if run_head:
-            self.head()
 
         return self.pull_update_push(
             self.dataset_id,

@@ -116,8 +116,8 @@ class Read(BatchAPIClient):
 
         Returns
         ---------
-        Dict
-            Dictionary of information
+        pd.DataFrame
+            a pandas dataframe of information
 
         Example
         ---------------
