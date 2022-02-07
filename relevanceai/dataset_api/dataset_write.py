@@ -186,9 +186,10 @@ class Write(Read):
                 pass
 
         documents = [
-            {k: v for k, v in doc.items() if not _is_valid(v)}
+            {k: v for k, v in doc.items() if _is_valid(v)}
             for doc in df.to_dict(orient="records")
         ]
+
         return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
 
     def upsert_documents(
@@ -269,6 +270,7 @@ class Write(Read):
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
+        run_head: bool = False,
         **apply_args,
     ):
         """
@@ -326,6 +328,9 @@ class Write(Read):
                 new_d = func(d, **apply_args)
                 new_documents.append(new_d)
             return documents
+
+        if run_head:
+            self.head()
 
         return self.pull_update_push(
             self.dataset_id,
@@ -424,11 +429,9 @@ class Write(Read):
                 "numeric_field3"
             ]
 
-            df.cat(fields)
             df.concat(fields)
 
             concat_vector_field_name = "concat_vector_"
-            df.cat(vector_name=concat_vector_field_name, fields=fields)
             df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
         if vector_name is None:
@@ -570,3 +573,26 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
+
+    def insert_df(self, dataframe, *args, **kwargs):
+        """
+        Insert a dataframe into the dataset.
+        Takes in additional args and kwargs based on `insert_documents`.
+
+        Parameters
+        ----------
+        dataframe : pandas.DataFrame
+            A pandas dataframe to be inserted
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            df = client.Dataset("sample_dataset")
+            pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
+
+            df.insert_df(pandas_df)
+
+        """
+        return self.insert_pandas_dataframe(dataframe, *args, **kwargs)

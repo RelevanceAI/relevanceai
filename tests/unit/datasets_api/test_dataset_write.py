@@ -57,7 +57,6 @@ def test_df_insert_csv_successful(test_csv_df: Dataset):
     assert response["inserted"] == original_length, "incorrect insertion"
 
 
-def test_insert_df(test_dataset_df: Dataset):
-    pandas_df = pd.DataFrame({"pandas_value": [3, 2, 1], "_id": ["10", "11", "12"]})
-    test_dataset_df.insert_pandas_dataframe(pandas_df)
-    assert "pandas_value" in pandas_df.columns
+def test_insert_df(test_dataset_df: Dataset, test_pd_df: pd.DataFrame):
+    test_dataset_df.insert_pandas_dataframe(test_pd_df)
+    assert "sample_1_label" in test_dataset_df.columns

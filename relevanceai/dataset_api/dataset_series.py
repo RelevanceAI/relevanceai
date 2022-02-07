@@ -193,7 +193,7 @@ class Series(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
-    def vectorize(self, model):
+    def vectorize(self, model, run_head: bool = False):
         """
         Vectorises over a field give a model architecture
 
@@ -230,6 +230,9 @@ class Series(BatchAPIClient):
 
             def encode_documents(documents):
                 return model(documents)
+
+        if run_head:
+            self.head
 
         return self.pull_update_push(
             self.dataset_id, encode_documents, select_fields=[self.field]

@@ -17,7 +17,7 @@ from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFA
 
 class DimReductionBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
     # @abstractmethod
     def fit_transform(self, *args, **kw) -> np.ndarray:
@@ -175,6 +175,7 @@ class DimReduction(_Base, DimReductionBase):
                 return UMAP().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
             elif dr == "ivis":
                 return Ivis().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
-
+            raise ValueError("not suppported")
         elif isinstance(dr, DimReductionBase):
             return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+        return

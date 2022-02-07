@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
+import pandas as pd
+
 from typing import List, Dict
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
@@ -34,7 +37,7 @@ class Stats(Read):
         """
         return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
 
-    def describe(self) -> dict:
+    def describe(self, return_type="pandas") -> dict:
         """
         Descriptive statistics include those that summarize the central tendency
         dispersion and shape of a dataset's distribution, excluding NaN values.
@@ -49,10 +52,25 @@ class Stats(Read):
             dataset_id = "sample_dataset"
             df = client.Dataset(dataset_id)
             field = "sample_field"
-            df.describe()
+            df.describe() # returns pandas dataframe of stats
+            df.describe(return_type='dict') # return raw json stats
 
         """
-        return self.datasets.facets(self.dataset_id)
+        facets = self.datasets.facets(self.dataset_id)
+        if return_type == "pandas":
+            schema = self.schema
+            dataframe = {
+                col: facets[col]
+                for col in schema
+                if not any(word in col for word in ["_cluster_", "_vector_"])
+                and isinstance(facets[col], dict)
+            }
+            dataframe = pd.DataFrame(dataframe)
+            return dataframe
+        elif return_type == "dict":
+            return facets
+        else:
+            raise ValueError("invalid return_type, should be `dict` or `pandas`")
 
     @property
     def health(self) -> dict:

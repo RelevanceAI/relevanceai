@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Batch Retrieve"""
 
 from typing import List
@@ -23,6 +24,7 @@ class BatchRetrieveClient(APIClient, Chunker):
         sort: list = [],
         select_fields: list = [],
         include_vector: bool = True,
+        include_cursor: bool = False,
     ):
 
         """
@@ -89,6 +91,8 @@ class BatchRetrieveClient(APIClient, Chunker):
                 _page += 1
             data = data[:number_of_documents]
 
+        if include_cursor:
+            return {"documents": data, "cursor": resp["cursor"]}
         return data
 
     def _get_all_documents(

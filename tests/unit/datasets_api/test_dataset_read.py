@@ -31,7 +31,7 @@ def test_head(test_client: Client, test_sample_vector_dataset):
 
 def test_describe(test_client: Client, test_sample_vector_dataset: Dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
-    description = df.describe()
+    description = df.describe(return_type="dict")
     assert True
 
 
