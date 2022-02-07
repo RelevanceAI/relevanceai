@@ -1,6 +1,7 @@
 """Testing for dataset labels.
 """
 import pytest
+import random
 from relevanceai.http_client import Dataset, Client
 from ...utils import generate_random_vector, generate_random_string
 from ...conftest import SAMPLE_DATASET_DATASET_PREFIX
@@ -66,3 +67,19 @@ def test_labelling_document(test_dataset_df: Dataset):
         number_of_labels=1,
     )
     assert len(result["_label_"]["sample"]) > 0, "missing_labels"
+
+
+def test_labelling_by_model(test_dataset_df: Dataset):
+
+    LABEL_LIST = ["cat", "dog"]
+
+    def random_label(label_list):
+        return random.choice(label_list)
+
+    test_dataset_df.label_from_list(
+        vector_field="sample_1_vector_",
+        model=random_label,
+        label_list=LABEL_LIST,
+        alias="pets",
+    )
+    assert "_label_.pets" in test_dataset_df.schema
