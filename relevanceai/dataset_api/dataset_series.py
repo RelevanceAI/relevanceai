@@ -79,17 +79,20 @@ class Series(BatchAPIClient):
         self.text_fields = text_fields
 
     def _repr_html_(self):
-        document = self.get_documents(
+        documents = self.get_documents(
             dataset_id=self.dataset_id, select_fields=[self.field]
         )
+        if not documents:
+            raise ValueError("vector")
+
         try:
-            return self._show_json(document, return_html=True)
+            return self._show_json(documents, return_html=True)
         except Exception:
             warnings.warn(
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
             )
-            return pd.json_normalize(document).set_index("_id")._repr_html_()
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
     def _show_json(self, document, **kw):
         from jsonshower import show_json
@@ -376,9 +379,12 @@ class Series(BatchAPIClient):
             arr = df[field].numpy()
         """
         documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
-        vectors = self.get_field_across_documents(self.field, documents)
-        vectors = np.array(vectors)
-        return vectors
+        if documents:
+            vectors = self.get_field_across_documents(self.field, documents)
+            vectors = np.array(vectors)
+            return vectors
+        else:
+            return None
 
     def value_counts(
         self,
