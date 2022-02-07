@@ -79,11 +79,21 @@ class Series(BatchAPIClient):
         self.text_fields = text_fields
 
     def _repr_html_(self):
+        if "_vector_" in self.field:
+            include_vector = True
+        else:
+            include_vector = False
+
         documents = self.get_documents(
-            dataset_id=self.dataset_id, select_fields=[self.field]
+            dataset_id=self.dataset_id,
+            select_fields=[self.field],
+            include_vector=include_vector,
         )
-        if not documents:
-            raise ValueError("vector")
+        if include_vector:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+            )
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
         try:
             return self._show_json(documents, return_html=True)
@@ -94,16 +104,16 @@ class Series(BatchAPIClient):
             )
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
-    def _show_json(self, document, **kw):
+    def _show_json(self, documents, **kw):
         from jsonshower import show_json
 
         if not self.text_fields:
-            text_fields = pd.json_normalize(document).columns.tolist()
+            text_fields = pd.json_normalize(documents).columns.tolist()
         else:
             text_fields = self.text_fields
 
         return show_json(
-            document,
+            documents,
             image_fields=self.image_fields,
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
