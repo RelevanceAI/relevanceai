@@ -9,6 +9,14 @@ class Dashboard(ABC, _Base):
     def __init__(
         self, project: str, api_key: str, deployable_id: str, application: str
     ):
+        valid_applications = {"cluster"}
+        if application not in valid_applications:
+            raise ValueError(
+                f"{application} is not a valid application. "
+                + "Must be one of the following: "
+                + f"{', '.join(valid_applications)}"
+            )
+
         deployables = Deployable(project, api_key)
         if deployable_id not in deployables.list():
             raise ValueError(f"No deployable with ID {deployable_id}")
@@ -19,28 +27,30 @@ class Dashboard(ABC, _Base):
             else:
                 self.vector_field = configuration["vector_field"]
 
-        super().__init__(project=project, api_key=api_key)
-        self.project = project
-        self.api_key = api_key
+        super().__init__(project, api_key)
         self.deployable_id = deployable_id
-        self.shareable_id = None
+
+        self._project = project
+        self._api_key = api_key
+        self._shareable_id = None
+        self._application = application
 
     def share_application(self):
-        if self.shareable_id is None:
-            deployables = Deployable(self.project, self.api_key)
+        if self._shareable_id is None:
+            deployables = Deployable(self._project, self._api_key)
             deployables.share(self.deployable_id)
             response = deployables.get(self.deployable_id)
-            self.share_key = response.json()["api_key"]
+            self._shareable_id = response.json()["api_key"]
         else:
             raise Exception("Dashboard is already shareable")
 
     def unshare_application(self):
-        if self.shareable_id is None:
+        if self._shareable_id is None:
             raise Exception("Dashboard is already unshareable")
         else:
-            deployables = Deployable(self.project, self.api_key)
+            deployables = Deployable(self._project, self._api_key)
             deployables.unshare(self.deployable_id)
-            self.share_key = None
+            self._shareable_id = None
 
     @classmethod
     def create_application(
@@ -66,7 +76,8 @@ class Dashboard(ABC, _Base):
 
         # Creation phase
         deployables = Deployable(project, api_key)
-        # TODO: Check if the deployable already exists?
+        # TODO: Should we if the deployable already exists? I think I would
+        # need to check the cluster/field/alias combo
         response = deployables.create(
             dataset_id,
             configuration={
@@ -88,11 +99,30 @@ class Dashboard(ABC, _Base):
         return application
 
     @property
-    @abstractmethod
     def deployable_url(self):
-        pass
+        deployables = Deployable(self.project, self.api_key)
+        configuration = deployables.get(self.deployable_id)["configuration"]
+        url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
+        return url.format(
+            configuration["dataset_id"],
+            self._project,
+            self._application,
+            self._api_key,
+            self.deployable_id,
+        )
 
     @property
-    @abstractmethod
     def shareable_url(self):
-        pass
+        if self.shareable_id is None:
+            raise Exception(f"This {self._application} application is not shareable")
+        else:
+            deployables = Deployable(self.project, self.api_key)
+            configuration = deployables.get(self.deployable_id)["configuration"]
+            url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
+            return url.format(
+                configuration["dataset_id"],
+                self._project,
+                self._application,
+                self._shareable_id,
+                self.deployable_id,
+            )
