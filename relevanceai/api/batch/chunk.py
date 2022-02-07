@@ -2,6 +2,7 @@
 from typing import List, Union
 
 import pandas as pd
+import math
 
 from relevanceai.progress_bar import progress_bar
 
@@ -25,8 +26,8 @@ class Chunker:
             The chunk size of an object.
         """
         if isinstance(documents, pd.DataFrame):
-            for i in progress_bar(range(0, int(len(documents) / chunksize))):
+            for i in progress_bar(range(0, math.ceil(len(documents) / chunksize))):
                 yield documents.iloc[i * chunksize : (i + 1) * chunksize]
         else:
-            for i in progress_bar(range(0, int(len(documents) / chunksize))):
+            for i in progress_bar(range(0, math.ceil(len(documents) / chunksize))):
                 yield documents[i * chunksize : ((i + 1) * chunksize)]
