@@ -6,6 +6,7 @@ from collections import Counter
 from html.parser import HTMLParser
 from io import StringIO
 
+
 class BaseTextProcessing:
     @staticmethod
     def normalize_text(
@@ -53,14 +54,15 @@ class BaseTextProcessing:
         )
         return sorted(word_counter.items(), key=lambda item: (-item[1], item[0]))
 
+
 class MLStripper(HTMLParser):
-    """Remove HTML from the code and retrieves data.
-    """
+    """Remove HTML from the code and retrieves data."""
+
     def __init__(self):
         super().__init__()
         self.reset()
         self.strict = False
-        self.convert_charrefs= True
+        self.convert_charrefs = True
         self.text = StringIO()
 
     def handle_data(self, d):

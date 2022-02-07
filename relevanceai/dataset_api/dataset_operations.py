@@ -3,6 +3,7 @@
 Pandas like dataset API
 """
 import warnings
+import itertools
 from collections import Counter
 from typing import Dict, List, Optional, Callable
 from relevanceai.dataset_api.dataset_write import Write
@@ -554,19 +555,20 @@ class Operations(Write):
             select_fields=[vector_field],
         )
 
-    def _set_up_nltk(self, stopwords_dict: str = "english",
-        additional_stopwords: list=[]):
-        """Additional stopwords to include
-        """
+    def _set_up_nltk(
+        self, stopwords_dict: str = "english", additional_stopwords: list = []
+    ):
+        """Additional stopwords to include"""
         import nltk
         from nltk.corpus import stopwords
+
         self._is_set_up = True
-        nltk.download('stopwords')
-        nltk.download('punkt')
+        nltk.download("stopwords")
+        nltk.download("punkt")
         self.eng_stopwords = stopwords.words(stopwords_dict)
         self.eng_stopwords.extend(additional_stopwords)
         self.eng_stopwords = set(self.eng_stopwords)
-    
+
     def clean_html(self, html):
         """Cleans HTML from text"""
         s = MLStripper()
@@ -575,17 +577,16 @@ class Operations(Write):
         s.feed(html)
         return s.get_data()
 
-
     def get_word_count(self, text_fields: List[str]):
         """
         Create labels from a given text field.
 
         Parameters
         ------------
-        
+
         text_fields: list
             List of text fields
-        
+
 
         Example
         ------------
@@ -599,18 +600,12 @@ class Operations(Write):
 
         """
         import nltk
-        from itertools import chain
         from nltk.corpus import stopwords
-        from nltk import word_tokenize 
-        from nltk.util import ngrams
 
         raise NotImplementedError
 
     def generate_text_list_from_documents(
-        self,
-        documents: list=[],
-        fields: list=[], 
-        clean_html: bool=False
+        self, documents: list = [], text_fields: list = [], clean_html: bool = False
     ):
         """
         Generate a list of text from documents to feed into the counter
@@ -618,63 +613,82 @@ class Operations(Write):
         Parameters
         -------------
         documents: list
-            A list of documents 
-        fields: list 
-            A list of fields 
+            A list of documents
+        fields: list
+            A list of fields
         clean_html: bool
-            If True, also cleans the text in a given text document to remove HTML. Will be slower 
+            If True, also cleans the text in a given text document to remove HTML. Will be slower
             if processing on a large document
         """
-        text = []
-        for f in fields:
-            if clean_html:
-                # TODO: switch to the bulk_apply_to_documents function
-                _text = [self.get_field(f, d, missing_treatment="ignore") for d in documents]
-            else:
-                _text = self.get_field_across_documents(f, documents, missing_treatment="ignore")
-            text.append("".join(_text))
-        return text
+        text = self.get_fields_across_documents(
+            text_fields, documents, missing_treatment="ignore"
+        )
+        return list(itertools.chain.from_iterable(text))
 
     def generate_text_list(
         self,
-        collection_name: str,
-        filters: list=[], 
-        batch_size: int=20, 
-        fields: list=[], 
-        cursor: str=None
+        filters: list = [],
+        batch_size: int = 20,
+        text_fields: list = [],
+        cursor: str = None,
     ):
-        documents = self.retrieve_documents(
-            collection_name=collection_name,
-            size=batch_size,
-            includes=fields,
-            include_id=False,
-            scroll="30m",
-            filter_query=self.construct_filter_query(filters),
-            verbose=False,
-            scroll_id=cursor
+        filters += [
+            {
+                "field": tf,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for tf in text_fields
+        ]
+        documents = self.get_documents(
+            dataset_id=self.dataset_id,
+            batch_size=batch_size,
+            select_fields=text_fields,
+            filters=filters,
+            cursor=cursor,
         )
-        return self.generate_text_list_from_documents(documents)
+        return self.generate_text_list_from_documents(documents, fields=text_fields)
 
-    
-    def get_ngrams(self, text, most_common: int=5, n: int=2, 
-        stopwords_dict: str ="english", additional_stopwords: list=[],
-        min_word_length: int=2):
+    def get_ngrams(
+        self,
+        text,
+        most_common: int = 5,
+        n: int = 2,
+        stopwords_dict: str = "english",
+        additional_stopwords: list = [],
+        min_word_length: int = 2,
+    ):
         try:
-            return self._get_ngrams(text=text, most_common=most_common,
-                n=n, addiitonal_stopwords=additional_stopwords, 
-                min_word_length=min_word_length)
+            return self._get_ngrams(
+                text=text,
+                most_common=most_common,
+                n=n,
+                addiitonal_stopwords=additional_stopwords,
+                min_word_length=min_word_length,
+            )
         except:
             # Specify that this shouldn't necessarily error out.
-            self.set_up(stopwords_dict=stopwords_dict,
-                additional_stopwords=additional_stopwords)
-            return self._get_ngrams(text=text, most_common=most_common,
-                n=n, min_word_length=min_word_length)
-    
-    def _get_ngrams(self, text, n: int=2, additional_stopwords=[], 
-        min_word_length: int=2,
+            self.set_up(
+                stopwords_dict=stopwords_dict, additional_stopwords=additional_stopwords
+            )
+            return self._get_ngrams(
+                text=text, most_common=most_common, n=n, min_word_length=min_word_length
+            )
+
+    def _get_ngrams(
+        self,
+        text,
+        n: int = 2,
+        additional_stopwords=[],
+        min_word_length: int = 2,
     ):
-        """Get the bigrams
-        """
+        """Get the bigrams"""
+
+        from nltk import word_tokenize
+        from nltk.util import ngrams
+        from itertools import chain
+
         if additional_stopwords:
             [self.eng_stopwords.add(s) for s in additional_stopwords]
 
@@ -685,83 +699,106 @@ class Operations(Write):
 
         def length_longer_than_min_word_length(x):
             return len(x.strip()) >= min_word_length
-        
+
         def is_not_stopword(x):
             return x.strip() not in self.eng_stopwords
 
         def is_clean(text_list):
-            return all(length_longer_than_min_word_length(x) and \
-                is_not_stopword(x) for x in text_list)
-            
+            return all(
+                length_longer_than_min_word_length(x) and is_not_stopword(x)
+                for x in text_list
+            )
+
         counter = Counter([" ".join(x) for x in chain(*n_grams) if is_clean(x)])
         return counter
         # return dict(counter.most_common(most_common))
-    
+
     def get_wordcloud(
         self,
-        dataset_id: str,
-        fields: list,
-        n: int=2,
-        most_common: int=10,
-        filters: list=[],
-        additional_stopwords: list=[],
-        min_word_length: int=2,
-        batch_size: int=1000,
-        document_limit: int=None
-    ):
+        text_fields: list,
+        n: int = 2,
+        most_common: int = 10,
+        filters: list = [],
+        additional_stopwords: list = [],
+        min_word_length: int = 2,
+        batch_size: int = 1000,
+        document_limit: int = None,
+    ) -> list:
         """
         wordcloud return object looks like:
-        {
-            "word 1": 10,
-            "word": 20
-        }
-        Parameters:
-            document_limit: int
-                document limit is set to limit the number of documents that are
-                retrieved
+
+        .. code-block::
+
+            {'python': 232}
+
+        Parameters
+        ------------
+
+        text_fields: list
+            A list of text fields
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
         """
         counter = Counter()
         if not hasattr(self, "_is_set_up"):
-            self._set_up()
+            print("setting up NLTK...")
+            self._set_up_nltk()
 
         # Mock a dummy documents so I can loop immediately without weird logic
         documents = {"documents": [[]], "cursor": None}
-        while len(documents['documents']) > 0 and \
-            (document_limit is None or sum(counter.values()) < document_limit):
+        print("Updating word count...")
+        while len(documents["documents"]) > 0 and (
+            document_limit is None or sum(counter.values()) < document_limit
+        ):
             documents = self.get_documents(
-                collection_name=dataset_id,
-                filter_query=filters,
-                scroll_id=documents['cursor'],
-                size=batch_size,
-                includes=fields
+                dataset_id=self.dataset_id,
+                filters=filters,
+                cursor=documents["cursor"],
+                batch_size=batch_size,
+                select_fields=text_fields,
+                include_cursor=True,
             )
             string = self.generate_text_list_from_documents(
-                documents["documents"], fields=fields,
+                documents=documents["documents"],
+                text_fields=text_fields,
             )
 
             ngram_counter = self._get_ngrams(
                 string,
-                n=n, 
+                n=n,
                 additional_stopwords=additional_stopwords,
-                min_word_length=min_word_length
+                min_word_length=min_word_length,
             )
             counter.update(ngram_counter)
-        
-        return counter.most_common(most_common)
+        return dict(counter.most_common(most_common))
 
-    def label_from_text_field(self, label_fields: List[str]):
+    def quick_label(
+        self,
+        field: str,
+        text_fields: List[str],
+        model: Callable = None,
+        top_most_words: int = 1000,
+        n_gram: int = 1,
+    ):
         """
         Label by the most popular keywords.
-        Get top X keywords or bigram for a text field. 
+        Get top X keywords or bigram for a text field.
         default X to 1000 or something scaled towards number of documents.
 
         Vectorize those into keywords
         Label every document with those top keywords
-        
+
         Parameters
         ------------
 
-        label_field: str
+        text_fields: str
             The field to label
 
         Example
@@ -769,22 +806,22 @@ class Operations(Write):
 
         .. code-block::
 
-            from relevanceai import Client 
+            from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
             df.label_from_text_field(n=1)
 
         """
-        # TODO 
+        # TODO
         # Algorithm for getting most common keywords
+        labels = self.get_wordcloud(
+            text_fields=text_fields, n=n_gram, most_common=top_most_words
+        )
 
         # create_labels_from_text_field
-
-        raise NotImplementedError
-
-    def label_with_model_from_dataset(self):
-        """# TODO"""
-        raise NotImplementedError
+        return self.label_from_list(
+            vector_field=field, model=model, label_list=list(labels)
+        )
 
     def vector_search(
         self,
