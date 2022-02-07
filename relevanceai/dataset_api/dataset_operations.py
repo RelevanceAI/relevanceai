@@ -482,9 +482,18 @@ class Operations(Write):
             warnings.warn("No alias is detected. Default to 'default' as the alias.")
             alias = "default"
         print("Encoding labels...")
-        label_vectors = model(label_list)
+        label_vectors = []
+        for c in self.chunk(label_list, chunksize=20):
+            label_vectors.extend(model(c))
+
+        if len(label_vectors) == 0:
+            raise ValueError("Failed to encode.")
+
+        # we need this to mock label documents - these values are not important
+        # and can be changed :)
         LABEL_VECTOR_FIELD = "label_vector_"
         LABEL_FIELD = "label"
+
         label_documents = [
             {LABEL_VECTOR_FIELD: label_vectors[i], LABEL_FIELD: label}
             for i, label in enumerate(label_list)
