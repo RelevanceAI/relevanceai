@@ -362,7 +362,8 @@ class ClusterOps(BatchAPIClient):
 
     def aggregate(
         self,
-        dataset: Optional[Union[str, Dataset]],
+        dataset: Optional[Union[str, Dataset]] = None,
+        vector_fields: List[str] = None,
         metrics: list = [],
         sort: list = [],
         groupby: list = [],
@@ -496,11 +497,23 @@ class ClusterOps(BatchAPIClient):
                 ]
             )
 
+            # If reloading,
+            clusterer = client.ClusterOps("minibatch_50")
+            clusterer.aggregate(
+                "sample_dataset",
+                groupby=[{
+                    "name": "title",
+                    "field": "title",
+                    "agg": "wordcloud",
+                }],
+                vector_fields=['sample_vector_']
+            )
+
 
         """
         return self.services.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),
-            vector_fields=self.vector_fields,
+            vector_fields=self.vector_fields if not vector_fields else vector_fields,
             groupby=groupby,
             metrics=metrics,
             sort=sort,
