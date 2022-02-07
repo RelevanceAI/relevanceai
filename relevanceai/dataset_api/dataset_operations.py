@@ -583,6 +583,9 @@ class Operations(Write):
         Parameters
         ------------
         
+        text_fields: list
+            List of text fields
+        
 
         Example
         ------------
