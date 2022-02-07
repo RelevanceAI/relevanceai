@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """KMeans Clustering
 """
 import numpy as np
@@ -81,7 +82,7 @@ class KMeansModel(ClusterBase):
         )
         return
 
-    def fit_transform(self, vectors: Union[np.ndarray, List]):
+    def fit_predict(self, vectors: Union[np.ndarray, List]):
         """
         Fit and transform transform the vectors
         """
