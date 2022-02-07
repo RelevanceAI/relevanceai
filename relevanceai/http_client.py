@@ -150,7 +150,7 @@ class Client(BatchAPIClient, DocUtils):
                 url = f"https://api.{region}.relevance.ai/latest"
                 self.base_url = url
                 self.base_ingest_url = url
-        self._write_credentials(project, api_key)
+        self._write_credentials(project, api_key, url)
         return project, api_key
 
     def _token_to_auth(self, token=None):
@@ -171,10 +171,17 @@ class Client(BatchAPIClient, DocUtils):
             data = self._read_credentials()
             project = data["project"]
             api_key = data["api_key"]
+            self.base_url = data["base_url"]
         return project, api_key
 
-    def _write_credentials(self, project, api_key):
-        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+    def _write_credentials(self, project, api_key, base_url):
+        print(
+            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved to this file."
+        )
+        json.dump(
+            {"project": project, "api_key": api_key, "base_url": base_url},
+            open(self._cred_fn, "w"),
+        )
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
