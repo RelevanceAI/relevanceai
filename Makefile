@@ -16,13 +16,13 @@ all:
 install:
 	python -m venv .venv
 	. .venv/bin/activate
-	pip install --upgrade pip                    
+	pip install --upgrade pip
 	pip install -q -r requirements-dev.txt
 
 install-vis:
 	python -m venv .venv
 	. .venv/bin/activate
-	pip install --upgrade pip                    
+	pip install --upgrade pip
 	pip install -q -e .[dev-vis]
 
 ## Update dependencies
@@ -36,13 +36,14 @@ test:
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
+	find . -type f -name "*.log" -delete
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -type d -name "*.eggs" -exec rm -rf {} +
 	find . -type d -name ".coverage" -exec rm -rf {} +
 	find . -type d -name "*.pytest_cache" -exec rm -rf {} +
 	find . -type d -name "*.mypy_cache" -exec rm -rf {} +
-	
+
 
 ## Lint using flake8
 lint:
