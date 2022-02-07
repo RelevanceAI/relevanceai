@@ -155,7 +155,7 @@ class TasksClient(_Base):
             endpoint=f"/datasets/{dataset_id}/tasks/create",
             method="POST",
             parameters={
-                "task_name": "Clusterer",
+                "task_name": "ClusterOps",
                 "vector_field": vector_field,
                 "n_clusters": n_clusters,
                 "alias": alias,

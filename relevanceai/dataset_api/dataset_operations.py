@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
-from typing import Dict, List
+import warnings
+from typing import Dict, List, Optional, Callable
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.vector_tools.nearest_neighbours import (
@@ -54,6 +56,9 @@ class Operations(Write):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
 
+        .. warning::
+            Deprecated in v0.33 in favour of df.auto_cluster.
+
         Parameters
         ----------
         model : Class
@@ -61,12 +66,13 @@ class Operations(Write):
         vector_fields : str
             The vector fields over which to cluster
 
+
         Example
         -------
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
@@ -81,12 +87,12 @@ class Operations(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.clusterer import Clusterer
+        from relevanceai.clusterer import ClusterOps
 
-        clusterer = Clusterer(
+        clusterer = ClusterOps(
             model=model, alias=alias, api_key=self.api_key, project=self.project
         )
-        clusterer.fit(dataset=self, vector_fields=vector_fields)
+        clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
     def label_vector(
@@ -99,7 +105,7 @@ class Operations(Write):
         number_of_labels: int = 1,
         similarity_metric: NEAREST_NEIGHBOURS = "cosine",
         score_field: str = "_search_score",
-        **kwargs
+        **kwargs,
     ):
         """
         Label a dataset based on a model.
@@ -140,7 +146,7 @@ class Operations(Write):
 
 
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
@@ -421,6 +427,139 @@ class Operations(Write):
             ],
         )
 
+    def label_from_list(
+        self,
+        vector_field: str,
+        model: Callable,
+        label_list: list,
+        similarity_metric="cosine",
+        number_of_labels: int = 1,
+        score_field: str = "_search_score",
+        alias: Optional[str] = None,
+    ):
+        """Label from a given list.
+
+        Parameters
+        ------------
+
+        vector_field: str
+            The vector field to label in the original dataset
+        model: Callable
+            This will take a list of strings and then encode them
+        label_list: List
+            A list of labels to accept
+        similarity_metric: str
+            The similarity metric to accept
+        number_of_labels: int
+            The number of labels to accept
+        score_field: str
+            What to call the scoring of the labels
+        alias: str
+            The alias of the labels
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+
+            # Get a model to help us encode
+            from vectorhub.encoders.text.tfhub import USE2Vec
+            enc = USE2Vec()
+
+            # Use that model to help with encoding
+            label_list = ["dog", "cat"]
+
+            df = client.Dataset("_github_repo_vectorai")
+
+            df.label_from_list("documentation_vector_", enc.bulk_encode, label_list, alias="pets")
+
+        """
+        if alias is None:
+            warnings.warn("No alias is detected. Default to 'default' as the alias.")
+            alias = "default"
+        print("Encoding labels...")
+        label_vectors = []
+        for c in self.chunk(label_list, chunksize=20):
+            label_vectors.extend(model(c))
+
+        if len(label_vectors) == 0:
+            raise ValueError("Failed to encode.")
+
+        # we need this to mock label documents - these values are not important
+        # and can be changed :)
+        LABEL_VECTOR_FIELD = "label_vector_"
+        LABEL_FIELD = "label"
+
+        label_documents = [
+            {LABEL_VECTOR_FIELD: label_vectors[i], LABEL_FIELD: label}
+            for i, label in enumerate(label_list)
+        ]
+
+        return self._bulk_label_dataset(
+            label_documents=label_documents,
+            vector_field=vector_field,
+            label_vector_field=LABEL_VECTOR_FIELD,
+            similarity_metric=similarity_metric,
+            number_of_labels=number_of_labels,
+            score_field=score_field,
+            label_fields=[LABEL_FIELD],
+            alias=alias,
+        )
+
+    def _bulk_label_dataset(
+        self,
+        label_documents,
+        vector_field,
+        label_vector_field,
+        similarity_metric,
+        number_of_labels,
+        score_field,
+        label_fields,
+        alias,
+    ):
+        def label_and_store(d: dict):
+            labels = self._get_nearest_labels(
+                label_documents=label_documents,
+                vector=self.get_field(vector_field, d),
+                label_vector_field=label_vector_field,
+                similarity_metric=similarity_metric,
+                number_of_labels=number_of_labels,
+                score_field=score_field,
+                label_fields=label_fields,
+            )
+            d.update(self.store_labels_in_document(labels, alias))
+            return d
+
+        def bulk_label_documents(documents):
+            [label_and_store(d) for d in documents]
+            return documents
+
+        print("Labelling dataset...")
+        return self.bulk_apply(
+            bulk_label_documents,
+            filters=[
+                {
+                    "field": vector_field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                },
+            ],
+            select_fields=[vector_field],
+        )
+
+    def label_by_ngram(self):
+        """# TODO"""
+        raise NotImplementedError
+
+    def label_with_model_from_dataset(self):
+        """# TODO"""
+        raise NotImplementedError
+
     def vector_search(
         self,
         multivector_query: List,
@@ -661,6 +800,7 @@ class Operations(Write):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
+            MULTIVECTOR_QUERY = [{"vector": [0, 1, 2], "fields": ["sample_vector_"]}]
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
@@ -926,6 +1066,105 @@ class Operations(Write):
             query=query,
         )
 
+    def auto_reduce_dimensions(
+        self,
+        alias: str,
+        vector_fields: list,
+        filters: Optional[list] = None,
+        number_of_documents: Optional[int] = None,
+    ):
+        """
+        Run dimensionality reduction quickly on a dataset on a small number of documents.
+        This is useful if you want to quickly see a projection of your dataset.
+        Currently, the only supported algorithm is `PCA`.
+
+        .. warning::
+            This function is currently in beta and is likely to change in the future.
+            We recommend not using this in any production systems.
+
+
+        .. note::
+            **New in v0.32.0**
+
+        Parameters
+        ----------
+        vector_fields: list
+            The vector fields to run dimensionality reduction on
+        number_of_documents: int
+            The number of documents to get
+        algorithm: str
+            The algorithm to run. The only supported algorithm is `pca` at this
+            current point in time.
+        n_components: int
+            The number of components
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            df.auto_reduce_dimensions(
+                "pca-3",
+                ["sample_vector_"],
+            )
+
+        """
+        if len(vector_fields) > 1:
+            raise ValueError("We only support 1 vector field at the moment.")
+
+        dr_args = alias.split("-")
+
+        if len(dr_args) != 2:
+            raise ValueError("""Your DR alias should be in the form of `pca-3`.""")
+
+        algorithm = dr_args[0]
+        n_components = int(dr_args[1])
+
+        print("Getting documents...")
+        if filters is None:
+            filters = []
+        filters += [
+            {
+                "field": vf,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vf in vector_fields
+        ]
+
+        if number_of_documents is None:
+            number_of_documents = self.get_number_of_documents(self.dataset_id, filters)
+
+        documents = self.get_documents(
+            dataset_id=self.dataset_id,
+            select_fields=vector_fields,
+            filters=filters,
+            number_of_documents=number_of_documents,
+        )
+
+        print("Run PCA...")
+        if algorithm == "pca":
+            dr_docs = self._run_pca(
+                vector_fields=vector_fields,
+                documents=documents,
+                alias=alias,
+                n_components=n_components,
+            )
+        else:
+            raise ValueError("DR algorithm not supported.")
+
+        results = self.update_documents(self.dataset_id, dr_docs)
+
+        if n_components == 3:
+            projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
+            print(f"You can now view your {projector_url}")
+
+        return results
+
     def reduce_dimensions(
         self,
         vector_fields: list,
@@ -968,9 +1207,9 @@ class Operations(Write):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("sample")
-            df.reduce_dimensions(
+            df.auto_reduce_dimensions(
+                alias="pca-3",
                 ["sample_vector_"],
-                alias="pca",
                 number_of_documents=1000
             )
 
@@ -979,6 +1218,8 @@ class Operations(Write):
             raise ValueError("We only support 1 vector field at the moment.")
 
         print("Getting documents...")
+        if filters is None:
+            filters = []
         filters += [
             {
                 "field": vf,
@@ -1003,10 +1244,15 @@ class Operations(Write):
                 alias=alias,
                 n_components=n_components,
             )
-        else:
-            raise ValueError("DR algorithm not supported.")
 
-        return self.update_documents(self.dataset_id, dr_docs)
+        else:
+            raise ValueError(
+                "DR algorithm not supported. Only supported algorithms are `pca`."
+            )
+
+        results = self.update_documents(self.dataset_id, dr_docs)
+
+        return results
 
     def _run_pca(
         self, vector_fields: list, documents: list, alias: str, n_components: int = 3
@@ -1021,3 +1267,116 @@ class Operations(Write):
             alias=alias,
             dims=n_components,
         )
+
+    def auto_cluster(self, alias: str, vector_fields: List[str], chunksize: int = 1024):
+        """
+        Automatically cluster in 1 line of code.
+        It will retrieve documents, run fitting on the documents and then
+        update the database.
+        There are only 2 supported clustering algorithms at the moment:
+        - kmeans
+        - minibatchkmeans
+
+        In order to choose the number of clusters, simply add a number
+        after the dash like `kmeans-8` or `minibatchkmeans-50`.
+
+        Under the hood, it uses scikit learn defaults or best practices.
+
+        Parameters
+        ----------
+        alias : str
+            The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
+            Supported aliases at the moment are 'kmeans','kmeans-10', 'kmeans-X' (where X is a number), 'minibatchkmeans',
+                'minibatchkmeans-10', 'minibatchkmeans-X' (where X is a number)
+        vector_fields : List
+            A list vector fields over which to cluster
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset"
+            df = client.Dataset(dataset_id)
+
+            # run kmeans with default 10 clusters
+            clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+            clusterer.list_closest_to_center()
+
+            # Run k means clustering with 8 clusters
+            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 8 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 20 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
+
+        """
+        cluster_args = alias.split("-")
+        algorithm = cluster_args[0]
+        if len(cluster_args) > 1:
+            n_clusters = int(cluster_args[1])
+        else:
+            print("No clusters are detected, defaulting to 8")
+            n_clusters = 8
+        if n_clusters >= chunksize:
+            raise ValueError("Number of clustesr exceed chunksize.")
+
+        num_docs = self.get_number_of_documents(self.dataset_id)
+
+        if num_docs <= n_clusters:
+            warnings.warn(
+                "You seem to have more clusters than documents. We recommend reducing the number of clusters."
+            )
+
+        from relevanceai.clusterer import ClusterOps
+
+        if algorithm.lower() == "kmeans":
+            from sklearn.cluster import KMeans
+
+            model = KMeans(n_clusters=n_clusters)
+            clusterer: ClusterOps = ClusterOps(
+                model=model,
+                alias=alias,
+                api_key=self.api_key,
+                project=self.project,
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
+            )
+            clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
+
+        elif algorithm.lower() == "hdbscan":
+            raise ValueError(
+                "HDBSCAN is soon to be released as an alternative clustering algorithm"
+            )
+        elif algorithm.lower() == "minibatchkmeans":
+            from sklearn.cluster import MiniBatchKMeans
+
+            model = MiniBatchKMeans(n_clusters=n_clusters)
+
+            clusterer = ClusterOps(
+                model=model,
+                alias=alias,
+                api_key=self.api_key,
+                project=self.project,
+                dataset_id=self.dataset_id,
+                vector_fields=vector_fields,
+            )
+
+            clusterer.partial_fit_predict_update(
+                dataset=self, vector_fields=vector_fields, chunksize=chunksize
+            )
+        else:
+            raise ValueError("Only KMeans clustering is supported at the moment.")
+
+        # Get users excited about being able to build a dashboard!
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
+        return clusterer

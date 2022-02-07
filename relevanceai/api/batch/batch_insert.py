@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Batch Insert"""
 import json
 import math
@@ -387,6 +388,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Track failed documents
         failed_documents: List[Dict] = []
+        failed_documents_detailed: List[Dict] = []
 
         # Trust the process
         # Get document lengths to calculate iterations
@@ -394,20 +396,20 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # get the remaining number in case things break
         remaining_length = original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
+
         iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
         completed_documents_list: list = []
 
         # Get incomplete documents from raw collection
         retrieve_filters = filters + [
-            {
-                "field": "ids",
-                "filter_type": "ids",
-                "condition": "!=",
-                "condition_value": completed_documents_list,
-            }
+            # {
+            #     "field": "ids",
+            #     "filter_type": "ids",
+            #     "condition": "!=",
+            #     "condition_value": completed_documents_list,
+            # }
         ]
-
         for _ in progress_bar(
             range(iterations_required), show_progress_bar=show_progress_bar
         ):
@@ -450,7 +452,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
             # Check success
             chunk_failed = insert_json["failed_documents"]
+            chunk_documents_detailed = insert_json["failed_documents_detailed"]
             failed_documents.extend(chunk_failed)
+            failed_documents_detailed.extend(chunk_documents_detailed)
             success_documents = list(set(updated_documents) - set(failed_documents))
             PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
             self.logger.success(
@@ -463,6 +467,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         #     os.remove(log_file)
         return {
             "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
         }
 
     def pull_update_push_to_cloud(
