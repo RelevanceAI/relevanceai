@@ -384,11 +384,18 @@ class DatasetsClient(_Base):
             user_input = "y"
         # input validation
         if user_input.lower() in ("y", "yes"):
-            return self.make_http_request(
-                endpoint=f"/datasets/delete",
-                method="POST",
-                parameters={"dataset_id": dataset_id},
-            )
+            if "gateway-api-aueast" in self.config["api.base_url"]:
+                return self.make_http_request(
+                    endpoint=f"/datasets/delete",
+                    method="POST",
+                    parameters={"dataset_id": dataset_id},
+                )
+            else:
+                return self.make_http_request(
+                    endpoint=f"/datasets/{dataset_id}/delete",
+                    method="POST",
+                    parameters={"dataset_id": dataset_id},
+                )
 
         elif user_input.lower() in ("n", "no"):
             self.logger.critical(f"{dataset_id} not deleted")
