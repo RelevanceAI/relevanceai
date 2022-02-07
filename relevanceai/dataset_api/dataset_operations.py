@@ -3,7 +3,7 @@
 Pandas like dataset API
 """
 import warnings
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Callable
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.vector_tools.nearest_neighbours import (
@@ -426,6 +426,139 @@ class Operations(Write):
                 },
             ],
         )
+
+    def label_from_list(
+        self,
+        vector_field: str,
+        model: Callable,
+        label_list: list,
+        similarity_metric="cosine",
+        number_of_labels: int = 1,
+        score_field: str = "_search_score",
+        alias: Optional[str] = None,
+    ):
+        """Label from a given list.
+
+        Parameters
+        ------------
+
+        vector_field: str
+            The vector field to label in the original dataset
+        model: Callable
+            This will take a list of strings and then encode them
+        label_list: List
+            A list of labels to accept
+        similarity_metric: str
+            The similarity metric to accept
+        number_of_labels: int
+            The number of labels to accept
+        score_field: str
+            What to call the scoring of the labels
+        alias: str
+            The alias of the labels
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+
+            # Get a model to help us encode
+            from vectorhub.encoders.text.tfhub import USE2Vec
+            enc = USE2Vec()
+
+            # Use that model to help with encoding
+            label_list = ["dog", "cat"]
+
+            df = client.Dataset("_github_repo_vectorai")
+
+            df.label_from_list("documentation_vector_", enc.bulk_encode, label_list, alias="pets")
+
+        """
+        if alias is None:
+            warnings.warn("No alias is detected. Default to 'default' as the alias.")
+            alias = "default"
+        print("Encoding labels...")
+        label_vectors = []
+        for c in self.chunk(label_list, chunksize=20):
+            label_vectors.extend(model(c))
+
+        if len(label_vectors) == 0:
+            raise ValueError("Failed to encode.")
+
+        # we need this to mock label documents - these values are not important
+        # and can be changed :)
+        LABEL_VECTOR_FIELD = "label_vector_"
+        LABEL_FIELD = "label"
+
+        label_documents = [
+            {LABEL_VECTOR_FIELD: label_vectors[i], LABEL_FIELD: label}
+            for i, label in enumerate(label_list)
+        ]
+
+        return self._bulk_label_dataset(
+            label_documents=label_documents,
+            vector_field=vector_field,
+            label_vector_field=LABEL_VECTOR_FIELD,
+            similarity_metric=similarity_metric,
+            number_of_labels=number_of_labels,
+            score_field=score_field,
+            label_fields=[LABEL_FIELD],
+            alias=alias,
+        )
+
+    def _bulk_label_dataset(
+        self,
+        label_documents,
+        vector_field,
+        label_vector_field,
+        similarity_metric,
+        number_of_labels,
+        score_field,
+        label_fields,
+        alias,
+    ):
+        def label_and_store(d: dict):
+            labels = self._get_nearest_labels(
+                label_documents=label_documents,
+                vector=self.get_field(vector_field, d),
+                label_vector_field=label_vector_field,
+                similarity_metric=similarity_metric,
+                number_of_labels=number_of_labels,
+                score_field=score_field,
+                label_fields=label_fields,
+            )
+            d.update(self.store_labels_in_document(labels, alias))
+            return d
+
+        def bulk_label_documents(documents):
+            [label_and_store(d) for d in documents]
+            return documents
+
+        print("Labelling dataset...")
+        return self.bulk_apply(
+            bulk_label_documents,
+            filters=[
+                {
+                    "field": vector_field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                },
+            ],
+            select_fields=[vector_field],
+        )
+
+    def label_by_ngram(self):
+        """# TODO"""
+        raise NotImplementedError
+
+    def label_with_model_from_dataset(self):
+        """# TODO"""
+        raise NotImplementedError
 
     def vector_search(
         self,
