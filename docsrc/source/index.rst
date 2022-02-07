@@ -26,9 +26,16 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Clustering
 
+   auto_clustering
    clusterer
-   cluster_models
    cluster_base
+   reloading_clusterers
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Dimensionality Reduction
+
+   auto_reduce_dimensions
 
 
 .. toctree::
@@ -36,7 +43,14 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :caption: Integrations
 
    sklearn_clustering_integration
-   faiss_kmeans_integration
+   faiss_clustering_integration 
+   hdbscan_integration
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Data Importers
+
+   mongodb
 
 .. toctree::
    :maxdepth: 4

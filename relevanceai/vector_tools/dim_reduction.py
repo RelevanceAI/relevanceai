@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import json
 
-from doc_utils.doc_utils import DocUtils
+from doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
@@ -15,28 +15,77 @@ from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 
 
-class DimReductionBase(LoguruLogger):
+class DimReductionBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
-        return self.fit_transform(*args, **kwargs)
+        return self.fit_predict(*args, **kwargs)
 
     # @abstractmethod
-    def fit_transform(
-        self, vectors: np.ndarray, dr_args: Dict[Any, Any], dims: int
-    ) -> np.ndarray:
+    def fit_transform(self, *args, **kw) -> np.ndarray:
         raise NotImplementedError
+
+    def fit(self, *args, **kw):
+        raise NotImplementedError
+
+    def transform(self, *args, **kw):
+        raise NotImplementedError
+
+    def transform_documents(self, vector_field: str, documents: List[Dict]):
+        vectors = self.get_field_across_documents(vector_field, documents)
+        return self.transform(documents)
+
+    def fit_documents(self, vector_field: str, documents: List[Dict]):
+        vectors = self.get_field_across_documents(
+            vector_field, documents, missing_treatment="skip"
+        )
+        return self.fit(vectors)
+
+    def get_dr_vector_field_name(self, vector_field: str, alias: str):
+        return ".".join(
+            [
+                "_dr_",
+                alias,
+                vector_field,
+            ]
+        )
+
+    def fit_transform_documents(
+        self,
+        vector_field: str,
+        documents: List[Dict],
+        alias: str,
+        exclude_original_vectors: bool = True,
+        dims: int = 3,
+    ):
+        documents = list(self.filter_docs_for_fields([vector_field], documents))
+        vectors = self.get_field_across_documents(
+            vector_field, documents, missing_treatment="skip"
+        )
+        dr_vectors = self.fit_transform(vectors, dims=dims)
+        dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
+        self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
+        if exclude_original_vectors:
+            dr_docs = self.subset_documents(["_id", dr_vector_field_name], documents)
+        return dr_docs
 
 
 class PCA(DimReductionBase):
+    def fit(self, vectors: np.ndarray, dims: int = 3, *args, **kw):
+        from sklearn.decomposition import PCA as SKLEARN_PCA
+
+        pca = SKLEARN_PCA(n_components=min(dims, vectors.shape[1]))
+        return pca.fit(vectors)
+
     def fit_transform(
         self,
         vectors: np.ndarray,
         dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
         dims: int = 3,
     ) -> np.ndarray:
-        from sklearn.decomposition import PCA
+        from sklearn.decomposition import PCA as SKLEARN_PCA
 
         self.logger.debug(f"{dr_args}")
-        pca = PCA(n_components=min(dims, vectors.shape[1]), **dr_args)
+        vector_length = len(vectors[0])
+        pca = SKLEARN_PCA(n_components=min(dims, vector_length), **dr_args)
         return pca.fit_transform(vectors)
 
 
@@ -126,6 +175,7 @@ class DimReduction(_Base, DimReductionBase):
                 return UMAP().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
             elif dr == "ivis":
                 return Ivis().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
-
+            raise ValueError("not suppported")
         elif isinstance(dr, DimReductionBase):
             return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+        return

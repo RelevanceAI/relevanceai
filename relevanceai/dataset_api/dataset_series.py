@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -35,7 +36,7 @@ class Series(BatchAPIClient):
 
     Examples
     --------
-    Assuming the following code as been executed:
+    Assuming the following code has been executed:
 
     .. code-block::
 
@@ -57,12 +58,69 @@ class Series(BatchAPIClient):
 
     """
 
-    def __init__(self, project: str, api_key: str, dataset_id: str, field: str):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        field: str,
+        image_fields: List[str] = [],
+        audio_fields: List[str] = [],
+        highlight_fields: Dict[str, List] = {},
+        text_fields: List[str] = [],
+    ):
+        super().__init__(project=project, api_key=api_key)
         self.project = project
         self.api_key = api_key
         self.dataset_id = dataset_id
         self.field = field
-        super().__init__(project=project, api_key=api_key)
+        self.image_fields = image_fields
+        self.audio_fields = audio_fields
+        self.highlight_fields = highlight_fields
+        self.text_fields = text_fields
+
+    def _repr_html_(self):
+        fields = [self.field]
+
+        documents = self.get_documents(dataset_id=self.dataset_id, select_fields=fields)
+        try:
+            return self._show_json(documents, return_html=True)
+        except Exception:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+                + str(e)
+            )
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
+
+    def list_aliases(self):
+        fields = self._format_select_fields()
+        fields = [field for field in fields if field != "_cluster_"]
+        return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
+
+    def _format_select_fields(self):
+        fields = [
+            field
+            for field in self.datasets.schema(self.dataset_id)
+            if "_cluster_" in field
+        ]
+        return fields
+
+    def _show_json(self, document, **kw):
+        from jsonshower import show_json
+
+        if not self.text_fields:
+            text_fields = pd.json_normalize(document).columns.tolist()
+        else:
+            text_fields = self.text_fields
+
+        return show_json(
+            document,
+            image_fields=self.image_fields,
+            audio_fields=self.audio_fields,
+            highlight_fields=self.highlight_fields,
+            text_fields=text_fields,
+            **kw,
+        )
 
     def sample(
         self,

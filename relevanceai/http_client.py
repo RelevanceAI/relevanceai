@@ -1,5 +1,5 @@
 """Relevance AI's base Client class - primarily used to login and access
-the Dataset class or Clusterer class.
+the Dataset class or ClusterOps class.
 
 
 The recomended way to log in is using:
@@ -21,16 +21,22 @@ log in this way:
     client = Client(project=project, api_key=api_key)
     client.list_datasets()
 
+If you need to change your token, simply run: 
+
+.. code-block::
+
+    from relevanceai import Client 
+    client = Client(token="...")
+
 """
 import getpass
 import json
 import os
-from typing import Union, Optional
+from typing import Union, Optional, List, Dict
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api import Dataset, Datasets
-from relevanceai.clusterer import Clusterer, ClusterBase
-from relevanceai.clusterer.kmeans_clusterer import KMeansClusterer
+from relevanceai.clusterer import ClusterOps, ClusterBase
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
@@ -64,9 +70,10 @@ class Client(BatchAPIClient, DocUtils):
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
         authenticate: bool = False,
+        token: str = None,
     ):
         if project is None or api_key is None:
-            project, api_key = self._token_to_auth()
+            project, api_key = self._token_to_auth(token)
 
         super().__init__(project, api_key)
 
@@ -132,7 +139,21 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Authentication Details
 
-    def _token_to_auth(self):
+    def _process_token(self, token: str):
+        split_token = token.split(":")
+        project = split_token[0]
+        api_key = split_token[1]
+        # If the base URl is included in the pasted token then include it
+        if len(split_token) == 3:
+            region = split_token[2]
+            if region != "old-australia-east":
+                url = f"https://api.{region}.relevance.ai/latest"
+                self.base_url = url
+                self.base_ingest_url = url
+        self._write_credentials(project, api_key)
+        return project, api_key
+
+    def _token_to_auth(self, token=None):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
         #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
@@ -140,16 +161,12 @@ class Client(BatchAPIClient, DocUtils):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
         if not os.path.exists(self._cred_fn):
             # We repeat it twice because of different behaviours
-            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(f"Auth token:")
-            split_token = token.split(":")
-            project = split_token[0]
-            api_key = split_token[1]
-            # If the base URl is included in the pasted token then include it
-            if len(split_token) == 3:
-                self.base_url = split_token[2]
-                self.base_ingest_url = split_token[2]
-            self._write_credentials(project, api_key)
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
+            if not token:
+                token = getpass.getpass(f"Activation token:")
+            return self._process_token(token)
+        elif token:
+            return self._process_token(token)
         else:
             data = self._read_credentials()
             project = data["project"]
@@ -279,55 +296,41 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.delete(dataset_id)
 
-    def Dataset(self, dataset_id: str, fields: list = []):
+    def Dataset(
+        self,
+        dataset_id: str,
+        fields: list = [],
+        image_fields: List[str] = [],
+        audio_fields: List[str] = [],
+        highlight_fields: Dict[str, List] = {},
+        text_fields: List[str] = [],
+    ):
         return Dataset(
             dataset_id=dataset_id,
             project=self.project,
             api_key=self.api_key,
             fields=fields,
+            image_fields=image_fields,
+            audio_fields=audio_fields,
+            highlight_fields=highlight_fields,
+            text_fields=text_fields,
         )
 
     ### Clustering
 
-    def Clusterer(
+    def ClusterOps(
         self,
-        model: ClusterBase,
         alias: str,
+        model=None,
+        dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
     ):
-        return Clusterer(
+        return ClusterOps(
             model=model,
             alias=alias,
-            cluster_field=cluster_field,
-            project=self.project,
-            api_key=self.api_key,
-        )
-
-    def KMeansClusterer(
-        self,
-        alias: str,
-        k: Union[None, int] = 10,
-        init: str = "k-means++",
-        n_init: int = 10,
-        max_iter: int = 300,
-        tol: float = 1e-4,
-        verbose: bool = True,
-        random_state: Optional[int] = None,
-        copy_x: bool = True,
-        algorithm: str = "auto",
-        cluster_field: str = "_cluster_",
-    ):
-        return KMeansClusterer(
-            alias=alias,
-            k=k,
-            init=init,
-            n_init=n_init,
-            max_iter=max_iter,
-            tol=tol,
-            verbose=verbose,
-            random_state=random_state,
-            copy_x=copy_x,
-            algorithm=algorithm,
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
@@ -432,3 +435,13 @@ class Client(BatchAPIClient, DocUtils):
             project=project,
             api_key=api_key,
         )
+
+    @property
+    def references(self):
+        from relevanceai.__init__ import __version__
+
+        REFERENCE_URL = f"https://relevanceai.readthedocs.io/en/{__version__}/"
+        MESSAGE = f"You can find your references here {REFERENCE_URL}."
+        print(MESSAGE)
+
+    docs = references

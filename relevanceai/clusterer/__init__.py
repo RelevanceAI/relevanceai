@@ -1,6 +1,6 @@
-"""Clusterer 
+"""ClusterOps 
 """
-from relevanceai.clusterer.clusterer import Clusterer
+from relevanceai.clusterer.clusterer import ClusterOps
 from relevanceai.clusterer.cluster_base import (
     ClusterBase,
     CentroidClusterBase,

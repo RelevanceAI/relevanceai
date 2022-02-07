@@ -1,5 +1,6 @@
 from os import error
 import sys
+
 from typing import Callable
 from loguru import logger as loguru_logger
 from abc import abstractmethod

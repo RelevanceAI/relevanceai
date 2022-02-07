@@ -67,4 +67,4 @@ autoapi_dirs = ["../../relevanceai"]
 autoapi_keep_files = True
 autoapi_options = {"undoc-members": "no", "exclude-members": "__init__"}
 autodoc_class_signature = "separated"
-autodoc_member_order = "bysource"
+autodoc_member_order = "alphabetical"

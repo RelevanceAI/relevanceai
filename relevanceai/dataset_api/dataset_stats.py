@@ -1,7 +1,7 @@
 """
 Pandas like dataset API
 """
-from typing import List
+from typing import List, Dict
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 
@@ -78,7 +78,7 @@ class Stats(Read):
         image_fields: List = [],
         text_fields: List = [],
         audio_fields: List = [],
-        highlight_fields: dict = {},
+        highlight_fields: Dict[str, List] = {},
         output_format: str = "pandas",
     ):
         self.dataset_id = dataset_id

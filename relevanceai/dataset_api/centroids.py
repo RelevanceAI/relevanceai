@@ -121,7 +121,7 @@ class Centroids(BatchAPIClient):
         -----------------
         .. code-block::
             from relevanceai import Client
-            from relevanceai.clusterer import Clusterer
+            from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()

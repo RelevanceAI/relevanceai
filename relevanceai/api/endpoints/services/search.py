@@ -716,8 +716,6 @@ class SearchClient(_Base):
 
         Parameters
         ----------
-        dataset_id : string
-            Unique name of dataset
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
         chunk_field : string
