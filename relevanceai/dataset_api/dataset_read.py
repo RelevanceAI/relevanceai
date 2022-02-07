@@ -222,6 +222,14 @@ class Read(BatchAPIClient):
 
     def _repr_html_(self):
         documents = self.get_documents(dataset_id=self.dataset_id)
+        documents = [
+            {
+                "_id": document["_id"],
+                "insert_date_": document["insert_date_"],
+                **document,
+            }
+            for document in documents
+        ]
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
