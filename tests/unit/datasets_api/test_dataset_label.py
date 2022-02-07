@@ -73,12 +73,12 @@ def test_labelling_by_model(test_dataset_df: Dataset):
 
     LABEL_LIST = ["cat", "dog"]
 
-    def random_label(label_list):
-        return random.choice(label_list)
+    def random_vector(labels):
+        return [generate_random_vector(100) for _ in labels]
 
     test_dataset_df.label_from_list(
         vector_field="sample_1_vector_",
-        model=random_label,
+        model=random_vector,
         label_list=LABEL_LIST,
         alias="pets",
     )
