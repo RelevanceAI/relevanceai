@@ -126,6 +126,7 @@ setup(
         ]
     },
     extras_require={
+        "docs": doc_requirements,
         "dev": dev_requirements,
         "dev-vis": dev_vis_requirements,
         "dev-viz": dev_vis_requirements,

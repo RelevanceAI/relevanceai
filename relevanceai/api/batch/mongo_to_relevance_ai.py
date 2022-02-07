@@ -1,27 +1,33 @@
 """
 Migrate from mongo database to Relevance Ai:
-    #Create an object of Mongo2RelevanceAi class
+
+.. code-block::
+
+    # Create an object of MongoImporter class
     connection_string= "..."
     project= "..."
     api_key= "..."
-    mongo2vec = Mongo2Mongo2RelevanceAi(connection_string, project, api_key)
+    mongo_importer = MongoImporter(connection_string, project, api_key)
 
-    #Get a summary of the mondo database using "mongo_summary"
-    mongo2vec.mongo_summary()
+    # Get a summary of the mondo database using "mongo_summary"
+    mongo_importer.mongo_summary()
 
-    #Set the desired source mongo collection using "set_mongo_collection"
+    # Set the desired source mongo collection using "set_mongo_collection"
     db_name = '...'
     collection_name = '...'
-    mongo2vec.set_mongo_collection(db_name, collection_name)
+    mongo_importer.set_mongo_collection(db_name, dataset_id)
 
-    #Get total number of entries in the mongo collection using "mongo_doc_count"
-    doc_cnt = mongo2vec.mongo_doc_count()
+    # Get total number of entries in the mongo collection using "mongo_document_count"
+    document_count = mongo_importer.mongo_document_count()
 
-    #Migrate data from mongo to Relevance Ai using "migrate_mongo2relevance_ai"
+    # Migrate data from mongo to Relevance AI using "migrate_mongo2relevance_ai"
     chunk_size = 5000      # migrate batches of 5000 (default 2000)
     start_idx= 12000       # loads from mongo starting at index 12000 (default 0)
     dataset_id = "..."     # dataset id in the Relevance Ai platform
-    mongo2vec.migrate_mongo2relevance_ai(dataset_id, doc_cnt, chunk_size = chunk_size, start_idx= start_idx)
+    mongo_importer.migrate(
+        dataset_id, document_count, chunk_size=chunk_size,
+        start_idx=start_idx)
+
 """
 
 import copy
@@ -56,7 +62,7 @@ except (ImportError, ModuleNotFoundError):
     )
 
 
-class Mongo2RelevanceAi(BatchAPIClient):
+class MongoImporter(BatchAPIClient):
     def __init__(self, connection_string: str, project: str, api_key: str):
         super().__init__(project, api_key)
         if PYMONGO_AVAILABLE:
@@ -91,7 +97,7 @@ class Mongo2RelevanceAi(BatchAPIClient):
     def set_mongo_collection(self, db_name: str, collection_name: str):
         self.mongo_collection = self.mongo_client[db_name][collection_name]
 
-    def mongo_doc_count(self):
+    def mongo_document_count(self):
         return self.mongo_collection.count()
 
     def create_relevance_ai_dataset(self, dataset_id: str):
@@ -133,12 +139,12 @@ class Mongo2RelevanceAi(BatchAPIClient):
         return documents
 
     @staticmethod
-    def build_range(doc_cnt: int, chunk_size: int = 2000, start_idx: int = 0):
+    def build_range(document_count: int, chunk_size: int = 2000, start_idx: int = 0):
         rng = [
             (s, s + chunk_size)
-            if s + chunk_size <= start_idx + doc_cnt
-            else (s, start_idx + doc_cnt)
-            for s in list(range(start_idx, start_idx + doc_cnt, chunk_size))
+            if s + chunk_size <= start_idx + document_count
+            else (s, start_idx + document_count)
+            for s in list(range(start_idx, start_idx + document_count, chunk_size))
         ]
         return rng
 
@@ -147,14 +153,31 @@ class Mongo2RelevanceAi(BatchAPIClient):
             return list(self.mongo_collection.find()[start_idx:end_idx])
         return list(self.mongo_collection.find())
 
-    def migrate_mongo2relevance_ai(
+    def migrate(
         self,
         dataset_id: str,
-        doc_cnt: int,
+        document_count: int,
         chunk_size: int = 2000,
         start_idx: int = 0,
         overwite: bool = False,
     ):
+        """
+        Migrate your MongoDB dataset ID.
+
+        Parameters
+        ------------
+        dataset_id: str
+            Name of your dataset
+        document_count: int
+            The number of documents in your collection
+        chunk_size: int
+            The number of chunks
+        start_idx: int
+            The start index in case it breaks
+        overwrite: bool
+            If True, then the dataset ID in Relevance AI will be overwritten
+
+        """
         response = self.create_relevance_ai_dataset(dataset_id)
         if "already exists" in response["message"] and not overwite:
             self.logger.error(response["message"])
@@ -162,14 +185,12 @@ class Mongo2RelevanceAi(BatchAPIClient):
 
         total_ingest_cnt = 0
         for s_idx, e_idx in tqdm(
-            Mongo2RelevanceAi.build_range(doc_cnt, chunk_size, start_idx)
+            MongoImporter.build_range(document_count, chunk_size, start_idx)
         ):
             df = pd.DataFrame(self.fetch_mongo_collection_data(s_idx, e_idx))
-            documents = self.update_id(
-                Mongo2RelevanceAi.parse_json(df.to_dict("records"))
-            )
-            documents = Mongo2RelevanceAi.remove_nan(
-                Mongo2RelevanceAi.flatten_inner_indxs(documents)
+            documents = self.update_id(MongoImporter.parse_json(df.to_dict("records")))
+            documents = MongoImporter.remove_nan(
+                MongoImporter.flatten_inner_indxs(documents)
             )
             self.insert_documents(dataset_id, documents)
             total_ingest_cnt += len(documents)
