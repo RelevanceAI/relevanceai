@@ -817,6 +817,31 @@ class Operations(Write):
         labels = self.get_wordcloud(
             text_fields=text_fields, n=n_gram, most_common=top_most_words
         )
+        if not field.endswith("_vector_"):
+            def encode_documents(field, docs, vector_error_treatment: str='zero_vector', 
+                field_type="vector"):
+                """bulk encode documents"""
+                vectors = model(self.get_field_across_documents(field, docs))
+                if vector_error_treatment == "zero_vector":
+                    self.set_field_across_documents(
+                        self.get_default_vector_field_name(field, field_type=field_type),
+                            vectors, docs)
+                    return
+                elif vector_error_treatment == "do_not_include":
+                    [self.set_field(
+                        self.get_default_vector_field_name(field, field_type=field_type), 
+                            value=vectors[i], doc=d) \
+                            for i, d in enumerate(docs) if \
+                            not self.is_empty_vector(vectors[i])]
+                else:
+                    [self.set_field(
+                        self.get_default_vector_field_name(field, field_type=field_type), d)
+                        if not self.is_empty_vector(vectors[i])
+                        else vector_error_treatment
+                        for i, d in enumerate(docs)]
+                    return
+
+            self.bulk_apply()
 
         # create_labels_from_text_field
         return self.label_from_list(
