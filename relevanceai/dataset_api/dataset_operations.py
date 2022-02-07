@@ -435,14 +435,27 @@ class Operations(Write):
         similarity_metric="cosine",
         number_of_labels: int = 1,
         score_field: str = "_search_score",
-        alias: str = "default",
+        alias: Optional[str] = None,
     ):
         """Label from a given list.
 
         Parameters
         ------------
 
-        label_list:
+        vector_field: str
+            The vector field to label in the original dataset
+        model: Callable
+            This will take a list of strings and then encode them
+        label_list: List
+            A list of labels to accept
+        similarity_metric: str
+            The similarity metric to accept
+        number_of_labels: int
+            The number of labels to accept
+        score_field: str
+            What to call the scoring of the labels
+        alias: str
+            The alias of the labels
 
         Example
         --------
@@ -465,6 +478,9 @@ class Operations(Write):
             df.label_from_list("documentation_vector_", enc.bulk_encode, label_list, alias="pets")
 
         """
+        if alias is None:
+            warnings.warn("No alias is detected. Default to 'default' as the alias.")
+            alias = "default"
         print("Encoding labels...")
         label_vectors = model(label_list)
         LABEL_VECTOR_FIELD = "label_vector_"
