@@ -362,7 +362,7 @@ class KMeans(MiniBatchKMeans):
         }
 
 
-class HDBSCANClusterer(DensityCluster):
+class HDBSCANClusterOps(DensityCluster):
     def __init__(
         self,
         algorithm: str = "best",
@@ -455,7 +455,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
                 elif cluster == "kmedoids":
                     raise NotImplementedError
             elif cluster == "hdbscan":
-                return HDBSCANClusterer(**cluster_args).fit_predict(vectors=vectors)
+                return HDBSCANClusterOps(**cluster_args).fit_predict(vectors=vectors)
         elif isinstance(cluster, ClusterBase):
             return cluster().fit_predict(vectors=vectors, cluster_args=cluster_args)
         raise ValueError("Not valid cluster input.")
@@ -697,7 +697,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             )
 
         # Cluster
-        clusterer = HDBSCANClusterer(
+        clusterer = HDBSCANClusterOps(
             algorithm=algorithm,
             alpha=alpha,
             approx_min_span_tree=approx_min_span_tree,

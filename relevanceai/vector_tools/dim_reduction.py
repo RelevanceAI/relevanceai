@@ -175,6 +175,7 @@ class DimReduction(_Base, DimReductionBase):
                 return UMAP().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
             elif dr == "ivis":
                 return Ivis().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
-
+            raise ValueError("not suppported")
         elif isinstance(dr, DimReductionBase):
             return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
+        return

@@ -1,14 +1,73 @@
 Changelog
 =================
 
-Here you will find a list of changes for each package update.
+Here you will find a list of changes for each package update related to the Relevance AI
+Python library.
+
+v0.33.2
+--------
+
+- Update References for data imports
+- Add :code-block:`auto_reduce_dimensions` with projector links
+
+v0.33.1
+---------
+
+*BREAKING CHANGES*
+- :code-block:`predict_dataset` has been corrected to :code-block:`predict_update`
+- :code-block:`fit_dataset_by_partial` has been corrected to :code-block:`partial_fit_dataset`
+- :code-block:`fit_partial` instances have been corrected to :code-block:`partial_fit`
+
+- Hotfix auto_cluster when having more clusters than batch size
+- Add dashboard link after clustering
+- Fix references when listing closest and furthest
 
 v0.33.0
 ---------
 
+The most important part of this change is adding more modularity to the clustering functions.
+This is important because previous functions tried to abstract away too much.
+Now, users
+
+
 *BREAKING CHANGES*
 
-- Clustering `fit_transform` is not a `fit_predict` to align with SKLearn's methods
+- Clustering :code:`fit_transform` is not a :code:`fit_predict` to align with SKLearn's methods
+- Rename :code:`Clusterer` to :code:`ClusterOps`
+- :code:`fit` has now been broken down into :code:`fit_predict_update`
+- Removed KMeansClusterer
+
+Non-breaking changes:
+
+- Create a CentroidClusterBase and update it to ClusterBase and a CentroidBase
+- Added a `fit_update`
+- Added support for batch clustering using MiniBatchKMeans
+- Added functional Insert_centroid_documents to the `ClusterOps` object
+- Introduced fit_partial to the clusterer
+- Introduced fit_partial_documents
+- Introduced `fit_dataset_by_partial` to allow users to be able to fit on a dataset if they want to use
+partial_fit
+- Introduced `fit_update_dataset`
+- Introduced `fit_update_dataset_by_partial` which will fit the dataset, predict the dataset
+and insert the centroids if there are expected centroids in the dataset
+- Introduced `fit_partial_predict_update` to allow for fitting, predicting and updating the dataset
+in 1 go
+- Fixed arguments in the `clusterer` object to now take an optional vector_fields and dataset
+- Feature/fix clustering transform by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/372
+- add fix for dim reduction by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/374
+- removed python manta on startup by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/376
+- Feature/add support for batch by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/375
+- Hotfix/pull update filter error by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/379
+- auto_cluster function by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/373
+- Feature/try fix cluster references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/380
+
+
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v0.32.0...v0.33.0
+
+v0.32.1
+---------
+
+- Apply hotfix to pull_update_push
 
 v0.32.0
 ---------
@@ -26,7 +85,7 @@ Non-breaking changes:
 
 - Fix bug with clusterer using `fit_predict` now
 * Feature/pro 1107 bug with clusterer by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/360
-* Added Cluster Metrics to Clusterer by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/347
+* Added Cluster Metrics to ClusterOps by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/347
 * Feature/fix auth by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/361
 * removing dataset_id as a required parameter by @ChakavehSaedi in https://github.com/RelevanceAI/RelevanceAI/pull/366
 * add dimensionality reduction by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/362
@@ -117,7 +176,7 @@ Non-breaking changes:
 - Added AutoAPI to gitignore as we no longer want to measure that
 - Add tighter sklearn integration
 - Add CentroidClusterBase
-- Clean up references around Clusterbase, Clusterer, Dataset
+- Clean up references around Clusterbase, ClusterOps, Dataset
 - Add reference to Client object
 - Hotfix .sample()
 - Update the Base Ingest URL to gateway and set to appropriate default
@@ -160,7 +219,7 @@ v0.29.1
 ---------
 
 - Moved get_all_documents in BatchAPIClient to _get_all_documents to resolve typing error
-- Include Client, Fix Clusterer, ClusterBase, update Cluster References
+- Include Client, Fix ClusterOps, ClusterBase, update Cluster References
 - Add Write Documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/311
 - update clustering documentation and client documentation by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/312
 

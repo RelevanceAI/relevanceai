@@ -1,14 +1,24 @@
-# -*- coding: utf-8 -*-
-from this import d
 import numpy as np
+
 from doc_utils import DocUtils
 from abc import abstractmethod, ABC
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Callable
 
 
 class ClusterBase(DocUtils, ABC):
     """
     A Cluster Base for models to be inherited.
+    The most basic class to inherit.
+    Use this class if you have an in-memory fitting algorithm.
+
+    If your clusters return centroids, you will want to inherit
+    `CentroidClusterBase`.
+
+    If your clusters can fit on batches, you will want to inherit
+    `BatchClusterBase`.
+
+    If you have both Batches and Centroids, you will want to inherit both.
+
     """
 
     def __call__(self, *args, **kwargs):
@@ -209,13 +219,13 @@ class AdvancedCentroidClusterBase(ClusterBase, ABC):
         pass
 
 
-class CentroidClusterBase(ClusterBase, ABC):
+class CentroidBase(ABC):
     """
-    Inherit this class if you have a centroids-based clustering approach.
-    The difference between this and `Clusterbase` is that you can also additionally
-    specify how to get your centers in the
-    `get_centers` base. This allows you to store your centers.
+    Simple centroid base for clusters.
     """
+
+    vector_fields: list
+    _label_cluster: Callable
 
     @abstractmethod
     def get_centers(self) -> List[List[float]]:
@@ -273,9 +283,36 @@ class CentroidClusterBase(ClusterBase, ABC):
         return centroid_docs
 
 
-class BatchClusterBase(ClusterBase):
-    def fit_on_batch(self, vectors):
+class CentroidClusterBase(ClusterBase, CentroidBase, ABC):
+    """
+    Inherit this class if you have a centroids-based clustering.
+    The difference between this and `Clusterbase` is that you can also additionally
+    specify how to get your centers in the
+    `get_centers` base. This allows you to store your centers.
+    """
+
+    ...
+
+
+class BatchClusterBase(ClusterBase, ABC):
+    """
+    Inherit this class if you have a batch-fitting algorithm that needs to be
+    trained and then predicted separately.
+    """
+
+    @abstractmethod
+    def partial_fit(self, vectors):
+        """
+        Partial fit the vectors.
+        """
         pass
 
+    @abstractmethod
     def predict(self):
+        """
+        Predict the vectors.
+        """
+        pass
+
+    def fit_predict(self, X):
         pass

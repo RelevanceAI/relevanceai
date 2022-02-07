@@ -5,7 +5,7 @@ import numpy as np
 import warnings
 from typing import Union, List, Optional
 
-from relevanceai.clusterer.clusterer import Clusterer
+from relevanceai.clusterer.clusterer import ClusterOps
 from relevanceai.clusterer.cluster_base import ClusterBase
 from relevanceai.dataset_api import Dataset
 
@@ -40,7 +40,7 @@ class KMeansModel(ClusterBase):
         from relevanceai.clusterer import KMeansModel
         model = KMeansModel(k=3)
 
-        clusterer = client.Clusterer(model=model, alias="kmeans")
+        clusterer = client.ClusterOps(model=model, alias="kmeans")
         clusterer.fit(df, vector_fields=["documentation_vector_"])
 
     """
@@ -172,7 +172,7 @@ class KMeansModel(ClusterBase):
         return centroid_docs
 
 
-class KMeansClusterer(Clusterer):
+class KMeansClusterOps(ClusterOps):
     """
     Run KMeans Clustering.
 
@@ -193,7 +193,7 @@ class KMeansClusterer(Clusterer):
     >>> from relevanceai import Client
     >>> client = Client()
     >>>
-    >>> clusterer = client.KMeansClusterer(alias="kmeans_cluster_sample")
+    >>> clusterer = client.KMeansClusterOps(alias="kmeans_cluster_sample")
     >>> df = client.Dataset("sample")
     >>> clusterer.fit(df, vector_fields=["sample_vector_"])
 
