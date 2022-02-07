@@ -616,9 +616,8 @@ class Operations(Write):
         text = []
         for f in fields:
             if clean_html:
-                _text = self.clean_html(
-                    self.get_field_across_documents(
-                        f, documents, missing_treatment="ignore"))
+                # TODO: switch to the bulk_apply_to_documents function
+                _text = [self.get_field(f, d, missing_treatment="ignore") for d in documents]
             else:
                 _text = self.get_field_across_documents(f, documents, missing_treatment="ignore")
             text.append("".join(_text))
