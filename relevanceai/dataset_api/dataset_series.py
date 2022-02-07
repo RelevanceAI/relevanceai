@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -103,6 +104,19 @@ class Series(BatchAPIClient):
                 + str(e)
             )
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
+
+    def list_aliases(self):
+        fields = self._format_select_fields()
+        fields = [field for field in fields if field != "_cluster_"]
+        return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
+
+    def _format_select_fields(self):
+        fields = [
+            field
+            for field in self.datasets.schema(self.dataset_id)
+            if "_cluster_" in field
+        ]
+        return fields
 
     def _show_json(self, documents, **kw):
         from jsonshower import show_json
