@@ -711,7 +711,7 @@ class ClusterOps(BatchAPIClient):
         """
         See your centroids if there are any.
         """
-        return self.services.cluster.centroids.list(
+        return self.services.cluster.centroids.documents(
             self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
