@@ -394,7 +394,7 @@ class DatasetsClient(_Base):
                 return self.make_http_request(
                     endpoint=f"/datasets/{dataset_id}/delete",
                     method="POST",
-                    parameters={"dataset_id": dataset_id},
+                    # parameters={"dataset_id": dataset_id},
                 )
 
         elif user_input.lower() in ("n", "no"):
