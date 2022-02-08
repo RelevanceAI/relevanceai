@@ -61,6 +61,8 @@ def test_client(test_project, test_api_key):
         client = Client(test_project, test_api_key)
     else:
         client = Client(test_project, test_api_key, region=REGION)
+    # For some reason not resetting to default
+    client.config.reset()
     return client
 
 

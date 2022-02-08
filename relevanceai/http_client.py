@@ -72,7 +72,7 @@ class Client(BatchAPIClient, DocUtils):
         region="us-east-1",
         authenticate: bool = True,
         token: str = None,
-        force_refresh: bool = False
+        force_refresh: bool = False,
     ):
         """
         Initialize the client
