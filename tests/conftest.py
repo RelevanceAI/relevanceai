@@ -32,18 +32,14 @@ REGION = os.getenv("TEST_REGION")
 
 @pytest.fixture(scope="session", autouse=True)
 def test_project():
-    if REGION is None:
-        return os.getenv("TEST_PROJECT")
-    elif REGION == "us-east-1":
+    if REGION == "us-east-1":
         return os.getenv("TEST_US_PROJECT")
     return os.getenv("TEST_PROJECT")
 
 
 @pytest.fixture(scope="session", autouse=True)
 def test_api_key():
-    if REGION is None:
-        return os.getenv("TEST_API_KEY")
-    elif REGION == "us-east-1":
+    if REGION == "us-east-1":
         return os.getenv("TEST_US_API_KEY")
     return os.getenv("TEST_API_KEY")
 
