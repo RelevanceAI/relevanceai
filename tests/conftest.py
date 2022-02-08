@@ -232,6 +232,7 @@ def test_sample_vector_dataset(
     """
     Use this dataset if you just want vector
     """
+    test_client.config.reset()
     response = test_client._insert_documents(test_dataset_id, sample_vector_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
