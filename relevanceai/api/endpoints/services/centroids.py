@@ -16,7 +16,6 @@ class CentroidsClient(_Base):
         page_size: int = 5,
         cursor: str = None,
         include_vector: bool = False,
-        base_url="https://gateway-api-aueast.relevance.ai/latest",
     ):
         """
         Retrieve the cluster centroid
@@ -37,7 +36,7 @@ class CentroidsClient(_Base):
             Include vectors in the search results
         """
         return self.make_http_request(
-            "/services/cluster/centroids/list",
+            "/services/cluster/centroids/documents",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
