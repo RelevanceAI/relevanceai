@@ -44,7 +44,7 @@ jobs:
 
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
-          TEST_REGION: us-east-1
+          # TEST_REGION: us-east-1
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT}}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY}}
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
