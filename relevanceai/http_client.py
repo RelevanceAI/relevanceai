@@ -95,10 +95,10 @@ class Client(BatchAPIClient, DocUtils):
         if project is None or api_key is None or force_refresh:
             project, api_key, base_url = self._token_to_auth(token)
 
-        super().__init__(project, api_key)
-
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
+
+        super().__init__(project, api_key)
 
         # used to debug
         if authenticate:
