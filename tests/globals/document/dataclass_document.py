@@ -1,5 +1,3 @@
-import pytest
-
 import random
 
 import uuid
@@ -16,6 +14,5 @@ class DataclassDocument:
     value2: float = random.random()
 
 
-@pytest.fixture(scope="session")
 def dataclass_document(id: str) -> NamedTuple:
     return DataclassDocument(id=uuid.uuid4().__str__())

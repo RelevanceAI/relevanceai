@@ -1,10 +1,7 @@
-import pytest
-
 import numpy as np
 import pandas as pd
 
 
-@pytest.fixture(scope="session")
 def pandas_document(id: str):
     return {
         "_id": id,

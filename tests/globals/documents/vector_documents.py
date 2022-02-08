@@ -2,7 +2,7 @@ import pytest
 
 import uuid
 
-from typing import Dict, List
+from typing import List
 
 from tests.globals.utils import NUMBER_OF_DOCUMENTS
 

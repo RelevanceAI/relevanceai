@@ -1,5 +1,3 @@
-import pytest
-
 import random
 
 from datetime import datetime
@@ -8,7 +6,6 @@ import numpy as np
 import pandas as pd
 
 
-@pytest.fixture(scope="session")
 def complex_nested_document(id: str):
     return {
         "_id": id,
@@ -41,7 +38,6 @@ def complex_nested_document(id: str):
     }
 
 
-@pytest.fixture(scope="session")
 def simple_nested_document(id: str):
     return {
         "_id": id,

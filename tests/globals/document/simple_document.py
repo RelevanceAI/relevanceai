@@ -1,11 +1,8 @@
-import pytest
-
 import random
 
 from tests.globals.utils import generate_random_vector
 
 
-@pytest.fixture(scope="session")
 def simple_document(id: str):
     return [
         {

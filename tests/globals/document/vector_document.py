@@ -1,7 +1,4 @@
 from typing import Dict
-import pytest
-
-import uuid
 
 from tests.globals.utils import (
     generate_random_label,

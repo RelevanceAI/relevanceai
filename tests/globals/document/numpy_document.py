@@ -1,9 +1,6 @@
-import pytest
-
 import numpy as np
 
 
-@pytest.fixture(scope="session")
 def numpy_document(id: str):
     return {
         "_id": id,
