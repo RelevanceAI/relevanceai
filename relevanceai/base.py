@@ -1,3 +1,4 @@
+from this import d
 from relevanceai.config import CONFIG
 from relevanceai.transport import Transport
 from relevanceai.logger import LoguruLogger
@@ -38,3 +39,24 @@ class _Base(Transport, LoguruLogger):
         if value.endswith("/"):
             value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
+
+    @property
+    def region(self):
+        if hasattr(self, "_region"):
+            return self._region
+        return self.config["api.region"]
+
+    @region.setter
+    def region(self, region_value):
+        self.config["api.region"] = region_value
+        self.base_url = self.base_ingest_url = self._region_to_url(region_value)
+
+    def _region_to_url(self, region: str):
+        # to match our logic in dashboard
+        # add print statement to double-check region support now
+        print(f"Connecting to {region}...")
+        if region == "old-australia-east":
+            url = "https://gateway-api-aueast.relevance.ai/latest"
+        else:
+            url = f"https://api.{region}.relevance.ai/latest"
+        return url

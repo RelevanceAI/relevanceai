@@ -146,21 +146,11 @@ class Client(BatchAPIClient, DocUtils):
                 url = self._region_to_url(region)
                 self.base_url = url
                 self.base_ingest_url = url
-            self.region = region
+            self._region = region
             if len(split_token) >= 4:
                 self._firebase_uid = split_token[4]
         self._write_credentials(project, api_key, url)
         return project, api_key, url
-
-    def _region_to_url(self, region: str):
-        # to match our logic in dashboard
-        # add print statement to double-check region support now
-        print(f"Connecting to {region}...")
-        if region == "old-australia-east":
-            url = "https://gateway-api-aueast.relevance.ai/latest"
-        else:
-            url = f"https://api.{region}.relevance.ai/latest"
-        return url
 
     def _region_to_ingestion_url(self, region: str):
         # same as region to URL now in case ingestion ever needs to be separate
