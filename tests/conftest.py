@@ -252,9 +252,12 @@ def test_datetime_dataset(
     test_client: Client, sample_datetime_documents, test_dataset_id
 ):
     """Sample datetime dataset"""
-    response = test_client._insert_documents(test_dataset_id, sample_datetime_documents)
+    DATETIME_DATASET_ID = test_dataset_id + "_datetime"
+    response = test_client._insert_documents(
+        DATETIME_DATASET_ID, sample_datetime_documents
+    )
     yield response, len(sample_datetime_documents)
-    test_client.datasets.delete(test_dataset_id)
+    test_client.datasets.delete(DATETIME_DATASET_ID)
 
 
 @pytest.fixture(scope="session")
