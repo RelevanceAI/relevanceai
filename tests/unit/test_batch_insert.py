@@ -15,6 +15,7 @@ class TestInsert:
         )
         assert len(results["failed_documents"]) == 0
 
+    @pytest.mark.skip
     def test_health(self, test_dataset_id, test_client: Client):
         """Batch insert"""
         health = test_client.datasets.monitor.health(test_dataset_id)

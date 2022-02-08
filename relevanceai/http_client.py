@@ -92,10 +92,10 @@ class Client(BatchAPIClient, DocUtils):
         if project is None or api_key is None:
             project, api_key, base_url = self._token_to_auth(token)
 
+        super().__init__(project, api_key)
+
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
-
-        super().__init__(project, api_key)
 
         # used to debug
         if authenticate:
@@ -109,10 +109,7 @@ class Client(BatchAPIClient, DocUtils):
         # Import projector and vector tools
         if vis_requirements:
             self.projector = Projector(project, api_key)
-        else:
-            self.logger.warning(
-                "Projector not loaded. You do not have visualisation requirements installed."
-            )
+
         self.vector_tools = VectorTools(project, api_key)
 
         # Legacy functions (?) - forgot what they were for
@@ -134,28 +131,6 @@ class Client(BatchAPIClient, DocUtils):
     # @output_format.setter
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
-
-    ### Configurations
-
-    @property
-    def base_url(self):
-        return CONFIG.get_field("api.base_url", CONFIG.config)
-
-    @base_url.setter
-    def base_url(self, value: str):
-        if value.endswith("/"):
-            value = value[:-1]
-        CONFIG.set_option("api.base_url", value)
-
-    @property
-    def base_ingest_url(self):
-        return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
-
-    @base_ingest_url.setter
-    def base_ingest_url(self, value: str):
-        if value.endswith("/"):
-            value = value[:-1]
-        CONFIG.set_option("api.base_ingest_url", value)
 
     ### Authentication Details
 
@@ -227,13 +202,6 @@ class Client(BatchAPIClient, DocUtils):
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
-
-    def login(
-        self,
-        authenticate: bool = True,
-    ):
-        project, api_key = self._token_to_auth()
-        return Client(project=project, api_key=api_key, authenticate=authenticate)
 
     @property
     def auth_header(self):

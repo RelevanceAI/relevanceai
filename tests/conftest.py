@@ -70,6 +70,11 @@ def test_dataset_id():
 
 
 @pytest.fixture(scope="session", autouse=True)
+def large_test_dataset_id():
+    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX + RANDOM_DATASET_SUFFIX
+
+
+@pytest.fixture(scope="session", autouse=True)
 def pandas_test_dataset_id():
     return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_PANDAS_DATASET_SUFFIX
 
@@ -86,12 +91,12 @@ def test_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def test_large_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
+def test_large_sample_dataset(test_client: Client, simple_doc, large_test_dataset_id):
     """Sample dataset to insert and then delete"""
     simple_documents = simple_doc * 1000
-    response = test_client._insert_documents(test_dataset_id, simple_documents)
+    response = test_client._insert_documents(large_test_dataset_id, simple_documents)
     yield test_dataset_id
-    test_client.datasets.delete(test_dataset_id)
+    test_client.datasets.delete(large_test_dataset_id)
 
 
 @pytest.fixture(scope="session", autouse=True)
