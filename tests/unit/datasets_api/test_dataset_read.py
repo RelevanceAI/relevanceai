@@ -2,6 +2,7 @@
     Testing dataset read operations
 """
 
+import pytest
 import pandas as pd
 from relevanceai.http_client import Dataset, Client
 
@@ -75,6 +76,7 @@ def test_info(test_dataset_df: Dataset):
     assert isinstance(info, pd.DataFrame)
 
 
+@pytest.mark.skip(reason="Node has not implemented yet")
 def test_df_get_smoke(test_dataset_df: Dataset):
     """Test the df"""
     # This is to cover the 255 error before
