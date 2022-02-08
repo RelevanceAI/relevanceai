@@ -3,6 +3,7 @@
 import time
 import traceback
 import json
+import asyncio
 from typing import Union
 from json.decoder import JSONDecodeError
 
@@ -55,7 +56,7 @@ class Transport(JSONEncoderUtils):
     def DASHBOARD_TYPES(self):
         return list(DASHBOARD_MAPPINGS.keys())
 
-    def _log_to_dashboard(
+    async def _log_to_dashboard(
         self,
         method: str,
         parameters: dict,
@@ -124,11 +125,13 @@ class Transport(JSONEncoderUtils):
 
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
-        return self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="multivector_search",
+        asyncio.ensure_future(
+            self._log_to_dashboard(
+                method=method,
+                parameters=parameters,
+                endpoint=endpoint,
+                dashboard_type="multivector_search",
+            )
         )
 
     def print_dashboard_message(self, message: str):

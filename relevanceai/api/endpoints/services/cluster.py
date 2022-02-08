@@ -1,3 +1,4 @@
+import asyncio
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.services.centroids import CentroidsClient
 
@@ -65,11 +66,13 @@ class ClusterClient(_Base):
             "vector_fields": vector_fields,
             "alias": alias,
         }
-        self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="cluster_aggregation",
+        asyncio.ensure_future(
+            self._log_to_dashboard(
+                method=method,
+                parameters=parameters,
+                endpoint=endpoint,
+                dashboard_type="cluster_aggregation",
+            )
         )
         return self.make_http_request(
             endpoint=endpoint, method=method, parameters=parameters
