@@ -63,6 +63,11 @@ def test_client(test_project, test_api_key):
         client = Client(test_project, test_api_key, region=REGION)
     # For some reason not resetting to default
     client.config.reset()
+    if client.region != "us-east-1":
+        import pdb
+
+        pdb.set_trace()
+        print("WTF")
     return client
 
 

@@ -8,8 +8,11 @@ from relevanceai import Client
 class TestInsert:
     """Testing the insert functionalities"""
 
-    def test_batch_insert(self, sample_vector_documents, test_dataset_id, test_client):
+    def test_batch_insert(
+        self, sample_vector_documents, test_dataset_id, test_client: Client
+    ):
         """Batch insert"""
+        test_client.config.reset()
         results = test_client._insert_documents(
             test_dataset_id, sample_vector_documents
         )
@@ -18,10 +21,12 @@ class TestInsert:
     @pytest.mark.skip
     def test_health(self, test_dataset_id, test_client: Client):
         """Batch insert"""
+        test_client.config.reset()
         health = test_client.datasets.monitor.health(test_dataset_id)
         assert health["_chunk_.label"]["exists"] == 100
 
     def test_csv_upload(self, test_csv_dataset):
+
         response, original_length = test_csv_dataset
         assert response["inserted"] == original_length
 

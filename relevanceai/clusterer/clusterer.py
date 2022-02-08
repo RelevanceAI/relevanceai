@@ -21,6 +21,7 @@ You can view other examples of how to interact with this class here :ref:`integr
 import os
 import json
 import getpass
+import time
 import warnings
 
 import numpy as np
@@ -596,6 +597,8 @@ class ClusterOps(BatchAPIClient):
             )
             self.logger.info(results)
 
+            # give database time to make sure its there
+            time.sleep(2)
             self.datasets.cluster.centroids.list_closest_to_center(
                 self.dataset_id,
                 vector_fields=self.vector_fields,

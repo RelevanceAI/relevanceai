@@ -5,6 +5,7 @@ Test the clustering workflow from getting the documents, clustering and then ins
 
 import pytest
 
+import time
 from relevanceai import Client
 from relevanceai.dataset_api import Dataset
 
@@ -32,6 +33,7 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_dataset_df: Da
 
     clusterer = test_client.ClusterOps(model=model, alias=alias)
 
+    time.sleep(2)
     clusterer.fit_predict_update(dataset=test_dataset_df, vector_fields=[vector_field])
 
     assert f"_cluster_.{vector_field}.{alias}" in test_dataset_df.schema
