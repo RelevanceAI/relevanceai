@@ -22,7 +22,7 @@ def test_batch_clusterer_closest(minibatch_clusterer: ClusterOps):
 
 
 def test_batch_clusterer_centroids(minibatch_clusterer: ClusterOps):
-    assert len(minibatch_clusterer.centroids) > 0
+    assert len(minibatch_clusterer.list_closest_to_center()) > 0
 
 
 @pytest.fixture(scope="session")
@@ -40,4 +40,4 @@ def test_kmeans_closest(kmeans_clusterer: ClusterOps):
 
 def test_kmeans_centroids(kmeans_clusterer: ClusterOps):
     """K Means ClusterOps object"""
-    assert len(kmeans_clusterer.centroids) > 0
+    assert len(kmeans_clusterer.list_closest_to_center()) > 0

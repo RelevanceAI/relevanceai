@@ -791,6 +791,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
             else:
                 break
+            time.sleep(int(self.config["retries.seconds_between_retries"]))
 
         # When returning, add in the cancelled id
         failed_ids.extend(cancelled_ids)

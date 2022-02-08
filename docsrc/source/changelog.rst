@@ -9,6 +9,7 @@ v0.33.3
 
 - Fix cluster aggregate
 - Fix for login
+- Make adding firebase UID not breaking
 
 Developer Updates: 
 

@@ -72,6 +72,7 @@ class Client(BatchAPIClient, DocUtils):
         region="us-east-1",
         authenticate: bool = True,
         token: str = None,
+        force_refresh: bool = False,
     ):
         """
         Initialize the client
@@ -87,20 +88,21 @@ class Client(BatchAPIClient, DocUtils):
             The region to work in. Currently only `us-east-1` is provided
         token: str
             You can paste the token here if things need to be refreshed
+        force_refresh: bool
+            If True, it forces you to refresh your client
         """
         self.region = region
-        if project is None or api_key is None:
+        if project is None or api_key is None or force_refresh:
             project, api_key, base_url = self._token_to_auth(token)
-
-        super().__init__(project, api_key)
 
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
 
+        super().__init__(project, api_key)
+
         # used to debug
         if authenticate:
             if self.check_auth():
-
                 WELCOME_MESSAGE = f"""Welcome to RelevanceAI. Logged in as {project}."""
                 print(WELCOME_MESSAGE)
             else:
@@ -138,28 +140,17 @@ class Client(BatchAPIClient, DocUtils):
         split_token = token.split(":")
         project = split_token[0]
         api_key = split_token[1]
-        # If the base URl is included in the pasted token then updaet base url
         if len(split_token) >= 3:
             region = split_token[2]
             if region != "old-australia-east":
                 url = self._region_to_url(region)
                 self.base_url = url
                 self.base_ingest_url = url
-            self.region = region
+            self._region = region
             if len(split_token) >= 4:
                 self._firebase_uid = split_token[4]
         self._write_credentials(project, api_key, url)
         return project, api_key, url
-
-    def _region_to_url(self, region: str):
-        # to match our logic in dashboard
-        # add print statement to double-check region support now
-        print(f"Connecting to {region}...")
-        if region == "old-australia-east":
-            url = "https://gateway-api-aueast.relevance.ai/latest"
-        else:
-            url = f"https://api.{region}.relevance.ai/latest"
-        return url
 
     def _region_to_ingestion_url(self, region: str):
         # same as region to URL now in case ingestion ever needs to be separate
@@ -211,6 +202,7 @@ class Client(BatchAPIClient, DocUtils):
         return self.services.search.make_suggestion()
 
     def check_auth(self):
+        print(f"Connecting to {self.region}...")
         return self.admin._ping()
 
     ### Utility functions

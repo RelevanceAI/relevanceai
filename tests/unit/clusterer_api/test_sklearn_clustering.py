@@ -22,4 +22,4 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
         model=model, alias=alias, vector_fields=[vector_field], overwrite=True
     )
     assert f"_cluster_.{vector_field}.{alias}" in df.schema
-    assert len(clusterer.centroids) > 0
+    assert len(clusterer.list_closest_to_center()) > 0
