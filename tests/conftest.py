@@ -27,15 +27,24 @@ SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
+REGION = os.getenv("TEST_REGION")
+
 
 @pytest.fixture(scope="session", autouse=True)
 def test_project():
-    # test projects
+    if REGION is None:
+        return os.getenv("TEST_PROJECT")
+    elif REGION == "us-east-1":
+        return os.getenv("TEST_US_PROJECT")
     return os.getenv("TEST_PROJECT")
 
 
 @pytest.fixture(scope="session", autouse=True)
 def test_api_key():
+    if REGION is None:
+        return os.getenv("TEST_API_KEY")
+    elif REGION == "us-east-1":
+        return os.getenv("TEST_US_API_KEY")
     return os.getenv("TEST_API_KEY")
 
 
