@@ -11,6 +11,7 @@ from relevanceai.clusterer import ClusterOps
 from relevanceai.clusterer import CentroidClusterBase
 
 
+@pytest.mark.skip
 def test_old_cluster_integration(test_client: Client, test_sample_vector_dataset):
     """Test for the entire clustering workflow."""
     # Retrieve a previous dataset
