@@ -102,7 +102,7 @@ class AggregateClient(_Base):
             "/services/aggregate/aggregate",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                "dataset_ids": [dataset_id],
                 "aggregation_query": {"groupby": groupby, "metrics": metrics},
                 "filters": filters,
                 "page_size": page_size,
