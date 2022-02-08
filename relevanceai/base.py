@@ -53,7 +53,6 @@ class _Base(Transport, LoguruLogger):
     def _region_to_url(self, region: str):
         # to match our logic in dashboard
         # add print statement to double-check region support now
-        print(f"Connecting to {region}...")
         if region == "old-australia-east":
             url = "https://gateway-api-aueast.relevance.ai/latest"
         else:

@@ -202,6 +202,7 @@ class Client(BatchAPIClient, DocUtils):
         return self.services.search.make_suggestion()
 
     def check_auth(self):
+        print(f"Connecting to {self.region}...")
         return self.admin._ping()
 
     ### Utility functions
