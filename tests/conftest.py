@@ -308,7 +308,7 @@ def test_csv_dataset(test_client: Client, sample_vector_documents, test_dataset_
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(sample_vector_documents)
-        df.to_csv(csvfile)
+        df.to_csv(csvfile.name)
 
         response = test_client._insert_csv(test_dataset_id, csvfile.name)
         yield response, len(sample_vector_documents)
