@@ -255,6 +255,7 @@ def test_datetime_dataset(
 ):
     """Sample datetime dataset"""
     DATETIME_DATASET_ID = test_dataset_id + "_datetime"
+    test_client.config.reset()
     response = test_client._insert_documents(
         DATETIME_DATASET_ID, sample_datetime_documents
     )
