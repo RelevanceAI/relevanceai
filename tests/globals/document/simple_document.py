@@ -1,13 +1,14 @@
 import pytest
 
-import uuid
 import random
+
+import uuid
 
 from tests.globals.utils import generate_random_vector
 
 
-@pytest.fixture(scope="session", autouse=True)
-def simple_doc():
+@pytest.fixture(scope="session")
+def simple_document():
     return [
         {
             "_id": uuid.uuid4().__str__(),

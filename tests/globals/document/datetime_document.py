@@ -1,9 +1,14 @@
+import pytest
+
 import uuid
+
+from typing import Dict
 
 from datetime import datetime
 
 
-def _sample_datetime_document():
+@pytest.fixture(scope="session")
+def datetime_document() -> Dict:
     return {
         "_id": uuid.uuid4().__str__(),
         "sample_1_datetime": datetime.now(),

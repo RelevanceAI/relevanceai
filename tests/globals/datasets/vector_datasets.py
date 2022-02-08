@@ -4,9 +4,9 @@ from relevanceai import Client
 
 
 @pytest.fixture(scope="session")
-def test_sample_vector_dataset(
-    test_client: Client, sample_vector_documents, test_dataset_id
-):
-    response = test_client._insert_documents(test_dataset_id, sample_vector_documents)
+def vector_dataset(test_client: Client, vector_documents, test_dataset_id):
+    response = test_client._insert_documents(test_dataset_id, vector_documents)
+
     yield test_dataset_id
+
     test_client.datasets.delete(test_dataset_id)

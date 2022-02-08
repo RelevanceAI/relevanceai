@@ -11,35 +11,35 @@ from relevanceai.dataset_api import Dataset
 import tempfile
 
 from tests.globals.utils import *
-from tests.globals.objects import *
 from tests.globals.document import *
 from tests.globals.documents import *
+from tests.globals.objects import *
 from tests.globals.datasets import *
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def test_project():
     # test projects
     return os.getenv("TEST_PROJECT")
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def test_api_key():
     return os.getenv("TEST_API_KEY")
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def test_client(test_project, test_api_key):
     client = Client(test_project, test_api_key)
     return client
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def test_dataset_id():
     return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def pandas_test_dataset_id():
     return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_PANDAS_DATASET_SUFFIX
 

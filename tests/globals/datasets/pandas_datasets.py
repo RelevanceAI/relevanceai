@@ -1,14 +1,19 @@
+from typing import Dict, List
 import pytest
 
 from relevanceai import Client
 
 
 @pytest.fixture(scope="session")
-def test_pandas_dataset(
-    test_client: Client, sample_pandas_documents, pandas_test_dataset_id
+def pandas_dataset(
+    test_client: Client,
+    test_pandas_documents: List[Dict],
+    pandas_test_dataset_id: str,
 ):
     response = test_client._insert_documents(
-        pandas_test_dataset_id, sample_pandas_documents
+        pandas_test_dataset_id, test_pandas_documents
     )
-    yield response, len(sample_pandas_documents)
+
+    yield response, len(test_pandas_documents)
+
     test_client.datasets.delete(pandas_test_dataset_id)

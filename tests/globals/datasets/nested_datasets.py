@@ -1,25 +1,16 @@
 import pytest
 
+from typing import List, Dict
+
 from relevanceai import Client
 
 
 @pytest.fixture(scope="session")
 def sample_nested_assorted_dataset(
-    test_client: Client, sample_nested_assorted_documents, test_dataset_id
+    test_client: Client, assorted_nested_documents: List[Dict], test_dataset_id: str
 ):
-    response = test_client._insert_documents(
-        test_dataset_id, sample_nested_assorted_documents
-    )
+    test_client._insert_documents(test_dataset_id, assorted_nested_documents)
+
     yield test_dataset_id
-    test_client.datasets.delete(test_dataset_id)
 
-
-@pytest.fixture(scope="session")
-def test_nested_assorted_dataset(
-    test_client: Client, sample_nested_assorted_documents, test_dataset_id
-):
-    response = test_client._insert_documents(
-        test_dataset_id, sample_nested_assorted_documents
-    )
-    yield response, len(sample_nested_assorted_documents)
     test_client.datasets.delete(test_dataset_id)
