@@ -138,7 +138,6 @@ class Client(BatchAPIClient, DocUtils):
         split_token = token.split(":")
         project = split_token[0]
         api_key = split_token[1]
-        # If the base URl is included in the pasted token then updaet base url
         if len(split_token) >= 3:
             region = split_token[2]
             if region != "old-australia-east":
