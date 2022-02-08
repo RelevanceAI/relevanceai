@@ -4,16 +4,22 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v0.33.3
+v0.33.5
+--------
+
+- Fix UX flow
+
+v0.33.4
 ---------
+
+- Make asynchronous dashboard request
+
+v0.33.3
+--------
 
 - Fix cluster aggregate
 - Fix for login
 - Make adding firebase UID not breaking
-
-Developer Updates: 
-
-- Makefile update
 
 v0.33.2
 --------
@@ -342,3 +348,4 @@ v0.26.0
 - Added JSON serialization and consequent test updates
 - Bug fix to cluster metrics
 - Minor fix to tests
+>>>>>>> development

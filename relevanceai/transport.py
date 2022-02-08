@@ -1,5 +1,6 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+import asyncio
 import time
 import traceback
 import asyncio
@@ -85,7 +86,7 @@ class Transport(JSONEncoderUtils):
         }
         self.logger.debug(request_body)
 
-        async def send_response():
+        async def run_request():
             req = Request(
                 method=method.upper(),
                 url=self._dashboard_request_url,
@@ -96,7 +97,7 @@ class Transport(JSONEncoderUtils):
             with requests.Session() as s:
                 response = s.send(req)
 
-        asyncio.ensure_future(send_response())
+        asyncio.ensure_future(run_request())
 
         if verbose:
             dashboard_url = (
@@ -104,7 +105,6 @@ class Transport(JSONEncoderUtils):
                 + DASHBOARD_MAPPINGS[dashboard_type]
             )
             self.print_dashboard_url(dashboard_url)
-        # return response
 
     def _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None):
         """Link to a monitoring dashboard
