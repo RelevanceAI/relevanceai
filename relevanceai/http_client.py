@@ -69,15 +69,34 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
+        region="us-east-1",
         authenticate: bool = False,
         token: str = None,
     ):
+        """
+        Initialize the client
+
+        Parameters
+        -------------
+
+        project: str
+            The name of the project
+        api_key: str
+            API key
+        region: str
+            The region to work in. Currently only `us-east-1` is provided
+        token: str
+            You can paste the token here if things need to be refreshed
+        """
+        self.region = region
         if project is None or api_key is None:
             project, api_key = self._token_to_auth(token)
 
+        self.base_url = self._region_to_url(region)
+
         super().__init__(project, api_key)
 
-        # Authenticate user
+        # used to debug
         if authenticate:
             if self.check_auth():
 
@@ -122,7 +141,7 @@ class Client(BatchAPIClient, DocUtils):
         return CONFIG.get_field("api.base_url", CONFIG.config)
 
     @base_url.setter
-    def base_url(self, value):
+    def base_url(self, value: str):
         if value.endswith("/"):
             value = value[:-1]
         CONFIG.set_option("api.base_url", value)
@@ -132,7 +151,7 @@ class Client(BatchAPIClient, DocUtils):
         return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
 
     @base_ingest_url.setter
-    def base_ingest_url(self, value):
+    def base_ingest_url(self, value: str):
         if value.endswith("/"):
             value = value[:-1]
         CONFIG.set_option("api.base_ingest_url", value)
@@ -143,15 +162,23 @@ class Client(BatchAPIClient, DocUtils):
         split_token = token.split(":")
         project = split_token[0]
         api_key = split_token[1]
-        # If the base URl is included in the pasted token then include it
-        if len(split_token) == 3:
+        # If the base URl is included in the pasted token then updaet base url
+        if len(split_token) >= 3:
             region = split_token[2]
             if region != "old-australia-east":
-                url = f"https://api.{region}.relevance.ai/latest"
+                url = self._region_to_url(region)
                 self.base_url = url
                 self.base_ingest_url = url
+            self.region = region
+            if len(split_token) >= 4:
+                self._firebase_uid = split_token[4]
         self._write_credentials(project, api_key, url)
-        return project, api_key
+        return project, api_key, url
+
+    def _region_to_url(self, region):
+        # to match our logic in dashboard
+        url = f"https://api.{region}.relevance.ai/latest"
+        return url
 
     def _token_to_auth(self, token=None):
         # if verbose:
@@ -172,11 +199,11 @@ class Client(BatchAPIClient, DocUtils):
             project = data["project"]
             api_key = data["api_key"]
             self.base_url = data["base_url"]
-        return project, api_key
+        return project, api_key, self.base_url
 
     def _write_credentials(self, project, api_key, base_url):
         print(
-            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved to this file."
+            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
         )
         json.dump(
             {"project": project, "api_key": api_key, "base_url": base_url},
