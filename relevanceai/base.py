@@ -43,7 +43,7 @@ class _Base(Transport, LoguruLogger):
     def region(self):
         if hasattr(self, "_region"):
             return self._region
-        return self.config["api.region"]
+        return CONFIG["api.region"]
 
     @region.setter
     def region(self, region_value):
