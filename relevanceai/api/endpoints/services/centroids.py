@@ -46,7 +46,6 @@ class CentroidsClient(_Base):
                 "cursor": cursor,
                 "include_vector": include_vector,
             },
-            base_url=base_url,
         )
 
     def get(
