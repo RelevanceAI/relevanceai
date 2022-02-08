@@ -135,7 +135,8 @@ class CentroidsClient(_Base):
         Retrieve the cluster centroids by IDs
 
         Parameters
-        ----------
+        -------------
+
         dataset_id : string
             Unique name of dataset
         cluster_ids : list
