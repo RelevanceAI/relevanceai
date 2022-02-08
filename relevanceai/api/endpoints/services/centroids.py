@@ -306,13 +306,11 @@ class CentroidsClient(_Base):
         }
         endpoint = "/services/cluster/centroids/list_closest_to_center"
         method = "POST"
-        asyncio.ensure_future(
-            self._log_to_dashboard(
-                method=method,
-                parameters=parameters,
-                endpoint=endpoint,
-                dashboard_type="cluster_centroids_closest",
-            )
+        self._log_to_dashboard(
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="cluster_centroids_closest",
         )
         return self.make_http_request(endpoint, method=method, parameters=parameters)
 
@@ -400,13 +398,11 @@ class CentroidsClient(_Base):
             "include_count": include_count,
             "include_facets": include_facets,
         }
-        asyncio.ensure_future(
-            self._log_to_dashboard(
-                method=method,
-                parameters=parameters,
-                endpoint=endpoint,
-                dashboard_type="cluster_centroids_furthest",
-            )
+        self._log_to_dashboard(
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="cluster_centroids_furthest",
         )
         response = self.make_http_request(
             endpoint, method=method, parameters=parameters

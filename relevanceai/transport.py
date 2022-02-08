@@ -2,9 +2,7 @@
 """
 import time
 import traceback
-import json
 import asyncio
-from typing import Union
 from json.decoder import JSONDecodeError
 
 from urllib.parse import urlparse
@@ -56,7 +54,7 @@ class Transport(JSONEncoderUtils):
     def DASHBOARD_TYPES(self):
         return list(DASHBOARD_MAPPINGS.keys())
 
-    async def _log_to_dashboard(
+    def _log_to_dashboard(
         self,
         method: str,
         parameters: dict,
@@ -86,15 +84,18 @@ class Transport(JSONEncoderUtils):
             },
         }
         self.logger.debug(request_body)
-        req = Request(
-            method=method.upper(),
-            url=self._dashboard_request_url,
-            headers=self.auth_header,
-            json=request_body,
-            # params=parameters if method.upper() == "GET" else {},
-        ).prepare()
-        with requests.Session() as s:
-            response = s.send(req)
+        async def send_response():
+            req = Request(
+                method=method.upper(),
+                url=self._dashboard_request_url,
+                headers=self.auth_header,
+                json=request_body,
+                # params=parameters if method.upper() == "GET" else {},
+            ).prepare()
+            with requests.Session() as s:
+                response = s.send(req)
+        
+        asyncio.ensure_future(send_response())
 
         if verbose:
             dashboard_url = (
@@ -102,7 +103,7 @@ class Transport(JSONEncoderUtils):
                 + DASHBOARD_MAPPINGS[dashboard_type]
             )
             self.print_dashboard_url(dashboard_url)
-        return response
+        # return response
 
     def _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None):
         """Link to a monitoring dashboard
@@ -125,13 +126,11 @@ class Transport(JSONEncoderUtils):
 
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
-        asyncio.ensure_future(
-            self._log_to_dashboard(
-                method=method,
-                parameters=parameters,
-                endpoint=endpoint,
-                dashboard_type="multivector_search",
-            )
+        self._log_to_dashboard(
+            method=method,
+            parameters=parameters,
+            endpoint=endpoint,
+            dashboard_type="multivector_search",
         )
 
     def print_dashboard_message(self, message: str):
