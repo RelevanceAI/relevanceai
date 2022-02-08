@@ -72,6 +72,7 @@ class Client(BatchAPIClient, DocUtils):
         region="us-east-1",
         authenticate: bool = True,
         token: str = None,
+        force_refresh: bool = False
     ):
         """
         Initialize the client
@@ -87,9 +88,11 @@ class Client(BatchAPIClient, DocUtils):
             The region to work in. Currently only `us-east-1` is provided
         token: str
             You can paste the token here if things need to be refreshed
+        force_refresh: bool
+            If True, it forces you to refresh your client
         """
         self.region = region
-        if project is None or api_key is None:
+        if project is None or api_key is None or force_refresh:
             project, api_key, base_url = self._token_to_auth(token)
 
         super().__init__(project, api_key)
@@ -100,7 +103,6 @@ class Client(BatchAPIClient, DocUtils):
         # used to debug
         if authenticate:
             if self.check_auth():
-
                 WELCOME_MESSAGE = f"""Welcome to RelevanceAI. Logged in as {project}."""
                 print(WELCOME_MESSAGE)
             else:
