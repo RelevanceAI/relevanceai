@@ -7,6 +7,8 @@ import pytest
 from relevanceai import Client
 from relevanceai.dataset_api import Dataset
 
+from typing import List
+
 from relevanceai.clusterer import ClusterOps
 from relevanceai.clusterer import CentroidClusterBase
 
@@ -15,13 +17,13 @@ from relevanceai.clusterer import CentroidClusterBase
     "vector_fields", [["sample_1_vector_"], ["sample_2_vector_", "sample_1_vector_"]]
 )
 def test_cluster_integration_one_liner(
-    test_client: Client, test_sample_vector_dataset, vector_fields
+    test_client: Client, vector_dataset: Dataset, vector_fields: List
 ):
     """Smoke Test for the entire clustering workflow."""
     # Retrieve a previous dataset
     VECTOR_FIELDS = vector_fields
     test_client.vector_tools.cluster.kmeans_cluster(
-        dataset_id=test_sample_vector_dataset,
+        dataset_id=vector_dataset,
         vector_fields=VECTOR_FIELDS,
         overwrite=True,
         alias="sample_cluster",

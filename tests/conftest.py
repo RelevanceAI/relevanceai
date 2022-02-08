@@ -19,7 +19,6 @@ from tests.globals.datasets import *
 
 @pytest.fixture(scope="session")
 def test_project():
-    # test projects
     return os.getenv("TEST_PROJECT")
 
 
@@ -45,34 +44,38 @@ def pandas_test_dataset_id():
 
 
 @pytest.fixture(scope="session")
-def test_csv_dataset(test_client: Client, sample_vector_documents, test_dataset_id):
+def test_csv_dataset(
+    test_client: Client, vector_documents: List[Dict], test_dataset_id
+):
     """Sample csv dataset"""
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
-        df = pd.DataFrame(sample_vector_documents)
+        df = pd.DataFrame(vector_documents)
         df.to_csv(csvfile)
 
         response = test_client._insert_csv(test_dataset_id, csvfile.name)
-        yield response, len(sample_vector_documents)
+        yield response, len(vector_documents)
         test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="session")
-def test_read_df(test_client: Client, sample_vector_documents):
+def test_read_df(test_client: Client, vector_documents: List[Dict]):
     DATASET_ID = "_sample_df_"
     df = test_client.Dataset(DATASET_ID)
-    results = df.upsert_documents(sample_vector_documents)
+    results = df.upsert_documents(vector_documents)
     yield results
     df.delete()
 
 
 @pytest.fixture(scope="session")
-def test_csv_df(test_dataset_df: Dataset, sample_vector_documents, test_dataset_id):
+def test_csv_df(
+    test_dataset_df: Dataset, vector_documents: List[Dict], test_dataset_id
+):
     """Sample csv dataset"""
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
-        df = pd.DataFrame(sample_vector_documents)
+        df = pd.DataFrame(vector_documents)
         df.to_csv(csvfile)
 
         response = test_dataset_df.insert_csv(csvfile.name)
-        yield response, len(sample_vector_documents)
+        yield response, len(vector_documents)
         test_dataset_df.delete()

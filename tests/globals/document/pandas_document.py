@@ -1,15 +1,13 @@
 import pytest
 
-import uuid
-
 import numpy as np
 import pandas as pd
 
 
 @pytest.fixture(scope="session")
-def pandas_document():
+def pandas_document(id: str):
     return {
-        "_id": uuid.uuid4().__str__(),
+        "_id": id,
         "sample_1_pandas": pd.DataFrame(
             np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
         ),

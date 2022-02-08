@@ -8,8 +8,6 @@ def test_dataset_api_kmeans_centroids_properties(test_client: Client, test_df: D
 
     from relevanceai.clusterer import KMeansModel
 
-    print(test_df.shape)
-
     model = KMeansModel()
 
     clusterer: ClusterOps = test_client.ClusterOps(model=model, alias=alias)

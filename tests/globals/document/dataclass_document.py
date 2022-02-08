@@ -17,5 +17,5 @@ class DataclassDocument:
 
 
 @pytest.fixture(scope="session")
-def dataclass_document() -> NamedTuple:
-    return DataclassDocument()
+def dataclass_document(id: str) -> NamedTuple:
+    return DataclassDocument(id=uuid.uuid4().__str__())

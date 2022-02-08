@@ -1,3 +1,4 @@
+from typing import Dict
 import pytest
 
 import uuid
@@ -10,10 +11,9 @@ from tests.globals.utils import (
 )
 
 
-@pytest.fixture(scope="session")
-def vector_document():
+def vector_document(id: str) -> Dict:
     return {
-        "_id": uuid.uuid4().__str__(),
+        "_id": id,
         "sample_1_label": generate_random_label(),
         "sample_2_label": generate_random_label(),
         "sample_3_label": generate_random_label(),

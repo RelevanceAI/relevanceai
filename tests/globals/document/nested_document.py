@@ -4,16 +4,14 @@ import random
 
 from datetime import datetime
 
-import uuid
-
 import numpy as np
 import pandas as pd
 
 
 @pytest.fixture(scope="session")
-def complex_nested_document():
+def complex_nested_document(id: str):
     return {
-        "_id": uuid.uuid4().__str__(),
+        "_id": id,
         "sample_1": {
             "panda": pd.DataFrame(
                 np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
@@ -44,9 +42,9 @@ def complex_nested_document():
 
 
 @pytest.fixture(scope="session")
-def simple_nested_document():
+def simple_nested_document(id: str):
     return {
-        "_id": uuid.uuid4.__str__(),
+        "_id": id,
         "col1": {"subcol1": random.random(), "subcol2": random.random()},
         "col2": {"subcol3": random.random(), "subcol4": random.random()},
         "col3": {"subcol5": random.random(), "subcol6": random.random()},

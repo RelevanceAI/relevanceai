@@ -1,10 +1,16 @@
 import pytest
 
+import uuid
+
 from typing import Dict, List
 
 from tests.globals.utils import NUMBER_OF_DOCUMENTS
 
+from tests.globals.document import datetime_document
+
 
 @pytest.fixture(scope="session")
-def datetime_documents(datetime_document: Dict) -> List:
-    return [datetime_document for _ in range(NUMBER_OF_DOCUMENTS)]
+def datetime_documents() -> List:
+    return [
+        datetime_document(uuid.uuid4().__str__()) for _ in range(NUMBER_OF_DOCUMENTS)
+    ]

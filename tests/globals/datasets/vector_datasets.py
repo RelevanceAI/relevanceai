@@ -1,11 +1,16 @@
 import pytest
 
+from typing import Dict, List
+
 from relevanceai import Client
+from relevanceai.dataset_api.dataset_api import Dataset
 
 
 @pytest.fixture(scope="session")
-def vector_dataset(test_client: Client, vector_documents, test_dataset_id):
-    response = test_client._insert_documents(test_dataset_id, vector_documents)
+def vector_dataset(
+    test_client: Client, vector_documents: List[Dict], test_dataset_id: str
+):
+    test_client._insert_documents(test_dataset_id, vector_documents)
 
     yield test_dataset_id
 

@@ -1,10 +1,16 @@
 import pytest
 
-from typing import Dict, List
+import uuid
+
+from typing import List
 
 from tests.globals.utils import NUMBER_OF_DOCUMENTS
 
+from tests.globals.document import dataclass_document
+
 
 @pytest.fixture(scope="session")
-def dataclass_documents(dataclass_document: Dict) -> List:
-    return [dataclass_document for _ in range(NUMBER_OF_DOCUMENTS)]
+def dataclass_documents() -> List:
+    return [
+        dataclass_document(uuid.uuid4().__str__()) for _ in range(NUMBER_OF_DOCUMENTS)
+    ]
