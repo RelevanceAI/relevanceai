@@ -1,6 +1,7 @@
 """
 Module for testing the auto clustering API
 """
+import time
 import pytest
 from relevanceai.http_client import Dataset, Client, ClusterOps
 
@@ -10,6 +11,7 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 @pytest.fixture(scope="session")
 def minibatch_clusterer(test_client: Client, test_sample_vector_dataset: Dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
+    time.sleep(2)
     clusterer: ClusterOps = df.auto_cluster(
         "minibatchkmeans-20", vector_fields=VECTOR_FIELDS
     )
