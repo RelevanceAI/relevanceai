@@ -77,7 +77,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
+        >>> df = client.Dataset("sample_dataset_id")
         >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
         >>> df.insert_documents(documents)
 
@@ -162,7 +162,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ---------
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
+        >>> df = client.Dataset("sample_dataset_id")
         >>> csv_filename = "temp.csv"
         >>> df.insert_csv(csv_filename)
 

@@ -112,7 +112,7 @@ class BatchRetrieveClient(APIClient, Chunker):
         ---------
 
         >>> client = Client()
-        >>> client.get_all_documents(dataset_id="sample_dataset"")
+        >>> client.get_all_documents(dataset_id="sample_dataset_id"")
 
         Parameters
         ----------

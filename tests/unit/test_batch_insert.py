@@ -78,42 +78,40 @@ def cause_some_error(documents):
 class TestPullUpdatePush:
     """Testing Pull Update Push"""
 
-    def test_pull_update_push_simple(
-        self, test_client: Client, sample_dataset: List[Dict]
-    ):
+    def test_pull_update_push_simple(self, test_client: Client, sample_dataset_id: str):
         """Simple test for pull update push"""
-        results = test_client.pull_update_push(sample_dataset, do_nothing)
+        results = test_client.pull_update_push(sample_dataset_id, do_nothing)
         assert len(results["failed_documents"]) == 0
 
     @pytest.mark.xfail
     def test_pull_update_push_with_errors(
-        self, test_client: Client, sample_dataset: List[Dict]
+        self, test_client: Client, sample_dataset_id: List[Dict]
     ):
         """Simple test for pull update push with an errored update function"""
         with pytest.raises(Exception) as execinfo:
-            test_client.pull_update_push(sample_dataset, cause_error)
+            test_client.pull_update_push(sample_dataset_id, cause_error)
 
     @pytest.mark.xfail
-    def test_with_some_errors(self, test_client: Client, sample_dataset: List[Dict]):
+    def test_with_some_errors(self, test_client: Client, sample_dataset_id: List[Dict]):
         """Test with some errors"""
         import requests
 
         with pytest.raises(requests.exceptions.InvalidJSONError) as execinfo:
-            test_client.pull_update_push(sample_dataset, cause_some_error)
+            test_client.pull_update_push(sample_dataset_id, cause_some_error)
 
     @pytest.mark.slow
     def test_pull_update_push_loaded(
-        self, test_client: Client, sample_dataset: List[Dict]
+        self, test_client: Client, sample_dataset_id: List[Dict]
     ):
         """Stress testing pull update push."""
 
         def do_nothing(documents):
             return documents
 
-        response = test_client.pull_update_push(sample_dataset, do_nothing)
+        response = test_client.pull_update_push(sample_dataset_id, do_nothing)
         assert len(response["failed_documents"]) == 0, "Failed to insert documents"
 
 
 # class TestCleanUp:
-#     def test_clean_up(self, test_client, test_dataset_id):
+#     def test_clean_up(self, test_client: Client, test_dataset_id):
 #         assert test_client.datasets.delete(test_dataset_id)

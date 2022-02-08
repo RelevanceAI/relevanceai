@@ -1,9 +1,12 @@
 import random
+
+from typing import List, Dict
+
 from relevanceai.http_client import Client
 
 
-def test_dataset_vectorize(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_dataset_vectorize(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
 
     OUTPUT_VECTOR_FIELD = "sample_1_vector_"
 

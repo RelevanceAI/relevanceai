@@ -6,9 +6,9 @@ import pandas as pd
 from relevanceai.http_client import Dataset, Client
 
 
-def test_apply(test_client: Client, test_sample_vector_dataset):
+def test_apply(test_client: Client, vector_dataset_id: str):
     RANDOM_STRING = "you are the kingj"
-    df = test_client.Dataset(test_sample_vector_dataset)
+    df = test_client.Dataset(vector_dataset_id)
     df["sample_1_label"].apply(
         lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
     )
@@ -26,10 +26,10 @@ def test_apply(test_client: Client, test_sample_vector_dataset):
     assert len(filtered_documents["documents"]) > 0
 
 
-def test_bulk_apply(test_client: Client, test_sample_vector_dataset):
+def test_bulk_apply(test_client: Client, vector_dataset_id: str):
     RANDOM_STRING = "you are the queen"
     LABEL = "sample_output"
-    df = test_client.Dataset(test_sample_vector_dataset)
+    df = test_client.Dataset(vector_dataset_id)
 
     def bulk_fn(docs):
         for d in docs:

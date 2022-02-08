@@ -7,8 +7,8 @@ from relevanceai.dataset_api import Dataset
 
 
 @pytest.fixture(scope="session")
-def test_df(test_client: Client, vector_dataset: str) -> Dataset:
-    df = test_client.Dataset(vector_dataset)
+def test_df(test_client: Client, vector_dataset_id: str) -> Dataset:
+    df = test_client.Dataset(vector_dataset_id)
     return df
 
 

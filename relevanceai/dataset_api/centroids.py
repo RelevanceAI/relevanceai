@@ -32,7 +32,7 @@ class Centroids(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             df.get(["sample_id"], include_vector=False)
 
@@ -126,7 +126,7 @@ class Centroids(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"

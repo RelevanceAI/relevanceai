@@ -1,19 +1,19 @@
 import pytest
 
-from tests.globals.utils import generate_random_string
+from typing import Dict, List
 
 from relevanceai import Client
 
 
-def test_kmeans(test_client: Client, test_clustered_dataset):
-    db_health = test_client.datasets.monitor.health(test_clustered_dataset)
+def test_kmeans(test_client: Client, clustered_dataset: List[Dict]):
+    db_health = test_client.datasets.monitor.health(clustered_dataset)
     assert "_cluster_" in db_health
     assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
 
 
-def test_kmeans_dashboard(test_client: Client, test_sample_vector_dataset):
+def test_kmeans_dashboard(test_client: Client, vector_dataset_id: str):
     centroids = test_client.vector_tools.cluster.kmeans_cluster(
-        dataset_id=test_sample_vector_dataset,
+        dataset_id=vector_dataset_id,
         vector_fields=["sample_1_vector_"],
         alias="kmeans_10",
         overwrite=True,
@@ -21,9 +21,9 @@ def test_kmeans_dashboard(test_client: Client, test_sample_vector_dataset):
     assert True
 
 
-def test_cluster_plot(test_client: Client, test_clustered_dataset):
+def test_cluster_plot(test_client: Client, clustered_dataset: List[Dict]):
     test_client.vector_tools.cluster.plot(
-        test_clustered_dataset,
+        clustered_dataset,
         "sample_1_vector_",
         "kmeans_10",
         ground_truth_field="sample_1_label",
@@ -31,9 +31,9 @@ def test_cluster_plot(test_client: Client, test_clustered_dataset):
     assert True
 
 
-def test_cluster_metrics(test_client: Client, test_clustered_dataset):
+def test_cluster_metrics(test_client: Client, clustered_dataset: List[Dict]):
     metrics = test_client.vector_tools.cluster.metrics(
-        test_clustered_dataset,
+        clustered_dataset,
         "sample_1_vector_",
         "kmeans_10",
         ground_truth_field="sample_1_label",
@@ -41,9 +41,9 @@ def test_cluster_metrics(test_client: Client, test_clustered_dataset):
     assert True
 
 
-def test_cluster_distribution(test_client: Client, test_clustered_dataset):
+def test_cluster_distribution(test_client: Client, clustered_dataset: List[Dict]):
     distribution = test_client.vector_tools.cluster.distribution(
-        test_clustered_dataset,
+        clustered_dataset,
         "sample_1_vector_",
         "kmeans_10",
         ground_truth_field="sample_1_label",
@@ -51,17 +51,17 @@ def test_cluster_distribution(test_client: Client, test_clustered_dataset):
     assert True
 
 
-def test_centroid_distances(test_client: Client, test_clustered_dataset):
+def test_centroid_distances(test_client: Client, clustered_dataset: List[Dict]):
     centroid_distances = test_client.vector_tools.cluster.centroid_distances(
-        test_clustered_dataset, "sample_1_vector_", "kmeans_10"
+        clustered_dataset, "sample_1_vector_", "kmeans_10"
     )
     assert True
 
 
 @pytest.fixture
-def closest_to_centers(test_client: Client, test_clustered_dataset):
+def closest_to_centers(test_client: Client, clustered_dataset: List[Dict]):
     results = test_client.datasets.cluster.centroids.list_closest_to_center(
-        test_clustered_dataset,
+        clustered_dataset,
         ["sample_1_vector_"],
         "kmeans_10",
     )
@@ -69,9 +69,9 @@ def closest_to_centers(test_client: Client, test_clustered_dataset):
 
 
 @pytest.fixture
-def furthest_from_centers(test_client: Client, test_clustered_dataset):
+def furthest_from_centers(test_client: Client, clustered_dataset: List[Dict]):
     results = test_client.datasets.cluster.centroids.list_furthest_from_center(
-        test_clustered_dataset,
+        clustered_dataset,
         ["sample_1_vector_"],
         "kmeans_10",
     )
@@ -84,12 +84,12 @@ def test_furthest_different_from_closest(closest_to_centers, furthest_from_cente
 
 
 @pytest.mark.skip(reason="Not fully implemented")
-def test_hdbscan_cluster(test_client: Client, test_sample_vector_dataset):
+def test_hdbscan_cluster(test_client: Client, vector_dataset_id: str):
     test_client.vector_tools.cluster.hdbscan_cluster(
-        dataset_id=test_sample_vector_dataset,
+        dataset_id=vector_dataset_id,
         vector_fields=["sample_1_vector_"],
         overwrite=True,
     )
-    db_health = test_client.datasets.monitor.health(test_sample_vector_dataset)
+    db_health = test_client.datasets.monitor.health(vector_dataset_id)
     assert "_cluster_" in db_health
     assert "_cluster_.sample_1_vector_.hdbscan" in db_health

@@ -2,12 +2,13 @@
     Testing dataset
 """
 
-import pandas as pd
+from typing import Dict, List
+
 from relevanceai.http_client import Dataset, Client
 
 
-def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_cluster(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
     vector_field = "sample_1_vector_"
@@ -19,8 +20,8 @@ def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
     assert f"_cluster_.{vector_field}.{alias}" in df.schema
 
 
-def test_centroids(test_client, test_clustered_dataset):
-    df = test_client.Dataset(test_clustered_dataset)
+def test_centroids(test_client: Client, clustered_dataset: List[Dict]):
+    df = test_client.Dataset(clustered_dataset)
     closest = df.centroids(["sample_1_vector_"], "kmeans_10").closest()
     furthest = df.centroids(["sample_1_vector_"], "kmeans_10").furthest()
     agg = df.centroids(["sample_1_vector_"], "kmeans_10").agg({"sample_2_label": "avg"})

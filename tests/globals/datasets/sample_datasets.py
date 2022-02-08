@@ -6,7 +6,7 @@ from relevanceai import Client
 
 
 @pytest.fixture(scope="session")
-def sample_dataset(
+def sample_dataset_id(
     test_client: Client, simple_documents: List[Dict], test_dataset_id: str
 ):
     test_client._insert_documents(test_dataset_id, simple_documents)

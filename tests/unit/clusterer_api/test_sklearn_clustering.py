@@ -7,8 +7,8 @@ from relevanceai.dataset_api import Dataset
 from tests.globals.utils import generate_random_string
 
 
-def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_cluster(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     from sklearn.cluster import KMeans
 
     vector_field = "sample_1_vector_"

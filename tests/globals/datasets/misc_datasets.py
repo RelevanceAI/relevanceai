@@ -6,7 +6,7 @@ from relevanceai import Client
 
 
 @pytest.fixture(scope="session")
-def obj_dataset(
+def obj_dataset_id(
     test_client: Client,
     dataclass_documents: List[NamedTuple],
     test_dataset_id: str,
@@ -19,7 +19,7 @@ def obj_dataset(
 
 
 @pytest.fixture(scope="session")
-def clustered_dataset(
+def clustered_dataset_id(
     test_client: Client, vector_documents: List[Dict], test_dataset_id: str
 ):
     test_client._insert_documents(test_dataset_id, vector_documents)

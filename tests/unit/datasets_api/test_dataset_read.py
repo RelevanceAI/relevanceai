@@ -3,11 +3,16 @@
 """
 
 import pandas as pd
-from relevanceai.http_client import Dataset, Client
+
+from typing import Dict, List
+
+from relevanceai import Client
+
+from relevanceai.dataset_api import Dataset
 
 
-def test_Dataset_init(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_Dataset_init(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     assert True
 
 
@@ -16,45 +21,45 @@ def test_Dataset_json_encoder(test_client: Client, test_sample_obj_dataset_df):
     assert "value1" in df.schema
 
 
-def test_info(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_info(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     info = df.info()
     assert True
 
 
-def test_shape(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_shape(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     shape = df.shape
     assert True
 
 
-def test_head(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_head(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     head = df.head()
     assert True
 
 
-def test_describe(test_client: Client, test_sample_vector_dataset: Dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_describe(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     description = df.describe()
     assert True
 
 
-def test_sample(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_sample(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     sample_n = df.sample(n=10)
     assert len(sample_n) == 10
 
 
-def test_value_counts(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_value_counts(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     value_counts = df["sample_1_label"].value_counts()
     value_counts = df["sample_1_label"].value_counts(normalize=True)
     assert True
 
 
-def test_filter(test_client: Client, test_sample_vector_dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_filter(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
     items = df.filter(items=["sample_1_label"])
     like = df.filter(like="sample_1_label")
     regex = df.filter(regex="s$")

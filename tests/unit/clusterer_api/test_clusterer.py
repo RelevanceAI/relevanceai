@@ -13,8 +13,8 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture
-def test_clusterer(test_client: Client, test_clustered_dataset: Dataset):
-    df: Dataset = test_client.Dataset(test_clustered_dataset)
+def test_clusterer(test_client: Client, clustered_dataset: Dataset):
+    df: Dataset = test_client.Dataset(clustered_dataset)
 
     model = get_model()
 
@@ -31,8 +31,8 @@ def get_model():
     return KMeansModel(verbose=False)
 
 
-def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):
-    df = test_client.Dataset(test_sample_vector_dataset)
+def test_cluster(test_client: Client, vector_dataset_id: str):
+    df = test_client.Dataset(vector_dataset_id)
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"

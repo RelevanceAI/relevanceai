@@ -70,7 +70,7 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             length, width = df.shape
@@ -127,7 +127,7 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.info()
         """
@@ -184,7 +184,7 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset", image_fields=["image_url])
+            df = client.Dataset("sample_dataset_id", image_fields=["image_url])
 
             df.head()
         """
@@ -265,7 +265,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset", image_fields=["image_url])
+            df = client.Dataset("sample_dataset_id", image_fields=["image_url])
             df.sample()
         """
         if not select_fields and self.fields:
@@ -328,7 +328,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             documents = df.get_all_documents()
         """
@@ -363,7 +363,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client, Dataset
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.get_documents_by_ids(["sample_id"], include_vector=False)
         """
@@ -396,7 +396,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.get(["sample_id"], include_vector=False)
         """
@@ -422,7 +422,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.schema
         """
@@ -440,7 +440,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.columns
 

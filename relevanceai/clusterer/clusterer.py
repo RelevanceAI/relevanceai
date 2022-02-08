@@ -331,7 +331,7 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from relevanceai.clusterer import KMeansModel
             kmeans = KMeans(n_clusters=5)
@@ -485,7 +485,7 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from relevanceai.clusterer import KMeansModel
             clusterer = client.ClusterOps(5)
@@ -500,7 +500,7 @@ class ClusterOps(BatchAPIClient):
             # If reloading,
             clusterer = client.ClusterOps("minibatch_50")
             clusterer.aggregate(
-                "sample_dataset",
+                "sample_dataset_id",
                 groupby=[{
                     "name": "title",
                     "field": "title",
