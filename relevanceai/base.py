@@ -48,7 +48,7 @@ class _Base(Transport, LoguruLogger):
 
     @region.setter
     def region(self, region_value):
-        self.config["api.region"] = region_value
+        CONFIG["api.region"] = region_value
         self.base_url = self.base_ingest_url = self._region_to_url(region_value)
 
     def _region_to_url(self, region: str):
