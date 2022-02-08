@@ -10,7 +10,7 @@ def generate_random_string(N: int = 5) -> str:
     )
 
 
-def generate_random_vector(N: int = 512) -> List[float]:
+def generate_random_vector(N: int = 5) -> List[float]:
     """Generate a random list of floats"""
     return [random.random() for _ in range(N)]
 

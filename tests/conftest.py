@@ -50,7 +50,7 @@ def simple_doc():
         {
             "_id": uuid.uuid4().__str__(),
             "value": random.randint(0, 1000),
-            "sample_1_vector_": generate_random_vector(N=100),
+            "sample_1_vector_": generate_random_vector(),
         }
     ]
 
@@ -89,9 +89,9 @@ def pandas_test_dataset_id():
 @pytest.fixture(scope="session", autouse=True)
 def test_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
     """Sample dataset to insert and then delete"""
-    simple_documents = simple_doc * 1000
+    simple_documents = simple_doc * 20
     response = test_client._insert_documents(test_dataset_id, simple_documents)
-    if response["inserted"] != 1000:
+    if response["inserted"] != 20:
         raise ValueError("Failed to insert.")
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
@@ -100,7 +100,7 @@ def test_sample_dataset(test_client: Client, simple_doc, test_dataset_id):
 @pytest.fixture(scope="session", autouse=True)
 def test_large_sample_dataset(test_client: Client, simple_doc, large_test_dataset_id):
     """Sample dataset to insert and then delete"""
-    simple_documents = simple_doc * 1000
+    simple_documents = simple_doc * 20
     response = test_client._insert_documents(large_test_dataset_id, simple_documents)
     yield test_dataset_id
     test_client.datasets.delete(large_test_dataset_id)
@@ -122,16 +122,16 @@ def sample_vector_documents():
             "sample_1_description": generate_random_string(),
             "sample_2_description": generate_random_string(),
             "sample_3_description": generate_random_string(),
-            "sample_1_vector_": generate_random_vector(N=100),
-            "sample_2_vector_": generate_random_vector(N=100),
-            "sample_3_vector_": generate_random_vector(N=100),
-            "sample_1_value": generate_random_integer(N=100),
-            "sample_2_value": generate_random_integer(N=100),
-            "sample_3_value": generate_random_integer(N=100),
+            "sample_1_vector_": generate_random_vector(),
+            "sample_2_vector_": generate_random_vector(),
+            "sample_3_vector_": generate_random_vector(),
+            "sample_1_value": generate_random_integer(),
+            "sample_2_value": generate_random_integer(),
+            "sample_3_value": generate_random_integer(),
             "_chunk_": [
                 {
                     "label": generate_random_label(),
-                    "label_chunkvector_": generate_random_vector(100),
+                    "label_chunkvector_": generate_random_vector(),
                 }
             ],
         }

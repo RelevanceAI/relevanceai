@@ -3,11 +3,11 @@ from relevanceai.http_client import Dataset, Client
 from ...utils import generate_random_string, generate_random_vector
 
 MULTIVECTOR_QUERY = [
-    {"vector": generate_random_vector(N=100), "fields": ["sample_1_vector_"]}
+    {"vector": generate_random_vector(), "fields": ["sample_1_vector_"]}
 ]
 
 CHUNK_MULTIVECTOR_QUERY = [
-    {"vector": generate_random_vector(N=100), "fields": ["_chunk_.label_chunkvector_"]}
+    {"vector": generate_random_vector(), "fields": ["_chunk_.label_chunkvector_"]}
 ]
 
 

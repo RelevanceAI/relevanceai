@@ -46,7 +46,7 @@ def test_dataset_labelling(test_label_df: Dataset):
 def test_labelling_vector(test_label_df: Dataset):
     ALIAS = "sample"
     result = test_label_df.label_vector(
-        generate_random_vector(100),
+        generate_random_vector(),
         label_vector_field="sample_1_vector_",
         alias=ALIAS,
         label_dataset_id=test_label_df.dataset_id,
@@ -74,7 +74,7 @@ def test_labelling_by_model(test_dataset_df: Dataset):
     LABEL_LIST = ["cat", "dog"]
 
     def random_vector(labels):
-        return [generate_random_vector(100) for _ in labels]
+        return [generate_random_vector() for _ in labels]
 
     test_dataset_df.label_from_list(
         vector_field="sample_1_vector_",
