@@ -122,8 +122,8 @@ class CentroidsClient(_Base):
     def documents(
         self,
         dataset_id: str,
-        cluster_ids: List,
         vector_fields: List,
+        cluster_ids: List = [],
         alias: str = "default",
         page_size: int = 5,
         cursor: str = None,
@@ -170,6 +170,7 @@ class CentroidsClient(_Base):
                 "page": page,
                 "include_vector": include_vector,
                 "similarity_metric": similarity_metric,
+                "vector_field": "",
             },
         )
 
