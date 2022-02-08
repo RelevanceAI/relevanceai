@@ -1,5 +1,5 @@
 import numpy as np
 
 
-def error_document(id: str):
-    return {"_id": id, "value": np.nan}
+def error_document(_id: str):
+    return {"_id": _id, "value": np.nan}

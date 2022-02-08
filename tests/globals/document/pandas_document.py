@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 
 
-def pandas_document(id: str):
+def pandas_document(_id: str):
     return {
-        "_id": id,
+        "_id": _id,
         "sample_1_pandas": pd.DataFrame(
             np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
         ),

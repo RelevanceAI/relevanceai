@@ -18,7 +18,7 @@ def assorted_nested_documents() -> List:
 
 
 @pytest.fixture(scope="session")
-def simple_nested_docs() -> List:
+def simple_nested_documents() -> List:
     return [
         simple_nested_document(uuid.uuid4().__str__())
         for _ in range(NUMBER_OF_DOCUMENTS)

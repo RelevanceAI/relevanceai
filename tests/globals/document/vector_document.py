@@ -8,9 +8,9 @@ from tests.globals.utils import (
 )
 
 
-def vector_document(id: str) -> Dict:
+def vector_document(_id: str) -> Dict:
     return {
-        "_id": id,
+        "_id": _id,
         "sample_1_label": generate_random_label(),
         "sample_2_label": generate_random_label(),
         "sample_3_label": generate_random_label(),

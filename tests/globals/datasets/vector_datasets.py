@@ -3,7 +3,6 @@ import pytest
 from typing import Dict, List
 
 from relevanceai import Client
-from relevanceai.dataset_api.dataset_api import Dataset
 
 
 @pytest.fixture(scope="session")
