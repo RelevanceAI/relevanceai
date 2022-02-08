@@ -7,10 +7,10 @@ from relevanceai.http_client import Dataset, Client
 from tests.globals.utils import (
     generate_random_vector,
     generate_random_string,
-    sample_dataset_id_DATASET_PREFIX,
+    SAMPLE_DATASET_DATASET_PREFIX,
 )
 
-LABEL_DATSET_ID = sample_dataset_id_DATASET_PREFIX + generate_random_string().lower()
+LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 
 @pytest.fixture(scope="session")
