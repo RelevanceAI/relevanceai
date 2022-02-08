@@ -14,7 +14,7 @@ def test_reduce_dimensiosn(test_dataset_df: Dataset):
     ), "Did not reduce dimensions properly"
 
 
-def test_auto_reduce_dimensiosn(test_dataset_df: Dataset):
+def test_auto_reduce_dimensions(test_dataset_df: Dataset):
 
     OUTPUT_VECTOR_FIELD = "sample_1_vector_"
     ALIAS = "pca-3"
