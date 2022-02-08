@@ -48,7 +48,7 @@ def test_cluster_distribution(test_client, test_clustered_dataset):
     assert True
 
 
-@pytest.mark.skip("centroids/list not rerouted properly")
+@pytest.mark.skip(reason="centroids/list not rerouted properly")
 def test_centroid_distances(test_client, test_clustered_dataset):
     centroid_distances = test_client.vector_tools.cluster.centroid_distances(
         test_clustered_dataset, "sample_1_vector_", "kmeans_10"
