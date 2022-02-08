@@ -389,11 +389,13 @@ class DatasetsClient(_Base):
                     endpoint=f"/datasets/delete",
                     method="POST",
                     parameters={"dataset_id": dataset_id},
+                    raise_error=False,
                 )
             else:
                 return self.make_http_request(
                     endpoint=f"/datasets/{dataset_id}/delete",
                     method="POST",
+                    raise_error=False
                     # parameters={"dataset_id": dataset_id},
                 )
 

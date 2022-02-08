@@ -149,6 +149,7 @@ class Transport(JSONEncoderUtils):
         parameters: dict = {},
         base_url: str = None,
         output_format=None,
+        raise_error: bool = True,
     ):
         """
         Make the HTTP request
@@ -158,6 +159,9 @@ class Transport(JSONEncoderUtils):
             The endpoint from the documentation to use
         method_type: string
             POST or GET request
+        raise_error: bool
+            If True, you will raise error. This is useful for endpoints that don't
+            necessarily need to error.
         """
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
@@ -184,8 +188,8 @@ class Transport(JSONEncoderUtils):
                     self._log_search_to_dashboard(
                         method=method, parameters=parameters, endpoint=endpoint
                     )
-                # TODO: Add other endpoints in here too
 
+                # TODO: Add other endpoints in here too
                 req = Request(
                     method=method.upper(),
                     url=request_url,
@@ -222,7 +226,8 @@ class Transport(JSONEncoderUtils):
                         response.status_code,
                         response.content.decode(),
                     )
-                    raise APIError(response.content.decode())
+                    if raise_error:
+                        raise APIError(response.content.decode())
 
                 # Retry other errors
                 else:

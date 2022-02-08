@@ -288,11 +288,12 @@ def test_nested_assorted_dataset(
     test_client: Client, sample_nested_assorted_documents, test_dataset_id
 ):
     """Sample nested assorted dataset"""
+    NESTED_DATASET_ID = test_dataset_id + "nested"
     response = test_client._insert_documents(
-        test_dataset_id, sample_nested_assorted_documents
+        NESTED_DATASET_ID, sample_nested_assorted_documents
     )
     yield response, len(sample_nested_assorted_documents)
-    test_client.datasets.delete(test_dataset_id)
+    test_client.datasets.delete(NESTED_DATASET_ID)
 
 
 @pytest.fixture(scope="session")
