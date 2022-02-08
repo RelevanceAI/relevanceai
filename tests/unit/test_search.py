@@ -7,7 +7,7 @@ def test_search_vector(test_client, test_sample_vector_dataset):
         test_sample_vector_dataset,
         multivector_query=[
             {
-                "vector": [random.randint(0, 1000) for _ in range(100)],
+                "vector": [random.randint(0, 1000) for _ in range(10)],
                 "fields": ["sample_1_vector_"],
             }
         ],
@@ -20,7 +20,7 @@ def test_suggestion(test_client, test_sample_vector_dataset):
         test_sample_vector_dataset,
         multivector_query=[
             {
-                "vector": [random.randint(0, 1000) for _ in range(100)],
+                "vector": [random.randint(0, 1000) for _ in range(10)],
                 "fields": ["sample_1_vector_"],
             }
         ],

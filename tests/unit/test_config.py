@@ -16,7 +16,7 @@ def test_output_format(test_client, test_sample_dataset):
         test_sample_dataset,
         multivector_query=[
             {
-                "vector": [random.randint(0, 1000) for _ in range(100)],
+                "vector": [random.randint(0, 1000) for _ in range(10)],
                 "fields": ["sample_1_vector_"],
             }
         ],
@@ -33,7 +33,7 @@ def test_output_format_json(test_client, test_sample_dataset):
         test_sample_dataset,
         multivector_query=[
             {
-                "vector": [random.randint(0, 1000) for _ in range(100)],
+                "vector": [random.randint(0, 1000) for _ in range(10)],
                 "fields": ["sample_1_vector_"],
             }
         ],
