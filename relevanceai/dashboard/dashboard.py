@@ -1,4 +1,6 @@
-from abc import ABC, abstractmethod
+import webbrowser
+
+from abc import ABC
 
 from relevanceai.api.endpoints.datasets.datasets import DatasetsClient
 from relevanceai.api.endpoints.deployables.deployables import Deployable
@@ -18,50 +20,49 @@ class Dashboard(ABC, _Base):
             )
 
         deployables = Deployable(project, api_key)
-        if deployable_id not in deployables.list():
+        deployables_ids = map(lambda d: d["_id"], deployables.list()["deployables"])
+        if deployable_id not in deployables_ids:
             raise ValueError(f"No deployable with ID {deployable_id}")
         else:
             configuration = deployables.get(deployable_id)["configuration"]
             if not application == configuration["type"]:
                 raise ValueError(f"{deployable_id} is not a {application} application")
             else:
-                self.vector_field = configuration["vector_field"]
+                self.vector_field = configuration[application]["vector_field"]
 
         super().__init__(project, api_key)
         self.deployable_id = deployable_id
 
-        self._project = project
-        self._api_key = api_key
         self._shareable_id = None
         self._application = application
 
-    def share_application(self):
+    def share_application(self) -> None:
         if self._shareable_id is None:
-            deployables = Deployable(self._project, self._api_key)
+            deployables = Deployable(self.project, self.api_key)
             deployables.share(self.deployable_id)
             response = deployables.get(self.deployable_id)
-            self._shareable_id = response.json()["api_key"]
+            self._shareable_id = response["api_key"]
         else:
             raise Exception("Dashboard is already shareable")
 
-    def unshare_application(self):
+    def unshare_application(self) -> None:
         if self._shareable_id is None:
             raise Exception("Dashboard is already unshareable")
         else:
-            deployables = Deployable(self._project, self._api_key)
+            deployables = Deployable(self.project, self.api_key)
             deployables.unshare(self.deployable_id)
             self._shareable_id = None
 
     @classmethod
-    def create_application(
+    def create_dashboard(
         cls,
         project: str,
         api_key: str,
         dataset_id: str,
         vector_field: str,
-        application_type: str,
-        share: bool = False,
-        **configuration,
+        application: str,
+        share: bool,
+        application_configuration: dict,
     ):
         # Validation phase
         schema = DatasetsClient(project, api_key).schema(dataset_id)
@@ -80,49 +81,50 @@ class Dashboard(ABC, _Base):
         # need to check the cluster/field/alias combo
         response = deployables.create(
             dataset_id,
-            configuration={
-                "type": application_type,
-                "vector_field": vector_field,
-                **{
-                    key: value
-                    for key, value in configuration.items()
-                    if key not in {"type", "vector_field"}
-                },
-            },
+            configuration=application_configuration,
         )
-        deployable_id = response.json()["deployable_id"]
+        deployable_id = response["deployable_id"]
 
-        application = cls(project, api_key, deployable_id, application_type)
+        dashboard = cls(project, api_key, deployable_id, application)
         if share:
-            application.share_application()
+            dashboard.share_application()
 
-        return application
+        return dashboard
 
     @property
-    def deployable_url(self):
+    def deployable_url(self) -> str:
         deployables = Deployable(self.project, self.api_key)
-        configuration = deployables.get(self.deployable_id)["configuration"]
+        deployable = deployables.get(self.deployable_id)
         url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
         return url.format(
-            configuration["dataset_id"],
-            self._project,
+            deployable["dataset_id"],
+            self.project,
             self._application,
-            self._api_key,
+            self.api_key,
             self.deployable_id,
         )
 
     @property
-    def shareable_url(self):
-        if self.shareable_id is None:
+    def shareable_url(self) -> str:
+        if self._shareable_id is None:
             raise Exception(f"This {self._application} application is not shareable")
         else:
             deployables = Deployable(self.project, self.api_key)
-            configuration = deployables.get(self.deployable_id)["configuration"]
+            deployable = deployables.get(self.deployable_id)
             url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
             return url.format(
-                configuration["dataset_id"],
-                self._project,
+                deployable["dataset_id"],
+                self.project,
                 self._application,
                 self._shareable_id,
                 self.deployable_id,
             )
+
+    def view(self, shareable: bool = False) -> None:
+        if shareable:
+            url = self.shareable_url
+        else:
+            url = self.deployable_url
+
+        print(f"Opening {url}...")
+        webbrowser.open(url)
