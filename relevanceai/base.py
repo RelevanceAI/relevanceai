@@ -1,4 +1,3 @@
-from this import d
 from relevanceai.config import CONFIG
 from relevanceai.transport import Transport
 from relevanceai.logger import LoguruLogger
