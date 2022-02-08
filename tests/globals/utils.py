@@ -29,3 +29,5 @@ RANDOM_PANDAS_DATASET_SUFFIX = generate_random_string().lower()
 SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 CLUSTER_DATASET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
+
+NUMBER_OF_DOCS = 100

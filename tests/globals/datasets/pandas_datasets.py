@@ -7,7 +7,6 @@ from relevanceai import Client
 def test_pandas_dataset(
     test_client: Client, sample_pandas_documents, pandas_test_dataset_id
 ):
-    """Sample pandas dataset"""
     response = test_client._insert_documents(
         pandas_test_dataset_id, sample_pandas_documents
     )

@@ -7,9 +7,6 @@ from relevanceai import Client
 def sample_nested_assorted_dataset(
     test_client: Client, sample_nested_assorted_documents, test_dataset_id
 ):
-    """
-    Use this dataset if you just want vector
-    """
     response = test_client._insert_documents(
         test_dataset_id, sample_nested_assorted_documents
     )
@@ -21,7 +18,6 @@ def sample_nested_assorted_dataset(
 def test_nested_assorted_dataset(
     test_client: Client, sample_nested_assorted_documents, test_dataset_id
 ):
-    """Sample nested assorted dataset"""
     response = test_client._insert_documents(
         test_dataset_id, sample_nested_assorted_documents
     )

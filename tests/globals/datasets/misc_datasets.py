@@ -7,9 +7,6 @@ from tests.globals.utils import CLUSTER_DATASET_ID
 
 @pytest.fixture(scope="session")
 def sample_obj_dataset(test_client: Client, test_dataclass_documents, test_dataset_id):
-    """
-    Use this dataset if you just want vector
-    """
     response = test_client._insert_documents(test_dataset_id, test_dataclass_documents)
     yield test_dataset_id
     test_client.datasets.delete(test_dataset_id)
