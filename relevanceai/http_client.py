@@ -70,7 +70,7 @@ class Client(BatchAPIClient, DocUtils):
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
         region="us-east-1",
-        authenticate: bool = False,
+        authenticate: bool = True,
         token: str = None,
     ):
         """
@@ -93,7 +93,6 @@ class Client(BatchAPIClient, DocUtils):
             project, api_key, base_url = self._token_to_auth(token)
 
         self.base_url = self._region_to_url(self.region)
-
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
 
         super().__init__(project, api_key)
@@ -102,7 +101,7 @@ class Client(BatchAPIClient, DocUtils):
         if authenticate:
             if self.check_auth():
 
-                WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
+                WELCOME_MESSAGE = f"""Welcome to RelevanceAI. Logged in as {project}."""
                 print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
@@ -179,6 +178,8 @@ class Client(BatchAPIClient, DocUtils):
 
     def _region_to_url(self, region: str):
         # to match our logic in dashboard
+        # add print statement to double-check region support now
+        print(f"Connecting to {region}...")
         if region == "old-australia-east":
             url = "https://gateway-api-aueast.relevance.ai/latest"
         else:
