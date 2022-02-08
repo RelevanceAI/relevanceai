@@ -61,7 +61,10 @@ def simple_doc():
 
 @pytest.fixture(scope="session", autouse=True)
 def test_client(test_project, test_api_key):
-    client = Client(test_project, test_api_key, region=REGION)
+    if REGION is None:
+        client = Client(test_project, test_api_key)
+    else:
+        client = Client(test_project, test_api_key, region=REGION)
     return client
 
 
