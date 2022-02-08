@@ -84,6 +84,7 @@ class Transport(JSONEncoderUtils):
             },
         }
         self.logger.debug(request_body)
+
         async def send_response():
             req = Request(
                 method=method.upper(),
@@ -94,7 +95,7 @@ class Transport(JSONEncoderUtils):
             ).prepare()
             with requests.Session() as s:
                 response = s.send(req)
-        
+
         asyncio.ensure_future(send_response())
 
         if verbose:
