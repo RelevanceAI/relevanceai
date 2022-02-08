@@ -40,8 +40,8 @@ class KMeansModel(ClusterBase):
         from relevanceai.clusterer import KMeansModel
         model = KMeansModel(k=3)
 
-        clusterer = client.ClusterOps(model=model, alias="kmeans")
-        clusterer.fit(df, vector_fields=["documentation_vector_"])
+        cluster_ops = client.ClusterOps(model=model, alias="kmeans")
+        cluster_ops.fit(df, vector_fields=["documentation_vector_"])
 
     """
 
