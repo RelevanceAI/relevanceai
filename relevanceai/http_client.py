@@ -94,6 +94,8 @@ class Client(BatchAPIClient, DocUtils):
 
         self.base_url = self._region_to_url(region)
 
+        self.base_ingest_url = self._region_to_ingestion_url(region)
+
         super().__init__(project, api_key)
 
         # used to debug
@@ -180,6 +182,11 @@ class Client(BatchAPIClient, DocUtils):
         url = f"https://api.{region}.relevance.ai/latest"
         return url
 
+    def _region_to_ingestion_url(self, region):
+        # same as region to URL now in case ingestion ever needs to be separate
+        url = f"https://api.{region}.relevance.ai/latest"
+        return url
+
     def _token_to_auth(self, token=None):
         # if verbose:
         #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
@@ -199,6 +206,7 @@ class Client(BatchAPIClient, DocUtils):
             project = data["project"]
             api_key = data["api_key"]
             self.base_url = data.get("base_url", CONFIG["api.base_url"])
+            self.base_ingest_url = data.get("base_url", CONFIG["api.base_ingest_url"])
         return project, api_key, self.base_url
 
     def _write_credentials(self, project, api_key, base_url):

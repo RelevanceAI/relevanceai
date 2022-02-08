@@ -61,7 +61,7 @@ def simple_doc():
 
 @pytest.fixture(scope="session", autouse=True)
 def test_client(test_project, test_api_key):
-    client = Client(test_project, test_api_key)
+    client = Client(test_project, test_api_key, region=REGION)
     return client
 
 
@@ -306,7 +306,9 @@ def test_read_df(test_client: Client, sample_vector_documents):
 
 
 @pytest.fixture(scope="session")
-def test_dataset_df(test_client: Client, test_sample_vector_dataset):
+def test_dataset_df(
+    test_client: Client, test_sample_vector_dataset, sample_vector_documents
+):
     df = test_client.Dataset(test_sample_vector_dataset)
     return df
 
