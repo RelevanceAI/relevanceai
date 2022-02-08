@@ -177,14 +177,20 @@ class Client(BatchAPIClient, DocUtils):
         self._write_credentials(project, api_key, url)
         return project, api_key, url
 
-    def _region_to_url(self, region):
+    def _region_to_url(self, region: str):
         # to match our logic in dashboard
-        url = f"https://api.{region}.relevance.ai/latest"
+        if region == "old-australia-east":
+            url = "https://gateway-api-aueast.relevance.ai/latest"
+        else:
+            url = f"https://api.{region}.relevance.ai/latest"
         return url
 
-    def _region_to_ingestion_url(self, region):
+    def _region_to_ingestion_url(self, region: str):
         # same as region to URL now in case ingestion ever needs to be separate
-        url = f"https://api.{region}.relevance.ai/latest"
+        if region == "old-australia-east":
+            url = "https://gateway-api-aueast.relevance.ai/latest"
+        else:
+            url = f"https://api.{region}.relevance.ai/latest"
         return url
 
     def _token_to_auth(self, token=None):
