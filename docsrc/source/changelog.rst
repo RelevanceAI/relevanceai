@@ -8,6 +8,7 @@ v0.33.3
 ---------
 
 - Fix cluster aggregate
+- Fix for login
 
 Developer Updates: 
 

@@ -90,7 +90,7 @@ class Client(BatchAPIClient, DocUtils):
         """
         self.region = region
         if project is None or api_key is None:
-            project, api_key = self._token_to_auth(token)
+            project, api_key, base_url = self._token_to_auth(token)
 
         self.base_url = self._region_to_url(region)
 
@@ -198,7 +198,7 @@ class Client(BatchAPIClient, DocUtils):
             data = self._read_credentials()
             project = data["project"]
             api_key = data["api_key"]
-            self.base_url = data["base_url"]
+            self.base_url = data.get("base_url", CONFIG["api.base_url"])
         return project, api_key, self.base_url
 
     def _write_credentials(self, project, api_key, base_url):
