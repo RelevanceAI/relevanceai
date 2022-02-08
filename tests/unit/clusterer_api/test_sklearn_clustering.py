@@ -1,10 +1,10 @@
 """
 Sklearn Integration Test
 """
+from relevanceai import Client
+from relevanceai.dataset_api import Dataset
 
-import pandas as pd
-from relevanceai.http_client import Dataset, Client
-from ...utils import generate_random_string
+from tests.globals.utils import generate_random_string
 
 
 def test_cluster(test_client: Client, test_sample_vector_dataset: Dataset):

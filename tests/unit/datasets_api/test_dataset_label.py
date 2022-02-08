@@ -3,8 +3,12 @@
 import pytest
 import random
 from relevanceai.http_client import Dataset, Client
-from ...utils import generate_random_vector, generate_random_string
-from ...conftest import SAMPLE_DATASET_DATASET_PREFIX
+
+from tests.globals.utils import (
+    generate_random_vector,
+    generate_random_string,
+    SAMPLE_DATASET_DATASET_PREFIX,
+)
 
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 

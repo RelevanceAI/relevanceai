@@ -1,6 +1,6 @@
-import pandas as pd
-from relevanceai.http_client import Dataset, Client
-from ...utils import generate_random_string, generate_random_vector
+from relevanceai.dataset_api import Dataset
+
+from tests.globals.utils import generate_random_vector
 
 MULTIVECTOR_QUERY = [
     {"vector": generate_random_vector(N=100), "fields": ["sample_1_vector_"]}

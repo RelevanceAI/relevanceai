@@ -91,11 +91,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
-
         if use_json_encoder:
             documents = self.json_encoder(documents)
+
+        # Turn _id into string
+        self._convert_id_to_string(documents)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(

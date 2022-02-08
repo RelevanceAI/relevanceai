@@ -11,6 +11,11 @@ def test_Dataset_init(test_client: Client, test_sample_vector_dataset):
     assert True
 
 
+def test_Dataset_json_encoder(test_client: Client, test_sample_obj_dataset_df):
+    df = test_client.Dataset(test_sample_obj_dataset_df)
+    assert "value1" in df.schema
+
+
 def test_info(test_client: Client, test_sample_vector_dataset):
     df = test_client.Dataset(test_sample_vector_dataset)
     info = df.info()
