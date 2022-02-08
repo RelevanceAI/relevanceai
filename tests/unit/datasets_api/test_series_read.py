@@ -1,3 +1,4 @@
+import pytest
 from relevanceai.http_client import Client, Dataset
 
 
