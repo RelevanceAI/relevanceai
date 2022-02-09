@@ -14,7 +14,7 @@ LIST_SIZE_MULTIPLIER = 3
 
 
 class BatchRetrieveClient(APIClient, Chunker):
-    def get_documents(
+    def _get_documents(
         self,
         dataset_id: str,
         number_of_documents: int = 20,

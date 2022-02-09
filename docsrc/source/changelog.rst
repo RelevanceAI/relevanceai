@@ -4,6 +4,13 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v0.33.6
+---------
+
+- Fix warning missing parameter
+- Remove `dataset_id` from `get_documents`
+- Fix URL bug if you are logging in from `old-australia-east`
+
 v0.33.5
 --------
 

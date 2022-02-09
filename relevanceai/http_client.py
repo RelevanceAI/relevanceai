@@ -142,10 +142,9 @@ class Client(BatchAPIClient, DocUtils):
         api_key = split_token[1]
         if len(split_token) >= 3:
             region = split_token[2]
-            if region != "old-australia-east":
-                url = self._region_to_url(region)
-                self.base_url = url
-                self.base_ingest_url = url
+            url = self._region_to_url(region)
+            self.base_url = url
+            self.base_ingest_url = url
             self._region = region
             if len(split_token) >= 4:
                 self._firebase_uid = split_token[4]
