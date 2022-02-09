@@ -62,7 +62,9 @@ class Stats(Read):
             dataframe = {
                 col: facets[col]
                 for col in schema
-                if not any(word in col for word in ["_cluster_", "_vector_"])
+                if not any(
+                    word in col for word in ["_cluster_", "_vector_", "_chunk_", "_dr_"]
+                )
                 and isinstance(facets[col], dict)
             }
             dataframe = pd.DataFrame(dataframe)
