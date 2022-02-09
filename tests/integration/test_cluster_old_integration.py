@@ -11,13 +11,12 @@ from relevanceai.clusterer import ClusterOps
 from relevanceai.clusterer import CentroidClusterBase
 
 
-@pytest.mark.skip
-def test_old_cluster_integration(test_client: Client, test_sample_vector_dataset):
+def test_old_cluster_integration(test_client: Client, vector_dataset_id):
     """Test for the entire clustering workflow."""
     # Retrieve a previous dataset
     VECTOR_FIELD = "sample_1_vector_"
     ALIAS = "kmeans_10"
-    documents = test_client.datasets.documents.list(test_sample_vector_dataset)
+    documents = test_client.datasets.documents.list(vector_dataset_id)
 
     from relevanceai.vector_tools.cluster import KMeans
 
@@ -33,7 +32,7 @@ def test_old_cluster_integration(test_client: Client, test_sample_vector_dataset
     # Centroids
     cluster_centers = cluster.get_centroid_documents()
     test_client.services.cluster.centroids.insert(
-        test_sample_vector_dataset,
+        vector_dataset_id,
         vector_fields=[VECTOR_FIELD],
         alias=ALIAS,
         cluster_centers=cluster_centers,
@@ -41,7 +40,7 @@ def test_old_cluster_integration(test_client: Client, test_sample_vector_dataset
     cluster_metadata = cluster.to_metadata()
     # Insert the centroids
     # test_client.services.cluster.centroids.metadata(
-    #     test_sample_vector_dataset,
+    #     vector_dataset_id,
     #     vector_field=VECTOR_FIELD,
     #     cluster_centers=cluster_centers,
     #     alias=ALIAS)

@@ -39,7 +39,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             text_field = "text_field"
@@ -77,7 +77,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"
@@ -151,7 +151,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             result = df.label_vector(
@@ -270,7 +270,7 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             results = df.label_document(
                 document={...},
@@ -356,7 +356,7 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             results = df.label(
                 vector_field="sample_1_vector_",
@@ -1300,7 +1300,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             # run kmeans with default 10 clusters
