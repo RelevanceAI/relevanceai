@@ -10,7 +10,7 @@ from relevanceai.dataset_api import Dataset
 
 import tempfile
 
-from tests.globals.utils import *
+from tests.globals.constants import *
 from tests.globals.document import *
 from tests.globals.documents import *
 from tests.globals.objects import *

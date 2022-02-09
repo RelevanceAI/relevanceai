@@ -4,7 +4,7 @@ Sklearn Integration Test
 from relevanceai import Client
 from relevanceai.dataset_api import Dataset
 
-from tests.globals.utils import generate_random_string
+from tests.globals.constants import generate_random_string
 
 
 def test_cluster(test_client: Client, vector_dataset_id: str):

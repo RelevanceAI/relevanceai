@@ -1,6 +1,6 @@
 from typing import Dict
 
-from tests.globals.utils import (
+from tests.globals.constants import (
     generate_random_label,
     generate_random_string,
     generate_random_vector,

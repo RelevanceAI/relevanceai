@@ -1,6 +1,6 @@
 import random
 
-from tests.globals.utils import generate_random_vector
+from tests.globals.constants import generate_random_vector
 
 
 def simple_document(_id: str):

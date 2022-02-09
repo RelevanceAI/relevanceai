@@ -1,6 +1,6 @@
 from relevanceai.dataset_api import Dataset
 
-from tests.globals.utils import generate_random_vector
+from tests.globals.constants import generate_random_vector
 
 MULTIVECTOR_QUERY = [
     {"vector": generate_random_vector(), "fields": ["sample_1_vector_"]}

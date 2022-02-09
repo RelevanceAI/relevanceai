@@ -4,7 +4,7 @@ import uuid
 
 from typing import List
 
-from tests.globals.utils import NUMBER_OF_DOCUMENTS
+from tests.globals.constants import NUMBER_OF_DOCUMENTS
 
 from tests.globals.document import dataclass_document
 
