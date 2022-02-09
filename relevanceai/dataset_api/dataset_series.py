@@ -85,7 +85,7 @@ class Series(BatchAPIClient):
         documents = self.get_documents(dataset_id=self.dataset_id, select_fields=fields)
         try:
             return self._show_json(documents, return_html=True)
-        except Exception:
+        except Exception as e:
             warnings.warn(
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
