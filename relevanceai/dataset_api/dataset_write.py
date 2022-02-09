@@ -570,25 +570,4 @@ class Write(Read):
         """
         return self.datasets.delete(self.dataset_id)
 
-    def insert_df(self, dataframe, *args, **kwargs):
-        """
-        Insert a dataframe into the dataset.
-        Takes in additional args and kwargs based on `insert_documents`.
-
-        Parameters
-        ----------
-        dataframe : pandas.DataFrame
-            A pandas dataframe to be inserted
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-
-            df = client.Dataset("sample_dataset")
-            pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
-
-            df.insert_df(pandas_df)
-
-        """
-        return self.insert_pandas_dataframe(dataframe, *args, **kwargs)
+    insert_df = insert_pandas_dataframe
