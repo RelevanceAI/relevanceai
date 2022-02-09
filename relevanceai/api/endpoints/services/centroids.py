@@ -159,7 +159,7 @@ class CentroidsClient(_Base):
 
         """
         return self.make_http_request(
-            "/datasets/{dataset_id}/cluster/centroids/documents",
+            f"/datasets/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
                 # "dataset_id": dataset_id,
