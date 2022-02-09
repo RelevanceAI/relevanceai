@@ -69,19 +69,41 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
-        authenticate: bool = False,
+        region="us-east-1",
+        authenticate: bool = True,
         token: str = None,
+        force_refresh: bool = False,
     ):
-        if project is None or api_key is None:
-            project, api_key = self._token_to_auth(token)
+        """
+        Initialize the client
+
+        Parameters
+        -------------
+
+        project: str
+            The name of the project
+        api_key: str
+            API key
+        region: str
+            The region to work in. Currently only `us-east-1` is provided
+        token: str
+            You can paste the token here if things need to be refreshed
+        force_refresh: bool
+            If True, it forces you to refresh your client
+        """
+        self.region = region
+        if project is None or api_key is None or force_refresh:
+            project, api_key, base_url = self._token_to_auth(token)
+
+        self.base_url = self._region_to_url(self.region)
+        self.base_ingest_url = self._region_to_ingestion_url(self.region)
 
         super().__init__(project, api_key)
 
-        # Authenticate user
+        # used to debug
         if authenticate:
             if self.check_auth():
-
-                WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
+                WELCOME_MESSAGE = f"""Welcome to RelevanceAI. Logged in as {project}."""
                 print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
@@ -89,10 +111,7 @@ class Client(BatchAPIClient, DocUtils):
         # Import projector and vector tools
         if vis_requirements:
             self.projector = Projector(project, api_key)
-        else:
-            self.logger.warning(
-                "Projector not loaded. You do not have visualisation requirements installed."
-            )
+
         self.vector_tools = VectorTools(project, api_key)
 
         # Legacy functions (?) - forgot what they were for
@@ -115,43 +134,31 @@ class Client(BatchAPIClient, DocUtils):
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
 
-    ### Configurations
-
-    @property
-    def base_url(self):
-        return CONFIG.get_field("api.base_url", CONFIG.config)
-
-    @base_url.setter
-    def base_url(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        CONFIG.set_option("api.base_url", value)
-
-    @property
-    def base_ingest_url(self):
-        return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
-
-    @base_ingest_url.setter
-    def base_ingest_url(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        CONFIG.set_option("api.base_ingest_url", value)
-
     ### Authentication Details
 
     def _process_token(self, token: str):
         split_token = token.split(":")
         project = split_token[0]
         api_key = split_token[1]
-        # If the base URl is included in the pasted token then include it
         if len(split_token) >= 3:
             region = split_token[2]
             if region != "old-australia-east":
-                url = f"https://api.{region}.relevance.ai/latest"
+                url = self._region_to_url(region)
                 self.base_url = url
                 self.base_ingest_url = url
-        self._write_credentials(project, api_key)
-        return project, api_key
+            self._region = region
+            if len(split_token) >= 4:
+                self._firebase_uid = split_token[4]
+        self._write_credentials(project, api_key, url)
+        return project, api_key, url
+
+    def _region_to_ingestion_url(self, region: str):
+        # same as region to URL now in case ingestion ever needs to be separate
+        if region == "old-australia-east":
+            url = "https://gateway-api-aueast.relevance.ai/latest"
+        else:
+            url = f"https://api.{region}.relevance.ai/latest"
+        return url
 
     def _token_to_auth(self, token=None):
         # if verbose:
@@ -171,20 +178,21 @@ class Client(BatchAPIClient, DocUtils):
             data = self._read_credentials()
             project = data["project"]
             api_key = data["api_key"]
-        return project, api_key
+            self.base_url = data.get("base_url", CONFIG["api.base_url"])
+            self.base_ingest_url = data.get("base_url", CONFIG["api.base_ingest_url"])
+        return project, api_key, self.base_url
 
-    def _write_credentials(self, project, api_key):
-        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+    def _write_credentials(self, project, api_key, base_url):
+        print(
+            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
+        )
+        json.dump(
+            {"project": project, "api_key": api_key, "base_url": base_url},
+            open(self._cred_fn, "w"),
+        )
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
-
-    def login(
-        self,
-        authenticate: bool = True,
-    ):
-        project, api_key = self._token_to_auth()
-        return Client(project=project, api_key=api_key, authenticate=authenticate)
 
     @property
     def auth_header(self):
@@ -194,6 +202,7 @@ class Client(BatchAPIClient, DocUtils):
         return self.services.search.make_suggestion()
 
     def check_auth(self):
+        print(f"Connecting to {self.region}...")
         return self.admin._ping()
 
     ### Utility functions
