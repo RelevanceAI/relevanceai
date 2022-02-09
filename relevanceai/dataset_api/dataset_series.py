@@ -85,7 +85,7 @@ class Series(BatchAPIClient):
         else:
             include_vector = False
 
-        documents = self.get_documents(
+        documents = self._get_documents(
             dataset_id=self.dataset_id,
             select_fields=[self.field],
             include_vector=include_vector,
@@ -98,7 +98,7 @@ class Series(BatchAPIClient):
 
         try:
             return self._show_json(documents, return_html=True)
-        except Exception:
+        except Exception as e:
             warnings.warn(
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
@@ -530,9 +530,9 @@ class Series(BatchAPIClient):
             warnings.warn(
                 "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
             )
-            return self.get_documents(
-                self.dataset_id, loc + 1, select_fields=[self.field]
-            )[loc][self.field]
+            return self.get_documents(loc + 1, select_fields=[self.field])[loc][
+                self.field
+            ]
         elif isinstance(loc, str):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")

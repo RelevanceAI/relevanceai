@@ -41,8 +41,13 @@ jobs:
       #       ${{ runner.os }}-${{ env.pythonLocation }}-
       - name: Run tests
         env:
-          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
-          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+
+          # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+          TEST_PROJECT: ${{ secrets.TEST_US_PROJECT}}
+          TEST_API_KEY: ${{ secrets.TEST_US_API_KEY}}
+          # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]

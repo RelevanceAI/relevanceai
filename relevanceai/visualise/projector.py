@@ -295,7 +295,6 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         [self._is_valid_label_name(dataset_id, label) for label in hover_label]
 
         documents = self.get_documents(
-            dataset_id,
             number_of_documents=number_of_points_to_render,
             batch_size=1000,
             select_fields=["_id", vector_field] + vector_label_field + hover_label,

@@ -1,3 +1,4 @@
+import asyncio
 from relevanceai.base import _Base
 from typing import Optional, Dict, Any, List
 
@@ -16,7 +17,6 @@ class CentroidsClient(_Base):
         page_size: int = 5,
         cursor: str = None,
         include_vector: bool = False,
-        base_url="https://gateway-api-aueast.relevance.ai/latest",
     ):
         """
         Retrieve the cluster centroid
@@ -37,17 +37,16 @@ class CentroidsClient(_Base):
             Include vectors in the search results
         """
         return self.make_http_request(
-            "/services/cluster/centroids/list",
+            f"/dataset/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                # "dataset_id": dataset_id,
                 "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
                 "include_vector": include_vector,
             },
-            base_url=base_url,
         )
 
     def get(
@@ -124,8 +123,8 @@ class CentroidsClient(_Base):
     def documents(
         self,
         dataset_id: str,
-        cluster_ids: List,
         vector_fields: List,
+        cluster_ids: List = [],
         alias: str = "default",
         page_size: int = 5,
         cursor: str = None,
@@ -137,7 +136,8 @@ class CentroidsClient(_Base):
         Retrieve the cluster centroids by IDs
 
         Parameters
-        ----------
+        -------------
+
         dataset_id : string
             Unique name of dataset
         cluster_ids : list
@@ -159,10 +159,10 @@ class CentroidsClient(_Base):
 
         """
         return self.make_http_request(
-            "/services/cluster/centroids/documents",
+            f"/datasets/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                # "dataset_id": dataset_id,
                 "cluster_ids": cluster_ids,
                 "vector_fields": vector_fields,
                 "alias": alias,
@@ -171,6 +171,7 @@ class CentroidsClient(_Base):
                 "page": page,
                 "include_vector": include_vector,
                 "similarity_metric": similarity_metric,
+                "vector_field": "",
             },
         )
 

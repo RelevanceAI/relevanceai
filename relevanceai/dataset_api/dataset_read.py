@@ -96,86 +96,6 @@ class Read(BatchAPIClient):
         }
         return dtypes
 
-    def get_documents(
-        self,
-        number_of_documents: int = 20,
-        filters: list = [],
-        cursor: str = None,
-        batch_size: int = 1000,
-        sort: list = [],
-        select_fields: list = [],
-        include_vector: bool = True,
-        include_cursor: bool = False,
-    ):
-
-        """
-        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
-        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
-        Parameters
-        ----------
-        dataset_id: string
-            Unique name of dataset
-        number_of_documents: int
-            Number of documents to retrieve
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields.
-        cursor: string
-            Cursor to paginate the document retrieval
-        batch_size: int
-            Number of documents to retrieve per iteration
-        include_vector: bool
-            Include vectors in the search results
-        sort: list
-            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
-        filters: list
-            Query for filtering the search results
-        """
-        if batch_size > number_of_documents:
-            batch_size = number_of_documents
-
-        resp = self.datasets.documents.get_where(
-            dataset_id=self.dataset_id,
-            select_fields=select_fields,
-            include_vector=include_vector,
-            page_size=batch_size,
-            sort=sort,
-            is_random=False,
-            random_state=0,
-            filters=filters,
-            cursor=cursor,
-        )
-        data = resp["documents"]
-
-        if number_of_documents > batch_size:
-            _cursor = resp["cursor"]
-            _page = 0
-            while resp:
-                self.logger.debug(f"Paginating {_page} batch size {batch_size} ...")
-                resp = self.datasets.documents.get_where(
-                    dataset_id=self.dataset_id,
-                    select_fields=select_fields,
-                    include_vector=include_vector,
-                    page_size=batch_size,
-                    sort=sort,
-                    is_random=False,
-                    random_state=0,
-                    filters=filters,
-                    cursor=_cursor,
-                )
-                _data = resp["documents"]
-                _cursor = resp["cursor"]
-                if (_data == []) or (_cursor == []):
-                    break
-                data += _data
-                if number_of_documents and (len(data) >= int(number_of_documents)):
-                    break
-                _page += 1
-            data = data[:number_of_documents]
-
-        if include_cursor:
-            return {"documents": data, "cursor": resp["cursor"]}
-        return data
-
     def _get_schema(self):
         # stores schema in memory to save users API usage/reloading
         if hasattr(self, "_schema"):
@@ -618,3 +538,48 @@ class Read(BatchAPIClient):
         filters = [{"filter_type": "or", "condition_value": filters}]
 
         return self.get_all_documents(select_fields=fields, filters=filters)
+
+    def get_documents(
+        self,
+        number_of_documents: int = 20,
+        filters: list = [],
+        cursor: str = None,
+        batch_size: int = 1000,
+        sort: list = [],
+        select_fields: list = [],
+        include_vector: bool = True,
+        include_cursor: bool = False,
+    ):
+        """
+        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
+        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        number_of_documents: int
+            Number of documents to retrieve
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+        cursor: string
+            Cursor to paginate the document retrieval
+        batch_size: int
+            Number of documents to retrieve per iteration
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        """
+        return self._get_documents(
+            dataset_id=self.dataset_id,
+            number_of_documents=number_of_documents,
+            filters=filters,
+            cursor=cursor,
+            batch_size=batch_size,
+            sort=sort,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            include_cursor=include_cursor,
+        )

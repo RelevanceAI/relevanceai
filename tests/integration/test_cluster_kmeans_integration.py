@@ -5,6 +5,7 @@ Test the clustering workflow from getting the documents, clustering and then ins
 
 import pytest
 
+import time
 from relevanceai import Client
 from relevanceai.dataset_api import Dataset
 
@@ -17,20 +18,8 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_df: Dataset):
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"
-
-    class KMeansModel(CentroidClusterBase):
-        def __init__(self, model):
-            self.model: KMeans = model
-
-        def fit_predict(self, vectors):
-            return self.model.fit_predict(vectors)
-
-        def get_centers(self):
-            return self.model.cluster_centers_
-
-    model = KMeansModel(model=KMeans())
-
-    clusterer = test_client.ClusterOps(model=model, alias=alias)
+    test_client.config.reset()
+    clusterer = test_client.ClusterOps(model=KMeans(n_clusters=2), alias=alias)
 
     clusterer.fit_predict_update(dataset=test_df, vector_fields=[vector_field])
 
