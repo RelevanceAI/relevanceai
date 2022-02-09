@@ -21,11 +21,11 @@ log in this way:
     client = Client(project=project, api_key=api_key)
     client.list_datasets()
 
-If you need to change your token, simply run: 
+If you need to change your token, simply run:
 
 .. code-block::
 
-    from relevanceai import Client 
+    from relevanceai import Client
     client = Client(token="...")
 
 """
@@ -144,7 +144,7 @@ class Client(BatchAPIClient, DocUtils):
         project = split_token[0]
         api_key = split_token[1]
         # If the base URl is included in the pasted token then include it
-        if len(split_token) == 3:
+        if len(split_token) >= 3:
             region = split_token[2]
             if region != "old-australia-east":
                 url = f"https://api.{region}.relevance.ai/latest"
@@ -252,7 +252,7 @@ class Client(BatchAPIClient, DocUtils):
 
             from relevanceai import Client
             client = Client()
-            client.create_dataset("sample_dataset")
+            client.create_dataset("sample_dataset_id")
 
         """
         return self.datasets.create(dataset_id, schema=schema)
@@ -291,7 +291,7 @@ class Client(BatchAPIClient, DocUtils):
 
             from relevanceai import Client
             client = Client()
-            client.delete_dataset("sample_dataset")
+            client.delete_dataset("sample_dataset_id")
 
         """
         return self.datasets.delete(dataset_id)

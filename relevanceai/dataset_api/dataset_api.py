@@ -73,7 +73,7 @@ class Dataset(Export, Stats, Operations):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"

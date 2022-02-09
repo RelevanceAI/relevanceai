@@ -29,7 +29,7 @@ class Stats(Read):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             field = "sample_field"
             value_counts_df = df.value_counts(field)
@@ -49,7 +49,7 @@ class Stats(Read):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             field = "sample_field"
             df.describe() # returns pandas dataframe of stats
@@ -84,7 +84,7 @@ class Stats(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
             df.health
 
         """

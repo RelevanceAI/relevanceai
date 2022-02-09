@@ -64,7 +64,7 @@ class Write(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             documents = [
@@ -134,7 +134,7 @@ class Write(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             csv_filename = "temp.csv"
             df.insert_csv(csv_filename)
@@ -164,7 +164,7 @@ class Write(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
             pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
             df.insert_pandas_dataframe(pandas_df)
 
@@ -243,7 +243,7 @@ class Write(Read):
                 }
             ]
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df.upsert_documents(documents)
@@ -302,7 +302,7 @@ class Write(Read):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_doc(doc):
                 doc["value"] = 2
@@ -377,7 +377,7 @@ class Write(Read):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
@@ -416,7 +416,7 @@ class Write(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             fields = [
@@ -544,7 +544,7 @@ class Write(Read):
                 }
             ]
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.create()
 
@@ -563,7 +563,7 @@ class Write(Read):
             from relevanceai import Client
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.delete()
 
