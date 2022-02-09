@@ -43,10 +43,7 @@ def test_client(test_project, test_api_key):
     # For some reason not resetting to default
     client.config.reset()
     if client.region != "us-east-1":
-        import pdb
-
-        pdb.set_trace()
-        print("WTF")
+        raise ValueError("default value aint RIGHT")
     return client
 
 
