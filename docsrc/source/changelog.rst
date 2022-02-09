@@ -4,11 +4,21 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v0.33.3
+v0.33.5
 --------
 
 - Fix delete dataset for international gateways
 - Add low-touch way to label with a given model
+
+v0.33.4
+---------
+
+- Make asynchronous dashboard request
+
+v0.33.3
+--------
+
+- Make adding firebase UID not breaking
 
 v0.33.2
 --------
