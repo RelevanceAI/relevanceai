@@ -17,12 +17,12 @@ HDBSCAN Example
 
     import hdbscan
     from relevanceai import Client
-    
+
     # instantiate the client
     client = Client()
 
     # Retrieve the relevant dataset
-    df = client.Dataset("sample_dataset")
+    df = client.Dataset("sample_dataset_id")
 
     model = hdbscan.HDBSCAN()
 
@@ -32,5 +32,5 @@ HDBSCAN Example
     # check that cluster is now in schema
     df.schema
 
-    # List closest to center 
+    # List closest to center
     clusterer.list_closest_to_center()

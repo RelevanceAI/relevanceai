@@ -20,6 +20,7 @@ class AggregateClient(_Base):
         asc: bool = False,
         flatten: bool = True,
         alias: str = "default",
+        **kw
     ):
         """
         Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
@@ -101,7 +102,7 @@ class AggregateClient(_Base):
             "/services/aggregate/aggregate",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                "dataset_ids": [dataset_id],
                 "aggregation_query": {"groupby": groupby, "metrics": metrics},
                 "filters": filters,
                 "page_size": page_size,
@@ -110,5 +111,6 @@ class AggregateClient(_Base):
                 "flatten": flatten,
                 "alias": alias,
             },
-            base_url="https://gateway-api-aueast.relevance.ai/v1",
+            # base_url="https://gateway-api-aueast.relevance.ai/v1",
+            **kw
         )

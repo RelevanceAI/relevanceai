@@ -55,6 +55,7 @@ test_requirements = (
     [
         "pytest",
         "pytest-dotenv",
+        "pytest-xdist",
         "pytest-cov",
         "pytest-mock",
         "mypy",

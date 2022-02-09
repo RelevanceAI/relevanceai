@@ -77,7 +77,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
+        >>> df = client.Dataset("sample_dataset_id")
         >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
         >>> df.insert_documents(documents)
 
@@ -91,11 +91,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
-
         if use_json_encoder:
             documents = self.json_encoder(documents)
+
+        # Turn _id into string
+        self._convert_id_to_string(documents)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
@@ -162,7 +162,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ---------
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
+        >>> df = client.Dataset("sample_dataset_id")
         >>> csv_filename = "temp.csv"
         >>> df.insert_csv(csv_filename)
 
@@ -791,6 +791,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
             else:
                 break
+            time.sleep(int(self.config["retries.seconds_between_retries"]))
 
         # When returning, add in the cancelled id
         failed_ids.extend(cancelled_ids)

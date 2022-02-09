@@ -21,6 +21,7 @@ You can view other examples of how to interact with this class here :ref:`integr
 import os
 import json
 import getpass
+import time
 import warnings
 
 import numpy as np
@@ -333,7 +334,7 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
@@ -488,15 +489,15 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
             cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
-            cluster_ops.aggregate(
-                "sample_dataset",
+            clusterer.aggregate(
+                "sample_dataset_id",
                 groupby=[{
                     "field": "title",
                     "agg": "wordcloud",
@@ -596,6 +597,8 @@ class ClusterOps(BatchAPIClient):
             )
             self.logger.info(results)
 
+            # give database time to make sure its there
+            time.sleep(2)
             self.datasets.cluster.centroids.list_closest_to_center(
                 self.dataset_id,
                 vector_fields=self.vector_fields,
@@ -716,7 +719,7 @@ class ClusterOps(BatchAPIClient):
         """
         See your centroids if there are any.
         """
-        return self.services.cluster.centroids.list(
+        return self.services.cluster.centroids.documents(
             self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,

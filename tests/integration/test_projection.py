@@ -34,8 +34,8 @@ from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
         },
     ],
 )
-def fixture_dataset_args(test_sample_vector_dataset, request):
-    return {"dataset_id": test_sample_vector_dataset, **request.param}
+def fixture_dataset_args(vector_dataset_id, request):
+    return {"dataset_id": vector_dataset_id, **request.param}
 
 
 @pytest.fixture(
@@ -62,11 +62,11 @@ def fixture_cluster_args(request):
 
 
 # @pytest.mark.skip(reason = 'Slow')
-# def test_projector_plot(test_client, dataset_args, dr_args, cluster_args):
+# def test_projector_plot(test_client: Client, dataset_args, dr_args, cluster_args):
 #     """Testing vector label with cluster"""
 #     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
 #     assert True
 
-# def test_projector_plot_fast(test_client, test_sample_vector_dataset):
-#     test_client.projector.plot(test_sample_vector_dataset, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
+# def test_projector_plot_fast(test_client: Client, vector_dataset_id: str):
+#     test_client.projector.plot(vector_dataset_id, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
 #     assert True

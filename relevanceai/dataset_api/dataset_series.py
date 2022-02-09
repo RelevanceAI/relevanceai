@@ -227,7 +227,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             text_field = "text_field"
@@ -281,7 +281,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df["sample_1_label"].apply(lambda x: x + 3, output_field="output_field")
@@ -342,7 +342,7 @@ class Series(BatchAPIClient):
             from relevanceai import Client
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
@@ -383,7 +383,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"
@@ -425,7 +425,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"
@@ -500,7 +500,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"
