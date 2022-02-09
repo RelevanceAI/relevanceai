@@ -62,7 +62,7 @@ class ExampleDatasets:
             "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
         )
         client = Client(project, api_key, region="old-australia-east")
-        documents = client.get_documents(
+        documents = client._get_documents(
             db_name,
             number_of_documents=number_of_documents,
             select_fields=select_fields,

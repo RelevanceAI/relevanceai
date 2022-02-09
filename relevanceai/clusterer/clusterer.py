@@ -973,8 +973,8 @@ class ClusterOps(BatchAPIClient):
         """Utility function for chunking a dataset"""
         cursor = None
 
-        docs = self.get_documents(
-            dataset.dataset_id,
+        docs = self._get_documents(
+            dataset_id=self.dataset_id,
             include_cursor=True,
             number_of_documents=chunksize,
             select_fields=select_fields,
@@ -983,8 +983,8 @@ class ClusterOps(BatchAPIClient):
 
         while len(docs["documents"]) > 0:
             yield docs["documents"]
-            docs = self.get_documents(
-                self.dataset.dataset_id,
+            docs = self._get_documents(
+                dataset_id=self.dataset_id,
                 cursor=docs["cursor"],
                 include_cursor=True,
                 select_fields=select_fields,
