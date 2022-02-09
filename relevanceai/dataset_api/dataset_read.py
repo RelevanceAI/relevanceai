@@ -189,7 +189,6 @@ class Read(BatchAPIClient):
             df.head()
         """
         head_documents = self.get_documents(
-            dataset_id=self.dataset_id,
             number_of_documents=n,
         )
         if raw_json:
@@ -221,7 +220,7 @@ class Read(BatchAPIClient):
         )
 
     def _repr_html_(self):
-        documents = self.get_documents(dataset_id=self.dataset_id)
+        documents = self.get_documents()
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
@@ -531,3 +530,48 @@ class Read(BatchAPIClient):
         filters = [{"filter_type": "or", "condition_value": filters}]
 
         return self.get_all_documents(select_fields=fields, filters=filters)
+
+    def get_documents(
+        self,
+        number_of_documents: int = 20,
+        filters: list = [],
+        cursor: str = None,
+        batch_size: int = 1000,
+        sort: list = [],
+        select_fields: list = [],
+        include_vector: bool = True,
+        include_cursor: bool = False,
+    ):
+        """
+        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
+        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        number_of_documents: int
+            Number of documents to retrieve
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+        cursor: string
+            Cursor to paginate the document retrieval
+        batch_size: int
+            Number of documents to retrieve per iteration
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        """
+        return self._get_documents(
+            dataset_id=self.dataset_id,
+            number_of_documents=number_of_documents,
+            filters=filters,
+            cursor=cursor,
+            batch_size=batch_size,
+            sort=sort,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            include_cursor=include_cursor,
+        )

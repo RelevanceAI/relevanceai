@@ -82,7 +82,7 @@ class Series(BatchAPIClient):
     def _repr_html_(self):
         fields = [self.field]
 
-        documents = self.get_documents(dataset_id=self.dataset_id, select_fields=fields)
+        documents = self.get_documents(select_fields=fields)
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
@@ -514,9 +514,9 @@ class Series(BatchAPIClient):
             warnings.warn(
                 "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
             )
-            return self.get_documents(
-                self.dataset_id, loc + 1, select_fields=[self.field]
-            )[loc][self.field]
+            return self.get_documents(loc + 1, select_fields=[self.field])[loc][
+                self.field
+            ]
         elif isinstance(loc, str):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
