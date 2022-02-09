@@ -49,6 +49,7 @@ def test_client(test_project, test_api_key):
 
 @pytest.fixture(scope="session")
 def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
+    test_client.config.reset()
     test_dataset_id = generate_dataset_id()
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
@@ -62,6 +63,7 @@ def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
 
 @pytest.fixture(scope="session")
 def test_read_df(test_client: Client, vector_documents: List[Dict]):
+    test_client.config.reset()
     DATASET_ID = "_sample_df_"
     df = test_client.Dataset(DATASET_ID)
     results = df.upsert_documents(vector_documents)
@@ -72,6 +74,7 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
 @pytest.fixture(scope="session")
 def test_csv_df(test_df: Dataset, vector_documents: List[Dict]):
     """Sample csv dataset"""
+    test_df.config.reset()
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(vector_documents)
         df.to_csv(csvfile)
