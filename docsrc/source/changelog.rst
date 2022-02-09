@@ -8,6 +8,13 @@ v0.33.5
 --------
 
 - Fix UX flow
+- Make US-East-1 the default
+- Add force refresh
+- Rework Login UX
+- Mention region when connecting
+- Make the authentication message super cool
+- Fix centroids to Node endpoint
+- Update the delete request
 
 v0.33.4
 ---------
