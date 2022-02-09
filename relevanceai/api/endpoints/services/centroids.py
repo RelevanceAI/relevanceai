@@ -37,10 +37,10 @@ class CentroidsClient(_Base):
             Include vectors in the search results
         """
         return self.make_http_request(
-            "/services/cluster/centroids/documents",
+            f"/dataset/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                # "dataset_id": dataset_id,
                 "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
