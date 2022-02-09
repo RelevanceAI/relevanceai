@@ -16,7 +16,7 @@ def test_old_cluster_integration(test_client: Client, vector_dataset_id):
     # Retrieve a previous dataset
     VECTOR_FIELD = "sample_1_vector_"
     ALIAS = "kmeans_10"
-    documents = test_client.datasets.documents.list(vector_dataset_id)
+    documents = test_client.datasets.documents.get_where(vector_dataset_id)
 
     from relevanceai.vector_tools.cluster import KMeans
 
