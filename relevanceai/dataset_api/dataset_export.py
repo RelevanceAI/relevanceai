@@ -40,7 +40,7 @@ class Export(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             csv_fname = "path/to/csv/file.csv"
@@ -70,7 +70,7 @@ class Export(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             dict = df.to_dict(orient="records")

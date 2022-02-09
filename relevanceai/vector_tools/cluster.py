@@ -524,7 +524,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.kmeans_cluster(
-            dataset_id="sample_dataset",
+            dataset_id="sample_dataset_id",
             vector_fields=vector_fields
         )
         """
@@ -672,7 +672,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.hdbscan_cluster(
-            dataset_id="sample_dataset",
+            dataset_id="sample_dataset_id",
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """

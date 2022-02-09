@@ -333,7 +333,7 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
@@ -488,15 +488,15 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
             cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
-            cluster_ops.aggregate(
-                "sample_dataset",
+            clusterer.aggregate(
+                "sample_dataset_id",
                 groupby=[{
                     "field": "title",
                     "agg": "wordcloud",
