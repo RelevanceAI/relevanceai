@@ -68,14 +68,12 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
 
 
 @pytest.fixture(scope="session")
-def test_csv_df(
-    test_dataset_df: Dataset, vector_documents: List[Dict], test_dataset_id
-):
+def test_csv_df(test_df: Dataset, vector_documents: List[Dict], test_dataset_id):
     """Sample csv dataset"""
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(vector_documents)
         df.to_csv(csvfile)
 
-        response = test_dataset_df.insert_csv(csvfile.name)
+        response = test_df.insert_csv(csvfile.name)
         yield response, len(vector_documents)
-        test_dataset_df.delete()
+        test_df.delete()

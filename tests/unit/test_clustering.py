@@ -5,8 +5,8 @@ from typing import Dict, List
 from relevanceai import Client
 
 
-def test_kmeans(test_client: Client, clustered_dataset: List[Dict]):
-    db_health = test_client.datasets.monitor.health(clustered_dataset)
+def test_kmeans(test_client: Client, clustered_dataset_id: List[Dict]):
+    db_health = test_client.datasets.monitor.health(clustered_dataset_id)
     assert "_cluster_" in db_health
     assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
 
@@ -21,9 +21,9 @@ def test_kmeans_dashboard(test_client: Client, vector_dataset_id: str):
     assert True
 
 
-def test_cluster_plot(test_client: Client, clustered_dataset: List[Dict]):
+def test_cluster_plot(test_client: Client, clustered_dataset_id: List[Dict]):
     test_client.vector_tools.cluster.plot(
-        clustered_dataset,
+        clustered_dataset_id,
         "sample_1_vector_",
         "kmeans_10",
         ground_truth_field="sample_1_label",
@@ -31,9 +31,9 @@ def test_cluster_plot(test_client: Client, clustered_dataset: List[Dict]):
     assert True
 
 
-def test_cluster_metrics(test_client: Client, clustered_dataset: List[Dict]):
+def test_cluster_metrics(test_client: Client, clustered_dataset_id: List[Dict]):
     metrics = test_client.vector_tools.cluster.metrics(
-        clustered_dataset,
+        clustered_dataset_id,
         "sample_1_vector_",
         "kmeans_10",
         ground_truth_field="sample_1_label",
@@ -41,9 +41,9 @@ def test_cluster_metrics(test_client: Client, clustered_dataset: List[Dict]):
     assert True
 
 
-def test_cluster_distribution(test_client: Client, clustered_dataset: List[Dict]):
+def test_cluster_distribution(test_client: Client, clustered_dataset_id: List[Dict]):
     distribution = test_client.vector_tools.cluster.distribution(
-        clustered_dataset,
+        clustered_dataset_id,
         "sample_1_vector_",
         "kmeans_10",
         ground_truth_field="sample_1_label",
@@ -51,17 +51,17 @@ def test_cluster_distribution(test_client: Client, clustered_dataset: List[Dict]
     assert True
 
 
-def test_centroid_distances(test_client: Client, clustered_dataset: List[Dict]):
+def test_centroid_distances(test_client: Client, clustered_dataset_id: List[Dict]):
     centroid_distances = test_client.vector_tools.cluster.centroid_distances(
-        clustered_dataset, "sample_1_vector_", "kmeans_10"
+        clustered_dataset_id, "sample_1_vector_", "kmeans_10"
     )
     assert True
 
 
 @pytest.fixture
-def closest_to_centers(test_client: Client, clustered_dataset: List[Dict]):
+def closest_to_centers(test_client: Client, clustered_dataset_id: List[Dict]):
     results = test_client.datasets.cluster.centroids.list_closest_to_center(
-        clustered_dataset,
+        clustered_dataset_id,
         ["sample_1_vector_"],
         "kmeans_10",
     )
@@ -69,9 +69,9 @@ def closest_to_centers(test_client: Client, clustered_dataset: List[Dict]):
 
 
 @pytest.fixture
-def furthest_from_centers(test_client: Client, clustered_dataset: List[Dict]):
+def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict]):
     results = test_client.datasets.cluster.centroids.list_furthest_from_center(
-        clustered_dataset,
+        clustered_dataset_id,
         ["sample_1_vector_"],
         "kmeans_10",
     )

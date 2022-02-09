@@ -14,9 +14,9 @@ LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower
 
 
 @pytest.fixture(scope="session")
-def test_label_df(test_client: Client, sample_vector_documents):
+def test_label_df(test_client: Client, vector_documents):
     df = test_client.Dataset(LABEL_DATSET_ID)
-    df.upsert_documents(sample_vector_documents)
+    df.upsert_documents(vector_documents)
     yield df
     df.delete()
 
@@ -61,29 +61,29 @@ def test_labelling_vector(test_label_df: Dataset):
 
 
 @pytest.mark.skip(reason="we dont really use this.")
-def test_labelling_document(test_dataset_df: Dataset):
-    result = test_dataset_df.label_document(
+def test_labelling_document(test_df: Dataset):
+    result = test_df.label_document(
         {},
         label_vector_field="sample_1_vector_",
         alias="sample",
-        label_dataset_id=test_dataset_df.dataset_id,
+        label_dataset_id=test_df.dataset_id,
         label_fields=["path"],
         number_of_labels=1,
     )
     assert len(result["_label_"]["sample"]) > 0, "missing_labels"
 
 
-def test_labelling_by_model(test_dataset_df: Dataset):
+def test_labelling_by_model(test_df: Dataset):
 
     LABEL_LIST = ["cat", "dog"]
 
     def random_vector(labels):
         return [generate_random_vector(100) for _ in labels]
 
-    test_dataset_df.label_from_list(
+    test_df.label_from_list(
         vector_field="sample_1_vector_",
         model=random_vector,
         label_list=LABEL_LIST,
         alias="pets",
     )
-    assert "_label_.pets" in test_dataset_df.schema
+    assert "_label_.pets" in test_df.schema

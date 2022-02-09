@@ -21,8 +21,8 @@ def test_nested_assorted_df(
 
 
 @pytest.fixture(scope="session")
-def test_sample_obj_dataset_df(
-    test_client: Client, obj_dataset: List[NamedTuple]
+def test_sample_obj_dataset_id_df(
+    test_client: Client, obj_dataset_id: List[NamedTuple]
 ) -> Dataset:
-    df = test_client.Dataset(obj_dataset)
+    df = test_client.Dataset(obj_dataset_id)
     return df

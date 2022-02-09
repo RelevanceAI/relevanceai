@@ -4,44 +4,42 @@
 
 import pandas as pd
 
-from typing import Dict, List
-
 from relevanceai import Client
 
 from relevanceai.dataset_api import Dataset
 
 
 def test_Dataset_init(test_client: Client, vector_dataset_id: str):
-    df = test_client.Dataset(vector_dataset_id)
+    test_client.Dataset(vector_dataset_id)
     assert True
 
 
-def test_Dataset_json_encoder(test_client: Client, test_sample_obj_dataset_df):
-    df = test_client.Dataset(test_sample_obj_dataset_df)
+def test_Dataset_json_encoder(test_client: Client, obj_dataset_id: str):
+    df = test_client.Dataset(obj_dataset_id)
     assert "value1" in df.schema
 
 
 def test_info(test_client: Client, vector_dataset_id: str):
     df = test_client.Dataset(vector_dataset_id)
-    info = df.info()
+    df.info()
     assert True
 
 
 def test_shape(test_client: Client, vector_dataset_id: str):
     df = test_client.Dataset(vector_dataset_id)
-    shape = df.shape
+    df.shape
     assert True
 
 
 def test_head(test_client: Client, vector_dataset_id: str):
     df = test_client.Dataset(vector_dataset_id)
-    head = df.head()
+    df.head()
     assert True
 
 
 def test_describe(test_client: Client, vector_dataset_id: str):
     df = test_client.Dataset(vector_dataset_id)
-    description = df.describe()
+    df.describe()
     assert True
 
 
@@ -53,39 +51,32 @@ def test_sample(test_client: Client, vector_dataset_id: str):
 
 def test_value_counts(test_client: Client, vector_dataset_id: str):
     df = test_client.Dataset(vector_dataset_id)
-    value_counts = df["sample_1_label"].value_counts()
-    value_counts = df["sample_1_label"].value_counts(normalize=True)
+    df["sample_1_label"].value_counts()
+    df["sample_1_label"].value_counts(normalize=True)
     assert True
 
 
 def test_filter(test_client: Client, vector_dataset_id: str):
     df = test_client.Dataset(vector_dataset_id)
-    items = df.filter(items=["sample_1_label"])
-    like = df.filter(like="sample_1_label")
-    regex = df.filter(regex="s$")
+    df.filter(items=["sample_1_label"])
+    df.filter(like="sample_1_label")
+    df.filter(regex="s$")
     assert True
 
 
-def test_read_df_check(test_read_df, sample_vector_documents):
-    assert test_read_df["inserted"] == len(
-        sample_vector_documents
-    ), "Did not insert properly"
+def test_read_df_check(test_read_df, vector_documents):
+    assert test_read_df["inserted"] == len(vector_documents), "Did not insert properly"
 
 
-def test_datasets_schema(test_dataset_df: Dataset):
-    """Testing the datasets API
-    Simple smoke tests for now until we are happy with functionality :)
-    """
-    test_dataset_df.schema
+def test_datasets_schema(test_df: Dataset):
+    test_df.schema
     assert True
 
 
-def test_info(test_dataset_df: Dataset):
-    info = test_dataset_df.info()
+def test_info(test_df: Dataset):
+    info = test_df.info()
     assert isinstance(info, pd.DataFrame)
 
 
-def test_df_get_smoke(test_dataset_df: Dataset):
-    """Test the df"""
-    # This is to cover the 255 error before
-    assert test_dataset_df.get(["321", "3421"])
+def test_df_get_smoke(test_df: Dataset):
+    assert test_df.get(["321", "3421"])
