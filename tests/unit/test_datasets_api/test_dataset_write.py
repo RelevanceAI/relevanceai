@@ -3,7 +3,13 @@
 """
 
 import pandas as pd
+
+import tempfile
+
+from typing import Dict, List
+
 from relevanceai.http_client import Dataset, Client
+from tests.globals.document.vector_document import vector_document
 
 
 def test_apply(test_client: Client, vector_dataset_id: str):
@@ -49,12 +55,6 @@ def test_bulk_apply(test_client: Client, vector_dataset_id: str):
         ],
     )
     assert len(filtered_documents["documents"]) > 0
-
-
-def test_df_insert_csv_successful(test_csv_df: Dataset):
-    """Test Insert CSv successful"""
-    response, original_length = test_csv_df
-    assert response["inserted"] == original_length, "incorrect insertion"
 
 
 def test_insert_df(test_df: Dataset):

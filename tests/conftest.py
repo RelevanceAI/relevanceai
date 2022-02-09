@@ -15,6 +15,7 @@ from tests.globals.document import *
 from tests.globals.documents import *
 from tests.globals.objects import *
 from tests.globals.datasets import *
+from tests.globals.clusterers import *
 
 
 @pytest.fixture(scope="session")
@@ -34,20 +35,8 @@ def test_client(test_project, test_api_key):
 
 
 @pytest.fixture(scope="session")
-def test_dataset_id():
-    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_DATASET_SUFFIX
-
-
-@pytest.fixture(scope="session")
-def pandas_test_dataset_id():
-    return SAMPLE_DATASET_DATASET_PREFIX + RANDOM_PANDAS_DATASET_SUFFIX
-
-
-@pytest.fixture(scope="session")
-def test_csv_dataset(
-    test_client: Client, vector_documents: List[Dict], test_dataset_id
-):
-    """Sample csv dataset"""
+def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
+    test_dataset_id = generate_dataset_id()
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(vector_documents)
@@ -68,7 +57,7 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
 
 
 @pytest.fixture(scope="session")
-def test_csv_df(test_df: Dataset, vector_documents: List[Dict], test_dataset_id):
+def test_csv_df(test_df: Dataset, vector_documents: List[Dict]):
     """Sample csv dataset"""
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(vector_documents)

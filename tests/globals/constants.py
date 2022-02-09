@@ -28,7 +28,10 @@ def generate_random_integer(min: int = 0, max: int = 100) -> int:
     return random.randint(min, max)
 
 
-RANDOM_DATASET_SUFFIX = generate_random_string().lower()
+def generate_dataset_id():
+    return SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
+
+
 RANDOM_PANDAS_DATASET_SUFFIX = generate_random_string().lower()
 SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
