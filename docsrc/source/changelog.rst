@@ -9,7 +9,8 @@ v1.0.0
 
 - Clustering report functionality
 - Add fix and test for new cluster aggregate
-- ADd document mocking utility
+- Add document mocking utility
+- Add integration for cluster reporting
 
 v0.33.6
 ---------
