@@ -503,7 +503,25 @@ def get_machine_learning_research_dataset():
     raise NotImplementedError
 
 
-def dummy_documents(number_of_documents: int = 100, vector_length=5):
+def mock_documents(number_of_documents: int = 100, vector_length=5):
+    """
+    Utility function to mock documents. Aimed at helping users reproduce errors
+    if required.
+
+    Parameters
+    ------------
+
+    number_of_documents: int
+        The number of documents to mock
+    vector_length: int
+        The length of vectors
+
+    .. code-block::
+
+        from relevanceai.datasets import mock_documents
+        documents = mock_documents(10)
+    """
+
     def generate_random_string(string_length: int = 5) -> str:
         """Generate a random string of letters and numbers"""
         return "".join(
