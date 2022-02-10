@@ -15,7 +15,6 @@ def track(func: Callable):
             if enable_tracking():
                 user_id = args[0].firebase_uid
                 event = f"pysdk-{func.__name__}"
-
                 kwargs.update(dict(zip(func.__code__.co_varnames, args)))
                 self = kwargs["self"]
                 kwargs.pop("self")
@@ -24,9 +23,7 @@ def track(func: Callable):
                     "kwargs": kwargs,
                 }
                 analytics.track(user_id=user_id, event=event, properties=properties)
-
                 kwargs["self"] = self
-
         except Exception as e:
             print(e)
 
@@ -45,9 +42,9 @@ def identify(func: Callable):
                     "region": region,
                 }
                 analytics.identify(user_id, traits)
-            return func(*args, **kwargs)
-
         except Exception as e:
             print(e)
+
+        return func(*args, **kwargs)
 
     return wrapper
