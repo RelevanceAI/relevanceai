@@ -11,6 +11,7 @@ v1.0.0
 - Add fix and test for new cluster aggregate
 - Add document mocking utility
 - Add integration for cluster reporting
+- Fix bug for sklearn clustering
 
 v0.33.6
 ---------
