@@ -35,6 +35,7 @@ Automated Cluster Reporting
 """
 import pandas as pd
 import numpy as np
+import warnings
 from typing import Union, List, Dict, Any
 from sklearn.metrics import (
     davies_bouldin_score,
@@ -68,6 +69,12 @@ class ClusterReport:
             The model to analyze. Currently only used
         num_clusters: Optional[int]
             The number of clusters. This is required if we can't actually tell how many clusters there are
+
+        .. warning::
+            This is a beta feature.
+
+        .. info::
+            Introduced in v1.0.0.
 
         """
         self.X = X
