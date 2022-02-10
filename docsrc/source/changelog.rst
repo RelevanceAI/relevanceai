@@ -8,6 +8,7 @@ v1.0.0
 ---------
 
 - Clustering report functionality
+- Add test for cluster aggregate
 
 v0.33.6
 ---------
