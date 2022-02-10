@@ -35,6 +35,7 @@ Automated Cluster Reporting
 """
 import pandas as pd
 import numpy as np
+from typing import Union, List
 from sklearn.metrics import (
     davies_bouldin_score,
     calinski_harabasz_score,
@@ -44,17 +45,43 @@ from sklearn.metrics.pairwise import (
     pairwise_distances,
 )
 from sklearn.tree import _tree, DecisionTreeClassifier
+from sklearn.cluster import KMeans
 
 
 class ClusterReport:
-    def __init__(self, X, cluster_labels, num_clusters, model):
+    def __init__(
+        self,
+        X,
+        cluster_labels: List[Union[str, float]],
+        model: KMeans = None,
+        num_clusters: int = None,
+    ):
+        """
+        Parameters
+        -------------
+
+        X: np.ndarray
+            The original data
+        cluster_labels: List[str]
+            A list of cluster labels
+        model
+            The model to analyze. Currently only used
+        num_clusters: Optional[int]
+            The number of clusters. This is required if we can't actually tell how many clusters there are
+
+        """
         self.X = X
         self.cluster_labels = cluster_labels
-        self.num_clusters = num_clusters
+        self.num_clusters = (
+            len(cluster_labels) if num_clusters is None else num_clusters
+        )
         self.model = model
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
+        """
+        Basic summary statistics
+        """
         if axis == 2:
             return {
                 "sum": array.sum(),
@@ -88,7 +115,29 @@ class ClusterReport:
                 "87.5%": np.percentile(array, 87.5, axis=axis),
             }
 
+    def get_distance_from_centroid(self, cluster_data, center_vector):
+        distances_from_centroid = pairwise_distances([center_vector], cluster_data)
+        return ClusterReport.summary_statistics(distances_from_centroid, axis=2)
+
+    def get_distance_from_centroid_to_another(self, other_cluster_data, center_vector):
+        """Store the distances from a centroid to another."""
+        distances_from_centroid_to_another = pairwise_distances(
+            [center_vector], other_cluster_data
+        )
+        return ClusterReport.summary_statistics(
+            distances_from_centroid_to_another, axis=2
+        )
+
+    def get_distance_from_grand_centroid(self, grand_centroid, specific_cluster_data):
+        distances_from_grand_centroid = pairwise_distances(
+            [grand_centroid], specific_cluster_data
+        )
+        return ClusterReport.summary_statistics(distances_from_grand_centroid, axis=2)
+
     def get_cluster_internal_report(self):
+        """
+        Get internal cluster reporting metrics
+        """
         self.X_silouhette_scores = silhouette_samples(
             self.X, self.cluster_labels, metric="euclidean"
         )
@@ -128,6 +177,7 @@ class ClusterReport:
                 cluster_label
             ] = ClusterReport.summary_statistics(self.X)
 
+            # If each value of the vector is important
             center_stats = {"by_features": {}}
 
             center_stats["by_features"]["summary"] = ClusterReport.summary_statistics(
@@ -135,37 +185,39 @@ class ClusterReport:
             )
 
             if hasattr(self.model, "cluster_centers_"):
+
                 grand_centroid = self.X[cluster_bool].mean(axis=0)
                 self.cluster_internal_report["overall"]["grand_centroids"].append(
                     grand_centroid
                 )
-                distances_from_centroid = pairwise_distances(
-                    [self.model.cluster_centers_[i]], self.X[cluster_bool]
-                )
-                distances_from_centroid_to_another = pairwise_distances(
-                    [self.model.cluster_centers_[i]], self.X[~cluster_bool]
-                )
+
+                specific_cluster_data = self.X[cluster_bool]
+                other_cluster_data = self.X[~cluster_bool]
 
                 center_stats[
                     "distance_from_centroid"
-                ] = ClusterReport.summary_statistics(distances_from_centroid, axis=2)
+                ] = self.get_distance_from_centroid(
+                    specific_cluster_data, self.model.cluster_centers_[i]
+                )
 
                 center_stats[
                     "distance_from_centroid_to_point_in_another_cluster"
-                ] = ClusterReport.summary_statistics(
-                    distances_from_centroid_to_another, axis=2
+                ] = self.get_distance_from_centroid_to_another(
+                    other_cluster_data, self.model.cluster_centers_[i]
                 )
 
-                distances_from_grand_centroid = pairwise_distances(
-                    [grand_centroid], self.X[cluster_bool]
+                center_stats["distances_from_grand_centroid"] = pairwise_distances(
+                    [grand_centroid], specific_cluster_data
                 )
-                distances_from_grand_centroid_to_another = pairwise_distances(
-                    [grand_centroid], self.X[~cluster_bool]
-                )
+
                 center_stats[
                     "distance_from_grand_centroid"
-                ] = ClusterReport.summary_statistics(
-                    distances_from_grand_centroid, axis=2
+                ] = self.get_distance_from_grand_centroid(
+                    grand_centroid, specific_cluster_data
+                )
+
+                distances_from_grand_centroid_to_another = pairwise_distances(
+                    [grand_centroid], self.X[~cluster_bool]
                 )
                 center_stats[
                     "distance_from_grand_centroid_to_point_in_another_cluster"
