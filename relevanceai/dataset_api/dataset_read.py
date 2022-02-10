@@ -116,8 +116,8 @@ class Read(BatchAPIClient):
 
         Returns
         ---------
-        Dict
-            Dictionary of information
+        pd.DataFrame
+            a pandas dataframe of information
 
         Example
         ---------------
@@ -221,6 +221,14 @@ class Read(BatchAPIClient):
 
     def _repr_html_(self):
         documents = self.get_documents()
+        documents = [
+            {
+                "_id": document["_id"],
+                "insert_date_": document["insert_date_"],
+                **document,
+            }
+            for document in documents
+        ]
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
