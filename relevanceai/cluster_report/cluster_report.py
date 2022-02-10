@@ -90,13 +90,13 @@ class ClusterReport:
                 "variance": array.var(),
                 "min": array.min(),
                 "max": array.max(),
-                "12.5%": np.percentile(array, 12.5),
+                "12_5%": np.percentile(array, 12.5),
                 "25%": np.percentile(array, 25),
-                "37.5%": np.percentile(array, 37.5),
+                "37_5%": np.percentile(array, 37.5),
                 "50%": np.percentile(array, 50),
-                "62.5%": np.percentile(array, 62.5),
+                "62_5%": np.percentile(array, 62.5),
                 "75%": np.percentile(array, 75),
-                "87.5%": np.percentile(array, 87.5),
+                "87_5%": np.percentile(array, 87.5),
             }
         else:
             return {
@@ -106,13 +106,13 @@ class ClusterReport:
                 "variance": array.var(axis=axis),
                 "min": array.min(axis=axis),
                 "max": array.max(axis=axis),
-                "12.5%": np.percentile(array, 12.5, axis=axis),
+                "12_5%": np.percentile(array, 12.5, axis=axis),
                 "25%": np.percentile(array, 25, axis=axis),
-                "37.5%": np.percentile(array, 37.5, axis=axis),
+                "37_5%": np.percentile(array, 37.5, axis=axis),
                 "50%": np.percentile(array, 50, axis=axis),
-                "62.5%": np.percentile(array, 62.5, axis=axis),
+                "62_5%": np.percentile(array, 62.5, axis=axis),
                 "75%": np.percentile(array, 75, axis=axis),
-                "87.5%": np.percentile(array, 87.5, axis=axis),
+                "87_5%": np.percentile(array, 87.5, axis=axis),
             }
 
     def get_distance_from_centroid(self, cluster_data, center_vector):
