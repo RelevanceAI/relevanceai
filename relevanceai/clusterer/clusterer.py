@@ -831,6 +831,11 @@ class ClusterOps(BatchAPIClient):
 
         self._insert_centroid_documents()
 
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
+
     def fit_dataset(
         self,
         dataset,
