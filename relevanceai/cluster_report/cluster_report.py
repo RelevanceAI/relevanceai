@@ -86,7 +86,7 @@ class ClusterReport:
             return {
                 "sum": array.sum(),
                 "mean": array.mean(),
-                "standard_deviation": array.std(),
+                "std": array.std(),
                 "variance": array.var(),
                 "min": array.min(),
                 "max": array.max(),
@@ -102,7 +102,7 @@ class ClusterReport:
             return {
                 "sum": array.sum(axis=axis),
                 "mean": array.mean(axis=axis),
-                "standard_deviation": array.std(axis=axis),
+                "std": array.std(axis=axis),
                 "variance": array.var(axis=axis),
                 "min": array.min(axis=axis),
                 "max": array.max(axis=axis),
@@ -143,6 +143,10 @@ class ClusterReport:
         return ClusterReport.summary_statistics(
             distances_from_grand_centroid_to_another, axis=2
         )
+
+    @staticmethod
+    def get_z_score(value, mean, std):
+        return (value - mean) / std
 
     def get_cluster_internal_report(self):
         """
@@ -232,21 +236,23 @@ class ClusterReport:
                     grand_centroid, other_cluster_data
                 )
 
-                center_stats["by_features"]["overall_z_score"] = (
-                    self.model.cluster_centers_[i]
-                    - self.cluster_internal_report["overall"]["summary"]["mean"]
-                ) / self.cluster_internal_report["overall"]["summary"][
-                    "standard_deviation"
-                ]
+                center_stats["by_features"][
+                    "overall_z_score"
+                ] = ClusterReport.get_z_score(
+                    self.model.cluster_centers_[i],
+                    self.cluster_internal_report["overall"]["summary"]["mean"],
+                    self.cluster_internal_report["overall"]["summary"]["std"],
+                )
 
-                center_stats["by_features"]["z_score"] = (
-                    self.model.cluster_centers_[i]
-                    - self.cluster_internal_report["each"]["summary"][cluster_label][
+                center_stats["by_features"]["z_score"] = ClusterReport.get_z_score(
+                    self.model.cluster_centers_[i],
+                    self.cluster_internal_report["each"]["summary"][cluster_label][
                         "mean"
-                    ]
-                ) / self.cluster_internal_report["each"]["summary"][cluster_label][
-                    "standard_deviation"
-                ]
+                    ],
+                    self.cluster_internal_report["each"]["summary"][cluster_label][
+                        "std"
+                    ],
+                )
 
                 squared_errors = np.square(
                     np.subtract(
@@ -255,12 +261,13 @@ class ClusterReport:
                     )
                 )
 
-                center_stats["by_features"]["overall_z_score_grand_centroid"] = (
-                    grand_centroid
-                    - self.cluster_internal_report["overall"]["summary"]["mean"]
-                ) / self.cluster_internal_report["overall"]["summary"][
-                    "standard_deviation"
-                ]
+                center_stats["by_features"][
+                    "overall_z_score_grand_centroid"
+                ] = ClusterReport.get_z_score(
+                    grand_centroid,
+                    self.cluster_internal_report["overall"]["summary"]["mean"],
+                    self.cluster_internal_report["overall"]["summary"]["std"],
+                )
 
             center_stats[
                 "overall_z_score_grand_centroid"
@@ -271,9 +278,7 @@ class ClusterReport:
             center_stats["by_features"]["z_score_grand_centroid"] = (
                 grand_centroid
                 - self.cluster_internal_report["each"]["summary"][cluster_label]["mean"]
-            ) / self.cluster_internal_report["each"]["summary"][cluster_label][
-                "standard_deviation"
-            ]
+            ) / self.cluster_internal_report["each"]["summary"][cluster_label]["std"]
 
             # this might not be needed
             center_stats["overall_z_score"] = ClusterReport.summary_statistics(
