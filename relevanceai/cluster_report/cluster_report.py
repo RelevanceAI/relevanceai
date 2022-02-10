@@ -3,18 +3,14 @@ Cluster Reporting Made Simple
 """
 import pandas as pd
 import numpy as np
-from collections import defaultdict
 from sklearn.metrics import (
     davies_bouldin_score,
     calinski_harabasz_score,
     silhouette_samples,
 )
 from sklearn.metrics.pairwise import (
-    cosine_similarity,
-    pairwise_distances_argmin,
     pairwise_distances,
 )
-from sklearn.metrics import mean_squared_error
 from sklearn.tree import _tree, DecisionTreeClassifier
 
 
