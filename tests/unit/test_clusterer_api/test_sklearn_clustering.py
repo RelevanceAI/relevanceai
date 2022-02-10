@@ -24,8 +24,8 @@ def test_cluster(test_client: Client, vector_dataset_id: str):
     assert f"_cluster_.{vector_field}.{alias}" in df.schema
     assert len(clusterer.list_closest_to_center()) > 0
 
+
 def test_dbscan(test_client: Client):
-    from relevanceai import Client
     from sklearn.cluster import DBSCAN
 
     ALIAS = "dbscan"
