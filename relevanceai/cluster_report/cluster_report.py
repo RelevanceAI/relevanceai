@@ -363,6 +363,13 @@ class ClusterReport:
                 self.X_silouhette_scores[cluster_bool], axis=2
             )
 
+        self.cluster_internal_report["overall"]["dunn_index"] = (
+            min(
+                c["distance_from_centroid"]["min"]
+                for c in self.cluster_internal_report["each"]["centers"].values()
+            )
+            / self.cluster_internal_report["overall"]["centroids_distance_matrix"].max()
+        )
         return self.cluster_internal_report
 
     def has_centers(self):
