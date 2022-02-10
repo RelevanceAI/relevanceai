@@ -16,7 +16,7 @@ Automated Cluster Reporting
     X = np.array(df['base_vector_'].tolist())
 
 
-    from relevanceai.cluster_report.cluster_reports import ClusterReport
+    from relevanceai.cluster_report.cluster_report import ClusterReport
     from sklearn.cluster import KMeans
 
     N_CLUSTERS = 2
