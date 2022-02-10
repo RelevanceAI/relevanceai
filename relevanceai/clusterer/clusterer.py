@@ -587,7 +587,6 @@ class ClusterOps(BatchAPIClient):
             centers = self.get_centroid_documents()
 
             if hasattr(self.model, "get_centers"):
-                center_vectors = self.model.get_centers()
                 centers = self.get_centroid_documents()
 
             # Change centroids insertion
