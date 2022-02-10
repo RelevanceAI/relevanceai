@@ -366,7 +366,6 @@ class ClusterOps(BatchAPIClient):
 
     def aggregate(
         self,
-        dataset: Optional[Union[str, Dataset]] = None,
         vector_fields: List[str] = None,
         metrics: list = [],
         sort: list = [],
@@ -376,6 +375,7 @@ class ClusterOps(BatchAPIClient):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
+        dataset: Optional[Union[str, Dataset]] = None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
