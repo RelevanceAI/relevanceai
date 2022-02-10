@@ -1,6 +1,13 @@
 """
 Automated Cluster Reporting
 
+.. warning::
+    This is a beta feature.
+
+.. info::
+    **Introduced in v1.0.0.**
+
+
 .. code-block::
 
     import requests
@@ -50,6 +57,30 @@ from sklearn.cluster import KMeans
 
 
 class ClusterReport:
+    """
+    Receive an automated cluster reprot
+
+    .. warning::
+        This is a beta feature.
+
+    .. info::
+        **Introduced in v1.0.0.**
+
+
+    Parameters
+    -------------
+
+    X: np.ndarray
+        The original data
+    cluster_labels: List[str]
+        A list of cluster labels
+    model
+        The model to analyze. Currently only used
+    num_clusters: Optional[int]
+        The number of clusters. This is required if we can't actually tell how many clusters there are
+
+    """
+
     def __init__(
         self,
         X,
@@ -57,26 +88,6 @@ class ClusterReport:
         model: KMeans = None,
         num_clusters: int = None,
     ):
-        """
-        Parameters
-        -------------
-
-        X: np.ndarray
-            The original data
-        cluster_labels: List[str]
-            A list of cluster labels
-        model
-            The model to analyze. Currently only used
-        num_clusters: Optional[int]
-            The number of clusters. This is required if we can't actually tell how many clusters there are
-
-        .. warning::
-            This is a beta feature.
-
-        .. info::
-            Introduced in v1.0.0.
-
-        """
         self.X = X
         self.cluster_labels = cluster_labels
         self.num_clusters = (
