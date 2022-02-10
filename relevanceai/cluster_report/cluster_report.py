@@ -363,6 +363,7 @@ class ClusterReport:
                 self.X_silhouette_scores[cluster_bool], axis=2
             )
 
+        if self.has_centers():
             self.cluster_internal_report["overall"]["dunn_index"] = (
                 min(
                     c["distance_from_centroid"]["min"]
@@ -372,6 +373,7 @@ class ClusterReport:
                     "centroids_distance_matrix"
                 ].max()
             )
+
         return self.cluster_internal_report
 
     def has_centers(self):
