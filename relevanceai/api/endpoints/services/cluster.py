@@ -57,7 +57,7 @@ class ClusterClient(_Base):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias}vector
         """
-        endpoint = "/services/cluster/aggregate"
+        endpoint = f"/datasets/{dataset_id}/cluster/aggregate"
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,
