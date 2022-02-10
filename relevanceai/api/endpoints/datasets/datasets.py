@@ -12,15 +12,26 @@ from relevanceai.api.endpoints.datasets.cluster import ClusterClient
 class DatasetsClient(_Base):
     """All dataset-related functions"""
 
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        self.tasks = TasksClient(project=project, api_key=api_key)
-        self.documents = DocumentsClient(project=project, api_key=api_key)
-        self.monitor = MonitorClient(project=project, api_key=api_key)
-        self.cluster = ClusterClient(project=project, api_key=api_key)
+        self.firebase_uid = firebase_uid
+        self.firebase_uid = firebase_uid
 
-        super().__init__(project, api_key)
+        self.tasks = TasksClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.documents = DocumentsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.monitor = MonitorClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.cluster = ClusterClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def schema(self, dataset_id: str):
         """

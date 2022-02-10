@@ -2,7 +2,7 @@ import pytest
 
 from typing import Dict, List
 
-from relevanceai import Client
+from relevanceai.http_client import Client
 
 
 def test_kmeans(test_client: Client, clustered_dataset_id: List[Dict]):

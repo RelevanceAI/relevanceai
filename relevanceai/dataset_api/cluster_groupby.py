@@ -9,6 +9,7 @@ class ClusterGroupby(Groupby):
         self,
         project,
         api_key,
+        firebase_uid,
         dataset_id,
         alias: str,
         vector_fields: list = [],
@@ -16,11 +17,17 @@ class ClusterGroupby(Groupby):
     ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self._pre_groupby = _pre_groupby
         self.alias = alias
         self.vector_fields = vector_fields
-        super().__init__(project=project, api_key=api_key, dataset_id=dataset_id)
+        super().__init__(
+            project=project,
+            api_key=api_key,
+            dataset_id=dataset_id,
+            firebase_uid=firebase_uid,
+        )
 
     def __call__(self, by: list = []):
         """
@@ -40,6 +47,7 @@ class ClusterGroupby(Groupby):
         self.agg = ClusterAgg(
             project=self.project,
             api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
             dataset_id=self.dataset_id,
             groupby_call=self.groupby_call,
             vector_fields=self.vector_fields,
@@ -99,6 +107,7 @@ class ClusterAgg(Agg):
         self,
         project,
         api_key,
+        firebase_uid,
         dataset_id,
         vector_fields: list,
         alias: str,
@@ -106,6 +115,7 @@ class ClusterAgg(Agg):
     ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self.groupby_call = groupby_call
         self.vector_fields = vector_fields
@@ -113,6 +123,7 @@ class ClusterAgg(Agg):
         super().__init__(
             project=project,
             api_key=api_key,
+            firebase_uid=firebase_uid,
             dataset_id=dataset_id,
             groupby_call=groupby_call,
         )

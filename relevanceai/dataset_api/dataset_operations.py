@@ -4,6 +4,8 @@ Pandas like dataset API
 """
 import warnings
 from typing import Dict, List, Optional, Callable
+
+from relevanceai.analytics_client import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.vector_tools.nearest_neighbours import (
@@ -13,6 +15,7 @@ from relevanceai.vector_tools.nearest_neighbours import (
 
 
 class Operations(Write):
+    @track
     def vectorize(self, field: str, model):
         """
         Vectorizes a Particular field (text) of the dataset
@@ -49,9 +52,11 @@ class Operations(Write):
             project=self.project,
             api_key=self.api_key,
             dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             field=field,
         ).vectorize(model)
 
+    @track
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
@@ -65,7 +70,6 @@ class Operations(Write):
             The clustering model to use
         vector_fields : str
             The vector fields over which to cluster
-
 
         Example
         -------
@@ -90,11 +94,16 @@ class Operations(Write):
         from relevanceai.clusterer import ClusterOps
 
         clusterer = ClusterOps(
-            model=model, alias=alias, api_key=self.api_key, project=self.project
+            model=model,
+            alias=alias,
+            api_key=self.api_key,
+            project=self.project,
+            firebase_uid=self.firebase_uid,
         )
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
+    @track
     def label_vector(
         self,
         vector,
@@ -184,6 +193,7 @@ class Operations(Write):
         # {"_label_": {"field": {"alias": [{"label": 3, "similarity_score": 0.4}]}
         return self.store_labels_in_document(labels, alias)
 
+    @track
     def store_labels_in_document(self, labels: list, alias: str):
         # return {"_label_": {label_vector_field: {alias: labels}}}
         return {"_label_": {alias: labels}}
@@ -216,6 +226,7 @@ class Operations(Write):
             ]
         return new_labels
 
+    @track
     def label_document(
         self,
         document: dict,
@@ -304,6 +315,7 @@ class Operations(Write):
         document.update(self.store_labels_in_document(labels, alias))
         return document
 
+    @track
     def label(
         self,
         vector_field: str,
@@ -427,6 +439,7 @@ class Operations(Write):
             ],
         )
 
+    @track
     def label_from_list(
         self,
         vector_field: str,
@@ -552,14 +565,17 @@ class Operations(Write):
             select_fields=[vector_field],
         )
 
+    @track
     def label_by_ngram(self):
         """# TODO"""
         raise NotImplementedError
 
+    @track
     def label_with_model_from_dataset(self):
         """# TODO"""
         raise NotImplementedError
 
+    @track
     def vector_search(
         self,
         multivector_query: List,
@@ -711,6 +727,7 @@ class Operations(Write):
             query=query,
         )
 
+    @track
     def hybrid_search(
         self,
         multivector_query: List,
@@ -827,6 +844,7 @@ class Operations(Write):
             search_history_id=search_history_id,
         )
 
+    @track
     def chunk_search(
         self,
         multivector_query,
@@ -945,6 +963,7 @@ class Operations(Write):
             query=query,
         )
 
+    @track
     def multistep_chunk_search(
         self,
         multivector_query,
@@ -1066,6 +1085,7 @@ class Operations(Write):
             query=query,
         )
 
+    @track
     def auto_reduce_dimensions(
         self,
         alias: str,
@@ -1164,6 +1184,7 @@ class Operations(Write):
 
         return results
 
+    @track
     def reduce_dimensions(
         self,
         vector_fields: list,
@@ -1266,6 +1287,7 @@ class Operations(Write):
             dims=n_components,
         )
 
+    @track
     def auto_cluster(self, alias: str, vector_fields: List[str], chunksize: int = 1024):
         """
         Automatically cluster in 1 line of code.
@@ -1343,6 +1365,7 @@ class Operations(Write):
                 alias=alias,
                 api_key=self.api_key,
                 project=self.project,
+                firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
@@ -1362,6 +1385,7 @@ class Operations(Write):
                 alias=alias,
                 api_key=self.api_key,
                 project=self.project,
+                firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )

@@ -31,16 +31,17 @@ def get_model():
     return KMeansModel(verbose=False)
 
 
-def test_cluster(test_client: Client, vector_dataset_id: str):
-    df = test_client.Dataset(vector_dataset_id)
+def test_cluster(test_df: Dataset):
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"
 
     model = get_model()
 
-    df.cluster(model=model, alias=alias, vector_fields=[vector_field], overwrite=True)
-    assert f"_cluster_.{vector_field}.{alias}" in df.schema
+    test_df.cluster(
+        model=model, alias=alias, vector_fields=[vector_field], overwrite=True
+    )
+    assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
 
 
 def test_closest(test_clusterer: ClusterOps):

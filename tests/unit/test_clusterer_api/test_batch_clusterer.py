@@ -13,8 +13,8 @@ CLUSTER_ALIAS = "minibatch"
 VECTOR_FIELDS = ["sample_1_vector_"]
 
 
-@pytest.fixture(scope="session")
-def test_batch_clusterer(test_client: Client, vector_dataset_id: str):
+@pytest.fixture(scope="function")
+def test_batch_clusterer(test_df: Dataset):
     from sklearn.cluster import MiniBatchKMeans
 
     clusterer = test_client.ClusterOps(

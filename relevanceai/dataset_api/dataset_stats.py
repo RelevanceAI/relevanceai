@@ -5,11 +5,13 @@ Pandas like dataset API
 import pandas as pd
 
 from typing import List, Dict
+from relevanceai.analytics_client import track
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 
 
 class Stats(Read):
+    @track
     def value_counts(self, field: str):
         """
         Return a Series containing counts of unique values.
@@ -35,8 +37,15 @@ class Stats(Read):
             value_counts_df = df.value_counts(field)
 
         """
-        return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
+        return Series(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+            field=field,
+        ).value_counts()
 
+    @track
     def describe(self, return_type="pandas") -> dict:
         """
         Descriptive statistics include those that summarize the central tendency

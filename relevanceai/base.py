@@ -1,6 +1,7 @@
 from relevanceai.config import CONFIG
 from relevanceai.transport import Transport
 from relevanceai.logger import LoguruLogger
+from relevanceai.analytics_client import identify
 
 
 def str2bool(v):
@@ -8,11 +9,13 @@ def str2bool(v):
 
 
 class _Base(Transport, LoguruLogger):
-    """Base class for all relevanceai client utilities"""
+    """_Base class for all relevanceai client utilities"""
 
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
+
         self.config = CONFIG
         # Initialize logger
         super().__init__()
@@ -28,6 +31,10 @@ class _Base(Transport, LoguruLogger):
         if value.endswith("/"):
             value = value[:-1]
         CONFIG.set_option("api.base_url", value)
+
+    @property
+    def mixpanel_write_key(self):
+        return CONFIG.get_field("mixpanel.write_key", CONFIG.config)
 
     @property
     def base_ingest_url(self):
@@ -48,8 +55,8 @@ class _Base(Transport, LoguruLogger):
     @region.setter
     def region(self, region_value):
         CONFIG["api.region"] = region_value
-        self.base_url = self.base_ingest_url = self._region_to_url(region_value)
 
+    @identify
     def _region_to_url(self, region: str):
         # to match our logic in dashboard
         # add print statement to double-check region support now
