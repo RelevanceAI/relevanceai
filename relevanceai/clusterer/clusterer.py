@@ -1506,20 +1506,31 @@ class ClusterOps(BatchAPIClient):
 
     def report(self):
         """
-        Get the cluster report going.
+        Get a report on your clusters.
 
         Example
         ---------
+        .. code-block::
+
+            from relevanceai.datasets import mock_documents
+            docs = mock_documents(10)
+            df = client.Dataset('sample')
+            df.upsert_documents(docs)
+            cluster_ops = df.auto_cluster('kmeans-2', ['sample_1_vector_'])
+            cluster_ops.report()
 
         """
+        if isinstance(self.vector_fields, list) and len(self.vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support more than 1 vector field when reporting."
+            )
         from relevanceai.cluster_report import ClusterReport
 
         # X is all the vectors
         cluster_field_name = self._get_cluster_field_name()
         all_docs = self._get_all_documents(
-            self.dataset_id, select_fields=[self.vector_fields[0], cluster_field_name]
+            self.dataset_id, select_fields=self.vector_fields + [cluster_field_name]
         )
-        print(len(all_docs))
         cluster_labels = self.get_field_across_documents(cluster_field_name, all_docs)
         self.number_of_clusters = len(set(cluster_labels))
         self._report = ClusterReport(
