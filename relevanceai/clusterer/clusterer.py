@@ -1292,7 +1292,7 @@ class ClusterOps(BatchAPIClient):
             ]
         return new_documents
 
-    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
+    def _get_cluster_field_name(self):
         if isinstance(self.vector_fields, list):
             set_cluster_field = (
                 f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
@@ -1301,6 +1301,10 @@ class ClusterOps(BatchAPIClient):
             set_cluster_field = (
                 f"{self.cluster_field}.{self.vector_fields}.{self.alias}"
             )
+        return set_cluster_field
+
+    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
+        set_cluster_field = self._get_cluster_field_name()
         self.set_field_across_documents(set_cluster_field, cluster_labels, documents)
 
     def _label_cluster(self, label: Union[int, str]):
@@ -1499,3 +1503,31 @@ class ClusterOps(BatchAPIClient):
                 }
 
         return stats
+
+    def report(self):
+        """
+        Get the cluster report going.
+
+        Example
+        ---------
+
+        """
+        from relevanceai.cluster_report import ClusterReport
+
+        # X is all the vectors
+        cluster_field_name = self._get_cluster_field_name()
+        all_docs = self._get_all_documents(
+            self.dataset_id, select_fields=[self.vector_fields[0], cluster_field_name]
+        )
+        print(len(all_docs))
+        cluster_labels = self.get_field_across_documents(cluster_field_name, all_docs)
+        self.number_of_clusters = len(set(cluster_labels))
+        self._report = ClusterReport(
+            self.get_field_across_documents(self.vector_fields[0], all_docs),
+            cluster_labels=self.get_field_across_documents(
+                cluster_field_name, all_docs
+            ),
+            model=self.model,
+            num_clusters=self.number_of_clusters,
+        )
+        return self._report.get_cluster_internal_report()

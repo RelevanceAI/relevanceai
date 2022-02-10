@@ -40,20 +40,25 @@ Automated Cluster Reporting
     internal_report = report.get_cluster_internal_report()
 
 """
+
 import pandas as pd
 import numpy as np
 from relevanceai.warnings import warn_function_is_work_in_progress
 from typing import Union, List, Dict, Any
-from sklearn.metrics import (
-    davies_bouldin_score,
-    calinski_harabasz_score,
-    silhouette_samples,
-)
-from sklearn.metrics.pairwise import (
-    pairwise_distances,
-)
-from sklearn.tree import _tree, DecisionTreeClassifier
-from sklearn.cluster import KMeans
+
+try:
+    from sklearn.metrics import (
+        davies_bouldin_score,
+        calinski_harabasz_score,
+        silhouette_samples,
+    )
+    from sklearn.metrics.pairwise import (
+        pairwise_distances,
+    )
+    from sklearn.tree import _tree, DecisionTreeClassifier
+    from sklearn.cluster import KMeans
+except ModuleNotFoundError as e:
+    pass
 
 
 class ClusterReport:
@@ -83,14 +88,20 @@ class ClusterReport:
 
     def __init__(
         self,
-        X,
+        X: Union[list, np.ndarray],
         cluster_labels: List[Union[str, float]],
         model: KMeans = None,
         num_clusters: int = None,
     ):
         warn_function_is_work_in_progress()
-        self.X = X
-        self.cluster_labels = cluster_labels
+        if isinstance(X, list):
+            self.X = np.array(X)
+        else:
+            self.X = X
+        if isinstance(cluster_labels, list):
+            self.cluster_labels = np.array(cluster_labels)
+        else:
+            self.cluster_labels = cluster_labels
         self.num_clusters = (
             len(cluster_labels) if num_clusters is None else num_clusters
         )
@@ -98,7 +109,7 @@ class ClusterReport:
 
     def get_centers(self):
         if hasattr(self.model, "cluster_centers_"):
-            return self.model.cluster_centers_
+            return self.get_centers()
         raise ValueError(
             "No centers detected. Ensure they they have a .get_centers attribute"
         )
@@ -174,9 +185,23 @@ class ClusterReport:
     def get_z_score(value, mean, std):
         return (value - mean) / std
 
+    # TODO: Implement caching
+    def get_centers(self):
+        # Here we add support for both RelevanceAI cluster models
+        # but also regular sklearn cluster models
+        if hasattr(self.model, "cluster_centers_"):
+            return self.get_centers()
+        elif hasattr(self.model, "get_centers"):
+            return self.model.get_centers()
+        else:
+            import warnings
+
+            warnings.warn("Missing centroids.")
+            return
+
     def get_cluster_internal_report(self):
         """
-        Get internal cluster reporting metrics
+        Provide the standard clustering report.
         """
         self.X_silouhette_scores = silhouette_samples(
             self.X, self.cluster_labels, metric="euclidean"
@@ -209,6 +234,9 @@ class ClusterReport:
         for i, cluster_label in enumerate(label_value_counts[0]):
             cluster_bool = self.cluster_labels == cluster_label
 
+            specific_cluster_data = self.X[cluster_bool]
+            other_cluster_data = self.X[~cluster_bool]
+
             cluster_frequency = label_value_counts[1][i]
             cluster_report["frequency"]["total"] += cluster_frequency
             cluster_report["frequency"]["each"][cluster_label] = cluster_frequency
@@ -221,9 +249,15 @@ class ClusterReport:
             center_stats = {"by_features": {}}
 
             center_stats["by_features"]["summary"] = ClusterReport.summary_statistics(
-                self.X[cluster_bool]
+                specific_cluster_data
             )
 
+            squared_errors = np.square(
+                np.subtract(
+                    [self.get_centers()[i]] * len(self.X[cluster_bool]),
+                    self.X[cluster_bool],
+                )
+            )
             if hasattr(self.model, "cluster_centers_"):
 
                 grand_centroid = self.X[cluster_bool].mean(axis=0)
@@ -231,19 +265,16 @@ class ClusterReport:
                     grand_centroid
                 )
 
-                specific_cluster_data = self.X[cluster_bool]
-                other_cluster_data = self.X[~cluster_bool]
-
                 center_stats[
                     "distance_from_centroid"
                 ] = self.get_distance_from_centroid(
-                    specific_cluster_data, self.model.cluster_centers_[i]
+                    specific_cluster_data, self.get_centers()[i]
                 )
 
                 center_stats[
                     "distance_from_centroid_to_point_in_another_cluster"
                 ] = self.get_distance_from_centroid_to_another(
-                    other_cluster_data, self.model.cluster_centers_[i]
+                    other_cluster_data, self.get_centers()[i]
                 )
 
                 center_stats["distances_from_grand_centroid"] = pairwise_distances(
@@ -265,26 +296,19 @@ class ClusterReport:
                 center_stats["by_features"][
                     "overall_z_score"
                 ] = ClusterReport.get_z_score(
-                    self.model.cluster_centers_[i],
+                    self.get_centers()[i],
                     self.cluster_internal_report["overall"]["summary"]["mean"],
                     self.cluster_internal_report["overall"]["summary"]["std"],
                 )
 
                 center_stats["by_features"]["z_score"] = ClusterReport.get_z_score(
-                    self.model.cluster_centers_[i],
+                    self.get_centers()[i],
                     self.cluster_internal_report["each"]["summary"][cluster_label][
                         "mean"
                     ],
                     self.cluster_internal_report["each"]["summary"][cluster_label][
                         "std"
                     ],
-                )
-
-                squared_errors = np.square(
-                    np.subtract(
-                        [self.model.cluster_centers_[i]] * len(self.X[cluster_bool]),
-                        self.X[cluster_bool],
-                    )
                 )
 
                 center_stats["by_features"][
@@ -295,32 +319,39 @@ class ClusterReport:
                     self.cluster_internal_report["overall"]["summary"]["std"],
                 )
 
-            center_stats[
-                "overall_z_score_grand_centroid"
-            ] = ClusterReport.summary_statistics(
-                center_stats["by_features"]["overall_z_score_grand_centroid"]
-            )
+                center_stats[
+                    "overall_z_score_grand_centroid"
+                ] = ClusterReport.summary_statistics(
+                    center_stats["by_features"]["overall_z_score_grand_centroid"]
+                )
 
-            center_stats["by_features"]["z_score_grand_centroid"] = (
-                grand_centroid
-                - self.cluster_internal_report["each"]["summary"][cluster_label]["mean"]
-            ) / self.cluster_internal_report["each"]["summary"][cluster_label]["std"]
+                center_stats["by_features"]["z_score_grand_centroid"] = (
+                    grand_centroid
+                    - self.cluster_internal_report["each"]["summary"][cluster_label][
+                        "mean"
+                    ]
+                ) / self.cluster_internal_report["each"]["summary"][cluster_label][
+                    "std"
+                ]
 
-            # this might not be needed
-            center_stats["overall_z_score"] = ClusterReport.summary_statistics(
-                center_stats["by_features"]["overall_z_score"]
-            )
-            # this might not be needed
-            center_stats["z_score"] = ClusterReport.summary_statistics(
-                center_stats["by_features"]["z_score"]
-            )
-            center_stats["z_score_grand_centroid"] = ClusterReport.summary_statistics(
-                center_stats["by_features"]["z_score_grand_centroid"]
-            )
+                # this might not be needed
+                center_stats["overall_z_score"] = ClusterReport.summary_statistics(
+                    center_stats["by_features"]["overall_z_score"]
+                )
 
-            center_stats["squared_errors"] = ClusterReport.summary_statistics(
-                squared_errors, axis=2
-            )
+                # this might not be needed
+                center_stats["z_score"] = ClusterReport.summary_statistics(
+                    center_stats["by_features"]["z_score"]
+                )
+                center_stats[
+                    "z_score_grand_centroid"
+                ] = ClusterReport.summary_statistics(
+                    center_stats["by_features"]["z_score_grand_centroid"]
+                )
+
+                center_stats["squared_errors"] = ClusterReport.summary_statistics(
+                    squared_errors, axis=2
+                )
 
             squared_errors_by_col = {}
 
@@ -341,12 +372,15 @@ class ClusterReport:
 
         return self.cluster_internal_report
 
+    def has_centers(self):
+        return self.get_centers() is not None
+
     def _store_basic_centroid_stats(self, overall_report):
         """Store"""
-        if hasattr(self.model, "cluster_centers_"):
-            overall_report["centroids"] = self.model.cluster_centers_
+        if self.has_centers():
+            overall_report["centroids"] = self.get_centers()
             overall_report["centroids_distance_matrix"] = pairwise_distances(
-                self.model.cluster_centers_, metric="euclidean"
+                self.get_centers(), metric="euclidean"
             )
             overall_report["grand_centroids"] = []
             overall_report["average_distance_between_centroids"] = (
