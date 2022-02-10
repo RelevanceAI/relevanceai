@@ -134,6 +134,16 @@ class ClusterReport:
         )
         return ClusterReport.summary_statistics(distances_from_grand_centroid, axis=2)
 
+    def get_distance_from_grand_centroid_to_point_in_another_cluster(
+        self, grand_centroid, other_cluster_data
+    ):
+        distances_from_grand_centroid_to_another = pairwise_distances(
+            [grand_centroid], other_cluster_data
+        )
+        return ClusterReport.summary_statistics(
+            distances_from_grand_centroid_to_another, axis=2
+        )
+
     def get_cluster_internal_report(self):
         """
         Get internal cluster reporting metrics
@@ -216,13 +226,10 @@ class ClusterReport:
                     grand_centroid, specific_cluster_data
                 )
 
-                distances_from_grand_centroid_to_another = pairwise_distances(
-                    [grand_centroid], self.X[~cluster_bool]
-                )
                 center_stats[
                     "distance_from_grand_centroid_to_point_in_another_cluster"
-                ] = ClusterReport.summary_statistics(
-                    distances_from_grand_centroid_to_another, axis=2
+                ] = self.get_distance_from_grand_centroid_to_point_in_another_cluster(
+                    grand_centroid, other_cluster_data
                 )
 
                 center_stats["by_features"]["overall_z_score"] = (
