@@ -14,7 +14,7 @@ def track(func: Callable):
         try:
             if enable_tracking():
                 user_id = args[0].firebase_uid
-                event = func.__name__
+                event = f"pysdk-{func.__name__}"
 
                 kwargs.update(dict(zip(func.__code__.co_varnames, args)))
                 self = kwargs["self"]
