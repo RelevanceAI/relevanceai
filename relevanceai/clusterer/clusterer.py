@@ -583,6 +583,7 @@ class ClusterOps(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
+            print("Inserting centroid documents...")
             centers = self.get_centroid_documents()
 
             if hasattr(self.model, "get_centers"):
@@ -829,7 +830,6 @@ class ClusterOps(BatchAPIClient):
         # Update the centroid collection
         self.model.vector_fields = vector_fields
 
-        print("Inserting centroid documents...")
         self._insert_centroid_documents()
 
     def fit_dataset(
