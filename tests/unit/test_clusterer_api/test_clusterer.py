@@ -59,3 +59,11 @@ def test_agg(test_clusterer: ClusterOps):
     groupby_agg = cluster_groupby.agg({"sample_2_value": "avg"})
     assert isinstance(groupby_agg, dict)
     assert len(groupby_agg) > 0
+
+
+def test_agg_std(test_clusterer: ClusterOps):
+    agg = test_clusterer.agg({"sample_2_value": "avg"})
+    cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
+    groupby_agg = cluster_groupby.agg({"sample_2_value": "std"})
+    assert isinstance(groupby_agg, dict)
+    assert len(groupby_agg) > 0
