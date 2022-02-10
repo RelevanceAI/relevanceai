@@ -73,7 +73,7 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
-        firebase_uid: Union[str, None] = None,
+        firebase_uid=os.getenv("RELEVANCE_FIREBASE_UID"),
         region="us-east-1",
         authenticate: bool = True,
         token: str = None,
@@ -105,9 +105,20 @@ class Client(BatchAPIClient, DocUtils):
         if project is None or api_key is None or firebase_uid is None or force_refresh:
             credentials = self._token_to_auth(token)
 
-        self.project = credentials["project"]
-        self.api_key = credentials["api_key"]
-        self.firebase_uid = credentials["firebase_uid"]
+        try:
+            self.project = credentials["project"]
+        except Exception:
+            self.project = project
+
+        try:
+            self.api_key = credentials["api_key"]
+        except Exception:
+            self.api_key = api_key
+
+        try:
+            self.firebase_uid = credentials["firebase_uid"]
+        except Exception:
+            self.firebase_uid = firebase_uid
 
         self.region = region
 
