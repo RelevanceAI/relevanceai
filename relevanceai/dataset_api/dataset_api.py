@@ -10,8 +10,6 @@ from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
 
-from relevanceai.analytics_client import track
-
 # from relevanceai.dataset_api.dataset_dr import DR
 
 

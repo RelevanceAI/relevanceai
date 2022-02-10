@@ -46,7 +46,7 @@ from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_cluste
 
 import analytics
 
-from relevanceai.analytics_client import identify, track
+from relevanceai.analytics_funcs import track, identify
 
 vis_requirements = False
 try:

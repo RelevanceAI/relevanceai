@@ -5,7 +5,7 @@ import pandas as pd
 
 from relevanceai.dataset_api.dataset_read import Read
 
-from relevanceai.analytics_client import track
+from relevanceai.analytics_funcs import track
 
 
 class Export(Read):

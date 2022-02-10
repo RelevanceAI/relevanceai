@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 from typing import Dict, List, Union
-from relevanceai.analytics_client import track
+from relevanceai.analytics_funcs import track
 
 from relevanceai.dataset_api.helpers import _build_filters
 from relevanceai.dataset_api.groupby import Groupby, Agg

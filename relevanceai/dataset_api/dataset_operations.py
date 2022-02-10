@@ -5,7 +5,7 @@ Pandas like dataset API
 import warnings
 from typing import Dict, List, Optional, Callable
 
-from relevanceai.analytics_client import track
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.vector_tools.nearest_neighbours import (

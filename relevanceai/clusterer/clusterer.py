@@ -34,7 +34,7 @@ from relevanceai.clusterer.cluster_base import (
     BatchClusterBase,
 )
 
-from relevanceai.analytics_client import track
+from relevanceai.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
@@ -252,32 +252,57 @@ class ClusterOps(BatchAPIClient):
 
     def _token_to_auth(self):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if not os.path.exists(self._cred_fn):
-            # We repeat it twice because of different behaviours
-            print(f"Authorization token ( you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(f"Auth token:")
-            split_token = token.split(":")
-            project = split_token[0]
-            api_key = split_token[1]
-            base_url = split_token[2]
-            firebase_uid = split_token[3]
-            self._write_credentials(
-                project=project,
-                api_key=api_key,
-                base_url=base_url,
-                firebase_uid=firebase_uid,
-            )
+
+        if os.path.exists(self._cred_fn):
+            credentials = self._read_credentials()
+            return credentials
+
+        elif token:
+            return self._process_token(token)
+
         else:
-            data = self._read_credentials()
-            project = data["project"]
-            api_key = data["api_key"]
-        return project, api_key
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
+            if not token:
+                token = getpass.getpass(f"Activation token:")
+            return self._process_token(token)
+
+    def _process_token(self, token: str):
+        split_token = token.split(":")
+        project = split_token[0]
+        api_key = split_token[1]
+        if len(split_token) > 2:
+            region = split_token[3]
+            base_url = self._region_to_url(region)
+
+            if len(split_token) > 3:
+                firebase_uid = split_token[4]
+                return self._write_credentials(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
+                    firebase_uid=firebase_uid,
+                )
+
+            else:
+                return self._write_credentials(
+                    project=project, api_key=api_key, base_url=base_url
+                )
+
+        else:
+            return self._write_credentials(project=project, api_key=api_key)
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
 
-    def _write_credentials(self, project, api_key):
-        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+    def _write_credentials(self, **kwargs):
+        print(
+            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
+        )
+        json.dump(
+            kwargs,
+            open(self._cred_fn, "w"),
+        )
+        return kwargs
 
     def _init_dataset(self, dataset):
         if isinstance(dataset, Dataset):

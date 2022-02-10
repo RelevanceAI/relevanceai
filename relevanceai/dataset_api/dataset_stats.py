@@ -5,7 +5,7 @@ Pandas like dataset API
 import pandas as pd
 
 from typing import List, Dict
-from relevanceai.analytics_client import track
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 

@@ -1,7 +1,6 @@
 from relevanceai.config import CONFIG
 from relevanceai.transport import Transport
 from relevanceai.logger import LoguruLogger
-from relevanceai.analytics_client import identify
 
 
 def str2bool(v):
