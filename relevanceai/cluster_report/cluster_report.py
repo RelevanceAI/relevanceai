@@ -183,7 +183,7 @@ class ClusterReport:
         # Here we add support for both RelevanceAI cluster models
         # but also regular sklearn cluster models
         if hasattr(self.model, "cluster_centers_"):
-            return self.get_centers()
+            return self.model.cluster_centers_
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
         else:
