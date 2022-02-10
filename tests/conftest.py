@@ -36,7 +36,7 @@ def test_api_key():
 
 @pytest.fixture(scope="session")
 def test_firebase_uid():
-    return "test-user"
+    return "relevanceai-sdk-test-user"
 
 
 @pytest.fixture(scope="session")
