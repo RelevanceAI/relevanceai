@@ -77,6 +77,13 @@ class ClusterReport:
         )
         self.model = model
 
+    def get_centers(self):
+        if hasattr(self.model, "cluster_centers_"):
+            return self.model.cluster_centers_
+        raise ValueError(
+            "No centers detected. Ensure they they have a .get_centers attribute"
+        )
+
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
         """
