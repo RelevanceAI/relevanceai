@@ -1101,10 +1101,16 @@ class ClusterOps(BatchAPIClient):
         )
         print("Updating your dataset...")
         self.predict_update(dataset=dataset)
-        # if hasattr(self, "get_centers"):
-        #     print("Inserting your centroids...")
-        print("Inserting centroids...")
-        self.insert_centroid_documents(self.get_centroid_documents(), dataset=dataset)
+        if hasattr(self.model, "get_centers"):
+            print("Inserting your centroids...")
+            self.insert_centroid_documents(
+                self.get_centroid_documents(), dataset=dataset
+            )
+
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
 
     def predict_documents(
         self,
