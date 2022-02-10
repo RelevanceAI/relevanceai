@@ -196,7 +196,7 @@ class ClusterReport:
         """
         Provide the standard clustering report.
         """
-        self.X_silouhette_scores = silhouette_samples(
+        self.X_silhouette_scores = silhouette_samples(
             self.X, self.cluster_labels, metric="euclidean"
         )
         self.cluster_internal_report = {
@@ -208,14 +208,14 @@ class ClusterReport:
                 "calinski_harabasz_score": calinski_harabasz_score(
                     self.X, self.cluster_labels
                 ),
-                "silouhette_score": ClusterReport.summary_statistics(
-                    self.X_silouhette_scores
+                "silhouette_score": ClusterReport.summary_statistics(
+                    self.X_silhouette_scores
                 ),
             },
             "each": {
                 "summary": {},
                 "centers": {},
-                "silouhette_score": {},
+                "silhouette_score": {},
             },
         }
         self._store_basic_centroid_stats(self.cluster_internal_report["overall"])
@@ -357,10 +357,10 @@ class ClusterReport:
             self.cluster_internal_report["each"]["centers"][
                 cluster_label
             ] = center_stats
-            self.cluster_internal_report["each"]["silouhette_score"][
+            self.cluster_internal_report["each"]["silhouette_score"][
                 cluster_label
             ] = ClusterReport.summary_statistics(
-                self.X_silouhette_scores[cluster_bool], axis=2
+                self.X_silhouette_scores[cluster_bool], axis=2
             )
 
         self.cluster_internal_report["overall"]["dunn_index"] = (
