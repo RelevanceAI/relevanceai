@@ -35,7 +35,7 @@ Automated Cluster Reporting
 """
 import pandas as pd
 import numpy as np
-from typing import Union, List
+from typing import Union, List, Dict, Any
 from sklearn.metrics import (
     davies_bouldin_score,
     calinski_harabasz_score,
@@ -337,7 +337,7 @@ class ClusterReport:
     def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
         self.inner_tree: _tree.Tree = tree.tree_
         self.classes = tree.classes_
-        self.class_rules_dict = dict()
+        self.class_rules_dict: Dict[Any, Any] = dict()
         self.tree_dfs()
 
     def tree_dfs(self, node_id=0, current_rule=[]):
