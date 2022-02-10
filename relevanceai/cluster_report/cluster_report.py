@@ -174,7 +174,7 @@ class ClusterReport:
                 "silouhette_score": {},
             },
         }
-        self.store_centroids_stats()
+        self._store_basic_centroid_stats(self.cluster_internal_report["overall"])
 
         label_value_counts = np.unique(self.cluster_labels, return_counts=True)
 
@@ -315,22 +315,16 @@ class ClusterReport:
 
         return self.cluster_internal_report
 
-    def store_centroids_stats(self):
+    def _store_basic_centroid_stats(self, overall_report):
+        """Store"""
         if hasattr(self.model, "cluster_centers_"):
-            self.cluster_internal_report["overall"][
-                "centroids"
-            ] = self.model.cluster_centers_
-            self.cluster_internal_report["overall"][
-                "centroids_distance_matrix"
-            ] = pairwise_distances(self.model.cluster_centers_, metric="euclidean")
-            self.cluster_internal_report["overall"]["grand_centroids"] = []
-            self.cluster_internal_report["overall"][
-                "average_distance_between_centroids"
-            ] = (
-                self.cluster_internal_report["overall"][
-                    "centroids_distance_matrix"
-                ].sum(axis=1)
-                - 1
+            overall_report["centroids"] = self.model.cluster_centers_
+            overall_report["centroids_distance_matrix"] = pairwise_distances(
+                self.model.cluster_centers_, metric="euclidean"
+            )
+            overall_report["grand_centroids"] = []
+            overall_report["average_distance_between_centroids"] = (
+                overall_report["centroids_distance_matrix"].sum(axis=1) - 1
             ) / self.num_clusters
 
     def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
