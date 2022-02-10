@@ -4,7 +4,7 @@ Automated Cluster Reporting
 .. warning::
     This is a beta feature.
 
-.. info::
+.. note::
     **Introduced in v1.0.0.**
 
 
@@ -63,7 +63,7 @@ class ClusterReport:
     .. warning::
         This is a beta feature.
 
-    .. info::
+    .. note::
         **Introduced in v1.0.0.**
 
 
