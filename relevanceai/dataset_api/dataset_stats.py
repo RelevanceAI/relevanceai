@@ -60,12 +60,9 @@ class Stats(Read):
         if return_type == "pandas":
             schema = self.schema
             dataframe = {
-                col: facets[col]
+                col: facets["results"][col]
                 for col in schema
-                if not any(
-                    word in col for word in ["_cluster_", "_vector_", "_chunk_", "_dr_"]
-                )
-                and isinstance(facets[col], dict)
+                if col in facets["results"] and isinstance(facets["results"][col], dict)
             }
             dataframe = pd.DataFrame(dataframe)
             return dataframe
