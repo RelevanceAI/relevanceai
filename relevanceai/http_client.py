@@ -46,7 +46,7 @@ from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_cluste
 
 import analytics
 
-from relevanceai.analytics_client import track
+from relevanceai.analytics_client import identify, track
 
 vis_requirements = False
 try:
@@ -122,6 +122,8 @@ class Client(BatchAPIClient, DocUtils):
 
         self.region = region
 
+        self._identify()
+
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
 
@@ -179,6 +181,10 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Authentication Details
 
+    @identify
+    def _identify(self):
+        return
+
     def _set_mixpanel_write_key(self):
         from base64 import b64decode as decode
 
@@ -189,12 +195,12 @@ class Client(BatchAPIClient, DocUtils):
         project = split_token[0]
         api_key = split_token[1]
         if len(split_token) > 2:
-            region = split_token[2]
+            region = split_token[3]
             base_url = self._region_to_url(region)
 
             if len(split_token) > 3:
-                firebase_uid = split_token[3]
-                self._write_credentials(
+                firebase_uid = split_token[4]
+                return self._write_credentials(
                     project=project,
                     api_key=api_key,
                     base_url=base_url,
@@ -202,12 +208,12 @@ class Client(BatchAPIClient, DocUtils):
                 )
 
             else:
-                self._write_credentials(
+                return self._write_credentials(
                     project=project, api_key=api_key, base_url=base_url
                 )
 
         else:
-            self._write_credentials(project=project, api_key=api_key)
+            return self._write_credentials(project=project, api_key=api_key)
 
     def _region_to_ingestion_url(self, region: str):
         # same as region to URL now in case ingestion ever needs to be separate
@@ -218,24 +224,20 @@ class Client(BatchAPIClient, DocUtils):
         return url
 
     def _token_to_auth(self, token=None):
-        # if verbose:
-        #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
-        #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
-        # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if not os.path.exists(self._cred_fn):
-            # We repeat it twice because of different behaviours
+
+        if os.path.exists(self._cred_fn):
+            credentials = self._read_credentials()
+            return credentials
+
+        elif token:
+            return self._process_token(token)
+
+        else:
             print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
                 token = getpass.getpass(f"Activation token:")
             return self._process_token(token)
-        elif token:
-            return self._process_token(token)
-        else:
-            data = self._read_credentials()
-            self.project = data["project"]
-            self.api_key = data["api_key"]
-            self.firebase_uid = data["firebase_uid"]
 
     def _write_credentials(self, **kwargs):
         print(

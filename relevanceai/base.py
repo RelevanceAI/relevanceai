@@ -56,7 +56,6 @@ class _Base(Transport, LoguruLogger):
     def region(self, region_value):
         CONFIG["api.region"] = region_value
 
-    @identify
     def _region_to_url(self, region: str):
         # to match our logic in dashboard
         # add print statement to double-check region support now
