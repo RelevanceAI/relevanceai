@@ -42,7 +42,7 @@ Automated Cluster Reporting
 """
 import pandas as pd
 import numpy as np
-import warnings
+from relevanceai.warnings import warn_function_is_work_in_progress
 from typing import Union, List, Dict, Any
 from sklearn.metrics import (
     davies_bouldin_score,
@@ -88,6 +88,7 @@ class ClusterReport:
         model: KMeans = None,
         num_clusters: int = None,
     ):
+        warn_function_is_work_in_progress()
         self.X = X
         self.cluster_labels = cluster_labels
         self.num_clusters = (
