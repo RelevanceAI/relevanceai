@@ -205,14 +205,15 @@ class ClusterOps(BatchAPIClient):
 
             new_model = BatchCentroidClusterModel(model)
             return new_model
+
         if hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_transform"):
-            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
-        elif hasattr(model, "fit_predict"):
-            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+        elif hasattr(model, "fit_transform"):
+            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
 
