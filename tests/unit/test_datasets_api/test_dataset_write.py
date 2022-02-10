@@ -4,12 +4,7 @@
 
 import pandas as pd
 
-import tempfile
-
-from typing import Dict, List
-
 from relevanceai.http_client import Dataset, Client
-from tests.globals.document.vector_document import vector_document
 
 
 def test_apply(test_client: Client, vector_dataset_id: str):
