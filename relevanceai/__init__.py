@@ -39,4 +39,3 @@ Changelog: {changelog_url}.""".format(  # type: ignore
         warnings.warn(MESSAGE)
 except:
     pass
-print(MESSAGE)
