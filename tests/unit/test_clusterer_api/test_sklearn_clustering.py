@@ -24,19 +24,12 @@ def test_cluster(test_df: Dataset):
     assert len(clusterer.list_closest_to_center()) > 0
 
 
-def test_dbscan(test_client: Client):
+def test_dbscan(test_client: Client, test_df: Dataset):
     from sklearn.cluster import DBSCAN
 
     ALIAS = "dbscan"
 
-    # instantiate the client
-    client = Client(force_refresh=True)
-
-    # Retrieve the relevant dataset
-    df = client.Dataset("sample")
-
     model = DBSCAN()
-    clusterer = client.ClusterOps(alias=ALIAS, model=model)
-    clusterer.fit_predict_update(df, ["sample_3_vector_"])
-
-    assert any([x for x in df.schema if ALIAS in x])
+    clusterer = test_client.ClusterOps(alias=ALIAS, model=model)
+    clusterer.fit_predict_update(test_df, ["sample_3_vector_"])
+    assert any([x for x in test_df.schema if ALIAS in x])

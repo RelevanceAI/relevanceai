@@ -521,3 +521,13 @@ class Client(BatchAPIClient, DocUtils):
         print(MESSAGE)
 
     docs = references
+
+    def search_app(self, dataset_id: str = None):
+        if dataset_id is not None:
+            self.print_search_dashboard_url(dataset_id)
+        elif hasattr(self, "_dataset_id"):
+            self.print_search_dashboard_url(self._dataset_id)
+        elif hasattr(self, "dataset_id"):
+            self.print_search_dashboard_url(self.dataset_id)
+        else:
+            print("You can build your search app at https://cloud.relevance.ai")
