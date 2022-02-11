@@ -4,6 +4,14 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.0.2
+--------
+
+- Fix pandas serialization for UTF-encoding errors 
+- Move search app
+- Change print search dashboard app URL 
+- Fix regionalisation error when authenticating client.
+
 v1.0.1
 --------
 - Make pandas dataframe serializable with vectors

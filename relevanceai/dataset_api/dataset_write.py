@@ -2,20 +2,16 @@
 """
 Pandas like dataset API
 """
-import re
-import math
 import uuid
-import warnings
+import json
 
 import pandas as pd
-import numpy as np
 
 from doc_utils import DocUtils
 
 from typing import Dict, List, Union, Callable
 
 from relevanceai.dataset_api.dataset_read import Read
-from relevanceai.dataset_api.dataset_series import Series
 
 
 class Write(Read):
@@ -183,14 +179,16 @@ class Write(Read):
                 else:
                     return True
             except:
-                pass
+                return True
 
         documents = [
             {k: v for k, v in doc.items() if _is_valid(v)}
             for doc in df.to_dict(orient="records")
         ]
 
-        return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        self.print_search_dashboard_url(self.dataset_id)
+        return results
 
     def upsert_documents(
         self,
