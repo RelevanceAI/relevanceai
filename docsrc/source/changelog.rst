@@ -4,7 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v0.1.0
+v1.0.1
+--------
+- Make pandas dataframe serializable with vectors
+
+v1.0.0
 ---------
 
 - Clustering report functionality
