@@ -282,6 +282,11 @@ class Series(BatchAPIClient):
 
         Objects passed to the function are Series objects whose index is either the DataFrame’s index (axis=0) or the DataFrame’s columns (axis=1). By default (result_type=None), the final return type is inferred from the return type of the applied function. Otherwise, it depends on the result_type argument.
 
+        
+        .. note::
+            We recommend using the bulk_apply functionality
+            if you are looking to have faster processing.
+        
         Parameters
         --------------
         func: function
