@@ -11,6 +11,8 @@ v0.33.7
 - Add fix and test for new cluster aggregate
 - Add document mocking utility
 - Add integration for cluster reporting
+- Add segment tracking with option to turn off
+- Add print statement after inserting
 
 v0.33.6
 ---------
