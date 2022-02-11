@@ -20,6 +20,23 @@ from tests.globals.clusterers import *
 REGION = os.getenv("TEST_REGION")
 
 
+# def pytest_sessionstart(session):
+#     """
+#     Pytest's configuration
+#     """
+#     # Deleting all mixpanel analytics from tests
+#     CONFIG_FN = os.path.join("relevanceai", "config.ini")
+#     with open(CONFIG_FN, "r") as f:
+#         lines = f.readlines()
+
+#     os.remove(CONFIG_FN)
+
+#     with open(CONFIG_FN, "w") as f:
+#         for i, line in enumerate(lines):
+#             if i < 27:
+#                 f.write(line)
+
+
 @pytest.fixture(scope="session")
 def test_project():
     if REGION == "us-east-1":
@@ -39,6 +56,12 @@ def test_firebase_uid():
     return "relevanceai-sdk-test-user"
 
 
+def correct_client_config(client):
+    client.config.reset()
+    if client.region != "us-east-1":
+        raise ValueError("default value aint RIGHT")
+
+
 @pytest.fixture(scope="session")
 def test_client(test_project, test_api_key, test_firebase_uid):
     if REGION is None:
@@ -53,15 +76,13 @@ def test_client(test_project, test_api_key, test_firebase_uid):
             region=REGION,
         )
     # For some reason not resetting to default
-    client.config.reset()
-    if client.region != "us-east-1":
-        raise ValueError("default value aint RIGHT")
+    correct_client_config(client)
     return client
 
 
 @pytest.fixture(scope="module")
 def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
-    test_client.config.reset()
+    correct_client_config(test_client)
     test_dataset_id = generate_dataset_id()
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
@@ -75,7 +96,7 @@ def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
 
 @pytest.fixture(scope="module")
 def test_read_df(test_client: Client, vector_documents: List[Dict]):
-    test_client.config.reset()
+    correct_client_config(test_client)
     DATASET_ID = "_sample_df_"
     df = test_client.Dataset(DATASET_ID)
     results = df.upsert_documents(vector_documents)
