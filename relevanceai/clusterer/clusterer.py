@@ -41,6 +41,7 @@ from relevanceai.analytics_funcs import track
 from relevanceai.integration_checks import is_sklearn_available
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
+from relevanceai.errors import NoDocumentsError
 
 from doc_utils import DocUtils
 
@@ -859,6 +860,8 @@ class ClusterOps(BatchAPIClient):
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
+        if len(docs) == 0:
+            raise NoDocumentsError()
         print("Fitting and predicting on all documents")
         clustered_docs = self.fit_predict_documents(
             vector_fields,
