@@ -45,10 +45,12 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
 
 
 class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def plot(
         self,

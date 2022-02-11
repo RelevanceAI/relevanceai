@@ -1,7 +1,6 @@
 """
 Pandas like dataset API
 """
-import warnings
 from typing import Union, List, Dict
 
 from relevanceai.api.client import BatchAPIClient
@@ -22,6 +21,7 @@ class Dataset(Export, Stats, Operations):
         project: str,
         api_key: str,
         dataset_id: str,
+        firebase_uid: str,
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
@@ -31,15 +31,19 @@ class Dataset(Export, Stats, Operations):
     ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.fields = fields
         self.dataset_id = dataset_id
         self.image_fields = image_fields
         self.audio_fields = audio_fields
         self.highlight_fields = highlight_fields
         self.text_fields = text_fields
+
+        self.firebase_uid = firebase_uid
         super().__init__(
             project=project,
             api_key=api_key,
+            firebase_uid=firebase_uid,
             fields=fields,
             dataset_id=dataset_id,
             image_fields=image_fields,
@@ -48,7 +52,11 @@ class Dataset(Export, Stats, Operations):
             text_fields=text_fields,
         )
         self.search = Search(
-            project=project, api_key=api_key, fields=fields, dataset_id=dataset_id
+            project=project,
+            api_key=api_key,
+            fields=fields,
+            dataset_id=dataset_id,
+            firebase_uid=firebase_uid,
         )
 
     def __getitem__(self, field: Union[List[str], str]):
@@ -81,20 +89,22 @@ class Dataset(Export, Stats, Operations):
         """
         if isinstance(field, str):
             return Series(
-                self.project,
-                self.api_key,
-                self.dataset_id,
-                field,
-                self.image_fields,
-                self.audio_fields,
-                self.highlight_fields,
-                self.text_fields,
+                project=self.project,
+                api_key=self.api_key,
+                dataset_id=self.dataset_id,
+                firebase_uid=self.firebase_uid,
+                field=field,
+                image_fields=self.image_fields,
+                audio_fields=self.audio_fields,
+                highlight_fields=self.highlight_fields,
+                text_fields=self.text_fields,
             )
         elif isinstance(field, list):
             return Dataset(
                 project=self.project,
                 api_key=self.api_key,
                 dataset_id=self.dataset_id,
+                firebase_uid=self.firebase_uid,
                 fields=field,
                 image_fields=self.image_fields,
                 audio_fields=self.audio_fields,
@@ -108,7 +118,9 @@ class Dataset(Export, Stats, Operations):
 class Datasets(BatchAPIClient):
     """Dataset class for multiple datasets"""
 
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project=project, api_key=api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)

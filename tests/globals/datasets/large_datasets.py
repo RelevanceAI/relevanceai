@@ -7,7 +7,7 @@ from relevanceai import Client
 from tests.globals.constants import generate_dataset_id
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def large_dataset_id(test_client: Client, sample_documents: List[Dict]):
     test_dataset_id = generate_dataset_id()
 

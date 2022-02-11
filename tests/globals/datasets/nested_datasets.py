@@ -7,7 +7,7 @@ from relevanceai import Client
 from tests.globals.constants import generate_dataset_id
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def assorted_nested_dataset_id(
     test_client: Client, assorted_nested_documents: List[Dict]
 ):

@@ -3,7 +3,7 @@ import warnings
 from relevanceai import vector_tools
 from relevanceai.http_client import Client
 
-# Cluster Base Utilities
+# Cluster _Base Utilities
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 from relevanceai.clusterer.clusterer import ClusterOps
 import requests

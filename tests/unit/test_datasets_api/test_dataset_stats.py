@@ -7,8 +7,7 @@ from typing import Dict, List
 from relevanceai.http_client import Dataset, Client
 
 
-def test_cluster(test_client: Client, vector_dataset_id: str):
-    df = test_client.Dataset(vector_dataset_id)
+def test_cluster(test_df: Dataset):
     from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
     vector_field = "sample_1_vector_"
@@ -16,16 +15,19 @@ def test_cluster(test_client: Client, vector_dataset_id: str):
 
     model = KMeansModel()
 
-    df.cluster(model=model, alias=alias, vector_fields=[vector_field], overwrite=True)
-    assert f"_cluster_.{vector_field}.{alias}" in df.schema
+    test_df.cluster(
+        model=model, alias=alias, vector_fields=[vector_field], overwrite=True
+    )
+    assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
 
 
-def test_centroids(test_client: Client, clustered_dataset_id: List[Dict]):
-    df = test_client.Dataset(clustered_dataset_id)
-    df.centroids(["sample_1_vector_"], "kmeans_10").closest()
-    df.centroids(["sample_1_vector_"], "kmeans_10").furthest()
-    df.centroids(["sample_1_vector_"], "kmeans_10").agg({"sample_2_label": "avg"})
-    df.centroids(["sample_1_vector_"], "kmeans_10").groupby(
+def test_centroids(test_clustered_df: Dataset):
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").closest()
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").furthest()
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").agg(
+        {"sample_2_label": "avg"}
+    )
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").groupby(
         ["sample_3_description"]
     ).agg({"sample_2_label": "avg"})
     assert True

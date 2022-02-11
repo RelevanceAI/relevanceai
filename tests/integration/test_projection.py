@@ -67,6 +67,6 @@ def fixture_cluster_args(request):
 #     test_client.projector.plot(**dataset_args, **dr_args, **cluster_args)
 #     assert True
 
-# def test_projector_plot_fast(test_client: Client, vector_dataset_id: str):
+# def test_projector_plot_fast(test_df: Dataset):
 #     test_client.projector.plot(vector_dataset_id, "sample_1_vector_", colour_label = "sample_1_label", cluster = 'kmeans', dims = 2, number_of_points_to_render = 100)
 #     assert True
