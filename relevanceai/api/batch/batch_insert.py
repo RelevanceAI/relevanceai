@@ -659,7 +659,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             {k: v for k, v in doc.items() if not pd.isna(v)}
             for doc in dataframe.to_dict(orient="records")
         ]
-        return self._insert_documents(dataset_id, documents, *args, **kwargs)
+        results = self._insert_documents(dataset_id, documents, *args, **kwargs)
+        search_url = f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/search"
+        self.print_dashboard_url(search_url)
+        return results
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 
