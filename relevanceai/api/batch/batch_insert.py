@@ -21,6 +21,7 @@ from relevanceai.progress_bar import progress_bar
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.utils import Utils
 from relevanceai.errors import MissingFieldError
+from relevanceai.analytics_funcs import track
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -273,7 +274,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
-        >>> client = Client(project, api_key)
+        >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
         >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
         >>> while len(documents['documents']) > 0:
         >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
@@ -651,6 +652,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "logging_collection": logging_dataset_id,
         }
 
+    @track
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
         import pandas as pd
@@ -659,7 +661,16 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             {k: v for k, v in doc.items() if not pd.isna(v)}
             for doc in dataframe.to_dict(orient="records")
         ]
-        return self._insert_documents(dataset_id, documents, *args, **kwargs)
+        results = self._insert_documents(dataset_id, documents, *args, **kwargs)
+        self.print_search_dashboard_url(dataset_id)
+        return results
+
+    def print_search_dashboard_url(self, dataset_id):
+        search_url = (
+            f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/search"
+        )
+        self._dataset_id = dataset_id
+        self.print_dashboard_url(search_url)
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 

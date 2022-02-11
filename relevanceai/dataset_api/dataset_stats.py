@@ -1,12 +1,17 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
+import pandas as pd
+
 from typing import List, Dict
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 
 
 class Stats(Read):
+    @track
     def value_counts(self, field: str):
         """
         Return a Series containing counts of unique values.
@@ -32,9 +37,16 @@ class Stats(Read):
             value_counts_df = df.value_counts(field)
 
         """
-        return Series(self.project, self.api_key, self.dataset_id, field).value_counts()
+        return Series(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+            field=field,
+        ).value_counts()
 
-    def describe(self) -> dict:
+    @track
+    def describe(self, return_type="pandas") -> dict:
         """
         Descriptive statistics include those that summarize the central tendency
         dispersion and shape of a dataset's distribution, excluding NaN values.
@@ -49,10 +61,24 @@ class Stats(Read):
             dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             field = "sample_field"
-            df.describe()
+            df.describe() # returns pandas dataframe of stats
+            df.describe(return_type='dict') # return raw json stats
 
         """
-        return self.datasets.facets(self.dataset_id)
+        facets = self.datasets.facets(self.dataset_id)
+        if return_type == "pandas":
+            schema = self.schema
+            dataframe = {
+                col: facets["results"][col]
+                for col in schema
+                if col in facets["results"] and isinstance(facets["results"][col], dict)
+            }
+            dataframe = pd.DataFrame(dataframe)
+            return dataframe
+        elif return_type == "dict":
+            return facets
+        else:
+            raise ValueError("invalid return_type, should be `dict` or `pandas`")
 
     @property
     def health(self) -> dict:

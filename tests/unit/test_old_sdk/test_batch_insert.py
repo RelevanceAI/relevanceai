@@ -76,26 +76,35 @@ class TestInsert:
 
 
 class TestPullUpdatePush:
-    def test_pull_update_push_simple(self, test_client: Client, sample_dataset_id: str):
+    def test_pull_update_push_simple(
+        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
+    ):
+        test_client._insert_documents(sample_dataset_id, simple_documents)
         results = test_client.pull_update_push(sample_dataset_id, do_nothing)
         assert len(results["failed_documents"]) == 0
 
     @pytest.mark.xfail
     def test_pull_update_push_with_errors(
-        self, test_client: Client, sample_dataset_id: str
+        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
     ):
+        test_client._insert_documents(sample_dataset_id, simple_documents)
         with pytest.raises(Exception) as execinfo:
             test_client.pull_update_push(sample_dataset_id, cause_error)
 
     @pytest.mark.xfail
-    def test_with_some_errors(self, test_client: Client, sample_dataset_id: str):
+    def test_with_some_errors(
+        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
+    ):
         import requests
 
+        test_client._insert_documents(sample_dataset_id, simple_documents)
         with pytest.raises(requests.exceptions.InvalidJSONError) as execinfo:
             test_client.pull_update_push(sample_dataset_id, cause_some_error)
 
     @pytest.mark.slow
-    def test_pull_update_push_loaded(self, test_client: Client, sample_dataset_id: str):
-
+    def test_pull_update_push_loaded(
+        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
+    ):
+        test_client._insert_documents(sample_dataset_id, simple_documents)
         response = test_client.pull_update_push(sample_dataset_id, do_nothing)
         assert len(response["failed_documents"]) == 0, "Failed to insert documents"

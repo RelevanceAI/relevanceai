@@ -4,22 +4,16 @@
 
 import pandas as pd
 
-import tempfile
-
-from typing import Dict, List
-
 from relevanceai.http_client import Dataset, Client
-from tests.globals.document.vector_document import vector_document
 
 
-def test_apply(test_client: Client, vector_dataset_id: str):
+def test_apply(test_df: Dataset):
     RANDOM_STRING = "you are the kingj"
-    df = test_client.Dataset(vector_dataset_id)
-    df["sample_1_label"].apply(
+    test_df["sample_1_label"].apply(
         lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
     )
-    filtered_documents = df.datasets.documents.get_where(
-        df.dataset_id,
+    filtered_documents = test_df.datasets.documents.get_where(
+        test_df.dataset_id,
         filters=[
             {
                 "field": "sample_1_label_2",
@@ -32,19 +26,18 @@ def test_apply(test_client: Client, vector_dataset_id: str):
     assert len(filtered_documents["documents"]) > 0
 
 
-def test_bulk_apply(test_client: Client, vector_dataset_id: str):
+def test_bulk_apply(test_df: Dataset):
     RANDOM_STRING = "you are the queen"
     LABEL = "sample_output"
-    df = test_client.Dataset(vector_dataset_id)
 
     def bulk_fn(docs):
         for d in docs:
             d[LABEL] = d.get("sample_1_label", "") + RANDOM_STRING
         return docs
 
-    df.bulk_apply(bulk_fn)
-    filtered_documents = df.datasets.documents.get_where(
-        df.dataset_id,
+    test_df.bulk_apply(bulk_fn)
+    filtered_documents = test_df.datasets.documents.get_where(
+        test_df.dataset_id,
         filters=[
             {
                 "field": "sample_output",

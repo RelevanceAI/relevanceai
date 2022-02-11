@@ -1,26 +1,15 @@
 """
 Pandas like dataset API
 """
-import re
-import math
-import warnings
 import pandas as pd
-import numpy as np
 
-from doc_utils import DocUtils
-
-from typing import Dict, List, Union, Callable, Optional
-
-from relevanceai.dataset_api.groupby import Groupby, Agg
-from relevanceai.dataset_api.centroids import Centroids
-from relevanceai.dataset_api.helpers import _build_filters
-
-from relevanceai.vector_tools.client import VectorTools
-from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_read import Read
+
+from relevanceai.analytics_funcs import track
 
 
 class Export(Read):
+    @track
     def to_csv(self, filename: str, **kwargs):
         """
         Download a dataset from Relevance AI to a local .csv file
@@ -50,6 +39,7 @@ class Export(Read):
         df = pd.DataFrame(documents)
         df.to_csv(filename)
 
+    @track
     def to_dict(self, orient: str = "records"):
         """
         Returns the raw list of dicts from Relevance AI

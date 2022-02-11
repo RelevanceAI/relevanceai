@@ -31,16 +31,17 @@ def get_model():
     return KMeansModel(verbose=False)
 
 
-def test_cluster(test_client: Client, vector_dataset_id: str):
-    df = test_client.Dataset(vector_dataset_id)
+def test_cluster(test_df: Dataset):
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"
 
     model = get_model()
 
-    df.cluster(model=model, alias=alias, vector_fields=[vector_field], overwrite=True)
-    assert f"_cluster_.{vector_field}.{alias}" in df.schema
+    test_df.cluster(
+        model=model, alias=alias, vector_fields=[vector_field], overwrite=True
+    )
+    assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
 
 
 def test_closest(test_clusterer: ClusterOps):
@@ -57,5 +58,13 @@ def test_agg(test_clusterer: ClusterOps):
     agg = test_clusterer.agg({"sample_2_value": "avg"})
     cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
     groupby_agg = cluster_groupby.agg({"sample_2_value": "avg"})
+    assert isinstance(groupby_agg, dict)
+    assert len(groupby_agg) > 0
+
+
+def test_agg_std(test_clusterer: ClusterOps):
+    agg = test_clusterer.agg({"sample_2_value": "avg"})
+    cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
+    groupby_agg = cluster_groupby.agg({"sample_2_value": "std_deviation"})
     assert isinstance(groupby_agg, dict)
     assert len(groupby_agg) > 0

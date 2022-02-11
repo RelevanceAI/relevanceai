@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 
 from typing import Dict, List, Union
+from relevanceai.analytics_funcs import track
 
 from relevanceai.dataset_api.helpers import _build_filters
 from relevanceai.dataset_api.groupby import Groupby, Agg
@@ -30,6 +31,7 @@ class Read(BatchAPIClient):
         project: str,
         api_key: str,
         dataset_id: str,
+        firebase_uid: str,
         fields: list = [],
         image_fields: List[str] = [],
         audio_fields: List[str] = [],
@@ -38,17 +40,35 @@ class Read(BatchAPIClient):
     ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.fields = fields
         self.dataset_id = dataset_id
-        self.vector_tools = VectorTools(project=project, api_key=api_key)
-        self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
-        self.agg = Agg(self.project, self.api_key, self.dataset_id)
-        self.centroids = Centroids(self.project, self.api_key, self.dataset_id)
+        self.vector_tools = VectorTools(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.groupby = Groupby(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+        )
+        self.agg = Agg(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+        )
+        self.centroids = Centroids(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+        )
         self.image_fields = image_fields
         self.audio_fields = audio_fields
         self.highlight_fields = highlight_fields
         self.text_fields = text_fields
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     @property
     def shape(self):
@@ -103,6 +123,7 @@ class Read(BatchAPIClient):
         self._schema = self.datasets.schema(self.dataset_id)
         return self._schema
 
+    @track
     def info(self, dtype_count: bool = False) -> pd.DataFrame:
         """
         Return a dictionary that contains information about the Dataset
@@ -116,8 +137,8 @@ class Read(BatchAPIClient):
 
         Returns
         ---------
-        Dict
-            Dictionary of information
+        pd.DataFrame
+            a pandas dataframe of information
 
         Example
         ---------------
@@ -153,6 +174,7 @@ class Read(BatchAPIClient):
             print(dtypes_info)
         return info_df
 
+    @track
     def head(
         self, n: int = 5, raw_json: bool = False, **kw
     ) -> Union[dict, pd.DataFrame]:
@@ -221,6 +243,14 @@ class Read(BatchAPIClient):
 
     def _repr_html_(self):
         documents = self.get_documents()
+        documents = [
+            {
+                "_id": document["_id"],
+                "insert_date_": document["insert_date_"],
+                **document,
+            }
+            for document in documents
+        ]
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
@@ -230,6 +260,7 @@ class Read(BatchAPIClient):
             )
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
+    @track
     def sample(
         self,
         n: int = 1,
@@ -294,6 +325,7 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
+    @track
     def get_all_documents(
         self,
         chunksize: int = 1000,
@@ -342,6 +374,7 @@ class Read(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
+    @track
     def get_documents_by_ids(
         self, document_ids: Union[List, str], include_vector: bool = True
     ):
@@ -376,6 +409,7 @@ class Read(BatchAPIClient):
             )
         raise TypeError("Document IDs needs to be a string or a list")
 
+    @track
     def get(self, document_ids: Union[List, str], include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
@@ -446,6 +480,7 @@ class Read(BatchAPIClient):
         """
         return list(self.schema)
 
+    @track
     def filter(
         self,
         index: Union[str, None] = None,
@@ -531,6 +566,7 @@ class Read(BatchAPIClient):
 
         return self.get_all_documents(select_fields=fields, filters=filters)
 
+    @track
     def get_documents(
         self,
         number_of_documents: int = 20,

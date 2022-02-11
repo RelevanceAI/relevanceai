@@ -4,6 +4,17 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v0.1.0
+---------
+
+- Clustering report functionality
+- Add fix and test for new cluster aggregate
+- Add document mocking utility
+- Add integration for cluster reporting
+- Fix bug for sklearn clustering
+- Add segment tracking with option to turn off
+- Add print statement after inserting
+
 v0.33.6
 ---------
 

@@ -18,7 +18,7 @@ log in this way:
     from relevanceai import Client
     project = ""
     api_key = ""
-    client = Client(project=project, api_key=api_key)
+    client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
     client.list_datasets()
 
 If you need to change your token, simply run:
@@ -29,20 +29,24 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
-import getpass
-import json
 import os
-from typing import Union, Optional, List, Dict
+import json
+import getpass
+
+from typing import Optional, List, Dict, Union
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.dataset_api import Dataset, Datasets
-from relevanceai.clusterer import ClusterOps, ClusterBase
+from relevanceai.dataset_api import Dataset
+from relevanceai.clusterer import ClusterOps
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
 
+import analytics
+
+from relevanceai.analytics_funcs import track, identify
 
 vis_requirements = False
 try:
@@ -69,6 +73,7 @@ class Client(BatchAPIClient, DocUtils):
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
+        firebase_uid=os.getenv("RELEVANCE_FIREBASE_UID"),
         region="us-east-1",
         authenticate: bool = True,
         token: str = None,
@@ -91,39 +96,79 @@ class Client(BatchAPIClient, DocUtils):
         force_refresh: bool
             If True, it forces you to refresh your client
         """
+
+        try:
+            self._set_mixpanel_write_key()
+        except Exception as e:
+            pass
+
+        if project is None or api_key is None or firebase_uid is None or force_refresh:
+            credentials = self._token_to_auth(token)
+
+        try:
+            self.project = credentials["project"]
+        except Exception:
+            self.project = project
+
+        try:
+            self.api_key = credentials["api_key"]
+        except Exception:
+            self.api_key = api_key
+
+        try:
+            self.firebase_uid = credentials["firebase_uid"]
+        except Exception:
+            self.firebase_uid = firebase_uid
+
         self.region = region
-        if project is None or api_key is None or force_refresh:
-            project, api_key, base_url = self._token_to_auth(token)
+
+        self._identify()
 
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
 
-        super().__init__(project, api_key)
+        super().__init__(
+            project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
+        )
 
         # used to debug
         if authenticate:
             if self.check_auth():
-                WELCOME_MESSAGE = f"""Welcome to RelevanceAI. Logged in as {project}."""
+                WELCOME_MESSAGE = (
+                    f"""Welcome to RelevanceAI. Logged in as {self.project}."""
+                )
                 print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
         # Import projector and vector tools
         if vis_requirements:
-            self.projector = Projector(project, api_key)
+            self.projector = Projector(
+                project=self.project,
+                api_key=self.api_key,
+                firebase_uid=self.firebase_uid,
+            )
 
-        self.vector_tools = VectorTools(project, api_key)
+        self.vector_tools = VectorTools(
+            project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
+        )
 
         # Legacy functions (?) - forgot what they were for
-        # self.Dataset = Dataset(project=project, api_key=api_key)
-        # self.Datasets = Datasets(project=project, api_key=api_key)
+        # self.Dataset = Dataset(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        # self.Datasets = Datasets(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
-            project=project, api_key=api_key, dataset_id=""
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id="",
         )._insert_documents
         self.insert_csv = Dataset(
-            project=project, api_key=api_key, dataset_id=""
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id="",
         )._insert_csv
 
     # @property
@@ -136,20 +181,39 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Authentication Details
 
+    @identify
+    def _identify(self):
+        return
+
+    def _set_mixpanel_write_key(self):
+        from base64 import b64decode as decode
+
+        analytics.write_key = decode(self.mixpanel_write_key).decode("utf-8")
+
     def _process_token(self, token: str):
         split_token = token.split(":")
         project = split_token[0]
         api_key = split_token[1]
-        if len(split_token) >= 3:
+        if len(split_token) > 2:
             region = split_token[2]
-            url = self._region_to_url(region)
-            self.base_url = url
-            self.base_ingest_url = url
-            self._region = region
-            if len(split_token) >= 4:
-                self._firebase_uid = split_token[4]
-        self._write_credentials(project, api_key, url)
-        return project, api_key, url
+            base_url = self._region_to_url(region)
+
+            if len(split_token) > 3:
+                firebase_uid = split_token[3]
+                return self._write_credentials(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
+                    firebase_uid=firebase_uid,
+                )
+
+            else:
+                return self._write_credentials(
+                    project=project, api_key=api_key, base_url=base_url
+                )
+
+        else:
+            return self._write_credentials(project=project, api_key=api_key)
 
     def _region_to_ingestion_url(self, region: str):
         # same as region to URL now in case ingestion ever needs to be separate
@@ -160,35 +224,30 @@ class Client(BatchAPIClient, DocUtils):
         return url
 
     def _token_to_auth(self, token=None):
-        # if verbose:
-        #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
-        #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
-        # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if not os.path.exists(self._cred_fn):
-            # We repeat it twice because of different behaviours
+
+        if os.path.exists(self._cred_fn):
+            credentials = self._read_credentials()
+            return credentials
+
+        elif token:
+            return self._process_token(token)
+
+        else:
             print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
                 token = getpass.getpass(f"Activation token:")
             return self._process_token(token)
-        elif token:
-            return self._process_token(token)
-        else:
-            data = self._read_credentials()
-            project = data["project"]
-            api_key = data["api_key"]
-            self.base_url = data.get("base_url", CONFIG["api.base_url"])
-            self.base_ingest_url = data.get("base_url", CONFIG["api.base_ingest_url"])
-        return project, api_key, self.base_url
 
-    def _write_credentials(self, project, api_key, base_url):
+    def _write_credentials(self, **kwargs):
         print(
             f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
         )
         json.dump(
-            {"project": project, "api_key": api_key, "base_url": base_url},
+            kwargs,
             open(self._cred_fn, "w"),
         )
+        return kwargs
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
@@ -210,6 +269,7 @@ class Client(BatchAPIClient, DocUtils):
 
     ### CRUD-related utility functions
 
+    @track
     def create_dataset(self, dataset_id: str, schema: dict = {}):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
@@ -265,6 +325,7 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.create(dataset_id, schema=schema)
 
+    @track
     def list_datasets(self):
         """List Datasets
 
@@ -283,6 +344,7 @@ class Client(BatchAPIClient, DocUtils):
         )
         return self.datasets.list()
 
+    @track
     def delete_dataset(self, dataset_id):
         """
         Delete a dataset
@@ -304,6 +366,7 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.delete(dataset_id)
 
+    @track
     def Dataset(
         self,
         dataset_id: str,
@@ -317,6 +380,7 @@ class Client(BatchAPIClient, DocUtils):
             dataset_id=dataset_id,
             project=self.project,
             api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
             fields=fields,
             image_fields=image_fields,
             audio_fields=audio_fields,
@@ -326,6 +390,7 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Clustering
 
+    @track
     def ClusterOps(
         self,
         alias: str,
@@ -342,12 +407,14 @@ class Client(BatchAPIClient, DocUtils):
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
         )
 
     def _set_logger_to_verbose(self):
         # Use this for debugging
         self.config["logging.logging_level"] = "INFO"
 
+    @track
     def send_dataset(
         self,
         dataset_id: str,
@@ -388,6 +455,7 @@ class Client(BatchAPIClient, DocUtils):
             receiver_api_key=receiver_api_key,
         )
 
+    @track
     def clone_dataset(
         self,
         source_dataset_id: str,
@@ -453,3 +521,13 @@ class Client(BatchAPIClient, DocUtils):
         print(MESSAGE)
 
     docs = references
+
+    def search_app(self, dataset_id: str = None):
+        if dataset_id is not None:
+            self.print_search_dashboard_url(dataset_id)
+        elif hasattr(self, "_dataset_id"):
+            self.print_search_dashboard_url(self._dataset_id)
+        elif hasattr(self, "dataset_id"):
+            self.print_search_dashboard_url(self.dataset_id)
+        else:
+            print("You can build your search app at https://cloud.relevance.ai")
