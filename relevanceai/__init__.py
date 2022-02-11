@@ -25,9 +25,16 @@ try:
         latest_version = None
 
     if __version__ != latest_version and latest_version is not None:
+        changelog_url = (
+            f"https://relevanceai.readthedocs.io/en/{__version__}/changelog.html"
+        )
         warnings.warn(
-            "Your RelevanceAI version ({version}) is not the latest. Please install the latest version ({latest_version}) by running pip install -U relevanceai.".format(
-                version=__version__, latest_version=latest_version
+            "Your RelevanceAI version ({version}) is not the latest. "
+            + "Please install the latest version ({latest_version}) by running "
+            + "pip install -U relevanceai. Changelog: {changelog_url}.".format(
+                version=__version__,
+                latest_version=latest_version,
+                changelog_url=changelog_url,
             )
         )
 except:
