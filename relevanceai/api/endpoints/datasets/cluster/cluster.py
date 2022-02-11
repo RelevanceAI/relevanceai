@@ -7,7 +7,6 @@ class ClusterClient(_Base):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
-        self.firebase_uid = firebase_uid
 
         self.centroids = CentroidsClient(
             project=project, api_key=api_key, firebase_uid=firebase_uid
