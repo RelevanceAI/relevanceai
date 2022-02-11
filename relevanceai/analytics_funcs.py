@@ -1,6 +1,7 @@
 import analytics
 
 from typing import Callable
+from functools import wraps
 
 from relevanceai.config import CONFIG
 
@@ -10,6 +11,7 @@ def enable_tracking():
 
 
 def track(func: Callable):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             if enable_tracking():
