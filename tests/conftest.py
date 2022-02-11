@@ -20,6 +20,22 @@ from tests.globals.clusterers import *
 REGION = os.getenv("TEST_REGION")
 
 
+def pytest_sessionstart(config):
+    """
+    Pytest's configuration
+    """
+    # Deleting all mixpanel analytics from tests
+    with open("relevanceai/config.ini", "w") as f:
+        lines = f.readlines()
+
+    os.remove("relevanceai/config.ini")
+
+    with open("relevanceai/config.ini", "w") as f:
+        for i, line in enumerate(lines):
+            if i < 27:
+                f.write(line)
+
+
 @pytest.fixture(scope="session")
 def test_project():
     if REGION == "us-east-1":
@@ -43,7 +59,6 @@ def correct_client_config(client):
     client.config.reset()
     if client.region != "us-east-1":
         raise ValueError("default value aint RIGHT")
-    client.config["mixpanel.enable_tracking"] = False
 
 
 @pytest.fixture(scope="session")
