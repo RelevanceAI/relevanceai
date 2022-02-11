@@ -7,7 +7,8 @@ from relevanceai.config import CONFIG
 
 
 def enable_tracking():
-    return CONFIG.get_field("mixpanel.enable_tracking", CONFIG.config)
+    if CONFIG.is_field("mixpanel.enable_tracking"):
+        return CONFIG.get_field("mixpanel.enable_tracking", CONFIG.config)
 
 
 def track(func: Callable):
