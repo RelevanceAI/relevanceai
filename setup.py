@@ -19,7 +19,7 @@ def get_version(rel_path):
     raise RuntimeError(f"Unable to find a valid __version__ string in {rel_path}.")
 
 
-requirements = [
+slim = [
     "tqdm>=4.49.0",
     "pandas>=1.0.0",
     "loguru>=0.5.3",
@@ -29,8 +29,9 @@ requirements = [
     "joblib>=1.0.0",
     "scikit-learn",
     "typing-extensions",
-    "analytics-python",
 ]
+
+requirements = slim + ["analytics-python"]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
@@ -141,6 +142,7 @@ setup(
         "umap": umap,
         # "ivis-cpu": ivis_cpu,
         # "ivis-gpu": ivis_gpu,
+        "slim": slim,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
     },
