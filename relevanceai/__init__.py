@@ -31,7 +31,7 @@ try:
         MESSAGE = """We noticed you don't have the latest version! 
 We recommend updating to the latest version ({latest_version}) to get all bug fixes and newest features!
 You can do this by running pip install -U relevanceai. 
-Changelog: {changelog_url}.""".format(
+Changelog: {changelog_url}.""".format(  # type: ignore
             version=__version__,
             latest_version=latest_version,
             changelog_url=changelog_url,
