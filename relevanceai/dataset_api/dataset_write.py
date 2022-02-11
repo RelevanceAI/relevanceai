@@ -190,6 +190,7 @@ class Write(Read):
             for doc in df.to_dict(orient="records")
         ]
 
+        self.print_search_dashboard_url(self.dataset_id)
         return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
 
     def upsert_documents(

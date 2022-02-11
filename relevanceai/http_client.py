@@ -195,8 +195,8 @@ class Client(BatchAPIClient, DocUtils):
         project = split_token[0]
         api_key = split_token[1]
         if len(split_token) > 2:
-            region = split_token[2]
-            base_url = self._region_to_url(region)
+            self.region = split_token[2]
+            base_url = self._region_to_url(self.region)
 
             if len(split_token) > 3:
                 firebase_uid = split_token[3]
