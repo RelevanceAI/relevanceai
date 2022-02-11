@@ -3,6 +3,7 @@ Pandas like dataset API
 """
 from typing import Union, List, Dict
 
+from relevanceai.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_export import Export
 from relevanceai.dataset_api.dataset_stats import Stats
@@ -16,6 +17,7 @@ from relevanceai.dataset_api.dataset_search import Search
 class Dataset(Export, Stats, Operations):
     """Dataset class"""
 
+    @track
     def __init__(
         self,
         project: str,
@@ -59,6 +61,7 @@ class Dataset(Export, Stats, Operations):
             firebase_uid=firebase_uid,
         )
 
+    @track
     def __getitem__(self, field: Union[List[str], str]):
         """
         Returns a Series Object that selects a particular field within a dataset
