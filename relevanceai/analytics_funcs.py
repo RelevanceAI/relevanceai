@@ -22,10 +22,11 @@ def track(func: Callable):
                     "args": args[1:],
                     "kwargs": kwargs,
                 }
-                analytics.track(user_id=user_id, event=event, properties=properties)
+                if user_id is not None:
+                    analytics.track(user_id=user_id, event=event, properties=properties)
                 kwargs["self"] = self
         except Exception as e:
-            print(e)
+            pass
 
         return func(**kwargs)
 
@@ -41,9 +42,10 @@ def identify(func: Callable):
                 traits = {
                     "region": region,
                 }
-                analytics.identify(user_id, traits)
+                if user_id is not None:
+                    analytics.identify(user_id, traits)
         except Exception as e:
-            print(e)
+            pass
 
         return func(*args, **kwargs)
 
