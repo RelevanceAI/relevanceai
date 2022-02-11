@@ -656,11 +656,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
         import pandas as pd
-
-        documents = [
-            {k: v for k, v in doc.items() if not pd.isna(v)}
-            for doc in dataframe.to_dict(orient="records")
-        ]
+        documents = json.loads(dataframe.to_json(orient="records"))
         results = self._insert_documents(dataset_id, documents, *args, **kwargs)
         self.print_search_dashboard_url(dataset_id)
         return results
