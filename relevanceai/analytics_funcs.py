@@ -4,6 +4,7 @@ from typing import Callable
 from functools import wraps
 
 from relevanceai.config import CONFIG
+from relevanceai.json_encoder import json_encoder
 
 
 def enable_tracking():
@@ -26,7 +27,11 @@ def track(func: Callable):
                     "kwargs": kwargs,
                 }
                 if user_id is not None:
-                    analytics.track(user_id=user_id, event=event, properties=properties)
+                    analytics.track(
+                        user_id=user_id,
+                        event=json_encoder(event),
+                        properties=properties,
+                    )
                 kwargs["self"] = self
         except Exception as e:
             pass
