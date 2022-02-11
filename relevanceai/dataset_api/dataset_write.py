@@ -172,7 +172,20 @@ class Write(Read):
             uuids = [uuid.uuid4() for _ in range(len(df))]
             df["_id"] = uuids
 
-        documents = json.loads(df.to_json(orient="records"))
+        def _is_valid(v):
+            try:
+                if pd.isna(v):
+                    return False
+                else:
+                    return True
+            except:
+                return True
+
+        documents = [
+            {k: v for k, v in doc.items() if _is_valid(v)}
+            for doc in df.to_dict(orient="records")
+        ]
+
         results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
         self.print_search_dashboard_url(self.dataset_id)
         return results
