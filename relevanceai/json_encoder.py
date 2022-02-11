@@ -113,6 +113,75 @@ def json_encoder(obj):
     raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
 
 
+def json_encoder(obj, force_string: bool = False):
+    """
+    Converts object so it is json serializable
+    If you want to add your own mapping,
+    customize it this way;
+
+    Parameters
+    ------------
+    obj: Any
+        The object to convert
+    force_string: bool
+        If True, forces the object to a string representation. Used mainly for
+        analytics tracking.
+
+    Example
+    --------
+
+    YOu can use our JSON encoder easily.
+    >>> documents = [{"value": np.nan}]
+    >>> client.json_encoder(documents)
+
+    If you want to use FastAPI's json encoder, do this:
+    >>> from fastapi import jsonable_encoder
+    >>> client.json_encoder = jsonable_encoder
+
+    """
+    # Loop through iterators and convert
+    if isinstance(obj, (list, set, frozenset, GeneratorType, tuple, collections.deque)):
+        encoded_list = []
+        for item in obj:
+            encoded_list.append(json_encoder(item))
+        return encoded_list
+
+    # Loop through dictionaries and convert
+    if isinstance(obj, dict):
+        encoded_dict = {}
+        for key, value in obj.items():
+            encoded_key = json_encoder(key)
+            encoded_value = json_encoder(value)
+            encoded_dict[encoded_key] = encoded_value
+        return encoded_dict
+
+    # Custom conversions
+    if dataclasses.is_dataclass(obj):
+        return dataclasses.asdict(obj)
+    if isinstance(obj, (np.ndarray, np.generic)):
+        return json_encoder(obj.tolist())
+    if isinstance(obj, pd.DataFrame):
+        return json_encoder(obj.to_dict())
+    if isinstance(obj, Enum):
+        return obj.value
+    if isinstance(obj, PurePath):
+        return str(obj)
+    if isinstance(obj, (str, int, type(None))):
+        return obj
+    if isinstance(obj, float):
+        if pd.isna(obj):
+            return None
+        else:
+            return obj
+    if type(obj) in ENCODERS_BY_TYPE:
+        return ENCODERS_BY_TYPE[type(obj)](obj)
+
+    if force_string:
+        return str(obj)
+
+    raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
+
+
 class JSONEncoderUtils:
     def json_encoder(self, *args, **kw):
         return json_encoder(*args, **kw)
