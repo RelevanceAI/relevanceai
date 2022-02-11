@@ -251,7 +251,7 @@ class ClusterReport:
                     self.X[cluster_bool],
                 )
             )
-            if hasattr(self.model, "cluster_centers_"):
+            if self.has_centers():
 
                 grand_centroid = self.X[cluster_bool].mean(axis=0)
                 self.cluster_internal_report["overall"]["grand_centroids"].append(
