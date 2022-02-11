@@ -10,6 +10,8 @@ from relevanceai import Client
 
 from tests.globals.constants import generate_dataset_id
 
+from tests.conftest import correct_client_config
+
 
 def do_nothing(documents):
     return documents
@@ -35,13 +37,13 @@ class TestInsert:
     test_dataset_id = generate_dataset_id()
 
     def test_batch_insert(self, vector_documents: List[Dict], test_client: Client):
-        test_client.config.reset()
+        correct_client_config(test_client)
         results = test_client._insert_documents(self.test_dataset_id, vector_documents)
         test_client.datasets.monitor.health(self.test_dataset_id)
         assert len(results["failed_documents"]) == 0
 
     def test_datetime_upload(self, datetime_documents: List[Dict], test_client: Client):
-        test_client.config.reset()
+        correct_client_config(test_client)
         results = test_client._insert_documents(
             self.test_dataset_id, datetime_documents
         )
@@ -52,13 +54,13 @@ class TestInsert:
         test_client: Client,
         numpy_documents: List[Dict],
     ):
-        test_client.config.reset()
+        correct_client_config(test_client)
         results = test_client._insert_documents(self.test_dataset_id, numpy_documents)
         test_client.datasets.monitor.health(self.test_dataset_id)
         assert len(results["failed_documents"]) == 0
 
     def test_pandas_upload(self, test_client: Client, pandas_documents: List[Dict]):
-        test_client.config.reset()
+        correct_client_config(test_client)
         results = test_client._insert_documents(self.test_dataset_id, pandas_documents)
         test_client.datasets.monitor.health(self.test_dataset_id)
         assert len(results["failed_documents"]) == 0
@@ -68,7 +70,7 @@ class TestInsert:
         test_client: Client,
         assorted_nested_documents: List[Dict],
     ):
-        test_client.config.reset()
+        correct_client_config(test_client)
         results = test_client._insert_documents(
             self.test_dataset_id, assorted_nested_documents
         )

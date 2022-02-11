@@ -364,7 +364,6 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.delete(dataset_id)
 
-    @track
     def Dataset(
         self,
         dataset_id: str,

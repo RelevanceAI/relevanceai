@@ -31,6 +31,7 @@ import datetime
 from uuid import UUID
 from collections import deque
 from pathlib import Path
+from typing import Any
 
 # Taken from pydanitc.json
 ENCODERS_BY_TYPE = {
@@ -55,62 +56,75 @@ ENCODERS_BY_TYPE = {
 }
 
 
-class JSONEncoderUtils:
-    def json_encoder(self, obj):
-        """
-        Converts object so it is json serializable
-        If you want to add your own mapping,
-        customize it this way;
+def json_encoder(obj: Any, force_string: bool = False):
+    """
+    Converts object so it is json serializable
+    If you want to add your own mapping,
+    customize it this way;
 
-        Example
-        --------
+    Parameters
+    ------------
+    obj: Any
+        The object to convert
+    force_string: bool
+        If True, forces the object to a string representation. Used mainly for
+        analytics tracking.
 
-        YOu can use our JSON encoder easily.
-        >>> documents = [{"value": np.nan}]
-        >>> client.json_encoder(documents)
+    Example
+    --------
 
-        If you want to use FastAPI's json encoder, do this:
-        >>> from fastapi import jsonable_encoder
-        >>> client.json_encoder = jsonable_encoder
+    YOu can use our JSON encoder easily.
+    >>> documents = [{"value": np.nan}]
+    >>> client.json_encoder(documents)
 
-        """
-        # Loop through iterators and convert
-        if isinstance(
-            obj, (list, set, frozenset, GeneratorType, tuple, collections.deque)
-        ):
-            encoded_list = []
-            for item in obj:
-                encoded_list.append(self.json_encoder(item))
-            return encoded_list
+    If you want to use FastAPI's json encoder, do this:
+    >>> from fastapi import jsonable_encoder
+    >>> client.json_encoder = jsonable_encoder
 
-        # Loop through dictionaries and convert
-        if isinstance(obj, dict):
-            encoded_dict = {}
-            for key, value in obj.items():
-                encoded_key = self.json_encoder(key)
-                encoded_value = self.json_encoder(value)
-                encoded_dict[encoded_key] = encoded_value
-            return encoded_dict
+    """
+    # Loop through iterators and convert
+    if isinstance(obj, (list, set, frozenset, GeneratorType, tuple, collections.deque)):
+        encoded_list = []
+        for item in obj:
+            encoded_list.append(json_encoder(item))
+        return encoded_list
 
-        # Custom conversions
-        if dataclasses.is_dataclass(obj):
-            return dataclasses.asdict(obj)
-        if isinstance(obj, (np.ndarray, np.generic)):
-            return self.json_encoder(obj.tolist())
-        if isinstance(obj, pd.DataFrame):
-            return self.json_encoder(obj.to_dict())
-        if isinstance(obj, Enum):
-            return obj.value
-        if isinstance(obj, PurePath):
-            return str(obj)
-        if isinstance(obj, (str, int, type(None))):
+    # Loop through dictionaries and convert
+    if isinstance(obj, dict):
+        encoded_dict = {}
+        for key, value in obj.items():
+            encoded_key = json_encoder(key)
+            encoded_value = json_encoder(value)
+            encoded_dict[encoded_key] = encoded_value
+        return encoded_dict
+
+    # Custom conversions
+    if dataclasses.is_dataclass(obj):
+        return dataclasses.asdict(obj)
+    if isinstance(obj, (np.ndarray, np.generic)):
+        return json_encoder(obj.tolist())
+    if isinstance(obj, pd.DataFrame):
+        return json_encoder(obj.to_dict())
+    if isinstance(obj, Enum):
+        return obj.value
+    if isinstance(obj, PurePath):
+        return str(obj)
+    if isinstance(obj, (str, int, type(None))):
+        return obj
+    if isinstance(obj, float):
+        if pd.isna(obj):
+            return None
+        else:
             return obj
-        if isinstance(obj, float):
-            if pd.isna(obj):
-                return None
-            else:
-                return obj
-        if type(obj) in ENCODERS_BY_TYPE:
-            return ENCODERS_BY_TYPE[type(obj)](obj)
+    if type(obj) in ENCODERS_BY_TYPE:
+        return ENCODERS_BY_TYPE[type(obj)](obj)  # type: ignore
 
-        raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
+    if force_string:
+        return str(obj)
+
+    raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
+
+
+class JSONEncoderUtils:
+    def json_encoder(self, *args, **kw):
+        return json_encoder(*args, **kw)

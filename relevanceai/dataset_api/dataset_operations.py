@@ -22,7 +22,9 @@ class Operations(Write):
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
-            We recommend not using this in any production systems.
+            We recommend not using this in any production systems. We recommend using
+            the bulk_apply function or the apply function to provide the intended output
+            for now.
 
         Parameters
         ------------
