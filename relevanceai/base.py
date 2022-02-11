@@ -54,6 +54,7 @@ class _Base(Transport, LoguruLogger):
     @region.setter
     def region(self, region_value):
         CONFIG["api.region"] = region_value
+        self._region = region_value
 
     def _region_to_url(self, region: str):
         # to match our logic in dashboard

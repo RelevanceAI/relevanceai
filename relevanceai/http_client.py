@@ -120,8 +120,6 @@ class Client(BatchAPIClient, DocUtils):
         except Exception:
             self.firebase_uid = firebase_uid
 
-        self.region = region
-
         self._identify()
 
         self.base_url = self._region_to_url(self.region)
@@ -195,8 +193,8 @@ class Client(BatchAPIClient, DocUtils):
         project = split_token[0]
         api_key = split_token[1]
         if len(split_token) > 2:
-            region = split_token[2]
-            base_url = self._region_to_url(region)
+            self.region = split_token[2]
+            base_url = self._region_to_url(self.region)
 
             if len(split_token) > 3:
                 firebase_uid = split_token[3]
@@ -226,12 +224,12 @@ class Client(BatchAPIClient, DocUtils):
     def _token_to_auth(self, token=None):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
 
-        if os.path.exists(self._cred_fn):
+        if token:
+            return self._process_token(token)
+
+        elif os.path.exists(self._cred_fn):
             credentials = self._read_credentials()
             return credentials
-
-        elif token:
-            return self._process_token(token)
 
         else:
             print(f"Activation token (you can find it here: {SIGNUP_URL} )")

@@ -655,9 +655,20 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
     @track
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
-        import pandas as pd
 
-        documents = json.loads(dataframe.to_json(orient="records"))
+        def _is_valid(v):
+            try:
+                if pd.isna(v):
+                    return False
+                else:
+                    return True
+            except:
+                return True
+
+        documents = [
+            {k: v for k, v in doc.items() if _is_valid(v)}
+            for doc in dataframe.to_dict(orient="records")
+        ]
         results = self._insert_documents(dataset_id, documents, *args, **kwargs)
         self.print_search_dashboard_url(dataset_id)
         return results
@@ -667,7 +678,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/search"
         )
         self._dataset_id = dataset_id
-        self.print_dashboard_url(search_url)
+        print(f"🍡 You can now explore your search app at {search_url}")
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 
