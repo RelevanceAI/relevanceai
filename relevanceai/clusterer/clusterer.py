@@ -214,14 +214,15 @@ class ClusterOps(BatchAPIClient):
 
             new_model = BatchCentroidClusterModel(model)
             return new_model
+
         if hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_transform"):
-            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
-        elif hasattr(model, "fit_predict"):
-            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+        elif hasattr(model, "fit_transform"):
+            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
 
@@ -250,7 +251,7 @@ class ClusterOps(BatchAPIClient):
             return model
         raise TypeError("Model should be inherited from ClusterBase.")
 
-    def _token_to_auth(self):
+    def _token_to_auth(self, token=None):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
 
         if os.path.exists(self._cred_fn):
@@ -626,10 +627,10 @@ class ClusterOps(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
+            print("Inserting centroid documents...")
             centers = self.get_centroid_documents()
 
             if hasattr(self.model, "get_centers"):
-                center_vectors = self.model.get_centers()
                 centers = self.get_centroid_documents()
 
             # Change centroids insertion
@@ -876,8 +877,12 @@ class ClusterOps(BatchAPIClient):
         # Update the centroid collection
         self.model.vector_fields = vector_fields
 
-        print("Inserting centroid documents...")
         self._insert_centroid_documents()
+
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
 
     @track
     def fit_dataset(
@@ -1144,10 +1149,16 @@ class ClusterOps(BatchAPIClient):
         )
         print("Updating your dataset...")
         self.predict_update(dataset=dataset)
-        # if hasattr(self, "get_centers"):
-        #     print("Inserting your centroids...")
-        print("Inserting centroids...")
-        self.insert_centroid_documents(self.get_centroid_documents(), dataset=dataset)
+        if hasattr(self.model, "get_centers"):
+            print("Inserting your centroids...")
+            self.insert_centroid_documents(
+                self.get_centroid_documents(), dataset=dataset
+            )
+
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
 
     @track
     def predict_documents(

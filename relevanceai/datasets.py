@@ -507,6 +507,26 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
     """
     Utility function to mock documents. Aimed at helping users reproduce errors
     if required.
+    The schema for the documents is as follows:
+
+    .. code-block::
+
+        {'_chunk_': 'chunks',
+        '_chunk_.label': 'text',
+        '_chunk_.label_chunkvector_': {'chunkvector': 5},
+        'insert_date_': 'date',
+        'sample_1_description': 'text',
+        'sample_1_label': 'text',
+        'sample_1_value': 'numeric',
+        'sample_1_vector_': {'vector': 5},
+        'sample_2_description': 'text',
+        'sample_2_label': 'text',
+        'sample_2_value': 'numeric',
+        'sample_2_vector_': {'vector': 5},
+        'sample_3_description': 'text',
+        'sample_3_label': 'text',
+        'sample_3_value': 'numeric',
+        'sample_3_vector_': {'vector': 5}}
 
     Parameters
     ------------
@@ -520,6 +540,7 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
 
         from relevanceai.datasets import mock_documents
         documents = mock_documents(10)
+
     """
 
     def generate_random_string(string_length: int = 5) -> str:
