@@ -6,10 +6,12 @@ from relevanceai.api.endpoints.client import APIClient
 
 
 class Utils(APIClient, _Base, DocUtils):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def _is_valid_vector_name(self, dataset_id, vector_name: str) -> bool:
         """

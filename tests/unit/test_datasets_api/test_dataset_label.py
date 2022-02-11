@@ -13,7 +13,7 @@ from tests.globals.constants import (
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def test_label_df(test_client: Client, vector_documents):
     df = test_client.Dataset(LABEL_DATSET_ID)
     df.upsert_documents(vector_documents)

@@ -1,12 +1,9 @@
 import random
 
-from typing import List, Dict
-
-from relevanceai.http_client import Client
+from relevanceai.http_client import Dataset
 
 
-def test_dataset_vectorize(test_client: Client, vector_dataset_id: str):
-    df = test_client.Dataset(vector_dataset_id)
+def test_dataset_vectorize(test_df: Dataset):
 
     OUTPUT_VECTOR_FIELD = "sample_1_vector_"
 
@@ -21,5 +18,5 @@ def test_dataset_vectorize(test_client: Client, vector_dataset_id: str):
             encode_document(d)
         return documents
 
-    df.vectorize("sample_1_label", encode_documents)
-    assert OUTPUT_VECTOR_FIELD in df.schema, "Did not vectorize properly"
+    test_df.vectorize("sample_1_label", encode_documents)
+    assert OUTPUT_VECTOR_FIELD in test_df.schema, "Did not vectorize properly"

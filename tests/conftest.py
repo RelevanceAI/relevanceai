@@ -35,11 +35,23 @@ def test_api_key():
 
 
 @pytest.fixture(scope="session")
-def test_client(test_project, test_api_key):
+def test_firebase_uid():
+    return "relevanceai-sdk-test-user"
+
+
+@pytest.fixture(scope="session")
+def test_client(test_project, test_api_key, test_firebase_uid):
     if REGION is None:
-        client = Client(test_project, test_api_key)
+        client = Client(
+            project=test_project, api_key=test_api_key, firebase_uid=test_firebase_uid
+        )
     else:
-        client = Client(test_project, test_api_key, region=REGION)
+        client = Client(
+            project=test_project,
+            api_key=test_api_key,
+            firebase_uid=test_firebase_uid,
+            region=REGION,
+        )
     # For some reason not resetting to default
     client.config.reset()
     if client.region != "us-east-1":
@@ -47,7 +59,7 @@ def test_client(test_project, test_api_key):
     return client
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
     test_client.config.reset()
     test_dataset_id = generate_dataset_id()
@@ -61,7 +73,7 @@ def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
         test_client.datasets.delete(test_dataset_id)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def test_read_df(test_client: Client, vector_documents: List[Dict]):
     test_client.config.reset()
     DATASET_ID = "_sample_df_"
@@ -71,7 +83,7 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
     df.delete()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def test_csv_df(test_df: Dataset, vector_documents: List[Dict]):
     """Sample csv dataset"""
     test_df.config.reset()

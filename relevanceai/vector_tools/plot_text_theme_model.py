@@ -17,6 +17,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         self,
         project: str,
         api_key: str,
+        firebase_uid: str,
         # dataset_info
         dataset_id: str,
         upload_chunksize: int = 50,
@@ -36,7 +37,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         self.dim_red_k = dim_red_k
         self.n_epochs_without_progress = n_epochs_without_progress
         self.language = language
-        super().__init__(project, api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def _build_and_plot_clusters(
         self,
@@ -362,6 +363,7 @@ def build_and_plot_clusters(
     self,
     project: str,
     api_key: str,
+    firebase_uid: str,
     dataset_id: str,
     vector_fields: List[str],
     text_fields: List[str],
@@ -388,6 +390,7 @@ def build_and_plot_clusters(
     model = PlotTextThemeModel(
         project=project,
         api_key=api_key,
+        firebase_uid=firebase_uid,
         dataset_id=dataset_id,
         upload_chunksize=upload_chunksize,
         # clustering

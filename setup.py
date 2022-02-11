@@ -29,6 +29,7 @@ requirements = [
     "joblib>=1.0.0",
     "scikit-learn",
     "typing-extensions",
+    "analytics-python",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]

@@ -13,6 +13,8 @@ from typing import Dict, List, Union, Callable, Optional
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.warnings import warn_function_is_work_in_progress
 
+from relevanceai.analytics_funcs import track
+
 
 class Series(BatchAPIClient):
     """
@@ -62,6 +64,7 @@ class Series(BatchAPIClient):
         self,
         project: str,
         api_key: str,
+        firebase_uid: str,
         dataset_id: str,
         field: str,
         image_fields: List[str] = [],
@@ -69,9 +72,10 @@ class Series(BatchAPIClient):
         highlight_fields: Dict[str, List] = {},
         text_fields: List[str] = [],
     ):
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self.field = field
         self.image_fields = image_fields
@@ -105,6 +109,7 @@ class Series(BatchAPIClient):
             )
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
+    @track
     def list_aliases(self):
         fields = self._format_select_fields()
         fields = [field for field in fields if field != "_cluster_"]
@@ -135,6 +140,7 @@ class Series(BatchAPIClient):
             **kw,
         )
 
+    @track
     def sample(
         self,
         n: int = 1,
@@ -201,6 +207,7 @@ class Series(BatchAPIClient):
 
     head = sample
 
+    @track
     def all(
         self,
         chunksize: int = 1000,
@@ -220,6 +227,7 @@ class Series(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
+    @track
     def vectorize(self, model):
         """
         Vectorises over a field give a model architecture
@@ -262,6 +270,7 @@ class Series(BatchAPIClient):
             self.dataset_id, encode_documents, select_fields=[self.field]
         )
 
+    @track
     def apply(
         self,
         func: Callable,
@@ -318,6 +327,7 @@ class Series(BatchAPIClient):
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
 
+    @track
     def bulk_apply(
         self,
         bulk_func: Callable,
@@ -375,6 +385,7 @@ class Series(BatchAPIClient):
             use_json_encoder=use_json_encoder,
         )
 
+    @track
     def numpy(self) -> np.ndarray:
         """
         Iterates over all documents in dataset and returns all numeric values in a numpy array.
@@ -410,6 +421,7 @@ class Series(BatchAPIClient):
         else:
             return None
 
+    @track
     def value_counts(
         self,
         normalize: bool = False,

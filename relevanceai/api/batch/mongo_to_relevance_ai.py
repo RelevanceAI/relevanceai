@@ -63,8 +63,10 @@ except (ImportError, ModuleNotFoundError):
 
 
 class MongoImporter(BatchAPIClient):
-    def __init__(self, connection_string: str, project: str, api_key: str):
-        super().__init__(project, api_key)
+    def __init__(
+        self, connection_string: str, project: str, api_key: str, firebase_uid: str
+    ):
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
         if PYMONGO_AVAILABLE:
             self.mongo_client = MongoClient(connection_string)
         else:

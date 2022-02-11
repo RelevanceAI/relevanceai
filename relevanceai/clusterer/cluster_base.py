@@ -7,7 +7,7 @@ from typing import Union, List, Dict, Callable
 
 class ClusterBase(DocUtils, ABC):
     """
-    A Cluster Base for models to be inherited.
+    A Cluster _Base for models to be inherited.
     The most basic class to inherit.
     Use this class if you have an in-memory fitting algorithm.
 

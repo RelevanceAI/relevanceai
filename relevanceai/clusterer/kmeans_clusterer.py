@@ -204,6 +204,7 @@ class KMeansClusterOps(ClusterOps):
         alias: str,
         project: str,
         api_key: str,
+        firebase_uid: str,
         k: Union[None, int] = 10,
         init: str = "k-means++",
         n_init: int = 10,
@@ -232,6 +233,7 @@ class KMeansClusterOps(ClusterOps):
             cluster_field=cluster_field,
             project=project,
             api_key=api_key,
+            firebase_uid=firebase_uid,
         )
         warnings.warn("Function has been deprecated.", DeprecationWarning)
 

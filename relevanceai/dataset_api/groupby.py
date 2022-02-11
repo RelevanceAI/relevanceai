@@ -1,15 +1,25 @@
 from relevanceai.api.client import BatchAPIClient
 
+from typing import Union, List
+
 GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 
 
 class Groupby(BatchAPIClient):
-    def __init__(self, project, api_key, dataset_id, _pre_groupby=None):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        firebase_uid: str,
+        _pre_groupby: Union[List, None] = None,
+    ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self._pre_groupby = _pre_groupby
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(self, by: list = []):
         """
@@ -77,12 +87,20 @@ class Groupby(BatchAPIClient):
 
 
 class Agg(BatchAPIClient):
-    def __init__(self, project, api_key, dataset_id, groupby_call=[]):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        firebase_uid: str,
+        groupby_call: List = [],
+    ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self.groupby_call = groupby_call
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(
         self,
