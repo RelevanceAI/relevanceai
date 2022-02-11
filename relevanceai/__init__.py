@@ -32,13 +32,11 @@ try:
 We recommend updating to the latest version ({latest_version}) to get all bug fixes and newest features!
 You can do this by running pip install -U relevanceai. 
 Changelog: {changelog_url}.""".format(
-                version=__version__,
-                latest_version=latest_version,
-                changelog_url=changelog_url,
-            )
-        warnings.warn(
-            MESSAGE
+            version=__version__,
+            latest_version=latest_version,
+            changelog_url=changelog_url,
         )
+        warnings.warn(MESSAGE)
 except:
     pass
 print(MESSAGE)
