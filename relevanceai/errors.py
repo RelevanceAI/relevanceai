@@ -30,3 +30,14 @@ class ClusteringResultsAlreadyExistsError(RelevanceAIError):
 
     def __str__(self):
         return self.message % (self.field_name)
+
+
+class NoDocumentsError(RelevanceAIError):
+    """Error for when no documents are retrieved for an operation."""
+
+    def __init__(self, message="""No documents were found."""):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return self.message
