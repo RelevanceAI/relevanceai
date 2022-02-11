@@ -25,7 +25,7 @@ def pytest_sessionstart(session):
     Pytest's configuration
     """
     # Deleting all mixpanel analytics from tests
-    with open("relevanceai/config.ini", "w") as f:
+    with open("relevanceai/config.ini", "r") as f:
         lines = f.readlines()
 
     os.remove("relevanceai/config.ini")
