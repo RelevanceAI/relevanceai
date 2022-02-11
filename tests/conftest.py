@@ -20,7 +20,7 @@ from tests.globals.clusterers import *
 REGION = os.getenv("TEST_REGION")
 
 
-def pytest_sessionstart(config):
+def pytest_sessionstart(session):
     """
     Pytest's configuration
     """
