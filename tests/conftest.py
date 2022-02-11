@@ -20,21 +20,21 @@ from tests.globals.clusterers import *
 REGION = os.getenv("TEST_REGION")
 
 
-def pytest_sessionstart(session):
-    """
-    Pytest's configuration
-    """
-    # Deleting all mixpanel analytics from tests
-    CONFIG_FN = os.path.join("relevanceai", "config.ini")
-    with open(CONFIG_FN, "r") as f:
-        lines = f.readlines()
+# def pytest_sessionstart(session):
+#     """
+#     Pytest's configuration
+#     """
+#     # Deleting all mixpanel analytics from tests
+#     CONFIG_FN = os.path.join("relevanceai", "config.ini")
+#     with open(CONFIG_FN, "r") as f:
+#         lines = f.readlines()
 
-    os.remove(CONFIG_FN)
+#     os.remove(CONFIG_FN)
 
-    with open(CONFIG_FN, "w") as f:
-        for i, line in enumerate(lines):
-            if i < 27:
-                f.write(line)
+#     with open(CONFIG_FN, "w") as f:
+#         for i, line in enumerate(lines):
+#             if i < 27:
+#                 f.write(line)
 
 
 @pytest.fixture(scope="session")
