@@ -21,6 +21,7 @@ from relevanceai.progress_bar import progress_bar
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.utils import Utils
 from relevanceai.errors import MissingFieldError
+from relevanceai.analytics_funcs import track
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -651,6 +652,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "logging_collection": logging_dataset_id,
         }
 
+    @track
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
         import pandas as pd
