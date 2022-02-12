@@ -120,7 +120,7 @@ class Dataset(Export, Stats, Operations):
     @track
     def launch_search_app(self):
         """
-Launches the link to the search application to start building
+        Launches the link to the search application to start building
         """
         return (
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
