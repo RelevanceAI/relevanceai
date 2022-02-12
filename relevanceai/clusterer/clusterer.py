@@ -643,15 +643,6 @@ class ClusterOps(BatchAPIClient):
             )
             self.logger.info(results)
 
-            # give database time to make sure its there
-            time.sleep(2)
-            self.datasets.cluster.centroids.list_closest_to_center(
-                self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                centroid_vector_fields=self.vector_fields,
-                page_size=20,
-            )
         return
 
     def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
@@ -1241,6 +1232,11 @@ class ClusterOps(BatchAPIClient):
                     all_responses["inserted"] += v
                 elif isinstance(all_responses[k], list):
                     all_responses[k] += v
+
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
         return all_responses
 
     @track

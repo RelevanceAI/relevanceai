@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.0.5
+--------
+
+- Remove repetitive print statements
+
 v1.0.4
 ---------
 

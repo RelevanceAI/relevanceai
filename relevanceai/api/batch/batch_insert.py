@@ -42,6 +42,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
+        verbose: bool = True,
         *args,
         **kwargs,
     ):
@@ -107,9 +108,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 **kwargs,
             )
 
-        print(
-            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
-        )
+        if verbose:
+            print(
+                f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            )
 
         return self._write_documents(
             bulk_insert_func,
@@ -240,12 +242,17 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunk[i] = chunk[i].apply(literal_eval)
 
         chunk_json = chunk.to_dict(orient="records")
+
+        print(
+            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+        )
         response = self._insert_documents(
             dataset_id=dataset_id,
             documents=chunk_json,
             max_workers=max_workers,
             retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
+            verbose=False,
         )
         return response
 
