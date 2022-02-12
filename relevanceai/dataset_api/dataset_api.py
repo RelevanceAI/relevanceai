@@ -118,10 +118,9 @@ class Dataset(Export, Stats, Operations):
             raise TypeError("Field needs to be a list or a string.")
 
     @track
-    @property
-    def search_app(self):
+    def launch_search_app(self):
         """
-        Build search applications.
+Launches the link to the search application to start building
         """
         return (
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
