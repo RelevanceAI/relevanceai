@@ -224,7 +224,7 @@ class Client(BatchAPIClient, DocUtils):
             print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
                 token = self._get_token()
-            return self._process_token(token)
+            return self._process_token(token)  # type: ignore
 
     def _get_token(self):
         # TODO: either use cache or keyring package
