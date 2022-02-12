@@ -4,7 +4,7 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v1.0.3
+v1.0.4
 ---------
 
 - add launch_search_app for dataset functionality
