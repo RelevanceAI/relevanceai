@@ -30,9 +30,8 @@ If you need to change your token, simply run:
 
 """
 import os
-import json
 import getpass
-
+from base64 import b64decode as decode
 from typing import Optional, List, Dict, Union
 
 from doc_utils.doc_utils import DocUtils
@@ -68,9 +67,7 @@ def str2bool(v):
 
 class Client(BatchAPIClient, DocUtils):
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
-    # _cred_fn = ".creds.json"
 
-    @lru_cache(maxsize=128, typed=None)
     def __init__(
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
@@ -153,10 +150,6 @@ class Client(BatchAPIClient, DocUtils):
             project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
         )
 
-        # Legacy functions (?) - forgot what they were for
-        # self.Dataset = Dataset(project=project, api_key=api_key, firebase_uid=firebase_uid)
-        # self.Datasets = Datasets(project=project, api_key=api_key, firebase_uid=firebase_uid)
-
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
             project=self.project,
@@ -186,8 +179,6 @@ class Client(BatchAPIClient, DocUtils):
         return
 
     def _set_mixpanel_write_key(self):
-        from base64 import b64decode as decode
-
         analytics.write_key = decode(self.mixpanel_write_key).decode("utf-8")
 
     def _process_token(self, token: str):
@@ -236,6 +227,7 @@ class Client(BatchAPIClient, DocUtils):
             return self._process_token(token)
 
     def _get_token(self):
+        # TODO: either use cache or keyring package
         token = getpass.getpass(f"Activation token:")
         return token
 

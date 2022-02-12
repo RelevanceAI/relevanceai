@@ -7,6 +7,12 @@ Python library.
 v1.0.3
 ---------
 
+- add launch_search_app for dataset functionality
+- remove saving .creds.json to avoid file caching
+
+v1.0.3
+---------
+
 - Fix print error message with segment
 - Separate out JSON Encoder
 
