@@ -29,7 +29,7 @@ class Dataset(Export, Stats, Operations):
         audio_fields: List[str] = [],
         highlight_fields: Dict[str, List] = {},
         text_fields: List[str] = [],
-        **kw
+        **kw,
     ):
         self.project = project
         self.api_key = api_key
@@ -116,6 +116,15 @@ class Dataset(Export, Stats, Operations):
             )
         else:
             raise TypeError("Field needs to be a list or a string.")
+
+    @track
+    def launch_search_app(self):
+        """
+        Launches the link to the search application to start building
+        """
+        return (
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
+        )
 
 
 class Datasets(BatchAPIClient):

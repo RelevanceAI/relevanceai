@@ -30,9 +30,8 @@ If you need to change your token, simply run:
 
 """
 import os
-import json
 import getpass
-
+from base64 import b64decode as decode
 from typing import Optional, List, Dict, Union
 
 from doc_utils.doc_utils import DocUtils
@@ -43,6 +42,7 @@ from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
+from functools import lru_cache
 
 import analytics
 
@@ -67,7 +67,6 @@ def str2bool(v):
 
 class Client(BatchAPIClient, DocUtils):
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
-    _cred_fn = ".creds.json"
 
     def __init__(
         self,
@@ -151,10 +150,6 @@ class Client(BatchAPIClient, DocUtils):
             project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
         )
 
-        # Legacy functions (?) - forgot what they were for
-        # self.Dataset = Dataset(project=project, api_key=api_key, firebase_uid=firebase_uid)
-        # self.Datasets = Datasets(project=project, api_key=api_key, firebase_uid=firebase_uid)
-
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
             project=self.project,
@@ -184,8 +179,6 @@ class Client(BatchAPIClient, DocUtils):
         return
 
     def _set_mixpanel_write_key(self):
-        from base64 import b64decode as decode
-
         analytics.write_key = decode(self.mixpanel_write_key).decode("utf-8")
 
     def _process_token(self, token: str):
@@ -198,20 +191,22 @@ class Client(BatchAPIClient, DocUtils):
 
             if len(split_token) > 3:
                 firebase_uid = split_token[3]
-                return self._write_credentials(
+                data = dict(
                     project=project,
                     api_key=api_key,
                     base_url=base_url,
                     firebase_uid=firebase_uid,
                 )
-
+                return data
             else:
-                return self._write_credentials(
-                    project=project, api_key=api_key, base_url=base_url
+                return dict(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
                 )
 
         else:
-            return self._write_credentials(project=project, api_key=api_key)
+            return dict(project=project, api_key=api_key)
 
     def _region_to_ingestion_url(self, region: str):
         # same as region to URL now in case ingestion ever needs to be separate
@@ -221,34 +216,20 @@ class Client(BatchAPIClient, DocUtils):
             url = f"https://api.{region}.relevance.ai/latest"
         return url
 
-    def _token_to_auth(self, token=None):
+    def _token_to_auth(self, token: Optional[str] = None):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-
         if token:
             return self._process_token(token)
-
-        elif os.path.exists(self._cred_fn):
-            credentials = self._read_credentials()
-            return credentials
-
         else:
             print(f"Activation token (you can find it here: {SIGNUP_URL} )")
             if not token:
-                token = getpass.getpass(f"Activation token:")
-            return self._process_token(token)
+                token = self._get_token()
+            return self._process_token(token)  # type: ignore
 
-    def _write_credentials(self, **kwargs):
-        print(
-            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
-        )
-        json.dump(
-            kwargs,
-            open(self._cred_fn, "w"),
-        )
-        return kwargs
-
-    def _read_credentials(self):
-        return json.load(open(self._cred_fn))
+    def _get_token(self):
+        # TODO: either use cache or keyring package
+        token = getpass.getpass(f"Activation token:")
+        return token
 
     @property
     def auth_header(self):
