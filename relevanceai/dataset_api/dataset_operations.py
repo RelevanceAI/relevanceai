@@ -1398,9 +1398,4 @@ class Operations(Write):
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
-        # Get users excited about being able to build a dashboard!
-        print(
-            "Build your clustering app here: "
-            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-        )
         return clusterer
