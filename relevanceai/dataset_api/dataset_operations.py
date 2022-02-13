@@ -1716,3 +1716,20 @@ class Operations(Write):
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
         return clusterer
+
+    def facets(
+        self,
+        fields: list = [],
+        date_interval: str = "monthly",
+        page_size: int = 5,
+        page: int = 1,
+        asc: bool = False,
+    ):
+        return self.datasets.facets(
+            dataset_id=self.dataset_id,
+            fields=fields,
+            date_interval=date_interval,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+        )
