@@ -712,7 +712,7 @@ class Operations(Write):
         n_grams = []
         for line in text:
             for p_hook in preprocess_hooks:
-                line = p(line)
+                line = p_hook(line)
             token = word_tokenize(line)
             n_grams.append(list(ngrams(token, n)))
 
@@ -835,6 +835,13 @@ class Operations(Write):
             )
             cluster_counters[c] = top_words
         return cluster_counters
+
+    def _add_cluster_word_cloud_to_config(self, data, cluster_value, top_words):
+        # hacky way I implemented to add top words to config
+        data["configuration"]["cluster-labels"][cluster_value] = ", ".join(
+            [k for k in top_words if k != "machine learning"]
+        )
+        data["configuration"]["cluster-descriptions"][cluster_value] = str(top_words)
 
     def quick_label(
         self,
