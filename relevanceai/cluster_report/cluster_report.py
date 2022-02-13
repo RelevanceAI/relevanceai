@@ -211,15 +211,19 @@ class ClusterReport(DocUtils):
         return (value - mean) / std
 
     @lru_cache(maxsize=128)
-    def get_centers(self):
-        # Here we add support for both RelevanceAI cluster models
-        # but also regular sklearn cluster models
+    def get_centers(self, output_format="array"):
         if hasattr(self.model, "cluster_centers_"):
             return self.model.cluster_centers_
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
         elif self.centroid_vectors is not None:
-            return self.centroid_vectors
+            if output_format == "array":
+                if isinstance(self.centroid_vectors, dict):
+                    return np.array(list(self.centroid_vectors.values()))
+                else:
+                    return self.centroid_vectors
+            else:
+                return self.centroid_vectors
         else:
             if self.verbose:
                 print(
@@ -448,9 +452,10 @@ class ClusterReport(DocUtils):
     def _store_basic_centroid_stats(self, overall_report):
         """Store"""
         if self.has_centers():
-            overall_report["centroids"] = self.get_centers()
+            centroids = self.get_centers()
+            overall_report["centroids"] = centroids
             overall_report["centroids_distance_matrix"] = pairwise_distances(
-                self.get_centers(), metric="euclidean"
+                centroids, metric="euclidean"
             )
             overall_report["grand_centroids"] = []
             overall_report["average_distance_between_centroids"] = (
@@ -508,7 +513,7 @@ class ClusterReport(DocUtils):
             return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
 
     @staticmethod
-    def get_centers(X, cluster_labels):
+    def centroids(X, cluster_labels):
         """Calculate the centes"""
         centroid_vectors = {}
         for label in cluster_labels:
