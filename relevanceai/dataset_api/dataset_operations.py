@@ -1399,3 +1399,28 @@ class Operations(Write):
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
         return clusterer
+
+    def aggregate(
+        self,
+        groupby: list = [],
+        metrics: list = [],
+        filters: list = [],
+        sort: list = [],
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        alias: str = "default",
+    ):
+        return self.services.aggregate.aggregate(
+            dataset_id=self.dataset_id,
+            groupby=groupby,
+            metrics=metrics,
+            filters=filters,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+            alias=alias,
+            # sort=sort
+        )
