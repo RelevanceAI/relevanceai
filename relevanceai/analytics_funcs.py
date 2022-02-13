@@ -24,7 +24,7 @@ def track(func: Callable):
                     event = f"pysdk-{func.__name__}"
                     kwargs.update(dict(zip(func.__code__.co_varnames, args)))
                     properties = {
-                        "args": args[1:],
+                        "args": args,
                         "kwargs": kwargs,
                     }
                     if user_id is not None:

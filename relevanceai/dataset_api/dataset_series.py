@@ -419,12 +419,9 @@ class Series(BatchAPIClient):
             arr = df[field].numpy()
         """
         documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
-        if documents:
-            vectors = self.get_field_across_documents(self.field, documents)
-            vectors = np.array(vectors)
-            return vectors
-        else:
-            return None
+        vectors = self.get_field_across_documents(self.field, documents)
+        vectors = np.array(vectors)
+        return vectors
 
     @track
     def value_counts(

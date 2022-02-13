@@ -1604,4 +1604,4 @@ class ClusterOps(BatchAPIClient):
             model=self.model,
             num_clusters=self.number_of_clusters,
         )
-        return self._report.get_cluster_internal_report()
+        return self._report.internal_report

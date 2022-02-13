@@ -1182,7 +1182,7 @@ class Operations(Write):
 
         if n_components == 3:
             projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
-            print(f"You can now view your {projector_url}")
+            print(f"You can now view your projector at {projector_url}")
 
         return results
 
