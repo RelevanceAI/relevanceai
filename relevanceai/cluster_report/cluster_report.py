@@ -486,7 +486,7 @@ class ClusterReport(DocUtils):
                 )
             return default_vector
         centers = self.get_centers()
-        if isinstance(centers, list):
+        if isinstance(centers, (list, np.ndarray)):
             centroid_vector = centers[i]  # type: ignore
         elif isinstance(centers, dict):
             try:
