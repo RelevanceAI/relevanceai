@@ -22,7 +22,7 @@ DBSCAN Example
     client = Client()
 
     # Retrieve the relevant dataset
-    df = client.Dataset("sample_dataset")
+    df = client.Dataset("sample_dataset_id")
 
     model = DBSCAN()
 

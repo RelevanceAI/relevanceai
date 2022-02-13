@@ -12,7 +12,7 @@ def str2bool(v):
 
 
 class AbstractLogger:
-    """Base Logging Instance"""
+    """_Base Logging Instance"""
 
     info: Callable
     error: Callable

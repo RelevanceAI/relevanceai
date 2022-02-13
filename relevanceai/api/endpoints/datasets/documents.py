@@ -3,10 +3,12 @@ from relevanceai.base import _Base
 
 
 class DocumentsClient(_Base):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def list(
         self,
@@ -71,7 +73,7 @@ class DocumentsClient(_Base):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df.get(["sample_id"], include_vector=False)

@@ -6,6 +6,8 @@ import warnings
 import itertools
 from collections import Counter
 from typing import Dict, List, Optional, Callable
+
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.data_tools.base_text_processing import MLStripper
@@ -16,13 +18,16 @@ from relevanceai.vector_tools.nearest_neighbours import (
 
 
 class Operations(Write):
+    @track
     def vectorize(self, field: str, model):
         """
         Vectorizes a Particular field (text) of the dataset
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
-            We recommend not using this in any production systems.
+            We recommend not using this in any production systems. We recommend using
+            the bulk_apply function or the apply function to provide the intended output
+            for now.
 
         Parameters
         ------------
@@ -42,7 +47,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             text_field = "text_field"
@@ -52,9 +57,11 @@ class Operations(Write):
             project=self.project,
             api_key=self.api_key,
             dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             field=field,
         ).vectorize(model)
 
+    @track
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
         Performs KMeans Clustering on over a vector field within the dataset.
@@ -69,7 +76,6 @@ class Operations(Write):
         vector_fields : str
             The vector fields over which to cluster
 
-
         Example
         -------
         .. code-block::
@@ -80,7 +86,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"
@@ -93,11 +99,16 @@ class Operations(Write):
         from relevanceai.clusterer import ClusterOps
 
         clusterer = ClusterOps(
-            model=model, alias=alias, api_key=self.api_key, project=self.project
+            model=model,
+            alias=alias,
+            api_key=self.api_key,
+            project=self.project,
+            firebase_uid=self.firebase_uid,
         )
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
+    @track
     def label_vector(
         self,
         vector,
@@ -154,7 +165,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             result = df.label_vector(
@@ -187,6 +198,7 @@ class Operations(Write):
         # {"_label_": {"field": {"alias": [{"label": 3, "similarity_score": 0.4}]}
         return self.store_labels_in_document(labels, alias)
 
+    @track
     def store_labels_in_document(self, labels: list, alias: str):
         # return {"_label_": {label_vector_field: {alias: labels}}}
         return {"_label_": {alias: labels}}
@@ -219,6 +231,7 @@ class Operations(Write):
             ]
         return new_labels
 
+    @track
     def label_document(
         self,
         document: dict,
@@ -273,7 +286,7 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             results = df.label_document(
                 document={...},
@@ -307,6 +320,7 @@ class Operations(Write):
         document.update(self.store_labels_in_document(labels, alias))
         return document
 
+    @track
     def label(
         self,
         vector_field: str,
@@ -359,7 +373,7 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             results = df.label(
                 vector_field="sample_1_vector_",
@@ -430,6 +444,7 @@ class Operations(Write):
             ],
         )
 
+    @track
     def label_from_list(
         self,
         vector_field: str,
@@ -818,27 +833,48 @@ class Operations(Write):
             text_fields=text_fields, n=n_gram, most_common=top_most_words
         )
         if not field.endswith("_vector_"):
-            def encode_documents(field, docs, vector_error_treatment: str='zero_vector', 
-                field_type="vector"):
+
+            def encode_documents(
+                field,
+                docs,
+                vector_error_treatment: str = "zero_vector",
+                field_type="vector",
+            ):
                 """bulk encode documents"""
                 vectors = model(self.get_field_across_documents(field, docs))
                 if vector_error_treatment == "zero_vector":
                     self.set_field_across_documents(
-                        self.get_default_vector_field_name(field, field_type=field_type),
-                            vectors, docs)
+                        self.get_default_vector_field_name(
+                            field, field_type=field_type
+                        ),
+                        vectors,
+                        docs,
+                    )
                     return
                 elif vector_error_treatment == "do_not_include":
-                    [self.set_field(
-                        self.get_default_vector_field_name(field, field_type=field_type), 
-                            value=vectors[i], doc=d) \
-                            for i, d in enumerate(docs) if \
-                            not self.is_empty_vector(vectors[i])]
+                    [
+                        self.set_field(
+                            self.get_default_vector_field_name(
+                                field, field_type=field_type
+                            ),
+                            value=vectors[i],
+                            doc=d,
+                        )
+                        for i, d in enumerate(docs)
+                        if not self.is_empty_vector(vectors[i])
+                    ]
                 else:
-                    [self.set_field(
-                        self.get_default_vector_field_name(field, field_type=field_type), d)
+                    [
+                        self.set_field(
+                            self.get_default_vector_field_name(
+                                field, field_type=field_type
+                            ),
+                            d,
+                        )
                         if not self.is_empty_vector(vectors[i])
                         else vector_error_treatment
-                        for i, d in enumerate(docs)]
+                        for i, d in enumerate(docs)
+                    ]
                     return
 
             self.bulk_apply()
@@ -848,6 +884,17 @@ class Operations(Write):
             vector_field=field, model=model, label_list=list(labels)
         )
 
+    @track
+    def label_by_ngram(self):
+        """# TODO"""
+        raise NotImplementedError
+
+    @track
+    def label_with_model_from_dataset(self):
+        """# TODO"""
+        raise NotImplementedError
+
+    @track
     def vector_search(
         self,
         multivector_query: List,
@@ -999,6 +1046,7 @@ class Operations(Write):
             query=query,
         )
 
+    @track
     def hybrid_search(
         self,
         multivector_query: List,
@@ -1115,6 +1163,7 @@ class Operations(Write):
             search_history_id=search_history_id,
         )
 
+    @track
     def chunk_search(
         self,
         multivector_query,
@@ -1233,6 +1282,7 @@ class Operations(Write):
             query=query,
         )
 
+    @track
     def multistep_chunk_search(
         self,
         multivector_query,
@@ -1354,6 +1404,7 @@ class Operations(Write):
             query=query,
         )
 
+    @track
     def auto_reduce_dimensions(
         self,
         alias: str,
@@ -1428,7 +1479,6 @@ class Operations(Write):
             number_of_documents = self.get_number_of_documents(self.dataset_id, filters)
 
         documents = self.get_documents(
-            dataset_id=self.dataset_id,
             select_fields=vector_fields,
             filters=filters,
             number_of_documents=number_of_documents,
@@ -1449,10 +1499,11 @@ class Operations(Write):
 
         if n_components == 3:
             projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
-            print(f"You can now view your {projector_url}")
+            print(f"You can now view your projector at {projector_url}")
 
         return results
 
+    @track
     def reduce_dimensions(
         self,
         vector_fields: list,
@@ -1518,7 +1569,6 @@ class Operations(Write):
             for vf in vector_fields
         ]
         documents = self.get_documents(
-            dataset_id=self.dataset_id,
             select_fields=vector_fields,
             filters=filters,
             number_of_documents=number_of_documents,
@@ -1556,6 +1606,7 @@ class Operations(Write):
             dims=n_components,
         )
 
+    @track
     def auto_cluster(self, alias: str, vector_fields: List[str], chunksize: int = 1024):
         """
         Automatically cluster in 1 line of code.
@@ -1588,7 +1639,7 @@ class Operations(Write):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             # run kmeans with default 10 clusters
@@ -1633,6 +1684,7 @@ class Operations(Write):
                 alias=alias,
                 api_key=self.api_key,
                 project=self.project,
+                firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
@@ -1652,6 +1704,7 @@ class Operations(Write):
                 alias=alias,
                 api_key=self.api_key,
                 project=self.project,
+                firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
@@ -1662,9 +1715,4 @@ class Operations(Write):
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
-        # Get users excited about being able to build a dashboard!
-        print(
-            "Build your clustering app here: "
-            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-        )
         return clusterer
