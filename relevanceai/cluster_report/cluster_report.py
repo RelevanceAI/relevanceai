@@ -37,7 +37,7 @@ Automated Cluster Reporting
         model=kmeans
     )
 
-    internal_report = report.get_cluster_internal_report()
+    report.internal_report
 
 """
 
@@ -48,6 +48,8 @@ from relevanceai.warnings import warn_function_is_work_in_progress
 from typing import Union, List, Dict, Any
 from functools import lru_cache
 from warnings import warn
+from doc_utils import DocUtils
+from relevanceai.analytics_funcs import track
 
 try:
     from sklearn.metrics import (
@@ -64,7 +66,7 @@ except ModuleNotFoundError as e:
     pass
 
 
-class ClusterReport:
+class ClusterReport(DocUtils):
     """
     Receive an automated cluster reprot
 
@@ -92,6 +94,8 @@ class ClusterReport:
         The centroid vectors. If supplied, will use these. Otherwise, will try to infer them
         from the model.
     """
+
+    @track
     def __init__(
         self,
         X: Union[list, np.ndarray],
@@ -99,7 +103,7 @@ class ClusterReport:
         model: KMeans = None,
         num_clusters: int = None,
         outlier_label: Union[str, int] = -1,
-        centroid_vectors: Union[list, np.nadarray]=None
+        centroid_vectors: Union[list, np.ndarray] = None,
     ):
         warn_function_is_work_in_progress()
 
@@ -119,7 +123,7 @@ class ClusterReport:
         self.model = model
         self.outlier_label = outlier_label
         self.centroid_vectors = centroid_vectors
-    
+
     def _typecheck_model(self, model: Union[KMeans, MiniBatchKMeans]):
         if not isinstance(model, (KMeans, MiniBatchKMeans)):
             warn("Model not directly supported. Will try to infer.")
@@ -211,14 +215,16 @@ class ClusterReport:
             )
             return
 
-    def get_cluster_internal_report(self):
+    @property
+    @lru_cache(maxsize=128)
+    def internal_report(self):
         """
         Provide the standard clustering report.
         """
         self.X_silhouette_scores = silhouette_samples(
             self.X, self.cluster_labels, metric="euclidean"
         )
-        self.cluster_internal_report = {
+        _internal_report = {
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
                 "davies_bouldin_score": davies_bouldin_score(
@@ -237,23 +243,25 @@ class ClusterReport:
                 "silhouette_score": {},
             },
         }
-        self._store_basic_centroid_stats(self.cluster_internal_report["overall"])
+        self._store_basic_centroid_stats(_internal_report["overall"])
 
-        label_value_counts = np.unique(self.cluster_labels, return_counts=True)
+        labels, counts = np.unique(self.cluster_labels, return_counts=True)
+        print("Detected the cluster labels:")
+        print(labels)
 
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
-        for i, cluster_label in enumerate(label_value_counts[0]):
+        for i, cluster_label in enumerate(labels):
             cluster_bool = self.cluster_labels == cluster_label
 
             specific_cluster_data = self.X[cluster_bool]
             other_cluster_data = self.X[~cluster_bool]
 
-            cluster_frequency = label_value_counts[1][i]
+            cluster_frequency = counts[i]
             cluster_report["frequency"]["total"] += cluster_frequency
             cluster_report["frequency"]["each"][cluster_label] = cluster_frequency
 
-            self.cluster_internal_report["each"]["summary"][
+            _internal_report["each"]["summary"][
                 cluster_label
             ] = ClusterReport.summary_statistics(self.X)
 
@@ -277,9 +285,7 @@ class ClusterReport:
                     )
                 )
 
-                self.cluster_internal_report["overall"]["grand_centroids"].append(
-                    grand_centroid
-                )
+                _internal_report["overall"]["grand_centroids"].append(grand_centroid)
 
                 center_stats[
                     "distance_from_centroid"
@@ -313,26 +319,22 @@ class ClusterReport:
                     "overall_z_score"
                 ] = ClusterReport.get_z_score(
                     centroid_vector,
-                    self.cluster_internal_report["overall"]["summary"]["mean"],
-                    self.cluster_internal_report["overall"]["summary"]["std"],
+                    _internal_report["overall"]["summary"]["mean"],
+                    _internal_report["overall"]["summary"]["std"],
                 )
 
                 center_stats["by_features"]["z_score"] = ClusterReport.get_z_score(
                     centroid_vector,
-                    self.cluster_internal_report["each"]["summary"][cluster_label][
-                        "mean"
-                    ],
-                    self.cluster_internal_report["each"]["summary"][cluster_label][
-                        "std"
-                    ],
+                    _internal_report["each"]["summary"][cluster_label]["mean"],
+                    _internal_report["each"]["summary"][cluster_label]["std"],
                 )
 
                 center_stats["by_features"][
                     "overall_z_score_grand_centroid"
                 ] = ClusterReport.get_z_score(
                     grand_centroid,
-                    self.cluster_internal_report["overall"]["summary"]["mean"],
-                    self.cluster_internal_report["overall"]["summary"]["std"],
+                    _internal_report["overall"]["summary"]["mean"],
+                    _internal_report["overall"]["summary"]["std"],
                 )
 
                 center_stats[
@@ -343,12 +345,8 @@ class ClusterReport:
 
                 center_stats["by_features"]["z_score_grand_centroid"] = (
                     grand_centroid
-                    - self.cluster_internal_report["each"]["summary"][cluster_label][
-                        "mean"
-                    ]
-                ) / self.cluster_internal_report["each"]["summary"][cluster_label][
-                    "std"
-                ]
+                    - _internal_report["each"]["summary"][cluster_label]["mean"]
+                ) / _internal_report["each"]["summary"][cluster_label]["std"]
 
                 # this might not be needed
                 center_stats["overall_z_score"] = ClusterReport.summary_statistics(
@@ -379,11 +377,9 @@ class ClusterReport:
 
                 center_stats["by_features"]["squared_errors"] = squared_errors_by_col
 
-                self.cluster_internal_report["each"]["centers"][
-                    cluster_label
-                ] = center_stats
+                _internal_report["each"]["centers"][cluster_label] = center_stats
 
-            self.cluster_internal_report["each"]["silhouette_score"][
+            _internal_report["each"]["silhouette_score"][
                 cluster_label
             ] = ClusterReport.summary_statistics(
                 self.X_silhouette_scores[cluster_bool], axis=2
@@ -393,17 +389,17 @@ class ClusterReport:
 
             min_centroid_distance = min(
                 c["distance_from_centroid"]["min"]
-                for c in self.cluster_internal_report["each"]["centers"].values()
+                for c in _internal_report["each"]["centers"].values()
             )
 
-            max_centroid_distance = self.cluster_internal_report["overall"][
+            max_centroid_distance = _internal_report["overall"][
                 "centroids_distance_matrix"
             ].max()
-            self.cluster_internal_report["overall"]["dunn_index"] = self.dunn_index(
+            _internal_report["overall"]["dunn_index"] = self.dunn_index(
                 min_centroid_distance, max_centroid_distance
             )
 
-        return self.cluster_internal_report
+        return _internal_report
 
     def dunn_index(self, min_distance_from_centroid, max_centroid_distance):
         return min_distance_from_centroid / max_centroid_distance
@@ -422,6 +418,38 @@ class ClusterReport:
             overall_report["average_distance_between_centroids"] = (
                 overall_report["centroids_distance_matrix"].sum(axis=1) - 1
             ) / self.num_clusters
+
+    @property
+    def davies_bouldin_score(self):
+        return pd.DataFrame(
+            self.subset_documents(
+                ["davies_bouldin_score"], [self.internal_report["overall"]]
+            )
+        )
+
+    @property
+    def calinski_harabasz_score(self):
+        return pd.DataFrame(
+            self.subset_documents(
+                ["calinski_harabasz_score"], [self.internal_report["overall"]]
+            )
+        )
+
+    @property
+    def internal_overall_report(self):
+        """
+        view the internal overall report.
+        """
+        metrics = pd.DataFrame(
+            self.subset_documents(
+                ["davies_bouldin_score", "calinski_harabasz_score"],
+                [self.internal_report["overall"]],
+            )
+        )
+        overall_df = pd.DataFrame(self.internal_report["overall"])[
+            ["summary", "silhouette_score"]
+        ]
+        return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
 
     def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
         self.inner_tree: _tree.Tree = tree.tree_
