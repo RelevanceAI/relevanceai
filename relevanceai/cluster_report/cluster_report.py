@@ -37,13 +37,17 @@ Automated Cluster Reporting
         model=kmeans
     )
 
+    # JSON output
     report.internal_report
+    
+    # Prettyprinted report of overall statistics
+    report.internal_overall_report
 
 """
 
 import pandas as pd
 import numpy as np
-from sklearn.cluster import MiniBatchKMeans
+from relevanceai.integration_checks import is_hdbscan_available, is_sklearn_available
 from relevanceai.warnings import warn_function_is_work_in_progress
 from typing import Union, List, Dict, Any
 from functools import lru_cache
@@ -60,6 +64,7 @@ try:
     from sklearn.metrics.pairwise import (
         pairwise_distances,
     )
+    from sklearn.cluster import MiniBatchKMeans
     from sklearn.tree import _tree, DecisionTreeClassifier
     from sklearn.cluster import KMeans
 except ModuleNotFoundError as e:
@@ -135,9 +140,13 @@ class ClusterReport(DocUtils):
                 + "{cluster_label: centroid_vector}."
             )
 
-    def _typecheck_model(self, model: Union[KMeans, MiniBatchKMeans]):
-        if not isinstance(model, (KMeans, MiniBatchKMeans)):
-            warn("Model not directly supported. Will try to infer.")
+    def _typecheck_model(self, model):
+        if is_hdbscan_available():
+            return
+        if is_sklearn_available():
+            if isinstance(model, (KMeans, MiniBatchKMeans)):
+                return
+        warn("Model not directly supported. Will try to infer.")
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
