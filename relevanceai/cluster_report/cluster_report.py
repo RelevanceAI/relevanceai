@@ -43,9 +43,11 @@ Automated Cluster Reporting
 
 import pandas as pd
 import numpy as np
+from sklearn.cluster import MiniBatchKMeans
 from relevanceai.warnings import warn_function_is_work_in_progress
 from typing import Union, List, Dict, Any
 from functools import lru_cache
+from warnings import warn
 
 try:
     from sklearn.metrics import (
@@ -86,8 +88,10 @@ class ClusterReport:
         The number of clusters. This is required if we can't actually tell how many clusters there are
     outlier_label: Optional[str, int]
         The label if it is an outlier
+    centroid_vectors: Union[list, np.ndarray]
+        The centroid vectors. If supplied, will use these. Otherwise, will try to infer them
+        from the model.
     """
-
     def __init__(
         self,
         X: Union[list, np.ndarray],
@@ -95,8 +99,12 @@ class ClusterReport:
         model: KMeans = None,
         num_clusters: int = None,
         outlier_label: Union[str, int] = -1,
+        centroid_vectors: Union[list, np.nadarray]=None
     ):
         warn_function_is_work_in_progress()
+
+        self._typecheck_model(model)
+
         if isinstance(X, list):
             self.X = np.array(X)
         else:
@@ -110,6 +118,11 @@ class ClusterReport:
         )
         self.model = model
         self.outlier_label = outlier_label
+        self.centroid_vectors = centroid_vectors
+    
+    def _typecheck_model(self, model: Union[KMeans, MiniBatchKMeans]):
+        if not isinstance(model, (KMeans, MiniBatchKMeans)):
+            warn("Model not directly supported. Will try to infer.")
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
@@ -182,7 +195,6 @@ class ClusterReport:
     def get_z_score(value, mean, std):
         return (value - mean) / std
 
-    # TODO: Implement caching
     @lru_cache(maxsize=128)
     def get_centers(self):
         # Here we add support for both RelevanceAI cluster models
@@ -191,6 +203,8 @@ class ClusterReport:
             return self.model.cluster_centers_
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
+        elif self.centroid_vectors is not None:
+            return self.centroid_vectors
         else:
             print(
                 "No centroids detected. We recommend including centroids to get all stats."
