@@ -289,7 +289,9 @@ class ClusterReport(DocUtils):
 
                 grand_centroid = self.X[cluster_bool].mean(axis=0)
 
-                centroid_vector = self.get_centers()[i]
+                centroid_vector = self._get_centroid_vector(
+                    i, cluster_label, grand_centroid
+                )
 
                 squared_errors = np.square(
                     np.subtract(
@@ -414,6 +416,29 @@ class ClusterReport(DocUtils):
 
         return _internal_report
 
+    def _get_centroid_vector(
+        self, i: int = None, cluster_label: int = None, default_vector=None
+    ):
+        # If this is an outlier, we will automatically default to the grand centroid
+        if cluster_label == self.outlier_label:
+            if self.verbose:
+                print(
+                    "Outlier labels detected. Using the grand centroid for the outlier labels."
+                )
+            return default_vector
+        centers = self.get_centers()
+        if isinstance(centers, list):
+            centroid_vector = centers[i]
+        elif isinstance(centers, dict):
+            try:
+                centroid_vector = centers[cluster_label]
+            except KeyError:
+                warn("cluster label not detected in centroid vectors")
+                centroid_vector = default_vector
+        else:
+            raise ValueError("Centroid vector needs to be a list or a dictionary.")
+        return centroid_vector
+
     def dunn_index(self, min_distance_from_centroid, max_centroid_distance):
         return min_distance_from_centroid / max_centroid_distance
 
@@ -481,6 +506,18 @@ class ClusterReport(DocUtils):
             ).T
             overall_df.columns = ["summary", "silhouette_score"]
             return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
+
+    @staticmethod
+    def get_centers(X, cluster_labels):
+        """Calculate the centes"""
+        centroid_vectors = {}
+        for label in cluster_labels:
+            centroid_vectors[label] = X[cluster_labels == label].mean(axis=0)
+        return centroid_vectors
+
+    def calculate_centroids(self, centers):
+        """Get the centroids (points closest to the centers)"""
+        raise NotImplementedError
 
     def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
         self.inner_tree: _tree.Tree = tree.tree_
