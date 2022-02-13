@@ -49,7 +49,7 @@ You can also insert your own centroid vectors if you want them to be represented
 For example - you may want to measure off medoids (points in your dataset) instead of centroids
 (as opposed to points outside of your dataset).
 
-In the example below, we show how you calculate centroids of HDBSCAN
+In the example below, we show how you calculate centroids or medoids for HDBSCAN
 
 .. code-block::
 
@@ -60,6 +60,8 @@ In the example below, we show how you calculate centroids of HDBSCAN
 
     cluster_labels = clusterer.fit_predict(X)
     centroids = ClusterReport.calculate_centroids(X, cluster_labels)
+    # or if you want medoids
+    # medoids = ClusterReport.calculate_medoids(X, cluster_labels)
 
     report = ClusterReport(
         X=X, 
