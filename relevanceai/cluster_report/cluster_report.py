@@ -104,6 +104,7 @@ class ClusterReport(DocUtils):
         num_clusters: int = None,
         outlier_label: Union[str, int] = -1,
         centroid_vectors: Union[list, np.ndarray] = None,
+        verbose: bool = False,
     ):
         warn_function_is_work_in_progress()
 
@@ -122,7 +123,17 @@ class ClusterReport(DocUtils):
         )
         self.model = model
         self.outlier_label = outlier_label
+        self._typecheck_centroid_vectors(centroid_vectors)
         self.centroid_vectors = centroid_vectors
+        self.verbose = verbose
+
+    def _typecheck_centroid_vectors(self, centroid_vectors: Union[list, Dict]):
+        if isinstance(centroid_vectors, (list, np.ndarray)):
+            warn(
+                "Centroid vectors are a list. Assuming they are in the order of the cluster labels."
+                + "To specify which vectors mapped to which label, place in the format of "
+                + "{cluster_label: centroid_vector}."
+            )
 
     def _typecheck_model(self, model: Union[KMeans, MiniBatchKMeans]):
         if not isinstance(model, (KMeans, MiniBatchKMeans)):
@@ -210,9 +221,10 @@ class ClusterReport(DocUtils):
         elif self.centroid_vectors is not None:
             return self.centroid_vectors
         else:
-            print(
-                "No centroids detected. We recommend including centroids to get all stats."
-            )
+            if self.verbose:
+                print(
+                    "No centroids detected. We recommend including centroids to get all stats."
+                )
             return
 
     @property
@@ -246,8 +258,9 @@ class ClusterReport(DocUtils):
         self._store_basic_centroid_stats(_internal_report["overall"])
 
         labels, counts = np.unique(self.cluster_labels, return_counts=True)
-        print("Detected the cluster labels:")
-        print(labels)
+        if self.verbose:
+            print("Detected the cluster labels:")
+            print(labels)
 
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
@@ -438,18 +451,36 @@ class ClusterReport(DocUtils):
     @property
     def internal_overall_report(self):
         """
-        view the internal overall report.
+        View the internal overall report.
         """
-        metrics = pd.DataFrame(
-            self.subset_documents(
-                ["davies_bouldin_score", "calinski_harabasz_score"],
-                [self.internal_report["overall"]],
+        # TODO: Figure out a better way to present this than having index in the middle
+        if not self.has_centers():
+            metrics = pd.DataFrame(
+                self.subset_documents(
+                    ["davies_bouldin_score", "calinski_harabasz_score"],
+                    [self.internal_report["overall"]],
+                )
             )
-        )
-        overall_df = pd.DataFrame(self.internal_report["overall"])[
-            ["summary", "silhouette_score"]
-        ]
-        return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
+            overall_df = pd.DataFrame(self.internal_report["overall"])[
+                ["summary", "silhouette_score"]
+            ]
+            return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
+        else:
+            metrics = pd.DataFrame(
+                self.subset_documents(
+                    ["davies_bouldin_score", "calinski_harabasz_score", "dunn_index"],
+                    [self.internal_report["overall"]],
+                )
+            )
+
+            overall_df = pd.DataFrame(
+                self.get_fields(
+                    ["overall.summary", "overall.silhouette_score"],
+                    self.internal_report,
+                )
+            ).T
+            overall_df.columns = ["summary", "silhouette_score"]
+            return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
 
     def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
         self.inner_tree: _tree.Tree = tree.tree_
