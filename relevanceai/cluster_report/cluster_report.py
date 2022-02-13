@@ -93,8 +93,8 @@ import pandas as pd
 import numpy as np
 from relevanceai.integration_checks import is_hdbscan_available, is_sklearn_available
 from relevanceai.warnings import warn_function_is_work_in_progress
-from typing import Union, List, Dict, Any
-from functools import lru_cache
+from typing import Union, List, Dict, Any, Optional
+import functools
 from warnings import warn
 from doc_utils import DocUtils
 from relevanceai.analytics_funcs import track
@@ -176,7 +176,9 @@ class ClusterReport(DocUtils):
         self.centroid_vectors = centroid_vectors
         self.verbose = verbose
 
-    def _typecheck_centroid_vectors(self, centroid_vectors: Union[list, Dict]):
+    def _typecheck_centroid_vectors(
+        self, centroid_vectors: Optional[Union[list, Dict, np.ndarray]] = None
+    ):
         if isinstance(centroid_vectors, (list, np.ndarray)):
             warn(
                 "Centroid vectors are a list. Assuming they are in the order of the cluster labels."
@@ -263,7 +265,7 @@ class ClusterReport(DocUtils):
     def get_z_score(value, mean, std):
         return (value - mean) / std
 
-    @lru_cache(maxsize=128)
+    @functools.lru_cache(maxsize=128)
     def get_centers(self, output_format="array"):
         if hasattr(self.model, "cluster_centers_"):
             return self.model.cluster_centers_
@@ -284,8 +286,8 @@ class ClusterReport(DocUtils):
                 )
             return
 
-    @property
-    @lru_cache(maxsize=128)
+    @property  # type: ignore
+    @functools.lru_cache(maxsize=128)
     def internal_report(self):
         """
         Provide the standard clustering report.
@@ -485,7 +487,7 @@ class ClusterReport(DocUtils):
             return default_vector
         centers = self.get_centers()
         if isinstance(centers, list):
-            centroid_vector = centers[i]
+            centroid_vector = centers[i]  # type: ignore
         elif isinstance(centers, dict):
             try:
                 centroid_vector = centers[cluster_label]
