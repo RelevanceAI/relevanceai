@@ -7,6 +7,7 @@ Automated Cluster Reporting
 .. note::
     **Introduced in v1.0.0.**
 
+You can run cluster reporting as a standalone module.
 
 .. code-block::
 
@@ -23,7 +24,7 @@ Automated Cluster Reporting
     X = np.array(df['base_vector_'].tolist())
 
 
-    from relevanceai.cluster_report.cluster_report import ClusterReport
+    from relevanceai.cluster_report import ClusterReport
     from sklearn.cluster import KMeans
 
     N_CLUSTERS = 2
@@ -41,6 +42,47 @@ Automated Cluster Reporting
     report.internal_report
     
     # Prettyprinted report of overall statistics
+    report.internal_overall_report
+
+
+You can also insert your own centroid vectors if you want them to be represented. 
+For example - you may want to measure off medoids (points in your dataset) instead of centroids
+(as opposed to points outside of your dataset).
+
+In the example below, we show how you calculate centroids of HDBSCAN
+
+.. code-block::
+
+    from relevanceai.cluster_report import ClusterReport
+
+    import hdbscan
+    clusterer = hdbscan.HDBSCAN()
+
+    cluster_labels = clusterer.fit_predict(X)
+    centroids = ClusterReport.calculate_centroids(X, cluster_labels)
+
+    report = ClusterReport(
+        X=X, 
+        cluster_labels=cluster_labels, 
+        centroid_vectors=centroids
+    )
+    report.internal_overall_report
+
+.. code-block::
+
+    from relevanceai.cluster_report import ClusterReport
+
+    import hdbscan
+    clusterer = hdbscan.HDBSCAN()
+
+    cluster_labels = clusterer.fit_predict(X)
+    medoids = ClusterReport.calculate_medoids(X, cluster_labels)
+
+    report = ClusterReport(
+        X=X, 
+        cluster_labels=cluster_labels, 
+        centroid_vectors=centroids
+    )
     report.internal_overall_report
 
 """
@@ -64,9 +106,9 @@ try:
     from sklearn.metrics.pairwise import (
         pairwise_distances,
     )
-    from sklearn.cluster import MiniBatchKMeans
+    from sklearn.cluster import MiniBatchKMeans, KMeans
     from sklearn.tree import _tree, DecisionTreeClassifier
-    from sklearn.cluster import KMeans
+    from sklearn.neighbors import NearestNeighbors
 except ModuleNotFoundError as e:
     pass
 
@@ -436,7 +478,7 @@ class ClusterReport(DocUtils):
         if cluster_label == self.outlier_label:
             if self.verbose:
                 print(
-                    "Outlier labels detected. Using the grand centroid for the outlier labels."
+                    "Outlier labels detected. Using the grand centroid for the outlier label."
                 )
             return default_vector
         centers = self.get_centers()
@@ -522,16 +564,23 @@ class ClusterReport(DocUtils):
             return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
 
     @staticmethod
-    def centroids(X, cluster_labels):
+    def calculate_centroids(X, cluster_labels):
         """Calculate the centes"""
         centroid_vectors = {}
         for label in cluster_labels:
             centroid_vectors[label] = X[cluster_labels == label].mean(axis=0)
         return centroid_vectors
 
-    def calculate_centroids(self, centers):
-        """Get the centroids (points closest to the centers)"""
-        raise NotImplementedError
+    @staticmethod
+    def calculate_medoids(X, cluster_labels):
+        centroids = ClusterReport.calculate_centroids(X, cluster_labels)
+        medoids = {}
+        nbrs = NearestNeighbors(n_neighbors=1, algorithm="ball_tree").fit(X)
+        medoid_indexes = nbrs.kneighbors(
+            np.array(list(centroids.values())), n_neighbors=1, return_distance=False
+        )
+        medoids = X[medoid_indexes]
+        return medoids
 
     def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
         self.inner_tree: _tree.Tree = tree.tree_
