@@ -45,6 +45,7 @@ import pandas as pd
 import numpy as np
 from relevanceai.warnings import warn_function_is_work_in_progress
 from typing import Union, List, Dict, Any
+from functools import lru_cache
 
 try:
     from sklearn.metrics import (
@@ -83,7 +84,8 @@ class ClusterReport:
         The model to analyze. Currently only used
     num_clusters: Optional[int]
         The number of clusters. This is required if we can't actually tell how many clusters there are
-
+    outlier_label: Optional[str, int]
+        The label if it is an outlier
     """
 
     def __init__(
@@ -92,6 +94,7 @@ class ClusterReport:
         cluster_labels: List[Union[str, float]],
         model: KMeans = None,
         num_clusters: int = None,
+        outlier_label: Union[str, int] = -1,
     ):
         warn_function_is_work_in_progress()
         if isinstance(X, list):
@@ -103,9 +106,10 @@ class ClusterReport:
         else:
             self.cluster_labels = cluster_labels
         self.num_clusters = (
-            len(cluster_labels) if num_clusters is None else num_clusters
+            len(set(cluster_labels)) if num_clusters is None else num_clusters
         )
         self.model = model
+        self.outlier_label = outlier_label
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
@@ -179,6 +183,7 @@ class ClusterReport:
         return (value - mean) / std
 
     # TODO: Implement caching
+    @lru_cache(maxsize=128)
     def get_centers(self):
         # Here we add support for both RelevanceAI cluster models
         # but also regular sklearn cluster models
@@ -187,9 +192,9 @@ class ClusterReport:
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
         else:
-            import warnings
-
-            warnings.warn("Missing centroids.")
+            print(
+                "No centroids detected. We recommend including centroids to get all stats."
+            )
             return
 
     def get_cluster_internal_report(self):
@@ -245,15 +250,19 @@ class ClusterReport:
                 specific_cluster_data
             )
 
-            squared_errors = np.square(
-                np.subtract(
-                    [self.get_centers()[i]] * len(self.X[cluster_bool]),
-                    self.X[cluster_bool],
-                )
-            )
             if self.has_centers():
 
                 grand_centroid = self.X[cluster_bool].mean(axis=0)
+
+                centroid_vector = self.get_centers()[i]
+
+                squared_errors = np.square(
+                    np.subtract(
+                        [centroid_vector] * len(specific_cluster_data),
+                        specific_cluster_data,
+                    )
+                )
+
                 self.cluster_internal_report["overall"]["grand_centroids"].append(
                     grand_centroid
                 )
@@ -261,13 +270,13 @@ class ClusterReport:
                 center_stats[
                     "distance_from_centroid"
                 ] = self.get_distance_from_centroid(
-                    specific_cluster_data, self.get_centers()[i]
+                    specific_cluster_data, centroid_vector
                 )
 
                 center_stats[
                     "distance_from_centroid_to_point_in_another_cluster"
                 ] = self.get_distance_from_centroid_to_another(
-                    other_cluster_data, self.get_centers()[i]
+                    other_cluster_data, centroid_vector
                 )
 
                 center_stats["distances_from_grand_centroid"] = pairwise_distances(
@@ -289,13 +298,13 @@ class ClusterReport:
                 center_stats["by_features"][
                     "overall_z_score"
                 ] = ClusterReport.get_z_score(
-                    self.get_centers()[i],
+                    centroid_vector,
                     self.cluster_internal_report["overall"]["summary"]["mean"],
                     self.cluster_internal_report["overall"]["summary"]["std"],
                 )
 
                 center_stats["by_features"]["z_score"] = ClusterReport.get_z_score(
-                    self.get_centers()[i],
+                    centroid_vector,
                     self.cluster_internal_report["each"]["summary"][cluster_label][
                         "mean"
                     ],
@@ -342,21 +351,24 @@ class ClusterReport:
                     center_stats["by_features"]["z_score_grand_centroid"]
                 )
 
+                # squared errors are calculted by the centroids
                 center_stats["squared_errors"] = ClusterReport.summary_statistics(
                     squared_errors, axis=2
                 )
 
-            squared_errors_by_col = {}
+                squared_errors_by_col = {}
 
-            for f in range(len(squared_errors[0])):
-                squared_errors_by_col[f] = ClusterReport.summary_statistics(
-                    squared_errors[:, f], axis=2
-                )
+                for f in range(len(squared_errors[0])):
+                    squared_errors_by_col[f] = ClusterReport.summary_statistics(
+                        squared_errors[:, f], axis=2
+                    )
 
-            center_stats["by_features"]["squared_errors"] = squared_errors_by_col
-            self.cluster_internal_report["each"]["centers"][
-                cluster_label
-            ] = center_stats
+                center_stats["by_features"]["squared_errors"] = squared_errors_by_col
+
+                self.cluster_internal_report["each"]["centers"][
+                    cluster_label
+                ] = center_stats
+
             self.cluster_internal_report["each"]["silhouette_score"][
                 cluster_label
             ] = ClusterReport.summary_statistics(
@@ -364,17 +376,23 @@ class ClusterReport:
             )
 
         if self.has_centers():
-            self.cluster_internal_report["overall"]["dunn_index"] = (
-                min(
-                    c["distance_from_centroid"]["min"]
-                    for c in self.cluster_internal_report["each"]["centers"].values()
-                )
-                / self.cluster_internal_report["overall"][
-                    "centroids_distance_matrix"
-                ].max()
+
+            min_centroid_distance = min(
+                c["distance_from_centroid"]["min"]
+                for c in self.cluster_internal_report["each"]["centers"].values()
+            )
+
+            max_centroid_distance = self.cluster_internal_report["overall"][
+                "centroids_distance_matrix"
+            ].max()
+            self.cluster_internal_report["overall"]["dunn_index"] = self.dunn_index(
+                min_centroid_distance, max_centroid_distance
             )
 
         return self.cluster_internal_report
+
+    def dunn_index(self, min_distance_from_centroid, max_centroid_distance):
+        return min_distance_from_centroid / max_centroid_distance
 
     def has_centers(self):
         return self.get_centers() is not None

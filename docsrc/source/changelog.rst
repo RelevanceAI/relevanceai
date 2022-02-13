@@ -8,6 +8,7 @@ v1.0.5
 --------
 
 - Remove repetitive print statements
+- Add outlier support for cluster report
 
 v1.0.4
 ---------
