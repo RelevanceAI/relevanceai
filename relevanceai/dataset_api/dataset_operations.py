@@ -6,7 +6,7 @@ import warnings
 import itertools
 from collections import Counter
 from typing import Dict, List, Optional, Callable
-
+from tqdm.auto import tqdm
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
@@ -698,7 +698,7 @@ class Operations(Write):
         n: int = 2,
         additional_stopwords=[],
         min_word_length: int = 2,
-        preprocessing: callable = None,
+        preprocess_hooks: list = [],
     ):
         """Get the bigrams"""
 
@@ -711,11 +711,9 @@ class Operations(Write):
 
         n_grams = []
         for line in text:
-            if preprocessing:
-                token = word_tokenize(preprocessing(line))
-            else:
-                token = word_tokenize(line)
-
+            for p_hook in preprocess_hooks:
+                line = p(line)
+            token = word_tokenize(line)
             n_grams.append(list(ngrams(token, n)))
 
         def length_longer_than_min_word_length(x):
@@ -744,7 +742,7 @@ class Operations(Write):
         min_word_length: int = 2,
         batch_size: int = 1000,
         document_limit: int = None,
-        preprocessing: callable = None,
+        preprocess_hooks: list = [],
     ) -> list:
         """
         wordcloud return object looks like:
@@ -796,10 +794,47 @@ class Operations(Write):
                 n=n,
                 additional_stopwords=additional_stopwords,
                 min_word_length=min_word_length,
-                preprocessing=preprocessing,
+                preprocess_hooks=preprocess_hooks,
             )
             counter.update(ngram_counter)
         return dict(counter.most_common(most_common))
+
+    def cluster_word_cloud(
+        self,
+        vector_fields: List[str],
+        text_fields: List[str],
+        cluster_alias: str,
+        n: int = 2,
+        cluster_field: str = "_cluster_",
+        num_clusters: int = 100,
+        preprocess_hooks: callable = None,
+    ):
+        """
+        Simple implementation of the cluster word cloud
+        """
+        vector_fields_str = ".".join(sorted(vector_fields))
+        field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
+        all_clusters = self.facets([field], page_size=num_clusters)
+        most_common = 10
+        cluster_counters = {}
+        for c in tqdm(all_clusters[field]):
+            cluster_value = c[field]
+            top_words = self.get_wordcloud(
+                text_fields=text_fields,
+                n=n,
+                filters=[
+                    {
+                        "field": field,
+                        "filter_type": "contains",
+                        "condition": "==",
+                        "condition_value": cluster_value,
+                    }
+                ],
+                most_common=most_common,
+                preprocess_hooks=preprocess_hooks,
+            )
+            cluster_counters[c] = top_words
+        return cluster_counters
 
     def quick_label(
         self,
