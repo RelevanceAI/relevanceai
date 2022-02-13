@@ -139,7 +139,7 @@ class ClusterReport(DocUtils):
         The number of clusters. This is required if we can't actually tell how many clusters there are
     outlier_label: Optional[str, int]
         The label if it is an outlier
-    centroid_vectors: Union[list, np.ndarray]
+    centroids: Union[list, np.ndarray]
         The centroid vectors. If supplied, will use these. Otherwise, will try to infer them
         from the model.
     """
@@ -152,7 +152,7 @@ class ClusterReport(DocUtils):
         model: KMeans = None,
         num_clusters: int = None,
         outlier_label: Union[str, int] = -1,
-        centroid_vectors: Union[list, np.ndarray] = None,
+        centroids: Union[list, np.ndarray] = None,
         verbose: bool = False,
     ):
         warn_function_is_work_in_progress()
@@ -172,8 +172,8 @@ class ClusterReport(DocUtils):
         )
         self.model = model
         self.outlier_label = outlier_label
-        self._typecheck_centroid_vectors(centroid_vectors)
-        self.centroid_vectors = centroid_vectors
+        self._typecheck_centroid_vectors(centroids)
+        self._centroids = centroids
         self.verbose = verbose
 
     def _typecheck_centroid_vectors(
@@ -271,14 +271,14 @@ class ClusterReport(DocUtils):
             return self.model.cluster_centers_
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
-        elif self.centroid_vectors is not None:
+        elif self._centroids is not None:
             if output_format == "array":
-                if isinstance(self.centroid_vectors, dict):
-                    return np.array(list(self.centroid_vectors.values()))
+                if isinstance(self._centroids, dict):
+                    return np.array(list(self._centroids.values()))
                 else:
-                    return self.centroid_vectors
+                    return self._centroids
             else:
-                return self.centroid_vectors
+                return self._centroids
         else:
             if self.verbose:
                 print(
