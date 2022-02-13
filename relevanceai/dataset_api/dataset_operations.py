@@ -657,13 +657,14 @@ class Operations(Write):
             for tf in text_fields
         ]
         documents = self.get_documents(
-            dataset_id=self.dataset_id,
             batch_size=batch_size,
             select_fields=text_fields,
             filters=filters,
             cursor=cursor,
         )
-        return self.generate_text_list_from_documents(documents, fields=text_fields)
+        return self.generate_text_list_from_documents(
+            documents, text_fields=text_fields
+        )
 
     def get_ngrams(
         self,
@@ -697,6 +698,7 @@ class Operations(Write):
         n: int = 2,
         additional_stopwords=[],
         min_word_length: int = 2,
+        preprocessing: callable = None,
     ):
         """Get the bigrams"""
 
@@ -709,7 +711,11 @@ class Operations(Write):
 
         n_grams = []
         for line in text:
-            token = word_tokenize(line)
+            if preprocessing:
+                token = word_tokenize(preprocessing(line))
+            else:
+                token = word_tokenize(line)
+
             n_grams.append(list(ngrams(token, n)))
 
         def length_longer_than_min_word_length(x):
@@ -738,6 +744,7 @@ class Operations(Write):
         min_word_length: int = 2,
         batch_size: int = 1000,
         document_limit: int = None,
+        preprocessing: callable = None,
     ) -> list:
         """
         wordcloud return object looks like:
@@ -773,7 +780,6 @@ class Operations(Write):
             document_limit is None or sum(counter.values()) < document_limit
         ):
             documents = self.get_documents(
-                dataset_id=self.dataset_id,
                 filters=filters,
                 cursor=documents["cursor"],
                 batch_size=batch_size,
@@ -790,6 +796,7 @@ class Operations(Write):
                 n=n,
                 additional_stopwords=additional_stopwords,
                 min_word_length=min_word_length,
+                preprocessing=preprocessing,
             )
             counter.update(ngram_counter)
         return dict(counter.most_common(most_common))
