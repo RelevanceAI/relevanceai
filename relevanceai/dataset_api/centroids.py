@@ -4,11 +4,12 @@ from typing import List
 
 
 class Centroids(BatchAPIClient):
-    def __init__(self, project: str, api_key: str, dataset_id: str):
+    def __init__(self, project: str, api_key: str, dataset_id: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(
         self, vector_fields: list, alias: str, cluster_field: str = "_cluster_"
@@ -32,7 +33,7 @@ class Centroids(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             df.get(["sample_id"], include_vector=False)
 
@@ -58,15 +59,17 @@ class Centroids(BatchAPIClient):
             }
         ]
         self.groupby = Groupby(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             _pre_groupby=self.cluster_groupby,
         )
         self.agg = Agg(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             groupby_call=self.cluster_groupby,
         )
         return self
@@ -126,7 +129,7 @@ class Centroids(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"

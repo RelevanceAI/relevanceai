@@ -4,11 +4,80 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+
+v1.0.6
+--------
+
+- Add low-touch way to label with a given model
+- Add wordcloud labelling
+
+v1.0.5
+--------
+
+**Breaking changes**
+
+- `get_cluster_internal_report` has now been renamed to `internal_report`
+
+Non-breaking changes:  
+
+- Remove repetitive print statements
+- Add outlier support for cluster report
+- Support for centroids and medoids in typing
+- Add pretty printing for cluster overall reporting
+
+v1.0.4
+---------
+
+- add launch_search_app for dataset functionality
+- remove saving .creds.json to avoid file caching
+
+v1.0.3
+---------
+
+- Fix print error message with segment
+- Separate out JSON Encoder
+
+v1.0.2
+--------
+
+- Fix pandas serialization for UTF-encoding errors 
+- Move search app
+- Change print search dashboard app URL 
+- Fix regionalisation error when authenticating client.
+
+v1.0.1
+--------
+- Make pandas dataframe serializable with vectors
+
+v1.0.0
+---------
+
+- Clustering report functionality
+- Add fix and test for new cluster aggregate
+- Add document mocking utility
+- Add integration for cluster reporting
+- Fix bug for sklearn clustering
+- Add segment tracking with option to turn off
+- Add print statement after inserting
+
+v0.33.6
+---------
+
+- Fix warning missing parameter
+- Remove `dataset_id` from `get_documents`
+- Fix URL bug if you are logging in from `old-australia-east`
+
 v0.33.5
 --------
 
-- Fix delete dataset for international gateways
-- Add low-touch way to label with a given model
+- Fix UX flow
+- Make US-East-1 the default
+- Add force refresh
+- Rework Login UX
+- Mention region when connecting
+- Make the authentication message super cool
+- Fix centroids to Node endpoint
+- Update the delete request
 
 v0.33.4
 ---------
@@ -18,6 +87,8 @@ v0.33.4
 v0.33.3
 --------
 
+- Fix cluster aggregate
+- Fix for login
 - Make adding firebase UID not breaking
 
 v0.33.2
@@ -347,3 +418,4 @@ v0.26.0
 - Added JSON serialization and consequent test updates
 - Bug fix to cluster metrics
 - Minor fix to tests
+>>>>>>> development

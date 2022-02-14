@@ -33,13 +33,18 @@ from relevanceai.clusterer.cluster_base import (
     BatchClusterBase,
 )
 
+from relevanceai.analytics_funcs import track
+
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
 from relevanceai.integration_checks import is_sklearn_available
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
+from relevanceai.errors import NoDocumentsError
 
 from doc_utils import DocUtils
+
+from relevanceai.vector_tools.cluster import Cluster
 
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
@@ -94,11 +99,12 @@ class ClusterOps(BatchAPIClient):
     def __init__(
         self,
         alias: str,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
         dataset_id: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
-        project: Union[str, None] = None,
-        api_key: Union[str, None] = None,
         cluster_field: str = "_cluster_",
     ):
         self.alias = alias
@@ -109,6 +115,7 @@ class ClusterOps(BatchAPIClient):
             )
 
         self.model = self._assign_model(model)
+        self.firebase_uid = firebase_uid
 
         if dataset_id is not None:
             self.dataset_id: str = dataset_id
@@ -121,24 +128,27 @@ class ClusterOps(BatchAPIClient):
             self.project: str = project
             self.api_key: str = api_key
 
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(self):
         self.groupby = ClusterGroupby(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             alias=self.alias,
             vector_fields=self.vector_fields,
         )
         self.agg = ClusterAgg(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
 
+    @track
     def groupby(self):
         return ClusterGroupby(
             project=self.project,
@@ -148,12 +158,14 @@ class ClusterOps(BatchAPIClient):
             vector_fields=self.vector_fields,
         )
 
+    @track
     def agg(self, groupby_call):
         """Aggregate the cluster class."""
         self.groupby = ClusterGroupby(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             alias=self.alias,
             vector_fields=self.vector_fields,
         )
@@ -161,16 +173,22 @@ class ClusterOps(BatchAPIClient):
             project=self.project,
             api_key=self.api_key,
             dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             vector_fields=self.vector_fields,
             alias=self.alias,
-            groupby_call=groupby_call,
         )
 
     # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):
         # Add support for not just sklearn models but sklearn models
         # with first -class integration for kmeans
-        from sklearn.cluster import KMeans, MiniBatchKMeans
+        from sklearn.cluster import (
+            KMeans,
+            MiniBatchKMeans,
+            DBSCAN,
+            Birch,
+            SpectralClustering,
+        )
 
         if model.__class__ == KMeans:
 
@@ -204,14 +222,26 @@ class ClusterOps(BatchAPIClient):
 
             new_model = BatchCentroidClusterModel(model)
             return new_model
+
+        elif model.__class__ in [SpectralClustering, Birch, DBSCAN]:
+
+            class CentroidClusterModel(ClusterBase):
+                def __init__(self, model):
+                    self.model: Union[KMeans, MiniBatchKMeans] = model
+
+                def fit_predict(self, X):
+                    return self.model.fit_predict(X)
+
+            new_model = CentroidClusterModel(model)
+            return new_model
         if hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_transform"):
-            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
-        elif hasattr(model, "fit_predict"):
-            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+        elif hasattr(model, "fit_transform"):
+            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
 
@@ -240,26 +270,59 @@ class ClusterOps(BatchAPIClient):
             return model
         raise TypeError("Model should be inherited from ClusterBase.")
 
-    def _token_to_auth(self):
+    def _token_to_auth(self, token=None):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if not os.path.exists(self._cred_fn):
-            # We repeat it twice because of different behaviours
-            print(f"Authorization token ( you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(f"Auth token:")
-            project = token.split(":")[0]
-            api_key = token.split(":")[1]
-            self._write_credentials(project, api_key)
+
+        if os.path.exists(self._cred_fn):
+            credentials = self._read_credentials()
+            return credentials
+
+        elif token:
+            return self._process_token(token)
+
         else:
-            data = self._read_credentials()
-            project = data["project"]
-            api_key = data["api_key"]
-        return project, api_key
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
+            if not token:
+                token = getpass.getpass(f"Activation token:")
+            return self._process_token(token)
+
+    def _process_token(self, token: str):
+        split_token = token.split(":")
+        project = split_token[0]
+        api_key = split_token[1]
+        if len(split_token) > 2:
+            region = split_token[3]
+            base_url = self._region_to_url(region)
+
+            if len(split_token) > 3:
+                firebase_uid = split_token[4]
+                return self._write_credentials(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
+                    firebase_uid=firebase_uid,
+                )
+
+            else:
+                return self._write_credentials(
+                    project=project, api_key=api_key, base_url=base_url
+                )
+
+        else:
+            return self._write_credentials(project=project, api_key=api_key)
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
 
-    def _write_credentials(self, project, api_key):
-        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+    def _write_credentials(self, **kwargs):
+        print(
+            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
+        )
+        json.dump(
+            kwargs,
+            open(self._cred_fn, "w"),
+        )
+        return kwargs
 
     def _init_dataset(self, dataset):
         if isinstance(dataset, Dataset):
@@ -273,6 +336,7 @@ class ClusterOps(BatchAPIClient):
                 "Dataset type needs to be either a string or Dataset instance."
             )
 
+    @track
     def list_closest_to_center(
         self,
         dataset: Optional[Union[str, Dataset]] = None,
@@ -333,7 +397,7 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
@@ -363,9 +427,9 @@ class ClusterOps(BatchAPIClient):
             include_count=include_count,
         )
 
+    @track
     def aggregate(
         self,
-        dataset: Optional[Union[str, Dataset]] = None,
         vector_fields: List[str] = None,
         metrics: list = [],
         sort: list = [],
@@ -375,6 +439,7 @@ class ClusterOps(BatchAPIClient):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
+        dataset: Optional[Union[str, Dataset]] = None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
@@ -488,15 +553,15 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
             cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
-            cluster_ops.aggregate(
-                "sample_dataset",
+            clusterer.aggregate(
+                "sample_dataset_id",
                 groupby=[{
                     "field": "title",
                     "agg": "wordcloud",
@@ -581,10 +646,10 @@ class ClusterOps(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
+            print("Inserting centroid documents...")
             centers = self.get_centroid_documents()
 
             if hasattr(self.model, "get_centers"):
-                center_vectors = self.model.get_centers()
                 centers = self.get_centroid_documents()
 
             # Change centroids insertion
@@ -596,13 +661,6 @@ class ClusterOps(BatchAPIClient):
             )
             self.logger.info(results)
 
-            self.datasets.cluster.centroids.list_closest_to_center(
-                self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                centroid_vector_fields=self.vector_fields,
-                page_size=20,
-            )
         return
 
     def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
@@ -623,6 +681,7 @@ class ClusterOps(BatchAPIClient):
                 raise ValueError("Please supply dataset.")
         return dataset_id
 
+    @track
     def insert_centroid_documents(
         self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
     ):
@@ -664,6 +723,7 @@ class ClusterOps(BatchAPIClient):
         )
         return results
 
+    @track
     def get_centroid_documents(self) -> List:
         """
         Get the centroid documents to store. This enables you to use `list_closest_to_center()`
@@ -716,7 +776,7 @@ class ClusterOps(BatchAPIClient):
         """
         See your centroids if there are any.
         """
-        return self.services.cluster.centroids.list(
+        return self.services.cluster.centroids.documents(
             self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -725,6 +785,7 @@ class ClusterOps(BatchAPIClient):
             include_vector=True,
         )
 
+    @track
     def delete_centroids(self, dataset: Union[str, Dataset], vector_fields: List):
         """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
@@ -742,6 +803,7 @@ class ClusterOps(BatchAPIClient):
         )
         return response.json()["status"]
 
+    @track
     def fit_predict_update(
         self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
     ):
@@ -807,6 +869,8 @@ class ClusterOps(BatchAPIClient):
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
+        if len(docs) == 0:
+            raise NoDocumentsError()
         print("Fitting and predicting on all documents")
         clustered_docs = self.fit_predict_documents(
             vector_fields,
@@ -825,9 +889,14 @@ class ClusterOps(BatchAPIClient):
         # Update the centroid collection
         self.model.vector_fields = vector_fields
 
-        print("Inserting centroid documents...")
         self._insert_centroid_documents()
 
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
+
+    @track
     def fit_dataset(
         self,
         dataset,
@@ -868,13 +937,6 @@ class ClusterOps(BatchAPIClient):
             inplace=inplace,
         )
 
-    # def list_closest_to_center(self):
-    #     return self.datasets.cluster.centroids.list_closest_to_center(
-    #         dataset_id=self.dataset_id,
-    #         vector_fields=self.vector_fields
-    #         alias=self.alias
-    #     )
-
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
@@ -911,6 +973,7 @@ class ClusterOps(BatchAPIClient):
 
         return vectors
 
+    @track
     def partial_fit_documents(
         self,
         vector_fields: list,
@@ -970,8 +1033,8 @@ class ClusterOps(BatchAPIClient):
         """Utility function for chunking a dataset"""
         cursor = None
 
-        docs = self.get_documents(
-            dataset.dataset_id,
+        docs = self._get_documents(
+            dataset_id=self.dataset_id,
             include_cursor=True,
             number_of_documents=chunksize,
             select_fields=select_fields,
@@ -980,8 +1043,8 @@ class ClusterOps(BatchAPIClient):
 
         while len(docs["documents"]) > 0:
             yield docs["documents"]
-            docs = self.get_documents(
-                self.dataset.dataset_id,
+            docs = self._get_documents(
+                dataset_id=self.dataset_id,
                 cursor=docs["cursor"],
                 include_cursor=True,
                 select_fields=select_fields,
@@ -989,6 +1052,7 @@ class ClusterOps(BatchAPIClient):
                 filters=filters,
             )
 
+    @track
     def partial_fit_dataset(
         self,
         dataset: Union[str, Dataset],
@@ -1023,7 +1087,10 @@ class ClusterOps(BatchAPIClient):
 
         if isinstance(dataset, str):
             self.dataset = Dataset(
-                project=self.project, api_key=self.api_key, dataset_id=dataset
+                project=self.project,
+                api_key=self.api_key,
+                dataset_id=dataset,
+                firebase_uid=self.firebase_uid,
             )
         else:
             self.dataset = dataset
@@ -1044,6 +1111,7 @@ class ClusterOps(BatchAPIClient):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
 
+    @track
     def partial_fit_predict_update(
         self,
         dataset: Union[Dataset, str],
@@ -1093,11 +1161,18 @@ class ClusterOps(BatchAPIClient):
         )
         print("Updating your dataset...")
         self.predict_update(dataset=dataset)
-        # if hasattr(self, "get_centers"):
-        #     print("Inserting your centroids...")
-        print("Inserting centroids...")
-        self.insert_centroid_documents(self.get_centroid_documents(), dataset=dataset)
+        if hasattr(self.model, "get_centers"):
+            print("Inserting your centroids...")
+            self.insert_centroid_documents(
+                self.get_centroid_documents(), dataset=dataset
+            )
 
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
+
+    @track
     def predict_documents(
         self,
         vector_fields,
@@ -1120,6 +1195,7 @@ class ClusterOps(BatchAPIClient):
             return_only_clusters=return_only_clusters,
         )
 
+    @track
     def predict_update(
         self, dataset, vector_fields: Optional[List[str]] = None, chunksize: int = 20
     ):
@@ -1174,8 +1250,14 @@ class ClusterOps(BatchAPIClient):
                     all_responses["inserted"] += v
                 elif isinstance(all_responses[k], list):
                     all_responses[k] += v
+
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
         return all_responses
 
+    @track
     def fit_predict_documents(
         self,
         vector_fields: list,
@@ -1236,6 +1318,7 @@ class ClusterOps(BatchAPIClient):
             return_only_clusters=return_only_clusters,
         )
 
+    @track
     def set_cluster_labels_across_documents(
         self,
         cluster_labels: list,
@@ -1289,7 +1372,7 @@ class ClusterOps(BatchAPIClient):
             ]
         return new_documents
 
-    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
+    def _get_cluster_field_name(self):
         if isinstance(self.vector_fields, list):
             set_cluster_field = (
                 f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
@@ -1298,6 +1381,10 @@ class ClusterOps(BatchAPIClient):
             set_cluster_field = (
                 f"{self.cluster_field}.{self.vector_fields}.{self.alias}"
             )
+        return set_cluster_field
+
+    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
+        set_cluster_field = self._get_cluster_field_name()
         self.set_field_across_documents(set_cluster_field, cluster_labels, documents)
 
     def _label_cluster(self, label: Union[int, str]):
@@ -1375,6 +1462,7 @@ class ClusterOps(BatchAPIClient):
             metadata=metadata,
         )
 
+    @track
     def evaluate(
         self,
         ground_truth_column: Union[str, None] = None,
@@ -1496,3 +1584,42 @@ class ClusterOps(BatchAPIClient):
                 }
 
         return stats
+
+    def report(self):
+        """
+        Get a report on your clusters.
+
+        Example
+        ---------
+        .. code-block::
+
+            from relevanceai.datasets import mock_documents
+            docs = mock_documents(10)
+            df = client.Dataset('sample')
+            df.upsert_documents(docs)
+            cluster_ops = df.auto_cluster('kmeans-2', ['sample_1_vector_'])
+            cluster_ops.report()
+
+        """
+        if isinstance(self.vector_fields, list) and len(self.vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support more than 1 vector field when reporting."
+            )
+        from relevanceai.cluster_report import ClusterReport
+
+        # X is all the vectors
+        cluster_field_name = self._get_cluster_field_name()
+        all_docs = self._get_all_documents(
+            self.dataset_id, select_fields=self.vector_fields + [cluster_field_name]
+        )
+        cluster_labels = self.get_field_across_documents(cluster_field_name, all_docs)
+        self.number_of_clusters = len(set(cluster_labels))
+        self._report = ClusterReport(
+            self.get_field_across_documents(self.vector_fields[0], all_docs),
+            cluster_labels=self.get_field_across_documents(
+                cluster_field_name, all_docs
+            ),
+            model=self.model,
+            num_clusters=self.number_of_clusters,
+        )
+        return self._report.internal_report

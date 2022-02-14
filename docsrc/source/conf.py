@@ -23,7 +23,23 @@ copyright = "2021, Relevance AI"
 author = "Relevance AI"
 
 # The full version, including alpha/beta/rc tags
-release = "0.28.2"
+def read(rel_path):
+    """Read lines from given file"""
+    here = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(here, rel_path), "r") as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    """Read __version__ from given file"""
+    for line in read(rel_path).splitlines():
+        if line.startswith("__version__"):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    raise RuntimeError(f"Unable to find a valid __version__ string in {rel_path}.")
+
+
+release = get_version(os.path.join("..", "..", "relevanceai", "__init__.py"))
 
 
 # -- General configuration ---------------------------------------------------

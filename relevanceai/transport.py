@@ -3,8 +3,7 @@
 import asyncio
 import time
 import traceback
-import json
-from typing import Union
+import asyncio
 from json.decoder import JSONDecodeError
 
 from urllib.parse import urlparse
@@ -22,7 +21,7 @@ DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
 
 class Transport(JSONEncoderUtils):
-    """Base class for all relevanceai objects"""
+    """_Base class for all relevanceai objects"""
 
     project: str
     api_key: str
@@ -128,7 +127,7 @@ class Transport(JSONEncoderUtils):
 
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
-        return self._log_to_dashboard(
+        self._log_to_dashboard(
             method=method,
             parameters=parameters,
             endpoint=endpoint,
@@ -150,6 +149,7 @@ class Transport(JSONEncoderUtils):
         parameters: dict = {},
         base_url: str = None,
         output_format=None,
+        raise_error: bool = True,
     ):
         """
         Make the HTTP request
@@ -159,6 +159,9 @@ class Transport(JSONEncoderUtils):
             The endpoint from the documentation to use
         method_type: string
             POST or GET request
+        raise_error: bool
+            If True, you will raise error. This is useful for endpoints that don't
+            necessarily need to error.
         """
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
@@ -185,8 +188,8 @@ class Transport(JSONEncoderUtils):
                     self._log_search_to_dashboard(
                         method=method, parameters=parameters, endpoint=endpoint
                     )
-                # TODO: Add other endpoints in here too
 
+                # TODO: Add other endpoints in here too
                 req = Request(
                     method=method.upper(),
                     url=request_url,
@@ -223,7 +226,8 @@ class Transport(JSONEncoderUtils):
                         response.status_code,
                         response.content.decode(),
                     )
-                    raise APIError(response.content.decode())
+                    if raise_error:
+                        raise APIError(response.content.decode())
 
                 # Retry other errors
                 else:

@@ -21,6 +21,7 @@ from relevanceai.progress_bar import progress_bar
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.utils import Utils
 from relevanceai.errors import MissingFieldError
+from relevanceai.analytics_funcs import track
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -41,6 +42,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
+        verbose: bool = True,
         *args,
         **kwargs,
     ):
@@ -77,7 +79,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
+        >>> df = client.Dataset("sample_dataset_id")
         >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
         >>> df.insert_documents(documents)
 
@@ -91,11 +93,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
-
         if use_json_encoder:
             documents = self.json_encoder(documents)
+
+        # Turn _id into string
+        self._convert_id_to_string(documents)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
@@ -106,9 +108,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 **kwargs,
             )
 
-        print(
-            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
-        )
+        if verbose:
+            print(
+                f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            )
 
         return self._write_documents(
             bulk_insert_func,
@@ -162,7 +165,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ---------
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset")
+        >>> df = client.Dataset("sample_dataset_id")
         >>> csv_filename = "temp.csv"
         >>> df.insert_csv(csv_filename)
 
@@ -239,12 +242,17 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             chunk[i] = chunk[i].apply(literal_eval)
 
         chunk_json = chunk.to_dict(orient="records")
+
+        print(
+            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+        )
         response = self._insert_documents(
             dataset_id=dataset_id,
             documents=chunk_json,
             max_workers=max_workers,
             retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
+            verbose=False,
         )
         return response
 
@@ -273,7 +281,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
-        >>> client = Client(project, api_key)
+        >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
         >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
         >>> while len(documents['documents']) > 0:
         >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
@@ -651,15 +659,33 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "logging_collection": logging_dataset_id,
         }
 
+    @track
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
         """Insert a dataframe for eachd doc"""
-        import pandas as pd
+
+        def _is_valid(v):
+            try:
+                if pd.isna(v):
+                    return False
+                else:
+                    return True
+            except:
+                return True
 
         documents = [
-            {k: v for k, v in doc.items() if not pd.isna(v)}
+            {k: v for k, v in doc.items() if _is_valid(v)}
             for doc in dataframe.to_dict(orient="records")
         ]
-        return self._insert_documents(dataset_id, documents, *args, **kwargs)
+        results = self._insert_documents(dataset_id, documents, *args, **kwargs)
+        self.print_search_dashboard_url(dataset_id)
+        return results
+
+    def print_search_dashboard_url(self, dataset_id):
+        search_url = (
+            f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/search"
+        )
+        self._dataset_id = dataset_id
+        print(f"🍡 You can now explore your search app at {search_url}")
 
     def delete_pull_update_push_logs(self, dataset_id=False):
 
@@ -791,6 +817,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
             else:
                 break
+            time.sleep(int(self.config["retries.seconds_between_retries"]))
 
         # When returning, add in the cancelled id
         failed_ids.extend(cancelled_ids)

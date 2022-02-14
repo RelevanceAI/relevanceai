@@ -7,7 +7,7 @@ Auto Dimensionality Reduction
 
     client = Client()
 
-    dataset_id = "sample_dataset"
+    dataset_id = "sample_dataset_id"
     df = client.Dataset(dataset_id)
 
     df.auto_reduce_dimensions("pca-3",

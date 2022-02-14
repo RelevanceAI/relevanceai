@@ -4,10 +4,12 @@ from relevanceai.base import _Base
 class AggregateClient(_Base):
     """Aggregate service"""
 
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def aggregate(
         self,
@@ -20,6 +22,7 @@ class AggregateClient(_Base):
         asc: bool = False,
         flatten: bool = True,
         alias: str = "default",
+        **kw
     ):
         """
         Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
@@ -101,7 +104,7 @@ class AggregateClient(_Base):
             "/services/aggregate/aggregate",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                "dataset_ids": [dataset_id],
                 "aggregation_query": {"groupby": groupby, "metrics": metrics},
                 "filters": filters,
                 "page_size": page_size,
@@ -110,5 +113,6 @@ class AggregateClient(_Base):
                 "flatten": flatten,
                 "alias": alias,
             },
-            base_url="https://gateway-api-aueast.relevance.ai/v1",
+            # base_url="https://gateway-api-aueast.relevance.ai/v1",
+            **kw
         )

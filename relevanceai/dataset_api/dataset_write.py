@@ -1,18 +1,17 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
-import re
-import math
-import warnings
+import uuid
+import json
+
 import pandas as pd
-import numpy as np
 
 from doc_utils import DocUtils
 
 from typing import Dict, List, Union, Callable
 
 from relevanceai.dataset_api.dataset_read import Read
-from relevanceai.dataset_api.dataset_series import Series
 
 
 class Write(Read):
@@ -61,7 +60,7 @@ class Write(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             documents = [
@@ -131,7 +130,7 @@ class Write(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             csv_filename = "temp.csv"
             df.insert_csv(csv_filename)
@@ -150,7 +149,9 @@ class Write(Read):
             auto_generate_id=auto_generate_id,
         )
 
-    def insert_pandas_dataframe(self, df: pd.DataFrame, *args, **kwargs):
+    def insert_pandas_dataframe(
+        self, df: pd.DataFrame, col_for_id=None, *args, **kwargs
+    ):
         """
         Insert a dataframe into the dataset.
         Takes additional args and kwargs based on `insert_documents`.
@@ -159,18 +160,35 @@ class Write(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
             pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
             df.insert_pandas_dataframe(pandas_df)
 
         """
-        import pandas as pd
+        if col_for_id is not None:
+            df["_id"] = df[col_for_id]
+
+        else:
+            uuids = [uuid.uuid4() for _ in range(len(df))]
+            df["_id"] = uuids
+
+        def _is_valid(v):
+            try:
+                if pd.isna(v):
+                    return False
+                else:
+                    return True
+            except:
+                return True
 
         documents = [
-            {k: v for k, v in doc.items() if not pd.isna(v)}
+            {k: v for k, v in doc.items() if _is_valid(v)}
             for doc in df.to_dict(orient="records")
         ]
-        return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+
+        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        self.print_search_dashboard_url(self.dataset_id)
+        return results
 
     def upsert_documents(
         self,
@@ -223,7 +241,7 @@ class Write(Read):
                 }
             ]
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df.upsert_documents(documents)
@@ -243,7 +261,6 @@ class Write(Read):
     def apply(
         self,
         func: Callable,
-        apply_args: dict,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
         filters: list = [],
@@ -251,6 +268,7 @@ class Write(Read):
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
+        **apply_args,
     ):
         """
         Apply a function along an axis of the DataFrame.
@@ -282,13 +300,20 @@ class Write(Read):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_doc(doc):
                 doc["value"] = 2
                 return doc
 
             df.apply(update_doc)
+
+            def update_doc_wargs(doc, value1, value2):
+                doc["value"] += value1
+                doc["value"] *= value2
+                return doc
+
+            df.apply(func=update_doc, value1=3, value2=2)
 
         """
         if axis == 1:
@@ -350,7 +375,7 @@ class Write(Read):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
@@ -389,7 +414,7 @@ class Write(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             fields = [
@@ -398,11 +423,9 @@ class Write(Read):
                 "numeric_field3"
             ]
 
-            df.cat(fields)
             df.concat(fields)
 
             concat_vector_field_name = "concat_vector_"
-            df.cat(vector_name=concat_vector_field_name, fields=fields)
             df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
         if vector_name is None:
@@ -519,7 +542,7 @@ class Write(Read):
                 }
             ]
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.create()
 
@@ -538,9 +561,11 @@ class Write(Read):
             from relevanceai import Client
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.delete()
 
         """
         return self.datasets.delete(self.dataset_id)
+
+    insert_df = insert_pandas_dataframe

@@ -414,10 +414,12 @@ class HDBSCANClusterOps(DensityCluster):
 
 
 class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     @staticmethod
     def _choose_k(vectors: np.ndarray):
@@ -524,7 +526,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.kmeans_cluster(
-            dataset_id="sample_dataset",
+            dataset_id="sample_dataset_id",
             vector_fields=vector_fields
         )
         """
@@ -672,7 +674,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.hdbscan_cluster(
-            dataset_id="sample_dataset",
+            dataset_id="sample_dataset_id",
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
