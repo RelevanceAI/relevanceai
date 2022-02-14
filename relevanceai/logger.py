@@ -59,10 +59,11 @@ class LoguruLogger(AbstractLogger):
 class FileLogger:
     """Log system output to a file if it gets messy."""
 
-    def __init__(self, fn: str = "logs.txt"):
+    def __init__(self, fn: str = "logs.txt", verbose: bool = False):
         self.fn = fn
         self._original_stdout = sys.stdout
         self._original_stderr = sys.stderr
+        self.verbose = verbose
 
     def __enter__(self, fn: str = "logs"):
         if not os.path.exists(self.fn):
@@ -77,8 +78,9 @@ class FileLogger:
         sys.stdout.close()
         sys.stdout = self._original_stdout
         sys.stderr = self._original_stderr
-        if self._if_not_empty():
-            print(f"Logs have been saved to {self.fn}")
+        if self.verbose:
+            if self._if_not_empty():
+                print(f"Logs have been saved to {self.fn}")
 
     def _if_not_empty(self):
         with open(self.fn, "r") as f:

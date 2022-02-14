@@ -202,7 +202,8 @@ class Operations(Write):
 
     @track
     def store_labels_in_document(self, labels: list, alias: str):
-        # return {"_label_": {label_vector_field: {alias: labels}}}
+        if isinstance(labels, dict) and "label" in labels:
+            return {"_label_": {alias: labels["label"]}}
         return {"_label_": {alias: labels}}
 
     def _get_nearest_labels(
@@ -506,7 +507,7 @@ class Operations(Write):
         print("Encoding labels...")
         label_vectors = []
         for c in self.chunk(label_list, chunksize=20):
-            with FileLogger():
+            with FileLogger(verbose=True):
                 label_vectors.extend(model(c))
 
         if len(label_vectors) == 0:
@@ -919,6 +920,7 @@ class Operations(Write):
             text_fields=[text_field],
             n=n_gram,
             most_common=most_common,
+            additional_stopwords=stopwords,
         )
 
         with open(labels_fn, "w") as f:
