@@ -35,3 +35,4 @@ It is instantiated like this:
 
 .. autoclass:: relevanceai.dataset_api.dataset_operations.Operations
     :members:
+    :exclude-members: label_with_model_from_dataset, label_vector, label_document
