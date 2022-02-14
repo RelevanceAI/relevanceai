@@ -3,7 +3,6 @@ import asyncio
 
 from typing import Callable
 
-import traceback
 from functools import wraps
 
 from relevanceai.config import CONFIG
@@ -38,7 +37,6 @@ def track(func: Callable):
 
                 asyncio.ensure_future(send_analytics())
         except Exception as e:
-            traceback.print_exc()
             pass
 
         return func(*args, **kwargs)

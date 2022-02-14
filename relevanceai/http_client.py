@@ -101,7 +101,7 @@ class Client(BatchAPIClient, DocUtils):
         except Exception as e:
             pass
 
-        if project is None or api_key is None or firebase_uid is None or force_refresh:
+        if project is None or api_key is None or force_refresh:
             credentials = self._token_to_auth(token)
 
         try:
