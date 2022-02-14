@@ -11,7 +11,7 @@ from doc_utils import DocUtils
 
 from typing import Dict, List, Union, Callable
 
-from analytics_funcs import track
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 
 
