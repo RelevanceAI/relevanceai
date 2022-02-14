@@ -24,5 +24,10 @@ def test_auto_reduce_dimensions(test_df: Dataset):
 
 
 def test_clustering_on_dr(test_df: Dataset):
-    test_df.auto_cluster("kmeans-2", vector_fields=["_dr_.pca-3.sample_1_vector_"])
+    OUTPUT_VECTOR_FIELD = "sample_1_vector_"
+    ALIAS = "pca-3"
+    test_df.auto_reduce_dimensions(vector_fields=[OUTPUT_VECTOR_FIELD], alias=ALIAS)
+    test_df.auto_cluster(
+        alias="kmeans-2", vector_fields=["_dr_.pca-3.sample_1_vector_"]
+    )
     assert "_cluster_._dr_.pca-3.sample_1_vector_.kmeans-2" in test_df.schema
