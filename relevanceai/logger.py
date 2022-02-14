@@ -1,4 +1,4 @@
-from os import error
+import os
 import sys
 
 from typing import Callable
@@ -59,24 +59,30 @@ class LoguruLogger(AbstractLogger):
 class FileLogger:
     """Log system output to a file if it gets messy."""
 
-    def __init__(self, fn: str = "logs"):
+    def __init__(self, fn: str = "logs.txt"):
         self.fn = fn
-        self._original_output = sys.stdout
+        self._original_stdout = sys.stdout
+        self._original_stderr = sys.stderr
 
     def __enter__(self, fn: str = "logs"):
-        sys.stdout = open(self.fn, "w")
+        if not os.path.exists(self.fn):
+            sys.stdout = open(self.fn, "w")
+            sys.stderr = open(self.fn, "w")
+        else:
+            sys.stdout = open(self.fn, "a")
+            sys.stderr = open(self.fn, "a")
 
     def __exit__(self, *args, **kw):
+        sys.stderr.close()
         sys.stdout.close()
-        sys.stdout = self._original_output
+        sys.stdout = self._original_stdout
+        sys.stderr = self._original_stderr
         if self._if_not_empty():
             print(f"Logs have been saved to {self.fn}")
 
     def _if_not_empty(self):
-        log_file = open(self.fn, "r")
-        for line in log_file:
-            log_file.close()
-            if line != "\n":
-                return True
-            else:
-                return False
+        with open(self.fn, "r") as f:
+            lines = f.readlines()
+        if len(lines) > 1:
+            return True
+        return False

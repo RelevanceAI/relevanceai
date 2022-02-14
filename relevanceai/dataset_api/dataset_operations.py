@@ -506,7 +506,8 @@ class Operations(Write):
         print("Encoding labels...")
         label_vectors = []
         for c in self.chunk(label_list, chunksize=20):
-            label_vectors.extend(model(c))
+            with FileLogger():
+                label_vectors.extend(model(c))
 
         if len(label_vectors) == 0:
             raise ValueError("Failed to encode.")
@@ -858,6 +859,7 @@ class Operations(Write):
         n_gram: int = 1,
         temp_vector_field: str = "_label_vector_",
         labels_fn="labels.txt",
+        stopwords: list = [],
     ):
         """
         Label by the most popular keywords.
@@ -884,16 +886,33 @@ class Operations(Write):
             The temporary vector field name
         labels_fn: str
             The filename for labels to be saved in.
+        stopwords: list
+            A list of stopwords
 
         Example
         --------
 
         .. code-block::
 
+            import random
             from relevanceai import Client
+            from relevanceai.datasets import mock_documents
+            from relevanceai.logger import FileLogger
+
             client = Client()
-            df = client.Dataset("sample")
-            df.label_from_text_field(n=1)
+            ds = client.Dataset("sample")
+            documents = mock_documents()
+            ds.insert_documents(documents)
+
+            def encode():
+                return [random.randint(0, 100) for _ in range(5)]
+
+            ds.quick_label(
+                text_field="sample_1_label",
+                model=encode,
+                most_common=10,
+                n_gram=1
+            )
 
         """
         labels = self.get_wordcloud(
