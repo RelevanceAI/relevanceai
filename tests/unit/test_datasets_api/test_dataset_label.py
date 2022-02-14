@@ -22,7 +22,7 @@ def test_label_df(test_client: Client, vector_documents):
 
 
 def test_dataset_labelling(test_label_df: Dataset):
-    results = test_label_df.label(
+    results = test_label_df.label_from_dataset(
         vector_field="sample_1_vector_",
         alias="example",
         label_dataset_id=test_label_df.dataset_id,
