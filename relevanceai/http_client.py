@@ -73,7 +73,7 @@ class Client(BatchAPIClient, DocUtils):
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
         firebase_uid=os.getenv("RELEVANCE_FIREBASE_UID"),
-        region="us-east-1",
+        region=None,
         authenticate: bool = True,
         token: str = None,
         force_refresh: bool = False,
@@ -121,7 +121,7 @@ class Client(BatchAPIClient, DocUtils):
 
         self._identify()
 
-        if region:
+        if region is not None:
             self.region = region
 
         self.base_url = self._region_to_url(self.region)
