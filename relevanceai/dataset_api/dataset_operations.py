@@ -669,19 +669,19 @@ class Operations(Write):
     def get_ngrams(
         self,
         text,
-        most_common: int = 5,
         n: int = 2,
         stopwords_dict: str = "english",
         additional_stopwords: list = [],
         min_word_length: int = 2,
+        preprocess_hooks: list = [],
     ):
         try:
             return self._get_ngrams(
                 text=text,
-                most_common=most_common,
                 n=n,
                 addiitonal_stopwords=additional_stopwords,
                 min_word_length=min_word_length,
+                preprocess_hooks=preprocess_hooks,
             )
         except:
             # Specify that this shouldn't necessarily error out.
@@ -689,7 +689,10 @@ class Operations(Write):
                 stopwords_dict=stopwords_dict, additional_stopwords=additional_stopwords
             )
             return self._get_ngrams(
-                text=text, most_common=most_common, n=n, min_word_length=min_word_length
+                text=text,
+                n=n,
+                min_word_length=min_word_length,
+                preprocess_hooks=preprocess_hooks,
             )
 
     def _get_ngrams(
