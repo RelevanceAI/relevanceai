@@ -324,7 +324,7 @@ class Operations(Write):
         return document
 
     @track
-    def label(
+    def label_from_dataset(
         self,
         vector_field: str,
         alias: str,
@@ -852,7 +852,7 @@ class Operations(Write):
         )
         data["configuration"]["cluster-descriptions"][cluster_value] = str(top_words)
 
-    def quick_label(
+    def label_from_common_words(
         self,
         text_field: str,
         model: Callable = None,
@@ -865,7 +865,7 @@ class Operations(Write):
         """
         Label by the most popular keywords.
 
-        Algorithm in question:
+        Algorithm:
 
         - Get top X keywords or bigram for a text field
         - Default X to 1000 or something scaled towards number of documents
@@ -908,7 +908,7 @@ class Operations(Write):
             def encode():
                 return [random.randint(0, 100) for _ in range(5)]
 
-            ds.quick_label(
+            ds.label_from_common_words(
                 text_field="sample_1_label",
                 model=encode,
                 most_common=10,
