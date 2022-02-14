@@ -3,6 +3,9 @@ import warnings
 from typing import List
 from collections import Counter
 
+from html.parser import HTMLParser
+from io import StringIO
+
 
 class BaseTextProcessing:
     @staticmethod
@@ -50,3 +53,20 @@ class BaseTextProcessing:
             [w.lower() for s in str_list for w in s.split() if w not in stpw]
         )
         return sorted(word_counter.items(), key=lambda item: (-item[1], item[0]))
+
+
+class MLStripper(HTMLParser):
+    """Remove HTML from the code and retrieves data."""
+
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.text = StringIO()
+
+    def handle_data(self, d):
+        self.text.write(d)
+
+    def get_data(self):
+        return self.text.getvalue()
