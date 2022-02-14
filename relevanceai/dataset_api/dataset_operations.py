@@ -741,6 +741,7 @@ class Operations(Write):
         return counter
         # return dict(counter.most_common(most_common))
 
+    @track
     def get_wordcloud(
         self,
         text_fields: list,
@@ -852,6 +853,7 @@ class Operations(Write):
         )
         data["configuration"]["cluster-descriptions"][cluster_value] = str(top_words)
 
+    @track
     def label_from_common_words(
         self,
         text_field: str,
@@ -1767,6 +1769,7 @@ class Operations(Write):
 
         return clusterer
 
+    @track
     def aggregate(
         self,
         groupby: list = [],
