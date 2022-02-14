@@ -1509,15 +1509,10 @@ class Operations(Write):
         """
         Run dimensionality reduction quickly on a dataset on a small number of documents.
         This is useful if you want to quickly see a projection of your dataset.
-        Currently, the only supported algorithm is `PCA`.
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-
-
-        .. note::
-            **New in v0.32.0**
 
         Parameters
         ----------
@@ -1607,15 +1602,10 @@ class Operations(Write):
         """
         Run dimensionality reduction quickly on a dataset on a small number of documents.
         This is useful if you want to quickly see a projection of your dataset.
-        Currently, the only supported algorithm is `PCA`.
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-
-
-        .. note::
-            **New in v0.32.0**
 
         Parameters
         ----------
