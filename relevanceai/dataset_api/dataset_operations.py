@@ -6,7 +6,7 @@ import warnings
 import itertools
 from collections import Counter
 from typing import Dict, List, Optional, Callable
-
+from tqdm.auto import tqdm
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
@@ -657,13 +657,14 @@ class Operations(Write):
             for tf in text_fields
         ]
         documents = self.get_documents(
-            dataset_id=self.dataset_id,
             batch_size=batch_size,
             select_fields=text_fields,
             filters=filters,
             cursor=cursor,
         )
-        return self.generate_text_list_from_documents(documents, fields=text_fields)
+        return self.generate_text_list_from_documents(
+            documents, text_fields=text_fields
+        )
 
     def get_ngrams(
         self,
@@ -697,6 +698,7 @@ class Operations(Write):
         n: int = 2,
         additional_stopwords=[],
         min_word_length: int = 2,
+        preprocess_hooks: list = [],
     ):
         """Get the bigrams"""
 
@@ -709,6 +711,8 @@ class Operations(Write):
 
         n_grams = []
         for line in text:
+            for p_hook in preprocess_hooks:
+                line = p_hook(line)
             token = word_tokenize(line)
             n_grams.append(list(ngrams(token, n)))
 
@@ -738,6 +742,7 @@ class Operations(Write):
         min_word_length: int = 2,
         batch_size: int = 1000,
         document_limit: int = None,
+        preprocess_hooks: list = [],
     ) -> list:
         """
         wordcloud return object looks like:
@@ -773,7 +778,6 @@ class Operations(Write):
             document_limit is None or sum(counter.values()) < document_limit
         ):
             documents = self.get_documents(
-                dataset_id=self.dataset_id,
                 filters=filters,
                 cursor=documents["cursor"],
                 batch_size=batch_size,
@@ -790,9 +794,54 @@ class Operations(Write):
                 n=n,
                 additional_stopwords=additional_stopwords,
                 min_word_length=min_word_length,
+                preprocess_hooks=preprocess_hooks,
             )
             counter.update(ngram_counter)
         return dict(counter.most_common(most_common))
+
+    def cluster_word_cloud(
+        self,
+        vector_fields: List[str],
+        text_fields: List[str],
+        cluster_alias: str,
+        n: int = 2,
+        cluster_field: str = "_cluster_",
+        num_clusters: int = 100,
+        preprocess_hooks: callable = None,
+    ):
+        """
+        Simple implementation of the cluster word cloud
+        """
+        vector_fields_str = ".".join(sorted(vector_fields))
+        field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
+        all_clusters = self.facets([field], page_size=num_clusters)
+        most_common = 10
+        cluster_counters = {}
+        for c in tqdm(all_clusters[field]):
+            cluster_value = c[field]
+            top_words = self.get_wordcloud(
+                text_fields=text_fields,
+                n=n,
+                filters=[
+                    {
+                        "field": field,
+                        "filter_type": "contains",
+                        "condition": "==",
+                        "condition_value": cluster_value,
+                    }
+                ],
+                most_common=most_common,
+                preprocess_hooks=preprocess_hooks,
+            )
+            cluster_counters[c] = top_words
+        return cluster_counters
+
+    def _add_cluster_word_cloud_to_config(self, data, cluster_value, top_words):
+        # hacky way I implemented to add top words to config
+        data["configuration"]["cluster-labels"][cluster_value] = ", ".join(
+            [k for k in top_words if k != "machine learning"]
+        )
+        data["configuration"]["cluster-descriptions"][cluster_value] = str(top_words)
 
     def quick_label(
         self,
@@ -1730,4 +1779,21 @@ class Operations(Write):
             flatten=flatten,
             alias=alias,
             # sort=sort
+        )
+
+    def facets(
+        self,
+        fields: list = [],
+        date_interval: str = "monthly",
+        page_size: int = 5,
+        page: int = 1,
+        asc: bool = False,
+    ):
+        return self.datasets.facets(
+            dataset_id=self.dataset_id,
+            fields=fields,
+            date_interval=date_interval,
+            page_size=page_size,
+            page=page,
+            asc=asc,
         )
