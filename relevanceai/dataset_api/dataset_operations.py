@@ -3,15 +3,20 @@
 Pandas like dataset API
 """
 import warnings
+import itertools
+from collections import Counter
 from typing import Dict, List, Optional, Callable
-
+from tqdm.auto import tqdm
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
+from relevanceai.data_tools.base_text_processing import MLStripper
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
 )
+
+from relevanceai.logger import FileLogger
 
 
 class Operations(Write):
@@ -197,7 +202,8 @@ class Operations(Write):
 
     @track
     def store_labels_in_document(self, labels: list, alias: str):
-        # return {"_label_": {label_vector_field: {alias: labels}}}
+        if isinstance(labels, dict) and "label" in labels:
+            return {"_label_": {alias: labels["label"]}}
         return {"_label_": {alias: labels}}
 
     def _get_nearest_labels(
@@ -318,7 +324,7 @@ class Operations(Write):
         return document
 
     @track
-    def label(
+    def label_from_dataset(
         self,
         vector_field: str,
         alias: str,
@@ -494,12 +500,15 @@ class Operations(Write):
 
         """
         if alias is None:
-            warnings.warn("No alias is detected. Default to 'default' as the alias.")
+            warnings.warn(
+                "No alias is detected for labelling. Default to 'default' as the alias."
+            )
             alias = "default"
         print("Encoding labels...")
         label_vectors = []
         for c in self.chunk(label_list, chunksize=20):
-            label_vectors.extend(model(c))
+            with FileLogger(verbose=True):
+                label_vectors.extend(model(c))
 
         if len(label_vectors) == 0:
             raise ValueError("Failed to encode.")
@@ -567,15 +576,370 @@ class Operations(Write):
             select_fields=[vector_field],
         )
 
-    @track
-    def label_by_ngram(self):
-        """# TODO"""
+    def _set_up_nltk(
+        self, stopwords_dict: str = "english", additional_stopwords: list = []
+    ):
+        """Additional stopwords to include"""
+        import nltk
+        from nltk.corpus import stopwords
+
+        self._is_set_up = True
+        nltk.download("stopwords")
+        nltk.download("punkt")
+        self.eng_stopwords = stopwords.words(stopwords_dict)
+        self.eng_stopwords.extend(additional_stopwords)
+        self.eng_stopwords = set(self.eng_stopwords)
+
+    def clean_html(self, html):
+        """Cleans HTML from text"""
+        s = MLStripper()
+        if html is None:
+            return ""
+        s.feed(html)
+        return s.get_data()
+
+    def get_word_count(self, text_fields: List[str]):
+        """
+        Create labels from a given text field.
+
+        Parameters
+        ------------
+
+        text_fields: list
+            List of text fields
+
+
+        Example
+        ------------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+            df.get_word_count()
+
+        """
+        import nltk
+        from nltk.corpus import stopwords
+
         raise NotImplementedError
 
-    @track
-    def label_with_model_from_dataset(self):
-        """# TODO"""
-        raise NotImplementedError
+    def generate_text_list_from_documents(
+        self, documents: list = [], text_fields: list = [], clean_html: bool = False
+    ):
+        """
+        Generate a list of text from documents to feed into the counter
+        model.
+        Parameters
+        -------------
+        documents: list
+            A list of documents
+        fields: list
+            A list of fields
+        clean_html: bool
+            If True, also cleans the text in a given text document to remove HTML. Will be slower
+            if processing on a large document
+        """
+        text = self.get_fields_across_documents(
+            text_fields, documents, missing_treatment="ignore"
+        )
+        return list(itertools.chain.from_iterable(text))
+
+    def generate_text_list(
+        self,
+        filters: list = [],
+        batch_size: int = 20,
+        text_fields: list = [],
+        cursor: str = None,
+    ):
+        filters += [
+            {
+                "field": tf,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for tf in text_fields
+        ]
+        documents = self.get_documents(
+            batch_size=batch_size,
+            select_fields=text_fields,
+            filters=filters,
+            cursor=cursor,
+        )
+        return self.generate_text_list_from_documents(
+            documents, text_fields=text_fields
+        )
+
+    def get_ngrams(
+        self,
+        text,
+        n: int = 2,
+        stopwords_dict: str = "english",
+        additional_stopwords: list = [],
+        min_word_length: int = 2,
+        preprocess_hooks: list = [],
+    ):
+        try:
+            return self._get_ngrams(
+                text=text,
+                n=n,
+                additional_stopwords=additional_stopwords,
+                min_word_length=min_word_length,
+                preprocess_hooks=preprocess_hooks,
+            )
+        except:
+            # Specify that this shouldn't necessarily error out.
+            self.set_up(
+                stopwords_dict=stopwords_dict, additional_stopwords=additional_stopwords
+            )
+            return self._get_ngrams(
+                text=text,
+                n=n,
+                min_word_length=min_word_length,
+                preprocess_hooks=preprocess_hooks,
+            )
+
+    def _get_ngrams(
+        self,
+        text,
+        n: int = 2,
+        additional_stopwords=[],
+        min_word_length: int = 2,
+        preprocess_hooks: list = [],
+    ):
+        """Get the bigrams"""
+
+        from nltk import word_tokenize
+        from nltk.util import ngrams
+        from itertools import chain
+
+        if additional_stopwords:
+            [self.eng_stopwords.add(s) for s in additional_stopwords]
+
+        n_grams = []
+        for line in text:
+            for p_hook in preprocess_hooks:
+                line = p_hook(line)
+            token = word_tokenize(line)
+            n_grams.append(list(ngrams(token, n)))
+
+        def length_longer_than_min_word_length(x):
+            return len(x.strip()) >= min_word_length
+
+        def is_not_stopword(x):
+            return x.strip() not in self.eng_stopwords
+
+        def is_clean(text_list):
+            return all(
+                length_longer_than_min_word_length(x) and is_not_stopword(x)
+                for x in text_list
+            )
+
+        counter = Counter([" ".join(x) for x in chain(*n_grams) if is_clean(x)])
+        return counter
+        # return dict(counter.most_common(most_common))
+
+    def get_wordcloud(
+        self,
+        text_fields: list,
+        n: int = 2,
+        most_common: int = 10,
+        filters: list = [],
+        additional_stopwords: list = [],
+        min_word_length: int = 2,
+        batch_size: int = 1000,
+        document_limit: int = None,
+        preprocess_hooks: List[callable] = [],
+    ) -> list:
+        """
+        wordcloud return object looks like:
+
+        .. code-block::
+
+            {'python': 232}
+
+        Parameters
+        ------------
+
+        text_fields: list
+            A list of text fields
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+        """
+        counter: Counter = Counter()
+        if not hasattr(self, "_is_set_up"):
+            print("setting up NLTK...")
+            self._set_up_nltk()
+
+        # Mock a dummy documents so I can loop immediately without weird logic
+        documents: dict = {"documents": [[]], "cursor": None}
+        print("Updating word count...")
+        while len(documents["documents"]) > 0 and (
+            document_limit is None or sum(counter.values()) < document_limit
+        ):
+            documents = self.get_documents(
+                filters=filters,
+                cursor=documents["cursor"],
+                batch_size=batch_size,
+                select_fields=text_fields,
+                include_cursor=True,
+            )
+            string = self.generate_text_list_from_documents(
+                documents=documents["documents"],
+                text_fields=text_fields,
+            )
+
+            ngram_counter = self._get_ngrams(
+                string,
+                n=n,
+                additional_stopwords=additional_stopwords,
+                min_word_length=min_word_length,
+                preprocess_hooks=preprocess_hooks,
+            )
+            counter.update(ngram_counter)
+        return counter.most_common(most_common)
+
+    def cluster_word_cloud(
+        self,
+        vector_fields: List[str],
+        text_fields: List[str],
+        cluster_alias: str,
+        n: int = 2,
+        cluster_field: str = "_cluster_",
+        num_clusters: int = 100,
+        preprocess_hooks: List[callable] = [],
+    ):
+        """
+        Simple implementation of the cluster word cloud
+        """
+        vector_fields_str = ".".join(sorted(vector_fields))
+        field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
+        all_clusters = self.facets([field], page_size=num_clusters)
+        most_common = 10
+        cluster_counters = {}
+        for c in tqdm(all_clusters[field]):
+            cluster_value = c[field]
+            top_words = self.get_wordcloud(
+                text_fields=text_fields,
+                n=n,
+                filters=[
+                    {
+                        "field": field,
+                        "filter_type": "contains",
+                        "condition": "==",
+                        "condition_value": cluster_value,
+                    }
+                ],
+                most_common=most_common,
+                preprocess_hooks=preprocess_hooks,
+            )
+            cluster_counters[c] = top_words
+        return cluster_counters
+
+    def _add_cluster_word_cloud_to_config(self, data, cluster_value, top_words):
+        # hacky way I implemented to add top words to config
+        data["configuration"]["cluster-labels"][cluster_value] = ", ".join(
+            [k for k in top_words if k != "machine learning"]
+        )
+        data["configuration"]["cluster-descriptions"][cluster_value] = str(top_words)
+
+    def label_from_common_words(
+        self,
+        text_field: str,
+        model: Callable = None,
+        most_common: int = 1000,
+        n_gram: int = 1,
+        temp_vector_field: str = "_label_vector_",
+        labels_fn="labels.txt",
+        stopwords: list = [],
+    ):
+        """
+        Label by the most popular keywords.
+
+        Algorithm:
+
+        - Get top X keywords or bigram for a text field
+        - Default X to 1000 or something scaled towards number of documents
+        - Vectorize those into keywords
+        - Label every document with those top keywords
+
+        Parameters
+        ------------
+
+        text_fields: str
+            The field to label
+        model: Callable
+            The function or callable to turn text into a vector.
+        most_common: int
+            How many of the most common worsd do you want to use as labels
+        n_gram: int
+            How many word co-occurrences do you want to consider
+        temp_vector_field: str
+            The temporary vector field name
+        labels_fn: str
+            The filename for labels to be saved in.
+        stopwords: list
+            A list of stopwords
+
+        Example
+        --------
+
+        .. code-block::
+
+            import random
+            from relevanceai import Client
+            from relevanceai.datasets import mock_documents
+            from relevanceai.logger import FileLogger
+
+            client = Client()
+            ds = client.Dataset("sample")
+            documents = mock_documents()
+            ds.insert_documents(documents)
+
+            def encode():
+                return [random.randint(0, 100) for _ in range(5)]
+
+            ds.label_from_common_words(
+                text_field="sample_1_label",
+                model=encode,
+                most_common=10,
+                n_gram=1
+            )
+
+        """
+        labels = self.get_wordcloud(
+            text_fields=[text_field],
+            n=n_gram,
+            most_common=most_common,
+            additional_stopwords=stopwords,
+        )
+
+        with open(labels_fn, "w") as f:
+            f.write(str(labels))
+
+        print(f"Saved labels to {labels_fn}")
+        # Add support if already encoded
+        def encode(doc):
+            with FileLogger():
+                doc[temp_vector_field] = model(self.get_field(text_field, doc))
+            return doc
+
+        self.apply(encode, select_fields=[text_field])
+        # create_labels_from_text_field
+        return self.label_from_list(
+            vector_field=temp_vector_field,
+            model=model,
+            label_list=[x[0] for x in labels],
+        )
 
     @track
     def vector_search(
@@ -1169,7 +1533,7 @@ class Operations(Write):
 
         print("Run PCA...")
         if algorithm == "pca":
-            dr_docs = self._run_pca(
+            dr_documents = self._run_pca(
                 vector_fields=vector_fields,
                 documents=documents,
                 alias=alias,
@@ -1178,7 +1542,7 @@ class Operations(Write):
         else:
             raise ValueError("DR algorithm not supported.")
 
-        results = self.update_documents(self.dataset_id, dr_docs)
+        results = self.update_documents(self.dataset_id, dr_documents)
 
         if n_components == 3:
             projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
@@ -1259,7 +1623,7 @@ class Operations(Write):
 
         print("Run PCA...")
         if algorithm == "pca":
-            dr_docs = self._run_pca(
+            dr_documents = self._run_pca(
                 vector_fields=vector_fields,
                 documents=documents,
                 alias=alias,
@@ -1271,7 +1635,7 @@ class Operations(Write):
                 "DR algorithm not supported. Only supported algorithms are `pca`."
             )
 
-        results = self.update_documents(self.dataset_id, dr_docs)
+        results = self.update_documents(self.dataset_id, dr_documents)
 
         return results
 
@@ -1349,9 +1713,9 @@ class Operations(Write):
         if n_clusters >= chunksize:
             raise ValueError("Number of clustesr exceed chunksize.")
 
-        num_docs = self.get_number_of_documents(self.dataset_id)
+        num_documents = self.get_number_of_documents(self.dataset_id)
 
-        if num_docs <= n_clusters:
+        if num_documents <= n_clusters:
             warnings.warn(
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
@@ -1423,4 +1787,21 @@ class Operations(Write):
             flatten=flatten,
             alias=alias,
             # sort=sort
+        )
+
+    def facets(
+        self,
+        fields: list = [],
+        date_interval: str = "monthly",
+        page_size: int = 5,
+        page: int = 1,
+        asc: bool = False,
+    ):
+        return self.datasets.facets(
+            dataset_id=self.dataset_id,
+            fields=fields,
+            date_interval=date_interval,
+            page_size=page_size,
+            page=page,
+            asc=asc,
         )
