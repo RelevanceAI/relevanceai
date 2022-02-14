@@ -93,6 +93,7 @@ import pandas as pd
 import numpy as np
 from relevanceai.integration_checks import is_hdbscan_available, is_sklearn_available
 from relevanceai.warnings import warn_function_is_work_in_progress
+from relevanceai.cluster_report.grading import get_silhouette_grade
 from typing import Union, List, Dict, Any, Optional
 import functools
 from warnings import warn
