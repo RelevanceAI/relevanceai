@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.0.6
+-------
+
+- Fix http client and regionalisation issues and remove need for firebase
+
 v1.0.5
 --------
 
@@ -411,4 +416,3 @@ v0.26.0
 - Added JSON serialization and consequent test updates
 - Bug fix to cluster metrics
 - Minor fix to tests
->>>>>>> development

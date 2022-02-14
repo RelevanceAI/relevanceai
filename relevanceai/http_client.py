@@ -101,7 +101,7 @@ class Client(BatchAPIClient, DocUtils):
         except Exception as e:
             pass
 
-        if project is None or api_key is None or firebase_uid is None or force_refresh:
+        if project is None or api_key is None or force_refresh:
             credentials = self._token_to_auth(token)
 
         try:
@@ -120,6 +120,9 @@ class Client(BatchAPIClient, DocUtils):
             self.firebase_uid = firebase_uid
 
         self._identify()
+
+        if region:
+            self.region = region
 
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
