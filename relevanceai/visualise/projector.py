@@ -56,7 +56,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Plot rendering args
         vector_label: Union[None, str] = None,
         # Dimensionality reduction args
-        dr: Union[DIM_REDUCTION, DimReductionBase] = "ivis",
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,
         dr_args: Union[None, Dict] = None,
         # Cluster args
@@ -163,7 +163,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Plot rendering args
         vector_label: Union[None, str] = None,
         # Dimensionality reduction args
-        dr: Union[DIM_REDUCTION, DimReductionBase] = "ivis",
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,
         dr_args: Union[None, Dict] = None,
         # Cluster args
@@ -311,7 +311,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         # Plot rendering args
         vector_label: Union[None, str] = None,
         # Dimensionality reduction args
-        dr: Union[DIM_REDUCTION, DimReductionBase] = "ivis",
+        dr: Union[DIM_REDUCTION, DimReductionBase] = "pca",
         dims: Literal[2, 3] = 3,
         dr_args: Union[None, Dict] = None,
         # Cluster args
