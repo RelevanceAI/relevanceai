@@ -98,7 +98,6 @@ from typing import Union, List, Dict, Any, Optional
 import functools
 from warnings import warn
 from doc_utils import DocUtils
-from relevanceai.analytics_funcs import track
 
 try:
     from sklearn.metrics import (
@@ -145,7 +144,6 @@ class ClusterReport(DocUtils):
         from the model.
     """
 
-    @track
     def __init__(
         self,
         X: Union[list, np.ndarray],
@@ -299,7 +297,7 @@ class ClusterReport(DocUtils):
         graded_score = self.X_silhouette_scores.mean()
         grade = get_silhouette_grade(graded_score)
 
-        _internal_report = {
+        self._internal_report = {
             "grade": grade,
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
@@ -313,14 +311,21 @@ class ClusterReport(DocUtils):
                     self.X_silhouette_scores
                 ),
             },
-            "each": []
+            "each": [
+                # {
+                #     "cluster_id": "cluster-1",
+                #     "summary": {},
+                #     "centers": {},
+                #     "silhouette_score": {}
+                # }
+            ]
             # {
             #     "summary": {},
             #     "centers": {},
             #     "silhouette_score": {},
             # },
         }
-        self._store_basic_centroid_stats(_internal_report["overall"])
+        self._store_basic_centroid_stats(self._internal_report["overall"])
 
         labels, counts = np.unique(self.cluster_labels, return_counts=True)
         if self.verbose:
@@ -330,7 +335,9 @@ class ClusterReport(DocUtils):
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
         for i, cluster_label in enumerate(labels):
-            cluster_label_doc = {"cluster_id": cluster_label}
+            cluster_label_doc = {
+                "cluster_id": cluster_label,
+            }
             cluster_bool = self.cluster_labels == cluster_label
 
             specific_cluster_data = self.X[cluster_bool]
@@ -340,9 +347,7 @@ class ClusterReport(DocUtils):
             cluster_report["frequency"]["total"] += cluster_frequency
             cluster_report["frequency"]["each"][cluster_label] = cluster_frequency
 
-            _internal_report["each"]["summary"][
-                cluster_label
-            ] = ClusterReport.summary_statistics(self.X)
+            cluster_label_doc["summary"] = ClusterReport.summary_statistics(self.X)
 
             # If each value of the vector is important
             center_stats = {"by_features": {}}
@@ -366,7 +371,9 @@ class ClusterReport(DocUtils):
                     )
                 )
 
-                _internal_report["overall"]["grand_centroids"].append(grand_centroid)
+                self._internal_report["overall"]["grand_centroids"].append(
+                    grand_centroid
+                )
 
                 center_stats[
                     "distance_from_centroid"
@@ -400,22 +407,22 @@ class ClusterReport(DocUtils):
                     "overall_z_score"
                 ] = ClusterReport.get_z_score(
                     centroid_vector,
-                    _internal_report["overall"]["summary"]["mean"],
-                    _internal_report["overall"]["summary"]["std"],
+                    self._internal_report["overall"]["summary"]["mean"],
+                    self._internal_report["overall"]["summary"]["std"],
                 )
 
                 center_stats["by_features"]["z_score"] = ClusterReport.get_z_score(
                     centroid_vector,
-                    _internal_report["each"]["summary"][cluster_label]["mean"],
-                    _internal_report["each"]["summary"][cluster_label]["std"],
+                    cluster_label_doc["summary"]["mean"],
+                    cluster_label_doc["summary"]["std"],
                 )
 
                 center_stats["by_features"][
                     "overall_z_score_grand_centroid"
                 ] = ClusterReport.get_z_score(
                     grand_centroid,
-                    _internal_report["overall"]["summary"]["mean"],
-                    _internal_report["overall"]["summary"]["std"],
+                    self._internal_report["overall"]["summary"]["mean"],
+                    self._internal_report["overall"]["summary"]["std"],
                 )
 
                 center_stats[
@@ -425,9 +432,8 @@ class ClusterReport(DocUtils):
                 )
 
                 center_stats["by_features"]["z_score_grand_centroid"] = (
-                    grand_centroid
-                    - _internal_report["each"]["summary"][cluster_label]["mean"]
-                ) / _internal_report["each"]["summary"][cluster_label]["std"]
+                    grand_centroid - cluster_label_doc["summary"]["mean"]
+                ) / cluster_label_doc["summary"]["std"]
 
                 # this might not be needed
                 center_stats["overall_z_score"] = ClusterReport.summary_statistics(
@@ -458,29 +464,30 @@ class ClusterReport(DocUtils):
 
                 center_stats["by_features"]["squared_errors"] = squared_errors_by_col
 
-                _internal_report["each"]["centers"][cluster_label] = center_stats
+                cluster_label_doc["centers"] = center_stats
 
-            _internal_report["each"]["silhouette_score"][
-                cluster_label
-            ] = ClusterReport.summary_statistics(
+            cluster_label_doc["silhouette_score"] = ClusterReport.summary_statistics(
                 self.X_silhouette_scores[cluster_bool], axis=2
             )
+
+            self._internal_report["each"].append(cluster_label_doc)
 
         if self.has_centers():
 
             min_centroid_distance = min(
-                c["distance_from_centroid"]["min"]
-                for c in _internal_report["each"]["centers"].values()
+                c["centers"]["distance_from_centroid"]["min"]
+                for c in self._internal_report["each"]
             )
 
-            max_centroid_distance = _internal_report["overall"][
+            max_centroid_distance = self._internal_report["overall"][
                 "centroids_distance_matrix"
             ].max()
-            _internal_report["overall"]["dunn_index"] = self.dunn_index(
+
+            self._internal_report["overall"]["dunn_index"] = self.dunn_index(
                 min_centroid_distance, max_centroid_distance
             )
 
-        return _internal_report
+        return self._internal_report
 
     def _get_centroid_vector(
         self, i: int = None, cluster_label: int = None, default_vector=None
