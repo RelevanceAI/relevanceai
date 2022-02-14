@@ -679,7 +679,7 @@ class Operations(Write):
             return self._get_ngrams(
                 text=text,
                 n=n,
-                addiitonal_stopwords=additional_stopwords,
+                additional_stopwords=additional_stopwords,
                 min_word_length=min_word_length,
                 preprocess_hooks=preprocess_hooks,
             )
@@ -745,7 +745,7 @@ class Operations(Write):
         min_word_length: int = 2,
         batch_size: int = 1000,
         document_limit: int = None,
-        preprocess_hooks: list = [],
+        preprocess_hooks: List[callable] = [],
     ) -> list:
         """
         wordcloud return object looks like:
@@ -769,13 +769,13 @@ class Operations(Write):
             client = Client()
 
         """
-        counter = Counter()
+        counter: Counter = Counter()
         if not hasattr(self, "_is_set_up"):
             print("setting up NLTK...")
             self._set_up_nltk()
 
         # Mock a dummy documents so I can loop immediately without weird logic
-        documents = {"documents": [[]], "cursor": None}
+        documents: dict = {"documents": [[]], "cursor": None}
         print("Updating word count...")
         while len(documents["documents"]) > 0 and (
             document_limit is None or sum(counter.values()) < document_limit
@@ -800,7 +800,7 @@ class Operations(Write):
                 preprocess_hooks=preprocess_hooks,
             )
             counter.update(ngram_counter)
-        return dict(counter.most_common(most_common))
+        return counter.most_common(most_common)
 
     def cluster_word_cloud(
         self,
@@ -810,7 +810,7 @@ class Operations(Write):
         n: int = 2,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
-        preprocess_hooks: callable = None,
+        preprocess_hooks: List[callable] = [],
     ):
         """
         Simple implementation of the cluster word cloud
@@ -893,7 +893,8 @@ class Operations(Write):
                 field_type="vector",
             ):
                 """bulk encode documents"""
-                vectors = model(self.get_field_across_documents(field, docs))
+                if model is not None:
+                    vectors = model(self.get_field_across_documents(field, docs))
                 if vector_error_treatment == "zero_vector":
                     self.set_field_across_documents(
                         self.get_default_vector_field_name(
@@ -929,7 +930,7 @@ class Operations(Write):
                     ]
                     return
 
-            self.bulk_apply()
+            # self.bulk_apply()
 
         # create_labels_from_text_field
         return self.label_from_list(
