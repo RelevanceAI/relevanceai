@@ -315,9 +315,9 @@ class ClusterReport(DocUtils):
                 ),
             },
             "each": {
-                "summary": {},
-                "centers": {},
-                "silhouette_score": {},
+                "summary": [],
+                "centers": [],
+                "silhouette_score": [],
             },
         }
         self._store_basic_centroid_stats(_internal_report["overall"])
@@ -329,6 +329,8 @@ class ClusterReport(DocUtils):
 
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
+        _internal_report["each"]["centers"] = []
+
         for i, cluster_label in enumerate(labels):
             cluster_bool = self.cluster_labels == cluster_label
 
@@ -337,7 +339,9 @@ class ClusterReport(DocUtils):
 
             cluster_frequency = counts[i]
             cluster_report["frequency"]["total"] += cluster_frequency
-            cluster_report["frequency"]["each"][cluster_label] = cluster_frequency
+            cluster_report["frequency"]["each"].append(
+                {"cluster_id": cluster_label, "cluster_frequency": cluster_frequency}
+            )
 
             _internal_report["each"]["summary"][
                 cluster_label
@@ -457,12 +461,17 @@ class ClusterReport(DocUtils):
 
                 center_stats["by_features"]["squared_errors"] = squared_errors_by_col
 
-                _internal_report["each"]["centers"][cluster_label] = center_stats
+                _internal_report["each"]["centers"].append(
+                    {"cluster_id": cluster_label, "center_stats": center_stats}
+                )
 
-            _internal_report["each"]["silhouette_score"][
-                cluster_label
-            ] = ClusterReport.summary_statistics(
-                self.X_silhouette_scores[cluster_bool], axis=2
+            _internal_report["each"]["silhouette_score"].append(
+                {
+                    "cluster_id": cluster_label,
+                    "silhouette_score": ClusterReport.summary_statistics(
+                        self.X_silhouette_scores[cluster_bool], axis=2
+                    ),
+                }
             )
 
         if self.has_centers():
