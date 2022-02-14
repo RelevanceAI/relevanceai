@@ -70,7 +70,8 @@ class Read(BatchAPIClient):
         self.text_fields = text_fields
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
-    @property
+    @property  # type: ignore
+    @track
     def shape(self):
         """
         Returns the shape (N x C) of a dataset
@@ -443,7 +444,8 @@ class Read(BatchAPIClient):
             )
         raise TypeError("Document IDs needs to be a string or a list")
 
-    @property
+    @property  # type: ignore
+    @track
     def schema(self) -> Dict:
         """
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
@@ -461,7 +463,8 @@ class Read(BatchAPIClient):
         """
         return self.datasets.schema(self.dataset_id)
 
-    @property
+    @property  # type: ignore
+    @track
     def columns(self) -> List[str]:
         """
         Returns a list of columns
