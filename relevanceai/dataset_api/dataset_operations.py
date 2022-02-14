@@ -16,6 +16,8 @@ from relevanceai.vector_tools.nearest_neighbours import (
     NEAREST_NEIGHBOURS,
 )
 
+from relevanceai.logger import FileLogger
+
 
 class Operations(Write):
     @track
@@ -497,7 +499,9 @@ class Operations(Write):
 
         """
         if alias is None:
-            warnings.warn("No alias is detected. Default to 'default' as the alias.")
+            warnings.warn(
+                "No alias is detected for labelling. Default to 'default' as the alias."
+            )
             alias = "default"
         print("Encoding labels...")
         label_vectors = []
@@ -848,25 +852,38 @@ class Operations(Write):
 
     def quick_label(
         self,
-        field: str,
-        text_fields: List[str],
+        text_field: str,
         model: Callable = None,
-        top_most_words: int = 1000,
+        most_common: int = 1000,
         n_gram: int = 1,
+        temp_vector_field: str = "_label_vector_",
+        labels_fn="labels.txt",
     ):
         """
         Label by the most popular keywords.
-        Get top X keywords or bigram for a text field.
-        default X to 1000 or something scaled towards number of documents.
 
-        Vectorize those into keywords
-        Label every document with those top keywords
+        Algorithm in question:
+
+        - Get top X keywords or bigram for a text field
+        - Default X to 1000 or something scaled towards number of documents
+        - Vectorize those into keywords
+        - Label every document with those top keywords
 
         Parameters
         ------------
 
         text_fields: str
             The field to label
+        model: Callable
+            The function or callable to turn text into a vector.
+        most_common: int
+            How many of the most common worsd do you want to use as labels
+        n_gram: int
+            How many word co-occurrences do you want to consider
+        temp_vector_field: str
+            The temporary vector field name
+        labels_fn: str
+            The filename for labels to be saved in.
 
         Example
         --------
@@ -879,62 +896,28 @@ class Operations(Write):
             df.label_from_text_field(n=1)
 
         """
-        # TODO
-        # Algorithm for getting most common keywords
         labels = self.get_wordcloud(
-            text_fields=text_fields, n=n_gram, most_common=top_most_words
+            text_fields=[text_field],
+            n=n_gram,
+            most_common=most_common,
         )
-        if not field.endswith("_vector_"):
 
-            def encode_documents(
-                field,
-                docs,
-                vector_error_treatment: str = "zero_vector",
-                field_type="vector",
-            ):
-                """bulk encode documents"""
-                if model is not None:
-                    vectors = model(self.get_field_across_documents(field, docs))
-                if vector_error_treatment == "zero_vector":
-                    self.set_field_across_documents(
-                        self.get_default_vector_field_name(
-                            field, field_type=field_type
-                        ),
-                        vectors,
-                        docs,
-                    )
-                    return
-                elif vector_error_treatment == "do_not_include":
-                    [
-                        self.set_field(
-                            self.get_default_vector_field_name(
-                                field, field_type=field_type
-                            ),
-                            value=vectors[i],
-                            doc=d,
-                        )
-                        for i, d in enumerate(docs)
-                        if not self.is_empty_vector(vectors[i])
-                    ]
-                else:
-                    [
-                        self.set_field(
-                            self.get_default_vector_field_name(
-                                field, field_type=field_type
-                            ),
-                            d,
-                        )
-                        if not self.is_empty_vector(vectors[i])
-                        else vector_error_treatment
-                        for i, d in enumerate(docs)
-                    ]
-                    return
+        with open(labels_fn, "w") as f:
+            f.write(str(labels))
 
-            # self.bulk_apply()
+        print(f"Saved labels to {labels_fn}")
+        # Add support if already encoded
+        def encode(doc):
+            with FileLogger():
+                doc[temp_vector_field] = model(self.get_field(text_field, doc))
+            return doc
 
+        self.apply(encode, select_fields=[text_field])
         # create_labels_from_text_field
         return self.label_from_list(
-            vector_field=field, model=model, label_list=list(labels)
+            vector_field=temp_vector_field,
+            model=model,
+            label_list=[x[0] for x in labels],
         )
 
     @track

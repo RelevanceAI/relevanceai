@@ -54,3 +54,29 @@ class LoguruLogger(AbstractLogger):
             if log_to_file:
                 logger.add(log_file_name, level=logging_level, rotation="100 MB")
         self._logger = logger
+
+
+class FileLogger:
+    """Log system output to a file if it gets messy."""
+
+    def __init__(self, fn: str = "logs"):
+        self.fn = fn
+        self._original_output = sys.stdout
+
+    def __enter__(self, fn: str = "logs"):
+        sys.stdout = open(self.fn, "w")
+
+    def __exit__(self, *args, **kw):
+        sys.stdout.close()
+        sys.stdout = self._original_output
+        if self._if_not_empty():
+            print(f"Logs have been saved to {self.fn}")
+
+    def _if_not_empty(self):
+        log_file = open(self.fn, "r")
+        for line in log_file:
+            log_file.close()
+            if line != "\n":
+                return True
+            else:
+                return False
