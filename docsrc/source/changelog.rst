@@ -4,11 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v1.0.9
+v1.1.0
 --------
 
 - Add low-touch way to label with a given model
-- Add wordcloud labelling
+- Add `label_from_dataset`, `label_from_list`, `label_from_common_words`
 
 v1.0.8
 ---------
