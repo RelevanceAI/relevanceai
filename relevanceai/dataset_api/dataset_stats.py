@@ -2,10 +2,12 @@
 """
 Pandas like dataset API
 """
+import matplotlib.pyplot as plt
 import pandas as pd
 
 from typing import List, Dict
 from relevanceai.analytics_funcs import track
+from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
 
@@ -79,6 +81,63 @@ class Stats(Read):
             return facets
         else:
             raise ValueError("invalid return_type, should be `dict` or `pandas`")
+
+    @track
+    def corr(self, X: str, Y: str, vector_field: str, alias: str, groupby: str = None):
+        """
+        Returns the Pearson correlation between two fields.
+
+        Parameters
+        ----------
+        X: str
+            A dataset field
+
+        Y: str
+            The other dataset field over which
+
+        Returns
+        -------
+        """
+        # todo: how to cover cases when fields are in schema but not "calculable" fields like clusters and deployables
+        # TODO: add groupby
+        cclient = ClusterClient(self.project, self.api_key, self.firebase_uid)
+        res = cclient.aggregate(
+            dataset_id=self.dataset_id,
+            vector_fields=[vector_field],
+            metrics=[{"name": "correlation", "fields": [X, Y], "agg": "correlation"}],
+            alias=alias,
+        )["results"]
+
+        clusters = sorted(res.keys())
+
+        if groupby is None:
+            categories = ["cluster"]
+        else:
+            series = Series(
+                project=self.project,
+                api_key=self.api_key,
+                dataset_id=self.dataset_id,
+                firebase_uid=self.firebase_uid,
+                field=groupby,
+            ).all(show_progress_bar=False)
+
+            categories = sorted(
+                pd.Series(map(lambda _: _[groupby], series)).drop_duplicates()
+            )
+
+        data = pd.DataFrame(data=[], columns=clusters, index=categories)
+
+        for cluster, values in res.items():
+            for value in values:
+                correlation_value = value["correlation"][X][Y]
+                category = value.get(groupby, "cluster")
+                data.at[category, cluster] = correlation_value
+
+        ax = plt.gca()
+        im = ax.imshow(data)
+
+        # cbar = ax.figure.colorbar(im, ax=ax)
+        # cbar.ax.set_ylabel(ch)
 
     @property
     def health(self) -> dict:
