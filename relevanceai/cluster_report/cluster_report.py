@@ -93,6 +93,7 @@ import pandas as pd
 import numpy as np
 from relevanceai.integration_checks import is_hdbscan_available, is_sklearn_available
 from relevanceai.warnings import warn_function_is_work_in_progress
+from relevanceai.cluster_report.grading import get_silhouette_grade
 from typing import Union, List, Dict, Any, Optional
 import functools
 from warnings import warn
@@ -287,6 +288,7 @@ class ClusterReport(DocUtils):
             return
 
     @property  # type: ignore
+    @track
     @functools.lru_cache(maxsize=128)
     def internal_report(self):
         """
@@ -295,7 +297,11 @@ class ClusterReport(DocUtils):
         self.X_silhouette_scores = silhouette_samples(
             self.X, self.cluster_labels, metric="euclidean"
         )
+        graded_score = self.X_silhouette_scores.mean()
+        grade = get_silhouette_grade(graded_score)
+
         _internal_report = {
+            "grade": grade,
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
                 "davies_bouldin_score": davies_bouldin_score(
@@ -568,6 +574,7 @@ class ClusterReport(DocUtils):
             return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
 
     @staticmethod
+    @track
     def calculate_centroids(X, cluster_labels):
         """Calculate the centes"""
         centroid_vectors = {}
@@ -576,6 +583,7 @@ class ClusterReport(DocUtils):
         return centroid_vectors
 
     @staticmethod
+    @track
     def calculate_medoids(X, cluster_labels):
         centroids = ClusterReport.calculate_centroids(X, cluster_labels)
         medoids = {}

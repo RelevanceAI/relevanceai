@@ -942,7 +942,6 @@ class ClusterOps(BatchAPIClient):
         return [np.concatenate(x) for x in list_of_vectors]
 
     def _get_vectors_from_documents(self, vector_fields: list, documents: List[Dict]):
-
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             documents = list(filter(DocUtils.list_doc_fields, documents))
@@ -1585,6 +1584,7 @@ class ClusterOps(BatchAPIClient):
 
         return stats
 
+    @track
     def report(self):
         """
         Get a report on your clusters.

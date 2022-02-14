@@ -2,6 +2,7 @@ import analytics
 import asyncio
 
 from typing import Callable
+
 from functools import wraps
 
 from relevanceai.config import CONFIG
@@ -9,7 +10,7 @@ from relevanceai.json_encoder import json_encoder
 
 
 def enable_tracking():
-    if CONFIG.is_field("mixpanel.enable_tracking"):
+    if CONFIG.is_field("mixpanel.enable_tracking", CONFIG.config):
         return CONFIG.get_field("mixpanel.enable_tracking", CONFIG.config)
 
 
@@ -28,11 +29,18 @@ def track(func: Callable):
                         "kwargs": kwargs,
                     }
                     if user_id is not None:
-                        analytics.track(
-                            user_id=user_id,
-                            event=json_encoder(event, force_string=True),
-                            properties=json_encoder(properties, force_string=True),
-                        )
+                        # Upsert/inserts/updates are too big to track
+                        if "insert" in event or "upsert" in event or "update" in event:
+                            analytics.track(
+                                user_id=user_id,
+                                event=event,
+                            )
+                        else:
+                            analytics.track(
+                                user_id=user_id,
+                                event=event,
+                                properties=json_encoder(properties, force_string=True),
+                            )
 
                 asyncio.ensure_future(send_analytics())
         except Exception as e:
