@@ -872,6 +872,9 @@ class Operations(Write):
         - Vectorize those into keywords
         - Label every document with those top keywords
 
+        .. note::
+            **New in v1.1.0**
+
         Parameters
         ------------
 
