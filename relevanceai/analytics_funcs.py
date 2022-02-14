@@ -2,6 +2,8 @@ import analytics
 import asyncio
 
 from typing import Callable
+
+import traceback
 from functools import wraps
 
 from relevanceai.config import CONFIG
@@ -9,7 +11,7 @@ from relevanceai.json_encoder import json_encoder
 
 
 def enable_tracking():
-    if CONFIG.is_field("mixpanel.enable_tracking"):
+    if CONFIG.is_field("mixpanel.enable_tracking", CONFIG.config):
         return CONFIG.get_field("mixpanel.enable_tracking", CONFIG.config)
 
 
@@ -24,7 +26,7 @@ def track(func: Callable):
                     event = f"pysdk-{func.__name__}"
                     kwargs.update(dict(zip(func.__code__.co_varnames, args)))
                     properties = {
-                        "args": args[1:],
+                        "args": args,
                         "kwargs": kwargs,
                     }
                     if user_id is not None:
@@ -36,6 +38,7 @@ def track(func: Callable):
 
                 asyncio.ensure_future(send_analytics())
         except Exception as e:
+            traceback.print_exc()
             pass
 
         return func(*args, **kwargs)

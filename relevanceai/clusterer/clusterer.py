@@ -21,7 +21,6 @@ You can view other examples of how to interact with this class here :ref:`integr
 import os
 import json
 import getpass
-import time
 import warnings
 
 import numpy as np
@@ -44,6 +43,8 @@ from relevanceai.dataset_api import Dataset
 from relevanceai.errors import NoDocumentsError
 
 from doc_utils import DocUtils
+
+from relevanceai.vector_tools.cluster import Cluster
 
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
@@ -181,7 +182,13 @@ class ClusterOps(BatchAPIClient):
     def _assign_sklearn_model(self, model):
         # Add support for not just sklearn models but sklearn models
         # with first -class integration for kmeans
-        from sklearn.cluster import KMeans, MiniBatchKMeans
+        from sklearn.cluster import (
+            KMeans,
+            MiniBatchKMeans,
+            DBSCAN,
+            Birch,
+            SpectralClustering,
+        )
 
         if model.__class__ == KMeans:
 
@@ -216,6 +223,17 @@ class ClusterOps(BatchAPIClient):
             new_model = BatchCentroidClusterModel(model)
             return new_model
 
+        elif model.__class__ in [SpectralClustering, Birch, DBSCAN]:
+
+            class CentroidClusterModel(ClusterBase):
+                def __init__(self, model):
+                    self.model: Union[KMeans, MiniBatchKMeans] = model
+
+                def fit_predict(self, X):
+                    return self.model.fit_predict(X)
+
+            new_model = CentroidClusterModel(model)
+            return new_model
         if hasattr(model, "fit_documents"):
             return model
         elif hasattr(model, "fit_predict"):
@@ -643,15 +661,6 @@ class ClusterOps(BatchAPIClient):
             )
             self.logger.info(results)
 
-            # give database time to make sure its there
-            time.sleep(2)
-            self.datasets.cluster.centroids.list_closest_to_center(
-                self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                centroid_vector_fields=self.vector_fields,
-                page_size=20,
-            )
         return
 
     def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
@@ -1241,6 +1250,11 @@ class ClusterOps(BatchAPIClient):
                     all_responses["inserted"] += v
                 elif isinstance(all_responses[k], list):
                     all_responses[k] += v
+
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
         return all_responses
 
     @track
@@ -1608,4 +1622,4 @@ class ClusterOps(BatchAPIClient):
             model=self.model,
             num_clusters=self.number_of_clusters,
         )
-        return self._report.get_cluster_internal_report()
+        return self._report.internal_report

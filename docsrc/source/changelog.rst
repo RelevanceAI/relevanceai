@@ -4,6 +4,20 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.0.5
+--------
+
+**Breaking changes**
+
+- `get_cluster_internal_report` has now been renamed to `internal_report`
+
+Non-breaking changes:  
+
+- Remove repetitive print statements
+- Add outlier support for cluster report
+- Support for centroids and medoids in typing
+- Add pretty printing for cluster overall reporting
+
 v1.0.4
 ---------
 

@@ -1182,7 +1182,7 @@ class Operations(Write):
 
         if n_components == 3:
             projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
-            print(f"You can now view your {projector_url}")
+            print(f"You can now view your projector at {projector_url}")
 
         return results
 
@@ -1398,9 +1398,29 @@ class Operations(Write):
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
-        # Get users excited about being able to build a dashboard!
-        print(
-            "Build your clustering app here: "
-            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-        )
         return clusterer
+
+    def aggregate(
+        self,
+        groupby: list = [],
+        metrics: list = [],
+        filters: list = [],
+        sort: list = [],
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        alias: str = "default",
+    ):
+        return self.services.aggregate.aggregate(
+            dataset_id=self.dataset_id,
+            groupby=groupby,
+            metrics=metrics,
+            filters=filters,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+            alias=alias,
+            # sort=sort
+        )

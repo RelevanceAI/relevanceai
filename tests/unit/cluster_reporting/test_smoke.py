@@ -34,5 +34,5 @@ def test_cluster_reporting_smoke():
         X=X, cluster_labels=cluster_labels, num_clusters=N_CLUSTERS, model=kmeans
     )
 
-    internal_report = report.get_cluster_internal_report()
+    internal_report = report.internal_report
     assert len(internal_report) >= 0
