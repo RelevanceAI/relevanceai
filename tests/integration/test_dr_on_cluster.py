@@ -13,4 +13,5 @@ def test_dr_on_cluster(test_client: Client):
     ds = test_client.Dataset("sample")
     ds.insert_documents(docs)
     ds.auto_reduce_dimensions("pca-3", vector_fields=["sample_1_vector_"])
+    ds.auto_cluster("kmeans-2", vector_fields=["_dr_.pca-3.sample_1_vector_"])
     assert True
