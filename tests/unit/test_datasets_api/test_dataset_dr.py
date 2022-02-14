@@ -21,3 +21,8 @@ def test_auto_reduce_dimensions(test_df: Dataset):
 
     vector_field_name = ".".join(["_dr_", ALIAS, OUTPUT_VECTOR_FIELD])
     assert vector_field_name in test_df.schema, "Did not reduce dimensions properly"
+
+
+def test_clustering_on_dr(test_df: Dataset):
+    test_df.auto_cluster("kmeans-2", vector_fields=["_dr_.pca-3.sample_1_vector_"])
+    assert "_cluster_._dr_.pca-3.sample_1_vector_.kmeans-2" in test_df.schema

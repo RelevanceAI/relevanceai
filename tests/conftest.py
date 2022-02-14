@@ -102,6 +102,7 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
     results = df.upsert_documents(vector_documents)
     yield results
 
+
 @pytest.fixture(scope="module")
 def test_csv_df(test_df: Dataset, vector_documents: List[Dict]):
     """Sample csv dataset"""
