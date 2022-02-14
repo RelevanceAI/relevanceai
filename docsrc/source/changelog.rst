@@ -4,6 +4,16 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.0.8
+---------
+
+- Fix document-utils for clustering on DR
+
+v1.0.7
+-------
+
+- Add grading for cluster report
+
 v1.0.6
 -------
 
