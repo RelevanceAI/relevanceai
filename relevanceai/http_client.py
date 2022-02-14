@@ -121,6 +121,9 @@ class Client(BatchAPIClient, DocUtils):
 
         self._identify()
 
+        if region:
+            self.region = region
+
         self.base_url = self._region_to_url(self.region)
         self.base_ingest_url = self._region_to_ingestion_url(self.region)
 
