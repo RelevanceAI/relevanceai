@@ -1584,6 +1584,7 @@ class ClusterOps(BatchAPIClient):
 
         return stats
 
+    @track
     def report(self):
         """
         Get a report on your clusters.

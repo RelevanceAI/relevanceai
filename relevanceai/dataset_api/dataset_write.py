@@ -11,10 +11,12 @@ from doc_utils import DocUtils
 
 from typing import Dict, List, Union, Callable
 
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 
 
 class Write(Read):
+    @track
     def insert_documents(
         self,
         documents: list,
@@ -89,6 +91,7 @@ class Write(Read):
             **kwargs,
         )
 
+    @track
     def insert_csv(
         self,
         filepath_or_buffer,
@@ -149,6 +152,7 @@ class Write(Read):
             auto_generate_id=auto_generate_id,
         )
 
+    @track
     def insert_pandas_dataframe(
         self, df: pd.DataFrame, col_for_id=None, *args, **kwargs
     ):
@@ -190,6 +194,7 @@ class Write(Read):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
+    @track
     def upsert_documents(
         self,
         documents: list,
@@ -258,6 +263,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
+    @track
     def apply(
         self,
         func: Callable,
@@ -337,6 +343,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
+    @track
     def bulk_apply(
         self,
         bulk_func: Callable,
@@ -395,6 +402,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
+    @track
     def cat(self, vector_name: Union[str, None] = None, fields: List = []):
         """
         Concatenates numerical fields along an axis and reuploads this vector for other operations
@@ -482,6 +490,7 @@ class Write(Read):
 
         self.pull_update_push(self.dataset_id, add_cluster_labels)
 
+    @track
     def create(self, schema: dict = {}) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
@@ -550,6 +559,7 @@ class Write(Read):
         """
         return self.datasets.create(self.dataset_id, schema=schema)
 
+    @track
     def delete(self):
         """
         Delete a dataset

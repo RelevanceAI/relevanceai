@@ -288,6 +288,7 @@ class ClusterReport(DocUtils):
             return
 
     @property  # type: ignore
+    @track
     @functools.lru_cache(maxsize=128)
     def internal_report(self):
         """
@@ -573,6 +574,7 @@ class ClusterReport(DocUtils):
             return pd.concat([metrics, overall_df.reset_index()], axis=1).fillna(" ")
 
     @staticmethod
+    @track
     def calculate_centroids(X, cluster_labels):
         """Calculate the centes"""
         centroid_vectors = {}
@@ -581,6 +583,7 @@ class ClusterReport(DocUtils):
         return centroid_vectors
 
     @staticmethod
+    @track
     def calculate_medoids(X, cluster_labels):
         centroids = ClusterReport.calculate_centroids(X, cluster_labels)
         medoids = {}
