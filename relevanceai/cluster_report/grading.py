@@ -1,5 +1,7 @@
 """Report for grading
 """
+
+
 def get_silhouette_grade(silhouette_score):
     if silhouette_score > 0.9:
         return "S"

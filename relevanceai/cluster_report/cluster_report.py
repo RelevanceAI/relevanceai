@@ -296,7 +296,11 @@ class ClusterReport(DocUtils):
         self.X_silhouette_scores = silhouette_samples(
             self.X, self.cluster_labels, metric="euclidean"
         )
+        graded_score = self.X_silhouette_scores.mean()
+        grade = get_silhouette_grade(graded_score)
+
         _internal_report = {
+            "grade": grade,
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
                 "davies_bouldin_score": davies_bouldin_score(
