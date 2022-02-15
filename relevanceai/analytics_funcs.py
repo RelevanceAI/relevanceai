@@ -1,5 +1,6 @@
 import analytics
 import asyncio
+import sys
 
 from typing import Callable
 
@@ -30,7 +31,12 @@ def track(func: Callable):
                     }
                     if user_id is not None:
                         # Upsert/inserts/updates are too big to track
-                        if "insert" in event or "upsert" in event or "update" in event:
+                        if (
+                            "insert" in event
+                            or "upsert" in event
+                            or "update" in event
+                            or sys.getsizeof(json_encoder(properties)) > 30000
+                        ):
                             analytics.track(
                                 user_id=user_id,
                                 event=event,
