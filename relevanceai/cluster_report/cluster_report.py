@@ -455,14 +455,19 @@ class ClusterReport(DocUtils):
                     squared_errors, axis=2
                 )
 
-                squared_errors_by_col = {}
+                squared_errors_by_col = []
 
                 for f in range(len(squared_errors[0])):
-                    squared_errors_by_col[f] = ClusterReport.summary_statistics(
-                        squared_errors[:, f], axis=2
+                    squared_errors_by_col.append(
+                        {
+                            "cluster_id": f,
+                            "squared_errors": ClusterReport.summary_statistics(
+                                squared_errors[:, f], axis=2
+                            ),
+                        }
                     )
 
-                center_stats["by_features"]["squared_errors"] = squared_errors_by_col
+                center_stats["by_features"] = squared_errors_by_col
 
                 cluster_label_doc["centers"] = center_stats
 
