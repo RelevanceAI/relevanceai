@@ -7,8 +7,10 @@ import time
 import traceback
 import uuid
 import pandas as pd
-from datetime import datetime
+
 from ast import literal_eval
+from datetime import datetime
+from pathlib import Path
 from typing import Callable, List, Dict, Union, Any
 
 from doc_utils import DocUtils
@@ -677,6 +679,44 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             for doc in dataframe.to_dict(orient="records")
         ]
         results = self._insert_documents(dataset_id, documents, *args, **kwargs)
+        self.print_search_dashboard_url(dataset_id)
+        return results
+
+    def insert_images_folder(
+        self,
+        dataset_id: str,
+        field: str,
+        path: Union[Path, str],
+        recurse: bool = True,
+        *args,
+        **kwargs,
+    ) -> dict:
+        if isinstance(path, str):
+            path = Path(path)
+        if not path.is_dir():
+            raise Exception(f"{path} is not a proper path")
+
+        from mimetypes import types_map
+
+        image_extensions = set(
+            k.lower() for k, v in types_map.items() if v.startswith("image/")
+        )
+
+        def get_paths(path: Path, images: List[str]) -> List[str]:
+            for file in path.iterdir():
+                if file.is_dir() and recurse:
+                    images.extend(get_paths(file, []))
+                elif file.is_file() and file.suffix.lower() in image_extensions:
+                    images.append(str(file))
+                else:
+                    continue
+
+            return images
+
+        images = get_paths(path, [])
+        documents = list(map(lambda image: {"_id": uuid.uuid4(), field: image}, images))
+        results = self._insert_documents(dataset_id, documents, *args, **kwargs)
+        self.image_fields.append(field)
         self.print_search_dashboard_url(dataset_id)
         return results
 
