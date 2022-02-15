@@ -57,8 +57,10 @@ class DimReductionBase(LoguruLogger, DocUtils):
         dims: int = 3,
     ):
         documents = list(self.filter_docs_for_fields([vector_field], documents))
-        vectors = self.get_field_across_documents(
-            vector_field, documents, missing_treatment="skip"
+        vectors = np.array(
+            self.get_field_across_documents(
+                vector_field, documents, missing_treatment="skip"
+            )
         )
         dr_vectors = self.fit_transform(vectors, dims=dims)
         dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
@@ -129,7 +131,7 @@ class Ivis(DimReductionBase):
     def fit_transform(
         self,
         vectors: np.ndarray,
-        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["tsne"],
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["ivis"],
         dims: int = 3,
     ) -> np.ndarray:
         try:

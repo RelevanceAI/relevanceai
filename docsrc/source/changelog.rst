@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.1.2
+-------
+
+- Added new DR methods to auto_reduce_dimensions
+- Fixed documentation on clustering
+
 v1.1.1
 --------
 

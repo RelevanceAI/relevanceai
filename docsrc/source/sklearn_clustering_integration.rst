@@ -18,18 +18,13 @@ DBSCAN Example
     from relevanceai import Client
     from sklearn.cluster import DBSCAN
 
-    # instantiate the client
-    client = Client()
+    model = DBSCAN()
+
+    clusterer = client.ClusterOps(model=model, alias="dbscan")
 
     # Retrieve the relevant dataset
     df = client.Dataset("sample_dataset_id")
-
-    model = DBSCAN()
-
-    clusterer = client.ClusterOps(model, alias="dbscan")
-
-    # check that cluster is now in schema
-    df.schema
+    clusterer.fit_predict_update(df, vector_fields=['example_vector_'])    
 
 K Means Example
 #################
