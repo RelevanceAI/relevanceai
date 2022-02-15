@@ -5,6 +5,10 @@
 
 [Join our slack channel!](https://join.slack.com/t/relevance-ai/shared_invite/zt-11fo8oush-dHPd57wamhoQ7J5arNv1mg)
 
+**Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12GiCo9r0JpFqcg5Tmae28Wz0VPMpHul_?usp=sharing)
+
 For guides and tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 
 ## 🔥 Features
