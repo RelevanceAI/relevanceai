@@ -149,7 +149,7 @@ class ClusterReport(DocUtils):
     def __init__(
         self,
         X: Union[list, np.ndarray],
-        cluster_labels: Union[List[Union[str, float]], np.ndarray[Any, Any]],
+        cluster_labels: Union[List[Union[str, float]], np.ndarray],
         model: KMeans = None,
         num_clusters: int = None,
         outlier_label: Union[str, int] = -1,
