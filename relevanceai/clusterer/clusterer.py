@@ -1318,16 +1318,7 @@ class ClusterOps(BatchAPIClient):
 
         if include_grade:
             try:
-                from relevanceai.cluster_report.grading import get_silhouette_grade
-                from sklearn.metrics import silhouette_samples
-
-                score = silhouette_samples(
-                    vectors, cluster_labels, metric="euclidean"
-                ).mean()
-                grade = get_silhouette_grade(score)
-                print(
-                    f"You have received a grade of {grade} based on the silhouette score of {score}."
-                )
+                self._calculate_silhouette_grade(vectors, cluster_labels)
             except Exception as e:
                 print(e)
                 pass
@@ -1336,6 +1327,17 @@ class ClusterOps(BatchAPIClient):
             documents,
             inplace=inplace,
             return_only_clusters=return_only_clusters,
+        )
+
+    @staticmethod
+    def _calculate_silhouette_grade(vectors, cluster_labels):
+        from relevanceai.cluster_report.grading import get_silhouette_grade
+        from sklearn.metrics import silhouette_samples
+
+        score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
+        grade = get_silhouette_grade(score)
+        print(
+            f"You have received a grade of {grade} based on the mean silhouette score of {score}."
         )
 
     @track
