@@ -684,13 +684,28 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
     def insert_images_folder(
         self,
-        dataset_id: str,
         field: str,
         path: Union[Path, str],
         recurse: bool = True,
         *args,
         **kwargs,
     ) -> dict:
+        """
+        Given a path to a directory, this method loads all image-related files
+        into a Dataset.
+
+        Parameters
+        ----------
+        field: str
+            A text field of a dataset.
+
+        path: Union[Path, str]
+            The path to the directory containing images.
+
+        recurse: bool
+            Indicator that determines whether to recursively load images from
+            subdirectories in the directory.
+        """
         if isinstance(path, str):
             path = Path(path)
         if not path.is_dir():
@@ -715,9 +730,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         images = get_paths(path, [])
         documents = list(map(lambda image: {"_id": uuid.uuid4(), field: image}, images))
-        results = self._insert_documents(dataset_id, documents, *args, **kwargs)
+        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
         self.image_fields.append(field)
-        self.print_search_dashboard_url(dataset_id)
+        self.print_search_dashboard_url(self.dataset_id)
         return results
 
     def print_search_dashboard_url(self, dataset_id):
