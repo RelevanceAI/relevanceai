@@ -35,7 +35,10 @@ def track(func: Callable):
                             "insert" in event
                             or "upsert" in event
                             or "update" in event
-                            or sys.getsizeof(json_encoder(properties)) > 30000
+                            or sys.getsizeof(
+                                json_encoder(properties, force_string=True)
+                            )
+                            > 30000
                         ):
                             analytics.track(
                                 user_id=user_id,
