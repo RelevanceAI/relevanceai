@@ -70,6 +70,7 @@ class ExampleDatasets:
             number_of_documents=number_of_documents,
             select_fields=select_fields,
         )
+        client.config.reset()
         return documents
 
     @staticmethod
