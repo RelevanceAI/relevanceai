@@ -32,20 +32,20 @@ You can run cluster reporting as a standalone module.
     cluster_labels = kmeans.fit_predict(X)
 
     report = ClusterReport(
-        X=X, 
-        cluster_labels=cluster_labels, 
-        num_clusters=N_CLUSTERS, 
+        X=X,
+        cluster_labels=cluster_labels,
+        num_clusters=N_CLUSTERS,
         model=kmeans
     )
 
     # JSON output
     report.internal_report
-    
+
     # Prettyprinted report of overall statistics
     report.internal_overall_report
 
 
-You can also insert your own centroid vectors if you want them to be represented. 
+You can also insert your own centroid vectors if you want them to be represented.
 For example - you may want to measure off medoids (points in your dataset) instead of centroids
 (as opposed to points outside of your dataset).
 
@@ -64,8 +64,8 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
     # medoids = ClusterReport.calculate_medoids(X, cluster_labels)
 
     report = ClusterReport(
-        X=X, 
-        cluster_labels=cluster_labels, 
+        X=X,
+        cluster_labels=cluster_labels,
         centroid_vectors=centroids
     )
     report.internal_overall_report
@@ -81,8 +81,8 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
     medoids = ClusterReport.calculate_medoids(X, cluster_labels)
 
     report = ClusterReport(
-        X=X, 
-        cluster_labels=cluster_labels, 
+        X=X,
+        cluster_labels=cluster_labels,
         centroid_vectors=centroids
     )
     report.internal_overall_report
@@ -147,7 +147,7 @@ class ClusterReport(DocUtils):
     def __init__(
         self,
         X: Union[list, np.ndarray],
-        cluster_labels: List[Union[str, float]],
+        cluster_labels: Union[List[Union[str, float]], np.ndarray],
         model: KMeans = None,
         num_clusters: int = None,
         outlier_label: Union[str, int] = -1,
