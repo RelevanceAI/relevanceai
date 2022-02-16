@@ -188,6 +188,11 @@ class ClusterOps(BatchAPIClient):
             DBSCAN,
             Birch,
             SpectralClustering,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
         )
 
         if model.__class__ == KMeans:
@@ -223,7 +228,16 @@ class ClusterOps(BatchAPIClient):
             new_model = BatchCentroidClusterModel(model)
             return new_model
 
-        elif model.__class__ in [SpectralClustering, Birch, DBSCAN]:
+        elif model.__class__ in [
+            SpectralClustering,
+            Birch,
+            DBSCAN,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
+        ]:
 
             class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
