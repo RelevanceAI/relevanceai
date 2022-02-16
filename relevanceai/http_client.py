@@ -47,6 +47,7 @@ from functools import lru_cache
 import analytics
 
 from relevanceai.analytics_funcs import track, identify
+from relevanceai.utils import beta, introduced_in_version
 
 vis_requirements = False
 try:
@@ -512,3 +513,11 @@ class Client(BatchAPIClient, DocUtils):
             self.print_search_dashboard_url(self.dataset_id)
         else:
             print("You can build your search app at https://cloud.relevance.ai")
+
+    @introduced_in_version("1.1.6")
+    @beta
+    def search_datasets(self, query: str):
+        """
+        Search through your datasets.
+        """
+        return [x for x in self.list_datasets()["datasets"] if query in x]
