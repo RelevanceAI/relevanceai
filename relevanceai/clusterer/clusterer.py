@@ -37,7 +37,7 @@ from relevanceai.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
-from relevanceai.integration_checks import is_sklearn_available
+from relevanceai.integration_checks import is_sklearn_available, is_hdbscan_available
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
 from relevanceai.errors import NoDocumentsError
@@ -188,8 +188,27 @@ class ClusterOps(BatchAPIClient):
             DBSCAN,
             Birch,
             SpectralClustering,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
         )
 
+        POSSIBLE_MODELS = [
+            SpectralClustering,
+            Birch,
+            DBSCAN,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
+        ]
+        if is_hdbscan_available():
+            from hdbscan import HDBSCAN
+
+            POSSIBLE_MODELS.append(HDBSCAN)
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
@@ -223,7 +242,7 @@ class ClusterOps(BatchAPIClient):
             new_model = BatchCentroidClusterModel(model)
             return new_model
 
-        elif model.__class__ in [SpectralClustering, Birch, DBSCAN]:
+        elif isinstance(model, tuple(POSSIBLE_MODELS)):
 
             class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
@@ -237,13 +256,13 @@ class ClusterOps(BatchAPIClient):
                 def get_centers(self):
                     # Get the centers for each label
                     centers = []
-                    for l in self._labels:
+                    for l in sorted(np.unique(self._labels).tolist()):
                         centers.append(self._X[self._labels == l].mean(axis=0).tolist())
                     return centers
 
             new_model = CentroidClusterModel(model)
             return new_model
-        if hasattr(model, "fit_documents"):
+        elif hasattr(model, "fit_documents"):
             return model
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
@@ -257,7 +276,10 @@ class ClusterOps(BatchAPIClient):
     def _assign_model(self, model):
         # Check if this is a model that will fit
         # otherwise - forces a Clusterbase
-        if is_sklearn_available() and "sklearn" in str(type(model)):
+        if (is_sklearn_available() or is_hdbscan_available()) and (
+            "sklearn" in str(type(model)).lower()
+            or "hdbscan" in str(type(model)).lower()
+        ):
             model = self._assign_sklearn_model(model)
             if model is not None:
                 return model
@@ -266,11 +288,11 @@ class ClusterOps(BatchAPIClient):
             return model
         elif hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_predict"):
-            # Support for SKLEARN interface
-            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
+        # elif hasattr(model, "fit_predict"):
+        #     # Support for SKLEARN interface
+        #     data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
+        #     ClusterModel = type("ClusterBase", (ClusterBase,), data)
+        #     return ClusterModel()
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
