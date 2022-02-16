@@ -225,12 +225,21 @@ class ClusterOps(BatchAPIClient):
 
         elif model.__class__ in [SpectralClustering, Birch, DBSCAN]:
 
-            class CentroidClusterModel(ClusterBase):
+            class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
-                    self.model: Union[KMeans, MiniBatchKMeans] = model
+                    self.model: Union[SpectralClustering, Birch, DBSCAN] = model
 
                 def fit_predict(self, X):
-                    return self.model.fit_predict(X)
+                    self._X = np.array(X)
+                    self._labels = self.model.fit_predict(X)
+                    return self._labels
+
+                def get_centers(self):
+                    # Get the centers for each label
+                    centers = []
+                    for l in self._labels:
+                        centers.append(self._X[self._labels == l].mean(axis=1).tolist())
+                    return centers
 
             new_model = CentroidClusterModel(model)
             return new_model
@@ -1340,7 +1349,6 @@ class ClusterOps(BatchAPIClient):
             f"You have received a grade of {grade} based on the mean silhouette score of {score}."
         )
 
-    @track
     def set_cluster_labels_across_documents(
         self,
         cluster_labels: list,
