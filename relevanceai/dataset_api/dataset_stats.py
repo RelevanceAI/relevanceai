@@ -2,10 +2,14 @@
 """
 Pandas like dataset API
 """
+from tkinter import font
+from tokenize import group
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from typing import List, Dict
+from typing import Dict, List, Optional
+
 from relevanceai.analytics_funcs import track
 from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset_api.dataset_read import Read
@@ -82,8 +86,15 @@ class Stats(Read):
         else:
             raise ValueError("invalid return_type, should be `dict` or `pandas`")
 
-    @track
-    def corr(self, X: str, Y: str, vector_field: str, alias: str, groupby: str = None):
+    def corr(
+        self,
+        X: str,
+        Y: str,
+        vector_field: str,
+        alias: str,
+        groupby: Optional[str] = None,
+        fontsize: int = 16,
+    ):
         """
         Returns the Pearson correlation between two fields.
 
@@ -93,18 +104,32 @@ class Stats(Read):
             A dataset field
 
         Y: str
-            The other dataset field over which
+            The other dataset field
 
-        Returns
-        -------
+        vector_field: str
+            The vector field over which the clustering has been performed
+
+        alias: str
+            The alias of the clustering
+
+        groupby: Optional[str]
+            A field to group the correlations over
+
+        fontsize: int
+            The font size of the values in the image
         """
         # todo: how to cover cases when fields are in schema but not "calculable" fields like clusters and deployables
-        # TODO: add groupby
         cclient = ClusterClient(self.project, self.api_key, self.firebase_uid)
+        groupby_agg = (
+            []
+            if groupby is None
+            else [{"name": groupby, "field": groupby, "agg": "correlation"}]
+        )
         res = cclient.aggregate(
             dataset_id=self.dataset_id,
             vector_fields=[vector_field],
             metrics=[{"name": "correlation", "fields": [X, Y], "agg": "correlation"}],
+            groupby=groupby_agg,
             alias=alias,
         )["results"]
 
@@ -125,19 +150,59 @@ class Stats(Read):
                 pd.Series(map(lambda _: _[groupby], series)).drop_duplicates()
             )
 
-        data = pd.DataFrame(data=[], columns=clusters, index=categories)
+        # Use a pandas DataFrame for easy indexing
+        dataframe = pd.DataFrame(data=[], columns=clusters, index=categories)
 
         for cluster, values in res.items():
             for value in values:
                 correlation_value = value["correlation"][X][Y]
                 category = value.get(groupby, "cluster")
-                data.at[category, cluster] = correlation_value
+                dataframe.at[category, cluster] = correlation_value
 
-        ax = plt.gca()
-        im = ax.imshow(data)
+        # Only needed pandas DataFrame for indexing, now convert to numpy
+        # ndarray for convenience.
+        data = dataframe.to_numpy(dtype=float)
 
-        # cbar = ax.figure.colorbar(im, ax=ax)
-        # cbar.ax.set_ylabel(ch)
+        fig, ax = plt.subplots(figsize=(2 * len(clusters), 2 * len(categories)))
+        cmap = plt.get_cmap("coolwarm_r")
+        cmap.set_bad("k")  # if np.nan, set imshow cell to black
+        im = ax.imshow(data, norm=mpl.colors.Normalize(vmin=-1, vmax=1), cmap=cmap)
+
+        ax.set_xticks(
+            range(data.shape[1]),
+            labels=clusters,
+            rotation=-30,
+            rotation_mode="anchor",
+            ha="right",
+            fontsize=fontsize + 1,
+        )
+        ax.set_yticks(range(data.shape[0]), labels=categories, fontsize=fontsize + 1)
+        ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
+
+        ax.spines[:].set_visible(False)
+        ax.set_xticks([n - 0.5 for n in range(data.shape[1] + 1)], minor=True)
+        ax.set_yticks([n - 0.5 for n in range(data.shape[0] + 1)], minor=True)
+        ax.grid(which="minor", color="w", linestyle="-", linewidth=3)
+        ax.tick_params(which="minor", bottom=False, left=False)
+
+        for column, _ in enumerate(clusters):
+            for row, _ in enumerate(categories):
+                # Ensure that the negative sign doesn't offset the text by
+                # offseting positive values.
+                if data[row][column] < 0:
+                    text = f"{data[row][column]:.2f}"
+                else:
+                    text = f" {data[row][column]:.2f}"
+                im.axes.text(
+                    column,
+                    row,
+                    text,
+                    dict(horizontalalignment="center", verticalalignment="center"),
+                    fontsize=fontsize,
+                )
+
+        fig.tight_layout()
+        plt.show()
 
     @property
     def health(self) -> dict:
