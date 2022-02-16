@@ -256,7 +256,7 @@ class ClusterOps(BatchAPIClient):
                 def get_centers(self):
                     # Get the centers for each label
                     centers = []
-                    for l in self._labels:
+                    for l in sorted(np.unique(self._labels).tolist()):
                         centers.append(self._X[self._labels == l].mean(axis=0).tolist())
                     return centers
 
