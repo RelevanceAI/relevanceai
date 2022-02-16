@@ -24,10 +24,15 @@ HDBSCAN Example
     # Retrieve the relevant dataset
     df = client.Dataset("sample_dataset_id")
 
+    from relevanceai import mock_documents
+    df.upsert_documents(mock_documents(100))
+
     model = hdbscan.HDBSCAN()
 
     clusterer = client.ClusterOps(model, alias="hdbscan")
-    clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
+    clusterer.fit_predict_update(
+        df, vector_fields=["sample_1_vector_"]
+    )
 
     # check that cluster is now in schema
     df.schema

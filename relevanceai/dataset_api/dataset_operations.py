@@ -741,6 +741,7 @@ class Operations(Write):
         return counter
         # return dict(counter.most_common(most_common))
 
+    @track
     def get_wordcloud(
         self,
         text_fields: list,
@@ -852,6 +853,7 @@ class Operations(Write):
         )
         data["configuration"]["cluster-descriptions"][cluster_value] = str(top_words)
 
+    @track
     def label_from_common_words(
         self,
         text_field: str,
@@ -1454,6 +1456,50 @@ class Operations(Write):
             query=query,
         )
 
+    def _run_dr_algorithm(
+        self,
+        algorithm: str,
+        vector_fields: list,
+        documents: list,
+        alias: str,
+        n_components: int = 3,
+    ):
+        original_name = algorithm
+        # Make sure that the letter case does not matter
+        algorithm = algorithm.upper()
+        if algorithm == "PCA":
+            from relevanceai.vector_tools.dim_reduction import PCA
+
+            model = PCA()
+        elif algorithm == "TSNE":
+            from relevanceai.vector_tools.dim_reduction import TSNE
+
+            model = TSNE()
+        elif algorithm == "UMAP":
+            from relevanceai.vector_tools.dim_reduction import UMAP
+
+            model = UMAP()
+        elif algorithm == "IVIS":
+            from relevanceai.vector_tools.dim_reduction import Ivis
+
+            model = Ivis()
+        else:
+            raise ValueError(
+                f'"{original_name}" is not a supported '
+                "dimensionality reduction algorithm. "
+                "Currently, the supported algorithms are: "
+                "PCA, TSNE, UMAP, and IVIS"
+            )
+
+        print(f"Run {algorithm}...")
+        # Returns a list of documents with dr vector
+        return model.fit_transform_documents(
+            vector_field=vector_fields[0],
+            documents=documents,
+            alias=alias,
+            dims=n_components,
+        )
+
     @track
     def auto_reduce_dimensions(
         self,
@@ -1465,15 +1511,10 @@ class Operations(Write):
         """
         Run dimensionality reduction quickly on a dataset on a small number of documents.
         This is useful if you want to quickly see a projection of your dataset.
-        Currently, the only supported algorithm is `PCA`.
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-
-
-        .. note::
-            **New in v0.32.0**
 
         Parameters
         ----------
@@ -1534,16 +1575,13 @@ class Operations(Write):
             number_of_documents=number_of_documents,
         )
 
-        print("Run PCA...")
-        if algorithm == "pca":
-            dr_documents = self._run_pca(
-                vector_fields=vector_fields,
-                documents=documents,
-                alias=alias,
-                n_components=n_components,
-            )
-        else:
-            raise ValueError("DR algorithm not supported.")
+        dr_documents = self._run_dr_algorithm(
+            algorithm=algorithm,
+            vector_fields=vector_fields,
+            documents=documents,
+            alias=alias,
+            n_components=n_components,
+        )
 
         results = self.update_documents(self.dataset_id, dr_documents)
 
@@ -1566,15 +1604,10 @@ class Operations(Write):
         """
         Run dimensionality reduction quickly on a dataset on a small number of documents.
         This is useful if you want to quickly see a projection of your dataset.
-        Currently, the only supported algorithm is `PCA`.
 
         .. warning::
             This function is currently in beta and is likely to change in the future.
             We recommend not using this in any production systems.
-
-
-        .. note::
-            **New in v0.32.0**
 
         Parameters
         ----------
@@ -1624,37 +1657,17 @@ class Operations(Write):
             number_of_documents=number_of_documents,
         )
 
-        print("Run PCA...")
-        if algorithm == "pca":
-            dr_documents = self._run_pca(
-                vector_fields=vector_fields,
-                documents=documents,
-                alias=alias,
-                n_components=n_components,
-            )
-
-        else:
-            raise ValueError(
-                "DR algorithm not supported. Only supported algorithms are `pca`."
-            )
+        dr_documents = self._run_dr_algorithm(
+            algorithm=algorithm,
+            vector_fields=vector_fields,
+            documents=documents,
+            alias=alias,
+            n_components=n_components,
+        )
 
         results = self.update_documents(self.dataset_id, dr_documents)
 
         return results
-
-    def _run_pca(
-        self, vector_fields: list, documents: list, alias: str, n_components: int = 3
-    ):
-        from relevanceai.vector_tools.dim_reduction import PCA
-
-        model = PCA()
-        # Returns a list of documents with the dr vector
-        return model.fit_transform_documents(
-            vector_field=vector_fields[0],
-            documents=documents,
-            alias=alias,
-            dims=n_components,
-        )
 
     @track
     def auto_cluster(self, alias: str, vector_fields: List[str], chunksize: int = 1024):
@@ -1738,7 +1751,9 @@ class Operations(Write):
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
             )
-            clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
+            clusterer.fit_predict_update(
+                dataset=self, vector_fields=vector_fields, include_grade=True
+            )
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
@@ -1767,6 +1782,7 @@ class Operations(Write):
 
         return clusterer
 
+    @track
     def aggregate(
         self,
         groupby: list = [],

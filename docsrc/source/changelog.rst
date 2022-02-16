@@ -4,6 +4,26 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.1.4
+----------
+
+- Add grading to auto_clustering
+- Bug fix for cluster report
+- Add DBSCAN centroids
+- Fix HDBSCAN
+- Add support for BIRCH, OPTICS and all native sklearn algorithms
+
+v1.1.2
+-------
+
+- Added new DR methods to auto_reduce_dimensions
+- Fixed documentation on clustering
+
+v1.1.1
+--------
+
+- Change data structure of report structure
+
 v1.1.0
 --------
 

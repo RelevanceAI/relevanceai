@@ -37,7 +37,7 @@ from relevanceai.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
-from relevanceai.integration_checks import is_sklearn_available
+from relevanceai.integration_checks import is_sklearn_available, is_hdbscan_available
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
 from relevanceai.errors import NoDocumentsError
@@ -188,8 +188,27 @@ class ClusterOps(BatchAPIClient):
             DBSCAN,
             Birch,
             SpectralClustering,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
         )
 
+        POSSIBLE_MODELS = [
+            SpectralClustering,
+            Birch,
+            DBSCAN,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
+        ]
+        if is_hdbscan_available():
+            from hdbscan import HDBSCAN
+
+            POSSIBLE_MODELS.append(HDBSCAN)
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
@@ -223,18 +242,27 @@ class ClusterOps(BatchAPIClient):
             new_model = BatchCentroidClusterModel(model)
             return new_model
 
-        elif model.__class__ in [SpectralClustering, Birch, DBSCAN]:
+        elif isinstance(model, tuple(POSSIBLE_MODELS)):
 
-            class CentroidClusterModel(ClusterBase):
+            class CentroidClusterModel(CentroidClusterBase):
                 def __init__(self, model):
-                    self.model: Union[KMeans, MiniBatchKMeans] = model
+                    self.model: Union[SpectralClustering, Birch, DBSCAN] = model
 
                 def fit_predict(self, X):
-                    return self.model.fit_predict(X)
+                    self._X = np.array(X)
+                    self._labels = self.model.fit_predict(X)
+                    return self._labels
+
+                def get_centers(self):
+                    # Get the centers for each label
+                    centers = []
+                    for l in sorted(np.unique(self._labels).tolist()):
+                        centers.append(self._X[self._labels == l].mean(axis=0).tolist())
+                    return centers
 
             new_model = CentroidClusterModel(model)
             return new_model
-        if hasattr(model, "fit_documents"):
+        elif hasattr(model, "fit_documents"):
             return model
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
@@ -248,7 +276,10 @@ class ClusterOps(BatchAPIClient):
     def _assign_model(self, model):
         # Check if this is a model that will fit
         # otherwise - forces a Clusterbase
-        if is_sklearn_available() and "sklearn" in str(type(model)):
+        if (is_sklearn_available() or is_hdbscan_available()) and (
+            "sklearn" in str(type(model)).lower()
+            or "hdbscan" in str(type(model)).lower()
+        ):
             model = self._assign_sklearn_model(model)
             if model is not None:
                 return model
@@ -257,11 +288,11 @@ class ClusterOps(BatchAPIClient):
             return model
         elif hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_predict"):
-            # Support for SKLEARN interface
-            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
+        # elif hasattr(model, "fit_predict"):
+        #     # Support for SKLEARN interface
+        #     data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
+        #     ClusterModel = type("ClusterBase", (ClusterBase,), data)
+        #     return ClusterModel()
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
@@ -805,7 +836,11 @@ class ClusterOps(BatchAPIClient):
 
     @track
     def fit_predict_update(
-        self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
+        self,
+        dataset: Union[Dataset, str],
+        vector_fields: List,
+        filters: List = [],
+        include_grade: bool = False,
     ):
         """
         This function fits a cluster model onto a dataset. It sits under `fit`
@@ -877,6 +912,7 @@ class ClusterOps(BatchAPIClient):
             docs,
             return_only_clusters=True,
             inplace=False,
+            include_grade=include_grade,
         )
 
         # Updating the db
@@ -1263,6 +1299,7 @@ class ClusterOps(BatchAPIClient):
         documents: List[Dict],
         return_only_clusters: bool = True,
         inplace: bool = True,
+        include_grade: bool = False,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -1310,6 +1347,12 @@ class ClusterOps(BatchAPIClient):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
 
+        if include_grade:
+            try:
+                self._calculate_silhouette_grade(vectors, cluster_labels)
+            except Exception as e:
+                print(e)
+                pass
         return self.set_cluster_labels_across_documents(
             cluster_labels,
             documents,
@@ -1317,7 +1360,17 @@ class ClusterOps(BatchAPIClient):
             return_only_clusters=return_only_clusters,
         )
 
-    @track
+    @staticmethod
+    def _calculate_silhouette_grade(vectors, cluster_labels):
+        from relevanceai.cluster_report.grading import get_silhouette_grade
+        from sklearn.metrics import silhouette_samples
+
+        score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
+        grade = get_silhouette_grade(score)
+        print(
+            f"You have received a grade of {grade} based on the mean silhouette score of {score}."
+        )
+
     def set_cluster_labels_across_documents(
         self,
         cluster_labels: list,
