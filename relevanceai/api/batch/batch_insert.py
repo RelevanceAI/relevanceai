@@ -703,8 +703,39 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             The path to the directory containing images.
 
         recurse: bool
-            Indicator that determines whether to recursively load images from
+            Indicator that determines whether to recursively insert images from
             subdirectories in the directory.
+
+        Returns
+        -------
+        dict
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("dataset_id")
+
+            from pathlib import Path
+            path = Path("images/")
+            # list(path.iterdir()) returns
+            # [
+            #    PosixPath('image.jpg'),
+            #    PosixPath('more-images'), # a directory
+            # ]
+
+            get_all_images: bool = True
+            if get_all_images:
+                # Inserts all images, even those in the more-images directory
+                ds.insert_images_folder(
+                    field="images", path=path, recurse=True
+                )
+            else:
+                # Only inserts image.jpg
+                ds.insert_images_folder(
+                    field="images", path=path, recurse=False
+                )
         """
         if isinstance(path, str):
             path = Path(path)
@@ -729,7 +760,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             return images
 
         images = get_paths(path, [])
-        documents = list(map(lambda image: {"_id": uuid.uuid4(), field: image}, images))
+        documents = list(
+            map(
+                lambda image: {"_id": uuid.uuid4(), "path": image, field: image}, images
+            )
+        )
         results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
         self.image_fields.append(field)
         self.print_search_dashboard_url(self.dataset_id)

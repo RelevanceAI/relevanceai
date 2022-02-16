@@ -9,8 +9,7 @@ from typing import Dict, List
 from relevanceai import Client
 
 from tests.globals.constants import generate_dataset_id
-
-from tests.conftest import correct_client_config
+from tests.conftest import correct_client_config, test_client
 
 
 def do_nothing(documents):
@@ -75,6 +74,46 @@ class TestInsert:
             self.test_dataset_id, assorted_nested_documents
         )
         assert len(results["failed_documents"]) == 0
+
+
+class TestInsertImages:
+    def setup(self):
+        import requests
+        from pathlib import Path
+        from uuid import uuid4
+
+        image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/167px-Ada_Lovelace_portrait.jpg"
+        self.filename = "lovelace.jpg"
+
+        req = requests.get(image_url)
+        if req.status_code == 200:
+            self.directory = Path(str(uuid4()))
+            self.directory.mkdir()
+            with open(self.directory / self.filename, "wb") as f:
+                f.write(req.content)
+        else:
+            assert False
+
+    def test_insert_images_folder(self, test_client: Client):
+        self.ds = test_client.Dataset(generate_dataset_id())
+        results = self.ds.insert_images_folder(
+            field="images",
+            path=self.directory,
+            recurse=False,  # No subdirectories exist anyway
+        )
+        assert not results["failed_documents"]
+
+    def teardown(self):
+        self.ds.delete()
+
+        try:
+            import os
+
+            os.remove(self.directory / self.filename)
+        except FileNotFoundError:
+            pass
+
+        self.directory.rmdir()
 
 
 class TestPullUpdatePush:
