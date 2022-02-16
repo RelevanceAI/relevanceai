@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+1.1.4
+-------
+
+- Add grading to auto_clustering
+- Bug fix for cluster report
+
 v1.1.2
 -------
 

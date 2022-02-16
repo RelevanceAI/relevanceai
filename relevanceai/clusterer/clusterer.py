@@ -805,7 +805,11 @@ class ClusterOps(BatchAPIClient):
 
     @track
     def fit_predict_update(
-        self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
+        self,
+        dataset: Union[Dataset, str],
+        vector_fields: List,
+        filters: List = [],
+        include_grade: bool = False,
     ):
         """
         This function fits a cluster model onto a dataset. It sits under `fit`
@@ -877,6 +881,7 @@ class ClusterOps(BatchAPIClient):
             docs,
             return_only_clusters=True,
             inplace=False,
+            include_grade=include_grade,
         )
 
         # Updating the db
@@ -1263,6 +1268,7 @@ class ClusterOps(BatchAPIClient):
         documents: List[Dict],
         return_only_clusters: bool = True,
         inplace: bool = True,
+        include_grade: bool = False,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -1310,11 +1316,28 @@ class ClusterOps(BatchAPIClient):
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
 
+        if include_grade:
+            try:
+                self._calculate_silhouette_grade(vectors, cluster_labels)
+            except Exception as e:
+                print(e)
+                pass
         return self.set_cluster_labels_across_documents(
             cluster_labels,
             documents,
             inplace=inplace,
             return_only_clusters=return_only_clusters,
+        )
+
+    @staticmethod
+    def _calculate_silhouette_grade(vectors, cluster_labels):
+        from relevanceai.cluster_report.grading import get_silhouette_grade
+        from sklearn.metrics import silhouette_samples
+
+        score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
+        grade = get_silhouette_grade(score)
+        print(
+            f"You have received a grade of {grade} based on the mean silhouette score of {score}."
         )
 
     @track
