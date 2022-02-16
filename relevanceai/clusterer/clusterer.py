@@ -238,7 +238,7 @@ class ClusterOps(BatchAPIClient):
                     # Get the centers for each label
                     centers = []
                     for l in self._labels:
-                        centers.append(self._X[self._labels == l].mean(axis=1).tolist())
+                        centers.append(self._X[self._labels == l].mean(axis=0).tolist())
                     return centers
 
             new_model = CentroidClusterModel(model)
