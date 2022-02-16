@@ -9,6 +9,7 @@ v1.1.5
 
 - Add DBSCAN centroids
 - Fix HDBSCAN
+- Add support for BIRCH, OPTICS and all native sklearn algorithms
 
 v1.1.4
 ----------
