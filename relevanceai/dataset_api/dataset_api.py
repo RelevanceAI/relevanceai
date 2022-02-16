@@ -1,6 +1,7 @@
 """
 Pandas like dataset API
 """
+from base64 import encode
 from typing import Union, List, Dict
 
 from relevanceai.analytics_funcs import track
@@ -125,6 +126,59 @@ class Dataset(Export, Stats, Operations):
         return (
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
         )
+
+    def vectorize(
+        self,
+        image_fields: List[str] = [],
+        text_fields: List[str] = [],
+        image_model=None,
+        text_model=None,
+    ) -> dict:
+        # TODO set None to default encoders
+        # add warning to install vectorhub
+        def create_encoder_function(
+            ftype: str, fields: List[str], field_checks: List[str], model
+        ):
+            if not all(
+                map(
+                    lambda field: field in self.schema and field in field_checks, fields
+                )
+            ):
+                raise ValueError(f"Invalid {ftype} field detected")
+
+            if ftype == "image":
+                try:
+                    model.encode = model.encode_image
+                except:
+                    pass
+
+            if hasattr(model, "encode_documents"):
+
+                def encode_documents(documents):
+                    return model.encode_documents(fields, documents)
+
+            else:
+
+                def encode_documents(documents):
+                    return model(documents)
+
+            return encode_documents
+
+        image_results = self.pull_update_push(
+            self.dataset_id,
+            create_encoder_function(
+                "image", image_fields, self.image_fields, image_model
+            ),
+            select_fields=image_fields,
+        )
+
+        text_results = self.pull_update_push(
+            self.dataset_id,
+            create_encoder_function("text", text_fields, self.text_fields, text_model),
+            select_fields=image_fields,
+        )
+
+        return {"image": image_results, "text": text_results}
 
 
 class Datasets(BatchAPIClient):
