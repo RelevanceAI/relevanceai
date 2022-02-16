@@ -266,11 +266,11 @@ class ClusterOps(BatchAPIClient):
             return model
         elif hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_predict"):
-            # Support for SKLEARN interface
-            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
+        # elif hasattr(model, "fit_predict"):
+        #     # Support for SKLEARN interface
+        #     data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
+        #     ClusterModel = type("ClusterBase", (ClusterBase,), data)
+        #     return ClusterModel()
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
