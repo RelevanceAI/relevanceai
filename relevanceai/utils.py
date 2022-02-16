@@ -72,14 +72,6 @@ class Utils(APIClient, _Base, DocUtils):
         return
 
 
-WARNING_RST = f"""
-.. warning::
-    This function is currently in beta and is liable to chaneg in the future. We
-    recommend not using this in production systems.
-
-"""
-
-
 def beta(f):
     old_doc = f.__doc__
     f.__doc__ = (
