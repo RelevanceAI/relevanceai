@@ -85,9 +85,10 @@ def beta(f):
     f.__doc__ = (
         old_doc
         + """
-    .. warning::
-        This function is currently in beta and is liable to chaneg in the future. We
-        recommend not using this in production systems.
+
+.. warning::
+    This function is currently in beta and is liable to chaneg in the future. We
+    recommend not using this in production systems.
 
     """
     )
@@ -106,8 +107,10 @@ def introduced_in_version(version_number):
         new_doc = (
             old_doc
             + f"""
-        .. note::
-            This function was introduced in **{version_number}**
+
+.. note::
+    This function was introduced in **{version_number}**.
+
         """
         )
         f.__doc__ = new_doc
