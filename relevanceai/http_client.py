@@ -514,7 +514,7 @@ class Client(BatchAPIClient, DocUtils):
         else:
             print("You can build your search app at https://cloud.relevance.ai")
 
-    @introduced_in_version("1.1.6")
+    @introduced_in_version("1.1.5")
     @beta
     def search_datasets(self, query: str):
         """
