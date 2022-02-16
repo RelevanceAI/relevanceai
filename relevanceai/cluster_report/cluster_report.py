@@ -336,7 +336,7 @@ class ClusterReport(DocUtils):
 
         for i, cluster_label in enumerate(labels):
             cluster_label_doc = {
-                "cluster_id": cluster_label,
+                "cluster_id": str(cluster_label),
             }
             cluster_bool = self.cluster_labels == cluster_label
 
@@ -460,7 +460,7 @@ class ClusterReport(DocUtils):
                 for f in range(len(squared_errors[0])):
                     squared_errors_by_col.append(
                         {
-                            "cluster_id": f,
+                            "cluster_id": str(f),
                             "squared_errors": ClusterReport.summary_statistics(
                                 squared_errors[:, f], axis=2
                             ),

@@ -10,12 +10,13 @@ integrations. It is also relatively easy to build your own!
 Clustering Algorithms
 -----------------------------
 
-DBSCAN Example
+DBSCAN
 ################
 
 .. code-block::
 
     from relevanceai import Client
+    from relevanceai.datasets import mock_documents
     from sklearn.cluster import DBSCAN
 
     model = DBSCAN()
@@ -24,34 +25,40 @@ DBSCAN Example
 
     # Retrieve the relevant dataset
     df = client.Dataset("sample_dataset_id")
-    clusterer.fit_predict_update(df, vector_fields=['example_vector_'])    
+    df.upsert_documents(mock_documents(10))
+    clusterer.fit_predict_update(df, vector_fields=['sample_1_vector_'])
 
-K Means Example
+OPTICS
 #################
 
 .. code-block::
 
     from relevanceai import Client
-    from sklearn.cluster import KMeans
-    model = KMeans(n_clusters=5)
+    from relevanceai.datasets import mock_documents
 
     df = client.Dataset('sample')
+    df.upsert_documents(mock_documents(100))
 
-    clusterer = client.ClusterOps(model)
-    clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
+    from sklearn.cluster import OPTICS
+    model = OPTICS()
+
+    clusterer = client.ClusterOps(alias="optics", model=model)
+    clusterer.fit_predict_update(df, vector_fields=["sample_1_vector_"])
     clusterer.list_closest_to_center()
 
-Mini Batch K-Means Example
+Birch
 ##############################
 
 .. code-block::
 
     from relevanceai import Client
-    from sklearn.cluster import MiniBatchKMeans
-    model = MiniBatchKMeans()
+    from relevanceai.datasets import mock_documents
 
     df = client.Dataset('sample')
+    df.upsert_documents(mock_documents(100))
 
-    clusterer = client.ClusterOps(model)
-    clusterer.fit_partial_predict_update(df, vector_fields=['sample_vector_'])
-    clusterer.list_closest_to_center()
+    from sklearn.cluster import Birch
+
+    model = Birch()
+    clusterer = client.ClusterOps(alias="birch", model=model)
+    clusterer.fit_predict_update(df, vector_fields=["sample_1_vector_"])
