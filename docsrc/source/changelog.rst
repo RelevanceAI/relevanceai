@@ -8,6 +8,7 @@ v1.1.5
 ----------
 
 - Add DBSCAN centroids
+- Fix HDBSCAN
 
 v1.1.4
 ----------
