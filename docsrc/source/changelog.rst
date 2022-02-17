@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.1.6
+----------
+
+- Add image tooling
+
 v1.1.5
 ----------
 
