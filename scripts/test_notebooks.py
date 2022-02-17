@@ -306,20 +306,18 @@ if __name__ == "__main__":
     PACKAGE_NAME = "RelevanceAI"
     ROOT_PATH = Path(__file__).parent.resolve() / ".."
 
-    try:
-        README_VERSION = open(ROOT_PATH / "__version__").read()
-    except FileNotFoundError as e:
-        print(f"File not found: {e}")
-        print(f"Loading file from latest Pip package release")
+    # try:
+    #     README_VERSION = open(ROOT_PATH / "__version__").read()
+    # except FileNotFoundError as e:
+    #     print(f"File not found: {e}")
+    #     print(f"Loading file from latest Pip package release")
 
     parser.add_argument("-d", "--debug", action="store_true", help="Run debug mode")
     parser.add_argument("-p", "--path", default=ROOT_PATH, help="Path of root folder")
     parser.add_argument(
         "-pn", "--package-name", default=PACKAGE_NAME, help="Package Name"
     )
-    parser.add_argument(
-        "-v", "--version", default=README_VERSION, help="Package Version"
-    )
+    parser.add_argument("-v", "--version", default=None, help="Package Version")
     parser.add_argument(
         "-n",
         "--notebooks",
