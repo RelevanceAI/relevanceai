@@ -3,12 +3,13 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from relevanceai.dataset_api.dataset_read import Read
-
 from relevanceai.analytics_funcs import track
+from relevanceai.dataset_api.dataset_read import Read
+from relevanceai.utils import introduced_in_version
 
 
 class Export(Read):
+    @introduced_in_version("1.1.5")
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
         """
         Converts a Relevance AI Dataset to a pandas DataFrame.
