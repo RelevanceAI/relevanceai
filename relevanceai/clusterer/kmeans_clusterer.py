@@ -40,8 +40,8 @@ class KMeansModel(ClusterBase):
         from relevanceai.clusterer import KMeansModel
         model = KMeansModel(k=3)
 
-        clusterer = client.ClusterOps(model=model, alias="kmeans")
-        clusterer.fit(df, vector_fields=["documentation_vector_"])
+        cluster_ops = client.ClusterOps(model=model, alias="kmeans")
+        cluster_ops.fit(df, vector_fields=["documentation_vector_"])
 
     """
 
@@ -204,6 +204,7 @@ class KMeansClusterOps(ClusterOps):
         alias: str,
         project: str,
         api_key: str,
+        firebase_uid: str,
         k: Union[None, int] = 10,
         init: str = "k-means++",
         n_init: int = 10,
@@ -232,6 +233,7 @@ class KMeansClusterOps(ClusterOps):
             cluster_field=cluster_field,
             project=project,
             api_key=api_key,
+            firebase_uid=firebase_uid,
         )
         warnings.warn("Function has been deprecated.", DeprecationWarning)
 

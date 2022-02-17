@@ -3,11 +3,15 @@ from relevanceai.api.endpoints.services.centroids import CentroidsClient
 
 
 class ClusterClient(_Base):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        self.centroids = CentroidsClient(project=project, api_key=api_key)
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        self.centroids = CentroidsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def aggregate(
         self,
@@ -52,7 +56,7 @@ class ClusterClient(_Base):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias}vector
         """
-        endpoint = "/services/cluster/aggregate"
+        endpoint = f"/datasets/{dataset_id}/cluster/aggregate"
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,

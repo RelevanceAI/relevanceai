@@ -1,9 +1,9 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+import asyncio
 import time
 import traceback
-import json
-from typing import Union
+import asyncio
 from json.decoder import JSONDecodeError
 
 from urllib.parse import urlparse
@@ -21,7 +21,7 @@ DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
 
 class Transport(JSONEncoderUtils):
-    """Base class for all relevanceai objects"""
+    """_Base class for all relevanceai objects"""
 
     project: str
     api_key: str
@@ -85,15 +85,19 @@ class Transport(JSONEncoderUtils):
             },
         }
         self.logger.debug(request_body)
-        req = Request(
-            method=method.upper(),
-            url=self._dashboard_request_url,
-            headers=self.auth_header,
-            json=request_body,
-            # params=parameters if method.upper() == "GET" else {},
-        ).prepare()
-        with requests.Session() as s:
-            response = s.send(req)
+
+        async def run_request():
+            req = Request(
+                method=method.upper(),
+                url=self._dashboard_request_url,
+                headers=self.auth_header,
+                json=request_body,
+                # params=parameters if method.upper() == "GET" else {},
+            ).prepare()
+            with requests.Session() as s:
+                response = s.send(req)
+
+        asyncio.ensure_future(run_request())
 
         if verbose:
             dashboard_url = (
@@ -101,7 +105,6 @@ class Transport(JSONEncoderUtils):
                 + DASHBOARD_MAPPINGS[dashboard_type]
             )
             self.print_dashboard_url(dashboard_url)
-        return response
 
     def _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None):
         """Link to a monitoring dashboard
@@ -124,7 +127,7 @@ class Transport(JSONEncoderUtils):
 
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
-        return self._log_to_dashboard(
+        self._log_to_dashboard(
             method=method,
             parameters=parameters,
             endpoint=endpoint,
@@ -146,6 +149,7 @@ class Transport(JSONEncoderUtils):
         parameters: dict = {},
         base_url: str = None,
         output_format=None,
+        raise_error: bool = True,
     ):
         """
         Make the HTTP request
@@ -155,6 +159,9 @@ class Transport(JSONEncoderUtils):
             The endpoint from the documentation to use
         method_type: string
             POST or GET request
+        raise_error: bool
+            If True, you will raise error. This is useful for endpoints that don't
+            necessarily need to error.
         """
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
@@ -181,8 +188,8 @@ class Transport(JSONEncoderUtils):
                     self._log_search_to_dashboard(
                         method=method, parameters=parameters, endpoint=endpoint
                     )
-                # TODO: Add other endpoints in here too
 
+                # TODO: Add other endpoints in here too
                 req = Request(
                     method=method.upper(),
                     url=request_url,
@@ -219,7 +226,8 @@ class Transport(JSONEncoderUtils):
                         response.status_code,
                         response.content.decode(),
                     )
-                    raise APIError(response.content.decode())
+                    if raise_error:
+                        raise APIError(response.content.decode())
 
                 # Retry other errors
                 else:

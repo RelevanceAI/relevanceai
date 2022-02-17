@@ -12,15 +12,25 @@ from relevanceai.api.endpoints.datasets.cluster import ClusterClient
 class DatasetsClient(_Base):
     """All dataset-related functions"""
 
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        self.tasks = TasksClient(project=project, api_key=api_key)
-        self.documents = DocumentsClient(project=project, api_key=api_key)
-        self.monitor = MonitorClient(project=project, api_key=api_key)
-        self.cluster = ClusterClient(project=project, api_key=api_key)
+        self.firebase_uid = firebase_uid
 
-        super().__init__(project, api_key)
+        self.tasks = TasksClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.documents = DocumentsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.monitor = MonitorClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.cluster = ClusterClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def schema(self, dataset_id: str):
         """
@@ -384,11 +394,20 @@ class DatasetsClient(_Base):
             user_input = "y"
         # input validation
         if user_input.lower() in ("y", "yes"):
-            return self.make_http_request(
-                endpoint=f"/datasets/delete",
-                method="POST",
-                parameters={"dataset_id": dataset_id},
-            )
+            if "gateway-api-aueast" in self.config["api.base_url"]:
+                return self.make_http_request(
+                    endpoint=f"/datasets/delete",
+                    method="POST",
+                    parameters={"dataset_id": dataset_id},
+                    raise_error=False,
+                )
+            else:
+                return self.make_http_request(
+                    endpoint=f"/datasets/{dataset_id}/delete",
+                    method="POST",
+                    raise_error=False
+                    # parameters={"dataset_id": dataset_id},
+                )
 
         elif user_input.lower() in ("n", "no"):
             self.logger.critical(f"{dataset_id} not deleted")

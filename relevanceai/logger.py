@@ -1,5 +1,6 @@
-from os import error
+import os
 import sys
+
 from typing import Callable
 from loguru import logger as loguru_logger
 from abc import abstractmethod
@@ -11,7 +12,7 @@ def str2bool(v):
 
 
 class AbstractLogger:
-    """Base Logging Instance"""
+    """_Base Logging Instance"""
 
     info: Callable
     error: Callable
@@ -53,3 +54,37 @@ class LoguruLogger(AbstractLogger):
             if log_to_file:
                 logger.add(log_file_name, level=logging_level, rotation="100 MB")
         self._logger = logger
+
+
+class FileLogger:
+    """Log system output to a file if it gets messy."""
+
+    def __init__(self, fn: str = "logs.txt", verbose: bool = False):
+        self.fn = fn
+        self._original_stdout = sys.stdout
+        self._original_stderr = sys.stderr
+        self.verbose = verbose
+
+    def __enter__(self, fn: str = "logs"):
+        if not os.path.exists(self.fn):
+            sys.stdout = open(self.fn, "w")
+            sys.stderr = open(self.fn, "w")
+        else:
+            sys.stdout = open(self.fn, "a")
+            sys.stderr = open(self.fn, "a")
+
+    def __exit__(self, *args, **kw):
+        sys.stderr.close()
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
+        sys.stderr = self._original_stderr
+        if self.verbose:
+            if self._if_not_empty():
+                print(f"Logs have been saved to {self.fn}")
+
+    def _if_not_empty(self):
+        with open(self.fn, "r") as f:
+            lines = f.readlines()
+        if len(lines) > 1:
+            return True
+        return False

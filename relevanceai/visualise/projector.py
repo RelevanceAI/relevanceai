@@ -29,7 +29,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         >>> from relevanceai import Client
         >>> project = input()
         >>> api_key = input()
-        >>> client = Client(project, api_key)
+        >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
         >>> client.projector.plot(
                 dataset_id, vector_field, number_of_points_to_render, random_state,
                 dr, dr_args, dims,
@@ -40,10 +40,12 @@ class Projector(BatchAPIClient, _Base, DocUtils):
                 )
     """
 
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     @typechecked
     def plot(
@@ -81,7 +83,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             >>> from relevanceai import Client
             >>> project = input()
             >>> api_key = input()
-            >>> client = Client(project, api_key)
+            >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
             >>> client.projector.plot(
                     dataset_id, vector_field, number_of_points_to_render, random_state,
                     dr, dr_args, dims,
@@ -189,7 +191,7 @@ class Projector(BatchAPIClient, _Base, DocUtils):
             >>> from relevanceai import Client
             >>> project = input()
             >>> api_key = input()
-            >>> client = Client(project, api_key)
+            >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
             >>> client.projector.plot(
                     dataset_id, vector_field, number_of_points_to_render, random_state,
                     dr, dr_args, dims,
@@ -295,7 +297,6 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         [self._is_valid_label_name(dataset_id, label) for label in hover_label]
 
         documents = self.get_documents(
-            dataset_id,
             number_of_documents=number_of_points_to_render,
             batch_size=1000,
             select_fields=["_id", vector_field] + vector_label_field + hover_label,

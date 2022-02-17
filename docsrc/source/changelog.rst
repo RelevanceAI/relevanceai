@@ -4,6 +4,127 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.1.4
+----------
+
+- Add grading to auto_clustering
+- Bug fix for cluster report
+- Add DBSCAN centroids
+- Fix HDBSCAN
+- Add support for BIRCH, OPTICS and all native sklearn algorithms
+
+v1.1.2
+-------
+
+- Added new DR methods to auto_reduce_dimensions
+- Fixed documentation on clustering
+
+v1.1.1
+--------
+
+- Change data structure of report structure
+
+v1.1.0
+--------
+
+- Add low-touch way to label with a given model
+- Add `label_from_dataset`, `label_from_list`, `label_from_common_words`
+
+v1.0.8
+---------
+
+- Fix document-utils for clustering on DR
+
+v1.0.7
+-------
+
+- Add grading for cluster report
+
+v1.0.6
+-------
+
+- Fix http client and regionalisation issues and remove need for firebase
+
+v1.0.5
+--------
+
+**Breaking changes**
+
+- `get_cluster_internal_report` has now been renamed to `internal_report`
+
+Non-breaking changes:  
+
+- Remove repetitive print statements
+- Add outlier support for cluster report
+- Support for centroids and medoids in typing
+- Add pretty printing for cluster overall reporting
+
+v1.0.4
+---------
+
+- add launch_search_app for dataset functionality
+- remove saving .creds.json to avoid file caching
+
+v1.0.3
+---------
+
+- Fix print error message with segment
+- Separate out JSON Encoder
+
+v1.0.2
+--------
+
+- Fix pandas serialization for UTF-encoding errors 
+- Move search app
+- Change print search dashboard app URL 
+- Fix regionalisation error when authenticating client.
+
+v1.0.1
+--------
+- Make pandas dataframe serializable with vectors
+
+v1.0.0
+---------
+
+- Clustering report functionality
+- Add fix and test for new cluster aggregate
+- Add document mocking utility
+- Add integration for cluster reporting
+- Fix bug for sklearn clustering
+- Add segment tracking with option to turn off
+- Add print statement after inserting
+
+v0.33.6
+---------
+
+- Fix warning missing parameter
+- Remove `dataset_id` from `get_documents`
+- Fix URL bug if you are logging in from `old-australia-east`
+
+v0.33.5
+--------
+
+- Fix UX flow
+- Make US-East-1 the default
+- Add force refresh
+- Rework Login UX
+- Mention region when connecting
+- Make the authentication message super cool
+- Fix centroids to Node endpoint
+- Update the delete request
+
+v0.33.4
+---------
+
+- Make asynchronous dashboard request
+
+v0.33.3
+--------
+
+- Fix cluster aggregate
+- Fix for login
+- Make adding firebase UID not breaking
+
 v0.33.2
 --------
 

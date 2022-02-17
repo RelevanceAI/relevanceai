@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
@@ -11,6 +12,8 @@ from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.warnings import warn_function_is_work_in_progress
+
+from relevanceai.analytics_funcs import track
 
 
 class Series(BatchAPIClient):
@@ -61,6 +64,7 @@ class Series(BatchAPIClient):
         self,
         project: str,
         api_key: str,
+        firebase_uid: str,
         dataset_id: str,
         field: str,
         image_fields: List[str] = [],
@@ -68,9 +72,10 @@ class Series(BatchAPIClient):
         highlight_fields: Dict[str, List] = {},
         text_fields: List[str] = [],
     ):
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self.field = field
         self.image_fields = image_fields
@@ -79,28 +84,55 @@ class Series(BatchAPIClient):
         self.text_fields = text_fields
 
     def _repr_html_(self):
-        document = self.get_documents(
-            dataset_id=self.dataset_id, select_fields=[self.field]
+        if "_vector_" in self.field:
+            include_vector = True
+        else:
+            include_vector = False
+
+        documents = self._get_documents(
+            dataset_id=self.dataset_id,
+            select_fields=[self.field],
+            include_vector=include_vector,
         )
+        if include_vector:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+            )
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
+
         try:
-            return self._show_json(document, return_html=True)
-        except Exception:
+            return self._show_json(documents, return_html=True)
+        except Exception as e:
             warnings.warn(
                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
                 + str(e)
             )
-            return pd.json_normalize(document).set_index("_id")._repr_html_()
+            return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
-    def _show_json(self, document, **kw):
+    @track
+    def list_aliases(self):
+        fields = self._format_select_fields()
+        fields = [field for field in fields if field != "_cluster_"]
+        return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
+
+    def _format_select_fields(self):
+        fields = [
+            field
+            for field in self.datasets.schema(self.dataset_id)
+            if "_cluster_" in field
+        ]
+        return fields
+
+    def _show_json(self, documents, **kw):
         from jsonshower import show_json
 
         if not self.text_fields:
-            text_fields = pd.json_normalize(document).columns.tolist()
+            text_fields = pd.json_normalize(documents).columns.tolist()
         else:
             text_fields = self.text_fields
 
         return show_json(
-            document,
+            documents,
             image_fields=self.image_fields,
             audio_fields=self.audio_fields,
             highlight_fields=self.highlight_fields,
@@ -108,6 +140,7 @@ class Series(BatchAPIClient):
             **kw,
         )
 
+    @track
     def sample(
         self,
         n: int = 1,
@@ -174,6 +207,7 @@ class Series(BatchAPIClient):
 
     head = sample
 
+    @track
     def all(
         self,
         chunksize: int = 1000,
@@ -193,6 +227,7 @@ class Series(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
+    @track
     def vectorize(self, model):
         """
         Vectorises over a field give a model architecture
@@ -213,7 +248,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             text_field = "text_field"
@@ -235,6 +270,7 @@ class Series(BatchAPIClient):
             self.dataset_id, encode_documents, select_fields=[self.field]
         )
 
+    @track
     def apply(
         self,
         func: Callable,
@@ -245,6 +281,11 @@ class Series(BatchAPIClient):
         Apply a function along an axis of the DataFrame.
 
         Objects passed to the function are Series objects whose index is either the DataFrame’s index (axis=0) or the DataFrame’s columns (axis=1). By default (result_type=None), the final return type is inferred from the return type of the applied function. Otherwise, it depends on the result_type argument.
+
+
+        .. note::
+            We recommend using the bulk_apply functionality
+            if you are looking to have faster processing.
 
         Parameters
         --------------
@@ -267,7 +308,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df["sample_1_label"].apply(lambda x: x + 3, output_field="output_field")
@@ -291,6 +332,7 @@ class Series(BatchAPIClient):
             self.dataset_id, bulk_fn, select_fields=[self.field]
         )
 
+    @track
     def bulk_apply(
         self,
         bulk_func: Callable,
@@ -328,7 +370,7 @@ class Series(BatchAPIClient):
             from relevanceai import Client
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
@@ -348,6 +390,7 @@ class Series(BatchAPIClient):
             use_json_encoder=use_json_encoder,
         )
 
+    @track
     def numpy(self) -> np.ndarray:
         """
         Iterates over all documents in dataset and returns all numeric values in a numpy array.
@@ -369,7 +412,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"
@@ -380,6 +423,7 @@ class Series(BatchAPIClient):
         vectors = np.array(vectors)
         return vectors
 
+    @track
     def value_counts(
         self,
         normalize: bool = False,
@@ -411,7 +455,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"
@@ -486,7 +530,7 @@ class Series(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             field = "sample_field"
@@ -500,9 +544,9 @@ class Series(BatchAPIClient):
             warnings.warn(
                 "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
             )
-            return self.get_documents(
-                self.dataset_id, loc + 1, select_fields=[self.field]
-            )[loc][self.field]
+            return self.get_documents(loc + 1, select_fields=[self.field])[loc][
+                self.field
+            ]
         elif isinstance(loc, str):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
