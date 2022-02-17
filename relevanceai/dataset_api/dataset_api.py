@@ -136,6 +136,45 @@ class Dataset(Export, Stats, Operations):
         image_encoder=None,
         text_encoder=None,
     ) -> dict:
+        """
+        Vectorizes multiple image and text fields at once.
+
+        Parameters
+        ----------
+        image_fields: List[str]
+            A list of image fields to vectorize
+
+        text_fields: List[str]
+            A list of text fields to vectorize
+
+        image_encoder
+            An image encoder model from the vectorhub library. If no model is
+            specified, a default encoder (Clip2Vec) is loaded.
+
+        text_encoder
+            A text encoder model from the vectorhub library. If no model is
+            specified, a default encoder (USE2Vec) is loaded.
+
+        Returns
+        -------
+        dict
+            The request result for the vecotrization process.
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset_id"
+            df = client.Dataset(dataset_id)
+
+            df.vectorize(
+                image_fields=["image_field_1", "image_field_2"],
+                text_fields=["text_field"],
+            )
+        """
         if image_fields and image_encoder is None:
             try:
                 from vectorhub.bi_encoders.text_image.torch import Clip2Vec
