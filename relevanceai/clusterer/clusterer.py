@@ -841,8 +841,8 @@ class ClusterOps(BatchAPIClient):
         filters: List[Dict] = [],
         return_only_clusters: bool = True,
         include_grade: bool = False,
-        update: bool = False,
-        inplace: bool = True,
+        update: bool = True,
+        inplace: bool = False,
     ):
         """
         Parameters
@@ -893,14 +893,14 @@ class ClusterOps(BatchAPIClient):
             model = CustomClusterModel()
 
             df = client.Dataset("sample_dataset")
-            clusterer = client.ClusterOps(model, alias="random_clustering")
+            clusterer = client.ClusterOps(alias="random_clustering", model=model)
             clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
         """
         if update and isinstance(data, list):
             warnings.warn(
                 "Cannot update list of datasets that are untethered "
                 "to a Relevance AI dataset. "
-                "Setting update to False"
+                "Setting update to False."
             )
             # If data is of type List[Dict] the value of update doesn't
             # actually matter. This is more for good practice.
@@ -939,7 +939,7 @@ class ClusterOps(BatchAPIClient):
 
         # Label the clusters
         print("Fitting and predicting on all relevant documents")
-        cluster_labels = self.model.fit_predict(self.model.fit_predict(vectors))
+        cluster_labels = self._label_clusters(self.model.fit_predict(vectors))
 
         if include_grade:
             try:
