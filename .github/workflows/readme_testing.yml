@@ -144,4 +144,4 @@ jobs:
 
           git add .
           git commit -m "New ReadMe version for RelevanceAI v$RELEVANCEAI_VERSION"
-          git push --set-upstream origin v$RELEVANCEAI_VERSION
+          git push || git push --set-upstream origin v$RELEVANCEAI_VERSION
