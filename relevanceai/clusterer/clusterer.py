@@ -1363,12 +1363,11 @@ class ClusterOps(BatchAPIClient):
         """
         self.vector_fields = vector_fields
 
-        if not hasattr(self.model, "fit_predict_documents"):
-            vectors = self._get_vectors_from_documents(vector_fields, documents)
-            cluster_labels = self.model.fit_predict(vectors)
-        else:
-            # Run fit_predict on the documents - issue
-            cluster_labels = self.model.fit_predict_documents(documents)
+        if hasattr(self.model, "fit_documents"):
+            return self.model.fit_documents(documents=documents)
+
+        # vectors = self._get_vectors_from_documents(vector_fields, documents)
+        self.model.fit_documents(vector_fields=vector_fields, documents=documents)
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
