@@ -159,14 +159,8 @@ class Dataset(Export, Stats, Operations):
                     "vectorhub[encoders-text-tfhub]` to install USE2Vec."
                 )
 
-        def create_encoder_function(
-            ftype: str, fields: List[str], field_checks: List[str], encoder
-        ):
-            if not all(
-                map(
-                    lambda field: field in self.schema and field in field_checks, fields
-                )
-            ):
+        def create_encoder_function(ftype: str, fields: List[str], encoder):
+            if not all(map(lambda field: field in self.schema, fields)):
                 raise ValueError(f"Invalid {ftype} field detected")
 
             if hasattr(encoder, "encode_documents"):
@@ -181,21 +175,41 @@ class Dataset(Export, Stats, Operations):
 
             return encode_documents
 
-        image_results = self.pull_update_push(
-            self.dataset_id,
-            create_encoder_function(
-                "image", image_fields, self.image_fields, image_encoder
-            ),
-            select_fields=image_fields,
-        )
+        if image_fields:
+            image_results = self.pull_update_push(
+                self.dataset_id,
+                create_encoder_function("image", image_fields, image_encoder),
+                select_fields=image_fields,
+                filters=[
+                    {
+                        "field": image_field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                    }
+                    for image_field in image_fields
+                ],
+            )
+        else:
+            image_results = {}
 
-        text_results = self.pull_update_push(
-            self.dataset_id,
-            create_encoder_function(
-                "text", text_fields, self.text_fields, text_encoder
-            ),
-            select_fields=text_fields,
-        )
+        if text_fields:
+            text_results = self.pull_update_push(
+                self.dataset_id,
+                create_encoder_function("text", text_fields, text_encoder),
+                select_fields=text_fields,
+                filters=[
+                    {
+                        "field": text_field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                    }
+                    for text_field in text_fields
+                ],
+            )
+        else:
+            text_results = {}
 
         return {"image": image_results, "text": text_results}
 
