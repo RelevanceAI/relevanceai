@@ -11,57 +11,144 @@ from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.data_tools.base_text_processing import MLStripper
+from relevanceai.logger import FileLogger
+from relevanceai.utils import introduced_in_version
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
 )
 
-from relevanceai.logger import FileLogger
-
 
 class Operations(Write):
-    @track
-    def vectorize(self, field: str, model):
+    @introduced_in_version("1.1.6")
+    def vectorize(
+        self,
+        image_fields: List[str] = [],
+        text_fields: List[str] = [],
+        image_encoder=None,
+        text_encoder=None,
+    ) -> dict:
         """
-        Vectorizes a Particular field (text) of the dataset
-
-        .. warning::
-            This function is currently in beta and is likely to change in the future.
-            We recommend not using this in any production systems. We recommend using
-            the bulk_apply function or the apply function to provide the intended output
-            for now.
-
         Parameters
-        ------------
-        field : str
-            The text field to select
-        model
-            a Type deep learning model that vectorizes text
+        ----------
+        image_fields: List[str]
+            A list of image fields to vectorize
+
+        text_fields: List[str]
+            A list of text fields to vectorize
+
+        image_encoder
+            A deep learning image encoder from the vectorhub library. If no
+            encoder is specified, a default encoder (Clip2Vec) is loaded.
+
+        text_encoder
+            A deep learning text encoder from the vectorhub library. If no
+            encoder is specified, a default encoder (USE2Vec) is loaded.
+
+        Returns
+        -------
+        dict
+            The request result for the vecotrization process.
 
         Example
-            -------
+        -------
         .. code-block::
-
             from relevanceai import Client
             from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
-            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
+            text_model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
 
             client = Client()
 
             dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
-            text_field = "text_field"
-            df.vectorize(text_field, model)
+            df.vectorize(
+                image_fields=["image_field_1", "image_field_2"],
+                text_fields=["text_field"],
+                text_model=text_model
+            )
         """
-        return Series(
-            project=self.project,
-            api_key=self.api_key,
-            dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
-            field=field,
-        ).vectorize(model)
+        if image_fields and image_encoder is None:
+            try:
+                from vectorhub.bi_encoders.text_image.torch import Clip2Vec
+
+                image_encoder = Clip2Vec()
+                image_encoder.encode = image_encoder.encode_image
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Default image encoder not found. "
+                    "Please install vectorhub with `python -m pip install "
+                    "vectorhub[clip]` to install Clip2Vec."
+                )
+
+        if text_fields and text_encoder is None:
+            try:
+                from vectorhub.encoders.text.tfhub import USE2Vec
+
+                text_encoder = USE2Vec()
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Default text encoder not found. "
+                    "Please install vectorhub with `python -m pip install "
+                    "vectorhub[encoders-text-tfhub]` to install USE2Vec."
+                )
+
+        def create_encoder_function(ftype: str, fields: List[str], encoder):
+            if not all(map(lambda field: field in self.schema, fields)):
+                raise ValueError(f"Invalid {ftype} field detected")
+
+            if hasattr(encoder, "encode_documents"):
+
+                def encode_documents(documents):
+                    return encoder.encode_documents(fields, documents)
+
+            else:
+
+                def encode_documents(documents):
+                    return encoder(documents)
+
+            return encode_documents
+
+        if image_fields:
+            image_results = self.pull_update_push(
+                self.dataset_id,
+                create_encoder_function("image", image_fields, image_encoder),
+                select_fields=image_fields,
+                filters=[
+                    {
+                        "field": image_field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                        "strict": "must_or",
+                    }
+                    for image_field in image_fields
+                ],
+            )
+        else:
+            image_results = {}
+
+        if text_fields:
+            text_results = self.pull_update_push(
+                self.dataset_id,
+                create_encoder_function("text", text_fields, text_encoder),
+                select_fields=text_fields,
+                filters=[
+                    {
+                        "field": text_field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                        "strict": "must_or",
+                    }
+                    for text_field in text_fields
+                ],
+            )
+        else:
+            text_results = {}
+
+        return {"image": image_results, "text": text_results}
 
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
