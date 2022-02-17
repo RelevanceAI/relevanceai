@@ -899,6 +899,7 @@ class ClusterOps(BatchAPIClient):
             }
             for f in vector_fields
         ]
+
         print("Retrieving all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
@@ -906,6 +907,7 @@ class ClusterOps(BatchAPIClient):
 
         if len(docs) == 0:
             raise NoDocumentsError()
+
         print("Fitting and predicting on all documents")
         clustered_docs = self.fit_predict_documents(
             vector_fields,
@@ -1352,9 +1354,12 @@ class ClusterOps(BatchAPIClient):
         """
         self.vector_fields = vector_fields
 
-        vectors = self._get_vectors_from_documents(vector_fields, documents)
-
-        cluster_labels = self.model.fit_predict(vectors)
+        if not hasattr(self.model, "fit_predict_documents"):
+            vectors = self._get_vectors_from_documents(vector_fields, documents)
+            cluster_labels = self.model.fit_predict(vectors)
+        else:
+            # Run fit_predict on the documents - issue
+            cluster_labels = self.model.fit_predict_documents(documents)
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
