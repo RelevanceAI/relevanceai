@@ -136,7 +136,6 @@ jobs:
         env:
           GITHUB_EMAIL: 'charleneleong84@gmail.com'
           GITHUB_USERNAME: 'Charlene Leong'
-          GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN}}
           RELEVANCEAI_README_API_KEY: ${{ secrets.RELEVANCEAI_README_API_KEY}}
         run: |
           cd readme-docs
@@ -150,7 +149,7 @@ jobs:
           python scripts/update_semver_ref.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
           python scripts/build_docs.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
 
-          ./scripts/sync_readme_docs.sh true ./docs/ $RELEVANCEAI_VERSION
+          # ./scripts/sync_readme_docs.sh true ./docs/ $RELEVANCEAI_VERSION
 
           git add .
           git commit -m "New ReadMe version for RelevanceAI v$RELEVANCEAI_VERSION"
