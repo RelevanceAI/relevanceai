@@ -26,39 +26,57 @@ try:
 except ModuleNotFoundError:
     pass
 
+try:
+    from functools import singledispatchmethod  # type: ignore
+except ImportError:
+    from relevanceai.data_tools.functools_extend import singledispatchmethod
+
 
 class ImageTools:
-    def read(self, image: str):
+    def read(self, image):
         """
         An method to read images (converting them into NumPy arrays)
         Args:
             image: An image link/bytes/io Bytesio data format.
             as_gray: read in the image as black and white
         """
-        if type(image) is str:
-            if "http" in image:
-                try:
-                    b = io.BytesIO(
-                        urlopen(
-                            Request(image, headers={"User-Agent": "Mozilla/5.0"})
-                        ).read()
-                    )
-                except:
-                    import tensorflow as tf
+        im_arr = self._read(image)
+        return self.process_image(im_arr)
 
-                    return tf.image.decode_jpeg(
-                        requests.get(image).content, channels=3, name="jpeg_reader"
-                    ).numpy()
-            else:
-                b = image
-        elif type(image) is bytes:
-            b = io.BytesIO(image)
-        elif type(image) is io.BytesIO:
-            b = image
+    @singledispatchmethod
+    def _read(self, image):
+        pass
+
+    @_read.register(str)
+    def _(self, image: str):
+        if "http" in image:
+            try:
+                b = io.BytesIO(
+                    urlopen(
+                        Request(image, headers={"User-Agent": "Mozilla/5.0"})
+                    ).read()
+                )
+            except:
+                import tensorflow as tf
+
+                return tf.image.decode_jpeg(
+                    requests.get(image).content, channels=3, name="jpeg_reader"
+                ).numpy()
         else:
-            raise ValueError(
-                "Cannot process data type. Ensure it is is string/bytes or BytesIO."
-            )
+            # assume some default image processing is fine
+            b = image  # type: ignore
+        return b
+
+    @_read.register(bytes)
+    def _(self, image):
+        return io.BytesIO(image)
+
+    @_read.register(io.BytesIO)
+    def _(self, image):
+        return image
+
+    @staticmethod
+    def process_image(b):
         try:
             return np.array(imageio.imread(b, pilmode="RGB"))
         except:
