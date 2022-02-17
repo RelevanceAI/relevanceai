@@ -137,12 +137,13 @@ jobs:
           GITHUB_EMAIL: 'charleneleong84@gmail.com'
           GITHUB_USERNAME: 'Charlene Leong'
           GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN}}
+          RELEVANCEAI_README_API_KEY: ${{ secrets.RELEVANCEAI_README_API_KEY}}
         run: |
           cd readme-docs
 
           git config --local user.email "$GITHUB_EMAIL"
           git config --local user.name "$GITHUB_USERNAME"
-          git checkout v$RELEVANCEAI_VERSION 2>/dev/null ||  git checkout -b v$RELEVANCEAI_VERSION
+          git checkout v$RELEVANCEAI_VERSION 2>/dev/null || git checkout -b v$RELEVANCEAI_VERSION
 
           python scripts/detect_secrets.py -d -p docs
           python scripts/update_asset_ref.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
