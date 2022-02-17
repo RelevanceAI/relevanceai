@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest] 
+        os: [ ubuntu-latest]
         python-version: [ '3.7' ]
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
@@ -30,19 +30,35 @@ jobs:
           repository: RelevanceAI/RelevanceAI-readme-docs
           ref: refs/heads/main
           path: readme-docs
-          
-          
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Get RelevanceAI version
+        run: |
+          RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          echo $RELEVANCEAI_VERSION
+          echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+
       - name: Run tests
         env:
-          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
-          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+          # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+          TEST_PROJECT: ${{ secrets.TEST_US_PROJECT}}
+          TEST_API_KEY: ${{ secrets.TEST_US_API_KEY}}
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pip install -r readme-docs/requirements.txt
           python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v 0.27.0
+
+      - name: Create new ReadMe branch
+        env:
+          GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN}}
+        run: |
+          git checkout -b $RELEVANCEAI_VERSION
+          git add .
+          git commit -m "New ReadMe version for RelevanceAI $RELEVANCEAI_VERSION"
+          git push origin $RELEVANCEAI_VERSION
