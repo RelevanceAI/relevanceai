@@ -128,6 +128,11 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
+          python -m pip install -r readme-docs/requirements.txt
+
       - name: Create new ReadMe branch
         env:
           GITHUB_EMAIL: 'charleneleong84@gmail.com'
