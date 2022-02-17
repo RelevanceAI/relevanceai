@@ -143,12 +143,15 @@ jobs:
 
           git config --local user.email "$GITHUB_EMAIL"
           git config --local user.name "$GITHUB_USERNAME"
-          git checkout v$RELEVANCEAI_VERSION 2>/dev/null || git checkout -b v$RELEVANCEAI_VERSION
+
+          GIT_BRANCH_VERSION=v$RELEVANCEAI_VERSION
+
+          git checkout v$RELEVANCEAI_VERSION 2>/dev/null || git checkout -b $GIT_BRANCH_VERSION
 
           python scripts/detect_secrets.py -d -p docs
-          python scripts/update_asset_ref.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
+          python scripts/update_asset_ref.py -d -p . -pn RelevanceAI -v v$RELEVANCEAI_VERSION
           python scripts/update_semver_ref.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
-          python scripts/build_docs.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
+          python scripts/build_docs.py -d -p . -pn RelevanceAI -v $GIT_BRANCH_VERSION
 
           # ./scripts/sync_readme_docs.sh true ./docs/ $RELEVANCEAI_VERSION
 
