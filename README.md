@@ -65,7 +65,7 @@ client = Client(<project_name>, <api_key>)
 
 Prepare your documents for insertion by following the below format:
 - Each document should be a dictionary
-- Include a field `_id` as a primary key, otherwise it's automatically generated 
+- Include a field `_id` as a primary key, otherwise it's automatically generated
 - Suffix vector fields with `_vector_`
 
 ```{python}
