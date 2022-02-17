@@ -71,13 +71,7 @@ def test_agg_std(test_clusterer: ClusterOps):
     assert len(groupby_agg) > 0
 
 
-def test_fit_predict(
-    test_client: Client,
-    test_project: str,
-    test_api_key: str,
-    test_firebase_uid: str,
-    vector_dataset_id: str,
-):
+def test_fit_predict(test_client: Client, vector_dataset_id: str):
     import random
 
     class CustomClusterModel(ClusterBase):
