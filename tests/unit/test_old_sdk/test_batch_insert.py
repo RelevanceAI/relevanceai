@@ -82,7 +82,7 @@ class TestInsertImages:
         from pathlib import Path
         from uuid import uuid4
 
-        image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/167px-Ada_Lovelace_portrait.jpg"
+        image_url = "https://relevance.ai/wp-content/uploads/2021/10/Pinterest-growth-numbers.png"
         self.filename = "lovelace.jpg"
 
         req = requests.get(image_url)
