@@ -717,7 +717,16 @@ class ClusterOps(BatchAPIClient):
         self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
     ):
         """
-        Insert the centroid documents
+        Insert the centroid documents.
+        Examples of centroid documents:
+
+        .. code-block::
+
+            # an example of a centroid document
+            {
+                "_id": "centroid-1",
+                "sample_vector_": [0.15, 0.32, 0.42]
+            }
 
         Parameters
         ------------
