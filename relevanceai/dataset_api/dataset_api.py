@@ -186,6 +186,7 @@ class Dataset(Export, Stats, Operations):
                         "filter_type": "exists",
                         "condition": "==",
                         "condition_value": " ",
+                        "strict": "must_or",
                     }
                     for image_field in image_fields
                 ],
@@ -204,6 +205,7 @@ class Dataset(Export, Stats, Operations):
                         "filter_type": "exists",
                         "condition": "==",
                         "condition_value": " ",
+                        "strict": "must_or",
                     }
                     for text_field in text_fields
                 ],
