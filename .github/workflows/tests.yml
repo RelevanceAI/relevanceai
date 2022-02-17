@@ -44,8 +44,6 @@ jobs:
 
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
-          TEST_PROJECT: ${{ secrets.TEST_US_PROJECT}}
-          TEST_API_KEY: ${{ secrets.TEST_US_API_KEY}}
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |
@@ -54,7 +52,9 @@ jobs:
           python -m pip install pytest-sugar
           python -m pip install pytest-rerunfailures
           python -m pip install pytest-xdist
-          python -m pytest --cov-config=coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=60
+          python -m pytest tests/ --cov-config=coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=60
+      - name: Runt vectorhub integration tests
+        run: |
           python -m pip install vectorhub[clip]
           python -m pip install vectorhub[encoders-text-tfhub]
-          python -m pytest test_integrations/vectorhub
+          python -m pytest test_integrations/vectorhub/
