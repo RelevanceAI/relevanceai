@@ -11,6 +11,7 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
+from relevanceai.utils import introduced_in_version
 
 # from relevanceai.dataset_api.dataset_dr import DR
 
@@ -127,6 +128,7 @@ class Dataset(Export, Stats, Operations):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
         )
 
+    @introduced_in_version("1.16")
     def vectorize(
         self,
         image_fields: List[str] = [],
