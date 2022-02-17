@@ -83,23 +83,10 @@ jobs:
           export test_notebook='readme-docs/docs/GETTING_STARTED/_notebooks/Intro-to-Relevance-AI.ipynb'
           python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks $test_notebook -nm
 
-  create-github-branch:
-    name: Test ${{ matrix.notebook }}
+  create-new-readme-branch:
+    name: Create new ReadMe branch
     needs: test-notebooks
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest]
-        python-version: [ '3.7' ]
-        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
-        notebook: ${{fromJSON(needs.setup-tests.outputs.notebook-fpaths)}}
-        include:
-          - os: ubuntu-latest
-            path: ~/.cache/pip
-          # - os: macos-latest
-          #   path: ~/Library/Caches/pip
-          # - os: windows-latest
-          #   path: ~\AppData\Local\pip\Cache
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
