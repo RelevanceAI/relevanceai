@@ -80,8 +80,7 @@ jobs:
         env:
           TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
         run: |
-          export test_notebook='readme-docs/docs/GETTING_STARTED/_notebooks/Intro-to-Relevance-AI.ipynb'
-          python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks $test_notebook -nm
+          python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks  ${{ matrix.notebook }}  -nm
 
   create-new-readme-branch:
     name: Create new ReadMe branch
