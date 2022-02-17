@@ -78,16 +78,14 @@ class TestInsert:
 
 class TestInsertImages:
     def setup(self):
-        import requests
         from pathlib import Path
         from uuid import uuid4
 
-        image_url = "https://relevance.ai/wp-content/uploads/2021/10/Pinterest-growth-numbers.png"
         self.filename = "lovelace.jpg"
 
         self.directory = Path(str(uuid4()))
         self.directory.mkdir()
-        with open(self.filename, "wb") as f:
+        with open(self.filename, 'wb') as f:
             f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
     def test_insert_images_folder(self, test_client: Client):
