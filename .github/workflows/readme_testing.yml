@@ -27,6 +27,7 @@ jobs:
           export NOTEBOOK_IGNORE=$(cat scripts/notebook_ignore.txt)
           export NOTEBOOKS=$(find docs -type f -name "*.ipynb")
           export NOTEBOOK_FPATHS=$(for n in  ${NOTEBOOKS[@]}; do echo $n; done | grep -wv "$NOTEBOOK_IGNORE"  | jq -Rsc '. / "\n" - [""]')
+          echo $NOTEBOOK_FPATHS
           echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
 
 
@@ -38,6 +39,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest]
         python-version: [ '3.7' ]
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         notebook: ${{fromJSON(needs.build-docs.outputs.notebook-fpaths )}}
         include:
           - os: ubuntu-latest
@@ -60,7 +62,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-          # cache: 'pip'
+          cache: 'pip'
 
       - name: Set SDK version as Github env var
         run: |
@@ -68,14 +70,18 @@ jobs:
           echo $RELEVANCEAI_VERSION
           echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
 
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
+          python -c "import sys; print(sys.version)"
+          # python -m pip install -e .[tests]
+          python -m pip install -r readme-docs/requirements.txt
+
       - name: Run tests
         env:
           TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
         run: |
-          python -c "import sys; print(sys.version)"
-          # python -m pip install -e .[tests]
-          python -m pip install -r readme-docs/requirements.txt
-          python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v $RELEVANCEAI_VERSION
+          python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks ${{ matrix.notebook }} -nm
 
       - name: Create new ReadMe branch
         env:
