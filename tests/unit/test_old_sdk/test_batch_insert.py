@@ -78,21 +78,15 @@ class TestInsert:
 
 class TestInsertImages:
     def setup(self):
-        import requests
         from pathlib import Path
         from uuid import uuid4
 
-        image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/167px-Ada_Lovelace_portrait.jpg"
         self.filename = "lovelace.jpg"
 
-        req = requests.get(image_url)
-        if req.status_code == 200:
-            self.directory = Path(str(uuid4()))
-            self.directory.mkdir()
-            with open(self.directory / self.filename, "wb") as f:
-                f.write(req.content)
-        else:
-            assert False
+        self.directory = Path(str(uuid4()))
+        self.directory.mkdir()
+        with open(self.filename, "wb") as f:
+            f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
     def test_insert_images_folder(self, test_client: Client):
         self.ds = test_client.Dataset(generate_dataset_id())
