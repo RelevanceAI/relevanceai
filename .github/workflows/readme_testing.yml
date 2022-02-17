@@ -31,7 +31,7 @@ jobs:
 
   test-notebooks:
     name: Test ${{ matrix.notebook }}
-    needs: build-docs
+    needs: setup-tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
