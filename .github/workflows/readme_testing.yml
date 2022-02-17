@@ -40,7 +40,7 @@ jobs:
         os: [ ubuntu-latest]
         python-version: [ '3.7' ]
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
-        notebook: ${{fromJSON(needs.build-docs.outputs.notebook-fpaths )}}
+        notebook: ${{fromJSON(needs.build-docs.outputs.notebook-fpaths)}}
         include:
           - os: ubuntu-latest
             path: ~/.cache/pip
