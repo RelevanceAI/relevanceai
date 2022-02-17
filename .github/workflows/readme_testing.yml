@@ -8,14 +8,36 @@ on:
     branches: [ development, main ]
 
 jobs:
-  deploy:
+  setup-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      notebook-fpaths: ${{ steps.set-notebook-fpaths.outputs.notebook-fpaths }}
+    steps:
+      - name: Checkout ReadMe repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/main
+          path: readme-docs
 
+      - id: set-notebook-fpaths
+        name: Setting notebook fpath output
+        run: |
+          export NOTEBOOK_IGNORE=$(cat scripts/notebook_ignore.txt)
+          export NOTEBOOKS=$(find docs -type f -name "*.ipynb")
+          export NOTEBOOK_FPATHS=$(for n in  ${NOTEBOOKS[@]}; do echo $n; done | grep -wv "$NOTEBOOK_IGNORE"  | jq -Rsc '. / "\n" - [""]')
+          echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
+
+
+  test-notebooks:
+    name: Test ${{ matrix.notebook }}
+    needs: build-docs
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ ubuntu-latest]
         python-version: [ '3.7' ]
-        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        notebook: ${{fromJSON(needs.build-docs.outputs.notebook-fpaths )}}
         include:
           - os: ubuntu-latest
             path: ~/.cache/pip
@@ -24,19 +46,22 @@ jobs:
           # - os: windows-latest
           #   path: ~\AppData\Local\pip\Cache
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout ReadMe repo
+        uses: actions/checkout@v2
         with:
           repository: RelevanceAI/RelevanceAI-readme-docs
           ref: refs/heads/main
           path: readme-docs
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+          # cache: 'pip'
 
-      - name: Get RelevanceAI version
+      - name: Set SDK version as Github env var
         run: |
           RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
           echo $RELEVANCEAI_VERSION
@@ -47,9 +72,9 @@ jobs:
           TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
         run: |
           python -c "import sys; print(sys.version)"
-          python -m pip install -e .[tests]
+          # python -m pip install -e .[tests]
           python -m pip install -r readme-docs/requirements.txt
-          python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v 0.27.0
+          python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v $RELEVANCEAI_VERSION
 
       - name: Create new ReadMe branch
         env:
