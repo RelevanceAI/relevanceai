@@ -1,8 +1,10 @@
+import warnings
 from typing import List, Dict
 
 from doc_utils import DocUtils
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.client import APIClient
+from functools import wraps
 
 
 class Utils(APIClient, _Base, DocUtils):
@@ -68,3 +70,47 @@ class Utils(APIClient, _Base, DocUtils):
                 f"{', '.join(invalid_fields)} are invalid fields. They are not in the dataset schema."
             )
         return
+
+
+def beta(f):
+    old_doc = f.__doc__
+    f.__doc__ = (
+        old_doc
+        + """
+
+.. warning::
+    This function is currently in beta and is liable to chaneg in the future. We
+    recommend not using this in production systems.
+
+    """
+    )
+
+    @wraps(f)
+    def wrapper(*args, **kwds):
+        warnings.warn("This function currently in beta and may change in the future.")
+        return f(*args, **kwds)
+
+    return wrapper
+
+
+def introduced_in_version(version_number):
+    def _version(f):
+        old_doc = f.__doc__
+        new_doc = (
+            old_doc
+            + f"""
+
+.. note::
+    This function was introduced in **{version_number}**.
+
+        """
+        )
+        f.__doc__ = new_doc
+
+        @wraps(f)
+        def wrapper(*args, **kwds):
+            return f(*args, **kwds)
+
+        return wrapper
+
+    return _version

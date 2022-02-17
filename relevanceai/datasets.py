@@ -58,20 +58,20 @@ class ExampleDatasets:
 
     @staticmethod
     def _get_dummy_dataset(db_name, number_of_documents, select_fields=[]):
+        from relevanceai.logger import FileLogger
         from .http_client import Client
 
-        project = "dummy-collections"
-        api_key = (
-            "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
-        )
-        client = Client(project, api_key, region="old-australia-east")
-        documents = client._get_documents(
-            db_name,
-            number_of_documents=number_of_documents,
-            select_fields=select_fields,
-        )
-        client.config.reset()
-        return documents
+        with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
+            project = "dummy-collections"
+            api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
+            client = Client(project, api_key, region="old-australia-east")
+            documents = client._get_documents(
+                db_name,
+                number_of_documents=number_of_documents,
+                select_fields=select_fields,
+            )
+            client.config.reset()
+            return documents
 
     @staticmethod
     def _get_online_dataset(

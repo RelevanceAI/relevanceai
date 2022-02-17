@@ -1670,7 +1670,13 @@ class Operations(Write):
         return results
 
     @track
-    def auto_cluster(self, alias: str, vector_fields: List[str], chunksize: int = 1024):
+    def auto_cluster(
+        self,
+        alias: str,
+        vector_fields: List[str],
+        chunksize: int = 1024,
+        filters: list = [],
+    ):
         """
         Automatically cluster in 1 line of code.
         It will retrieve documents, run fitting on the documents and then
@@ -1752,7 +1758,10 @@ class Operations(Write):
                 vector_fields=vector_fields,
             )
             clusterer.fit_predict_update(
-                dataset=self, vector_fields=vector_fields, include_grade=True
+                dataset=self,
+                vector_fields=vector_fields,
+                include_grade=True,
+                filters=filters,
             )
 
         elif algorithm.lower() == "hdbscan":
@@ -1775,7 +1784,10 @@ class Operations(Write):
             )
 
             clusterer.partial_fit_predict_update(
-                dataset=self, vector_fields=vector_fields, chunksize=chunksize
+                dataset=self,
+                vector_fields=vector_fields,
+                chunksize=chunksize,
+                filters=filters,
             )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")

@@ -26,7 +26,7 @@ For guides and tutorials on how to use this package, visit https://docs.relevanc
 | API type      | Link |
 | ------------- | ----------- |
 | Guides | [Documentation](https://docs.relevance.ai/) |
-| Python Reference | [Documentation](https://relevanceai.readthedocs.io/)        |
+| Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
 
 You can easily access our documentation while using the SDK using:
 
