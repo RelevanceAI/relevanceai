@@ -1093,6 +1093,7 @@ class ClusterOps(BatchAPIClient):
         dataset: Union[str, Dataset],
         vector_fields: List[str],
         chunksize: int = 100,
+        filters: list = [],
     ):
         """
         Fit The dataset by partial documents.
@@ -1138,7 +1139,7 @@ class ClusterOps(BatchAPIClient):
                 "condition_value": " ",
             }
             for f in vector_fields
-        ]
+        ] + filters
 
         for c in self._chunk_dataset(
             self.dataset, self.vector_fields, chunksize=chunksize, filters=filters
@@ -1152,6 +1153,7 @@ class ClusterOps(BatchAPIClient):
         dataset: Union[Dataset, str],
         vector_fields: List[str],
         chunksize: int = 100,
+        filters: list = [],
     ):
         """
         Fit, predict and update on a dataset.
@@ -1192,7 +1194,10 @@ class ClusterOps(BatchAPIClient):
         """
         print("Fitting dataset...")
         self.partial_fit_dataset(
-            dataset=dataset, vector_fields=vector_fields, chunksize=chunksize
+            dataset=dataset,
+            vector_fields=vector_fields,
+            chunksize=chunksize,
+            filters=filters,
         )
         print("Updating your dataset...")
         self.predict_update(dataset=dataset)
@@ -1367,9 +1372,11 @@ class ClusterOps(BatchAPIClient):
 
         score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
         grade = get_silhouette_grade(score)
-        print(
-            f"You have received a grade of {grade} based on the mean silhouette score of {score}."
-        )
+
+        print("---------------------------")
+        print(f"Grade: {grade}")
+        print(f"Dunn Index: {score}")
+        print("---------------------------")
 
     def set_cluster_labels_across_documents(
         self,
