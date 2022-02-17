@@ -204,10 +204,10 @@ def main(args):
 
     PIP_INSTALL_SENT_REGEX = f".*pip install .* {args.package_name}.*==.*"
     PIP_INSTALL_VERSION_STR_REGEX = f"==.*[0-9]"
-    PIP_INSTALL_VERSION_STR_REPLACE = ""
+    PIP_INSTALL_VERSION_STR_REPLACE = f"=={RELEVANCEAI_SDK_VERSION}"
     pip_install_version_args = {
         "find_sent_regex": PIP_INSTALL_SENT_REGEX,
-        "find_str_regex": PIP_INSTALL_SENT_REGEX,
+        "find_str_regex": PIP_INSTALL_VERSION_STR_REGEX,
         "replace_str": PIP_INSTALL_VERSION_STR_REPLACE,
     }
 
