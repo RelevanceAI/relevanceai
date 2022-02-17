@@ -128,7 +128,7 @@ class Dataset(Export, Stats, Operations):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
         )
 
-    @introduced_in_version("1.16")
+    @introduced_in_version("1.1.6")
     def vectorize(
         self,
         image_fields: List[str] = [],
