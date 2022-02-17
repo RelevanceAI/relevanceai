@@ -85,7 +85,7 @@ class TestInsertImages:
 
         self.directory = Path(str(uuid4()))
         self.directory.mkdir()
-        with open(self.filename, 'wb') as f:
+        with open(self.filename, "wb") as f:
             f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
     def test_insert_images_folder(self, test_client: Client):

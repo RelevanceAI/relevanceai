@@ -933,6 +933,12 @@ class ClusterOps(BatchAPIClient):
         )
 
     @track
+    def fit_predict(self, X):
+        # If dataset, runs fit predict on a dataset
+        # if docs, runs fit predict on a set of document
+        pass
+
+    @track
     def fit_dataset(
         self,
         dataset,
@@ -1151,7 +1157,7 @@ class ClusterOps(BatchAPIClient):
     def partial_fit_predict_update(
         self,
         dataset: Union[Dataset, str],
-        vector_fields: List[str],
+        vector_fields: List[str] = [],
         chunksize: int = 100,
         filters: list = [],
     ):
@@ -1192,6 +1198,7 @@ class ClusterOps(BatchAPIClient):
             )
 
         """
+
         print("Fitting dataset...")
         self.partial_fit_dataset(
             dataset=dataset,
@@ -1375,7 +1382,7 @@ class ClusterOps(BatchAPIClient):
 
         print("---------------------------")
         print(f"Grade: {grade}")
-        print(f"Dunn Index: {score}")
+        print(f"Mean Silhouette Score: {score}")
         print("---------------------------")
 
     def set_cluster_labels_across_documents(
