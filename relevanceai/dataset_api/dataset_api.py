@@ -131,13 +131,36 @@ class Dataset(Export, Stats, Operations):
         self,
         image_fields: List[str] = [],
         text_fields: List[str] = [],
-        image_model=None,
-        text_model=None,
+        image_encoder=None,
+        text_encoder=None,
     ) -> dict:
-        # TODO set None to default encoders
-        # add warning to install vectorhub
+        if image_fields and image_encoder is None:
+            try:
+                from vectorhub.bi_encoders.text_image.torch import Clip2Vec
+
+                image_encoder = Clip2Vec()
+                image_encoder.encode = image_encoder.encode_image
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Default image encoder not found. "
+                    "Please install vectorhub with `python -m pip install "
+                    "vectorhub[clip]` to install Clip2Vec."
+                )
+
+        if text_fields and text_encoder is None:
+            try:
+                from vectorhub.encoders.text.tfhub import USE2Vec
+
+                text_encoder = USE2Vec()
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Default text encoder not found. "
+                    "Please install vectorhub with `python -m pip install "
+                    "vectorhub[encoders-text-tfhub]` to install USE2Vec."
+                )
+
         def create_encoder_function(
-            ftype: str, fields: List[str], field_checks: List[str], model
+            ftype: str, fields: List[str], field_checks: List[str], encoder
         ):
             if not all(
                 map(
@@ -146,35 +169,31 @@ class Dataset(Export, Stats, Operations):
             ):
                 raise ValueError(f"Invalid {ftype} field detected")
 
-            if ftype == "image":
-                try:
-                    model.encode = model.encode_image
-                except:
-                    pass
-
-            if hasattr(model, "encode_documents"):
+            if hasattr(encoder, "encode_documents"):
 
                 def encode_documents(documents):
-                    return model.encode_documents(fields, documents)
+                    return encoder.encode_documents(fields, documents)
 
             else:
 
                 def encode_documents(documents):
-                    return model(documents)
+                    return encoder(documents)
 
             return encode_documents
 
         image_results = self.pull_update_push(
             self.dataset_id,
             create_encoder_function(
-                "image", image_fields, self.image_fields, image_model
+                "image", image_fields, self.image_fields, image_encoder
             ),
             select_fields=image_fields,
         )
 
         text_results = self.pull_update_push(
             self.dataset_id,
-            create_encoder_function("text", text_fields, self.text_fields, text_model),
+            create_encoder_function(
+                "text", text_fields, self.text_fields, text_encoder
+            ),
             select_fields=text_fields,
         )
 
