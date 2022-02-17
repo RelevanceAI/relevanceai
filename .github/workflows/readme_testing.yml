@@ -155,9 +155,10 @@ jobs:
           # ./scripts/sync_readme_docs.sh true ./docs/ $RELEVANCEAI_VERSION
 
           git add .
+          git status | grep -q "Changes to be committed"
           git commit -m "New ReadMe version for RelevanceAI v$RELEVANCEAI_VERSION"
 
           GITHUB_URL=https://$GITHUB_USERNAME:$GITHUB_PAT@github.com/RelevanceAI/RelevanceAI-readme-docs.git
-          git push $GITHUB_URL || git push $GITHUB_URL --set-upstream origin v$RELEVANCEAI_VERSION
+          git push $GITHUB_URL || git push -u $GITHUB_URL origin HEAD:v$RELEVANCEAI_VERSION
 
-          gh pr create --base main --title v$RELEVANCEAI_VERSION
+          gh pr create --base main --head v$RELEVANCEAI_VERSION --title v$RELEVANCEAI_VERSION --body v$RELEVANCEAI_VERSION
