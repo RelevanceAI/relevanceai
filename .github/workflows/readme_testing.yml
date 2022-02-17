@@ -158,4 +158,6 @@ jobs:
 
           GITHUB_URL=https://$GITHUB_USERNAME:$GITHUB_PAT@github.com/RelevanceAI/RelevanceAI-readme-docs.git
           git push $GITHUB_URL || git push $GITHUB_URL --set-upstream origin v$RELEVANCEAI_VERSION
+
+          gh auth login --with-token $GITHUB_PAT
           gh pr create --base main --title v$RELEVANCEAI_VERSION
