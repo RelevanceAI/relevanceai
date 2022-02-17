@@ -65,7 +65,7 @@ jobs:
 
       - name: Set SDK version as Github env var
         run: |
-          RELEVANCEAI_VERSION=v$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          RELEVANCEAI_VERSION=$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
           echo $RELEVANCEAI_VERSION
           echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
 
@@ -80,12 +80,54 @@ jobs:
         env:
           TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
         run: |
-          python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks ${{ matrix.notebook }} -nm
+          export test_notebook='readme-docs/docs/GETTING_STARTED/_notebooks/Intro-to-Relevance-AI.ipynb'
+          python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks $test_notebook -nm
+
+  create-github-branch:
+    name: Test ${{ matrix.notebook }}
+    needs: test-notebooks
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest]
+        python-version: [ '3.7' ]
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        notebook: ${{fromJSON(needs.setup-tests.outputs.notebook-fpaths)}}
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+          # - os: macos-latest
+          #   path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout ReadMe repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/main
+          path: readme-docs
+
+      - name: Set SDK version as Github env var
+        run: |
+          RELEVANCEAI_VERSION=$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          echo $RELEVANCEAI_VERSION
+          echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
 
       - name: Create new ReadMe branch
         env:
+          GITHUB_EMAIL: 'charleneleong84@gmail.com'
+          GITHUB_USERNAME: 'Charlene Leong'
           GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
+          cd readme-docs
+
+          git config --local user.email "$GITHUB_EMAIL"
+          git config --local user.name "$GITHUB_USERNAME"
+
           git checkout -b $RELEVANCEAI_VERSION
           git add .
           git commit -m "New ReadMe version for RelevanceAI $RELEVANCEAI_VERSION"
