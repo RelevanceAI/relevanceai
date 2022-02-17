@@ -5,7 +5,7 @@ name: Testing ReadMe Repo branch creation upon release
 
 on:
   pull_request:
-    branches: [ development, main,  hotfix/parallelize_tests ]
+    branches: [main]
 
 jobs:
   setup-tests:
