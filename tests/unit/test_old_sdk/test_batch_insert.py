@@ -85,14 +85,10 @@ class TestInsertImages:
         image_url = "https://relevance.ai/wp-content/uploads/2021/10/Pinterest-growth-numbers.png"
         self.filename = "lovelace.jpg"
 
-        req = requests.get(image_url)
-        if req.status_code == 200:
-            self.directory = Path(str(uuid4()))
-            self.directory.mkdir()
-            with open(self.directory / self.filename, "wb") as f:
-                f.write(req.content)
-        else:
-            assert False
+        self.directory = Path(str(uuid4()))
+        self.directory.mkdir()
+        with open(self.filename, "wb") as f:
+            f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
     def test_insert_images_folder(self, test_client: Client):
         self.ds = test_client.Dataset(generate_dataset_id())
