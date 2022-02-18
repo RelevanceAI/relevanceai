@@ -284,7 +284,6 @@ class Write(Read):
         )
         results = self.insert_documents(documents, *args, **kwargs)
         self.image_fields.append(field)
-        self._process_insert_results(results)
         return results
 
     @track

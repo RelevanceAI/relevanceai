@@ -48,3 +48,5 @@ def test_dataset(test_client):
     docs = mock_documents(10)
     ds = test_client.Dataset("sample")
     ds.insert_documents(docs)
+    yield ds
+    ds.delete()

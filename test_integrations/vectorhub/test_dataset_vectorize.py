@@ -1,10 +1,9 @@
 from unittest import result
 from relevanceai.datasets import mock_documents
-from relevanceai.http_client import Client
+from relevanceai.http_client import Client, Dataset
 
 
-def test_dataset_vectorize(test_dataset):
-    dataset_id = "vectorhub-test"
+def test_dataset_vectorize(test_dataset: Dataset):
     results = test_dataset.vectorize(text_fields=["sample_3_description"])
     # This means teh results are good yay!
     assert results is None
