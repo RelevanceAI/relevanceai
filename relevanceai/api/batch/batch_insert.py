@@ -919,3 +919,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             return sample_documents
 
         self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)
+
+    def _process_insert_results(self, results: json):
+        # in case API is backwards incompatible
+        if "failed_document_ids" in results:
+            if len(results["failed_document_ids"]) == 0:
+                print("✅ All documents inserted/edited successfully.")
+            print("❗Few errors with inserting/editing documents. Please check logs.")

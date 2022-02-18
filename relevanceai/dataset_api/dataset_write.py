@@ -79,7 +79,7 @@ class Write(Read):
             df.insert_documents(documents)
 
         """
-        return self._insert_documents(
+        results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -90,6 +90,8 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
             **kwargs,
         )
+        self._process_insert_results(results)
+        return results
 
     @track
     def insert_csv(
@@ -139,7 +141,7 @@ class Write(Read):
             df.insert_csv(csv_filename)
 
         """
-        return self._insert_csv(
+        results = self._insert_csv(
             dataset_id=self.dataset_id,
             filepath_or_buffer=filepath_or_buffer,
             chunksize=chunksize,
@@ -151,6 +153,8 @@ class Write(Read):
             col_for_id=col_for_id,
             auto_generate_id=auto_generate_id,
         )
+        self._process_insert_results(results)
+        return results
 
     @track
     def insert_pandas_dataframe(
@@ -281,6 +285,7 @@ class Write(Read):
         )
         results = self.insert_documents(documents, *args, **kwargs)
         self.image_fields.append(field)
+        self._process_insert_results(results)
         return results
 
     @track
