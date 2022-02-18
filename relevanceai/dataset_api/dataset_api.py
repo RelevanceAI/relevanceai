@@ -1,6 +1,7 @@
 """
 Pandas like dataset API
 """
+from base64 import encode
 from typing import Union, List, Dict
 
 from relevanceai.analytics_funcs import track
@@ -10,6 +11,7 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
+from relevanceai.utils import introduced_in_version
 
 # from relevanceai.dataset_api.dataset_dr import DR
 
