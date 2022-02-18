@@ -3,6 +3,7 @@ import os
 import pytest
 
 from relevanceai import Client
+from relevanceai.datasets import mock_documents
 
 REGION = os.getenv("TEST_REGION")
 
@@ -40,3 +41,10 @@ def test_client(test_project, test_api_key, test_firebase_uid):
             region=REGION,
         )
     return client
+
+
+@pytest.fixture(scope="function")
+def test_dataset(test_client):
+    docs = mock_documents(10)
+    ds = test_client.Dataset("sample")
+    ds.insert_documents(docs)

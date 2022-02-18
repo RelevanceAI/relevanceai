@@ -27,7 +27,7 @@ class Operations(Write):
         text_fields: List[str] = [],
         image_encoder=None,
         text_encoder=None,
-    ) -> dict:
+    ):
         """
         Parameters
         ----------
@@ -69,31 +69,34 @@ class Operations(Write):
                 text_model=text_model
             )
         """
-        with FileLogger("logging.txt"):
-            if image_fields and image_encoder is None:
-                try:
+        if image_fields and image_encoder is None:
+            try:
+                with FileLogger("logging.txt"):
                     from vectorhub.bi_encoders.text_image.torch import Clip2Vec
 
                     image_encoder = Clip2Vec()
                     image_encoder.encode = image_encoder.encode_image
-                except ModuleNotFoundError:
-                    raise ModuleNotFoundError(
-                        "Default image encoder not found. "
-                        "Please install vectorhub with `python -m pip install "
-                        "vectorhub[clip]` to install Clip2Vec."
-                    )
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Default image encoder not found. "
+                    "Please install vectorhub with `python -m pip install "
+                    "vectorhub[clip]` to install Clip2Vec."
+                )
 
-            if text_fields and text_encoder is None:
-                try:
+        if text_fields and text_encoder is None:
+            try:
+                with FileLogger("logging.txt"):
                     from vectorhub.encoders.text.tfhub import USE2Vec
 
                     text_encoder = USE2Vec()
-                except ModuleNotFoundError:
-                    raise ModuleNotFoundError(
-                        "Default text encoder not found. "
-                        "Please install vectorhub with `python -m pip install "
-                        "vectorhub[encoders-text-tfhub]` to install USE2Vec."
-                    )
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Default text encoder not found. "
+                    "Please install vectorhub with `python -m pip install "
+                    "vectorhub[encoders-text-tfhub]` to install USE2Vec."
+                )
+
+        with FileLogger("logging.txt"):
 
             def create_encoder_function(ftype: str, fields: List[str], encoder):
                 if not all(map(lambda field: field in self.schema, fields)):
@@ -130,6 +133,15 @@ class Operations(Write):
             else:
                 image_results = {}
 
+        if len(image_fields) > 0:
+            if len(image_results.get("failed_documents", [])) == 0:
+                print("✅ All image documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with vectorizing image documents. Please check logs."
+                )
+
+        with FileLogger("logging.txt"):
             if text_fields:
                 text_results = self.pull_update_push(
                     self.dataset_id,
@@ -149,22 +161,18 @@ class Operations(Write):
             else:
                 text_results = {}
 
-            if len(image_fields) > 0:
-                if len(image_results.get("failed_documents", [])) == 0:
-                    print("✅ All image documents inserted/edited successfully.")
-                else:
-                    print(
-                        "❗Few errors with vectorizing image documents. Please check logs."
-                    )
+        if len(text_fields) > 0:
+            if len(text_results.get("failed_documents", [])) == 0:
+                print("✅ All text documents inserted/edited successfully.")
+            else:
+                print("❗Few errors with vectorizing text documents. Please check logs.")
 
-            if len(text_fields) > 0:
-                if len(text_results.get("failed_documents", [])) == 0:
-                    print("✅ All text documents inserted/edited successfully.")
-                else:
-                    print(
-                        "❗Few errors with vectorizing text documents. Please check logs."
-                    )
-        return {"image": image_results, "text": text_results}
+        if (
+            len(image_results.get("failed_documents", []))
+            + len(text_results.get("failed_documents", []))
+            != 0
+        ):
+            return {"image": image_results, "text": text_results}
 
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):

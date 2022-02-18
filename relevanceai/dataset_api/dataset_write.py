@@ -90,8 +90,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
             **kwargs,
         )
-        self._process_insert_results(results)
-        return results
+        return self._process_insert_results(results)
 
     @track
     def insert_csv(
