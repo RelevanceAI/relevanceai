@@ -228,49 +228,6 @@ class Series(BatchAPIClient):
         )
 
     @track
-    def vectorize(self, model):
-        """
-        Vectorises over a field give a model architecture
-
-        Parameters
-        ----------
-        model : Machine learning model for vectorizing text`
-            The dataset_id of concern
-
-        Example
-        -------
-        .. code-block::
-
-            from relevanceai import Client
-            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-
-            model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
-
-            client = Client()
-
-            dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-
-            text_field = "text_field"
-            df.vectorize(text_field, model)
-        """
-        warn_function_is_work_in_progress()
-
-        if hasattr(model, "encode_documents"):
-
-            def encode_documents(documents):
-                return model.encode_documents(self.field, documents)
-
-        else:
-
-            def encode_documents(documents):
-                return model(documents)
-
-        return self.pull_update_push(
-            self.dataset_id, encode_documents, select_fields=[self.field]
-        )
-
-    @track
     def apply(
         self,
         func: Callable,

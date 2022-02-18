@@ -4,6 +4,17 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.0
+----------
+
+**BREAKING CHANGES**
+
+- When inserting/writing, you will now no longer be returned confusing insertion/write statements
+but if it errors, it will return the JSON object with the necessary details.
+
+- Add image tooling around processing (currently an alpha feature to be tested)
+- Add `vectorize` method for text and images
+
 v1.1.5
 ----------
 

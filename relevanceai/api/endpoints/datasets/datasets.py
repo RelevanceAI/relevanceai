@@ -485,54 +485,6 @@ class DatasetsClient(_Base):
             },
         )
 
-    def vectorize(
-        self,
-        dataset_id: str,
-        model_id: str,
-        fields: list = [],
-        filters: list = [],
-        refresh: bool = False,
-        alias: str = "default",
-        chunksize: int = 20,
-        chunk_field: str = None,
-    ):
-        """
-        Queue the encoding of a dataset using the method given by model_id.
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        model_id : string
-            Model ID to use for vectorizing (encoding.)
-        fields : list
-            Fields to remove ['random_field', 'another_random_field']. Defaults to no removes
-        filters : list
-            Filters to run against
-        refresh : bool
-            If True, re-runs encoding on whole dataset.
-        alias : string
-            Alias used to name a vector field. Belongs in field_{alias}vector
-        chunksize : int
-            Batch for each encoding. Change at your own risk.
-        chunk_field : string
-            The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.
-
-        """
-        return self.make_http_request(
-            endpoint=f"/datasets/{dataset_id}/vectorize",
-            method="GET",
-            parameters={
-                "model_id": model_id,
-                "fields": fields,
-                "filters": filters,
-                "refresh": refresh,
-                "alias": alias,
-                "chunksize": chunksize,
-                "chunk_field": chunk_field,
-            },
-        )
-
     def task_status(self, dataset_id: str, task_id: str):
         """
         Check the status of an existing encoding task on the given dataset. \n
