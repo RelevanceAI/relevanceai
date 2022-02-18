@@ -12,7 +12,7 @@ from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.data_tools.base_text_processing import MLStripper
 from relevanceai.logger import FileLogger
-from relevanceai.utils import introduced_in_version
+from relevanceai.utils import introduced_in_version, _process_insert_results
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -148,6 +148,18 @@ class Operations(Write):
         else:
             text_results = {}
 
+        if len(image_fields) > 0:
+            if len(image_results.get("failed_documents", [])) == 0:
+                print("✅ All image documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with vectorizing image documents. Please check logs."
+                )
+
+        if len(text_fields) > 0:
+            if len(text_results.get("failed_documents", [])) == 0:
+                print("✅ All text documents inserted/edited successfully.")
+                print("❗Few errors with vectorizing text documents. Please check logs.")
         return {"image": image_results, "text": text_results}
 
     @track
