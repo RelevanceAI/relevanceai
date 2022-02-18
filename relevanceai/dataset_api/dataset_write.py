@@ -196,8 +196,8 @@ class Write(Read):
 
     def insert_images_folder(
         self,
-        field: str,
-        path: Union[Path, str, PathLike],
+        path: Union[Path, str],
+        field: str = "images",
         recurse: bool = True,
         *args,
         **kwargs,
@@ -250,9 +250,39 @@ class Write(Read):
                 )
 
         """
-        return self._insert_images_folder(
-            field=field, path=path, recurse=recurse, *args, **kwargs
+        if isinstance(path, str):
+            path = Path(path)
+
+            if not path.is_dir():
+                raise Exception(f"{path} is not a proper path")
+
+        from mimetypes import types_map
+
+        image_extensions = set(
+            k.lower() for k, v in types_map.items() if v.startswith("image/")
         )
+
+        def get_paths(path: Path, images: List[str]) -> List[str]:
+            for file in path.iterdir():
+                if file.is_dir() and recurse:
+                    images.extend(get_paths(file, []))
+                elif file.is_file() and file.suffix.lower() in image_extensions:
+                    images.append(str(file))
+                else:
+                    continue
+
+            return images
+
+        images = get_paths(path, [])
+        documents = list(
+            map(
+                lambda image: {"_id": uuid.uuid4(), "path": image, field: image}, images
+            )
+        )
+        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        self.image_fields.append(field)
+        self.print_search_dashboard_url(self.dataset_id)
+        return results
 
     @track
     def upsert_documents(
