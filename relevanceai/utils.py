@@ -79,7 +79,7 @@ def beta(f):
         + """
 
 .. warning::
-    This function is currently in beta and is liable to chaneg in the future. We
+    This function is currently in beta and is liable to change in the future. We
     recommend not using this in production systems.
 
     """
