@@ -114,3 +114,9 @@ def introduced_in_version(version_number):
         return wrapper
 
     return _version
+
+
+def _process_insert_results(results):
+    if len(results["failed_document_ids"]) == 0:
+        print("✅ All documents inserted/edited successfully.")
+    print("❗Few errors with inserting/editing documents. Please check logs.")

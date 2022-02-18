@@ -1,13 +1,10 @@
 from unittest import result
 from relevanceai.datasets import mock_documents
-from relevanceai.http_client import Client
+from relevanceai.http_client import Client, Dataset
 
 
-def test_dataset_vectorize(test_client: Client):
-    dataset_id = "vectorhub-test"
-    ds = test_client.Dataset("vectorhub-test")
-    ds.insert_documents(mock_documents(number_of_documents=10))
-    results = ds.vectorize(text_fields=["sample_3_description"])
-    assert len(results["text"]["failed_documents"]) == 0
-    assert "sample_3_description_use_vector_" in ds.schema
-    ds.delete()
+def test_dataset_vectorize(test_dataset: Dataset):
+    results = test_dataset.vectorize(text_fields=["sample_3_description"])
+    # This means teh results are good yay!
+    assert results is None
+    assert "sample_3_description_use_vector_" in test_dataset.schema

@@ -95,7 +95,7 @@ class TestInsertImages:
             path=self.directory,
             recurse=False,  # No subdirectories exist anyway
         )
-        assert not results["failed_documents"]
+        assert results is None
 
     def teardown(self):
         self.ds.delete()

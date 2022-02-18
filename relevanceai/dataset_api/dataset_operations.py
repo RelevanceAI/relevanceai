@@ -12,7 +12,7 @@ from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.data_tools.base_text_processing import MLStripper
 from relevanceai.logger import FileLogger
-from relevanceai.utils import introduced_in_version
+from relevanceai.utils import introduced_in_version, _process_insert_results
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -27,7 +27,7 @@ class Operations(Write):
         text_fields: List[str] = [],
         image_encoder=None,
         text_encoder=None,
-    ) -> dict:
+    ):
         """
         Parameters
         ----------
@@ -71,10 +71,11 @@ class Operations(Write):
         """
         if image_fields and image_encoder is None:
             try:
-                from vectorhub.bi_encoders.text_image.torch import Clip2Vec
+                with FileLogger("logging.txt"):
+                    from vectorhub.bi_encoders.text_image.torch import Clip2Vec
 
-                image_encoder = Clip2Vec()
-                image_encoder.encode = image_encoder.encode_image
+                    image_encoder = Clip2Vec()
+                    image_encoder.encode = image_encoder.encode_image
             except ModuleNotFoundError:
                 raise ModuleNotFoundError(
                     "Default image encoder not found. "
@@ -84,9 +85,10 @@ class Operations(Write):
 
         if text_fields and text_encoder is None:
             try:
-                from vectorhub.encoders.text.tfhub import USE2Vec
+                with FileLogger("logging.txt"):
+                    from vectorhub.encoders.text.tfhub import USE2Vec
 
-                text_encoder = USE2Vec()
+                    text_encoder = USE2Vec()
             except ModuleNotFoundError:
                 raise ModuleNotFoundError(
                     "Default text encoder not found. "
@@ -94,61 +96,83 @@ class Operations(Write):
                     "vectorhub[encoders-text-tfhub]` to install USE2Vec."
                 )
 
-        def create_encoder_function(ftype: str, fields: List[str], encoder):
-            if not all(map(lambda field: field in self.schema, fields)):
-                raise ValueError(f"Invalid {ftype} field detected")
+        with FileLogger("logging.txt"):
 
-            if hasattr(encoder, "encode_documents"):
+            def create_encoder_function(ftype: str, fields: List[str], encoder):
+                if not all(map(lambda field: field in self.schema, fields)):
+                    raise ValueError(f"Invalid {ftype} field detected")
 
-                def encode_documents(documents):
-                    return encoder.encode_documents(fields, documents)
+                if hasattr(encoder, "encode_documents"):
 
+                    def encode_documents(documents):
+                        return encoder.encode_documents(fields, documents)
+
+                else:
+
+                    def encode_documents(documents):
+                        return encoder(documents)
+
+                return encode_documents
+
+            if image_fields:
+                image_results = self.pull_update_push(
+                    self.dataset_id,
+                    create_encoder_function("image", image_fields, image_encoder),
+                    select_fields=image_fields,
+                    filters=[
+                        {
+                            "field": image_field,
+                            "filter_type": "exists",
+                            "condition": "==",
+                            "condition_value": " ",
+                            "strict": "must_or",
+                        }
+                        for image_field in image_fields
+                    ],
+                )
             else:
+                image_results = {}
 
-                def encode_documents(documents):
-                    return encoder(documents)
+        if len(image_fields) > 0:
+            if len(image_results.get("failed_documents", [])) == 0:
+                print("✅ All image documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with vectorizing image documents. Please check logs."
+                )
 
-            return encode_documents
+        with FileLogger("logging.txt"):
+            if text_fields:
+                text_results = self.pull_update_push(
+                    self.dataset_id,
+                    create_encoder_function("text", text_fields, text_encoder),
+                    select_fields=text_fields,
+                    filters=[
+                        {
+                            "field": text_field,
+                            "filter_type": "exists",
+                            "condition": "==",
+                            "condition_value": " ",
+                            "strict": "must_or",
+                        }
+                        for text_field in text_fields
+                    ],
+                )
+            else:
+                text_results = {}
 
-        if image_fields:
-            image_results = self.pull_update_push(
-                self.dataset_id,
-                create_encoder_function("image", image_fields, image_encoder),
-                select_fields=image_fields,
-                filters=[
-                    {
-                        "field": image_field,
-                        "filter_type": "exists",
-                        "condition": "==",
-                        "condition_value": " ",
-                        "strict": "must_or",
-                    }
-                    for image_field in image_fields
-                ],
-            )
-        else:
-            image_results = {}
+        if len(text_fields) > 0:
+            if len(text_results.get("failed_documents", [])) == 0:
+                print("✅ All text documents inserted/edited successfully.")
+            else:
+                print("❗Few errors with vectorizing text documents. Please check logs.")
 
-        if text_fields:
-            text_results = self.pull_update_push(
-                self.dataset_id,
-                create_encoder_function("text", text_fields, text_encoder),
-                select_fields=text_fields,
-                filters=[
-                    {
-                        "field": text_field,
-                        "filter_type": "exists",
-                        "condition": "==",
-                        "condition_value": " ",
-                        "strict": "must_or",
-                    }
-                    for text_field in text_fields
-                ],
-            )
-        else:
-            text_results = {}
-
-        return {"image": image_results, "text": text_results}
+        if (
+            len(image_results.get("failed_documents", []))
+            + len(text_results.get("failed_documents", []))
+            != 0
+        ):
+            return {"image": image_results, "text": text_results}
 
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
