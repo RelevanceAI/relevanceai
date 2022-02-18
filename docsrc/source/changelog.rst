@@ -12,7 +12,7 @@ v1.2.0
 - When inserting/writing, you will now no longer be returned confusing insertion/write statements
 but if it errors, it will return the JSON object with the necessary details.
 
-- Add image tooling
+- Add image tooling around processing (currently an alpha feature to be tested)
 - Add `vectorize` method for text and images
 
 v1.1.5
