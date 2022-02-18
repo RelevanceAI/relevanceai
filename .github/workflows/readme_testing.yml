@@ -146,7 +146,7 @@ jobs:
 
           GIT_BRANCH_VERSION=v$RELEVANCEAI_VERSION
 
-          git checkout v$RELEVANCEAI_VERSION 2>/dev/null || git checkout -b $GIT_BRANCH_VERSION
+          git checkout $GIT_BRANCH_VERSION 2>/dev/null && git pull || git checkout -b $GIT_BRANCH_VERSION
 
           python scripts/detect_secrets.py -d -p docs
           python scripts/update_asset_ref.py -d -p . -pn RelevanceAI -v v$RELEVANCEAI_VERSION
