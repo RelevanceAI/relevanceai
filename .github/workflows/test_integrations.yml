@@ -31,24 +31,13 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # - name: Cache pip
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ${{ matrix.path }}
-      #     key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.pythonLocation }}-pip-
-      #       ${{ runner.os }}-${{ env.pythonLocation }}-
-      - name: Run tests
+      - name: Run vectorhub integration tests
         env:
-          # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
-          # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT }}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
-          # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
-          # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist
-          python -m pytest tests/ --cov-config=coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=60
+          python -m pip install vectorhub[clip,encoders-text-tfhub]
+          python -m pytest test_integrations/vectorhub/
