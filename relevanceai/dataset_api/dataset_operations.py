@@ -12,7 +12,7 @@ from relevanceai.dataset_api.dataset_write import Write
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.data_tools.base_text_processing import MLStripper
 from relevanceai.logger import FileLogger
-from relevanceai.utils import introduced_in_version, _process_insert_results
+from relevanceai.utils import introduced_in_version, _process_insert_results, beta
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -20,6 +20,7 @@ from relevanceai.vector_tools.nearest_neighbours import (
 
 
 class Operations(Write):
+    @beta
     @introduced_in_version("1.2.0")
     def vectorize(
         self,
