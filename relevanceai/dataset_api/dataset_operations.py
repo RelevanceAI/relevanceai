@@ -54,6 +54,7 @@ class Operations(Write):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
 
@@ -69,6 +70,7 @@ class Operations(Write):
                 text_fields=["text_field"],
                 text_model=text_model
             )
+
         """
         if image_fields and image_encoder is None:
             try:
