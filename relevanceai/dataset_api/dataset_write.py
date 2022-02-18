@@ -279,9 +279,8 @@ class Write(Read):
                 lambda image: {"_id": uuid.uuid4(), "path": image, field: image}, images
             )
         )
-        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        results = self.insert_documents(documents, *args, **kwargs)
         self.image_fields.append(field)
-        self.print_search_dashboard_url(self.dataset_id)
         return results
 
     @track
