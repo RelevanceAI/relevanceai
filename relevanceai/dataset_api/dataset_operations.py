@@ -20,7 +20,7 @@ from relevanceai.vector_tools.nearest_neighbours import (
 
 
 class Operations(Write):
-    @introduced_in_version("1.1.6")
+    @introduced_in_version("1.2.0")
     def vectorize(
         self,
         image_fields: List[str] = [],

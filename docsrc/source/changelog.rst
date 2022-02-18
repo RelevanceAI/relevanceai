@@ -7,7 +7,13 @@ Python library.
 v1.2.0
 ----------
 
+**BREAKING CHANGES**
+
+- When inserting/writing, you will now no longer be returned confusing insertion/write statements
+but if it errors, it will return the JSON object with the necessary details.
+
 - Add image tooling
+- Add `vectorize` method for text and images
 
 v1.1.5
 ----------
