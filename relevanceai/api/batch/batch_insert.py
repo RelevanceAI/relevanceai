@@ -695,7 +695,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         self.print_search_dashboard_url(dataset_id)
         return results
 
-    def insert_images_folder(
+    def _insert_images_folder(
         self,
         field: str,
         path: Union[Path, str],

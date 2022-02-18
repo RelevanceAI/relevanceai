@@ -8,9 +8,9 @@ import json
 import pandas as pd
 
 from doc_utils import DocUtils
-
+from os import PathLike
+from pathlib import Path
 from typing import Dict, List, Union, Callable
-
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 
@@ -193,6 +193,66 @@ class Write(Read):
         results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
         self.print_search_dashboard_url(self.dataset_id)
         return results
+
+    def insert_images_folder(
+        self,
+        field: str,
+        path: Union[Path, str, PathLike],
+        recurse: bool = True,
+        *args,
+        **kwargs,
+    ):
+        """
+        Given a path to a directory, this method loads all image-related files
+        into a Dataset.
+
+        Parameters
+        ----------
+        field: str
+            A text field of a dataset.
+
+        path: Union[Path, str]
+            The path to the directory containing images.
+
+        recurse: bool
+            Indicator that determines whether to recursively insert images from
+            subdirectories in the directory.
+
+        Returns
+        -------
+            dict
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("dataset_id")
+
+            from pathlib import Path
+            path = Path("images/")
+            # list(path.iterdir()) returns
+            # [
+            #    PosixPath('image.jpg'),
+            #    PosixPath('more-images'), # a directory
+            # ]
+
+            get_all_images: bool = True
+            if get_all_images:
+                # Inserts all images, even those in the more-images directory
+                ds.insert_images_folder(
+                    field="images", path=path, recurse=True
+                )
+            else:
+                # Only inserts image.jpg
+                ds.insert_images_folder(
+                    field="images", path=path, recurse=False
+                )
+
+        """
+        return self._insert_images_folder(
+            field=field, path=path, recurse=recurse, *args, **kwargs
+        )
 
     @track
     def upsert_documents(
