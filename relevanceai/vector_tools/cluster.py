@@ -438,17 +438,21 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Dict = {},
+        cluster_args: Optional[Dict[str, Any]] = None,
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
         Cluster vectors
         """
-        if isinstance(cluster, str):
-            if cluster_args == {}:
+        if cluster_args is None:
+            if isinstance(cluster, str):
                 cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
+            else:
+                cluster_args = {}
+
+        if isinstance(cluster, str):
             if cluster in ["kmeans", "kmedoids"]:
-                if k is None and cluster_args is None:
+                if k is None:
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
                     if k not in cluster_args:
@@ -467,7 +471,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         dataset_id: str,
         vector_fields: list,
         alias: str,
-        filters: List = [],
+        filters: Optional[List] = None,
         k: Union[None, int] = 10,
         init: str = "k-means++",
         n_init: int = 10,
@@ -530,6 +534,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             vector_fields=vector_fields
         )
         """
+        filters = [] if filters is None else filters
 
         if alias is None:
             alias = "kmeans_" + str(k)
@@ -612,7 +617,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self,
         dataset_id: str,
         vector_fields: list,
-        filters: List = [],
+        filters: Optional[List] = None,
         algorithm: str = "best",
         alpha: float = 1.0,
         approx_min_span_tree: bool = True,
@@ -678,6 +683,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
+        filters = [] if filters is None else filters
 
         if (
             ".".join([cluster_field, vector_fields[0], alias])
