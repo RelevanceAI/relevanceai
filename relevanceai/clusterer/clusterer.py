@@ -1292,7 +1292,7 @@ class ClusterOps(BatchAPIClient):
                 vector_fields=vector_fields, documents=c
             )
             response = self.dataset._update_documents(
-                datasset_id=self.dataset_id, documents=cluster_predictions
+                dataset_id=self.dataset_id, documents=cluster_predictions
             )
             for k, v in response.items():
                 if isinstance(all_responses[k], int):
