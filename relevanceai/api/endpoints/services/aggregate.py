@@ -1,3 +1,5 @@
+from typing import Optional
+
 from relevanceai.base import _Base
 
 
@@ -14,9 +16,9 @@ class AggregateClient(_Base):
     def aggregate(
         self,
         dataset_id: str,
-        metrics: list = [],
-        groupby: list = [],
-        filters: list = [],
+        metrics: Optional[list] = None,
+        groupby: Optional[list] = None,
+        filters: Optional[list] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -100,6 +102,10 @@ class AggregateClient(_Base):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
+        metrics = [] if metrics is None else metrics
+        groupby = [] if groupby is None else groupby
+        filters = [] if filters is None else filters
+
         return self.make_http_request(
             "/services/aggregate/aggregate",
             method="POST",
