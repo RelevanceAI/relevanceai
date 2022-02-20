@@ -67,11 +67,11 @@ class ImageTools:
             b = image  # type: ignore
         return b
 
-    @_read.register(bytes)
+    @_read.register(bytes)  # type: ignore
     def _(self, image):
         return io.BytesIO(image)
 
-    @_read.register(io.BytesIO)
+    @_read.register(io.BytesIO)  # type: ignore
     def _(self, image):
         return image
 

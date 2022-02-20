@@ -4,6 +4,22 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.1
+----------
+
+**BREAKING CHANGES**
+
+- When upserting, you will no longer be returned confusing inserting/write statements.
+
+**Other Changes**:
+
+- Add option to `create_id` when inserting
+
+Developer changes:
+
+- Reduced number of documents in testing
+- Make tracking only occur at the uppermost level and not the bottom level
+
 v1.2.0
 ----------
 
