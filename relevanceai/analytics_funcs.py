@@ -72,6 +72,7 @@ def track(func: Callable):
             return func(*args, **kwargs)
         finally:
             args[0]._is_analytics_in_transit = False
+
     return wrapper
 
 
