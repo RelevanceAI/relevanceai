@@ -133,7 +133,7 @@ class ClusterAgg(Agg):
     # The call below violates the Liskov principle
     def __call__(  # type: ignore
         self,
-        metrics: None[dict] = None,
+        metrics: Optional[dict] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
