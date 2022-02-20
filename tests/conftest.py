@@ -17,7 +17,7 @@ from tests.globals.objects import *
 from tests.globals.datasets import *
 from tests.globals.clusterers import *
 
-REGION = os.getenv("TEST_REGION")
+REGION = "old-australia-east"
 
 
 # def pytest_sessionstart(session):
@@ -76,7 +76,7 @@ def test_client(test_project, test_api_key, test_firebase_uid):
             region=REGION,
         )
     # For some reason not resetting to default
-    correct_client_config(client)
+    # correct_client_config(client)
     return client
 
 
@@ -97,10 +97,11 @@ def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
 @pytest.fixture(scope="module")
 def test_read_df(test_client: Client, vector_documents: List[Dict]):
     correct_client_config(test_client)
-    DATASET_ID = "_sample_df_"
+    DATASET_ID = generate_dataset_id
     df = test_client.Dataset(DATASET_ID)
     results = df.upsert_documents(vector_documents)
     yield results
+    df.delete()
 
 
 @pytest.fixture(scope="module")
