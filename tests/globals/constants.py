@@ -4,7 +4,7 @@ import string
 from typing import List
 
 VECTOR_LENGTH = 8
-NUMBER_OF_DOCUMENTS = 100
+NUMBER_OF_DOCUMENTS = 20
 
 
 def generate_random_string(string_length: int = 5) -> str:
