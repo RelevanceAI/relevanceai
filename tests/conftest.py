@@ -97,7 +97,7 @@ def test_csv_dataset(test_client: Client, vector_documents: List[Dict]):
 @pytest.fixture(scope="module")
 def test_read_df(test_client: Client, vector_documents: List[Dict]):
     correct_client_config(test_client)
-    DATASET_ID = generate_dataset_id
+    DATASET_ID = generate_dataset_id()
     df = test_client.Dataset(DATASET_ID)
     results = df.upsert_documents(vector_documents)
     yield results
