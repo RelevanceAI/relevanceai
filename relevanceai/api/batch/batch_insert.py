@@ -46,6 +46,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         use_json_encoder: bool = True,
         verbose: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -99,8 +100,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
+        # TODO: rename this function to convert_id_to_string
+        self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
@@ -269,6 +270,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -316,7 +318,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         )
 
         # Turn _id into string
-        self._convert_id_to_string(documents)
+        self._convert_id_to_string(documents, create_id=create_id)
 
         if use_json_encoder:
             documents = self.json_encoder(documents)
@@ -920,7 +922,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)
 
-    def _process_insert_results(self, results: dict):
+    def _process_insert_results(self, results: dict, return_json: bool = False):
         # in case API is backwards incompatible
 
         if "failed_documents" in results:
@@ -944,5 +946,5 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             len(results.get("failed_documents", []))
             + len(results.get("failed_document_ids", []))
             > 0
-        ):
+        ) or return_json:
             return results

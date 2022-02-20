@@ -26,6 +26,7 @@ class Write(Read):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         **kwargs,
     ) -> Dict:
 
@@ -88,6 +89,7 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
             **kwargs,
         )
         return self._process_insert_results(results)
@@ -296,6 +298,8 @@ class Write(Read):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        return_json: bool = False,
+        create_id: bool = False,
     ) -> Dict:
 
         """
@@ -344,7 +348,7 @@ class Write(Read):
             df.upsert_documents(documents)
 
         """
-        return self._update_documents(
+        results = self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -353,7 +357,9 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
         )
+        return self._process_insert_results(results, return_json=return_json)
 
     @track
     def apply(
