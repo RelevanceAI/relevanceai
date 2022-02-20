@@ -26,7 +26,7 @@ class Write(Read):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
-        create_id: bool = True,
+        create_id: bool = False,
         **kwargs,
     ) -> Dict:
 
