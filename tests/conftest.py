@@ -17,7 +17,7 @@ from tests.globals.objects import *
 from tests.globals.datasets import *
 from tests.globals.clusterers import *
 
-REGION = "old-australia-east"
+REGION = os.getenv("TEST_REGION")
 
 
 # def pytest_sessionstart(session):
