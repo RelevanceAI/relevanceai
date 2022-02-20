@@ -86,5 +86,8 @@ def test_fit_predict(test_client: Client, vector_dataset_id: str):
         alias="random_clustering",
         model=model,
     )
+    import inspect
+
+    print(inspect.getfullargspec(clusterer.fit_predict))
     clusterer.fit_predict(df, vector_fields=["sample_1_vector_"])
     assert "_cluster_.sample_1_vector_.random_clustering" in df.schema
