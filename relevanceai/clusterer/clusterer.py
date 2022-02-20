@@ -754,7 +754,6 @@ class ClusterOps(BatchAPIClient):
         )
         return results
 
-    @track
     def get_centroid_documents(self) -> List:
         """
         Get the centroid documents to store. This enables you to use `list_closest_to_center()`
