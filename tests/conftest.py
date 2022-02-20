@@ -16,6 +16,7 @@ from tests.globals.documents import *
 from tests.globals.objects import *
 from tests.globals.datasets import *
 from tests.globals.clusterers import *
+from tests.globals.constants import SAMPLE_DATASET_DATASET_PREFIX
 
 REGION = os.getenv("TEST_REGION")
 
@@ -77,7 +78,13 @@ def test_client(test_project, test_api_key, test_firebase_uid):
         )
     # For some reason not resetting to default
     # correct_client_config(client)
-    return client
+
+    yield client
+
+    # To avoid flooding backend
+    for d in client.list_datasets()["datasets"]:
+        if SAMPLE_DATASET_DATASET_PREFIX in d:
+            client.delete_dataset(d)
 
 
 @pytest.fixture(scope="module")

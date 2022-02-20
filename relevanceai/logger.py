@@ -50,7 +50,7 @@ class LoguruLogger(AbstractLogger):
         logger = loguru_logger
         logger.remove()
         if enable_logging:
-            logger.add(sys.stdout, level=logging_level)
+            logger.add(sys.stdout, level=logging_level, format="{message}")
             if log_to_file:
                 logger.add(log_file_name, level=logging_level, rotation="100 MB")
         self._logger = logger
