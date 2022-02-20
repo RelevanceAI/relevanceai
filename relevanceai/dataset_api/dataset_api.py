@@ -1,7 +1,8 @@
 """
 Pandas like dataset API
 """
-from typing import Union, List, Dict
+from base64 import encode
+from typing import Dict, List, Optional, Union
 
 from relevanceai.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
@@ -10,6 +11,7 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
+from relevanceai.utils import introduced_in_version
 
 # from relevanceai.dataset_api.dataset_dr import DR
 
@@ -24,22 +26,22 @@ class Dataset(Export, Stats, Operations):
         api_key: str,
         dataset_id: str,
         firebase_uid: str,
-        fields: list = [],
-        image_fields: List[str] = [],
-        audio_fields: List[str] = [],
-        highlight_fields: Dict[str, List] = {},
-        text_fields: List[str] = [],
+        fields: Optional[list] = None,
+        image_fields: Optional[List[str]] = None,
+        audio_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, List]] = None,
+        text_fields: Optional[List[str]] = None,
         **kw,
     ):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
-        self.fields = fields
+        self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
-        self.image_fields = image_fields
-        self.audio_fields = audio_fields
-        self.highlight_fields = highlight_fields
-        self.text_fields = text_fields
+        self.image_fields = [] if image_fields is None else image_fields
+        self.audio_fields = [] if audio_fields is None else audio_fields
+        self.highlight_fields = {} if highlight_fields is None else highlight_fields
+        self.text_fields = [] if text_fields is None else text_fields
 
         self.firebase_uid = firebase_uid
         super().__init__(

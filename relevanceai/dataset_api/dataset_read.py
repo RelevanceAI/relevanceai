@@ -7,7 +7,7 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 from relevanceai.analytics_funcs import track
 
 from relevanceai.dataset_api.helpers import _build_filters
@@ -32,16 +32,16 @@ class Read(BatchAPIClient):
         api_key: str,
         dataset_id: str,
         firebase_uid: str,
-        fields: list = [],
-        image_fields: List[str] = [],
-        audio_fields: List[str] = [],
-        highlight_fields: Dict[str, list] = {},
-        text_fields: List[str] = [],
+        fields: Optional[list] = None,
+        image_fields: Optional[List[str]] = None,
+        audio_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, list]] = None,
+        text_fields: Optional[List[str]] = None,
     ):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
-        self.fields = fields
+        self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
         self.vector_tools = VectorTools(
             project=project, api_key=api_key, firebase_uid=firebase_uid
@@ -64,9 +64,9 @@ class Read(BatchAPIClient):
             dataset_id=self.dataset_id,
             firebase_uid=self.firebase_uid,
         )
-        self.image_fields = image_fields
-        self.audio_fields = audio_fields
-        self.highlight_fields = highlight_fields
+        self.image_fields = [] if image_fields is None else image_fields
+        self.audio_fields = [] if audio_fields is None else audio_fields
+        self.highlight_fields = {} if highlight_fields is None else highlight_fields
         self.text_fields = text_fields
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
@@ -266,13 +266,12 @@ class Read(BatchAPIClient):
         self,
         n: int = 1,
         frac: float = None,
-        filters: list = [],
+        filters: Optional[list] = None,
         random_state: int = 0,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector: bool = True,
         output_format: str = "json",
     ):
-
         """
         Return a random sample of items from a dataset.
 
@@ -299,6 +298,9 @@ class Read(BatchAPIClient):
             df = client.Dataset("sample_dataset_id", image_fields=["image_url])
             df.sample()
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if not select_fields and self.fields:
             select_fields = self.fields
 
@@ -330,13 +332,12 @@ class Read(BatchAPIClient):
     def get_all_documents(
         self,
         chunksize: int = 1000,
-        filters: List = [],
-        sort: List = [],
-        select_fields: List = [],
+        filters: Optional[List] = None,
+        sort: Optional[List] = None,
+        select_fields: Optional[List] = None,
         include_vector: bool = True,
         show_progress_bar: bool = True,
     ):
-
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
@@ -363,7 +364,11 @@ class Read(BatchAPIClient):
             dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             documents = df.get_all_documents()
+
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
 
         return self._get_all_documents(
             dataset_id=self.dataset_id,
@@ -573,11 +578,11 @@ class Read(BatchAPIClient):
     def get_documents(
         self,
         number_of_documents: int = 20,
-        filters: list = [],
+        filters: Optional[list] = None,
         cursor: str = None,
         batch_size: int = 1000,
-        sort: list = [],
-        select_fields: list = [],
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
         include_vector: bool = True,
         include_cursor: bool = False,
     ):
@@ -603,6 +608,10 @@ class Read(BatchAPIClient):
         filters: list
             Query for filtering the search results
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
+
         return self._get_documents(
             dataset_id=self.dataset_id,
             number_of_documents=number_of_documents,

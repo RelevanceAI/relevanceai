@@ -4,7 +4,7 @@ Relevance AI Platform offers free datasets for users.
 These datasets have been licensed under Apache 2.0.
 """
 
-from typing import List, Union, Dict, Any
+from typing import Any, Dict, List, Optional, Union
 import random
 import uuid
 import string
@@ -37,7 +37,9 @@ class ExampleDatasets:
         """List of example datasets available to download"""
         return self.datasets
 
-    def get_dataset(self, name, number_of_documents=None, select_fields=[]):
+    def get_dataset(
+        self, name, number_of_documents=None, select_fields: Optional[List] = None
+    ):
         """
         Download an example dataset
         Parameters
@@ -49,6 +51,7 @@ class ExampleDatasets:
         select_fields : list
             Fields to include in the dataset, empty array/list means all fields.
         """
+        select_fields = [] if select_fields is None else select_fields
         if name in self.datasets:
             return getattr(THIS_MODULE, f"get_{name}_dataset")(
                 number_of_documents, select_fields
@@ -57,26 +60,34 @@ class ExampleDatasets:
             raise ValueError("Not a valid dataset")
 
     @staticmethod
-    def _get_dummy_dataset(db_name, number_of_documents, select_fields=[]):
+    def _get_dummy_dataset(
+        db_name, number_of_documents, select_fields: Optional[List[str]] = None
+    ):
+        from relevanceai.logger import FileLogger
         from .http_client import Client
 
-        project = "dummy-collections"
-        api_key = (
-            "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
-        )
-        client = Client(project, api_key, region="old-australia-east")
-        documents = client._get_documents(
-            db_name,
-            number_of_documents=number_of_documents,
-            select_fields=select_fields,
-        )
-        client.config.reset()
-        return documents
+        select_fields = [] if select_fields is None else select_fields
+        with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
+            project = "dummy-collections"
+            api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
+            client = Client(project, api_key, region="old-australia-east")
+            documents = client._get_documents(
+                db_name,
+                number_of_documents=number_of_documents,
+                select_fields=select_fields,
+            )
+            client.config.reset()
+            return documents
 
     @staticmethod
     def _get_online_dataset(
-        url, number_of_documents, select_fields=[], encoding=None, csv=True
+        url,
+        number_of_documents,
+        select_fields: Optional[List] = None,
+        encoding=None,
+        csv=True,
     ):
+        select_fields = [] if select_fields is None else select_fields
         if csv:
             data = pd.read_csv(url, index_col=0, encoding=encoding).to_dict(
                 orient="records"
@@ -90,7 +101,10 @@ class ExampleDatasets:
         return data
 
     @staticmethod
-    def _get_api_dataset(url, number_of_documents, select_fields=[]):
+    def _get_api_dataset(
+        url, number_of_documents, select_fields: Optional[List] = None
+    ):
+        select_fields = [] if select_fields is None else select_fields
         data = requests.get(url).json()
         if number_of_documents:
             data = data[:number_of_documents]
@@ -100,7 +114,7 @@ class ExampleDatasets:
 
 
 def get_games_dataset(
-    number_of_documents: Union[None, int] = 365, select_fields: list = []
+    number_of_documents: Union[None, int] = 365, select_fields: Optional[List] = None
 ) -> List:
     """
     Download an example games dataset (https://www.freetogame.com/) \n
@@ -131,6 +145,7 @@ def get_games_dataset(
             'freetogame_profile_url': 'https://www.freetogame.com/dauntless'
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 365
 
@@ -140,7 +155,7 @@ def get_games_dataset(
 
 
 def get_ecommerce_dataset_encoded(
-    number_of_documents: int = 739, select_fields: list = []
+    number_of_documents: int = 739, select_fields: Optional[List] = None
 ) -> List[Dict[Any, Any]]:
     """
     Download an example e-commerce dataset \n
@@ -169,6 +184,7 @@ def get_ecommerce_dataset_encoded(
             'source': 'eBay'
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 739
     return ExampleDatasets._get_dummy_dataset(
@@ -177,16 +193,7 @@ def get_ecommerce_dataset_encoded(
 
 
 def get_ecommerce_dataset_clean(
-    number_of_documents: int = 1000,
-    select_fields: list = [
-        "_id",
-        "product_image",
-        "product_link",
-        "product_title",
-        "product_price",
-        "query",
-        "source",
-    ],
+    number_of_documents: int = 1000, select_fields: Optional[List] = None
 ):
     """
     Download an example e-commerce dataset \n
@@ -213,6 +220,19 @@ def get_ecommerce_dataset_clean(
             'source': 'eBay'
         }
     """
+    select_fields = (
+        [
+            "_id",
+            "product_image",
+            "product_link",
+            "product_title",
+            "product_price",
+            "query",
+            "source",
+        ]
+        if select_fields is None
+        else select_fields
+    )
     if number_of_documents is None:
         number_of_documents = 1000
     documents = ExampleDatasets._get_dummy_dataset(
@@ -225,7 +245,7 @@ def get_ecommerce_dataset_clean(
 
 
 def get_online_retail_dataset(
-    number_of_documents: Union[None, int] = 1000, select_fields: list = []
+    number_of_documents: Union[None, int] = 1000, select_fields: Optional[List] = None
 ) -> List:
     """
     Download an example online retail dataset from UCI machine learning \n
@@ -253,6 +273,7 @@ def get_online_retail_dataset(
             'UnitPrice': 2.55
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 1000
     return ExampleDatasets._get_online_dataset(
@@ -264,7 +285,7 @@ def get_online_retail_dataset(
 
 
 def get_news_dataset(
-    number_of_documents: Union[None, int] = 250, select_fields: list = []
+    number_of_documents: Union[None, int] = 250, select_fields: Optional[List] = None
 ) -> List:
     """
     Download an example news dataset \n
@@ -299,6 +320,7 @@ def get_news_dataset(
             'url': 'http://awm.com/church-congregation-brings-gift-to-waitresses-working-on-christmas-eve-has-them-crying-video/'
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 250
     return ExampleDatasets._get_online_dataset(
@@ -309,7 +331,7 @@ def get_news_dataset(
 
 
 def get_online_ecommerce_dataset(
-    number_of_documents: Union[None, int] = 1000, select_fields: list = []
+    number_of_documents: Union[None, int] = 1000, select_fields: Optional[List] = None
 ) -> List:
     """
     Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance) \n
@@ -345,6 +367,7 @@ def get_online_ecommerce_dataset(
             'url': 'http://www.ebay.com/sch/i.html?_from=R40&_trksid=p2050601.m570.l1313.TR11.TRC1.A0.H0.Xplant.TRS0&_nkw=playstation%204'
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 1000
     df = ExampleDatasets._get_online_dataset(
@@ -370,7 +393,7 @@ def get_online_ecommerce_dataset(
 
 
 def get_flipkart_dataset(
-    number_of_documents: Union[None, int] = 19920, select_fields: list = []
+    number_of_documents: Union[None, int] = 19920, select_fields: Optional[List] = None
 ) -> List:
     """
     Download an example flipkart ecommerce dataset \n
@@ -394,6 +417,7 @@ def get_flipkart_dataset(
             'retail_price': 999.0
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 19920
     return ExampleDatasets._get_online_dataset(
@@ -403,7 +427,9 @@ def get_flipkart_dataset(
     )
 
 
-def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = []):
+def get_realestate_dataset(
+    number_of_documents: int = 50, select_fields: Optional[List] = None
+):
     """
     Download an example real-estate dataset \n
     Total Len: 5885 \n
@@ -451,6 +477,7 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
         ...
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 50
 
@@ -468,7 +495,7 @@ def get_realestate_dataset(number_of_documents: int = 50, select_fields: list = 
 
 
 def get_mission_statements_dataset(
-    number_of_documents: Union[None, int] = 1433, select_fields: list = []
+    number_of_documents: Union[None, int] = 1433, select_fields: Optional[List] = []
 ) -> List:
     """Function to download a sample company mission statement dataset.
     Total Len: 1433
@@ -490,6 +517,7 @@ def get_mission_statements_dataset(
             'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'
         }
     """
+    select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 514330
     return ExampleDatasets._get_online_dataset(

@@ -4,6 +4,43 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.1
+----------
+
+**BREAKING CHANGES**
+
+- When upserting, you will no longer be returned confusing inserting/write statements.
+
+**Other Changes**:
+
+- Add option to `create_id` when inserting
+
+Developer changes:
+
+- Reduced number of documents in testing
+- Make tracking only occur at the uppermost level and not the bottom level
+
+v1.2.0
+----------
+
+**BREAKING CHANGES**
+
+- When inserting/writing, you will now no longer be returned confusing insertion/write statements
+but if it errors, it will return the JSON object with the necessary details.
+
+- Add image tooling around processing (currently an alpha feature to be tested)
+- Add `vectorize` method for text and images
+
+v1.1.5
+----------
+
+- Feature/add beta decorator by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/461
+- feature/pro-1267-remove-verbose-logs-from-output by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/457
+- feature/pro-1299-add-a-insert_images_folder by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/456
+- Add filters to clustering  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/464
+- silence dataset retrieval by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/465
+
+
 v1.1.4
 ----------
 

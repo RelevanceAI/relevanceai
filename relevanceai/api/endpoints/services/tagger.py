@@ -1,5 +1,7 @@
 """Tagger services
 """
+from typing import Optional
+
 from relevanceai.base import _Base
 
 
@@ -22,14 +24,13 @@ class TaggerClient(_Base):
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [],
+        filters: Optional[list] = None,
         min_score: float = 0,
         include_search_relevance: bool = False,
         search_relevance_cutoff_aggressiveness: int = 1,
         asc: bool = False,
         include_score: bool = False,
     ):
-
         """
         Tag documents or vectors
 
@@ -66,6 +67,7 @@ class TaggerClient(_Base):
         include_score: bool
             Whether to include score
         """
+        filters = [] if filters is None else filters
 
         return self.make_http_request(
             f"/services/tagger/tag",
@@ -102,7 +104,7 @@ class TaggerClient(_Base):
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: list = [],
+        filters: Optional[list] = None,
         min_score: float = 0,
         include_search_relevance: bool = False,
         search_relevance_cutoff_aggressiveness: int = 1,
@@ -111,7 +113,6 @@ class TaggerClient(_Base):
         n_init: int = 5,
         n_iter: int = 10,
     ):
-
         """
         Tagging and then clustering the tags and returning one from each cluster (starting from the closest tag)
 
@@ -156,6 +157,7 @@ class TaggerClient(_Base):
         n_iter: int
             Number of iterations in each run
         """
+        filters = [] if filters is None else filters
 
         return self.make_http_request(
             f"/services/tagger/diversity",

@@ -7,9 +7,11 @@ import time
 import traceback
 import uuid
 import pandas as pd
-from datetime import datetime
+
 from ast import literal_eval
-from typing import Callable, List, Dict, Union, Any
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from doc_utils import DocUtils
 
@@ -44,6 +46,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         use_json_encoder: bool = True,
         verbose: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -97,8 +100,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
+        # TODO: rename this function to convert_id_to_string
+        self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
@@ -133,7 +136,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
-        csv_args: dict = {},
+        csv_args: Optional[dict] = None,
         col_for_id: str = None,
         auto_generate_id: bool = True,
     ):
@@ -171,6 +174,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         >>> df.insert_csv(csv_filename)
 
         """
+        csv_args = {} if csv_args is None else csv_args
 
         csv_args.pop("index_col", None)
         csv_args.pop("chunksize", None)
@@ -267,6 +271,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -314,7 +319,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         )
 
         # Turn _id into string
-        self._convert_id_to_string(documents)
+        self._convert_id_to_string(documents, create_id=create_id)
 
         if use_json_encoder:
             documents = self.json_encoder(documents)
@@ -346,11 +351,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         update_function,
         updated_dataset_id: str = None,
         log_file: str = None,
-        updating_args: dict = {},
+        updating_args: Optional[dict] = None,
         retrieve_chunk_size: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -377,6 +382,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if not callable(update_function):
             raise TypeError(
                 "Your update function needs to be a function! Please read the documentation if it is not."
@@ -488,14 +497,14 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         update_function,
         updated_dataset_id: str = None,
         logging_dataset_id: str = None,
-        updating_args: dict = {},
+        updating_args: Optional[dict] = None,
         retrieve_chunk_size: int = 100,
         retrieve_chunk_size_failure_retry_multiplier: float = 0.5,
         number_of_retrieve_retries: int = 3,
         max_workers: int = 8,
         max_error: int = 1000,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -526,6 +535,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         # Check if a logging_collection has been supplied
         if logging_dataset_id is None:
             logging_dataset_id = (
@@ -917,3 +930,30 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             return sample_documents
 
         self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)
+
+    def _process_insert_results(self, results: dict, return_json: bool = False):
+        # in case API is backwards incompatible
+
+        if "failed_documents" in results:
+            if len(results["failed_documents"]) == 0:
+                print("✅ All documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with inserting/editing documents. Please check logs."
+                )
+
+        elif "failed_document_ids" in results:
+            if len(results["failed_document_ids"]) == 0:
+                print("✅ All documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with inserting/editing documents. Please check logs."
+                )
+
+        # Make backwards compatible on errors
+        if (
+            len(results.get("failed_documents", []))
+            + len(results.get("failed_document_ids", []))
+            > 0
+        ) or return_json:
+            return results
