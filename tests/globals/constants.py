@@ -5,7 +5,7 @@ import string
 from typing import List
 
 VECTOR_LENGTH = 8
-NUMBER_OF_DOCUMENTS = os.getenv("TEST_NUMBER_OF_DOCUMENTS", 20)
+NUMBER_OF_DOCUMENTS = int(os.getenv("TEST_NUMBER_OF_DOCUMENTS", 20))
 
 
 def generate_random_string(string_length: int = 5) -> str:

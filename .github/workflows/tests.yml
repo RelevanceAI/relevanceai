@@ -45,7 +45,6 @@ jobs:
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT }}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
-          TEST_NUMBER_OF_DOCUMENTS: 100
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |
