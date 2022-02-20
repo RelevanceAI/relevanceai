@@ -67,10 +67,10 @@ class Series(BatchAPIClient):
         firebase_uid: str,
         dataset_id: str,
         field: str,
-        image_fields: List[str] = [],
-        audio_fields: List[str] = [],
-        highlight_fields: Dict[str, List] = {},
-        text_fields: List[str] = [],
+        image_fields: Optional[List[str]] = None,
+        audio_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, List]] = None,
+        text_fields: Optional[List[str]] = None,
     ):
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
         self.project = project
@@ -78,10 +78,10 @@ class Series(BatchAPIClient):
         self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self.field = field
-        self.image_fields = image_fields
-        self.audio_fields = audio_fields
-        self.highlight_fields = highlight_fields
-        self.text_fields = text_fields
+        self.image_fields = [] if image_fields is None else image_fields
+        self.audio_fields = [] if audio_fields is None else audio_fields
+        self.highlight_fields = {} if highlight_fields is None else highlight_fields
+        self.text_fields = [] if text_fields is None else text_fields
 
     def _repr_html_(self):
         if "_vector_" in self.field:
@@ -145,7 +145,7 @@ class Series(BatchAPIClient):
         self,
         n: int = 1,
         frac: float = None,
-        filters: list = [],
+        filters: Optional[list] = None,
         random_state: int = 0,
         include_vector: bool = True,
         output_format="pandas",
@@ -176,6 +176,8 @@ class Series(BatchAPIClient):
             df.sample(n=3)
 
         """
+        filters = [] if filters is None else filters
+
         select_fields = [self.field]
 
         if frac and n:
@@ -211,11 +213,14 @@ class Series(BatchAPIClient):
     def all(
         self,
         chunksize: int = 1000,
-        filters: List = [],
-        sort: List = [],
+        filters: Optional[List] = None,
+        sort: Optional[List] = None,
         include_vector: bool = True,
         show_progress_bar: bool = True,
     ):
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+
         select_fields = [self.field] if isinstance(self.field, str) else self.field
         return self._get_all_documents(
             dataset_id=self.dataset_id,
@@ -295,8 +300,8 @@ class Series(BatchAPIClient):
         bulk_func: Callable,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -336,6 +341,9 @@ class Series(BatchAPIClient):
 
             df.bulk_apply(update_documents)
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.pull_update_push(
             self.dataset_id,
             bulk_func,
