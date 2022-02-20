@@ -46,6 +46,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         use_json_encoder: bool = True,
         verbose: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -99,8 +100,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
+        # TODO: rename this function to convert_id_to_string
+        self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
@@ -269,6 +270,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -316,7 +318,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         )
 
         # Turn _id into string
-        self._convert_id_to_string(documents)
+        self._convert_id_to_string(documents, create_id=create_id)
 
         if use_json_encoder:
             documents = self.json_encoder(documents)
@@ -695,94 +697,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         self.print_search_dashboard_url(dataset_id)
         return results
 
-    def insert_images_folder(
-        self,
-        field: str,
-        path: Union[Path, str],
-        recurse: bool = True,
-        *args,
-        **kwargs,
-    ) -> dict:
-        """
-        Given a path to a directory, this method loads all image-related files
-        into a Dataset.
-
-        Parameters
-        ----------
-        field: str
-            A text field of a dataset.
-
-        path: Union[Path, str]
-            The path to the directory containing images.
-
-        recurse: bool
-            Indicator that determines whether to recursively insert images from
-            subdirectories in the directory.
-
-        Returns
-        -------
-        dict
-
-        Example
-        -------
-        .. code-block::
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("dataset_id")
-
-            from pathlib import Path
-            path = Path("images/")
-            # list(path.iterdir()) returns
-            # [
-            #    PosixPath('image.jpg'),
-            #    PosixPath('more-images'), # a directory
-            # ]
-
-            get_all_images: bool = True
-            if get_all_images:
-                # Inserts all images, even those in the more-images directory
-                ds.insert_images_folder(
-                    field="images", path=path, recurse=True
-                )
-            else:
-                # Only inserts image.jpg
-                ds.insert_images_folder(
-                    field="images", path=path, recurse=False
-                )
-        """
-        if isinstance(path, str):
-            path = Path(path)
-        if not path.is_dir():
-            raise Exception(f"{path} is not a proper path")
-
-        from mimetypes import types_map
-
-        image_extensions = set(
-            k.lower() for k, v in types_map.items() if v.startswith("image/")
-        )
-
-        def get_paths(path: Path, images: List[str]) -> List[str]:
-            for file in path.iterdir():
-                if file.is_dir() and recurse:
-                    images.extend(get_paths(file, []))
-                elif file.is_file() and file.suffix.lower() in image_extensions:
-                    images.append(str(file))
-                else:
-                    continue
-
-            return images
-
-        images = get_paths(path, [])
-        documents = list(
-            map(
-                lambda image: {"_id": uuid.uuid4(), "path": image, field: image}, images
-            )
-        )
-        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
-        self.image_fields.append(field)
-        self.print_search_dashboard_url(self.dataset_id)
-        return results
-
     def print_search_dashboard_url(self, dataset_id):
         search_url = (
             f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/search"
@@ -1007,3 +921,30 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             return sample_documents
 
         self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)
+
+    def _process_insert_results(self, results: dict, return_json: bool = False):
+        # in case API is backwards incompatible
+
+        if "failed_documents" in results:
+            if len(results["failed_documents"]) == 0:
+                print("✅ All documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with inserting/editing documents. Please check logs."
+                )
+
+        elif "failed_document_ids" in results:
+            if len(results["failed_document_ids"]) == 0:
+                print("✅ All documents inserted/edited successfully.")
+            else:
+                print(
+                    "❗Few errors with inserting/editing documents. Please check logs."
+                )
+
+        # Make backwards compatible on errors
+        if (
+            len(results.get("failed_documents", []))
+            + len(results.get("failed_document_ids", []))
+            > 0
+        ) or return_json:
+            return results

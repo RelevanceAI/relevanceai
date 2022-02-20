@@ -3,6 +3,8 @@
 """
 
 import pandas as pd
+import pytest
+from relevanceai.errors import MissingFieldError
 
 from relevanceai.http_client import Dataset, Client
 
@@ -24,6 +26,15 @@ def test_apply(test_df: Dataset):
         ],
     )
     assert len(filtered_documents["documents"]) > 0
+
+
+def test_create_id_in_documents(test_df: Dataset):
+    docs = [{"value": 2}]
+    with pytest.raises(MissingFieldError):
+        test_df.insert_documents(docs)
+
+    results = test_df.insert_documents(docs, create_id=True)
+    assert results is None, "Documents are inserted."
 
 
 def test_bulk_apply(test_df: Dataset):
