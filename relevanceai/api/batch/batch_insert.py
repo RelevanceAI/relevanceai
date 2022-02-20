@@ -921,7 +921,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         self.pull_update_push(dataset_id, update_function, retrieve_chunk_size=200)
 
-    def _process_insert_results(self, results: dict):
+    def _process_insert_results(self, results: dict, return_json: bool = False):
         # in case API is backwards incompatible
 
         if "failed_documents" in results:
@@ -945,5 +945,5 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             len(results.get("failed_documents", []))
             + len(results.get("failed_document_ids", []))
             > 0
-        ):
+        ) or return_json:
             return results

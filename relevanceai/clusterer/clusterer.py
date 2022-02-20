@@ -1291,13 +1291,14 @@ class ClusterOps(BatchAPIClient):
             cluster_predictions = self.predict_documents(
                 vector_fields=vector_fields, documents=c
             )
-            response = self.dataset.upsert_documents(cluster_predictions)
+            response = self.dataset._update_documents(
+                datasset_id=self.dataset_id, documents=cluster_predictions
+            )
             for k, v in response.items():
                 if isinstance(all_responses[k], int):
                     all_responses["inserted"] += v
                 elif isinstance(all_responses[k], list):
                     all_responses[k] += v
-
         print(
             "Build your clustering app here: "
             + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"

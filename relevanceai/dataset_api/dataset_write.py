@@ -298,6 +298,7 @@ class Write(Read):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        return_json: bool = False,
     ) -> Dict:
 
         """
@@ -356,7 +357,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
         )
-        return self._process_insert_results(results)
+        return self._process_insert_results(results, return_json=return_json)
 
     @track
     def apply(
