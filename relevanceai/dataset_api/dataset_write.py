@@ -345,7 +345,7 @@ class Write(Read):
             df.upsert_documents(documents)
 
         """
-        return self._update_documents(
+        results = self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -355,6 +355,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
         )
+        return self._process_insert_results(results)
 
     @track
     def apply(
