@@ -10,9 +10,9 @@ from relevanceai.json_encoder import json_encoder
 from relevanceai.logger import FileLogger
 
 
-def enable_tracking():
-    if CONFIG.is_field("mixpanel.enable_tracking", CONFIG.config):
-        return CONFIG.get_field("mixpanel.enable_tracking", CONFIG.config)
+def is_tracking_enabled():
+    if CONFIG.is_field("mixpanel.is_tracking_enabled", CONFIG.config):
+        return CONFIG.get_field("mixpanel.is_tracking_enabled", CONFIG.config)
 
 
 def get_json_size(json_obj):
@@ -23,8 +23,14 @@ def get_json_size(json_obj):
 def track(func: Callable):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        if hasattr(args[0], "_is_analytics_sent"):
+            if args[0]._is_analytics_sent:
+                return func(*args, **kwargs)
+
+        args[0]._is_analytics_in_transit = True
+
         try:
-            if enable_tracking():
+            if is_tracking_enabled():
 
                 async def send_analytics():
                     user_id = args[0].firebase_uid
@@ -61,8 +67,10 @@ def track(func: Callable):
                 asyncio.ensure_future(send_analytics())
         except Exception as e:
             pass
-
-        return func(*args, **kwargs)
+        try:
+            return func(*args, **kwargs)
+        finally:
+            args[0]._is_analytics_in_transit = False
 
     return wrapper
 
@@ -70,7 +78,7 @@ def track(func: Callable):
 def identify(func: Callable):
     def wrapper(*args, **kwargs):
         try:
-            if enable_tracking():
+            if is_tracking_enabled():
                 user_id = args[0].firebase_uid
                 region = args[0].region
                 traits = {
