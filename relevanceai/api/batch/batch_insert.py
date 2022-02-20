@@ -270,6 +270,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -317,7 +318,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         )
 
         # Turn _id into string
-        self._convert_id_to_string(documents)
+        self._convert_id_to_string(documents, create_id=create_id)
 
         if use_json_encoder:
             documents = self.json_encoder(documents)

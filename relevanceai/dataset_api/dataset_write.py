@@ -299,6 +299,7 @@ class Write(Read):
         show_progress_bar=False,
         use_json_encoder: bool = True,
         return_json: bool = False,
+        create_id: bool = False,
     ) -> Dict:
 
         """
@@ -356,6 +357,7 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
         )
         return self._process_insert_results(results, return_json=return_json)
 
