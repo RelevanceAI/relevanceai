@@ -2,8 +2,6 @@
 """
 Pandas like dataset API
 """
-from tkinter import font
-from tokenize import group
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
