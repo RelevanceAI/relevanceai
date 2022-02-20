@@ -1,6 +1,6 @@
 from relevanceai.api.client import BatchAPIClient
 
-from typing import Union, List
+from typing import List, Optional, Union
 
 GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 
@@ -93,18 +93,18 @@ class Agg(BatchAPIClient):
         api_key: str,
         dataset_id: str,
         firebase_uid: str,
-        groupby_call: List = [],
+        groupby_call: Optional[List] = None,
     ):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
-        self.groupby_call = groupby_call
+        self.groupby_call = [] if groupby_call is None else groupby_call
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(
         self,
-        metrics: dict = {},
+        metrics: Optional[dict] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -129,7 +129,7 @@ class Agg(BatchAPIClient):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
-        self.metrics = metrics
+        self.metrics = {} if metrics is None else metrics
         self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
         return self.services.aggregate.aggregate(

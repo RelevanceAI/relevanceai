@@ -11,7 +11,7 @@ import pandas as pd
 from ast import literal_eval
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, List, Dict, Union, Any
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from doc_utils import DocUtils
 
@@ -136,7 +136,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
-        csv_args: dict = {},
+        csv_args: Optional[dict] = None,
         col_for_id: str = None,
         auto_generate_id: bool = True,
     ):
@@ -174,6 +174,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         >>> df.insert_csv(csv_filename)
 
         """
+        csv_args = {} if csv_args is None else csv_args
 
         csv_args.pop("index_col", None)
         csv_args.pop("chunksize", None)
@@ -350,11 +351,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         update_function,
         updated_dataset_id: str = None,
         log_file: str = None,
-        updating_args: dict = {},
+        updating_args: Optional[dict] = None,
         retrieve_chunk_size: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -381,6 +382,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if not callable(update_function):
             raise TypeError(
                 "Your update function needs to be a function! Please read the documentation if it is not."
@@ -492,14 +497,14 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         update_function,
         updated_dataset_id: str = None,
         logging_dataset_id: str = None,
-        updating_args: dict = {},
+        updating_args: Optional[dict] = None,
         retrieve_chunk_size: int = 100,
         retrieve_chunk_size_failure_retry_multiplier: float = 0.5,
         number_of_retrieve_retries: int = 3,
         max_workers: int = 8,
         max_error: int = 1000,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -530,6 +535,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         # Check if a logging_collection has been supplied
         if logging_dataset_id is None:
             logging_dataset_id = (

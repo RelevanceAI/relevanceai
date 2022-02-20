@@ -1,5 +1,7 @@
 """Recommmend services.
 """
+from typing import Optional
+
 from relevanceai.base import _Base
 
 
@@ -14,26 +16,25 @@ class RecommendClient(_Base):
     def vector(
         self,
         dataset_id: str,
-        positive_document_ids: dict = {},
-        negative_document_ids: dict = {},
-        vector_fields=[],
+        positive_document_ids: Optional[dict] = None,
+        negative_document_ids: Optional[dict] = None,
+        vector_fields: Optional[list] = None,
         approximation_depth: int = 0,
         vector_operation: str = "sum",
         sum_fields: bool = True,
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score: float = 0,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector: bool = False,
         include_count: bool = True,
         asc: bool = False,
         keep_search_history: bool = False,
         hundred_scale: bool = False,
     ):
-
         """
         Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations. \n
         Here are a couple of different scenarios and what the queries would look like for those: \n
@@ -109,6 +110,16 @@ class RecommendClient(_Base):
         hundred_scale: bool
             Whether to scale up the metric by 100
         """
+        positive_document_ids = (
+            {} if positive_document_ids is None else positive_document_ids
+        )
+        negative_document_ids = (
+            {} if negative_document_ids is None else negative_document_ids
+        )
+        vector_fields = [] if vector_fields is None else vector_fields
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             f"/services/recommend/vector",
@@ -141,19 +152,19 @@ class RecommendClient(_Base):
         dataset_id: str,
         cluster_vector_field: str,
         n_clusters: int,
-        positive_document_ids: dict = {},
-        negative_document_ids: dict = {},
-        vector_fields=[],
+        positive_document_ids: Optional[dict] = None,
+        negative_document_ids: Optional[dict] = None,
+        vector_fields: Optional[list] = None,
         approximation_depth: int = 0,
         vector_operation: str = "sum",
         sum_fields: bool = True,
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score: float = 0,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector: bool = False,
         include_count: bool = True,
         asc: bool = False,
@@ -164,7 +175,16 @@ class RecommendClient(_Base):
         n_iter: int = 10,
         return_as_clusters: bool = False,
     ):
-
+        positive_document_ids = (
+            {} if positive_document_ids is None else positive_document_ids
+        )
+        negative_document_ids = (
+            {} if negative_document_ids is None else negative_document_ids
+        )
+        vector_fields = [] if vector_fields is None else vector_fields
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
         """
         Vector Search based recommendations are done by extracting the vectors of the documents ids specified performing some vector operations and then searching the dataset with the resultant vector. This allows us to not only do recommendations but personalized and weighted recommendations. \n
         Diversity recommendation increases the variety within the recommendations via clustering. Search results are clustered and the top k items in each cluster are selected. The main clustering parameters are cluster_vector_field and n_clusters, the vector field on which to perform clustering and number of clusters respectively. \n

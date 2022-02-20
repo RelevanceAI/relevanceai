@@ -1,5 +1,6 @@
+from typing import List, Optional
+
 from relevanceai.base import _Base
-from typing import List
 
 
 class SearchClient(_Base):
@@ -15,18 +16,18 @@ class SearchClient(_Base):
         self,
         dataset_id: str,
         multivector_query: List,
-        positive_document_ids: dict = {},
-        negative_document_ids: dict = {},
+        positive_document_ids: Optional[dict] = None,
+        negative_document_ids: Optional[dict] = None,
         vector_operation="sum",
         approximation_depth=0,
         sum_fields=True,
         page_size=20,
         page=1,
         similarity_metric="cosine",
-        facets=[],
-        filters=[],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -128,6 +129,16 @@ class SearchClient(_Base):
         query: string
             What to store as the query name in the dashboard
         """
+        positive_document_ids = (
+            {} if positive_document_ids is None else positive_document_ids
+        )
+        negative_document_ids = (
+            {} if negative_document_ids is None else negative_document_ids
+        )
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/vector",
             method="POST",
@@ -168,10 +179,10 @@ class SearchClient(_Base):
         page_size: int = 20,
         page=1,
         similarity_metric="cosine",
-        facets=[],
-        filters=[],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -239,6 +250,10 @@ class SearchClient(_Base):
         traditional_weight: int
             Multiplier of traditional search score. A value of 0.025~0.075 is the ideal range
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/hybrid",
             method="POST",
@@ -276,10 +291,10 @@ class SearchClient(_Base):
         page_size: int = 20,
         page=1,
         similarity_metric="cosine",
-        facets=[],
-        filters=[],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -334,6 +349,10 @@ class SearchClient(_Base):
         hundred_scale: bool
             Whether to scale up the metric by 100
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/semantic",
             method="POST",
@@ -364,18 +383,18 @@ class SearchClient(_Base):
         cluster_vector_field: str,
         n_clusters: int,
         multivector_query: list,
-        positive_document_ids: dict = {},
-        negative_document_ids: dict = {},
+        positive_document_ids: Optional[dict] = None,
+        negative_document_ids: Optional[dict] = None,
         vector_operation="sum",
         approximation_depth: int = 0,
         sum_fields: bool = True,
         page_size: int = 20,
         page: int = 1,
         similarity_metric="cosine",
-        facets=[],
-        filters=[],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -462,6 +481,16 @@ class SearchClient(_Base):
         query: string
             What to store as the query name in the dashboard
         """
+        positive_document_ids = (
+            {} if positive_document_ids is None else positive_document_ids
+        )
+        negative_document_ids = (
+            {} if negative_document_ids is None else negative_document_ids
+        )
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/diversity",
             method="POST",
@@ -499,12 +528,12 @@ class SearchClient(_Base):
         self,
         dataset_id: str,
         text: str,
-        fields: list = [],
+        fields: Optional[list] = None,
         edit_distance: int = -1,
         ignore_spaces: bool = True,
         page_size: int = 29,
         page: int = 1,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector: bool = False,
         include_count: bool = True,
         asc: bool = False,
@@ -549,6 +578,9 @@ class SearchClient(_Base):
         search_history_id: string
             Search history ID, only used for storing search histories.
         """
+        fields = [] if fields is None else fields
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/traditional",
             method="POST",
@@ -583,8 +615,8 @@ class SearchClient(_Base):
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score: int = None,
         include_vector: bool = False,
         include_count: bool = True,
@@ -593,7 +625,6 @@ class SearchClient(_Base):
         hundred_scale: bool = False,
         query: str = None,
     ):
-
         """
         Chunks are data that has been divided into different units. e.g. A paragraph is made of many sentence chunks, a sentence is made of many word chunks, an image frame in a video. By searching through chunks you can pinpoint more specifically where a match is occuring. When creating a chunk in your document use the suffix "chunk" and "chunkvector". An example of a document with chunks:
 
@@ -654,6 +685,8 @@ class SearchClient(_Base):
         query: string
             What to store as the query name in the dashboard
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
 
         return self.make_http_request(
             "/services/search/chunk",
@@ -696,8 +729,8 @@ class SearchClient(_Base):
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score: int = None,
         include_vector: bool = False,
         include_count: bool = True,
@@ -708,7 +741,6 @@ class SearchClient(_Base):
         first_step_page_size: int = 20,
         query: str = None,
     ):
-
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
@@ -763,6 +795,9 @@ class SearchClient(_Base):
         query: string
             What to store as the query name in the dashboard
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+
         return self.make_http_request(
             "/services/search/multistep_chunk",
             method="POST",
@@ -800,7 +835,7 @@ class SearchClient(_Base):
         min_score: int = None,
         page_size: int = 20,
         include_vector: bool = False,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         query: str = None,
     ):
         """
@@ -866,6 +901,8 @@ class SearchClient(_Base):
         query: string
             What to store as the query name in the dashboard
         """
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/advanced_chunk",
             method="POST",
@@ -892,13 +929,13 @@ class SearchClient(_Base):
         first_step_traditional_weight: float = 0.075,
         first_step_approximation_depth: int = 0,
         first_step_sum_fields: bool = True,
-        first_step_filters: list = [],
+        first_step_filters: Optional[list] = None,
         first_step_page_size: int = 50,
         include_count: bool = True,
         min_score: int = 0,
         page_size: int = 20,
         include_vector: bool = False,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         query: str = None,
     ):
         """
@@ -988,6 +1025,9 @@ class SearchClient(_Base):
         query: string
             What to store as the query name in the dashboard
         """
+        first_step_filters = [] if first_step_filters is None else first_step_filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.make_http_request(
             "/services/search/advanced_multistep_chunk",
             method="POST",
@@ -1013,9 +1053,13 @@ class SearchClient(_Base):
             },
         )
 
-    def _init_experiment_helper(
-        self, categories=["chunk", "vector", "diversity", "traditional"]
-    ):
+    def _init_experiment_helper(self, categories: Optional[List[str]] = None):
+        categories = (
+            ["chunk", "vector", "diversity", "traditional"]
+            if categories is None
+            else categories
+        )
+
         self.categories = categories
         self.traditional_search_doc = (
             "https://docs.relevance.ai/docs/better-text-search-with-hybrid"
