@@ -879,6 +879,7 @@ class ClusterOps(BatchAPIClient):
 
         Example
         -------
+
         .. code-block::
 
             from relevanceai import ClusterBase, Client
