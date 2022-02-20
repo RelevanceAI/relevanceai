@@ -838,7 +838,7 @@ class ClusterOps(BatchAPIClient):
         self,
         data: Union[str, Dataset, List[Dict]],
         vector_fields: List[str],
-        filters: List[Dict] = [],
+        filters: Optional[List[Dict]] = None,
         return_only_clusters: bool = True,
         include_grade: bool = False,
         update: bool = True,
@@ -880,6 +880,7 @@ class ClusterOps(BatchAPIClient):
         Example
         -------
         .. code-block::
+
             from relevanceai import ClusterBase, Client
 
             client = Client()
@@ -895,7 +896,10 @@ class ClusterOps(BatchAPIClient):
             df = client.Dataset("sample_dataset")
             clusterer = client.ClusterOps(alias="random_clustering", model=model)
             clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
+
         """
+        filters = [] if filters is None else filters
+
         if update and isinstance(data, list):
             warnings.warn(
                 "Cannot update list of datasets that are untethered "
