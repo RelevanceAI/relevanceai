@@ -4,6 +4,13 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.2
+----------
+
+**BREAKING CHANGES**
+
+- All list and dict default arguments are changed to `None`.
+
 v1.2.1
 ----------
 
