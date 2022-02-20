@@ -89,7 +89,8 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
-            create_id=create_id**kwargs,
+            create_id=create_id,
+            **kwargs,
         )
         return self._process_insert_results(results)
 
