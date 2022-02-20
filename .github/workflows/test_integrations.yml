@@ -44,8 +44,8 @@ jobs:
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT }}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
         run: |
-          python -m pip install -e .
           python -c "import sys; print(sys.version);"
+          python -m pip install -e .
           python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist
           python -m pip install vectorhub[clip,encoders-text-tfhub]
           python -m pytest test_integrations/vectorhub/ --cov-fail-under=1
