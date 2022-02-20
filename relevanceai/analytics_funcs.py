@@ -23,8 +23,8 @@ def get_json_size(json_obj):
 def track(func: Callable):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if hasattr(args[0], "_is_analytics_sent"):
-            if args[0]._is_analytics_sent:
+        if hasattr(args[0], "_is_analytics_in_transit"):
+            if args[0]._is_analytics_in_transit:
                 return func(*args, **kwargs)
 
         args[0]._is_analytics_in_transit = True
@@ -41,7 +41,8 @@ def track(func: Callable):
                         "kwargs": kwargs,
                     }
                     if user_id is not None:
-                        # Upsert/inserts/updates are too big to track
+                        # TODO: Loop through the properties and remove anything
+                        # greater than 5kb
                         if (
                             "insert" in event_name
                             or "upsert" in event_name
@@ -71,7 +72,6 @@ def track(func: Callable):
             return func(*args, **kwargs)
         finally:
             args[0]._is_analytics_in_transit = False
-
     return wrapper
 
 
