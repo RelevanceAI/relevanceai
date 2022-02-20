@@ -46,6 +46,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         chunksize: int = 0,
         use_json_encoder: bool = True,
         verbose: bool = True,
+        create_id: bool = False,
         *args,
         **kwargs,
     ):
@@ -99,8 +100,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        # Turn _id into string
-        self._convert_id_to_string(documents)
+        # TODO: rename this function to convert_id_to_string
+        self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(

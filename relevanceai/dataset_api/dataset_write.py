@@ -26,6 +26,7 @@ class Write(Read):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
+        create_id: bool = True,
         **kwargs,
     ) -> Dict:
 
@@ -88,7 +89,7 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
-            **kwargs,
+            create_id=create_id ** kwargs,
         )
         return self._process_insert_results(results)
 
