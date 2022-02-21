@@ -1364,16 +1364,24 @@ class ClusterOps(BatchAPIClient):
         self.vector_fields = vector_fields
 
         if hasattr(self.model, "fit_documents"):
-            return self.model.fit_documents(documents=documents)
+            return self.model.fit_documents(
+                vector_fields=vector_fields, documents=documents
+            )
 
         # vectors = self._get_vectors_from_documents(vector_fields, documents)
-        self.model.fit_documents(vector_fields=vector_fields, documents=documents)
+        cluster_labels = self.model.fit_documents(
+            vector_fields=vector_fields, documents=documents
+        )
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
 
         if include_grade:
             try:
+                # Wiat what.....
+                vectors = self.get_field_across_documents(
+                    vector_fields=vector_fields[0], cluster_labels=cluster_labels
+                )
                 self._calculate_silhouette_grade(vectors, cluster_labels)
             except Exception as e:
                 print(e)

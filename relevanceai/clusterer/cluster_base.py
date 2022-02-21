@@ -125,6 +125,7 @@ class ClusterBase(DocUtils, ABC):
         cluster_field: str = "_cluster_",
         return_only_clusters: bool = True,
         inplace: bool = True,
+        return_labels: bool = False,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -153,6 +154,9 @@ class ClusterBase(DocUtils, ABC):
         vectors = self._get_vectors_from_documents(vector_fields, documents)
 
         cluster_labels = self.fit_predict(vectors)
+
+        if return_labels:
+            return cluster_labels
 
         # Label the clusters
         cluster_labels = self._label_clusters(cluster_labels)
