@@ -2,6 +2,7 @@
 """
 Pandas like dataset API
 """
+from modulefinder import Module
 import warnings
 import itertools
 from collections import Counter
@@ -956,6 +957,20 @@ class Operations(Write):
             )
             counter.update(ngram_counter)
         return counter.most_common(most_common)
+    
+    def get_wordcloud_rake_from_list_of_text(self, list_of_text: List[str], *args, **kw):
+        """Get WordClouds based on RAKE algorithm. You can find out more here: https://github.com/csurfer/rake-nltk
+
+        The main advantage of this algorithm is that you do not need to set `n`.
+        """
+        try:
+            from rake_nltk import Rake
+        except ModuleNotFoundError:
+            raise Exception("You will need to install rake-nltk by running `pip install rake-nltk`.")
+        # TODO: Move the algorithm inside the package as the algorithm can be a self-contained script
+        r = Rake(*args, **kw)
+        r.extract_keywords_from_sentences(list_of_text)
+        return r.get_ranked_phrases()
 
     def cluster_word_cloud(
         self,

@@ -12,6 +12,12 @@ class MissingFieldError(RelevanceAIError):
 
 class APIError(RelevanceAIError):
     """Error related to API"""
+    def __init__(self, response):
+        # This might be dangerous - let's hope it's fine
+        self.message = eval(response)['message']
+    
+    def __str__(self):
+        return self.message
 
 
 class ClusteringResultsAlreadyExistsError(RelevanceAIError):
