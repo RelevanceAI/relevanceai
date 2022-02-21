@@ -11,6 +11,10 @@ v1.2.2
 
 - All list and dict default arguments are changed to `None`.
 
+**Other Changes**
+
+- Export to Pandas DataFrame
+
 v1.2.1
 ----------
 
