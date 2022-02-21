@@ -150,6 +150,7 @@ class ClusterBase(DocUtils, ABC):
 
         """
         self.vector_fields = vector_fields
+        self.cluster_field = cluster_field
 
         vectors = self._get_vectors_from_documents(vector_fields, documents)
 
@@ -175,6 +176,49 @@ class ClusterBase(DocUtils, ABC):
             if return_only_clusters:
                 return [
                     {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                    for d in documents
+                ]
+            return documents
+
+        new_documents = documents.copy()
+
+        self.set_field_across_documents(
+            set_cluster_field, cluster_labels, new_documents
+        )
+
+        if return_only_clusters:
+            return [
+                {"_id": d.get("_id"), cluster_field: d.get(cluster_field)}
+                for d in documents
+            ]
+        return documents
+
+    def set_cluster_labels_on_documents(
+        self,
+        cluster_labels: list,
+        documents: List[Dict],
+        inplace: bool = True,
+        return_only_clusters: bool = True,
+    ):
+        """Set cluster labels on documents"""
+        if isinstance(self.vector_fields, list):
+            set_cluster_field = (
+                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
+            )
+        elif isinstance(self.vector_fields, str):
+            set_cluster_field = (
+                f"{self.cluster_field}.{self.vector_fields}.{self.alias}"
+            )
+
+        if inplace:
+            self.set_field_across_documents(
+                set_cluster_field,
+                cluster_labels,
+                documents,
+            )
+            if return_only_clusters:
+                return [
+                    {"_id": d.get("_id"), self.cluster_field: d.get(self.cluster_field)}
                     for d in documents
                 ]
             return documents
