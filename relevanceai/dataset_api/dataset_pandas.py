@@ -160,7 +160,63 @@ class PandasSeries(ABC):
         series = self._get_pandas_series()
         return np.asarray(series._values, dtype)
 
+    # Indexing, iteration
+
+    # Binary operator functions
+
+    # Function application, GroupBy & window
+
+    # Computations / descriptive stats
+
+    # Reindexing / selection / label manipulation
+
+    # Missing data handling
+
+    # Reshaping, sorting
+
+    # Combining / comparing / joining / merging
+
+    # Time Series-related
+
+    # Accessors
+
+    # Plotting
+
+    # Serialization / IO / conversion
+
 
 class PandasDataFrame(ABC):
     def __init__(self):
         raise Exception("Cannot be instantiated")
+
+    # Attributes and underlying data
+
+    # Conversion
+
+    # Indexing, iteration
+
+    # Binary operator functions
+
+    # Function application, GroupBy & window
+
+    # Computations / descriptive stats
+
+    # Reindexing / selection / label manipulation
+
+    # Missing data handling
+
+    # Reshaping, sorting, transposing
+
+    # Combining / comparing / joining / merging
+
+    # Time Series-related
+
+    # Flags
+
+    # Metadata
+
+    # Plotting
+
+    # Sparse accessor
+
+    # Serialization / IO / conversion
