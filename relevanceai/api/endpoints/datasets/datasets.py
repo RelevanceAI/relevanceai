@@ -1,6 +1,6 @@
 """All Dataset related functions
 """
-from typing import List
+from typing import List, Optional
 
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.datasets.documents import DocumentsClient
@@ -58,7 +58,7 @@ class DatasetsClient(_Base):
             endpoint=f"/datasets/{dataset_id}/metadata", method="GET"
         )
 
-    def create(self, dataset_id: str, schema: dict = {}):
+    def create(self, dataset_id: str, schema: Optional[dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -100,6 +100,8 @@ class DatasetsClient(_Base):
             Schema for specifying the field that are vectors and its length
 
         """
+        schema = {} if schema is None else schema
+
         return self.make_http_request(
             endpoint=f"/datasets/create",
             method="POST",
@@ -118,13 +120,12 @@ class DatasetsClient(_Base):
         include_schema_stats: bool = False,
         include_vector_health: bool = False,
         include_active_jobs: bool = False,
-        dataset_ids: list = [],
+        dataset_ids: Optional[list] = None,
         sort_by_created_at_date: bool = False,
         asc: bool = False,
         page_size: int = 20,
         page: int = 1,
     ):
-
         """
         Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
 
@@ -160,6 +161,8 @@ class DatasetsClient(_Base):
         page : int
             Page of the results
         """
+        dataset_ids = [] if dataset_ids is None else dataset_ids
+
         return self.make_http_request(
             endpoint="/datasets/list",
             method="POST",
@@ -181,7 +184,7 @@ class DatasetsClient(_Base):
     def facets(
         self,
         dataset_id,
-        fields: list = [],
+        fields: Optional[list] = None,
         date_interval: str = "monthly",
         page_size: int = 5,
         page: int = 1,
@@ -206,6 +209,8 @@ class DatasetsClient(_Base):
             Whether to sort results by ascending or descending order
 
         """
+        fields = [] if fields is None else fields
+
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/facets",
             method="POST",
@@ -298,7 +303,7 @@ class DatasetsClient(_Base):
         insert_date: bool = True,
         overwrite: bool = True,
         update_schema: bool = True,
-        field_transformers=[],
+        field_transformers: Optional[list] = None,
         return_documents: bool = False,
     ):
         """
@@ -334,6 +339,7 @@ class DatasetsClient(_Base):
             >>>    "split_sentences": true
             >>> }
         """
+        field_transformers = [] if field_transformers is None else field_transformers
 
         base_url = self.config.get_option("api.base_ingest_url")
 
@@ -421,10 +427,10 @@ class DatasetsClient(_Base):
         self,
         old_dataset: str,
         new_dataset: str,
-        schema: dict = {},
-        rename_fields: dict = {},
-        remove_fields: list = [],
-        filters: list = [],
+        schema: Optional[dict] = None,
+        rename_fields: Optional[dict] = None,
+        remove_fields: Optional[list] = None,
+        filters: Optional[list] = None,
     ):
         """
         Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.
@@ -444,6 +450,11 @@ class DatasetsClient(_Base):
         filters : list
             Query for filtering the search results
         """
+        schema = {} if schema is None else schema
+        rename_fields = {} if rename_fields is None else rename_fields
+        remove_fields = [] if remove_fields is None else remove_fields
+        filters = [] if filters is None else filters
+
         dataset_id = old_dataset
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/clone",

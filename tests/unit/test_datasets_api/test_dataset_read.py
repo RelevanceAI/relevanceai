@@ -61,7 +61,7 @@ def test_filter(test_df: Dataset):
 
 
 def test_read_df_check(test_read_df, vector_documents):
-    assert test_read_df["inserted"] == len(vector_documents), "Did not insert properly"
+    assert test_read_df is None, "Did not insert properly"
 
 
 def test_datasets_schema(test_df: Dataset):

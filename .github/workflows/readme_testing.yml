@@ -146,7 +146,7 @@ jobs:
 
           GIT_BRANCH_VERSION=v$RELEVANCEAI_VERSION
 
-          git checkout v$RELEVANCEAI_VERSION 2>/dev/null || git checkout -b $GIT_BRANCH_VERSION
+          git checkout $GIT_BRANCH_VERSION 2>/dev/null && git pull || git checkout -b $GIT_BRANCH_VERSION
 
           python scripts/detect_secrets.py -d -p docs
           python scripts/update_asset_ref.py -d -p . -pn RelevanceAI -v v$RELEVANCEAI_VERSION
@@ -157,9 +157,9 @@ jobs:
 
           git add .
           git status | grep -q "Changes to be committed"
-          git commit -m "New ReadMe version for RelevanceAI v$RELEVANCEAI_VERSION"
+          git commit -m "New ReadMe version for RelevanceAI $GIT_BRANCH_VERSION"
 
           GITHUB_URL=https://$GITHUB_USERNAME:$GITHUB_PAT@github.com/RelevanceAI/RelevanceAI-readme-docs.git
           git push $GITHUB_URL || git push -u $GITHUB_URL origin HEAD:v$RELEVANCEAI_VERSION
 
-          gh pr create --base main --head v$RELEVANCEAI_VERSION --title v$RELEVANCEAI_VERSION --body v$RELEVANCEAI_VERSION
+          gh pr create --base main --head $GIT_BRANCH_VERSION --title $GIT_BRANCH_VERSION --body $GIT_BRANCH_VERSION

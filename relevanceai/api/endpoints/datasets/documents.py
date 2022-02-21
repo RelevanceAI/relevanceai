@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from relevanceai.base import _Base
 
 
@@ -13,7 +13,7 @@ class DocumentsClient(_Base):
     def list(
         self,
         dataset_id: str,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         cursor: str = None,
         page_size: int = 20,
         include_vector: bool = True,
@@ -37,6 +37,7 @@ class DocumentsClient(_Base):
         random_state: int
             Random Seed for retrieving random documents.
         """
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/list",
@@ -92,9 +93,8 @@ class DocumentsClient(_Base):
         dataset_id: str,
         ids: List,
         include_vector: bool = True,
-        select_fields: List = [],
+        select_fields: Optional[List] = [],
     ):
-
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field. \n
         For single id lookup version of this request use datasets.documents.get.
@@ -110,6 +110,7 @@ class DocumentsClient(_Base):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
         """
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_get",
@@ -124,16 +125,15 @@ class DocumentsClient(_Base):
     def get_where(
         self,
         dataset_id: str,
-        filters: list = [],
+        filters: Optional[list] = None,
         cursor: str = None,
         page_size: int = 20,
-        sort: list = [],
-        select_fields: list = [],
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
         include_vector: bool = True,
         random_state: int = 0,
         is_random: bool = False,
     ):
-
         """
         Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
 
@@ -205,6 +205,9 @@ class DocumentsClient(_Base):
         random_state: int
             Random Seed for retrieving random documents.
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
@@ -227,9 +230,8 @@ class DocumentsClient(_Base):
         page: int = 1,
         page_size: int = 20,
         include_vector: bool = True,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
     ):
-
         """
         Retrieve documents with filters and support for pagination. \n
         For more information about filters check out datasets.documents.get_where.
@@ -247,6 +249,7 @@ class DocumentsClient(_Base):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
         """
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/paginate",
@@ -281,8 +284,9 @@ class DocumentsClient(_Base):
             parameters={"update": update, "insert_date": insert_date},
         )
 
-    def update_where(self, dataset_id: str, update: dict, filters: list = []):
-
+    def update_where(
+        self, dataset_id: str, update: dict, filters: Optional[list] = None
+    ):
         """
         Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
         For more information about filters refer to datasets.documents.get_where.
@@ -297,6 +301,7 @@ class DocumentsClient(_Base):
             Query for filtering the search results
 
         """
+        filters = [] if filters is None else filters
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/update_where",
@@ -377,7 +382,6 @@ class DocumentsClient(_Base):
         )
 
     def delete_where(self, dataset_id: str, filters: list):
-
         """
         Delete a document by filters. \n
         For more information about filters refer to datasets.documents.get_where.
@@ -396,8 +400,7 @@ class DocumentsClient(_Base):
             parameters={"filters": filters},
         )
 
-    def bulk_delete(self, dataset_id: str, ids: list = []):
-
+    def bulk_delete(self, dataset_id: str, ids: Optional[list] = None):
         """
         Delete a list of documents by their IDs.
 
@@ -408,6 +411,7 @@ class DocumentsClient(_Base):
         ids : list
             IDs of documents to delete
         """
+        ids = [] if ids is None else ids
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_delete",
@@ -416,7 +420,6 @@ class DocumentsClient(_Base):
         )
 
     def delete_fields(self, dataset_id: str, id: str, fields: list):
-
         """
         Delete fields in a document in a dataset by its id
 

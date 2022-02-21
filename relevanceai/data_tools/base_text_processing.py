@@ -1,6 +1,6 @@
 import string
 import warnings
-from typing import List
+from typing import List, Optional
 from collections import Counter
 
 from html.parser import HTMLParser
@@ -32,10 +32,13 @@ class BaseTextProcessing:
     def get_word_frequency(
         str_list: List[str],
         remove_stop_words: bool = True,
-        additional_stop_words: List[str] = [],
+        additional_stop_words: Optional[List[str]] = None,
         language="english",
     ) -> List:
         """Returns a sorted word frequency in Python"""
+        additional_stop_words = (
+            [] if additional_stop_words is None else additional_stop_words
+        )
         try:
             import nltk
 

@@ -4,6 +4,33 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.2
+----------
+
+**BREAKING CHANGES**
+
+- All list and dict default arguments are changed to `None`.
+
+**Other Changes**
+
+- Export to Pandas DataFrame
+
+v1.2.1
+----------
+
+**BREAKING CHANGES**
+
+- When upserting, you will no longer be returned confusing inserting/write statements.
+
+**Other Changes**:
+
+- Add option to `create_id` when inserting
+
+Developer changes:
+
+- Reduced number of documents in testing
+- Make tracking only occur at the uppermost level and not the bottom level
+
 v1.2.0
 ----------
 

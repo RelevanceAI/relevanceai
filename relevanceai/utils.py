@@ -1,10 +1,11 @@
 import warnings
 from typing import List, Dict
-
+from uuid import uuid4
 from doc_utils import DocUtils
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.client import APIClient
 from functools import wraps
+from relevanceai.errors import MissingFieldError
 
 
 class Utils(APIClient, _Base, DocUtils):
@@ -50,10 +51,20 @@ class Utils(APIClient, _Base, DocUtils):
         """
         return [d for d in documents if d.get(vector_field)]
 
-    def _convert_id_to_string(self, documents):
-        self.set_field_across_documents(
-            "_id", [str(i["_id"]) for i in documents], documents
-        )
+    def _convert_id_to_string(self, documents, create_id: bool = False):
+        try:
+            self.set_field_across_documents(
+                "_id", [str(i["_id"]) for i in documents], documents
+            )
+        except KeyError:
+            if create_id:
+                self.set_field_across_documents(
+                    "_id", [str(uuid4()) for i in documents], documents
+                )
+            else:
+                raise MissingFieldError(
+                    "Missing _id field. Set `create_id=True` to automatically generate IDs."
+                )
 
     def _are_fields_in_schema(self, fields, dataset_id, schema=None):
         """
