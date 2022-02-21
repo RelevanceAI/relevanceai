@@ -179,6 +179,8 @@ class ClusterBase(DocUtils, ABC):
         return_only_clusters: bool = True,
     ):
         """Set cluster labels on documents"""
+        # TODO: Maybe users should be able to run fit predict on the actual labels
+        # fit predict will need to be refactored
         if isinstance(self.vector_fields, list):
             set_cluster_field = (
                 f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
