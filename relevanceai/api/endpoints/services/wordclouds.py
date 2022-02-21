@@ -1,5 +1,7 @@
 """Wordclouds services
 """
+from typing import Optional
+
 from relevanceai.base import _Base
 
 
@@ -18,10 +20,10 @@ class WordcloudsClient(_Base):
         n: int = 2,
         most_common: int = 5,
         page_size: int = 20,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector: bool = False,
-        filters: list = [],
-        additional_stopwords: list = [],
+        filters: Optional[list] = None,
+        additional_stopwords: Optional[list] = None,
     ):
         """
         Get frequency n-gram frequency counter from the wordcloud.
@@ -47,6 +49,11 @@ class WordcloudsClient(_Base):
         additional_stopwords: list
             Additional stopwords to add
         """
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+        additional_stopwords = (
+            [] if additional_stopwords is None else additional_stopwords
+        )
 
         return self.make_http_request(
             f"/services/wordclouds/wordclouds",

@@ -260,7 +260,10 @@ class KMeansClusterOps(ClusterOps):
         return
 
     def fit(
-        self, dataset: Union[Dataset, str], vector_fields: List, filters: list = []
+        self,
+        dataset: Union[Dataset, str],
+        vector_fields: List,
+        filters: Optional[list] = None,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -273,5 +276,6 @@ class KMeansClusterOps(ClusterOps):
         vector_field: list
             The vector field of the documents
         """
+        filters = [] if filters is None else filters
         self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
         return self._insert_centroid_documents()

@@ -4,7 +4,7 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import List, Dict
+from typing import Dict, List, Optional
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
@@ -101,16 +101,16 @@ class Stats(Read):
     def __call__(
         self,
         dataset_id: str,
-        image_fields: List = [],
-        text_fields: List = [],
-        audio_fields: List = [],
-        highlight_fields: Dict[str, List] = {},
+        image_fields: Optional[List] = None,
+        text_fields: Optional[List] = None,
+        audio_fields: Optional[List] = None,
+        highlight_fields: Optional[Dict[str, List]] = None,
         output_format: str = "pandas",
     ):
         self.dataset_id = dataset_id
-        self.image_fields = image_fields
-        self.text_fields = text_fields
-        self.audio_fields = audio_fields
-        self.highlight_fields = highlight_fields
+        self.image_fields = [] if image_fields is None else image_fields
+        self.text_fields = [] if text_fields is None else text_fields
+        self.audio_fields = [] if audio_fields is None else audio_fields
+        self.highlight_fields = {} if highlight_fields is None else highlight_fields
         self.output_format = output_format
         return self

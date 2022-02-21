@@ -1,5 +1,7 @@
 """Services class
 """
+from typing import Optional
+
 from relevanceai.base import _Base
 
 from relevanceai.api.endpoints.services.encoders import EncodersClient
@@ -45,7 +47,10 @@ class ServicesClient(_Base):
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def document_diff(
-        self, doc: dict, documents_to_compare: list, difference_fields: list = []
+        self,
+        doc: dict,
+        documents_to_compare: list,
+        difference_fields: Optional[list] = None,
     ):
         """
         Find differences between documents
@@ -60,6 +65,8 @@ class ServicesClient(_Base):
             Fields to compare. Defaults to [], which compares all fields.
 
         """
+        difference_fields = [] if difference_fields is None else difference_fields
+
         return self.make_http_request(
             endpoint=f"/services/document_diff",
             method="POST",

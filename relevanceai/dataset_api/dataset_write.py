@@ -10,7 +10,7 @@ import pandas as pd
 from doc_utils import DocUtils
 from os import PathLike
 from pathlib import Path
-from typing import Dict, List, Union, Callable
+from typing import Callable, Dict, List, Optional, Union
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 
@@ -103,11 +103,10 @@ class Write(Read):
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
-        csv_args: dict = {},
+        csv_args: Optional[dict] = None,
         col_for_id: str = None,
         auto_generate_id: bool = True,
     ) -> Dict:
-
         """
         Insert data from csv file
 
@@ -142,6 +141,8 @@ class Write(Read):
             df.insert_csv(csv_filename)
 
         """
+        csv_args = {} if csv_args is None else csv_args
+
         results = self._insert_csv(
             dataset_id=self.dataset_id,
             filepath_or_buffer=filepath_or_buffer,
@@ -367,8 +368,8 @@ class Write(Read):
         func: Callable,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
@@ -420,6 +421,9 @@ class Write(Read):
             df.apply(func=update_doc, value1=3, value2=2)
 
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if axis == 1:
             raise ValueError("We do not support column-wise operations!")
 
@@ -447,8 +451,8 @@ class Write(Read):
         bulk_func: Callable,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -489,6 +493,9 @@ class Write(Read):
 
             df.apply(update_documents)
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.pull_update_push(
             self.dataset_id,
             bulk_func,
@@ -501,7 +508,7 @@ class Write(Read):
         )
 
     @track
-    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+    def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
         """
         Concatenates numerical fields along an axis and reuploads this vector for other operations
 
@@ -534,6 +541,8 @@ class Write(Read):
             concat_vector_field_name = "concat_vector_"
             df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
+        fields = [] if fields is None else fields
+
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
 
@@ -589,7 +598,7 @@ class Write(Read):
         self.pull_update_push(self.dataset_id, add_cluster_labels)
 
     @track
-    def create(self, schema: dict = {}) -> Dict:
+    def create(self, schema: Optional[dict] = None) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -655,6 +664,8 @@ class Write(Read):
 
             df.insert_documents(documents)
         """
+        schema = {} if schema is None else schema
+
         return self.datasets.create(self.dataset_id, schema=schema)
 
     @track

@@ -5,7 +5,7 @@ Pandas like dataset API
 import warnings
 import itertools
 from collections import Counter
-from typing import Dict, List, Optional, Callable
+from typing import Callable, Dict, List, Optional
 from tqdm.auto import tqdm
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
@@ -24,8 +24,8 @@ class Operations(Write):
     @introduced_in_version("1.2.0")
     def vectorize(
         self,
-        image_fields: List[str] = [],
-        text_fields: List[str] = [],
+        image_fields: Optional[List[str]] = None,
+        text_fields: Optional[List[str]] = None,
         image_encoder=None,
         text_encoder=None,
     ):
@@ -72,6 +72,9 @@ class Operations(Write):
             )
 
         """
+        image_fields = [] if image_fields is None else image_fields
+        text_fields = [] if text_fields is None else text_fields
+
         if image_fields and image_encoder is None:
             try:
                 with FileLogger("logging.txt"):
@@ -446,11 +449,10 @@ class Operations(Write):
         label_vector_field: str,
         label_fields: List[str],
         number_of_labels: int = 1,
-        filters: list = [],
+        filters: Optional[list] = None,
         similarity_metric="cosine",
         score_field: str = "_search_score",
     ):
-
         """
         Label a dataset based on a model.
 
@@ -509,6 +511,8 @@ class Operations(Write):
             )
 
         """
+        filters = [] if filters is None else filters
+
         # Download documents in the label dataset
         filters += [
             {
@@ -691,11 +695,17 @@ class Operations(Write):
         )
 
     def _set_up_nltk(
-        self, stopwords_dict: str = "english", additional_stopwords: list = []
+        self,
+        stopwords_dict: str = "english",
+        additional_stopwords: Optional[list] = None,
     ):
         """Additional stopwords to include"""
         import nltk
         from nltk.corpus import stopwords
+
+        additional_stopwords = (
+            [] if additional_stopwords is None else additional_stopwords
+        )
 
         self._is_set_up = True
         nltk.download("stopwords")
@@ -740,7 +750,10 @@ class Operations(Write):
         raise NotImplementedError
 
     def generate_text_list_from_documents(
-        self, documents: list = [], text_fields: list = [], clean_html: bool = False
+        self,
+        documents: Optional[list] = None,
+        text_fields: Optional[list] = None,
+        clean_html: bool = False,
     ):
         """
         Generate a list of text from documents to feed into the counter
@@ -755,6 +768,9 @@ class Operations(Write):
             If True, also cleans the text in a given text document to remove HTML. Will be slower
             if processing on a large document
         """
+        documents = [] if documents is None else documents
+        text_fields = [] if text_fields is None else text_fields
+
         text = self.get_fields_across_documents(
             text_fields, documents, missing_treatment="ignore"
         )
@@ -762,11 +778,14 @@ class Operations(Write):
 
     def generate_text_list(
         self,
-        filters: list = [],
+        filters: Optional[list] = None,
         batch_size: int = 20,
-        text_fields: list = [],
+        text_fields: Optional[list] = None,
         cursor: str = None,
     ):
+        filters = [] if filters is None else filters
+        text_fields = [] if text_fields is None else text_fields
+
         filters += [
             {
                 "field": tf,
@@ -791,10 +810,15 @@ class Operations(Write):
         text,
         n: int = 2,
         stopwords_dict: str = "english",
-        additional_stopwords: list = [],
+        additional_stopwords: Optional[list] = None,
         min_word_length: int = 2,
-        preprocess_hooks: list = [],
+        preprocess_hooks: Optional[list] = None,
     ):
+        additional_stopwords = (
+            [] if additional_stopwords is None else additional_stopwords
+        )
+        preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
+
         try:
             return self._get_ngrams(
                 text=text,
@@ -819,11 +843,15 @@ class Operations(Write):
         self,
         text,
         n: int = 2,
-        additional_stopwords=[],
+        additional_stopwords: Optional[list] = None,
         min_word_length: int = 2,
-        preprocess_hooks: list = [],
+        preprocess_hooks: Optional[list] = None,
     ):
         """Get the bigrams"""
+        additional_stopwords = (
+            [] if additional_stopwords is None else additional_stopwords
+        )
+        preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
 
         from nltk import word_tokenize
         from nltk.util import ngrams
@@ -861,12 +889,12 @@ class Operations(Write):
         text_fields: list,
         n: int = 2,
         most_common: int = 10,
-        filters: list = [],
-        additional_stopwords: list = [],
+        filters: Optional[list] = None,
+        additional_stopwords: Optional[list] = None,
         min_word_length: int = 2,
         batch_size: int = 1000,
         document_limit: int = None,
-        preprocess_hooks: List[callable] = [],
+        preprocess_hooks: Optional[List[callable]] = None,
     ) -> list:
         """
         wordcloud return object looks like:
@@ -890,6 +918,12 @@ class Operations(Write):
             client = Client()
 
         """
+        filters = [] if filters is None else filters
+        additional_stopwords = (
+            [] if additional_stopwords is None else additional_stopwords
+        )
+        preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
+
         counter: Counter = Counter()
         if not hasattr(self, "_is_set_up"):
             print("setting up NLTK...")
@@ -931,11 +965,13 @@ class Operations(Write):
         n: int = 2,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
-        preprocess_hooks: List[callable] = [],
+        preprocess_hooks: Optional[List[callable]] = None,
     ):
         """
         Simple implementation of the cluster word cloud
         """
+        preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
+
         vector_fields_str = ".".join(sorted(vector_fields))
         field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
         all_clusters = self.facets([field], page_size=num_clusters)
@@ -976,7 +1012,7 @@ class Operations(Write):
         n_gram: int = 1,
         temp_vector_field: str = "_label_vector_",
         labels_fn="labels.txt",
-        stopwords: list = [],
+        stopwords: Optional[list] = None,
     ):
         """
         Label by the most popular keywords.
@@ -1035,6 +1071,8 @@ class Operations(Write):
             )
 
         """
+        stopwords = [] if stopwords is None else stopwords
+
         labels = self.get_wordcloud(
             text_fields=[text_field],
             n=n_gram,
@@ -1064,18 +1102,18 @@ class Operations(Write):
     def vector_search(
         self,
         multivector_query: List,
-        positive_document_ids: dict = {},
-        negative_document_ids: dict = {},
+        positive_document_ids: Optional[dict] = None,
+        negative_document_ids: Optional[dict] = None,
         vector_operation="sum",
         approximation_depth=0,
         sum_fields=True,
         page_size=20,
         page=1,
         similarity_metric="cosine",
-        facets=[],
-        filters=[],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -1187,6 +1225,15 @@ class Operations(Write):
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
+        positive_document_ids = (
+            {} if positive_document_ids is None else positive_document_ids
+        )
+        negative_document_ids = (
+            {} if negative_document_ids is None else negative_document_ids
+        )
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
 
         return self.services.search.vector(
             dataset_id=self.dataset_id,
@@ -1224,10 +1271,10 @@ class Operations(Write):
         page_size: int = 20,
         page=1,
         similarity_metric="cosine",
-        facets=[],
-        filters=[],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -1306,6 +1353,10 @@ class Operations(Write):
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.services.search.hybrid(
             dataset_id=self.dataset_id,
             multivector_query=multivector_query,
@@ -1342,8 +1393,8 @@ class Operations(Write):
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score: int = None,
         include_vector: bool = False,
         include_count: bool = True,
@@ -1425,6 +1476,9 @@ class Operations(Write):
             )
 
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+
         return self.services.search.chunk(
             dataset_id=self.dataset_id,
             multivector_query=multivector_query,
@@ -1462,8 +1516,8 @@ class Operations(Write):
         page_size: int = 20,
         page: int = 1,
         similarity_metric: str = "cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score: int = None,
         include_vector: bool = False,
         include_count: bool = True,
@@ -1544,6 +1598,9 @@ class Operations(Write):
             )
 
         """
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+
         return self.services.search.multistep_chunk(
             dataset_id=self.dataset_id,
             multivector_query=multivector_query,
@@ -1713,7 +1770,7 @@ class Operations(Write):
         number_of_documents: int = 1000,
         algorithm: str = "pca",
         n_components: int = 3,
-        filters: list = [],
+        filters: Optional[list] = None,
     ):
         """
         Run dimensionality reduction quickly on a dataset on a small number of documents.
@@ -1750,12 +1807,12 @@ class Operations(Write):
             )
 
         """
+        filters = [] if filters is None else filters
+
         if len(vector_fields) > 1:
             raise ValueError("We only support 1 vector field at the moment.")
 
         print("Getting documents...")
-        if filters is None:
-            filters = []
         filters += [
             {
                 "field": vf,
@@ -1789,7 +1846,7 @@ class Operations(Write):
         alias: str,
         vector_fields: List[str],
         chunksize: int = 1024,
-        filters: list = [],
+        filters: Optional[list] = None,
     ):
         """
         Automatically cluster in 1 line of code.
@@ -1839,6 +1896,8 @@ class Operations(Write):
             clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
         """
+        filters = [] if filters is None else filters
+
         cluster_args = alias.split("-")
         algorithm = cluster_args[0]
         if len(cluster_args) > 1:
@@ -1911,10 +1970,10 @@ class Operations(Write):
     @track
     def aggregate(
         self,
-        groupby: list = [],
-        metrics: list = [],
-        filters: list = [],
-        sort: list = [],
+        groupby: Optional[list] = None,
+        metrics: Optional[list] = None,
+        filters: Optional[list] = None,
+        # sort: list = [],
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -1923,9 +1982,9 @@ class Operations(Write):
     ):
         return self.services.aggregate.aggregate(
             dataset_id=self.dataset_id,
-            groupby=groupby,
-            metrics=metrics,
-            filters=filters,
+            groupby=[] if groupby is None else groupby,
+            metrics=[] if metrics is None else metrics,
+            filters=[] if filters is None else filters,
             page_size=page_size,
             page=page,
             asc=asc,
@@ -1936,7 +1995,7 @@ class Operations(Write):
 
     def facets(
         self,
-        fields: list = [],
+        fields: Optional[list] = None,
         date_interval: str = "monthly",
         page_size: int = 5,
         page: int = 1,
@@ -1944,7 +2003,7 @@ class Operations(Write):
     ):
         return self.datasets.facets(
             dataset_id=self.dataset_id,
-            fields=fields,
+            fields=[] if fields is None else fields,
             date_interval=date_interval,
             page_size=page_size,
             page=page,

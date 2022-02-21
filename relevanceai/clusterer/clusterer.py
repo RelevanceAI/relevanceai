@@ -372,15 +372,15 @@ class ClusterOps(BatchAPIClient):
         self,
         dataset: Optional[Union[str, Dataset]] = None,
         vector_fields: Optional[List] = None,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: List = [],
+        filters: Optional[List] = None,
         # facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
@@ -438,6 +438,13 @@ class ClusterOps(BatchAPIClient):
             cluster_ops.list_closest_to_center()
 
         """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+
         return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields
@@ -462,10 +469,10 @@ class ClusterOps(BatchAPIClient):
     def aggregate(
         self,
         vector_fields: List[str] = None,
-        metrics: list = [],
-        sort: list = [],
-        groupby: list = [],
-        filters: list = [],
+        metrics: Optional[list] = None,
+        sort: Optional[list] = None,
+        groupby: Optional[list] = None,
+        filters: Optional[list] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -602,6 +609,11 @@ class ClusterOps(BatchAPIClient):
 
 
         """
+        metrics = [] if metrics is None else metrics
+        sort = [] if sort is None else sort
+        groupby = [] if groupby is None else groupby
+        filters = [] if filters is None else filters
+
         return self.services.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields if not vector_fields else vector_fields,
@@ -839,7 +851,7 @@ class ClusterOps(BatchAPIClient):
         self,
         dataset: Union[Dataset, str],
         vector_fields: List,
-        filters: List = [],
+        filters: Optional[List] = None,
         include_grade: bool = False,
     ):
         """
@@ -880,6 +892,7 @@ class ClusterOps(BatchAPIClient):
             clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
 
         """
+        filters = [] if filters is None else filters
 
         # load the documents
         self.logger.warning(
@@ -943,11 +956,13 @@ class ClusterOps(BatchAPIClient):
         self,
         dataset,
         vector_fields,
-        filters: list = [],
+        filters: Optional[list] = None,
         return_only_clusters: bool = True,
         inplace=False,
     ):
         """ """
+        filters = [] if filters is None else filters
+
         # load the documents
         self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
@@ -1067,11 +1082,14 @@ class ClusterOps(BatchAPIClient):
     def _chunk_dataset(
         self,
         dataset: Dataset,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         chunksize: int = 100,
-        filters: list = [],
+        filters: Optional[list] = None,
     ):
         """Utility function for chunking a dataset"""
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+
         cursor = None
 
         docs = self._get_documents(
@@ -1099,7 +1117,7 @@ class ClusterOps(BatchAPIClient):
         dataset: Union[str, Dataset],
         vector_fields: List[str],
         chunksize: int = 100,
-        filters: list = [],
+        filters: Optional[list] = None,
     ):
         """
         Fit The dataset by partial documents.
@@ -1121,6 +1139,8 @@ class ClusterOps(BatchAPIClient):
             cluster_ops.partial_fit_dataset(df, vector_fields=["documentation_vector_"])
 
         """
+        filters = [] if filters is None else filters
+
         self.vector_fields = vector_fields
         if len(vector_fields) > 1:
             raise ValueError(
@@ -1157,7 +1177,7 @@ class ClusterOps(BatchAPIClient):
     def partial_fit_predict_update(
         self,
         dataset: Union[Dataset, str],
-        vector_fields: List[str] = [],
+        vector_fields: Optional[List[str]] = None,
         chunksize: int = 100,
         filters: list = [],
     ):
@@ -1198,6 +1218,7 @@ class ClusterOps(BatchAPIClient):
             )
 
         """
+        vector_fields = [] if vector_fields is None else vector_fields
 
         print("Fitting dataset...")
         self.partial_fit_dataset(

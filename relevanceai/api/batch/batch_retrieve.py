@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Batch Retrieve"""
 
-from typing import List
+from typing import List, Optional
 import math
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
@@ -18,15 +18,14 @@ class BatchRetrieveClient(APIClient, Chunker):
         self,
         dataset_id: str,
         number_of_documents: int = 20,
-        filters: list = [],
+        filters: Optional[list] = None,
         cursor: str = None,
         batch_size: int = 1000,
-        sort: list = [],
-        select_fields: list = [],
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
         include_vector: bool = True,
         include_cursor: bool = False,
     ):
-
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
         If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
@@ -49,6 +48,10 @@ class BatchRetrieveClient(APIClient, Chunker):
         filters: list
             Query for filtering the search results
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
+
         if batch_size > number_of_documents:
             batch_size = number_of_documents
 
@@ -99,9 +102,9 @@ class BatchRetrieveClient(APIClient, Chunker):
         self,
         dataset_id: str,
         chunksize: int = 1000,
-        filters: List = [],
-        sort: List = [],
-        select_fields: List = [],
+        filters: Optional[List] = None,
+        sort: Optional[List] = None,
+        select_fields: Optional[List] = None,
         include_vector: bool = True,
         show_progress_bar: bool = True,
     ):
@@ -129,6 +132,9 @@ class BatchRetrieveClient(APIClient, Chunker):
         select_fields : list
             Fields to include in the search results, empty array/list means all fields.
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
 
         # Initialise values
         length = 1
@@ -163,7 +169,7 @@ class BatchRetrieveClient(APIClient, Chunker):
                 full_data += x["documents"]
         return full_data
 
-    def get_number_of_documents(self, dataset_id, filters=[]):
+    def get_number_of_documents(self, dataset_id, filters: Optional[List] = None):
         """
         Get number of documents in a dataset. Filter can be used to select documents that match the conditions set in a filter query. For more details see documents.get_where.
 
@@ -174,6 +180,8 @@ class BatchRetrieveClient(APIClient, Chunker):
         filters: list
             Filters to select documents
         """
+        filters = [] if filters is None else filters
+
         return self.datasets.documents.get_where(
             dataset_id, page_size=1, filters=filters
         )["count"]
