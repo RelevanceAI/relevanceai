@@ -2,8 +2,6 @@
 """
 Pandas like dataset API
 """
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import pandas as pd
 
 from typing import Dict, List, Optional
@@ -11,6 +9,7 @@ from relevanceai.analytics_funcs import track
 from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
+from relevanceai.utils import introduced_in_version
 
 
 class Stats(Read):
@@ -83,6 +82,7 @@ class Stats(Read):
         else:
             raise ValueError("invalid return_type, should be `dict` or `pandas`")
 
+    @introduced_in_version("1.2.2")
     def corr(
         self,
         X: str,
@@ -115,6 +115,9 @@ class Stats(Read):
         fontsize: int
             The font size of the values in the image
         """
+        import matplotlib as mpl
+        import matplotlib.pyplot as plt
+
         # todo: how to cover cases when fields are in schema but not "calculable" fields like clusters and deployables
         cclient = ClusterClient(self.project, self.api_key, self.firebase_uid)
         groupby_agg = (
