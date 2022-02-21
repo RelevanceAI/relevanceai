@@ -515,3 +515,8 @@ class Series(BatchAPIClient):
         elif isinstance(loc, str):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
+
+    def to_list(self):
+        """Convert the dataset series to a list of strings."""
+        docs = self._get_all_documents(self.dataset_id, select_fields=[self.field])
+        return self.get_field_across_documents(self.field, docs)
