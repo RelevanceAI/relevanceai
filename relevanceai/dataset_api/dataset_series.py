@@ -11,12 +11,13 @@ import numpy as np
 from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.dataset_api.dataset_pandas import PandasSeries
 from relevanceai.warnings import warn_function_is_work_in_progress
 
 from relevanceai.analytics_funcs import track
 
 
-class Series(BatchAPIClient):
+class Series(BatchAPIClient, PandasSeries):
     """
     Dataset Series Object
     -----------------------------
