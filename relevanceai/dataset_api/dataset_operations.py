@@ -964,6 +964,16 @@ class Operations(Write):
         """Get WordClouds based on RAKE algorithm. You can find out more here: https://github.com/csurfer/rake-nltk
 
         The main advantage of this algorithm is that you do not need to set `n`.
+
+        .. code-block::
+
+            df = client.Dataset('tweets_jeremyphoward')
+            texts = df['tweet']
+            tweets = texts.to_list()
+            from relevanceai.data_tools.base_text_processing import BaseTextProcessing
+            tweets = [BaseTextProcessing().normalize_text(t) for t in tweets]
+            df.get_wordcloud_rake_from_list_of_text(tweets)
+
         """
         try:
             from rake_nltk import Rake
