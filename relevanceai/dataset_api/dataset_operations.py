@@ -1840,6 +1840,46 @@ class Operations(Write):
 
         return results
 
+    def auto_projector(
+        self,
+        image_field: str,
+        number_of_documents: int = 1000,
+        image_encoder=None,
+        alias: str = "",
+        algorithm: str = "pca",
+        n_components: int = 3,
+        filters: Optional[list] = None,
+    ):
+        """
+        TODO: explanation
+
+        Parameters
+        ----------
+
+        Example
+        -------
+        """
+        # note: it might be a good idea to collect all supported DR algos
+        # somewhere such that the check is done without the need to
+        # manually update set here
+        if algorithm.lower() not in {"pca", "tsne", "umap", "ivis"}:
+            raise ValueError(
+                f"{algorithm} is an unspported dimensionality reduction " "algorithm."
+            )
+        self.vectorize(image_fields=[image_field], image_encoder=image_encoder)
+
+        vector_field = "_".join([image_field, algorithm.lower(), "vector_"])
+        alias = f"{algorithm}-{n_components}" if alias == "" else alias
+        filters = [] if filters is None else filters
+        results = self.reduce_dimensions(
+            vector_fields=[vector_field],
+            alias=alias,
+            number_of_documents=number_of_documents,
+            algorithm=algorithm,
+            n_components=n_components,
+            filters=filters,
+        )
+
     @track
     def auto_cluster(
         self,
