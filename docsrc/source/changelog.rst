@@ -9,7 +9,13 @@ v1.2.2
 
 Developer changes:
 
+**BREAKING CHANGES**
+
+- All list and dict default arguments are changed to `None`.
+
+**Other Changes**
 - Introduced `corr`, a method to plot the correlation between two fields, in `Dataset`
+- Export to Pandas DataFrame
 
 v1.2.1
 ----------
