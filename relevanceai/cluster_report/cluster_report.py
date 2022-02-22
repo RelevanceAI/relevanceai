@@ -7,7 +7,8 @@ Automated Cluster Reporting
 .. note::
     **Introduced in v1.0.0.**
 
-You can run cluster reporting as a standalone module.
+You can run cluster reporting as a standalone module with the option
+to store it in Relevance AI.
 
 .. code-block::
 
@@ -43,6 +44,20 @@ You can run cluster reporting as a standalone module.
 
     # Prettyprinted report of overall statistics
     report.internal_overall_report
+
+    # Storing your cluster report
+    from relevanceai import Client 
+    client = Client()
+    response = client.store_cluster_report(
+        report_name="kmeans",
+        report=report
+    )
+
+    # Listing all cluster reports 
+    client.list_cluster_reports()
+
+    # Deleting cluster report
+    client.delete_cluster_report(response['_id])
 
 
 You can also insert your own centroid vectors if you want them to be represented.

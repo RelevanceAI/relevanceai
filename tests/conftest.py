@@ -78,7 +78,7 @@ def test_client(test_project, test_api_key, test_firebase_uid):
         )
     # For some reason not resetting to default
     # correct_client_config(client)
-
+    client.config["mixpanel.is_tracking_enabled"] = False
     yield client
 
     # To avoid flooding backend

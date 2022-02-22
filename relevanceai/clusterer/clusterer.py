@@ -1674,7 +1674,7 @@ class ClusterOps(BatchAPIClient):
         return stats
 
     @track
-    def report(self):
+    def internal_report(self):
         """
         Get a report on your clusters.
 
@@ -1687,7 +1687,7 @@ class ClusterOps(BatchAPIClient):
             df = client.Dataset('sample')
             df.upsert_documents(docs)
             cluster_ops = df.auto_cluster('kmeans-2', ['sample_1_vector_'])
-            cluster_ops.report()
+            cluster_ops.internal_report()
 
         """
         if isinstance(self.vector_fields, list) and len(self.vector_fields) > 1:
@@ -1710,5 +1710,9 @@ class ClusterOps(BatchAPIClient):
             ),
             model=self.model,
             num_clusters=self.number_of_clusters,
+        )
+        cluster_response = self.reports.clusters.create(
+            name=cluster_field_name,
+            report=self.json_encoder(self._report.internal_report),
         )
         return self._report.internal_report
