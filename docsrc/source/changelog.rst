@@ -17,12 +17,14 @@ Developer changes:
 v1.2.2
 ----------
 
+Developer changes:
+
 **BREAKING CHANGES**
 
 - All list and dict default arguments are changed to `None`.
 
 **Other Changes**
-
+- Introduced `corr`, a method to plot the correlation between two fields, in `Dataset`
 - Export to Pandas DataFrame
 
 v1.2.1
@@ -110,7 +112,7 @@ v1.0.5
 
 - `get_cluster_internal_report` has now been renamed to `internal_report`
 
-Non-breaking changes:  
+Non-breaking changes:
 
 - Remove repetitive print statements
 - Add outlier support for cluster report
@@ -132,9 +134,9 @@ v1.0.3
 v1.0.2
 --------
 
-- Fix pandas serialization for UTF-encoding errors 
+- Fix pandas serialization for UTF-encoding errors
 - Move search app
-- Change print search dashboard app URL 
+- Change print search dashboard app URL
 - Fix regionalisation error when authenticating client.
 
 v1.0.1
