@@ -1,6 +1,7 @@
 import analytics
 import asyncio
 import json
+import os
 from typing import Callable
 
 from functools import wraps
@@ -20,23 +21,33 @@ def get_json_size(json_obj):
     return len(json.dumps(json_obj).encode("utf-8")) / 1024
 
 
+TRANSIT_ENV_VAR = "_IS_ANALYTICS_IN_TRANSIT"
+
+
 def track(func: Callable):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if hasattr(args[0], "_is_analytics_in_transit"):
-            if args[0]._is_analytics_in_transit:
-                return func(*args, **kwargs)
+        if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
+            return func(*args, **kwargs)
 
-        args[0]._is_analytics_in_transit = True
+        os.environ[TRANSIT_ENV_VAR] = "TRUE"
 
         try:
             if is_tracking_enabled():
 
-                async def send_analytics():
+                def send_analytics():
                     user_id = args[0].firebase_uid
                     event_name = f"pysdk-{func.__name__}"
-                    kwargs.update(dict(zip(func.__code__.co_varnames, args)))
+                    # kwargs.update(dict(zip(func.__code__.co_varnames, args)))
+                    # all_kwargs = copy.deepcopy(kwargs)
+                    # all_kwargs = all_kwargs.update(
+                    #     dict(zip(func.__code__.co_varnames, args))
+                    # )
+
+                    additional_args = dict(zip(func.__code__.co_varnames, args))
+
                     properties = {
+                        "additional_args": additional_args,
                         "args": args,
                         "kwargs": kwargs,
                     }
@@ -54,24 +65,25 @@ def track(func: Callable):
                             )
                             > 30
                         ):
-                            analytics.track(
+                            response = analytics.track(
                                 user_id=user_id,
                                 event=event_name,
                             )
                         else:
-                            analytics.track(
+                            response = analytics.track(
                                 user_id=user_id,
                                 event=event_name,
                                 properties=json_encoder(properties, force_string=True),
                             )
 
+                # send_analytics()
                 asyncio.ensure_future(send_analytics())
         except Exception as e:
             pass
         try:
             return func(*args, **kwargs)
         finally:
-            args[0]._is_analytics_in_transit = False
+            os.environ[TRANSIT_ENV_VAR] = "FALSE"
 
     return wrapper
 

@@ -31,6 +31,7 @@ If you need to change your token, simply run:
 """
 import os
 import getpass
+import pandas as pd
 from base64 import b64decode as decode
 from typing import Dict, List, Optional, Union
 
@@ -350,6 +351,7 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.delete(dataset_id)
 
+    @track
     def Dataset(
         self,
         dataset_id: str,
@@ -527,3 +529,34 @@ class Client(BatchAPIClient, DocUtils):
         Search through your datasets.
         """
         return [x for x in self.list_datasets()["datasets"] if query in x]
+
+    @introduced_in_version("2.1.2")
+    @beta
+    def list_cluster_reports(self):
+        """
+
+        List all cluster reports.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.list_cluster_reports()
+
+        """
+        return pd.DataFrame(self.reports.clusters.list()["results"])
+
+    @introduced_in_version("2.1.2")
+    def delete_cluster_report(self, cluster_report_id: str):
+        """
+
+        Delete Cluster Report
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.delete_cluster_report(cluster_report_id)
+
+        """
+        return self.reports.clusters.delete(cluster_report_id)
