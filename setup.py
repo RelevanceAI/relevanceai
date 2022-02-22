@@ -25,7 +25,6 @@ requirements = [
     "loguru>=0.5.3",
     "document-utils>=1.7.1",
     "requests>=2.0.0",
-    "matplotlib>=3.5.1",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
     "scikit-learn",
@@ -36,6 +35,7 @@ requirements = [
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
+    "matplotlib>=3.5.1",
     "plotly>=5.3.1",
     "typeguard",
     "dash",
