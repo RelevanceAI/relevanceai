@@ -834,7 +834,7 @@ class ClusterOps(BatchAPIClient):
         )
         return response.json()["status"]
 
-    def fit_predict(
+    def some_func_name(
         self,
         data: Union[str, Dataset, List[Dict]],
         vector_fields: List[str],
