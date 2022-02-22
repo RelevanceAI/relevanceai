@@ -44,6 +44,11 @@ You can run cluster reporting as a standalone module.
     # Prettyprinted report of overall statistics
     report.internal_overall_report
 
+    # Storing your cluster report
+    from relevanceai import Client 
+    client = Client()
+    
+
 
 You can also insert your own centroid vectors if you want them to be represented.
 For example - you may want to measure off medoids (points in your dataset) instead of centroids

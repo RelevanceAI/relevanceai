@@ -560,3 +560,17 @@ class Client(BatchAPIClient, DocUtils):
 
         """
         return self.reports.clusters.delete(cluster_report_id)
+    
+    @introduced_in_version("2.1.3")
+    def store_cluster_report(self, cluster_report_id: str):
+        """
+        
+        Store the cluster data. 
+    
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.
+
+        """
