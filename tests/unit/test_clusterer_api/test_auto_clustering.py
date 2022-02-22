@@ -7,7 +7,7 @@ def test_minibatch_clusterer(minibatch_clusterer: ClusterOps):
 
 
 def test_minibatchkmeans_cluster_report(minibatch_clusterer: ClusterOps):
-    assert len(minibatch_clusterer.report()) > 0
+    assert len(minibatch_clusterer.internal_report()) > 0
 
 
 def test_kmeans_clusterer(kmeans_clusterer: ClusterOps):
@@ -16,4 +16,4 @@ def test_kmeans_clusterer(kmeans_clusterer: ClusterOps):
 
 
 def test_kmeans_cluster_report(kmeans_clusterer: ClusterOps):
-    assert len(kmeans_clusterer.report()) > 0
+    assert len(kmeans_clusterer.internal_report()) > 0
