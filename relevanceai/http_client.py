@@ -31,6 +31,7 @@ If you need to change your token, simply run:
 """
 import os
 import getpass
+import pandas as pd
 from base64 import b64decode as decode
 from typing import Dict, List, Optional, Union
 
@@ -542,7 +543,7 @@ class Client(BatchAPIClient, DocUtils):
             client.list_cluster_reports()
 
         """
-        return self.reports.clusters.list()
+        return pd.DataFrame(self.reports.clusters.list()["results"])
 
     @introduced_in_version("2.1.2")
     def delete_cluster_report(self, cluster_report_id: str):
