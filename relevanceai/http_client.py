@@ -522,15 +522,15 @@ class Client(BatchAPIClient, DocUtils):
         else:
             print("You can build your search app at https://cloud.relevance.ai")
 
-    @introduced_in_version("1.1.5")
-    @beta
+    @introduced_in_version("1.1.3")
+    @track
     def search_datasets(self, query: str):
         """
         Search through your datasets.
         """
         return [x for x in self.list_datasets()["datasets"] if query in x]
 
-    @introduced_in_version("2.1.2")
+    @introduced_in_version("2.1.3")
     @beta
     def list_cluster_reports(self):
         """
@@ -546,7 +546,9 @@ class Client(BatchAPIClient, DocUtils):
         """
         return pd.DataFrame(self.reports.clusters.list()["results"])
 
-    @introduced_in_version("2.1.2")
+    @introduced_in_version("2.1.3")
+    @beta
+    @track
     def delete_cluster_report(self, cluster_report_id: str):
         """
 
@@ -556,7 +558,26 @@ class Client(BatchAPIClient, DocUtils):
 
             from relevanceai import Client
             client = Client()
-            client.delete_cluster_report(cluster_report_id)
+            client.delete_cluster_report("cluster_id_goes_here")
 
         """
         return self.reports.clusters.delete(cluster_report_id)
+
+    @introduced_in_version("2.1.3")
+    @beta
+    @track
+    def store_cluster_report(self, report_name: str, report: dict):
+        """
+
+        Store the cluster data.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.store_cluster_report("sample", {"value": 3})
+
+        """
+        return self.reports.clusters.create(
+            name=report_name, report=self.json_encoder(report)
+        )
