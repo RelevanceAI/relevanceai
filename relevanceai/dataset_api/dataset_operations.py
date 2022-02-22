@@ -1019,7 +1019,7 @@ class Operations(Write):
         results = r.get_ranked_phrases_with_scores()
         return {v: k for k, v in results}
 
-    def cluster_word_cloud(
+    def cluster_keyphrases(
         self,
         vector_fields: List[str],
         text_fields: List[str],
@@ -1057,6 +1057,20 @@ class Operations(Write):
             )
             cluster_counters[c] = top_words
         return cluster_counters
+    
+    def auto_cluster_keyphrases(
+        vector_fields: List[str],
+        text_fields: List[str],
+        cluster_alias: str,
+        deployable_id: str,
+        n: int = 2,
+        cluster_field: str = "_cluster_",
+        num_clusters: int = 100,
+        preprocess_hooks: Optional[List[callable]] = None,
+    ):
+        """"""
+        pass
+
 
     def _add_cluster_word_cloud_to_config(self, data, cluster_value, top_words):
         # TODO: Add this to wordcloud deployable
