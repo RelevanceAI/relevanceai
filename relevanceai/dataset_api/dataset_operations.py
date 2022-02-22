@@ -48,8 +48,9 @@ class Operations(Write):
 
         Returns
         -------
-        dict
-            The request result for the vecotrization process.
+        None | dict
+            The request result for the vecotrization process. None if
+            vecotrization process is completely successful.
 
         Example
         -------
