@@ -47,7 +47,10 @@ You can run cluster reporting as a standalone module.
     # Storing your cluster report
     from relevanceai import Client 
     client = Client()
-    
+    client.store_cluster_report(
+        report_name="kmeans",
+        report=report
+    )
 
 
 You can also insert your own centroid vectors if you want them to be represented.
