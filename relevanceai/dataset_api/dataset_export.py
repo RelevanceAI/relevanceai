@@ -3,6 +3,8 @@ Pandas like dataset API
 """
 import pandas as pd
 
+from functools import lru_cache
+
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.utils import introduced_in_version
@@ -10,6 +12,7 @@ from relevanceai.utils import introduced_in_version
 
 class Export(Read):
     @introduced_in_version("1.1.5")
+    @lru_cache(maxsize=1)
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
         """
         Converts a Relevance AI Dataset to a pandas DataFrame.
@@ -30,9 +33,20 @@ class Export(Read):
             df = relevance_ai.to_pandas_dataframe()
         """
         documents = self.get_all_documents(**kwargs)
-        df = pd.DataFrame(documents)
-        df.set_index("_id", inplace=True)
-        return df
+
+        try:
+            df = pd.DataFrame(documents)
+            df.set_index("_id", inplace=True)
+            return df
+        except KeyError:
+            raise Exception("No documents found")
+
+    def __getattr__(self, attr):
+        df = self.to_pandas_dataframe(show_progress_bar=False)
+        try:
+            return getattr(df, attr)
+        except SyntaxError:
+            raise AttributeError(f"'{attr}' is an invalid attribute")
 
     @track
     def to_csv(self, filename: str, **kwargs):
