@@ -523,7 +523,6 @@ class Client(BatchAPIClient, DocUtils):
             print("You can build your search app at https://cloud.relevance.ai")
 
     @introduced_in_version("1.1.3")
-    @beta
     @track
     def search_datasets(self, query: str):
         """
@@ -531,7 +530,7 @@ class Client(BatchAPIClient, DocUtils):
         """
         return [x for x in self.list_datasets()["datasets"] if query in x]
 
-    @introduced_in_version("2.1.2")
+    @introduced_in_version("2.1.3")
     @beta
     def list_cluster_reports(self):
         """
