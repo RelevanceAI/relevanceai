@@ -400,7 +400,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 + "_pull_update_push"
                 + ".log"
             )
-
         with FileLogger(fn=log_file, verbose=True):
             # Instantiate the logger to document the successful IDs
             PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
@@ -445,7 +444,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 documents = orig_json["documents"]
 
                 try:
-                    updated_data = update_function(documents, **updating_args)
+                    updated_data = update_function(documents)
                 except Exception as e:
                     self.logger.error("Your updating function does not work: " + str(e))
                     traceback.print_exc()

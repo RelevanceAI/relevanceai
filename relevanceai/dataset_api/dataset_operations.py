@@ -72,8 +72,23 @@ class Operations(Write):
             )
 
         """
+        if not image_fields and not text_fields:
+            raise ValueError("'image_fields' and 'text_fields' both cannot be empty.")
+
         image_fields = [] if image_fields is None else image_fields
         text_fields = [] if text_fields is None else text_fields
+
+        fields = image_fields + text_fields
+
+        foreign_fields = []
+        for field in fields:
+            if field not in self.schema:
+                foreign_fields.append(field)
+        else:
+            if foreign_fields:
+                raise ValueError(
+                    f"The following fields are invalid: {', '.join(foreign_fields)}"
+                )
 
         if image_fields and image_encoder is None:
             try:
@@ -88,6 +103,10 @@ class Operations(Write):
                     "Please install vectorhub with `python -m pip install "
                     "vectorhub[clip]` to install Clip2Vec."
                 )
+        if image_fields and not hasattr(image_encoder, "encode_documents"):
+            raise AttributeError(
+                f"{image_encoder} is missing attribute 'encode_documents'"
+            )
 
         if text_fields and text_encoder is None:
             try:
@@ -101,84 +120,58 @@ class Operations(Write):
                     "Please install vectorhub with `python -m pip install "
                     "vectorhub[encoders-text-tfhub]` to install USE2Vec."
                 )
+        if text_fields and not hasattr(text_encoder, "encode_documents"):
+            raise AttributeError(
+                f"{text_encoder} is missing attribute 'encode_documents'"
+            )
 
-        with FileLogger("logging.txt"):
-
-            def create_encoder_function(ftype: str, fields: List[str], encoder):
-                if not all(map(lambda field: field in self.schema, fields)):
-                    raise ValueError(f"Invalid {ftype} field detected")
-
-                if hasattr(encoder, "encode_documents"):
-
-                    def encode_documents(documents):
-                        return encoder.encode_documents(fields, documents)
-
-                else:
-
-                    def encode_documents(documents):
-                        return encoder(documents)
-
-                return encode_documents
-
-            if image_fields:
-                image_results = self.pull_update_push(
-                    self.dataset_id,
-                    create_encoder_function("image", image_fields, image_encoder),
-                    select_fields=image_fields,
-                    filters=[
-                        {
-                            "field": image_field,
-                            "filter_type": "exists",
-                            "condition": "==",
-                            "condition_value": " ",
-                            "strict": "must_or",
-                        }
-                        for image_field in image_fields
-                    ],
+        def dual_encoder_function(documents):
+            updated_documents = []
+            if image_encoder is not None:
+                updated_documents.extend(
+                    image_encoder.encode_documents(image_fields, documents)
                 )
-            else:
-                image_results = {}
-
-        if len(image_fields) > 0:
-            if len(image_results.get("failed_documents", [])) == 0:
-                print("✅ All image documents inserted/edited successfully.")
-            else:
-                print(
-                    "❗Few errors with vectorizing image documents. Please check logs."
+            if text_encoder is not None:
+                updated_documents.extend(
+                    text_encoder.encode_documents(text_fields, documents)
                 )
 
-        with FileLogger("logging.txt"):
-            if text_fields:
-                text_results = self.pull_update_push(
-                    self.dataset_id,
-                    create_encoder_function("text", text_fields, text_encoder),
-                    select_fields=text_fields,
-                    filters=[
-                        {
-                            "field": text_field,
-                            "filter_type": "exists",
-                            "condition": "==",
-                            "condition_value": " ",
-                            "strict": "must_or",
-                        }
-                        for text_field in text_fields
-                    ],
-                )
-            else:
-                text_results = {}
+            return updated_documents
 
-        if len(text_fields) > 0:
-            if len(text_results.get("failed_documents", [])) == 0:
-                print("✅ All text documents inserted/edited successfully.")
-            else:
-                print("❗Few errors with vectorizing text documents. Please check logs.")
+        old_schema = self.schema.keys()
 
-        if (
-            len(image_results.get("failed_documents", []))
-            + len(text_results.get("failed_documents", []))
-            != 0
-        ):
-            return {"image": image_results, "text": text_results}
+        results = self.pull_update_push(
+            self.dataset_id,
+            dual_encoder_function,
+            select_fields=fields,
+            filters=[
+                {
+                    "field": field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": " ",
+                    "strict": "must_or",
+                }
+                for field in fields
+            ],
+        )
+
+        new_schema = self.schema.keys()
+
+        if not results["failed_documents"]:
+            print("✅ All documents inserted/edited successfully.")
+
+            added_vectors = new_schema - old_schema
+            if len(added_vectors) == 1:
+                text = "The following vector was added: "
+            else:
+                text = "The following vectors were added: "
+            print(text + ", ".join(added_vectors))
+
+            return None
+        else:
+            print("❗Few errors with vectorizing documents. Please check logs.")
+            return results
 
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
