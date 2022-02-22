@@ -567,7 +567,7 @@ class Client(BatchAPIClient, DocUtils):
     @introduced_in_version("2.1.3")
     @beta
     @track
-    def store_cluster_report(self, report_name: str, report):
+    def store_cluster_report(self, report_name: str, report: dict):
         """
 
         Store the cluster data.
