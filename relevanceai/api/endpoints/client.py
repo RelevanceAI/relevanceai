@@ -26,7 +26,7 @@ class APIClient(_Base):
         self.admin = AdminClient(
             project=project, api_key=api_key, firebase_uid=firebase_uid
         )
-        self.report = ReportsClient(
+        self.reports = ReportsClient(
             project=project, api_key=api_key, firebase_uid=firebase_uid
         )
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)

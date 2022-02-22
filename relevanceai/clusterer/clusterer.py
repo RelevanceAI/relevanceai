@@ -1674,7 +1674,7 @@ class ClusterOps(BatchAPIClient):
         return stats
 
     @track
-    def report(self):
+    def internal_report(self):
         """
         Get a report on your clusters.
 
@@ -1710,5 +1710,8 @@ class ClusterOps(BatchAPIClient):
             ),
             model=self.model,
             num_clusters=self.number_of_clusters,
+        )
+        cluster_response = self.reports.clusters.create(
+            name=cluster_field_name, report=self._report.internal_report
         )
         return self._report.internal_report

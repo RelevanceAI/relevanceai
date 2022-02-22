@@ -527,3 +527,34 @@ class Client(BatchAPIClient, DocUtils):
         Search through your datasets.
         """
         return [x for x in self.list_datasets()["datasets"] if query in x]
+
+    @introduced_in_version("2.1.2")
+    @beta
+    def list_cluster_reports(self):
+        """
+
+        List all cluster reports.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.list_cluster_reports()
+
+        """
+        return self.reports.clusters.list()
+
+    @introduced_in_version("2.1.2")
+    def delete_cluster_report(self, cluster_report_id: str):
+        """
+
+        Delete Cluster Report
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.delete_cluster_report(cluster_report_id)
+
+        """
+        return self.reports.clusters.delete(cluster_report_id)
