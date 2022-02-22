@@ -8,16 +8,16 @@ import warnings
 import pandas as pd
 import numpy as np
 
+from functools import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.dataset_api.dataset_pandas import PandasSeries
 from relevanceai.warnings import warn_function_is_work_in_progress
 
 from relevanceai.analytics_funcs import track
 
 
-class Series(BatchAPIClient, PandasSeries):
+class Series(BatchAPIClient):
     """
     Dataset Series Object
     -----------------------------
@@ -516,3 +516,26 @@ class Series(BatchAPIClient, PandasSeries):
         elif isinstance(loc, str):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
+
+    @lru_cache(maxsize=1)
+    def _get_pandas_series(self):
+        documents = self._get_all_documents(
+            dataset_id=self.dataset_id,
+            select_fields=[self.field],
+            include_vector=False,
+            show_progress_bar=False,
+        )
+
+        try:
+            df = pd.DataFrame(documents)
+            df.set_index("_id", inplace=True)
+            return df.squeeze()
+        except KeyError:
+            raise Exception("No documents found")
+
+    def __getattr__(self, attr):
+        series = self._get_pandas_series()
+        try:
+            return getattr(series, attr)
+        except SyntaxError:
+            raise AttributeError(f"{attr} is an invalid attribute")
