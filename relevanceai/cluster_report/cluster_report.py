@@ -7,7 +7,8 @@ Automated Cluster Reporting
 .. note::
     **Introduced in v1.0.0.**
 
-You can run cluster reporting as a standalone module.
+You can run cluster reporting as a standalone module with the option
+to store it in Relevance AI.
 
 .. code-block::
 
@@ -43,6 +44,20 @@ You can run cluster reporting as a standalone module.
 
     # Prettyprinted report of overall statistics
     report.internal_overall_report
+
+    # Storing your cluster report
+    from relevanceai import Client 
+    client = Client()
+    response = client.store_cluster_report(
+        report_name="kmeans",
+        report=report
+    )
+
+    # Listing all cluster reports 
+    client.list_cluster_reports()
+
+    # Deleting cluster report
+    client.delete_cluster_report(response['_id])
 
 
 You can also insert your own centroid vectors if you want them to be represented.
@@ -611,9 +626,10 @@ class ClusterReport(DocUtils):
         self.class_rules_dict: Dict[Any, Any] = dict()
         self.tree_dfs()
 
-    def tree_dfs(self, node_id=0, current_rule=[]):
-        if not hasattr(self, "classes"):
-            self.get_class_rules()
+    def tree_dfs(self, node_id=0, current_rule: Optional[list] = None):
+        current_rule = [] if current_rule is None else current_rule
+        # if not hasattr(self, "classes"):
+        #    self.get_class_rules()
 
         # feature[i] holds the feature to split on, for the internal node i.
         split_feature = self.inner_tree.feature[node_id]

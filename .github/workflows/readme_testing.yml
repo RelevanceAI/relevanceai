@@ -1,21 +1,43 @@
-# # This workflows will upload a Python Package using Twine when a release is created
-# # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 name: Testing ReadMe Repo branch creation upon release
 
 on:
   pull_request:
-    branches: [ development, main ]
+    branches: [main]
 
 jobs:
-  deploy:
+  setup-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      notebook-fpaths: ${{ steps.set-notebook-fpaths.outputs.notebook-fpaths }}
+    steps:
+      - name: Checkout ReadMe repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/main
+          path: readme-docs
 
+      - id: set-notebook-fpaths
+        name: Setting notebook fpath output
+        run: |
+          export NOTEBOOK_IGNORE=$(cat scripts/notebook_ignore.txt)
+          export NOTEBOOKS=$(find readme-docs/docs -type f -name "*.ipynb")
+          export NOTEBOOK_FPATHS=$(for n in  ${NOTEBOOKS[@]}; do echo $n; done | grep -wv "$NOTEBOOK_IGNORE"  | jq -Rsc '. / "\n" - [""]')
+          echo $NOTEBOOK_FPATHS
+          echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
+
+
+  test-notebooks:
+    name: Test ${{ matrix.notebook }}
+    needs: setup-tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest] 
+        os: [ ubuntu-latest]
         python-version: [ '3.7' ]
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        notebook: ${{fromJSON(needs.setup-tests.outputs.notebook-fpaths)}}
         include:
           - os: ubuntu-latest
             path: ~/.cache/pip
@@ -24,25 +46,120 @@ jobs:
           # - os: windows-latest
           #   path: ~\AppData\Local\pip\Cache
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout ReadMe repo
+        uses: actions/checkout@v2
         with:
           repository: RelevanceAI/RelevanceAI-readme-docs
           ref: refs/heads/main
           path: readme-docs
-          
-          
-      - name: Set up Python
-        uses: actions/setup-python@v2
+
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
-      - name: Run tests
-        env:
-          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
-          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+      - name: Set SDK version as Github env var
         run: |
+          RELEVANCEAI_VERSION=$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          echo $RELEVANCEAI_VERSION
+          echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pip install -r readme-docs/requirements.txt
-          python scripts/test_notebooks.py -p readme-docs -n RelevanceAI -v 0.27.0
+
+      - name: Run tests
+        env:
+          TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
+        run: |
+          python scripts/test_notebooks.py -p readme-docs -pn RelevanceAI -v $RELEVANCEAI_VERSION --notebooks  ${{ matrix.notebook }}  -nm
+
+  create-new-readme-branch:
+    name: Create new ReadMe branch
+    needs: test-notebooks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout ReadMe repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/RelevanceAI-readme-docs
+          ref: refs/heads/main
+          path: readme-docs
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Set SDK version as Github env var
+        run: |
+          RELEVANCEAI_VERSION=$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          echo $RELEVANCEAI_VERSION
+          echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
+          python -m pip install -r readme-docs/requirements.txt
+
+      - name: Create new ReadMe branch
+        env:
+          GITHUB_EMAIL: 'action@github.com'
+          GITHUB_USERNAME: 'github-actions[bot]'
+          RELEVANCEAI_README_API_KEY: ${{ secrets.RELEVANCEAI_README_API_KEY}}
+          GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          cd readme-docs
+
+          git config --local user.email "$GITHUB_EMAIL"
+          git config --local user.name "$GITHUB_USERNAME"
+
+          GIT_BRANCH_VERSION=v$RELEVANCEAI_VERSION
+
+          git checkout $GIT_BRANCH_VERSION 2>/dev/null && git pull || git checkout -b $GIT_BRANCH_VERSION
+
+          python scripts/detect_secrets.py -d -p docs
+          python scripts/update_asset_ref.py -d -p . -pn RelevanceAI -v v$RELEVANCEAI_VERSION
+          python scripts/update_semver_ref.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
+          python scripts/build_docs.py -d -p . -pn RelevanceAI -v $GIT_BRANCH_VERSION
+
+          # ./scripts/sync_readme_docs.sh true ./docs/ $RELEVANCEAI_VERSION
+
+          git add .
+          git status | grep -q "Changes to be committed"
+          git commit -m "New ReadMe version for RelevanceAI $GIT_BRANCH_VERSION"
+
+          GITHUB_URL=https://$GITHUB_USERNAME:$GITHUB_PAT@github.com/RelevanceAI/RelevanceAI-readme-docs.git
+          git push $GITHUB_URL || git push -u $GITHUB_URL origin HEAD:v$RELEVANCEAI_VERSION
+
+          gh pr create --base main --head $GIT_BRANCH_VERSION --title $GIT_BRANCH_VERSION --body $GIT_BRANCH_VERSION

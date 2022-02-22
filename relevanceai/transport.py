@@ -3,8 +3,9 @@
 import asyncio
 import time
 import traceback
-import asyncio
+
 from json.decoder import JSONDecodeError
+from typing import Optional
 
 from urllib.parse import urlparse
 
@@ -146,7 +147,7 @@ class Transport(JSONEncoderUtils):
         self,
         endpoint: str,
         method: str = "GET",
-        parameters: dict = {},
+        parameters: Optional[dict] = None,
         base_url: str = None,
         output_format=None,
         raise_error: bool = True,
@@ -163,6 +164,7 @@ class Transport(JSONEncoderUtils):
             If True, you will raise error. This is useful for endpoints that don't
             necessarily need to error.
         """
+        parameters = {} if parameters is None else parameters
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
 

@@ -8,9 +8,9 @@ import json
 import pandas as pd
 
 from doc_utils import DocUtils
-
-from typing import Dict, List, Union, Callable
-
+from os import PathLike
+from pathlib import Path
+from typing import Callable, Dict, List, Optional, Union
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 
@@ -26,6 +26,7 @@ class Write(Read):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         **kwargs,
     ) -> Dict:
 
@@ -79,7 +80,7 @@ class Write(Read):
             df.insert_documents(documents)
 
         """
-        return self._insert_documents(
+        results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -88,8 +89,10 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
             **kwargs,
         )
+        return self._process_insert_results(results)
 
     @track
     def insert_csv(
@@ -100,11 +103,10 @@ class Write(Read):
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
-        csv_args: dict = {},
+        csv_args: Optional[dict] = None,
         col_for_id: str = None,
         auto_generate_id: bool = True,
     ) -> Dict:
-
         """
         Insert data from csv file
 
@@ -139,7 +141,9 @@ class Write(Read):
             df.insert_csv(csv_filename)
 
         """
-        return self._insert_csv(
+        csv_args = {} if csv_args is None else csv_args
+
+        results = self._insert_csv(
             dataset_id=self.dataset_id,
             filepath_or_buffer=filepath_or_buffer,
             chunksize=chunksize,
@@ -151,6 +155,8 @@ class Write(Read):
             col_for_id=col_for_id,
             auto_generate_id=auto_generate_id,
         )
+        self._process_insert_results(results)
+        return results
 
     @track
     def insert_pandas_dataframe(
@@ -194,6 +200,95 @@ class Write(Read):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
+    def insert_images_folder(
+        self,
+        path: Union[Path, str],
+        field: str = "images",
+        recurse: bool = True,
+        *args,
+        **kwargs,
+    ):
+        """
+        Given a path to a directory, this method loads all image-related files
+        into a Dataset.
+
+        Parameters
+        ----------
+        field: str
+            A text field of a dataset.
+
+        path: Union[Path, str]
+            The path to the directory containing images.
+
+        recurse: bool
+            Indicator that determines whether to recursively insert images from
+            subdirectories in the directory.
+
+        Returns
+        -------
+            dict
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("dataset_id")
+
+            from pathlib import Path
+            path = Path("images/")
+            # list(path.iterdir()) returns
+            # [
+            #    PosixPath('image.jpg'),
+            #    PosixPath('more-images'), # a directory
+            # ]
+
+            get_all_images: bool = True
+            if get_all_images:
+                # Inserts all images, even those in the more-images directory
+                ds.insert_images_folder(
+                    field="images", path=path, recurse=True
+                )
+            else:
+                # Only inserts image.jpg
+                ds.insert_images_folder(
+                    field="images", path=path, recurse=False
+                )
+
+        """
+        if isinstance(path, str):
+            path = Path(path)
+
+            if not path.is_dir():
+                raise Exception(f"{path} is not a proper path")
+
+        from mimetypes import types_map
+
+        image_extensions = set(
+            k.lower() for k, v in types_map.items() if v.startswith("image/")
+        )
+
+        def get_paths(path: Path, images: List[str]) -> List[str]:
+            for file in path.iterdir():
+                if file.is_dir() and recurse:
+                    images.extend(get_paths(file, []))
+                elif file.is_file() and file.suffix.lower() in image_extensions:
+                    images.append(str(file))
+                else:
+                    continue
+
+            return images
+
+        images = get_paths(path, [])
+        documents = list(
+            map(
+                lambda image: {"_id": uuid.uuid4(), "path": image, field: image}, images
+            )
+        )
+        results = self.insert_documents(documents, *args, **kwargs)
+        self.image_fields.append(field)
+        return results
+
     @track
     def upsert_documents(
         self,
@@ -204,6 +299,8 @@ class Write(Read):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        return_json: bool = False,
+        create_id: bool = False,
     ) -> Dict:
 
         """
@@ -252,7 +349,7 @@ class Write(Read):
             df.upsert_documents(documents)
 
         """
-        return self._update_documents(
+        results = self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -261,7 +358,9 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
         )
+        return self._process_insert_results(results, return_json=return_json)
 
     @track
     def apply(
@@ -269,8 +368,8 @@ class Write(Read):
         func: Callable,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
@@ -322,6 +421,9 @@ class Write(Read):
             df.apply(func=update_doc, value1=3, value2=2)
 
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if axis == 1:
             raise ValueError("We do not support column-wise operations!")
 
@@ -349,8 +451,8 @@ class Write(Read):
         bulk_func: Callable,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -391,6 +493,9 @@ class Write(Read):
 
             df.apply(update_documents)
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.pull_update_push(
             self.dataset_id,
             bulk_func,
@@ -403,7 +508,7 @@ class Write(Read):
         )
 
     @track
-    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+    def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
         """
         Concatenates numerical fields along an axis and reuploads this vector for other operations
 
@@ -436,6 +541,8 @@ class Write(Read):
             concat_vector_field_name = "concat_vector_"
             df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
+        fields = [] if fields is None else fields
+
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
 
@@ -491,7 +598,7 @@ class Write(Read):
         self.pull_update_push(self.dataset_id, add_cluster_labels)
 
     @track
-    def create(self, schema: dict = {}) -> Dict:
+    def create(self, schema: Optional[dict] = None) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -557,6 +664,8 @@ class Write(Read):
 
             df.insert_documents(documents)
         """
+        schema = {} if schema is None else schema
+
         return self.datasets.create(self.dataset_id, schema=schema)
 
     @track

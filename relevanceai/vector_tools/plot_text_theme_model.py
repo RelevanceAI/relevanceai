@@ -4,7 +4,7 @@ from random import randint
 from typing import List, Tuple
 from sklearn import preprocessing
 from tqdm.auto import tqdm
-from typing import List, Union
+from typing import List, Optional, Union
 from doc_utils import DocUtils
 from relevanceai.logger import LoguruLogger
 from relevanceai.api.client import BatchAPIClient
@@ -50,13 +50,17 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
         remove_digit: bool = True,
         remove_punct: bool = True,
         remove_stop_words: bool = True,
-        additional_stop_words: List[str] = [],
+        additional_stop_words: Optional[List[str]] = None,
         cluster_representative_cnt: int = 3,
         plot_axis: str = "off",
         figsize: Tuple[int, ...] = (20, 10),
         cmap: str = "plasma",
         alpha: float = 0.2,
     ):
+        additional_stop_words = (
+            [] if additional_stop_words is None else additional_stop_words
+        )
+
         # get documents
         documents = self._get_documents(
             vector_fields=vector_fields,
@@ -176,7 +180,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
     def _batch_load_documents(
         self,
         fields: List[str],
-        filters: List[dict] = [],
+        filters: Optional[List[dict]] = None,
         page_size: int = 200,
         cursor: str = None,
     ):
@@ -184,7 +188,7 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             dataset_id=self.dataset_id,
             select_fields=fields,
             page_size=page_size,
-            filters=filters,
+            filters=[] if filters is None else filters,
             cursor=cursor,
         )
 
@@ -268,7 +272,9 @@ class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUt
             cluster_data[cluster]["word_freq"] = self.get_word_frequency(
                 str_list=cluster_data[cluster]["data"],
                 remove_stop_words=remove_stop_words,
-                additional_stop_words=additional_stop_words,
+                additional_stop_words=[]
+                if additional_stop_words is None
+                else additional_stop_words,
                 language=self.language,
             )
         return {
@@ -380,7 +386,7 @@ def build_and_plot_clusters(
     remove_digit: bool = True,
     remove_punct: bool = True,
     remove_stop_words: bool = True,
-    additional_stop_words: List[str] = [],
+    additional_stop_words: Optional[List[str]] = None,
     cluster_representative_cnt: int = 3,
     plot_axis: str = "off",
     figsize: Tuple[int, ...] = (20, 10),
@@ -411,7 +417,9 @@ def build_and_plot_clusters(
         remove_digit=remove_digit,
         remove_punct=remove_punct,
         remove_stop_words=remove_stop_words,
-        additional_stop_words=additional_stop_words,
+        additional_stop_words=[]
+        if additional_stop_words is None
+        else additional_stop_words,
         cluster_representative_cnt=cluster_representative_cnt,
         plot_axis=plot_axis,
         figsize=figsize,

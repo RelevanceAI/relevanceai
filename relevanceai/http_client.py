@@ -31,8 +31,9 @@ If you need to change your token, simply run:
 """
 import os
 import getpass
+import pandas as pd
 from base64 import b64decode as decode
-from typing import Optional, List, Dict, Union
+from typing import Dict, List, Optional, Union
 
 from doc_utils.doc_utils import DocUtils
 from relevanceai.dataset_api import Dataset
@@ -253,7 +254,7 @@ class Client(BatchAPIClient, DocUtils):
     ### CRUD-related utility functions
 
     @track
-    def create_dataset(self, dataset_id: str, schema: dict = {}):
+    def create_dataset(self, dataset_id: str, schema: Optional[Dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -306,6 +307,7 @@ class Client(BatchAPIClient, DocUtils):
             client.create_dataset("sample_dataset_id")
 
         """
+        schema = {} if schema is None else schema
         return self.datasets.create(dataset_id, schema=schema)
 
     @track
@@ -349,15 +351,21 @@ class Client(BatchAPIClient, DocUtils):
         """
         return self.datasets.delete(dataset_id)
 
+    @track
     def Dataset(
         self,
         dataset_id: str,
-        fields: list = [],
-        image_fields: List[str] = [],
-        audio_fields: List[str] = [],
-        highlight_fields: Dict[str, List] = {},
-        text_fields: List[str] = [],
+        fields: Optional[List[str]] = None,
+        image_fields: Optional[List[str]] = None,
+        audio_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, List]] = None,
+        text_fields: Optional[List[str]] = None,
     ):
+        fields = [] if fields is None else fields
+        image_fields = [] if image_fields is None else image_fields
+        audio_fields = [] if audio_fields is None else audio_fields
+        highlight_fields = {} if highlight_fields is None else highlight_fields
+        text_fields = [] if text_fields is None else text_fields
         return Dataset(
             dataset_id=dataset_id,
             project=self.project,
@@ -441,11 +449,11 @@ class Client(BatchAPIClient, DocUtils):
     def clone_dataset(
         self,
         source_dataset_id: str,
-        new_dataset_id: str = None,
-        source_project: str = None,
-        source_api_key: str = None,
-        project: str = None,
-        api_key: str = None,
+        new_dataset_id: Optional[str] = None,
+        source_project: Optional[str] = None,
+        source_api_key: Optional[str] = None,
+        project: Optional[str] = None,
+        api_key: Optional[str] = None,
     ):
         """
         Clone a dataset from another user's projects into your project.
@@ -504,7 +512,7 @@ class Client(BatchAPIClient, DocUtils):
 
     docs = references
 
-    def search_app(self, dataset_id: str = None):
+    def search_app(self, dataset_id: Optional[str] = None):
         if dataset_id is not None:
             self.print_search_dashboard_url(dataset_id)
         elif hasattr(self, "_dataset_id"):
@@ -514,10 +522,62 @@ class Client(BatchAPIClient, DocUtils):
         else:
             print("You can build your search app at https://cloud.relevance.ai")
 
-    @introduced_in_version("1.1.5")
-    @beta
+    @introduced_in_version("1.1.3")
+    @track
     def search_datasets(self, query: str):
         """
         Search through your datasets.
         """
         return [x for x in self.list_datasets()["datasets"] if query in x]
+
+    @introduced_in_version("2.1.3")
+    @beta
+    def list_cluster_reports(self):
+        """
+
+        List all cluster reports.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.list_cluster_reports()
+
+        """
+        return pd.DataFrame(self.reports.clusters.list()["results"])
+
+    @introduced_in_version("2.1.3")
+    @beta
+    @track
+    def delete_cluster_report(self, cluster_report_id: str):
+        """
+
+        Delete Cluster Report
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.delete_cluster_report("cluster_id_goes_here")
+
+        """
+        return self.reports.clusters.delete(cluster_report_id)
+
+    @introduced_in_version("2.1.3")
+    @beta
+    @track
+    def store_cluster_report(self, report_name: str, report: dict):
+        """
+
+        Store the cluster data.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.store_cluster_report("sample", {"value": 3})
+
+        """
+        return self.reports.clusters.create(
+            name=report_name, report=self.json_encoder(report)
+        )
