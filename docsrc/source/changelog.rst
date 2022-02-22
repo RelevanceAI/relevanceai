@@ -4,6 +4,16 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.3
+-----------
+
+- Add Cluster Report endpoints
+
+Developer changes:
+
+- Fix bug with analytics and change to an env variable tracker for outermost function
+
+
 v1.2.2
 ----------
 
