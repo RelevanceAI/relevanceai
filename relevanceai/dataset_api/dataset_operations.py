@@ -4,6 +4,7 @@ Pandas like dataset API
 """
 import warnings
 import itertools
+from itertools import chain
 from collections import Counter
 from typing import Callable, Dict, List, Optional
 from tqdm.auto import tqdm
@@ -855,7 +856,6 @@ class Operations(Write):
 
         from nltk import word_tokenize
         from nltk.util import ngrams
-        from itertools import chain
 
         if additional_stopwords:
             [self.eng_stopwords.add(s) for s in additional_stopwords]
@@ -884,9 +884,11 @@ class Operations(Write):
         # return dict(counter.most_common(most_common))
 
     @track
-    def get_wordcloud(
+    @beta
+    def keyphrases(
         self,
         text_fields: list,
+        algorithm: str = "rake",
         n: int = 2,
         most_common: int = 10,
         filters: Optional[list] = None,
@@ -897,17 +899,46 @@ class Operations(Write):
         preprocess_hooks: Optional[List[callable]] = None,
     ) -> list:
         """
-        wordcloud return object looks like:
+        Returns the most common phrase in the following format:
 
         .. code-block::
 
-            {'python': 232}
+            [('heavily draping faux fur', 16.0),
+            ('printed sweatshirt fabric made', 14.333333333333334),
+            ('high paper bag waist', 14.25),
+            ('ribbed organic cotton jersey', 13.803030303030303),
+            ('soft sweatshirt fabric', 9.0),
+            ('open back pocket', 8.5),
+            ('layered tulle skirt', 8.166666666666666),
+            ('soft brushed inside', 8.0),
+            ('discreet side pockets', 7.5),
+            ('cotton blend', 5.363636363636363)]
 
         Parameters
         ------------
 
         text_fields: list
             A list of text fields
+        algorithm: str
+            The algorithm to use. Must be one of `nltk` or `rake`.
+        n: int
+            if algorithm is `nltk`, this will set the number of words. If `rake`, then it
+            will do nothing.
+        most_common: int
+            How many to return
+        filters: list
+            A list of filters to supply
+        additional_stopwords: list
+            A list of additional stopwords to supply
+        min_word_length: int
+            The minimum word length to apply to clean. This can be helpful if there are common
+            acronyms that you want to exclude.
+        batch_size: int
+            Batch size is the number of documents to retrieve in a chunk
+        document_limit: int
+            The maximum number of documents in a dataset
+        preprocess_hooks: List[Callable]
+            A list of process hooks
 
         Example
         ----------
@@ -916,8 +947,12 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
+            ds = client.Dataset("sample")
+            # Returns the top keywords in a text field
+            ds.keyphrases(text_fields=["sample"])
 
         """
+        self._check_keyphrase_algorithm_requirements(algorithm)
         filters = [] if filters is None else filters
         additional_stopwords = (
             [] if additional_stopwords is None else additional_stopwords
@@ -935,6 +970,8 @@ class Operations(Write):
         while len(documents["documents"]) > 0 and (
             document_limit is None or sum(counter.values()) < document_limit
         ):
+            # TODO: make this into a progress bar instead
+            print("Retrieving documents...")
             documents = self.get_documents(
                 filters=filters,
                 cursor=documents["cursor"],
@@ -947,17 +984,42 @@ class Operations(Write):
                 text_fields=text_fields,
             )
 
-            ngram_counter = self._get_ngrams(
-                string,
-                n=n,
-                additional_stopwords=additional_stopwords,
-                min_word_length=min_word_length,
-                preprocess_hooks=preprocess_hooks,
-            )
+            if algorithm == "nltk":
+                ngram_counter = self._get_ngrams(
+                    string,
+                    n=n,
+                    additional_stopwords=additional_stopwords,
+                    min_word_length=min_word_length,
+                    preprocess_hooks=preprocess_hooks,
+                )
+            elif algorithm == "rake":
+                ngram_counter = self._get_rake_keyphrases(
+                    string,
+                )
             counter.update(ngram_counter)
         return counter.most_common(most_common)
 
-    def cluster_word_cloud(
+    def _check_keyphrase_algorithm_requirements(self, algorithm: str):
+        if algorithm == "rake":
+            try:
+                import rake_nltk
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError("Run `pip install nltk-rake`.")
+        elif algorithm == "nltk":
+            try:
+                import nltk
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError("Run `pip install nltk`")
+
+    def _get_rake_keyphrases(self, string, **kw):
+        from rake_nltk import Rake
+
+        r = Rake(**kw)
+        r.extract_keywords_from_sentences(string)
+        results = r.get_ranked_phrases_with_scores()
+        return {v: k for k, v in results}
+
+    def cluster_keyphrases(
         self,
         vector_fields: List[str],
         text_fields: List[str],
@@ -979,7 +1041,7 @@ class Operations(Write):
         cluster_counters = {}
         for c in tqdm(all_clusters[field]):
             cluster_value = c[field]
-            top_words = self.get_wordcloud(
+            top_words = self.keyphrases(
                 text_fields=text_fields,
                 n=n,
                 filters=[
@@ -996,7 +1058,24 @@ class Operations(Write):
             cluster_counters[c] = top_words
         return cluster_counters
 
+    # TODO: Add keyphrases to auto cluster
+    # def auto_cluster_keyphrases(
+    #     vector_fields: List[str],
+    #     text_fields: List[str],
+    #     cluster_alias: str,
+    #     deployable_id: str,
+    #     n: int = 2,
+    #     cluster_field: str = "_cluster_",
+    #     num_clusters: int = 100,
+    #     preprocess_hooks: Optional[List[callable]] = None,
+    # ):
+    #     """
+    #     # TODO:
+    #     """
+    #     pass
+
     def _add_cluster_word_cloud_to_config(self, data, cluster_value, top_words):
+        # TODO: Add this to wordcloud deployable
         # hacky way I implemented to add top words to config
         data["configuration"]["cluster-labels"][cluster_value] = ", ".join(
             [k for k in top_words if k != "machine learning"]
@@ -1073,7 +1152,7 @@ class Operations(Write):
         """
         stopwords = [] if stopwords is None else stopwords
 
-        labels = self.get_wordcloud(
+        labels = self.keyphrases(
             text_fields=[text_field],
             n=n_gram,
             most_common=most_common,
@@ -1097,6 +1176,10 @@ class Operations(Write):
             model=model,
             label_list=[x[0] for x in labels],
         )
+
+    ############################
+    # Search operations
+    ############################
 
     @track
     def vector_search(

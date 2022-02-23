@@ -4,6 +4,13 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.4
+-----------
+
+- Add `nltk-rake` support for keyphrases
+- Add more documentation around cluster reporting
+- Enable Dataset and Series access pandas DataFrame and Series methods, respectively
+
 v1.2.3
 -----------
 
