@@ -2052,7 +2052,6 @@ class Operations(Write):
         chunksize: int = 1024,
         filters: Optional[list] = None,
         text_encoder=None,
-        n_clusters: int = 12,
     ):
         """
 
@@ -2073,6 +2072,11 @@ class Operations(Write):
             vector_fields=new_vectors,
             chunksize=chunksize,
             filters=filters,
+        )
+
+        print(
+            "Build your text clustering app here: "
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
         )
 
     @track
