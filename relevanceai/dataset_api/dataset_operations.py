@@ -2050,6 +2050,11 @@ class Operations(Write):
 
         return clusterer
 
+    def auto_text_cluster_dashboard(
+        self, text_field: str, text_encoder=None, n_clusters: int = 12
+    ):
+        self.vectorize(text_fields=[text_field], text_encoder=text_encoder)
+
     @track
     def aggregate(
         self,
