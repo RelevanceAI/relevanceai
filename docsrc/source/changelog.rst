@@ -11,6 +11,7 @@ v1.2.4
 - Add more documentation around cluster reporting
 - Enable `Dataset` and `Series` access `pandas` `DataFrame` and `Series` methods, respectively
 - Change `Dataset.health` from a property to a method and add `pandas` `DataFrame` output
+- Change `Dataset.vectorize` to call `pull_update_push` just once instead of twice
 
 v1.2.3
 -----------
