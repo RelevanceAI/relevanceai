@@ -42,7 +42,7 @@ class Export(Read):
             raise Exception("No documents found")
 
     def __getattr__(self, attr):
-        df = self.to_pandas_dataframe(show_progress_bar=False)
+        df = self.to_pandas_dataframe(show_progress_bar=True)
         try:
             return getattr(df, attr)
         except SyntaxError:

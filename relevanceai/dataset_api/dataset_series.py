@@ -523,7 +523,7 @@ class Series(BatchAPIClient):
             dataset_id=self.dataset_id,
             select_fields=[self.field],
             include_vector=False,
-            show_progress_bar=False,
+            show_progress_bar=True,
         )
 
         try:
