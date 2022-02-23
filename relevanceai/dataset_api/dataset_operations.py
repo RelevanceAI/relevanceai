@@ -48,9 +48,10 @@ class Operations(Write):
 
         Returns
         -------
-        None | dict
-            The request result for the vecotrization process. None if
-            vecotrization process is completely successful.
+        dict
+            If the vectorization process is successful, this dict contains
+            the added vector names. Else, the dict is the request result
+            containing error information.
 
         Example
         -------
@@ -162,14 +163,14 @@ class Operations(Write):
         if not results["failed_documents"]:
             print("✅ All documents inserted/edited successfully.")
 
-            added_vectors = new_schema - old_schema
+            added_vectors = list(new_schema - old_schema)
             if len(added_vectors) == 1:
                 text = "The following vector was added: "
             else:
                 text = "The following vectors were added: "
             print(text + ", ".join(added_vectors))
 
-            return None
+            return {"added_vectors": added_vectors}
         else:
             print("❗Few errors with vectorizing documents. Please check logs.")
             return results
