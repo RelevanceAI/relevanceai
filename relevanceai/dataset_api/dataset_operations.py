@@ -2051,9 +2051,34 @@ class Operations(Write):
         return clusterer
 
     def auto_text_cluster_dashboard(
-        self, text_field: str, text_encoder=None, n_clusters: int = 12
+        self,
+        text_fields: Optional[List[str]],
+        alias: str,
+        chunksize: int = 1024,
+        filters: Optional[list] = None,
+        text_encoder=None,
+        n_clusters: int = 12,
     ):
-        self.vectorize(text_fields=[text_field], text_encoder=text_encoder)
+        """
+
+        alias must be the format "{algorithm}-{n_clusters}"
+        """
+        filters = [] if filters is None else filters
+
+        results = self.vectorize(text_fields=text_fields, text_encoder=text_encoder)
+        if "added_vectors" not in results:
+            # If there were errors in vecotrizing, then quit immediately
+            return None
+
+        new_vectors = results["added_vectors"]
+
+        clusterer = self.auto_cluster(
+            self,
+            alias=alias,
+            vector_fields=new_vectors,
+            chunksize=chunksize,
+            filters=filters,
+        )
 
     @track
     def aggregate(
