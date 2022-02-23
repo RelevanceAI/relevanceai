@@ -4,7 +4,8 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
+
 from relevanceai.analytics_funcs import track
 from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset_api.dataset_read import Read
@@ -204,10 +205,15 @@ class Stats(Read):
         fig.tight_layout()
         plt.show()
 
-    @property
-    def health(self) -> dict:
+    def health(self, output_format="dataframe") -> Union[pd.DataFrame, dict]:
         """
         Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors
+
+        Parameters
+        ----------
+
+        output_format: str
+            The format of the output. Must either be "dataframe" or "json".
 
         Example
         -----------
@@ -220,7 +226,13 @@ class Stats(Read):
             df.health
 
         """
-        return self.datasets.monitor.health(self.dataset_id)
+        results = self.datasets.monitor.health(self.dataset_id)
+        if output_format == "dataframe":
+            return pd.DataFrame(results).T
+        elif output_format == "json":
+            return results
+        else:
+            raise ValueError('\'output_format\' must either be "dataframe" or "json"')
 
     def __call__(
         self,
