@@ -228,7 +228,7 @@ class Stats(Read):
         """
         results = self.datasets.monitor.health(self.dataset_id)
         if output_format == "dataframe":
-            return pd.DataFrame(results)
+            return pd.DataFrame(results).T
         elif output_format == "json":
             return results
         else:
