@@ -4,6 +4,15 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.4
+-----------
+
+- Add `nltk-rake` support for keyphrases
+- Add more documentation around cluster reporting
+- Enable `Dataset` and `Series` access `pandas` `DataFrame` and `Series` methods, respectively
+- Change `Dataset.health` from a property to a method and add `pandas` `DataFrame` output
+- Change `Dataset.vectorize` to call `pull_update_push` just once instead of twice
+
 v1.2.3
 -----------
 
@@ -17,12 +26,14 @@ Developer changes:
 v1.2.2
 ----------
 
+Developer changes:
+
 **BREAKING CHANGES**
 
 - All list and dict default arguments are changed to `None`.
 
 **Other Changes**
-
+- Introduced `corr`, a method to plot the correlation between two fields, in `Dataset`
 - Export to Pandas DataFrame
 
 v1.2.1
@@ -110,7 +121,7 @@ v1.0.5
 
 - `get_cluster_internal_report` has now been renamed to `internal_report`
 
-Non-breaking changes:  
+Non-breaking changes:
 
 - Remove repetitive print statements
 - Add outlier support for cluster report
@@ -132,9 +143,9 @@ v1.0.3
 v1.0.2
 --------
 
-- Fix pandas serialization for UTF-encoding errors 
+- Fix pandas serialization for UTF-encoding errors
 - Move search app
-- Change print search dashboard app URL 
+- Change print search dashboard app URL
 - Fix regionalisation error when authenticating client.
 
 v1.0.1
