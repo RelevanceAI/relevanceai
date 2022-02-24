@@ -534,8 +534,10 @@ class Series(BatchAPIClient):
             raise Exception("No documents found")
 
     def __getattr__(self, attr):
-        series = self._get_pandas_series()
-        try:
-            return getattr(series, attr)
-        except SyntaxError:
-            raise AttributeError(f"'{attr}' is an invalid attribute")
+        if hasattr(pd.Series, attr):
+            series = self._get_pandas_series()
+            try:
+                return getattr(series, attr)
+            except SyntaxError:
+                raise AttributeError(f"'{attr}' is an invalid attribute")
+        raise AttributeError(f"'{attr}' is an invalid attribute")

@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.5
+------------
+
+- Add hotfix if pandas functions not supported.
+
 v1.2.4
 -----------
 
