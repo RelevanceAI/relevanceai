@@ -4,6 +4,13 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.6
+-------
+
+- Add initial bias detection
+- Fix analytics support 
+- Remove test tracking
+
 v1.2.5
 ------------
 
