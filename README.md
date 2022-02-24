@@ -7,7 +7,7 @@
 
 **Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12GiCo9r0JpFqcg5Tmae28Wz0VPMpHul_?usp=sharing)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://hubs.ly/Q014Qbs10)
 
 For guides and tutorials on how to use this package, visit https://docs.relevance.ai/docs.
 

@@ -50,7 +50,7 @@ to store it in Relevance AI.
     client = Client()
     response = client.store_cluster_report(
         report_name="kmeans",
-        report=report
+        report=report.internal_report
     )
 
     # Listing all cluster reports 
@@ -113,6 +113,7 @@ from typing import Union, List, Dict, Any, Optional
 import functools
 from warnings import warn
 from doc_utils import DocUtils
+from relevanceai.analytics_funcs import track_event_usage
 
 try:
     from sklearn.metrics import (
@@ -159,6 +160,7 @@ class ClusterReport(DocUtils):
         from the model.
     """
 
+    @track_event_usage("cluster_report")
     def __init__(
         self,
         X: Union[list, np.ndarray],
