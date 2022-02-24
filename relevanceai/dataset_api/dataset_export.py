@@ -11,8 +11,8 @@ from relevanceai.utils import introduced_in_version
 
 
 class Export(Read):
+    @lru_cache(maxsize=8)
     @introduced_in_version("1.1.5")
-    @lru_cache(maxsize=1)
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
         """
         Converts a Relevance AI Dataset to a pandas DataFrame.
@@ -42,11 +42,13 @@ class Export(Read):
             raise Exception("No documents found")
 
     def __getattr__(self, attr):
-        df = self.to_pandas_dataframe(show_progress_bar=True)
-        try:
-            return getattr(df, attr)
-        except SyntaxError:
-            raise AttributeError(f"'{attr}' is an invalid attribute")
+        if hasattr(pd.DataFrame, attr):
+            df = self.to_pandas_dataframe(show_progress_bar=True)
+            try:
+                return getattr(df, attr)
+            except SyntaxError:
+                raise AttributeError(f"'{attr}' is an invalid attribute")
+        raise AttributeError(f"'{attr}' is an invalid attribute")
 
     @track
     def to_csv(self, filename: str, **kwargs):

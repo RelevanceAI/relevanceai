@@ -517,7 +517,7 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=8)
     def _get_pandas_series(self):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,
@@ -534,8 +534,10 @@ class Series(BatchAPIClient):
             raise Exception("No documents found")
 
     def __getattr__(self, attr):
-        series = self._get_pandas_series()
-        try:
-            return getattr(series, attr)
-        except SyntaxError:
-            raise AttributeError(f"'{attr}' is an invalid attribute")
+        if hasattr(pd.Series, attr):
+            series = self._get_pandas_series()
+            try:
+                return getattr(series, attr)
+            except SyntaxError:
+                raise AttributeError(f"'{attr}' is an invalid attribute")
+        raise AttributeError(f"'{attr}' is an invalid attribute")
