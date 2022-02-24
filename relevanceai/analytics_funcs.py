@@ -4,6 +4,7 @@ import json
 import os
 from typing import Callable
 
+from base64 import b64decode as decode
 from functools import wraps
 
 from relevanceai.config import CONFIG
@@ -35,7 +36,7 @@ def track(func: Callable):
         try:
             if is_tracking_enabled():
 
-                def send_analytics():
+                async def send_analytics():
                     user_id = args[0].firebase_uid
                     event_name = f"pysdk-{func.__name__}"
                     # kwargs.update(dict(zip(func.__code__.co_varnames, args)))
@@ -86,6 +87,45 @@ def track(func: Callable):
             os.environ[TRANSIT_ENV_VAR] = "FALSE"
 
     return wrapper
+
+
+def track_event_usage(event_name: str):
+    EVENT_NAME = event_name
+    write_key = CONFIG.get_field("mixpanel.write_key", CONFIG.config)
+    analytics.write_key = decode(write_key).decode("utf-8")
+
+    def track(func: Callable):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
+                return func(*args, **kwargs)
+            os.environ[TRANSIT_ENV_VAR] = "TRUE"
+            try:
+                if is_tracking_enabled():
+
+                    async def send_analytics():
+                        user_id = "OPEN_SOURCE_USER"
+                        event_name = f"pysdk-{EVENT_NAME}"
+
+                        if user_id is not None:
+                            # TODO: Loop through the properties and remove anything
+                            # greater than 5kb
+                            response = analytics.track(
+                                user_id=user_id,
+                                event=event_name,
+                            )
+
+                    asyncio.ensure_future(send_analytics())
+            except Exception as e:
+                pass
+            try:
+                return func(*args, **kwargs)
+            finally:
+                os.environ[TRANSIT_ENV_VAR] = "FALSE"
+
+        return wrapper
+
+    return track
 
 
 def identify(func: Callable):
