@@ -578,9 +578,14 @@ class Client(BatchAPIClient, DocUtils):
             client.store_cluster_report("sample", {"value": 3})
 
         """
-        return self.reports.clusters.create(
+        print(
+            f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+        )
+        response = self.reports.clusters.create(
             name=report_name, report=self.json_encoder(report)
         )
 
     def disable_analytics_tracking(self):
         self.config["mixpanel.is_tracking_enabled"] = False
+        return response
+

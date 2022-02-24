@@ -50,7 +50,7 @@ to store it in Relevance AI.
     client = Client()
     response = client.store_cluster_report(
         report_name="kmeans",
-        report=report
+        report=report.internal_report
     )
 
     # Listing all cluster reports 
