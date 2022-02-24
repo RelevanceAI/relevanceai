@@ -70,8 +70,6 @@ class BiasIndicator(DocUtils):
             )
         else:
             fig.suptitle(title)
-        # fig.show()
-        return fig
 
     def _get_bias_title(self, document, metadata_field):
         return f"bias_towards_{self.get_field(metadata_field, document)}"
