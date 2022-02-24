@@ -15,7 +15,7 @@ class BiasIndicator(DocUtils):
         # Use the TanH activation function to prevent blow-up
         return (v[0] - proj[0]) ** 2 - (v[1] - proj[1]) ** 2
 
-    def remove_box_line(self, axes: str, edge: str):
+    def remove_box_line(self, axes, edge: str):
         axes[1].spines["top"].set_visible(False)
 
     def bias_indicator_to_html(
