@@ -517,7 +517,7 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=8)
     def _get_pandas_series(self):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,

@@ -11,8 +11,8 @@ from relevanceai.utils import introduced_in_version
 
 
 class Export(Read):
+    @lru_cache(maxsize=8)
     @introduced_in_version("1.1.5")
-    @lru_cache(maxsize=1)
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
         """
         Converts a Relevance AI Dataset to a pandas DataFrame.
