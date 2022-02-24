@@ -1,5 +1,6 @@
 from typing import List, Dict, Any, Callable
 from doc_utils import DocUtils
+from relevanceai.analytics_funcs import track_event_usage
 
 try:
     import matplotlib.pyplot as plt
@@ -143,6 +144,7 @@ class BiasIndicator(DocUtils):
         # return inner(a, b) / (norm(a) * norm(b))
 
 
+@track_event_usage("bias_indicator")
 def bias_indicator(anchors: List, values: List, model: Callable):
     """
     Simple bias indicator based on vectors.
