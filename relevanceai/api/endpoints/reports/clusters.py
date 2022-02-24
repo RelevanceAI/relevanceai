@@ -2,7 +2,7 @@ from relevanceai.base import _Base
 
 
 class ClusterReportClient(_Base):
-    def create(self, report: dict, name: str):
+    def create(self, report: dict, name: str) -> dict:
         return self.make_http_request(
             "/reports/clusters/create",
             method="POST",
