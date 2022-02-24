@@ -79,6 +79,7 @@ def test_client(test_project, test_api_key, test_firebase_uid):
     # For some reason not resetting to default
     # correct_client_config(client)
     client.config["mixpanel.is_tracking_enabled"] = False
+    client.disable_analytics_tracking()
     yield client
 
     # To avoid flooding backend
@@ -106,6 +107,7 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
     correct_client_config(test_client)
     DATASET_ID = generate_dataset_id()
     df = test_client.Dataset(DATASET_ID)
+    test_client.disable_analytics_tracking()
     results = df.upsert_documents(vector_documents)
     yield results
     df.delete()
@@ -115,6 +117,7 @@ def test_read_df(test_client: Client, vector_documents: List[Dict]):
 def test_csv_df(test_df: Dataset, vector_documents: List[Dict]):
     """Sample csv dataset"""
     test_df.config.reset()
+    test_client.disable_analytics_tracking()
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as csvfile:
         df = pd.DataFrame(vector_documents)
         df.to_csv(csvfile)
