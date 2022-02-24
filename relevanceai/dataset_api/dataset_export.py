@@ -42,11 +42,13 @@ class Export(Read):
             raise Exception("No documents found")
 
     def __getattr__(self, attr):
-        df = self.to_pandas_dataframe(show_progress_bar=True)
-        try:
-            return getattr(df, attr)
-        except SyntaxError:
-            raise AttributeError(f"'{attr}' is an invalid attribute")
+        if hasattr(pd.DataFrame, attr):
+            df = self.to_pandas_dataframe(show_progress_bar=True)
+            try:
+                return getattr(df, attr)
+            except SyntaxError:
+                raise AttributeError(f"'{attr}' is an invalid attribute")
+        raise AttributeError(f"'{attr}' is an invalid attribute")
 
     @track
     def to_csv(self, filename: str, **kwargs):
