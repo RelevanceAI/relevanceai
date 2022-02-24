@@ -541,4 +541,3 @@ class Series(BatchAPIClient):
             except SyntaxError:
                 raise AttributeError(f"'{attr}' is an invalid attribute")
         raise AttributeError(f"'{attr}' is an invalid attribute")
-
