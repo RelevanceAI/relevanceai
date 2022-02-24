@@ -578,6 +578,10 @@ class Client(BatchAPIClient, DocUtils):
             client.store_cluster_report("sample", {"value": 3})
 
         """
-        return self.reports.clusters.create(
+        response = self.reports.clusters.create(
             name=report_name, report=self.json_encoder(report)
         )
+        print(
+            f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+        )
+        return response
