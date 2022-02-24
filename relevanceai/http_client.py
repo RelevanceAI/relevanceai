@@ -584,8 +584,7 @@ class Client(BatchAPIClient, DocUtils):
         response = self.reports.clusters.create(
             name=report_name, report=self.json_encoder(report)
         )
+        return response
 
     def disable_analytics_tracking(self):
         self.config["mixpanel.is_tracking_enabled"] = False
-        return response
-
