@@ -3,6 +3,7 @@ import asyncio
 import json
 import os
 import threading
+import copy
 
 from typing import Callable
 from base64 import b64decode as decode
@@ -79,7 +80,8 @@ def track(func: Callable):
                                 "self"
                             ].dataset_id
 
-                    properties.update(
+                    full_properties = copy.deepcopy(properties)
+                    full_properties.update(
                         {
                             "additional_args": additional_args,
                             "args": args,
@@ -96,19 +98,22 @@ def track(func: Callable):
                             or "fit" in event_name
                             or "predict" in event_name
                             or get_json_size(
-                                json_encoder(properties, force_string=True)
+                                json_encoder(full_properties, force_string=True)
                             )
                             > 30
                         ):
                             response = analytics.track(
                                 user_id=user_id,
                                 event=event_name,
+                                properties=json_encoder(properties, force_string=True),
                             )
                         else:
                             response = analytics.track(
                                 user_id=user_id,
                                 event=event_name,
-                                properties=json_encoder(properties, force_string=True),
+                                properties=json_encoder(
+                                    full_properties, force_string=True
+                                ),
                             )
 
                 send_analytics()
