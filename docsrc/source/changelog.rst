@@ -8,6 +8,7 @@ v1.2.7
 -----------
 
 - Adjust max cache size, from one to eight, of `Dataset.to_pandas_dataframe` and `Series._get_pandas_series`
+- Fix dataset analytics
 
 v1.2.6
 -----------
