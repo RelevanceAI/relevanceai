@@ -67,11 +67,11 @@ def track(func: Callable):
 
                     additional_args = dict(zip(func.__code__.co_varnames, args))
 
-                    properties = {
+                    properties.update({
                         "additional_args": additional_args,
                         "args": args,
                         "kwargs": kwargs,
-                    }
+                    })
                     if user_id is not None:
                         # TODO: Loop through the properties and remove anything
                         # greater than 5kb
