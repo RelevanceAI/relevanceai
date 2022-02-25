@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.8
+-----------
+
+- Add dimensionality reduction for documents
+- Change maximum chunksize to 500
+
 v1.2.7
 -----------
 
