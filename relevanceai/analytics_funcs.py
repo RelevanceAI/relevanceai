@@ -2,8 +2,9 @@ import analytics
 import asyncio
 import json
 import os
-from typing import Callable
+import threading
 
+from typing import Callable
 from base64 import b64decode as decode
 from functools import wraps
 
@@ -22,6 +23,13 @@ def get_json_size(json_obj):
     return len(json.dumps(json_obj).encode("utf-8")) / 1024
 
 
+def fire_and_forget(f):
+    def wrapped():
+        threading.Thread(target=f).start()
+
+    return wrapped
+
+
 TRANSIT_ENV_VAR = "_IS_ANALYTICS_IN_TRANSIT"
 
 
@@ -36,9 +44,21 @@ def track(func: Callable):
         try:
             if is_tracking_enabled():
 
-                async def send_analytics():
-                    user_id = args[0].firebase_uid
+                @fire_and_forget
+                def send_analytics():
+                    properties = {}
+                    if "firebase_uid" in kwargs:
+                        user_id = kwargs["firebase_uid"]
+                    elif hasattr(args[0], "firebase_uid"):
+                        user_id = args[0].firebase_uid
+                    else:
+                        user_id = "firebase_uid_not_detected"
+
+                    if "dataset_id" in kwargs:
+                        properties["dataset_id"] = kwargs["dataset_id"]
+
                     event_name = f"pysdk-{func.__name__}"
+
                     # kwargs.update(dict(zip(func.__code__.co_varnames, args)))
                     # all_kwargs = copy.deepcopy(kwargs)
                     # all_kwargs = all_kwargs.update(
@@ -77,8 +97,8 @@ def track(func: Callable):
                                 properties=json_encoder(properties, force_string=True),
                             )
 
-                # send_analytics()
-                asyncio.ensure_future(send_analytics())
+                send_analytics()
+                # asyncio.ensure_future(send_analytics())
         except Exception as e:
             pass
         try:
