@@ -25,7 +25,7 @@ import copy
 from doc_utils import DocUtils
 
 
-class ReduceDimensionOps(DocUtils):
+class ReduceDimensionsOps(DocUtils):
     def __init__(self, model, alias: str):
         self.model = model
         self.alias = alias
@@ -36,7 +36,10 @@ class ReduceDimensionOps(DocUtils):
         """
         self.fields = fields
         self.documents = documents
-        values = self.get_fields_across_documents(fields, documents)
+        if len(fields) == 1:
+            values = self.get_field_across_documents(fields[0], documents)
+        else:
+            raise ValueError("Supporting multiple fields not supported yet.")
         dr_values = self.model.fit_transform(values)
         if inplace:
             self.set_dr_field_across_documents(fields, dr_values, documents)
@@ -47,7 +50,7 @@ class ReduceDimensionOps(DocUtils):
             return new_documents
 
     def set_dr_field_across_documents(self, fields: list, values, documents):
-        vector_fields_joined = ".".join(fields)
-        field_name = f"_dr_.{vector_fields_joined}.{self.alias}"
+        fields_joined = ".".join(fields)
+        field_name = f"_dr_.{fields_joined}.{self.alias}"
         self.set_field_across_documents(field_name, values, documents)
         return documents
