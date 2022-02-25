@@ -54,9 +54,6 @@ def track(func: Callable):
                     else:
                         user_id = "firebase_uid_not_detected"
 
-                    if "dataset_id" in kwargs:
-                        properties["dataset_id"] = kwargs["dataset_id"]
-
                     event_name = f"pysdk-{func.__name__}"
 
                     # kwargs.update(dict(zip(func.__code__.co_varnames, args)))
@@ -67,11 +64,28 @@ def track(func: Callable):
 
                     additional_args = dict(zip(func.__code__.co_varnames, args))
 
-                    properties.update({
-                        "additional_args": additional_args,
-                        "args": args,
-                        "kwargs": kwargs,
-                    })
+                    if "dataset_id" in kwargs:
+                        properties["dataset_id"] = kwargs["dataset_id"]
+
+                    elif "dataset_id" in additional_args:
+                        properties["dataset_id"] = additional_args["dataset_id"]
+
+                    elif hasattr(args[0], "dataset_id"):
+                        properties["dataset_id"] = args[0].dataset_id
+
+                    elif "self" in additional_args:
+                        if hasattr(additional_args["self"], "dataset_id"):
+                            properties["dataset_id"] = additional_args[
+                                "self"
+                            ].dataset_id
+
+                    properties.update(
+                        {
+                            "additional_args": additional_args,
+                            "args": args,
+                            "kwargs": kwargs,
+                        }
+                    )
                     if user_id is not None:
                         # TODO: Loop through the properties and remove anything
                         # greater than 5kb
