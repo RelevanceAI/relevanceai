@@ -113,13 +113,13 @@ class Operations(Write):
             )
         else:
             new_image_fields = []
-            old_image_fields = []
+            existing_image_vectors = []
             for image_field in image_fields:
                 vector = f"{image_field}_{image_encoder.__name__}_vector_"
                 if vector not in self.schema:
                     new_image_fields.append(image_field)
                 else:
-                    old_image_fields.append(image_field)
+                    existing_image_vectors.append(vector)
                     print(
                         f"Since '{vector}' already exists, its construction will be skipped."
                     )
@@ -142,13 +142,13 @@ class Operations(Write):
             )
         else:
             new_text_fields = []
-            old_text_fields = []
+            existing_text_vectors = []
             for text_field in text_fields:
                 vector = f"{text_field}_{text_encoder.__name__}_vector_"
                 if vector not in self.schema:
                     new_text_fields.append(text_field)
                 else:
-                    old_text_fields.append(text_field)
+                    existing_text_vectors.append(vector)
                     print(
                         f"Since '{vector}' already exists, its construction will be skipped."
                     )
@@ -205,7 +205,7 @@ class Operations(Write):
 
             return {
                 "added_vectors": added_vectors,
-                "skipped_fields": old_image_fields + old_text_fields,
+                "skipped_vectors": existing_image_vectors + existing_text_vectors,
             }
         else:
             print("❗Few errors with vectorizing documents. Please check logs.")
