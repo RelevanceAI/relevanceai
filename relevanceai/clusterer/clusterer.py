@@ -1092,12 +1092,6 @@ class ClusterOps(BatchAPIClient):
         )
 
     @track
-    def fit_predict(self, X):
-        # If dataset, runs fit predict on a dataset
-        # if docs, runs fit predict on a set of document
-        pass
-
-    @track
     def fit_dataset(
         self,
         dataset,
