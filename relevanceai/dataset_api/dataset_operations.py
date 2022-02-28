@@ -1974,6 +1974,28 @@ class Operations(Write):
             # Run minibatch k means clustering with 20 clusters
             clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
+        You can alternatively run this using kmeans.
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+
+            ds = client.Dataset('sample')
+            ds.upsert_documents(mock_documents(100))
+            # Run initial kmeans to get clusters
+            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            # Run separate K Means to get subclusters
+            cluster_ops = ds.auto_cluster(
+                'kmeans-2',
+                vector_fields=["sample_1_vector_"],
+                parent_alias="kmeans-3"
+            )
+
+
         """
         filters = [] if filters is None else filters
 
@@ -2044,12 +2066,20 @@ class Operations(Write):
                 parent_alias=parent_alias,
             )
 
-            clusterer.partial_fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                chunksize=chunksize,
-                filters=filters,
-            )
+            if parent_alias:
+                clusterer.subfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+
+            else:
+                clusterer.partial_fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    chunksize=chunksize,
+                    filters=filters,
+                )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 

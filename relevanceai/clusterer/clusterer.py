@@ -1519,6 +1519,40 @@ class ClusterOps(BatchAPIClient):
             + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
         )
 
+    def subpartial_fit_predict_dataset(
+        self,
+        dataset,
+        vector_fields,
+        chunksize,
+        filters,
+    ):
+        """
+        Fit predict the dataset
+
+        Parameters
+        -------------
+
+        Example
+        -------------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
+
+            cluster_ops.partial_fit_dataset(df)
+            cluster_ops.predict_dataset(df)
+        """
+        # For each unique cluster
+        # Running clustering on that unique subcluster
+        # Then store the appropriate labels
+        pass
+
     @track
     def predict_documents(
         self,
