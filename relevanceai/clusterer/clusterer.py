@@ -1112,8 +1112,8 @@ class ClusterOps(BatchAPIClient):
     def subfit_predict_update(
         self,
         dataset,
-        vector_fields: list = None,
-        filters: list = None,
+        vector_fields: Optional[List] = None,
+        filters: Optional[List] = None,
         verbose: bool = False,
     ):
         filters = [] if filters is None else filters
@@ -1243,7 +1243,7 @@ class ClusterOps(BatchAPIClient):
 
     def subfit_predict_documents(
         self,
-        vector_fields: List,
+        vector_fields: Optional[List] = None,
         filters: Optional[List] = None,
         cluster_ids: Optional[List] = None,
         verbose: bool = True,
@@ -1577,7 +1577,7 @@ class ClusterOps(BatchAPIClient):
         dataset: Union[Dataset, str],
         vector_fields: Optional[List[str]] = None,
         chunksize: int = 100,
-        filters: list = [],
+        filters: Optional[List] = None,
         verbose: bool = True,
     ):
         """
@@ -1618,6 +1618,7 @@ class ClusterOps(BatchAPIClient):
 
         """
         vector_fields = [] if vector_fields is None else vector_fields
+        filters = [] if filters is None else filters
 
         print("Fitting dataset...")
         self.partial_fit_dataset(
