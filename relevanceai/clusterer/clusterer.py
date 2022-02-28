@@ -1073,7 +1073,7 @@ class ClusterOps(BatchAPIClient):
         fields_to_get = vector_fields.copy()
         if self.parent_alias:
             parent_field = self._get_cluster_field_name(self.parent_alias)
-            fields_to_get += [parent_field]
+            fields_to_get.append(parent_field)
 
         print("Fitting and predicting on all documents")
         docs = self._get_all_documents(
@@ -1166,8 +1166,8 @@ class ClusterOps(BatchAPIClient):
         self,
         dataset,
         vector_fields: list,
-        filters: list = None,
-        cluster_ids: list = None,
+        filters: Optional[list] = None,
+        cluster_ids: Optional[list] = None,
         verbose: bool = True,
     ):
         """
@@ -1189,6 +1189,21 @@ class ClusterOps(BatchAPIClient):
 
         .. code-block::
 
+            from relevanceai import Client
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+            ds = client.Dataset("sample")
+            # Creates 100 sample documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=10)
+            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer.subpartialfit_predict_update(
+                dataset=ds,
+            )
 
         """
         # Get data
@@ -1228,11 +1243,47 @@ class ClusterOps(BatchAPIClient):
 
     def subfit_predict_documents(
         self,
-        vector_fields,
-        filters: list,
-        cluster_ids: list = None,
+        vector_fields: List,
+        filters: Optional[List] = None,
+        cluster_ids: Optional[List] = None,
         verbose: bool = True,
     ):
+        """
+        Subclustering using fit predict update. This will loop through all of the
+        different clusters and then run subclustering on them. For this, you need to
+
+        Parameters
+        ------------
+
+        Example
+        ---------
+
+        ..code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+
+            # Creating 100 sample documents
+            from relevanceai.datasets import mock_documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            # Run simple clustering first
+            ds.auto_cluster("kmeans-3", vector_fields=["sample_1_vector_"])
+
+            # Start KMeans
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=20)
+
+            # Run subclustering.
+            cluster_ops = client.ClusterOps(
+                alias="subclusteringkmeans",
+                model=model,
+                parent_alias="kmeans-3")
+
+
+        """
         filters = [] if filters is None else filters
         cluster_ids = [] if cluster_ids is None else cluster_ids
         # Loop through each unique cluster ID and run clustering
