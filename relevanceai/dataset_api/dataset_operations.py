@@ -2279,6 +2279,11 @@ class Operations(Write):
             filters=filters,
         )
 
+        print(
+            "Build your clustering app here: "
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
+
         return {"outcome": "success"}
 
     @track
