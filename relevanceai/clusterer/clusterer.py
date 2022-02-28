@@ -1186,11 +1186,14 @@ class ClusterOps(BatchAPIClient):
 
         Example
         ----------
+
         .. code-block::
 
 
         """
         # Get data
+
+        self._init_dataset(dataset)
 
         filters = [] if filters is None else filters
         cluster_ids = [] if cluster_ids is None else cluster_ids
@@ -1214,7 +1217,6 @@ class ClusterOps(BatchAPIClient):
                 dataset=self.dataset_id,
                 vector_fields=vector_fields,
                 filters=cluster_filters,
-                include_grade=False,
                 verbose=False,
             )
 
@@ -1525,6 +1527,7 @@ class ClusterOps(BatchAPIClient):
         vector_fields: Optional[List[str]] = None,
         chunksize: int = 100,
         filters: list = [],
+        verbose: bool = True,
     ):
         """
         Fit, predict and update on a dataset.
@@ -1580,57 +1583,11 @@ class ClusterOps(BatchAPIClient):
                 self.get_centroid_documents(), dataset=dataset
             )
 
-        print(
-            "Build your clustering app here: "
-            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-        )
-
-    def subpartial_fit_predict_dataset(
-        self,
-        dataset,
-        vector_fields: list,
-        chunksize: int,
-        filters: list,
-    ):
-        """
-        Fit predict the dataset
-
-        Parameters
-        -------------
-
-        dataset
-
-        vector_fields: list
-            A list of vector fields
-
-        chunksize: int
-            The size of the chunks
-
-        filters: list
-            The list of filters to fit on a dAataset
-
-        Example
-        -------------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-
-            from sklearn.cluster import MiniBatchKMeans
-            model = MiniBatchKMeans(n_clusters=2)
-            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
-
-            cluster_ops.partial_fit_dataset(df)
-            cluster_ops.predict_dataset(df)
-
-        """
-        # For each unique cluster
-        # Running partial clustering on that unique subcluster
-        # Then store the appropriate labels
-
-        pass
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
 
     @track
     def predict_documents(

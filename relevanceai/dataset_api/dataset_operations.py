@@ -2067,6 +2067,7 @@ class Operations(Write):
             )
 
             if parent_alias:
+                print("subpartial fit...")
                 clusterer.subpartialfit_predict_update(
                     dataset=self,
                     vector_fields=vector_fields,
