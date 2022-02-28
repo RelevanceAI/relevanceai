@@ -4,10 +4,12 @@ from relevanceai.http_client import Dataset
 
 from .utils import VECTOR_FIELDS
 
+ORIGINAL_ALIAS = "minibatchkmeans-3"
+
 
 @pytest.fixture(scope="function")
 def minibatch_clusterer(test_df: Dataset):
-    clusterer = test_df.auto_cluster("minibatchkmeans-3", vector_fields=VECTOR_FIELDS)
+    clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
     yield clusterer
     clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
 
@@ -19,7 +21,7 @@ def minibatch_subclusterer(test_df: Dataset):
     clusterer = test_df.auto_cluster(
         ALIAS,
         vector_fields=VECTOR_FIELDS,
-        parent_alias="minibatchkmeans-3",
+        parent_alias=ORIGINAL_ALIAS,
     )
     yield test_df, ALIAS
     clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
@@ -32,7 +34,7 @@ def kmeans_subclusterer(test_df: Dataset):
     clusterer = test_df.auto_cluster(
         ALIAS,
         vector_fields=VECTOR_FIELDS,
-        parent_alias="minibatchkmeans-3",
+        parent_alias=ORIGINAL_ALIAS,
     )
     yield test_df, ALIAS
-    clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
+    # clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
