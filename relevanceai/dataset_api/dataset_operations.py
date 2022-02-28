@@ -258,6 +258,125 @@ class Operations(Write):
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
+    def community_detection(
+        self,
+        field: str,
+        model=None,
+        retrieval_kwargs: Optional[dict] = None,
+        encode_kwargs: Optional[dict] = None,
+        threshold: float = 0.75,
+        min_community_size: int = 10,
+        init_max_size: int = 1000,
+    ):
+        """
+        Parameters
+        ----------
+        field: str
+            The field
+
+        model
+            A model for computing sentence embeddings
+
+        retrieval_kwargs: Optional[dict]
+            Keyword arguments for `get_documents` call. See respective
+            details for argument details.
+
+        encode_kwargs: Optional[dict]
+            Keyword arguments for the provide model's `encode` call. See
+            respective method for argument details.
+
+        threshold: float
+
+        min_community_size: int
+            The minimum size of a community. Only communities that are larger
+            than this value are returned, and the first element of each
+            community is treated as the central point.
+
+        init_max_size: int
+            The maximum size of a community. If the corpus is larger than this
+            value, that is set to the maximum size.
+        """
+        if field in self.schema:
+            if not self.schema[field] == "text":
+                raise ValueError("The field must be a 'text' type")
+        else:
+            raise ValueError(f"{field} does not exist in the dataset")
+
+        try:
+            with FileLogger("logging.txt"):
+                from sentence_transformers.util import community_detection
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "community_detection function not found. "
+                "Please install sentence-transformers with `python -m "
+                "pip install -U sentence-transformers` to install "
+                "community_detection."
+            )
+
+        retrieval_kwargs = {} if retrieval_kwargs is None else retrieval_kwargs
+        encode_kwargs = {} if encode_kwargs is None else encode_kwargs
+
+        if model is None:
+            from sentence_transformers import SentenceTransformer
+
+            model = SentenceTransformer("all-MiniLM-L6-v2")
+            # encode defaults:
+            #  batch_size: int = 32
+            #  show_progress_bar: bool = None
+            #  output_value: str = 'sentence_embedding'
+            #  convert_to_numpy: bool = True
+            #  convert_to_Tensor: bool = False
+            #  device: str = None
+            #  normalize_embeddings: bool = False
+
+        print("Retrieving documents...")
+        documents = self.get_all_documents(
+            select_fields=[field],
+            **{
+                key: value
+                for key, value in retrieval_kwargs.items()
+                if key != "select_fields"
+            },
+        )
+        print("Documents retrieved.")
+
+        sentences = set()
+        for document in documents:
+            sentences.add(document[field])
+
+        # Storing a mapping like this is fine because when the values are
+        # made a list below, they will be a list in the same order as inserted
+        # in the dictionary.
+        corpus_sentences = {}
+        for i, sentence in enumerate(sentences):
+            corpus_sentences[i] = sentence
+
+        print("Encoding the corpus...")
+        corpus_embeddings = model.encode(
+            sentences=list(corpus_sentences.values()),
+            **{
+                key: value for key, value in encode_kwargs.items() if key != "sentences"
+            },
+        )
+        print("Encoding complete.")
+
+        print("Community detection started...")
+        clusters = community_detection(
+            embeddings=corpus_embeddings,
+            threshold=threshold,
+            min_community_size=min_community_size,
+            init_max_size=init_max_size,
+        )
+        print("Community detection complete.")
+
+        communities = {}
+        for i, cluster in enumerate(clusters):
+            communities[f"community-{i+1}"] = list(
+                map(lambda _: corpus_sentences[_], cluster)
+            )
+
+        return communities
+
     @track
     def label_vector(
         self,

@@ -7,6 +7,7 @@ import pytest
 from relevanceai.clusterer import kmeans_clusterer
 from relevanceai.http_client import Dataset, Client, ClusterOps
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby
+from relevanceai.vector_tools.cluster import ClusterBase
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -68,3 +69,22 @@ def test_agg_std(test_clusterer: ClusterOps):
     groupby_agg = cluster_groupby.agg({"sample_2_value": "std_deviation"})
     assert isinstance(groupby_agg, dict)
     assert len(groupby_agg) > 0
+
+
+def test_fit_predict(test_client: Client, vector_dataset_id: str):
+    import random
+
+    class CustomClusterModel(ClusterBase):
+        def fit_predict(self, X):
+            cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
+            return cluster_labels
+
+    model = CustomClusterModel()
+
+    df = test_client.Dataset(vector_dataset_id)
+    clusterer = test_client.ClusterOps(
+        alias="random_clustering",
+        model=model,
+    )
+    clusterer.fit_predict(df, vector_fields=["sample_1_vector_"])
+    assert "_cluster_.sample_1_vector_.random_clustering" in df.schema
