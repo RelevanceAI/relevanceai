@@ -1124,7 +1124,7 @@ class ClusterOps(BatchAPIClient):
         )
 
         self._init_dataset(dataset)
-        self.vector_fields = vector_fields #type: ignore
+        self.vector_fields = vector_fields  # type: ignore
 
         # make sure to only get fields where vector fields exist
         filters += [
@@ -1134,7 +1134,7 @@ class ClusterOps(BatchAPIClient):
                 "condition": "==",
                 "condition_value": " ",
             }
-            for f in vector_fields #type: ignore
+            for f in vector_fields  # type: ignore
         ]
 
         print("Fitting and predicting on all documents")
