@@ -2087,12 +2087,14 @@ class Operations(Write):
         chunksize: int = 1024,
         filters: Optional[list] = None,
         text_encoder=None,
-    ) -> None:
+    ) -> dict:
         """
+        Convenient way to vectorize and cluster text fields.
+
         Parameters
         ----------
         text_fields: List[str]
-            A list of text fields to cluster on
+            A list of text fields to vectorize and cluster
 
         alias: str
             The name of the clustring application. The alias is required to
@@ -2109,24 +2111,56 @@ class Operations(Write):
         text_encoder:
             A deep learning text encoder from the vectorhub library. If no
             encoder is specified, a default encoder (USE2Vec) is loaded.
+
+        Returns
+        -------
+        A dictionary indicating the outcome status
+
+        Example
+        -------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            ds = client.Dataset("sample_dataset_id")
+
+            ds.auto_text_cluster_dashboard(text_fields=["sample_text_field"])
+
         """
         filters = [] if filters is None else filters
 
-        # TODO: modify Dataset.vectorize to check model.get_default_vector_field_name
+        fields = []
+        for field in text_fields:
+            try:
+                if not "text" == self.schema[field]:
+                    fields.append(field)
+            except KeyError:
+                raise KeyError(f"'{field}' is an invalid field")
+        else:
+            if fields:
+                raise ValueError(
+                    "The following fields are not text fields: " f"{', '.join(fields)}"
+                )
 
         results = self.vectorize(text_fields=text_fields, text_encoder=text_encoder)
         if "added_vectors" not in results:
-            # If there were errors in vecotrizing, then quit immediately
-            return None
+            # If there were errors in vectorizing, then quit immediately and return errors
+            return results
 
         new_vectors = results["added_vectors"]
+        existing_vectors = results["skipped_vectors"]
 
-        clusterer = self.auto_cluster(
+        self.auto_cluster(
             alias=alias,
-            vector_fields=new_vectors,
+            vector_fields=new_vectors + existing_vectors,
             chunksize=chunksize,
             filters=filters,
         )
+
+        return {"outcome": "success"}
 
     @track
     def aggregate(
