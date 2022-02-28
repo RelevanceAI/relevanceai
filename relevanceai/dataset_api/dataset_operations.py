@@ -257,6 +257,7 @@ class Operations(Write):
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
+    @beta
     def community_detection(
         self,
         field: str,
@@ -266,15 +267,15 @@ class Operations(Write):
         threshold: float = 0.75,
         min_community_size: int = 10,
         init_max_size: int = 1000,
-    ):
+    ) -> dict:
         """
         Parameters
         ----------
         field: str
-            The field
+            The field over which to find communities. Must be of type "text".
 
         model
-            A model for computing sentence embeddings
+            A model for computing sentence embeddings.
 
         retrieval_kwargs: Optional[dict]
             Keyword arguments for `get_documents` call. See respective
@@ -285,6 +286,8 @@ class Operations(Write):
             respective method for argument details.
 
         threshold: float
+            A lower limit of similarity that determines whether two embeddings
+            are similar or not.
 
         min_community_size: int
             The minimum size of a community. Only communities that are larger
@@ -294,6 +297,24 @@ class Operations(Write):
         init_max_size: int
             The maximum size of a community. If the corpus is larger than this
             value, that is set to the maximum size.
+
+        Returns
+        -------
+        A dictionary of communities
+
+        Example
+        -------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            ds = client.Dataset("sample_dataset_id")
+
+            communities = ds.community_detection("sample_text_field")
+
         """
         if field in self.schema:
             if not self.schema[field] == "text":
