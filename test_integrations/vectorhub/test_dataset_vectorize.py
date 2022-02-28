@@ -7,6 +7,9 @@ def test_dataset_vectorize(test_dataset: Dataset):
     assert "image_url_clip_vector_" in test_dataset.schema
     assert "data_use_vector_" in test_dataset.schema
 
+    results = test_dataset.vectorize(image_fields=["image_url"])
+    assert "image_url_clip_vector_" in results["skipped_vectors"]
+
 
 def test_dataset_auto_text_cluster_dashboard(test_dataset: Dataset):
     alias = "kmeans-3"

@@ -30,7 +30,7 @@ class Operations(Write):
         text_fields: Optional[List[str]] = None,
         image_encoder=None,
         text_encoder=None,
-    ):
+    ) -> dict:
         """
         Parameters
         ----------
@@ -258,6 +258,7 @@ class Operations(Write):
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
 
+    @beta
     def community_detection(
         self,
         field: str,
@@ -267,15 +268,17 @@ class Operations(Write):
         threshold: float = 0.75,
         min_community_size: int = 10,
         init_max_size: int = 1000,
-    ):
+    ) -> dict:
         """
+        Performs community detection on a text field.
+
         Parameters
         ----------
         field: str
-            The field
+            The field over which to find communities. Must be of type "text".
 
         model
-            A model for computing sentence embeddings
+            A model for computing sentence embeddings.
 
         retrieval_kwargs: Optional[dict]
             Keyword arguments for `get_documents` call. See respective
@@ -286,6 +289,8 @@ class Operations(Write):
             respective method for argument details.
 
         threshold: float
+            A lower limit of similarity that determines whether two embeddings
+            are similar or not.
 
         min_community_size: int
             The minimum size of a community. Only communities that are larger
@@ -295,6 +300,24 @@ class Operations(Write):
         init_max_size: int
             The maximum size of a community. If the corpus is larger than this
             value, that is set to the maximum size.
+
+        Returns
+        -------
+        A dictionary of communities
+
+        Example
+        -------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            ds = client.Dataset("sample_dataset_id")
+
+            communities = ds.community_detection("sample_text_field")
+
         """
         if field in self.schema:
             if not self.schema[field] == "text":
@@ -1153,7 +1176,7 @@ class Operations(Write):
             try:
                 import rake_nltk
             except ModuleNotFoundError:
-                raise ModuleNotFoundError("Run `pip install nltk-rake`.")
+                raise ModuleNotFoundError("Run `pip install rake-nltk`.")
         elif algorithm == "nltk":
             try:
                 import nltk
@@ -2079,6 +2102,7 @@ class Operations(Write):
         vector_fields: List[str],
         chunksize: int = 1024,
         filters: Optional[list] = None,
+        parent_alias: Optional[str] = None,
     ):
         """
         Automatically cluster in 1 line of code.
@@ -2092,6 +2116,9 @@ class Operations(Write):
         after the dash like `kmeans-8` or `minibatchkmeans-50`.
 
         Under the hood, it uses scikit learn defaults or best practices.
+
+        This returns a ClusterOps object and is a wrapper on top of
+        `ClusterOps`.
 
         Parameters
         ----------
@@ -2127,6 +2154,28 @@ class Operations(Write):
             # Run minibatch k means clustering with 20 clusters
             clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
+        You can alternatively run this using kmeans.
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+
+            ds = client.Dataset('sample')
+            ds.upsert_documents(mock_documents(100))
+            # Run initial kmeans to get clusters
+            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            # Run separate K Means to get subclusters
+            cluster_ops = ds.auto_cluster(
+                'kmeans-2',
+                vector_fields=["sample_1_vector_"],
+                parent_alias="kmeans-3"
+            )
+
+
         """
         filters = [] if filters is None else filters
 
@@ -2161,13 +2210,21 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
-            clusterer.fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                include_grade=True,
-                filters=filters,
-            )
+            if parent_alias:
+                clusterer.subfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+            else:
+                clusterer.fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    include_grade=True,
+                    filters=filters,
+                )
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
@@ -2186,14 +2243,24 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
 
-            clusterer.partial_fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                chunksize=chunksize,
-                filters=filters,
-            )
+            if parent_alias:
+                print("subpartial fit...")
+                clusterer.subpartialfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+
+            else:
+                clusterer.partial_fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    chunksize=chunksize,
+                    filters=filters,
+                )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
