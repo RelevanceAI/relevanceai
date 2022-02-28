@@ -269,6 +269,8 @@ class Operations(Write):
         init_max_size: int = 1000,
     ) -> dict:
         """
+        Performs community detection on a text field.
+
         Parameters
         ----------
         field: str
