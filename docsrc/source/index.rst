@@ -37,7 +37,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :caption: Dimensionality Reduction
 
    auto_reduce_dimensions
-
+   relevanceai.dim_reduction_ops.rst
 
 .. toctree::
    :maxdepth: 4

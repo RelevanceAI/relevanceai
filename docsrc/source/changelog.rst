@@ -4,10 +4,17 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.2.8
+-----------
+
+- Add dimensionality reduction for documents
+- Change maximum chunksize to 500
+
 v1.2.7
 -----------
 
 - Adjust max cache size, from one to eight, of `Dataset.to_pandas_dataframe` and `Series._get_pandas_series`
+- Fix dataset analytics
 
 v1.2.6
 -----------
