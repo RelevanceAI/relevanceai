@@ -999,7 +999,7 @@ class Operations(Write):
             try:
                 import rake_nltk
             except ModuleNotFoundError:
-                raise ModuleNotFoundError("Run `pip install nltk-rake`.")
+                raise ModuleNotFoundError("Run `pip install rake-nltk`.")
         elif algorithm == "nltk":
             try:
                 import nltk
@@ -2067,7 +2067,7 @@ class Operations(Write):
             )
 
             if parent_alias:
-                clusterer.subfit_predict_update(
+                clusterer.subpartialfit_predict_update(
                     dataset=self,
                     vector_fields=vector_fields,
                     filters=filters,

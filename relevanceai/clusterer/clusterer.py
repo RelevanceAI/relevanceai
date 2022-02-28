@@ -46,6 +46,8 @@ from doc_utils import DocUtils
 
 from relevanceai.vector_tools.cluster import Cluster
 
+from tqdm.auto import tqdm
+
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
 <b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
@@ -1160,6 +1162,68 @@ class ClusterOps(BatchAPIClient):
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
 
+    def subpartialfit_predict_update(
+        self,
+        dataset,
+        vector_fields: list,
+        filters: list = None,
+        cluster_ids: list = None,
+        verbose: bool = True,
+    ):
+        """
+
+        Retrieve all the documents.
+
+        Parameters
+        ------------
+
+        dataset: Dataset
+            The dataset to call fit predict update on
+        vector_fields: list
+            The list of vector fields
+        filters: list
+            The list of filters
+
+        Example
+        ----------
+        .. code-block::
+
+
+        """
+        # Get data
+
+        filters = [] if filters is None else filters
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        # Loop through each unique cluster ID and run clustering
+        parent_field = self._get_cluster_field_name(self.parent_alias)
+
+        print("Getting unique cluster IDs...")
+        unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+
+        for i, unique_cluster in enumerate(tqdm(unique_clusters)):
+            cluster_filters = filters.copy()
+            cluster_filters += [
+                {
+                    "field": parent_field,
+                    "filter_type": "category",
+                    "condition": "==",
+                    "condition_value": unique_cluster,
+                }
+            ]
+            self.partial_fit_predict_update(
+                dataset=self.dataset_id,
+                vector_fields=vector_fields,
+                filters=cluster_filters,
+                include_grade=False,
+                verbose=False,
+            )
+
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
     def subfit_predict_documents(
         self,
         vector_fields,
@@ -1171,10 +1235,12 @@ class ClusterOps(BatchAPIClient):
         cluster_ids = [] if cluster_ids is None else cluster_ids
         # Loop through each unique cluster ID and run clustering
         parent_field = self._get_cluster_field_name(self.parent_alias)
-        from tqdm.auto import tqdm
 
         print("Getting unique cluster IDs...")
-        unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+        if not cluster_ids:
+            unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+        else:
+            unique_clusters = cluster_ids
 
         for i, unique_cluster in enumerate(tqdm(unique_clusters)):
             cluster_filters = filters.copy()
@@ -1522,15 +1588,26 @@ class ClusterOps(BatchAPIClient):
     def subpartial_fit_predict_dataset(
         self,
         dataset,
-        vector_fields,
-        chunksize,
-        filters,
+        vector_fields: list,
+        chunksize: int,
+        filters: list,
     ):
         """
         Fit predict the dataset
 
         Parameters
         -------------
+
+        dataset
+
+        vector_fields: list
+            A list of vector fields
+
+        chunksize: int
+            The size of the chunks
+
+        filters: list
+            The list of filters to fit on a dAataset
 
         Example
         -------------
@@ -1547,10 +1624,12 @@ class ClusterOps(BatchAPIClient):
 
             cluster_ops.partial_fit_dataset(df)
             cluster_ops.predict_dataset(df)
+
         """
         # For each unique cluster
-        # Running clustering on that unique subcluster
+        # Running partial clustering on that unique subcluster
         # Then store the appropriate labels
+
         pass
 
     @track
