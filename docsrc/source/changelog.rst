@@ -4,8 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v1.2.9
+
+v1.3.0
 -----------
+
+- Add support for subclustering
 - Add community detection algorithm `Dataset.community_detection`
 - Update `Dataset.vectorize` to ignore already-vectorized fields and modified output to include those vector names
 

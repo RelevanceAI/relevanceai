@@ -1175,7 +1175,7 @@ class Operations(Write):
             try:
                 import rake_nltk
             except ModuleNotFoundError:
-                raise ModuleNotFoundError("Run `pip install nltk-rake`.")
+                raise ModuleNotFoundError("Run `pip install rake-nltk`.")
         elif algorithm == "nltk":
             try:
                 import nltk
@@ -2101,6 +2101,7 @@ class Operations(Write):
         vector_fields: List[str],
         chunksize: int = 1024,
         filters: Optional[list] = None,
+        parent_alias: Optional[str] = None,
     ):
         """
         Automatically cluster in 1 line of code.
@@ -2114,6 +2115,9 @@ class Operations(Write):
         after the dash like `kmeans-8` or `minibatchkmeans-50`.
 
         Under the hood, it uses scikit learn defaults or best practices.
+
+        This returns a ClusterOps object and is a wrapper on top of
+        `ClusterOps`.
 
         Parameters
         ----------
@@ -2149,6 +2153,28 @@ class Operations(Write):
             # Run minibatch k means clustering with 20 clusters
             clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
+        You can alternatively run this using kmeans.
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+
+            ds = client.Dataset('sample')
+            ds.upsert_documents(mock_documents(100))
+            # Run initial kmeans to get clusters
+            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            # Run separate K Means to get subclusters
+            cluster_ops = ds.auto_cluster(
+                'kmeans-2',
+                vector_fields=["sample_1_vector_"],
+                parent_alias="kmeans-3"
+            )
+
+
         """
         filters = [] if filters is None else filters
 
@@ -2183,13 +2209,21 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
-            clusterer.fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                include_grade=True,
-                filters=filters,
-            )
+            if parent_alias:
+                clusterer.subfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+            else:
+                clusterer.fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    include_grade=True,
+                    filters=filters,
+                )
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
@@ -2208,14 +2242,24 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
 
-            clusterer.partial_fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                chunksize=chunksize,
-                filters=filters,
-            )
+            if parent_alias:
+                print("subpartial fit...")
+                clusterer.subpartialfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+
+            else:
+                clusterer.partial_fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    chunksize=chunksize,
+                    filters=filters,
+                )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
