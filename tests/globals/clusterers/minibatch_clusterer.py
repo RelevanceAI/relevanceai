@@ -13,11 +13,26 @@ def minibatch_clusterer(test_df: Dataset):
 
 
 @pytest.fixture(scope="function")
-def minibatch_subclustering(test_df: Dataset):
+def minibatch_subclusterer(test_df: Dataset):
+    # Running batch k means after clustering
+    ALIAS = "minibatchkmeans-4"
     clusterer = test_df.auto_cluster(
-        "minibatchkmeans-4",
+        ALIAS,
         vector_fields=VECTOR_FIELDS,
         parent_alias="minibatchkmeans-3",
     )
-    yield test_df
+    yield test_df, ALIAS
+    clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
+
+
+@pytest.fixture(scope="function")
+def kmeans_subclusterer(test_df: Dataset):
+    # Running K Means after clustering
+    ALIAS = "kmeans-4"
+    clusterer = test_df.auto_cluster(
+        ALIAS,
+        vector_fields=VECTOR_FIELDS,
+        parent_alias="minibatchkmeans-3",
+    )
+    yield test_df, ALIAS
     clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
