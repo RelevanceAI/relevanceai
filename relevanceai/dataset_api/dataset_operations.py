@@ -1925,6 +1925,7 @@ class Operations(Write):
         vector_fields: List[str],
         chunksize: int = 1024,
         filters: Optional[list] = None,
+        parent_alias: Optional[str] = None,
     ):
         """
         Automatically cluster in 1 line of code.
@@ -2007,13 +2008,21 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
-            clusterer.fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                include_grade=True,
-                filters=filters,
-            )
+            if parent_alias:
+                clusterer.subfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+            else:
+                clusterer.fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    include_grade=True,
+                    filters=filters,
+                )
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
@@ -2032,6 +2041,7 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
 
             clusterer.partial_fit_predict_update(
@@ -2087,3 +2097,42 @@ class Operations(Write):
             page=page,
             asc=asc,
         )
+
+    def subcluster(
+        self,
+        parent_alias: str,
+        alias: str,
+        cluster_ids: list = None,
+        vector_fields: list = None,
+        chunksize: int = 1024,
+        filters: Optional[list] = None,
+    ):
+        """
+        Clustering within clusters.
+
+        Steps:
+
+            1. Get the parent alias.
+            2. Get the values from the alias
+            3. Get Cluster IDs from the parent alias
+
+        Parameters
+        ---------------
+        alias: str
+            The alias to use for clustering
+        cluster_ids: list
+            The list of cluster IDS you want to subcluster. If None, it will cluster for all of them
+        vector_fields: list
+            The list of vector fields to supply
+        """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        vector_fields = [] if vector_fields is None else vector_fields
+        filters = [] if filters is None else filters
+
+        if not alias.startswith("sub"):
+            return alias.startswith("sub")
+        else:
+            # Running Clustering using the model
+            return self.auto_cluster(
+                parent_alias=parent_alias, alias=alias, chunksize=chunksize
+            )
