@@ -1116,6 +1116,45 @@ class ClusterOps(BatchAPIClient):
         filters: Optional[List] = None,
         verbose: bool = False,
     ):
+        """
+
+        Run subclustering on your dataset using an in-memory clustering algorithm.
+
+        Parameters
+        --------------
+
+        dataset: Dataset
+            The dataset to create
+        vector_fields: List
+            The list of vector fields to run fitting, prediction and updating on
+        filters: Optional[List]
+            The list of filters to run clustering on
+        verbose: bool
+            If True, this should be verbose
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+            ds = client.Dataset("sample")
+
+            # Creates 100 sample documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=10)
+            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer.subfit_predict_update(
+                dataset=ds,
+            )
+
+        """
         filters = [] if filters is None else filters
 
         # load the documents
@@ -1172,7 +1211,7 @@ class ClusterOps(BatchAPIClient):
     ):
         """
 
-        Retrieve all the documents.
+        Run partial fit subclustering on your dataset.
 
         Parameters
         ------------

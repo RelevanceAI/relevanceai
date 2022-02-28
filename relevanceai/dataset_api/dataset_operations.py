@@ -2059,6 +2059,9 @@ class Operations(Write):
 
         Under the hood, it uses scikit learn defaults or best practices.
 
+        This returns a ClusterOps object and is a wrapper on top of
+        `ClusterOps`.
+
         Parameters
         ----------
         alias : str
