@@ -18,6 +18,7 @@ def minibatch_clusterer(test_df: Dataset):
 def minibatch_subclusterer(test_df: Dataset):
     # Running batch k means after clustering
     ALIAS = "minibatchkmeans-4"
+    clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
     clusterer = test_df.auto_cluster(
         ALIAS,
         vector_fields=VECTOR_FIELDS,
@@ -31,6 +32,7 @@ def minibatch_subclusterer(test_df: Dataset):
 def kmeans_subclusterer(test_df: Dataset):
     # Running K Means after clustering
     ALIAS = "kmeans-4"
+    clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
     clusterer = test_df.auto_cluster(
         ALIAS,
         vector_fields=VECTOR_FIELDS,
