@@ -7,6 +7,7 @@ Python library.
 v1.2.9
 -----------
 - Add community detection algorithm `Dataset.community_detection`
+- Update `Dataset.vectorize` to ignore already-vectorized fields and modified output to include those vector names
 
 v1.2.8
 -----------

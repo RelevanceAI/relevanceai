@@ -29,7 +29,7 @@ class Operations(Write):
         text_fields: Optional[List[str]] = None,
         image_encoder=None,
         text_encoder=None,
-    ):
+    ) -> dict:
         """
         Parameters
         ----------
@@ -110,6 +110,18 @@ class Operations(Write):
             raise AttributeError(
                 f"{image_encoder} is missing attribute 'encode_documents'"
             )
+        else:
+            new_image_fields = []
+            existing_image_vectors = []
+            for image_field in image_fields:
+                vector = f"{image_field}_{image_encoder.__name__}_vector_"
+                if vector not in self.schema:
+                    new_image_fields.append(image_field)
+                else:
+                    existing_image_vectors.append(vector)
+                    print(
+                        f"Since '{vector}' already exists, its construction will be skipped."
+                    )
 
         if text_fields and text_encoder is None:
             try:
@@ -127,51 +139,73 @@ class Operations(Write):
             raise AttributeError(
                 f"{text_encoder} is missing attribute 'encode_documents'"
             )
+        else:
+            new_text_fields = []
+            existing_text_vectors = []
+            for text_field in text_fields:
+                vector = f"{text_field}_{text_encoder.__name__}_vector_"
+                if vector not in self.schema:
+                    new_text_fields.append(text_field)
+                else:
+                    existing_text_vectors.append(vector)
+                    print(
+                        f"Since '{vector}' already exists, its construction will be skipped."
+                    )
 
-        def dual_encoder_function(documents):
-            updated_documents = []
-            if image_encoder is not None:
-                updated_documents.extend(
-                    image_encoder.encode_documents(image_fields, documents)
-                )
-            if text_encoder is not None:
-                updated_documents.extend(
-                    text_encoder.encode_documents(text_fields, documents)
-                )
+        if new_image_fields or new_text_fields:
 
-            return updated_documents
+            def dual_encoder_function(documents):
+                updated_documents = []
+                if image_encoder is not None:
+                    updated_documents.extend(
+                        image_encoder.encode_documents(new_image_fields, documents)
+                    )
+                if text_encoder is not None:
+                    updated_documents.extend(
+                        text_encoder.encode_documents(new_text_fields, documents)
+                    )
 
-        old_schema = self.schema.keys()
+                return updated_documents
 
-        results = self.pull_update_push(
-            self.dataset_id,
-            dual_encoder_function,
-            select_fields=fields,
-            filters=[
-                {
-                    "field": field,
-                    "filter_type": "exists",
-                    "condition": "==",
-                    "condition_value": " ",
-                    "strict": "must_or",
-                }
-                for field in fields
-            ],
-        )
+            old_schema = self.schema.keys()
 
-        new_schema = self.schema.keys()
+            results = self.pull_update_push(
+                self.dataset_id,
+                dual_encoder_function,
+                select_fields=fields,
+                filters=[
+                    {
+                        "field": field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                        "strict": "must_or",
+                    }
+                    for field in fields
+                ],
+            )
 
-        if not results["failed_documents"]:
-            print("✅ All documents inserted/edited successfully.")
+            new_schema = self.schema.keys()
 
             added_vectors = list(new_schema - old_schema)
+        else:
+            results = {"failed_documents": []}
+            added_vectors = []
+
+        if not results["failed_documents"]:
+            if added_vectors:
+                print("✅ All documents inserted/edited successfully.")
+
             if len(added_vectors) == 1:
                 text = "The following vector was added: "
             else:
                 text = "The following vectors were added: "
             print(text + ", ".join(added_vectors))
 
-            return {"added_vectors": added_vectors}
+            return {
+                "added_vectors": added_vectors,
+                "skipped_vectors": existing_image_vectors + existing_text_vectors,
+            }
         else:
             print("❗Few errors with vectorizing documents. Please check logs.")
             return results
