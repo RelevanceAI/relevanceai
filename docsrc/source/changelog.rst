@@ -9,6 +9,7 @@ v1.3.0
 -----------
 
 - Add support for subclustering
+- Add community detection algorithm `Dataset.community_detection`
 
 v1.2.8
 -----------
@@ -26,7 +27,7 @@ v1.2.6
 -----------
 
 - Add initial bias detection
-- Fix analytics support 
+- Fix analytics support
 - Remove test tracking
 
 v1.2.5
