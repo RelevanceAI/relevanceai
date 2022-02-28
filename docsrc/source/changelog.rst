@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+
+v1.3.0
+-----------
+
+- Add support for subclustering
+
 v1.2.8
 -----------
 
