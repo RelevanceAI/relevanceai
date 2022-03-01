@@ -50,6 +50,12 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
 
 .. toctree::
    :maxdepth: 4
+   :caption: Tools
+
+   relevanceai.bias_detection
+
+.. toctree::
+   :maxdepth: 4
    :caption: Data Importers
 
    mongodb
