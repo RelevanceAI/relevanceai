@@ -2,7 +2,6 @@
 """
 Pandas like dataset API
 """
-from hashlib import new
 import warnings
 import itertools
 from itertools import chain
