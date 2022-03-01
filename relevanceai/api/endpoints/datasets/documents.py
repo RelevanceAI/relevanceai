@@ -178,11 +178,20 @@ class DocumentsClient(_Base):
 
         >>> {'field' : 'ids', 'filter_type' : 'ids', "condition":"==", "condition_value":["1", "10"]}
 
+
+        "or": for filtering with multiple conditions
+
+        .. code-block::
+
+            {'filter_type' : 'or', "condition_value": [{'field' : 'price',
+            'filter_type' : 'numeric', "condition":"<=", "condition_value":90},
+            {'field' : 'price', 'filter_type' : 'numeric',
+            "condition":">=", "condition_value":150}]}
+
         These are the available conditions:
 
         >>> "==", "!=", ">=", ">", "<", "<="
 
-        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
 
         Parameters
         ----------
