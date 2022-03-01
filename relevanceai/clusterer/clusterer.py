@@ -2147,6 +2147,9 @@ class ClusterOps(BatchAPIClient):
 
         Example
         ---------
+
+        This is what is returned on an `auto_cluster` method.
+
         .. code-block::
 
             from relevanceai.datasets import mock_documents
@@ -2154,6 +2157,25 @@ class ClusterOps(BatchAPIClient):
             df = client.Dataset('sample')
             df.upsert_documents(docs)
             cluster_ops = df.auto_cluster('kmeans-2', ['sample_1_vector_'])
+            cluster_ops.internal_report()
+
+        This is what is returned on an `internal_report` method.
+
+        .. code-block::
+
+            from relevanceai import Client
+            # client = Client()
+            from relevanceai.datasets import mock_documents
+            ds = client.Dataset("sample")
+            # Creates 100 sample documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=10)
+            clusterer = client.ClusterOps(alias="not-auto-kmeans-10", model=model)
+
+            clusterer.fit_predict_update(dataset=ds, vector_fields=["sample_1_vector_"])
             cluster_ops.internal_report()
 
         """
