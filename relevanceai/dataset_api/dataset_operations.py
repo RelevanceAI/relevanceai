@@ -2272,7 +2272,7 @@ class Operations(Write):
         chunksize: int = 1024,
         filters: Optional[list] = None,
         text_encoder=None,
-    ) -> dict:
+    ):
         """
         Convenient way to vectorize and cluster text fields.
 
@@ -2349,8 +2349,6 @@ class Operations(Write):
             "Build your clustering app here: "
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
         )
-
-        return {"outcome": "success"}
 
     @track
     def aggregate(
