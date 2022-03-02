@@ -1,6 +1,8 @@
 import time
+import pytest
 from relevanceai import Client
 from relevanceai.http_client import ClusterOps
+from ...utils import is_subname_in_schema
 
 
 def test_minibatch_clusterer(minibatch_clusterer: ClusterOps):
@@ -15,6 +17,17 @@ def test_minibatchkmeans_cluster_report(minibatch_clusterer: ClusterOps):
 def test_kmeans_clusterer(kmeans_clusterer: ClusterOps):
     assert len(kmeans_clusterer.list_closest_to_center()) > 0
     assert len(kmeans_clusterer.centroids) > 0
+
+
+@pytest.mark.skip(reason="tofix for jacky wong")
+def test_minibatchkmeans_subclusterer(minibatch_subclusterer):
+    df, ALIAS = minibatch_subclusterer
+    assert is_subname_in_schema(ALIAS, df.schema)
+
+
+def test_kmeans_subclusterer(kmeans_subclusterer):
+    df, ALIAS = kmeans_subclusterer
+    assert is_subname_in_schema(ALIAS, df.schema)
 
 
 def test_kmeans_cluster_report(kmeans_clusterer: ClusterOps):

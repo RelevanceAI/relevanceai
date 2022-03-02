@@ -31,6 +31,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    cluster_base
    reloading_clusterers
    relevanceai.cluster_report
+   subclustering
 
 .. toctree::
    :maxdepth: 4
@@ -46,6 +47,12 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    sklearn_clustering_integration
    faiss_clustering_integration 
    hdbscan_integration
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Tools
+
+   relevanceai.bias_detection
 
 .. toctree::
    :maxdepth: 4
