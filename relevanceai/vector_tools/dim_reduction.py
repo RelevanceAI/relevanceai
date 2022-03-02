@@ -139,8 +139,8 @@ class Ivis(DimReductionBase):
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
                 f"{e}\nInstall ivis\n \
-                CPU: pip install -U relevanceai[ivis-cpu]\n \
-                GPU: pip install -U relevanceai[ivis-gpu]"
+                CPU: pip install -U ivis-cpu\n \
+                GPU: pip install -U ivis-gpu"
             )
         self.logger.debug(f"{dr_args}")
         ivis = Ivis(embedding_dims=dims, **dr_args)
