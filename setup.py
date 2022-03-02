@@ -46,8 +46,8 @@ vis_requirements = requirements + [
 ]
 
 umap = ["umap-learn>=0.5.2"]
-# ivis_cpu = ["ivis[cpu]>=2.0.6"]
-# ivis_gpu = ["ivis[gpu]>=2.0.6"]
+ivis_cpu = ["ivis[cpu]>=2.0.6"]
+ivis_gpu = ["ivis[gpu]>=2.0.6"]
 kmedoids = ["scikit-learn-extra>=0.2.0"]
 hdbscan = ["hdbscan>=0.8.27"]
 
@@ -140,8 +140,8 @@ setup(
         "tests": test_requirements,
         "notebook": ["jsonshower"] + vis_requirements,
         "umap": umap,
-        # "ivis-cpu": ivis_cpu,
-        # "ivis-gpu": ivis_gpu,
+        "ivis-cpu": ivis_cpu,
+        "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
     },
