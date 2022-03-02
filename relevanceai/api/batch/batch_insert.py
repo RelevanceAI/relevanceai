@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 """Batch Insert"""
+import asyncio
 import json
 import math
 import sys
 import time
 import traceback
 import uuid
+
 import pandas as pd
 
 from ast import literal_eval
 from datetime import datetime
 from pathlib import Path
+from threading import Thread
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from doc_utils import DocUtils
@@ -489,6 +492,171 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 "failed_documents": failed_documents,
                 "failed_documents_detailed": failed_documents_detailed,
             }
+
+    def pull_update_push_new(
+        self,
+        dataset_id: str,
+        update_function,
+        updated_dataset_id: str = None,
+        log_file: str = None,
+        updating_args: Optional[dict] = None,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 8,
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        show_progress_bar: bool = True,
+        use_json_encoder: bool = True,
+    ):
+        """ """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
+        if not callable(update_function):
+            raise TypeError(
+                "Your update function needs to be a function! Please read the documentation if it is not."
+            )
+
+        if log_file is None:
+            log_file = (
+                dataset_id
+                + "_"
+                + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+                + "_pull_update_push"
+                + ".log"
+            )
+
+        with FileLogger(fn=log_file, verbose=True):
+            # Instantiate the logger to document the successful IDs
+            PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
+
+            # Track failed documents
+            failed_documents: List[Dict] = []
+            failed_documents_detailed: List[Dict] = []
+
+            num_documents = self.get_number_of_documents(dataset_id, filters)
+
+            # This number will determine how many requests are sent.
+            # Example: Suppose the number of documents is 1254 and
+            # retrieve_chunk_size is 100. Then the number of requests would
+            # be 1254 // 100, which would be 12, and one, which amounts to
+            # 13 requests. This must be defined ahead of time because the
+            # cursor predetermines the number of documents to retrieve on
+            # the first call. So, The first 12 calls would each get 100
+            # documents and call 13 would retrieve the remaining 54.
+            num_requests = (num_documents // retrieve_chunk_size) + 1
+
+            async def pull_update_push_subset(page_size: int, cursor: str = None):
+                response = await self.datasets.documents.get_where_async(
+                    dataset_id,
+                    filters=filters,
+                    cursor=cursor,
+                    page_size=page_size,
+                    select_fields=select_fields,
+                    include_vector=False,
+                )
+
+                documents = response["documents"]
+
+                try:
+                    updated_documents = update_function(documents)
+                except Exception as e:
+                    self.logger.error("Your updating function does not work: " + str(e))
+                    traceback.print_exc()
+                    return
+
+                updated_ids = [document["_id"] for document in documents]
+
+                if updated_dataset_id is None:
+                    insert_json = self._update_documents(
+                        dataset_id=dataset_id,
+                        documents=updated_documents,
+                        max_workers=max_workers,
+                        show_progress_bar=False,
+                        use_json_encoder=use_json_encoder,
+                    )
+                else:
+                    insert_json = self._insert_documents(
+                        dataset_id=updated_dataset_id,
+                        documents=updated_documents,
+                        max_workers=max_workers,
+                        show_progress_bar=False,
+                        use_json_encoder=use_json_encoder,
+                    )
+
+                return insert_json, updated_ids
+
+            tasks = []
+            if retrieve_chunk_size >= num_documents:
+                tasks.append(pull_update_push_subset(num_documents, None))
+            else:
+                # Retrieve the cursor. While executing a get_where call just
+                # to retrieve the cursor is somewhat inefficient, this is
+                # the cleanest solution at the moment.
+                cursor = self.datasets.documents.get_where(
+                    dataset_id,
+                    filters=filters,
+                    page_size=retrieve_chunk_size,
+                    select_fields=select_fields,
+                    include_vector=False,  # Set to false to for speed
+                )["cursor"]
+
+                # TODO: comment
+                tasks.extend(
+                    [
+                        pull_update_push_subset(retrieve_chunk_size, None)
+                        if not task_num
+                        else pull_update_push_subset(0, cursor)
+                        for task_num in range(num_requests)
+                    ]
+                )
+
+            class EventLoop(Thread):
+                def __init__(self):
+                    super().__init__()
+                    self._loop = asyncio.new_event_loop()
+                    self.daemon = True
+                    self.future = None
+                    self.futures = []
+
+                def run(self):
+                    self._loop.run_forever()
+
+                async def execute_tasks(self, tasks):
+                    return await asyncio.gather(
+                        *[asyncio.create_task(task) for task in tasks]
+                    )
+
+                def submit_tasks(self, tasks):
+                    self.future = asyncio.run_coroutine_threadsafe(
+                        self.execute_tasks(tasks), self._loop
+                    )
+
+                async def create_future(self, task):
+                    return await asyncio.create_task(task)
+
+                def create_futures(self, tasks):
+                    for task in tasks:
+                        self.futures.append(
+                            asyncio.run_coroutine_threadsafe(
+                                self.create_future(task), self._loop
+                            )
+                        )
+
+                def terminate(self):
+                    self._loop.call_soon_threadsafe(self._loop.stop)
+                    self.join()
+
+            threaded_loop = EventLoop()
+            threaded_loop.start()
+            # threaded_loop.submit_tasks(tasks)
+            # while not threaded_loop.future.done():
+            threaded_loop.create_futures(tasks)
+            while not all(map(lambda future: future.done(), threaded_loop.futures)):
+                continue
+            threaded_loop.terminate()
+
+            return threaded_loop.futures
 
     def pull_update_push_to_cloud(
         self,
