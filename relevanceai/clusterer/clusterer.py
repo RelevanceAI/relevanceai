@@ -1069,13 +1069,15 @@ class ClusterOps(BatchAPIClient):
             }
             for f in vector_fields
         ]
-        print("Retrieving all documents")
+        if verbose:
+            print("Retrieving all documents")
         fields_to_get = vector_fields.copy()
         if self.parent_alias:
             parent_field = self._get_cluster_field_name(self.parent_alias)
             fields_to_get.append(parent_field)
 
-        print("Fitting and predicting on all documents")
+        if verbose:
+            print("Fitting and predicting on all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=fields_to_get
         )
@@ -1092,7 +1094,8 @@ class ClusterOps(BatchAPIClient):
         )
 
         # Updating the db
-        print("Updating the database...")
+        if verbose:
+            print("Updating the database...")
         results = self._update_documents(
             self.dataset_id, clustered_docs, chunksize=10000
         )
@@ -1176,11 +1179,11 @@ class ClusterOps(BatchAPIClient):
             for f in vector_fields  # type: ignore
         ]
 
-        print("Fitting and predicting on all documents")
+        if verbose:
+            print("Fitting and predicting on all documents")
         # Here we run subfitting on these documents
         clustered_docs = self.subfit_predict_documents(
-            vector_fields=vector_fields,
-            filters=filters,
+            vector_fields=vector_fields, filters=filters, verbose=verbose
         )
 
         # Updating the db
@@ -1328,7 +1331,8 @@ class ClusterOps(BatchAPIClient):
         # Loop through each unique cluster ID and run clustering
         parent_field = self._get_cluster_field_name(self.parent_alias)
 
-        print("Getting unique cluster IDs...")
+        if verbose:
+            print("Getting unique cluster IDs...")
         if not cluster_ids:
             unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
         else:
@@ -1396,6 +1400,7 @@ class ClusterOps(BatchAPIClient):
         filters: Optional[list] = None,
         return_only_clusters: bool = True,
         inplace=False,
+        verbose: bool = True,
     ):
         """ """
         filters = [] if filters is None else filters
@@ -1418,12 +1423,14 @@ class ClusterOps(BatchAPIClient):
             }
             for f in vector_fields
         ]
-        print("Retrieving all documents")
+        if verbose:
+            print("Retrieving all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
-        print("Fitting and predicting on all documents")
+        if verbose:
+            print("Fitting and predicting on all documents")
         return self.fit_predict_documents(
             vector_fields,
             docs,
@@ -1659,17 +1666,20 @@ class ClusterOps(BatchAPIClient):
         vector_fields = [] if vector_fields is None else vector_fields
         filters = [] if filters is None else filters
 
-        print("Fitting dataset...")
+        if verbose:
+            print("Fitting dataset...")
         self.partial_fit_dataset(
             dataset=dataset,
             vector_fields=vector_fields,
             chunksize=chunksize,
             filters=filters,
         )
-        print("Updating your dataset...")
+        if verbose:
+            print("Updating your dataset...")
         self.predict_update(dataset=dataset)
         if hasattr(self.model, "get_centers"):
-            print("Inserting your centroids...")
+            if verbose:
+                print("Inserting your centroids...")
             self.insert_centroid_documents(
                 self.get_centroid_documents(), dataset=dataset
             )
@@ -1705,7 +1715,11 @@ class ClusterOps(BatchAPIClient):
 
     @track
     def predict_update(
-        self, dataset, vector_fields: Optional[List[str]] = None, chunksize: int = 20
+        self,
+        dataset,
+        vector_fields: Optional[List[str]] = None,
+        chunksize: int = 20,
+        verbose: bool = True,
     ):
         """
         Predict the dataset.
@@ -1760,10 +1774,11 @@ class ClusterOps(BatchAPIClient):
                     all_responses["inserted"] += v
                 elif isinstance(all_responses[k], list):
                     all_responses[k] += v
-        print(
-            "Build your clustering app here: "
-            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-        )
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
         return all_responses
 
     @track
