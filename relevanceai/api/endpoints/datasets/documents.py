@@ -433,6 +433,44 @@ class DocumentsClient(_Base):
                 "status_code": status_code,
             }
 
+    async def bulk_update_async(
+        self,
+        dataset_id: str,
+        updates: list,
+        insert_date: bool = True,
+        # return_documents: bool = False
+    ):
+        """
+        Asynchronous version of bulk_update. See bulk_update for details.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        updates : list
+            Updates to make to the documents. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+
+        insert_date	: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        include_updated_ids	: bool
+            Include the inserted IDs in the response
+        """
+        base_url = self.config.get_option("api.base_ingest_url")
+
+        return await self.make_async_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
+            method="POST",
+            parameters={"updates": updates, "insert_date": insert_date},
+            base_url=base_url,
+        )
+
+        # if return_documents:
+        #    return {"response_json": response}
+        # else:
+        #    return response
+
     def delete(self, dataset_id: str, id: str):
 
         """
