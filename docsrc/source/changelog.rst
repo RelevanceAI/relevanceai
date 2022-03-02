@@ -12,6 +12,18 @@ v1.3.0
 - Add community detection algorithm `Dataset.community_detection`
 - Update `Dataset.vectorize` to ignore already-vectorized fields and modified output to include those vector names
 
+Additional info on PRs:
+
+* feature/pro-1286-fit_predict_update-vs by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/469
+* feature/pro-1380-add-community-detection-to-relevance-ai by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/499
+* feature/pro-1447-change-output-of-vectorize by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/505
+* Feature/pro 1434 subclustering by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/504
+* Fix report by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/506
+* Feature/pro 1339 improve filter documentation to include by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/507
+* add pypi upload tokens by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/508
+* feature/pro-1403-auto_text_cluster_dashboard by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/498
+* add docs on bias detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/510
+
 v1.2.8
 -----------
 
