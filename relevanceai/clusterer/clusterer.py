@@ -214,7 +214,8 @@ class ClusterOps(BatchAPIClient):
         if is_hdbscan_available():
             import hdbscan
 
-            POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
+            if hasattr(hdbscan, "HDBSCAN"):
+                POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
