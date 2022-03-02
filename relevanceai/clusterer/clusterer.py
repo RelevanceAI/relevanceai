@@ -41,10 +41,10 @@ from relevanceai.integration_checks import is_sklearn_available, is_hdbscan_avai
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
 from relevanceai.errors import NoDocumentsError
+from relevanceai.utils import beta
 
 from doc_utils import DocUtils
 
-from relevanceai.vector_tools.cluster import Cluster
 
 from tqdm.auto import tqdm
 
