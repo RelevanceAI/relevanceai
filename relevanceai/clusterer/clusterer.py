@@ -31,6 +31,8 @@ from relevanceai.clusterer.cluster_base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
+    HDBSCANClusterBase,
+    SklearnCentroidBase,
 )
 
 from relevanceai.analytics_funcs import track
@@ -210,9 +212,10 @@ class ClusterOps(BatchAPIClient):
             FeatureAgglomeration,
         ]
         if is_hdbscan_available():
-            from hdbscan import HDBSCAN
+            import hdbscan
 
-            POSSIBLE_MODELS.append(HDBSCAN)
+            if hasattr(hdbscan, "HDBSCAN"):
+                POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
@@ -247,24 +250,11 @@ class ClusterOps(BatchAPIClient):
             return new_model
 
         elif isinstance(model, tuple(POSSIBLE_MODELS)):
-
-            class CentroidClusterModel(CentroidClusterBase):
-                def __init__(self, model):
-                    self.model: Union[SpectralClustering, Birch, DBSCAN] = model
-
-                def fit_predict(self, X):
-                    self._X = np.array(X)
-                    self._labels = self.model.fit_predict(X)
-                    return self._labels
-
-                def get_centers(self):
-                    # Get the centers for each label
-                    centers = []
-                    for l in sorted(np.unique(self._labels).tolist()):
-                        centers.append(self._X[self._labels == l].mean(axis=0).tolist())
-                    return centers
-
-            new_model = CentroidClusterModel(model)
+            # new_model = CentroidClusterModel(model)
+            if "sklearn" in str(type(model)).lower():
+                new_model = SklearnCentroidBase(model)
+            elif "hdbscan" in str(type(model)).lower():
+                new_model = HDBSCANClusterBase(model)
             return new_model
         elif hasattr(model, "fit_documents"):
             return model
@@ -702,9 +692,6 @@ class ClusterOps(BatchAPIClient):
             print("Inserting centroid documents...")
             centers = self.get_centroid_documents()
 
-            if hasattr(self.model, "get_centers"):
-                centers = self.get_centroid_documents()
-
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(
                 dataset_id=self.dataset_id,
@@ -801,6 +788,9 @@ class ClusterOps(BatchAPIClient):
             }
 
         """
+        if hasattr(self.model, "get_centroid_documents"):
+            self.model.vector_fields = self.vector_fields
+            return self.model.get_centroid_documents()
         self.centers = self.model.get_centers()
 
         if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
