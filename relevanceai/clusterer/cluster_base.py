@@ -371,7 +371,7 @@ if is_hdbscan_available():
 
 
 class HDBSCANClusterBase(SklearnCentroidBase):
-    model: HDBSCAN
+    model: "HDBSCAN"
 
     def get_unique_labels(self):
         return sorted(np.unique(self.model.labels_))
