@@ -12,6 +12,7 @@ import pandas as pd
 
 from ast import literal_eval
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 from threading import Thread
 from typing import Any, Callable, Dict, List, Optional, Union
@@ -501,11 +502,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         log_file: str = None,
         updating_args: Optional[dict] = None,
         retrieve_chunk_size: int = 100,
-        max_workers: int = 8,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
+        insert: bool = False,
     ):
         """ """
         updating_args = {} if updating_args is None else updating_args
@@ -567,24 +568,16 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
                 updated_ids = [document["_id"] for document in documents]
 
-                if updated_dataset_id is None:
-                    insert_json = self._update_documents(
-                        dataset_id=dataset_id,
-                        documents=updated_documents,
-                        max_workers=max_workers,
-                        show_progress_bar=False,
-                        use_json_encoder=use_json_encoder,
-                    )
-                else:
-                    insert_json = self._insert_documents(
-                        dataset_id=updated_dataset_id,
-                        documents=updated_documents,
-                        max_workers=max_workers,
-                        show_progress_bar=False,
-                        use_json_encoder=use_json_encoder,
-                    )
+                inserted = await self._change_documents(
+                    dataset_id=updated_dataset_id
+                    if updated_dataset_id is not None
+                    else dataset_id,
+                    documents=updated_documents,
+                    insert=insert,
+                    use_json_encoder=use_json_encoder,
+                )
 
-                return insert_json, updated_ids
+                return inserted, updated_ids
 
             tasks = []
             if retrieve_chunk_size >= num_documents:
@@ -1124,3 +1117,84 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             > 0
         ) or return_json:
             return results
+
+    async def _change_documents(
+        self,
+        dataset_id: str,
+        documents: list,
+        insert: bool,
+        show_progress_bar: bool = False,
+        use_json_encoder: bool = True,
+        create_id: bool = False,
+        verbose: bool = True,
+        *args,
+        **kwargs,
+    ):
+        if use_json_encoder:
+            documents = self.json_encoder(documents)
+
+        bulk_fn_inner: Callable  # Declaration made to satisfy mypy
+        in_dataset = dataset_id in self.datasets.list()["datasets"]
+        if not in_dataset or insert:
+            operation = f"inserting into {dataset_id}"
+            if not in_dataset:
+                self.datasets.create(dataset_id)
+            self._convert_id_to_string(documents, create_id=create_id)
+            bulk_fn_inner = self.datasets.bulk_insert_async
+        else:
+            operation = f"updating {dataset_id}"
+            self._convert_id_to_string(documents, create_id=create_id)
+            bulk_fn_inner = self.datasets.documents.bulk_update_async
+
+        async def bulk_fn(documents):
+            return await bulk_fn_inner(
+                dataset_id=dataset_id, documents=documents, *args, **kwargs
+            )
+
+        self.logger.info(f"You are currently {operation}")
+
+        self.logger.info(
+            "You can track your stats and progress via our dashboard at "
+            f"https://cloud.relevance.ai/collections/dashboard/stats/?collection={dataset_id}"
+        )
+
+        if verbose:
+            print(
+                f"While {operation}, you can visit your dashboard at "
+                f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            )
+
+        async def change_documents(bulk_fn, documents):
+            if len(documents) == 0:
+                self.logger.warning("No document is detected")
+                return {
+                    "inserted": 0,
+                    "failed_documents": [],
+                    "failed_documents_detailed": [],
+                }
+
+            num_documents_inserted: int = 0
+            # Maintain a reference to documents to keep track during looping
+            documents_remaining = documents.copy()
+            for _ in range(int(self.config.get_option("retries.number_of_retries"))):
+                if len(documents_remaining) > 0:
+                    # bulk_update_async
+                    response = await bulk_fn(documents=documents)
+                    num_documents_inserted += response["inserted"]
+                    documents_remaining = [
+                        document
+                        for document in documents_remaining
+                        if document["_id"] in response["failed_documents"]
+                    ]
+                else:
+                    # Once documents_remaining is empty, leave the for-loop...
+                    break
+                # ...else, wait some amount of time before retrying
+                time.sleep(int(self.config["retries.seconds_between_retries"]))
+
+            return {
+                "inserted": num_documents_inserted,
+                "failed_documents": documents_remaining,
+            }
+
+        return await change_documents(bulk_fn=bulk_fn, documents=documents)
