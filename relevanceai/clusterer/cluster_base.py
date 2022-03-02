@@ -305,7 +305,7 @@ class SklearnCentroidBase(CentroidBase, ClusterBase):
         return centers
 
     def fit_predict(self, X):
-        self._X = X
+        self._X = np.array(X)
         return self.model.fit_predict(X)
 
     def get_unique_labels(self):
