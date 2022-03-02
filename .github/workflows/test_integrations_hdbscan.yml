@@ -39,4 +39,4 @@ jobs:
           python -m pip install -e .[tests]
           python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist
           python -m pip install hdbscan
-          python -m pytest test_integrations/hdbscan/
+          python -m pytest test_integrations/hdbscan/ --cov-fail-under=1
