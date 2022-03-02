@@ -2155,8 +2155,33 @@ class ClusterOps(BatchAPIClient):
 
         return stats
 
+    @beta
     @track
-    def internal_report(self):
+    def store_cluster_report(
+        self, report_name: str, report: dict, verbose: bool = True
+    ):
+        """
+
+        Store the cluster data.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.store_cluster_report("sample", {"value": 3})
+
+        """
+        response: dict = self.reports.clusters.create(
+            name=report_name, report=self.json_encoder(report)
+        )
+        if verbose:
+            print(
+                f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+            )
+        return response
+
+    @track
+    def internal_report(self, verbose: bool = True):
         """
         Get a report on your clusters.
 
@@ -2215,8 +2240,12 @@ class ClusterOps(BatchAPIClient):
             model=self.model,
             num_clusters=self.number_of_clusters,
         )
-        cluster_response = self.reports.clusters.create(
-            name=cluster_field_name,
+        cluster_response = self.store_cluster_report(
+            report_name=cluster_field_name,
             report=self.json_encoder(self._report.internal_report),
+            verbose=verbose,
         )
+
         return self._report.internal_report
+
+    report = internal_report
