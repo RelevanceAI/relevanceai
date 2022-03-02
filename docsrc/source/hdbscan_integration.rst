@@ -24,7 +24,7 @@ HDBSCAN Example
     # Retrieve the relevant dataset
     ds = client.Dataset("sample_dataset_id")
 
-    from relevanceai import mock_documents
+    from relevanceai.datasets import mock_documents
     ds.upsert_documents(mock_documents(100))
 
     model = hdbscan.HDBSCAN()

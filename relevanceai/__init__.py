@@ -7,6 +7,7 @@ from relevanceai.http_client import Client
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 from relevanceai.clusterer.clusterer import ClusterOps
 from relevanceai.dim_reduction_ops.dim_reduction_ops import ReduceDimensionsOps
+from relevanceai.datasets import mock_documents
 import requests
 
 # Import useful utility if possible as well
