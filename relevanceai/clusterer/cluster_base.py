@@ -301,12 +301,13 @@ class SklearnCentroidBase(CentroidBase, ClusterBase):
         labels = self.get_unique_labels()
         for l in sorted(np.unique(labels).tolist()):
             # self.model.jkjkj
-            centers.append(self._X[labels == l].mean(axis=0).tolist())
+            centers.append(self._X[self.preds == l].mean(axis=0).tolist())
         return centers
 
     def fit_predict(self, X):
         self._X = np.array(X)
-        return self.model.fit_predict(X)
+        self.preds = self.model.fit_predict(X)
+        return self.preds
 
     def get_unique_labels(self):
         if hasattr(self.model, "_labels"):
