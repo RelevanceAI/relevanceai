@@ -1199,7 +1199,7 @@ class Operations(Write):
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
         preprocess_hooks: Optional[List[callable]] = None,
-        algorithm: str="rake"
+        algorithm: str = "rake",
     ):
         """
         Simple implementation of the cluster word cloud
@@ -1226,7 +1226,7 @@ class Operations(Write):
                 ],
                 most_common=most_common,
                 preprocess_hooks=preprocess_hooks,
-                algorithm=algorithm
+                algorithm=algorithm,
             )
             cluster_counters[c] = top_words
         return cluster_counters
