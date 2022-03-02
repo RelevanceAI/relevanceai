@@ -212,9 +212,9 @@ class ClusterOps(BatchAPIClient):
             FeatureAgglomeration,
         ]
         if is_hdbscan_available():
-            from hdbscan import HDBSCAN
+            import hdbscan
 
-            POSSIBLE_MODELS.append(HDBSCAN)
+            POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
