@@ -1199,6 +1199,7 @@ class Operations(Write):
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
         preprocess_hooks: Optional[List[callable]] = None,
+        algorithm: str="rake"
     ):
         """
         Simple implementation of the cluster word cloud
@@ -1225,6 +1226,7 @@ class Operations(Write):
                 ],
                 most_common=most_common,
                 preprocess_hooks=preprocess_hooks,
+                algorithm=algorithm
             )
             cluster_counters[c] = top_words
         return cluster_counters
@@ -1263,6 +1265,7 @@ class Operations(Write):
         temp_vector_field: str = "_label_vector_",
         labels_fn="labels.txt",
         stopwords: Optional[list] = None,
+        algorithm: str = "nltk",
     ):
         """
         Label by the most popular keywords.
@@ -1294,6 +1297,8 @@ class Operations(Write):
             The filename for labels to be saved in.
         stopwords: list
             A list of stopwords
+        algorithm: str
+            The algorithm to use. Must be one of `nltk` or `rake`.
 
         Example
         --------
@@ -1328,6 +1333,7 @@ class Operations(Write):
             n=n_gram,
             most_common=most_common,
             additional_stopwords=stopwords,
+            algorithm=algorithm,
         )
 
         with open(labels_fn, "w") as f:
