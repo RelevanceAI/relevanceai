@@ -587,4 +587,9 @@ class Client(BatchAPIClient, DocUtils):
         return response
 
     def disable_analytics_tracking(self):
+        """Disable analytics tracking if you would prefer not to send usage
+        data to improve the product. Analytics allows us to improve your experience
+        by examining the most popular flows, dedicating more resources to popular
+        product features and improve user experience.
+        """
         self.config["mixpanel.is_tracking_enabled"] = False

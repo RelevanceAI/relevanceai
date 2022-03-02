@@ -392,13 +392,13 @@ class HDBSCANClusterOps(DensityCluster):
         vectors: np.ndarray,
     ) -> np.ndarray:
         try:
-            from hdbscan import HDBSCAN
+            import hdbscan
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
                 f"{e}\nInstall hdbscan\n \
-                pip install -U relevanceai[hdbscan]"
+                pip install -U hdbscan"
             )
-        hdbscan = HDBSCAN(
+        model = hdbscan.HDBSCAN(
             min_cluster_size=self.min_cluster_size,
             algorithm=self.algorithm,
             approx_min_span_tree=self.approx_min_span_tree,
@@ -409,7 +409,7 @@ class HDBSCANClusterOps(DensityCluster):
             min_samples=self.min_samples,
             p=self.p,
         ).fit(vectors)
-        cluster_labels = hdbscan.labels_
+        cluster_labels = model.labels_
         return cluster_labels
 
 
