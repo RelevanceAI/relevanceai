@@ -789,7 +789,6 @@ class ClusterOps(BatchAPIClient):
         """
         if hasattr(self.model, "get_centroid_documents"):
             self.model.vector_fields = self.vector_fields
-            self.model.centers = self.centers
             return self.model.get_centroid_documents()
         self.centers = self.model.get_centers()
 
