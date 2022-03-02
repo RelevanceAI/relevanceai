@@ -3,10 +3,12 @@ from relevanceai import Client
 
 def test_hdbscan(test_client):
     import hdbscan
+    from relevanceai import mock_documents
 
     DATASET_ID = "_test_sample_hdbscan"
     ALIAS = "hdbscan"
     ds = test_client.Dataset(DATASET_ID)
+    ds.upsert_documents(mock_documents(100))
     model = hdbscan.HDBSCAN()
     clusterer = test_client.ClusterOps(alias=hdbscan, model=model)
     clusterer.fit_predict_update(ds, vector_fields=["sample_1_vector_"])
