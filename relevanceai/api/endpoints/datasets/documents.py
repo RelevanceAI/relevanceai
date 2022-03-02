@@ -438,7 +438,6 @@ class DocumentsClient(_Base):
         dataset_id: str,
         updates: list,
         insert_date: bool = True,
-        # return_documents: bool = False
     ):
         """
         Asynchronous version of bulk_update. See bulk_update for details.
@@ -457,19 +456,12 @@ class DocumentsClient(_Base):
         include_updated_ids	: bool
             Include the inserted IDs in the response
         """
-        base_url = self.config.get_option("api.base_ingest_url")
-
         return await self.make_async_http_request(
+            base_url=self.config.get_option("api.base_ingest_url"),
             endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
             method="POST",
             parameters={"updates": updates, "insert_date": insert_date},
-            base_url=base_url,
         )
-
-        # if return_documents:
-        #    return {"response_json": response}
-        # else:
-        #    return response
 
     def delete(self, dataset_id: str, id: str):
 

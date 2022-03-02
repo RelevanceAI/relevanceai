@@ -382,6 +382,52 @@ class DatasetsClient(_Base):
                 "status_code": status_code,
             }
 
+    async def bulk_insert_async(
+        self,
+        dataset_id: str,
+        documents: list,
+        insert_date: bool = True,
+        overwrite: bool = True,
+        update_schema: bool = True,
+        field_transformers: Optional[list] = None,
+    ):
+        """
+        Asynchronous version of bulk_insert. See bulk_insert for details.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        documents: list
+            A list of documents. A document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+
+        insert_date: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        overwrite: bool
+            Whether to overwrite document if it exists.
+
+        update_schema: bool
+            Whether the api should check the documents for vector datatype to update the schema.
+
+        field_transformers: list
+        """
+        field_transformers = [] if field_transformers is None else field_transformers
+
+        return await self.make_async_http_request(
+            base_url=self.config.get_option("api.base_ingest_url"),
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
+            method="POST",
+            parameters={
+                "documents": documents,
+                "insert_date": insert_date,
+                "overwrite": overwrite,
+                "update_schema": update_schema,
+                "field_transformers": field_transformers,
+            },
+        )
+
     def delete(self, dataset_id: str, confirm: bool = False):
         """
         Delete a dataset
