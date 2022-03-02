@@ -293,7 +293,7 @@ class SklearnCentroidBase(CentroidBase, ClusterBase):
     def __init__(self, model):
         self.model: KMeans = model
 
-    def get_centers(self, X):
+    def get_centers(self):
         if hasattr(self.model, "cluster_centers_"):
             return self.model.cluster_centers_
         # Get the centers for each label
