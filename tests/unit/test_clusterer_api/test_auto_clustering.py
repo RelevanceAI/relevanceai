@@ -22,12 +22,12 @@ def test_kmeans_clusterer(kmeans_clusterer: ClusterOps):
 @pytest.mark.skip(reason="tofix for jacky wong")
 def test_minibatchkmeans_subclusterer(minibatch_subclusterer):
     df, ALIAS = minibatch_subclusterer
-    assert is_subname_in_schema(ALIAS, df.schema)
+    assert is_subname_in_schema(ALIAS, list(df.schema))
 
 
 def test_kmeans_subclusterer(kmeans_subclusterer):
     df, ALIAS = kmeans_subclusterer
-    assert is_subname_in_schema(ALIAS, df.schema)
+    assert is_subname_in_schema(ALIAS, list(df.schema))
 
 
 def test_kmeans_cluster_report(kmeans_clusterer: ClusterOps):
