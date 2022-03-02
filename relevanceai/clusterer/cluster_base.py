@@ -298,7 +298,15 @@ class SklearnCentroidBase(CentroidBase, ClusterBase):
             return self.model.cluster_centers_
         # Get the centers for each label
         centers = []
-        # Get labels from sklearn
+        labels = self.get_unique_labels()
+        for l in sorted(np.unique(labels).tolist()):
+            centers.append(self._X[labels == l].mean(axis=0).tolist())
+        return centers
+
+    def fit_predict(self, *args, **kw):
+        return self.model.fit_predict(*args, **kw)
+
+    def get_unique_labels(self):
         if hasattr(self.model, "_labels"):
             labels = self.model._labels
         # Get labels from hdbscan
@@ -308,12 +316,7 @@ class SklearnCentroidBase(CentroidBase, ClusterBase):
             raise AttributeError(
                 "SKLearn has changed labels API - will need to provide way to return cluster centers"
             )
-        for l in sorted(np.unique(labels).tolist()):
-            centers.append(self._X[labels == l].mean(axis=0).tolist())
-        return centers
-
-    def fit_predict(self, *args, **kw):
-        return self.model.fit_predict(*args, **kw)
+        return sorted(np.unique(labels))
 
     def get_centroid_documents(self) -> List:
         """
@@ -370,11 +373,16 @@ if is_hdbscan_available():
 class HDBSCANClusterBase(SklearnCentroidBase):
     model: HDBSCAN
 
+    def get_unique_labels(self):
+        return sorted(np.unique(self.model.labels_))
+
     def get_centers(self):
-        labels = self.model.labels_
+        labels = self.get_unique_labels()
         centers = []
-        for l in sorted(np.unique(labels).tolist()):
-            centers.append(self.model._raw_data[labels == l].mean(axis=0).tolist())
+        for l in labels:
+            centers.append(
+                self.model._raw_data[self.model.labels_ == l].mean(axis=0).tolist()
+            )
         return centers
 
     def get_centroid_documents(self) -> List:
@@ -402,7 +410,8 @@ class HDBSCANClusterBase(SklearnCentroidBase):
 
         """
         self.centers = self.get_centers()
-        print("GET THE CENTERS")
+        labels = self.get_unique_labels()
+
         if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
 
             if isinstance(self.centers, np.ndarray):
@@ -411,7 +420,7 @@ class HDBSCANClusterBase(SklearnCentroidBase):
             centroid_vector_field_name = self.vector_fields[0]
             return [
                 {
-                    "_id": self._label_cluster(self.model.labels_[i]),
+                    "_id": self._label_cluster(labels[i]),
                     centroid_vector_field_name: self.centers[i],
                 }
                 for i in range(len(self.centers))
@@ -420,7 +429,7 @@ class HDBSCANClusterBase(SklearnCentroidBase):
         # centroid documents are created using multiple vector fields
         centroid_docs = []
         for i, c in enumerate(self.centers):
-            centroid_doc = {"_id": self._label_cluster(self.model.labels_[i])}
+            centroid_doc = {"_id": self._label_cluster(labels[i])}
             for j, vf in enumerate(self.vector_fields):
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())
