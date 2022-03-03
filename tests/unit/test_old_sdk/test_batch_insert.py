@@ -143,3 +143,10 @@ class TestPullUpdatePush:
         test_client._insert_documents(sample_dataset_id, simple_documents)
         response = test_client.pull_update_push(sample_dataset_id, do_nothing)
         assert len(response["failed_documents"]) == 0, "Failed to insert documents"
+
+    def test_pull_update_push_async(
+        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
+    ):
+        test_client._insert_documents(sample_dataset_id, simple_documents)
+        response = test_client.pull_update_push_async(sample_dataset_id, do_nothing)
+        assert len(response["failed_documents"]) == 0, "Failed to insert documents"
