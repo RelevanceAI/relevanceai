@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.3.2
+------------
+
+- Add verbose verbose argument
+
 v1.3.1
 ------------
 

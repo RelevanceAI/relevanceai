@@ -1020,13 +1020,13 @@ class Operations(Write):
         preprocess_hooks: Optional[list] = None,
     ):
         """Get the bigrams"""
+        from nltk import word_tokenize
+        from nltk.util import ngrams
+
         additional_stopwords = (
             [] if additional_stopwords is None else additional_stopwords
         )
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
-
-        from nltk import word_tokenize
-        from nltk.util import ngrams
 
         if additional_stopwords:
             [self.eng_stopwords.add(s) for s in additional_stopwords]
@@ -1110,7 +1110,7 @@ class Operations(Write):
         document_limit: int
             The maximum number of documents in a dataset
         preprocess_hooks: List[Callable]
-            A list of process hooks
+            A list of process hooks to clean text before they count as a word
 
         Example
         ----------
@@ -1122,6 +1122,19 @@ class Operations(Write):
             ds = client.Dataset("sample")
             # Returns the top keywords in a text field
             ds.keyphrases(text_fields=["sample"])
+
+
+            # Create an e-commerce dataset
+
+            from relevanceai.datasets import get_dummy_ecommerce_dataset
+            docs = get_dummy_ecommerce_dataset()
+            ds = client.Dataset("ecommerce-example")
+            ds.upsert_documents(docs)
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3)
+            def remove_apostrophe(string):
+                return string.replace("'s", "")
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3, preprocess_hooks=[remove_apostrophe])
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3, additional_stopwords=["Men", "Women"])
 
         """
         self._check_keyphrase_algorithm_requirements(algorithm)
