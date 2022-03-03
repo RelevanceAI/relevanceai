@@ -498,17 +498,56 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         self,
         dataset_id: str,
         update_function,
-        updated_dataset_id: str = None,
-        log_file: str = None,
         updating_args: Optional[dict] = None,
+        updated_dataset_id: Optional[str] = None,
+        log_file: str = None,
         retrieve_chunk_size: int = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        show_progress_bar: bool = True,
         use_json_encoder: bool = True,
+        include_vector: bool = True,
+        show_progress_bar: bool = True,
         insert: bool = False,
     ):
-        """ """
+        """
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+
+        Parameters
+        ----------
+        dataset_id: str
+            The dataset_id of the collection where your original documents are
+
+        update_function
+            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+
+        updating_args: dict
+            Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+
+        updated_dataset_id: str
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+
+        filters: list
+            A list of filters to apply on the retrieval query
+
+        select_fields: list
+            A list of fields to query over
+
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
+        include_vector: bool
+            If True, includes vectors in the updating query
+
+        show_progress_bar: bool
+            If True, shows a progress bar
+
+        insert: bool
+            If True, inserts rather than updates an already-existing dataset
+        """
         updating_args = {} if updating_args is None else updating_args
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
@@ -554,13 +593,13 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     cursor=cursor,
                     page_size=page_size,
                     select_fields=select_fields,
-                    include_vector=False,
+                    include_vector=include_vector,
                 )
 
                 documents = response["documents"]
 
                 try:
-                    updated_documents = update_function(documents)
+                    updated_documents = update_function(documents, **updating_args)
                 except Exception as e:
                     self.logger.error("Your updating function does not work: " + str(e))
                     traceback.print_exc()
@@ -594,7 +633,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     include_vector=False,  # Set to false to for speed
                 )["cursor"]
 
-                # TODO: comment
+                # The cursor is constrained by its first query. Specifically,
+                # if the query from which we get the cursor has a certain page
+                # size, further accesses through the cursor will be the same
+                # page size. Therefore, in the tasks below, the first task
+                # does a proper query of the first {retrieve_chunk_size}
+                # documents. Subsequent calls use the cursor to access the
+                # next {retrieve_chunk_size} documents {num_requests-1} times.
+                # The 0 is there to make the aforementioned statement
+                # explicit.
                 tasks.extend(
                     [
                         pull_update_push_subset(retrieve_chunk_size, None)
@@ -604,52 +651,75 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     ]
                 )
 
+            # The event loop is required to call asynchronous functions from
+            # a regular (synchronous) function. This class spins off a
+            # background thread that runs an event loop. All asynchronous
+            # tasks are run there.
             class EventLoop(Thread):
-                def __init__(self):
+                def __init__(self, tasks, num_requests, show_progress_bar):
                     super().__init__()
                     self._loop = asyncio.new_event_loop()
                     self.daemon = True
-                    self.future = None
+
                     self.futures = []
+                    self.tasks = tasks
+
+                    from relevanceai.progress_bar import progress_bar
+
+                    self.show_progress_bar = show_progress_bar
+                    self.progress_tracker = progress_bar(
+                        range(num_requests), show_progress_bar=show_progress_bar
+                    )
+                    self.progress_iterator = iter(self.progress_tracker)
 
                 def run(self):
                     self._loop.run_forever()
 
-                async def execute_tasks(self, tasks):
-                    return await asyncio.gather(
-                        *[asyncio.create_task(task) for task in tasks]
-                    )
-
-                def submit_tasks(self, tasks):
-                    self.future = asyncio.run_coroutine_threadsafe(
-                        self.execute_tasks(tasks), self._loop
-                    )
-
-                async def create_future(self, task):
+                async def _create_future(self, task):
                     return await asyncio.create_task(task)
 
-                def create_futures(self, tasks):
-                    for task in tasks:
-                        self.futures.append(
+                def execute_tasks(self):
+                    self.futures.extend(
+                        [
                             asyncio.run_coroutine_threadsafe(
-                                self.create_future(task), self._loop
+                                self._create_future(task), self._loop
                             )
-                        )
+                            for task in self.tasks
+                        ]
+                    )
+
+                    from concurrent.futures import as_completed
+
+                    for _ in as_completed(self.futures):
+                        if self.progress_tracker is not None:
+                            next(self.progress_iterator)
+                        if self.show_progress_bar:
+                            self.progress_tracker.update(1)
 
                 def terminate(self):
                     self._loop.call_soon_threadsafe(self._loop.stop)
                     self.join()
 
-            threaded_loop = EventLoop()
+            threaded_loop = EventLoop(tasks, num_requests, show_progress_bar)
             threaded_loop.start()
-            # threaded_loop.submit_tasks(tasks)
-            # while not threaded_loop.future.done():
-            threaded_loop.create_futures(tasks)
-            while not all(map(lambda future: future.done(), threaded_loop.futures)):
-                continue
+            threaded_loop.execute_tasks()
             threaded_loop.terminate()
 
-            return threaded_loop.futures
+            failed_documents = []
+            all_documents = []
+            for future in threaded_loop.futures:
+                inserted, updated_ids = future.result()
+                failed_documents.extend(inserted["failed_documents"])
+                all_documents.extend(updated_ids)
+
+            # log successfully updated pulled/updated/pushed documents
+            PULL_UPDATE_PUSH_LOGGER.log_ids(
+                list(set(all_documents) - set(failed_documents))
+            )
+
+            self.logger.success("Pull, update, and push is complete!")
+
+            return {"failed_documents": failed_documents}
 
     def pull_update_push_to_cloud(
         self,
@@ -1118,38 +1188,121 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ) or return_json:
             return results
 
+    async def _apply_bulk_fn(self, bulk_fn, documents: list):
+        """
+        Called from _change_documents. Calls bulk_fn on documents.
+
+        Parameters
+        ----------
+        bulk_fn
+            An asynchronous function that takes in the documents
+
+        documents: list
+            A list of documents
+        """
+        if len(documents) == 0:
+            self.logger.warning("No document is detected")
+            return {
+                "inserted": 0,
+                "failed_documents": [],
+                "failed_documents_detailed": [],
+            }
+
+        num_documents_inserted: int = 0
+        # Maintain a reference to documents to keep track during looping
+        documents_remaining = documents.copy()
+        for _ in range(int(self.config.get_option("retries.number_of_retries"))):
+            if len(documents_remaining) > 0:
+                # bulk_update_async
+                response = await bulk_fn(documents=documents)
+                num_documents_inserted += response["inserted"]
+                documents_remaining = [
+                    document
+                    for document in documents_remaining
+                    if document["_id"] in response["failed_documents"]
+                ]
+            else:
+                # Once documents_remaining is empty, leave the for-loop...
+                break
+            # ...else, wait some amount of time before retrying
+            time.sleep(int(self.config["retries.seconds_between_retries"]))
+
+        return {
+            "inserted": num_documents_inserted,
+            "failed_documents": documents_remaining,
+        }
+
     async def _change_documents(
         self,
         dataset_id: str,
         documents: list,
         insert: bool,
-        show_progress_bar: bool = False,
         use_json_encoder: bool = True,
         create_id: bool = False,
         verbose: bool = True,
-        *args,
         **kwargs,
     ):
+        """
+        Parameters
+        ----------
+        dataset_id: str
+            The dataset_id of the collection to change
+
+        documents: list
+            A list of documents
+
+        insert: bool
+            If True, inserts rather than updates an already-existing dataset
+
+        use_json_encoder: bool
+            Whether to automatically convert documents to json encodable format
+
+        create_id: bool
+            If True, creates a indices for the documents
+
+        verbose: bool
+            If True, print user-informing statements.
+
+        **kwargs
+            Additional arguments for bulk_insert_async or bulk_update_async
+        """
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        bulk_fn_inner: Callable  # Declaration made to satisfy mypy
         in_dataset = dataset_id in self.datasets.list()["datasets"]
         if not in_dataset or insert:
             operation = f"inserting into {dataset_id}"
             if not in_dataset:
                 self.datasets.create(dataset_id)
+            if insert:
+                create_id = True
             self._convert_id_to_string(documents, create_id=create_id)
-            bulk_fn_inner = self.datasets.bulk_insert_async
+
+            async def bulk_fn(documents):
+                return await self.datasets.bulk_insert_async(
+                    dataset_id=dataset_id,
+                    documents=documents,
+                    **{
+                        key: value
+                        for key, value in kwargs.items()
+                        if key not in {"dataset_id", "updates"}
+                    },
+                )
+
         else:
             operation = f"updating {dataset_id}"
             self._convert_id_to_string(documents, create_id=create_id)
-            bulk_fn_inner = self.datasets.documents.bulk_update_async
 
-        async def bulk_fn(documents):
-            return await bulk_fn_inner(
-                dataset_id=dataset_id, documents=documents, *args, **kwargs
-            )
+            async def bulk_fn(documents):
+                return await self.datasets.documents.bulk_update_async(
+                    dataset_id=dataset_id,
+                    updates=documents,
+                    **{
+                        key: value
+                        for key, value in kwargs.items()
+                        if key not in {"dataset_id", "documents"}
+                    },
+                )
 
         self.logger.info(f"You are currently {operation}")
 
@@ -1164,37 +1317,4 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
             )
 
-        async def change_documents(bulk_fn, documents):
-            if len(documents) == 0:
-                self.logger.warning("No document is detected")
-                return {
-                    "inserted": 0,
-                    "failed_documents": [],
-                    "failed_documents_detailed": [],
-                }
-
-            num_documents_inserted: int = 0
-            # Maintain a reference to documents to keep track during looping
-            documents_remaining = documents.copy()
-            for _ in range(int(self.config.get_option("retries.number_of_retries"))):
-                if len(documents_remaining) > 0:
-                    # bulk_update_async
-                    response = await bulk_fn(documents=documents)
-                    num_documents_inserted += response["inserted"]
-                    documents_remaining = [
-                        document
-                        for document in documents_remaining
-                        if document["_id"] in response["failed_documents"]
-                    ]
-                else:
-                    # Once documents_remaining is empty, leave the for-loop...
-                    break
-                # ...else, wait some amount of time before retrying
-                time.sleep(int(self.config["retries.seconds_between_retries"]))
-
-            return {
-                "inserted": num_documents_inserted,
-                "failed_documents": documents_remaining,
-            }
-
-        return await change_documents(bulk_fn=bulk_fn, documents=documents)
+        return await self._apply_bulk_fn(bulk_fn=bulk_fn, documents=documents)
