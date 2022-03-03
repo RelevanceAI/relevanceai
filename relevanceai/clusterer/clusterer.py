@@ -1377,7 +1377,9 @@ class ClusterOps(BatchAPIClient):
             asc=True,
         )
         all_cluster_ids = []
-        for facet in facet_results["results"][cluster_field]:
+        if "results" in facet_results:
+            facet_results = facet_results["results"]
+        for facet in facet_results[cluster_field]:
             if facet["frequency"] > minimum_cluster_size:
                 all_cluster_ids.append(facet[cluster_field])
         return all_cluster_ids
