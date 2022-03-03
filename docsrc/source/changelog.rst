@@ -4,6 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.3.1
+------------
+
+- Added pull_update_push_async
+- Introduced asynchronous client
+- Fix bug in facets
 
 v1.3.0
 -----------
