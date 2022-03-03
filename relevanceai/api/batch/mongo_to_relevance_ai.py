@@ -39,10 +39,9 @@ import uuid
 import warnings
 from tqdm.auto import tqdm
 from typing import List
-from relevanceai.api.client import BatchAPIClient
 
 try:
-    from pymongo import MongoClient
+    from relevanceai import Client
 
     PYMONGO_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
@@ -62,11 +61,9 @@ except (ImportError, ModuleNotFoundError):
     )
 
 
-class MongoImporter(BatchAPIClient):
-    def __init__(
-        self, connection_string: str, project: str, api_key: str, firebase_uid: str
-    ):
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+class MongoImporter(Client):
+    def __init__(self, connection_string: str):
+        super().__init__()
         if PYMONGO_AVAILABLE:
             self.mongo_client = MongoClient(connection_string)
         else:
