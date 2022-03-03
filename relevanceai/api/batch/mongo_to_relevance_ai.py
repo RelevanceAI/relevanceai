@@ -44,6 +44,7 @@ from typing import List
 
 try:
     from relevanceai import Client
+    from pymongo import MongoClient
 
     PYMONGO_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
