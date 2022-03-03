@@ -494,7 +494,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 "failed_documents_detailed": failed_documents_detailed,
             }
 
-    def pull_update_push_new(
+    def pull_update_push_async(
         self,
         dataset_id: str,
         update_function,
