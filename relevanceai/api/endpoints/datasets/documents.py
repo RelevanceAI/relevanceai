@@ -233,6 +233,69 @@ class DocumentsClient(_Base):
             },
         )
 
+    async def get_where_async(
+        self,
+        dataset_id: str,
+        filters: Optional[list] = None,
+        cursor: str = None,
+        page_size: int = 20,
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        include_vector: bool = True,
+        random_state: int = 0,
+        is_random: bool = False,
+    ):
+        """
+        Asynchronous version of get_where. See get_where for more detials.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+
+        cursor: str
+            Cursor to paginate the document retrieval
+
+        page_size: int
+            Size of each page of results
+
+        include_vector: bool
+            Include vectors in the search results
+
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+
+        filters: list
+            Query for filtering the search results
+
+        is_random: bool
+            If True, retrieves doucments randomly. Cannot be used with cursor.
+
+        random_state: int
+            Random Seed for retrieving random documents.
+        """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
+
+        return await self.make_async_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/get_where",
+            method="POST",
+            parameters={
+                "select_fields": select_fields,
+                "cursor": cursor,
+                "page_size": page_size,
+                "sort": sort,
+                "include_vector": include_vector,
+                "filters": filters,
+                "random_state": random_state,
+                "is_random": is_random,
+            },
+        )
+
     def paginate(
         self,
         dataset_id: str,
@@ -369,6 +432,36 @@ class DocumentsClient(_Base):
                 "documents": updates,
                 "status_code": status_code,
             }
+
+    async def bulk_update_async(
+        self,
+        dataset_id: str,
+        updates: list,
+        insert_date: bool = True,
+    ):
+        """
+        Asynchronous version of bulk_update. See bulk_update for details.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        updates : list
+            Updates to make to the documents. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+
+        insert_date	: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        include_updated_ids	: bool
+            Include the inserted IDs in the response
+        """
+        return await self.make_async_http_request(
+            base_url=self.config.get_option("api.base_ingest_url"),
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
+            method="POST",
+            parameters={"updates": updates, "insert_date": insert_date},
+        )
 
     def delete(self, dataset_id: str, id: str):
 
