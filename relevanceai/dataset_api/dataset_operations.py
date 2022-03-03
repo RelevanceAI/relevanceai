@@ -1210,22 +1210,45 @@ class Operations(Write):
         vector_fields: List[str],
         text_fields: List[str],
         cluster_alias: str,
-        n: int = 2,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
+        most_common: int = 10,
         preprocess_hooks: Optional[List[callable]] = None,
         algorithm: str = "rake",
+        n: int = 2,
     ):
         """
-        Simple implementation of the cluster word cloud
+        Simple implementation of the cluster word cloud.
+
+        Parameters
+        ------------
+        vector_fields: list
+            The list of vector fields
+        text_fields: list
+            The list of text fields
+        cluster_alias: str
+            The alias of the cluster
+        cluster_field: str
+            The cluster field to try things on
+        num_clusters: int
+            The number of clusters
+        preprocess_hooks: list
+            The preprocess hooks
+        algorithm: str
+            The algorithm to use
+        n: int
+            The number of words
+
         """
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
 
         vector_fields_str = ".".join(sorted(vector_fields))
         field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
         all_clusters = self.facets([field], page_size=num_clusters)
-        most_common = 10
         cluster_counters = {}
+        if "results" in all_clusters:
+            all_clusters = all_clusters["results"]
+        # TODO: Switch to multiprocessing
         for c in tqdm(all_clusters[field]):
             cluster_value = c[field]
             top_words = self.keyphrases(
@@ -1243,7 +1266,7 @@ class Operations(Write):
                 preprocess_hooks=preprocess_hooks,
                 algorithm=algorithm,
             )
-            cluster_counters[c] = top_words
+            cluster_counters[cluster_value] = top_words
         return cluster_counters
 
     # TODO: Add keyphrases to auto cluster
