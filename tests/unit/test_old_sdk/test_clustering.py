@@ -1,5 +1,5 @@
 import pytest
-
+import time
 from typing import Dict, List
 
 from relevanceai.http_client import Client
@@ -81,6 +81,7 @@ def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict])
 
 def test_furthest_different_from_closest(closest_to_centers, furthest_from_centers):
     """Ensure that the bug where they are closest and furthest are no longer there"""
+    time.sleep(2)
     assert closest_to_centers != furthest_from_centers
 
 
