@@ -3,6 +3,8 @@ Migrate from mongo database to Relevance Ai:
 
 .. code-block::
 
+    from relevanceai.api.batch import MongoImporter
+
     # Create an object of MongoImporter class
     connection_string= "..."
     project= "..."
