@@ -8,6 +8,7 @@ v1.3.2
 ------------
 
 - Add verbose verbose argument
+- Fix cluster_keyphrases
 
 v1.3.1
 ------------
