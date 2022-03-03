@@ -1068,6 +1068,7 @@ class Operations(Write):
         batch_size: int = 1000,
         document_limit: int = None,
         preprocess_hooks: Optional[List[callable]] = None,
+        verbose: bool = True,
     ) -> list:
         """
         Returns the most common phrase in the following format:
@@ -1132,17 +1133,18 @@ class Operations(Write):
 
         counter: Counter = Counter()
         if not hasattr(self, "_is_set_up"):
-            print("setting up NLTK...")
+            if verbose:
+                print("setting up NLTK...")
             self._set_up_nltk()
 
         # Mock a dummy documents so I can loop immediately without weird logic
         documents: dict = {"documents": [[]], "cursor": None}
-        print("Updating word count...")
+        if verbose:
+            print("Updating word count...")
         while len(documents["documents"]) > 0 and (
             document_limit is None or sum(counter.values()) < document_limit
         ):
             # TODO: make this into a progress bar instead
-            print("Retrieving documents...")
             documents = self.get_documents(
                 filters=filters,
                 cursor=documents["cursor"],
