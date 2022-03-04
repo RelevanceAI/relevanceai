@@ -262,13 +262,12 @@ class Operations(Write):
         self,
         field: str,
         model=None,
-        return_id: bool = False,
         retrieval_kwargs: Optional[dict] = None,
         encode_kwargs: Optional[dict] = None,
         threshold: float = 0.75,
         min_community_size: int = 10,
         init_max_size: int = 1000,
-    ) -> dict:
+    ):
         """
         Performs community detection on a text field.
 
@@ -280,10 +279,6 @@ class Operations(Write):
 
         model
             A model for computing sentence embeddings.
-
-        return_id: bool
-            If True, returns the communities by IDs. Else, the field values
-            are returned.
 
         retrieval_kwargs: Optional[dict]
             Keyword arguments for `get_documents` call. See respective
@@ -305,10 +300,6 @@ class Operations(Write):
         init_max_size: int
             The maximum size of a community. If the corpus is larger than this
             value, that is set to the maximum size.
-
-        Returns
-        -------
-        A dictionary of communities
 
         Example
         -------
@@ -431,25 +422,24 @@ class Operations(Write):
         )
         print("Community detection complete.")
 
-        communities = {}
-        if return_id:
-            for i, cluster in enumerate(clusters):
-                community = []
-                for member in cluster:
-                    community.extend(ids_map[member])
-                communities[f"community-{i+1}"] = community
-        else:
-            for i, cluster in enumerate(clusters):
-                if field_type == "text":
-                    community = list(map(lambda member: element_map[member], cluster))
-                elif field_type == "vector":
-                    # vector must be converted to a list back from tuple
-                    community = list(
-                        map(lambda member: list(element_map[member]), cluster)
-                    )
-                communities[f"community-{i+1}"] = community
-
-        return communities
+        for i, cluster in enumerate(clusters):
+            ids = []
+            for member in cluster:
+                ids.extend(ids_map[member])
+            self.datasets.documents.update_where(
+                self.dataset_id,
+                update={
+                    "_cluster_": {field: {"community-detection": f"community-{i+1}"}}
+                },
+                filters=[
+                    {
+                        "field": "ids",
+                        "filter_type": "ids",
+                        "condition": "==",
+                        "condition_value": ids,
+                    }
+                ],
+            )
 
     @track
     def label_vector(
