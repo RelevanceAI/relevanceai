@@ -5,6 +5,7 @@ These datasets have been licensed under Apache 2.0.
 """
 
 from typing import Any, Dict, List, Optional, Union
+from typing_extensions import Literal
 import random
 import uuid
 import string
@@ -613,6 +614,38 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
         }
 
     return [vector_document(uuid.uuid4().__str__()) for _ in range(number_of_documents)]
+
+
+def get_titanic_dataset(
+    output_format: Literal["pandas_dataframe", "json", "csv"] = "json"
+):
+    """
+    Titanic Dataset.
+
+    # Sample document
+    {'Unnamed: 0': 0,
+    'PassengerId': 892,
+    'Survived': 0,
+    'Pclass': 3,
+    'Age': 34.5,
+    'SibSp': 0,
+    'Parch': 0,
+    'Fare': 7.8292,
+    'male': 1,
+    'Q': 1,
+    'S': 0,
+    'value_vector_': '[3.0, 34.5, 0.0, 0.0, 7.8292, 1.0, 1.0, 0.0]'}
+    """
+    FN = "https://gist.githubusercontent.com/boba-and-beer/0bf5f7840a856f2d2adb2b80f96db481/raw/0891fed9c19ddc07e3393ee4127aa3b9d809b4f2/titanic_train_data.csv"
+    if output_format == "csv":
+        return FN
+    df = pd.read_csv(FN)
+    if output_format == "pandas_dataframe":
+        return df
+    docs = df.to_dict(orient="records")
+    for d in docs:
+        d["value_vector_"] = eval(d["value_vector_"])
+    return docs
 
 
 ### For backwards compatability
