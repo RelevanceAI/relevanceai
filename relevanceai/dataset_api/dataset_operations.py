@@ -5,8 +5,8 @@ Pandas like dataset API
 import warnings
 import itertools
 from itertools import chain
-from collections import Counter
-from typing import Callable, Dict, List, Optional
+from collections import Counter, defaultdict
+from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
@@ -265,16 +265,17 @@ class Operations(Write):
         retrieval_kwargs: Optional[dict] = None,
         encode_kwargs: Optional[dict] = None,
         threshold: float = 0.75,
-        min_community_size: int = 10,
+        min_community_size: int = 1,
         init_max_size: int = 1000,
-    ) -> dict:
+    ):
         """
         Performs community detection on a text field.
 
         Parameters
         ----------
         field: str
-            The field over which to find communities. Must be of type "text".
+            The field over which to find communities. Must be of type "text"
+            or "vector".
 
         model
             A model for computing sentence embeddings.
@@ -300,10 +301,6 @@ class Operations(Write):
             The maximum size of a community. If the corpus is larger than this
             value, that is set to the maximum size.
 
-        Returns
-        -------
-        A dictionary of communities
-
         Example
         -------
 
@@ -319,8 +316,8 @@ class Operations(Write):
 
         """
         if field in self.schema:
-            if not self.schema[field] == "text":
-                raise ValueError("The field must be a 'text' type")
+            if not (self.schema[field] == "text" or field.endswith("_vector_")):
+                raise ValueError("The field must be a 'text' type or a vector")
         else:
             raise ValueError(f"{field} does not exist in the dataset")
 
@@ -335,10 +332,12 @@ class Operations(Write):
                 "community_detection."
             )
 
+        field_type = "text" if self.schema[field] == "text" else "vector"
+
         retrieval_kwargs = {} if retrieval_kwargs is None else retrieval_kwargs
         encode_kwargs = {} if encode_kwargs is None else encode_kwargs
 
-        if model is None:
+        if model is None and field_type == "text":
             from sentence_transformers import SentenceTransformer
 
             model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -362,42 +361,102 @@ class Operations(Write):
         )
         print("Documents retrieved.")
 
-        sentences = set()
+        # lists (i.e. vectors) are unhashable therefore handled by converting
+        # them into tuples.
+        if field_type == "vector":
+            for document in documents:
+                try:
+                    document[field] = tuple(document[field])
+                except KeyError:
+                    # If a document is missing a vector, ignore
+                    continue
+
+        # Keep track of the fields. Since two documents could have the same
+        # field, use a list to keep track of multiples
+        element_ids = defaultdict(list)
+
+        # remove duplicates
+        elements = set()
         for document in documents:
-            sentences.add(document[field])
+            try:
+                element = document[field]
+            except KeyError:
+                # It could be that a document does not have a field or a
+                # a vector that other documents in the Dataset has. In that
+                # case, ignore.
+                continue
+            elements.add(element)
+            element_ids[element].append(document["_id"])
 
         # Storing a mapping like this is fine because when the values are
         # made a list below, they will be a list in the same order as inserted
         # in the dictionary.
-        corpus_sentences = {}
-        for i, sentence in enumerate(sentences):
-            corpus_sentences[i] = sentence
+        element_map = {}
+        ids_map = {}
+        for i, element in enumerate(elements):
+            element_map[i] = element
+            ids_map[i] = element_ids[element]
 
-        print("Encoding the corpus...")
-        corpus_embeddings = model.encode(
-            sentences=list(corpus_sentences.values()),
-            **{
-                key: value for key, value in encode_kwargs.items() if key != "sentences"
-            },
-        )
-        print("Encoding complete.")
+        if field_type == "text":
+            print("Encoding the corpus...")
+            embeddings = model.encode(
+                sentences=list(element_map.values()),
+                **{
+                    key: value
+                    for key, value in encode_kwargs.items()
+                    if key != "sentences"
+                },
+            )
+            print("Encoding complete.")
+        else:
+            from numpy import array
+
+            embeddings = array(list(element_map.values()))
 
         print("Community detection started...")
         clusters = community_detection(
-            embeddings=corpus_embeddings,
+            embeddings=embeddings,
             threshold=threshold,
             min_community_size=min_community_size,
             init_max_size=init_max_size,
         )
         print("Community detection complete.")
 
-        communities = {}
+        print("Updating documents...")
+        community_documents = []
         for i, cluster in enumerate(clusters):
-            communities[f"community-{i+1}"] = list(
-                map(lambda _: corpus_sentences[_], cluster)
-            )
+            ids = []
+            for member in cluster:
+                ids.extend(ids_map[member])
+            # During initial construction update_where did not accept dict
+            # values as valid updates.
+            # self.datasets.documents.update_where(
+            #    self.dataset_id,
+            #    update={
+            #        "_cluster_": {field: {"community-detection": f"community-{i+1}"}}
+            #    },
+            #    filters=[
+            #        {
+            #            "field": "ids",
+            #            "filter_type": "ids",
+            #            "condition": "==",
+            #            "condition_value": ids,
+            #        }
+            #    ],
+            # )
+            for id in ids:
+                community_documents.append(
+                    {
+                        "_id": id,
+                        "_cluster_": {
+                            field: {"community-detection": f"community-{i+1}"}
+                        },
+                    }
+                )
 
-        return communities
+        results = self._update_documents(self.dataset_id, community_documents)
+        print("Documents updated.")
+        return results
 
     @track
     def label_vector(

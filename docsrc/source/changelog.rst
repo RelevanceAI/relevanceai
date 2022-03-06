@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.3.4
+------------
+
+- Improve `Dataset.community_detection` such that it takes vectors as well
+
 v1.3.3
 ------------
 
