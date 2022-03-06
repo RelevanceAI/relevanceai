@@ -1,11 +1,27 @@
 import os
-
+import random
+import string
 import pytest
 
 from relevanceai import Client
 from relevanceai.datasets import mock_documents
 
 REGION = os.getenv("TEST_REGION")
+
+
+SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
+
+
+def generate_random_string(string_length: int = 5) -> str:
+    """Generate a random string of letters and numbers"""
+    return "".join(
+        random.choice(string.ascii_uppercase + string.digits)
+        for _ in range(string_length)
+    )
+
+
+def generate_dataset_id():
+    return SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 
 @pytest.fixture(scope="session")
@@ -93,7 +109,7 @@ def test_dataset(test_client):
         },
     ]
 
-    ds = test_client.Dataset("test-integration-sample")
-    ds.insert_documents(docs)
+    ds = test_client.Dataset(generate_dataset_id())
+    ds.upsert_documents(docs)
     yield ds
     ds.delete()
