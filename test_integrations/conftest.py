@@ -56,6 +56,7 @@ def test_client(test_project, test_api_key, test_firebase_uid):
             firebase_uid=test_firebase_uid,
             region=REGION,
         )
+    client.disable_analytics_tracking()
     return client
 
 
