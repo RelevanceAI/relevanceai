@@ -515,3 +515,20 @@ class DatasetsClient(_Base):
             method="GET",
             parameters={"task_id": task_id},
         )
+
+    def get_file_upload_urls(self, dataset_id: str, files: List):
+        """
+        Specify a list of file paths. For each file path, a url upload_url is returned. files can be POSTed on upload_url to upload them. They can then be accessed on url. Upon dataset deletion, these files will be deleted.
+
+        Parameters
+        -------------
+        files: list
+            List of files to be uploaded
+        dataset_id: str
+            The dataset
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/get_file_upload_urls",
+            method="POST",
+            parameters={"files": files},
+        )
