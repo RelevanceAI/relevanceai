@@ -65,7 +65,7 @@ class DatasetsClient(_Base):
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/metadata",
             method="POST",
-            json={"dataset_id": dataset_id, "metadata": metadata},
+            parameters={"dataset_id": dataset_id, "metadata": metadata},
         )
 
     def create(self, dataset_id: str, schema: Optional[dict] = None):
