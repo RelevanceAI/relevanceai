@@ -58,6 +58,16 @@ class DatasetsClient(_Base):
             endpoint=f"/datasets/{dataset_id}/metadata", method="GET"
         )
 
+    def post_metadata(self, dataset_id: str, metadata: dict):
+        """
+        Edit and add metadata about a dataset. Notably description, data source, etc
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/metadata",
+            method="POST",
+            parameters={"dataset_id": dataset_id, "metadata": metadata},
+        )
+
     def create(self, dataset_id: str, schema: Optional[dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
