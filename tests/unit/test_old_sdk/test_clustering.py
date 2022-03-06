@@ -1,5 +1,5 @@
 import pytest
-
+import time
 from typing import Dict, List
 
 from relevanceai.http_client import Client
@@ -61,6 +61,7 @@ def test_centroid_distances(test_client: Client, clustered_dataset_id: List[Dict
 
 @pytest.fixture
 def closest_to_centers(test_client: Client, clustered_dataset_id: List[Dict]):
+    time.sleep(2)
     results = test_client.datasets.cluster.centroids.list_closest_to_center(
         clustered_dataset_id,
         ["sample_1_vector_"],
@@ -71,6 +72,7 @@ def closest_to_centers(test_client: Client, clustered_dataset_id: List[Dict]):
 
 @pytest.fixture
 def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict]):
+    time.sleep(2)
     results = test_client.datasets.cluster.centroids.list_furthest_from_center(
         clustered_dataset_id,
         ["sample_1_vector_"],

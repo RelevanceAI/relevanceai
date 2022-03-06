@@ -1020,13 +1020,13 @@ class Operations(Write):
         preprocess_hooks: Optional[list] = None,
     ):
         """Get the bigrams"""
+        from nltk import word_tokenize
+        from nltk.util import ngrams
+
         additional_stopwords = (
             [] if additional_stopwords is None else additional_stopwords
         )
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
-
-        from nltk import word_tokenize
-        from nltk.util import ngrams
 
         if additional_stopwords:
             [self.eng_stopwords.add(s) for s in additional_stopwords]
@@ -1110,7 +1110,7 @@ class Operations(Write):
         document_limit: int
             The maximum number of documents in a dataset
         preprocess_hooks: List[Callable]
-            A list of process hooks
+            A list of process hooks to clean text before they count as a word
 
         Example
         ----------
@@ -1122,6 +1122,19 @@ class Operations(Write):
             ds = client.Dataset("sample")
             # Returns the top keywords in a text field
             ds.keyphrases(text_fields=["sample"])
+
+
+            # Create an e-commerce dataset
+
+            from relevanceai.datasets import get_dummy_ecommerce_dataset
+            docs = get_dummy_ecommerce_dataset()
+            ds = client.Dataset("ecommerce-example")
+            ds.upsert_documents(docs)
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3)
+            def remove_apostrophe(string):
+                return string.replace("'s", "")
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3, preprocess_hooks=[remove_apostrophe])
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3, additional_stopwords=["Men", "Women"])
 
         """
         self._check_keyphrase_algorithm_requirements(algorithm)
@@ -1197,22 +1210,45 @@ class Operations(Write):
         vector_fields: List[str],
         text_fields: List[str],
         cluster_alias: str,
-        n: int = 2,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
+        most_common: int = 10,
         preprocess_hooks: Optional[List[callable]] = None,
         algorithm: str = "rake",
+        n: int = 2,
     ):
         """
-        Simple implementation of the cluster word cloud
+        Simple implementation of the cluster word cloud.
+
+        Parameters
+        ------------
+        vector_fields: list
+            The list of vector fields
+        text_fields: list
+            The list of text fields
+        cluster_alias: str
+            The alias of the cluster
+        cluster_field: str
+            The cluster field to try things on
+        num_clusters: int
+            The number of clusters
+        preprocess_hooks: list
+            The preprocess hooks
+        algorithm: str
+            The algorithm to use
+        n: int
+            The number of words
+
         """
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
 
         vector_fields_str = ".".join(sorted(vector_fields))
         field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
         all_clusters = self.facets([field], page_size=num_clusters)
-        most_common = 10
         cluster_counters = {}
+        if "results" in all_clusters:
+            all_clusters = all_clusters["results"]
+        # TODO: Switch to multiprocessing
         for c in tqdm(all_clusters[field]):
             cluster_value = c[field]
             top_words = self.keyphrases(
@@ -1230,7 +1266,7 @@ class Operations(Write):
                 preprocess_hooks=preprocess_hooks,
                 algorithm=algorithm,
             )
-            cluster_counters[c] = top_words
+            cluster_counters[cluster_value] = top_words
         return cluster_counters
 
     # TODO: Add keyphrases to auto cluster
