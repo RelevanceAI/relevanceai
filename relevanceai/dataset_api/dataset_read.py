@@ -630,6 +630,11 @@ class Read(BatchAPIClient):
         """
         return self.datasets.metadata(self.dataset_id)
 
+    @property
+    def metadata(self):
+        """Get the metadata"""
+        return self.get_metadata()
+
     def insert_metadata(self, metadata: dict):
         """Insert metadata"""
         return self.datasets.post_metadata(self.dataset_id, metadata)
