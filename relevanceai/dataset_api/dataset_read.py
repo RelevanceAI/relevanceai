@@ -633,7 +633,7 @@ class Read(BatchAPIClient):
     @property
     def metadata(self):
         """Get the metadata"""
-        return self.get_metadata()
+        return self.get_metadata()["results"]
 
     def insert_metadata(self, metadata: dict):
         """Insert metadata"""
