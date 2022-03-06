@@ -623,3 +623,24 @@ class Read(BatchAPIClient):
             include_vector=include_vector,
             include_cursor=include_cursor,
         )
+
+    def get_metadata(self):
+        """
+        Store Metadata
+        """
+        return self.datasets.metadata(self.dataset_id)
+
+    @property
+    def metadata(self):
+        """Get the metadata"""
+        return self.get_metadata()["results"]
+
+    def insert_metadata(self, metadata: dict):
+        """Insert metadata"""
+        return self.datasets.post_metadata(self.dataset_id, metadata)
+
+    def upsert_metadata(self, metadata: dict):
+        """Upsert metadata."""
+        original_metadata: dict = self.datasets.metadata(self.dataset_id)
+        original_metadata.update(metadata)
+        return self.datasets.post_metadata(self.dataset_id, metadata)

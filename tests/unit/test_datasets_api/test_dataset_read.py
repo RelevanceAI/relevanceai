@@ -3,6 +3,7 @@
 """
 
 import pandas as pd
+import time
 
 from relevanceai import Client
 
@@ -76,3 +77,18 @@ def test_info(test_df: Dataset):
 
 def test_df_get_smoke(test_df: Dataset):
     assert test_df.get(["321", "3421"])
+
+
+def test_df_metadata(test_df: Dataset):
+    metadata = {"value": "hey"}
+    time.sleep(1)
+    test_df.insert_metadata(metadata)
+    time.sleep(1)
+    new_metadata = test_df.metadata
+    assert new_metadata["value"] == "hey"
+
+    new_metadata = {"value": "cool", "old_value": "hey"}
+    response = test_df.upsert_metadata(new_metadata)
+    new_metadata = test_df.metadata
+    assert new_metadata["value"] == "cool"
+    assert new_metadata["old_value"] == "hey"
