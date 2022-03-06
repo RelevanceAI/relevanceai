@@ -265,7 +265,7 @@ class Operations(Write):
         retrieval_kwargs: Optional[dict] = None,
         encode_kwargs: Optional[dict] = None,
         threshold: float = 0.75,
-        min_community_size: int = 10,
+        min_community_size: int = 1,
         init_max_size: int = 1000,
     ):
         """
@@ -422,24 +422,41 @@ class Operations(Write):
         )
         print("Community detection complete.")
 
+        print("Updating documents...")
+        community_documents = []
         for i, cluster in enumerate(clusters):
             ids = []
             for member in cluster:
                 ids.extend(ids_map[member])
-            self.datasets.documents.update_where(
-                self.dataset_id,
-                update={
-                    "_cluster_": {field: {"community-detection": f"community-{i+1}"}}
-                },
-                filters=[
+            # During initial construction update_where did not accept dict
+            # values as valid updates.
+            # self.datasets.documents.update_where(
+            #    self.dataset_id,
+            #    update={
+            #        "_cluster_": {field: {"community-detection": f"community-{i+1}"}}
+            #    },
+            #    filters=[
+            #        {
+            #            "field": "ids",
+            #            "filter_type": "ids",
+            #            "condition": "==",
+            #            "condition_value": ids,
+            #        }
+            #    ],
+            # )
+            for id in ids:
+                community_documents.append(
                     {
-                        "field": "ids",
-                        "filter_type": "ids",
-                        "condition": "==",
-                        "condition_value": ids,
+                        "_id": id,
+                        "_cluster_": {
+                            field: {"community-detection": f"community-{i+1}"}
+                        },
                     }
-                ],
-            )
+                )
+
+        results = self._update_documents(self.dataset_id, community_documents)
+        print("Documents updated.")
+        return results
 
     @track
     def label_vector(
