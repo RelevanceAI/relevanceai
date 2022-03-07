@@ -290,7 +290,7 @@ class Write(Read):
             )
         )
         results = self.insert_documents(documents, *args, **kwargs)
-        self.media_fields.append(field)
+        self.image_fields.append(field)
         return results
 
     @track
