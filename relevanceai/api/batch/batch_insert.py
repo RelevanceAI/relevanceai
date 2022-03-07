@@ -607,7 +607,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
                 updated_ids = [document["_id"] for document in documents]
 
-                inserted = await self._change_documents(
+                inserted = await self._process_documents(
                     dataset_id=updated_dataset_id
                     if updated_dataset_id is not None
                     else dataset_id,
@@ -1190,7 +1190,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
     async def _apply_bulk_fn(self, bulk_fn, documents: list):
         """
-        Called from _change_documents. Calls bulk_fn on documents.
+        Called from _process_documents. Calls bulk_fn on documents.
 
         Parameters
         ----------
@@ -1232,7 +1232,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             "failed_documents": documents_remaining,
         }
 
-    async def _change_documents(
+    async def _process_documents(
         self,
         dataset_id: str,
         documents: list,
@@ -1243,6 +1243,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         **kwargs,
     ):
         """
+        Called from pull_update_push_async. This method determines via user
+        input whether to insert or to update documents in a Dataset. (A
+        Dataset that does not exist is automatically created.) Then, the
+        operation (either bulk_insert_async or bulk_update_async) is wrapped
+        by _apply_bulk_fn and then applied to the given documents.
+
         Parameters
         ----------
         dataset_id: str

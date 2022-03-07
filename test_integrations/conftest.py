@@ -9,7 +9,7 @@ from relevanceai.datasets import mock_documents
 REGION = os.getenv("TEST_REGION")
 
 
-SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
+SAMPLE_DATASET_DATASET_PREFIX = "_sample_integration_test_dataset_"
 
 
 def generate_random_string(string_length: int = 5) -> str:
@@ -56,8 +56,18 @@ def test_client(test_project, test_api_key, test_firebase_uid):
             firebase_uid=test_firebase_uid,
             region=REGION,
         )
+
+    # For some reason not resetting to default
+    # correct_client_config(client)
+    client.config["mixpanel.is_tracking_enabled"] = False
     client.disable_analytics_tracking()
-    return client
+    yield client
+
+    # While unnecessary since test_dataset is deleted upon return, put in
+    # place for future use.
+    for d in client.datasets.list()["datasets"]:
+        if d.startswith(SAMPLE_DATASET_DATASET_PREFIX):
+            client.delete_dataset(d)
 
 
 @pytest.fixture(scope="function")
