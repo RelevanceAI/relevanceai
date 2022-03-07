@@ -211,6 +211,9 @@ class Read(BatchAPIClient):
 
             df.head()
         """
+        print(
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
+        )
         head_documents = self.get_documents(
             number_of_documents=n,
         )

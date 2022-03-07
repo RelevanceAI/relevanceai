@@ -8,6 +8,7 @@ v1.4.1
 -----------
 
 - Fix bug with `upsert_images`
+- Suggest link with dashboard link
 
 v1.4.0
 ------------
@@ -24,6 +25,7 @@ v1.3.2
 ------------
 
 - Add verbose verbose argument
+- Fix cluster_keyphrases
 
 v1.3.1
 ------------
