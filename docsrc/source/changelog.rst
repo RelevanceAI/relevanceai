@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.4.2
+-----------
+
+- Rename `image` to `media`
+
 v1.4.1
 -----------
 
@@ -141,7 +146,7 @@ v1.1.5
 
 - Feature/add beta decorator by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/461
 - feature/pro-1267-remove-verbose-logs-from-output by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/457
-- feature/pro-1299-add-a-insert_images_folder by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/456
+- feature/pro-1299-add-a-insert_media_folder by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/456
 - Add filters to clustering  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/464
 - silence dataset retrieval by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/465
 
