@@ -88,9 +88,9 @@ class TestInsertImages:
         with open(self.filename, "wb") as f:
             f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
-    def test_insert_images_folder(self, test_client: Client):
+    def test_insert_media_folder(self, test_client: Client):
         self.ds = test_client.Dataset(generate_dataset_id())
-        results = self.ds.insert_images_folder(
+        results = self.ds.insert_media_folder(
             field="images",
             path=self.directory,
             recurse=False,  # No subdirectories exist anyway
