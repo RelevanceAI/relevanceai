@@ -203,7 +203,7 @@ class Write(Read):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
-    def insert_medias_folder(
+    def insert_media_folder(
         self,
         path: Union[Path, str],
         field: str = "medias",
@@ -250,12 +250,12 @@ class Write(Read):
             get_all_medias: bool = True
             if get_all_medias:
                 # Inserts all medias, even those in the more-medias directory
-                ds.insert_medias_folder(
+                ds.insert_media_folder(
                     field="medias", path=path, recurse=True
                 )
             else:
                 # Only inserts media.jpg
-                ds.insert_medias_folder(
+                ds.insert_media_folder(
                     field="medias", path=path, recurse=False
                 )
 
@@ -290,7 +290,7 @@ class Write(Read):
             )
         )
         results = self.insert_documents(documents, *args, **kwargs)
-        self.media_fields.append(field)
+        self.image_fields.append(field)
         return results
 
     @track
