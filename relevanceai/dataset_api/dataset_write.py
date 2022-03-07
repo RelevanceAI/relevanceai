@@ -743,11 +743,14 @@ class Write(Read):
                     self._upload_image(
                         presigned_url=response["files"][i]["upload_url"],
                         image_content=requests.get(im).content,
+                        verbose=verbose,
                     )
                     response_docs["image_documents"].append(response_doc)
                 except Exception as e:
-                    print(f"Failed to upload {im}.")
-                    print(e)
+                    if verbose:
+                        print(f"Failed to upload {im}.")
+                    if verbose:
+                        print(e)
                     response_docs["failed_images"].append(response_doc)
         # Return the image URLs
         return response_docs
@@ -818,10 +821,10 @@ class Write(Read):
                     response_docs["failed_images"].append(response_doc)
         return response_docs
 
-    def insert_images(
+    def get_image_documents(
         self,
         image_fns: List[str],
-        verbose: bool = True,
+        verbose: bool = False,
         file_log: str = "image_upload.log",
     ) -> dict:
         """
@@ -832,7 +835,7 @@ class Write(Read):
         image_fns: List[str]
             List of images to upload
         verbose: bool
-            If True, prints the right statements
+            If True, prints statements after uploading
         file_log: str
             The file log to write
         """
@@ -843,3 +846,28 @@ class Write(Read):
             return self.insert_local_images(
                 image_fns, verbose=verbose, file_log=file_log
             )
+
+    def upsert_images(
+        self,
+        image_fns: List[str],
+        verbose: bool = False,
+        file_log: str = "image_upload.log",
+        **kw,
+    ):
+        """
+        Insert images into a dataset.
+
+        Parameters
+        -------------
+
+        image_fns: List[str]
+            A list of images to upsert
+        verbose: bool
+            If True, prints statements after uploading
+        file_log: str
+            The file log to write
+        """
+        documents = self.get_image_documents(
+            image_fns=image_fns, verbose=verbose, file_log=file_log
+        )
+        return self.upsert_documents(documents, create_id=True, **kw)
