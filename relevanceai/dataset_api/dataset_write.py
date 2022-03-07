@@ -870,4 +870,4 @@ class Write(Read):
         documents = self.get_image_documents(
             image_fns=image_fns, verbose=verbose, file_log=file_log
         )
-        return self.upsert_documents(documents, create_id=True, **kw)
+        return self.upsert_documents(documents["image_documents"], create_id=True, **kw)
