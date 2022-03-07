@@ -8,6 +8,7 @@ v1.4.1
 -----------
 
 - Fix bug with `upsert_images`
+- Suggest link with dashboard link
 
 v1.4.0
 ------------
