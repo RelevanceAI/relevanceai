@@ -234,6 +234,7 @@ class Write(Read):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             client = Client()
             ds = client.Dataset("dataset_id")
@@ -734,7 +735,7 @@ class Write(Read):
         response = self.datasets.get_file_upload_urls(self.dataset_id, files=image_urls)
         response_docs: dict = {"image_documents": [], "failed_images": []}
         with FileLogger(file_log):
-            for i, im in enumerate(image_urls):
+            for i, im in enumerate(tqdm(image_urls)):
                 response_doc = {}
                 response_doc["image_file"] = im
                 response_doc["image_url"] = response["files"][i]["url"]
@@ -800,7 +801,7 @@ class Write(Read):
         response = self.datasets.get_file_upload_urls(self.dataset_id, files=image_fns)
         response_docs: dict = {"image_documents": [], "failed_images": []}
         with FileLogger(file_log) as f:
-            for i, image_fn in tqdm(image_fns):
+            for i, image_fn in enumerate(tqdm(image_fns)):
                 response_doc = {}
                 response_doc["image_file"] = image_fn
                 response_doc["image_url"] = response["files"][i]["url"]
