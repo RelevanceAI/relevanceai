@@ -203,16 +203,16 @@ class Write(Read):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
-    def insert_images_folder(
+    def insert_medias_folder(
         self,
         path: Union[Path, str],
-        field: str = "images",
+        field: str = "medias",
         recurse: bool = True,
         *args,
         **kwargs,
     ):
         """
-        Given a path to a directory, this method loads all image-related files
+        Given a path to a directory, this method loads all media-related files
         into a Dataset.
 
         Parameters
@@ -221,10 +221,10 @@ class Write(Read):
             A text field of a dataset.
 
         path: Union[Path, str]
-            The path to the directory containing images.
+            The path to the directory containing medias.
 
         recurse: bool
-            Indicator that determines whether to recursively insert images from
+            Indicator that determines whether to recursively insert medias from
             subdirectories in the directory.
 
         Returns
@@ -240,23 +240,23 @@ class Write(Read):
             ds = client.Dataset("dataset_id")
 
             from pathlib import Path
-            path = Path("images/")
+            path = Path("medias/")
             # list(path.iterdir()) returns
             # [
-            #    PosixPath('image.jpg'),
-            #    PosixPath('more-images'), # a directory
+            #    PosixPath('media.jpg'),
+            #    PosixPath('more-medias'), # a directory
             # ]
 
-            get_all_images: bool = True
-            if get_all_images:
-                # Inserts all images, even those in the more-images directory
-                ds.insert_images_folder(
-                    field="images", path=path, recurse=True
+            get_all_medias: bool = True
+            if get_all_medias:
+                # Inserts all medias, even those in the more-medias directory
+                ds.insert_medias_folder(
+                    field="medias", path=path, recurse=True
                 )
             else:
-                # Only inserts image.jpg
-                ds.insert_images_folder(
-                    field="images", path=path, recurse=False
+                # Only inserts media.jpg
+                ds.insert_medias_folder(
+                    field="medias", path=path, recurse=False
                 )
 
         """
@@ -268,29 +268,29 @@ class Write(Read):
 
         from mimetypes import types_map
 
-        image_extensions = set(
-            k.lower() for k, v in types_map.items() if v.startswith("image/")
+        media_extensions = set(
+            k.lower() for k, v in types_map.items() if v.startswith("media/")
         )
 
-        def get_paths(path: Path, images: List[str]) -> List[str]:
+        def get_paths(path: Path, medias: List[str]) -> List[str]:
             for file in path.iterdir():
                 if file.is_dir() and recurse:
-                    images.extend(get_paths(file, []))
-                elif file.is_file() and file.suffix.lower() in image_extensions:
-                    images.append(str(file))
+                    medias.extend(get_paths(file, []))
+                elif file.is_file() and file.suffix.lower() in media_extensions:
+                    medias.append(str(file))
                 else:
                     continue
 
-            return images
+            return medias
 
-        images = get_paths(path, [])
+        medias = get_paths(path, [])
         documents = list(
             map(
-                lambda image: {"_id": uuid.uuid4(), "path": image, field: image}, images
+                lambda media: {"_id": uuid.uuid4(), "path": media, field: media}, medias
             )
         )
         results = self.insert_documents(documents, *args, **kwargs)
-        self.image_fields.append(field)
+        self.media_fields.append(field)
         return results
 
     @track
@@ -611,7 +611,7 @@ class Write(Read):
 
         .. code-block::
             {
-                "product_image_vector_": 1024,
+                "product_media_vector_": 1024,
                 "product_text_description_vector_" : 128
             }
 
@@ -693,181 +693,181 @@ class Write(Read):
 
     insert_df = insert_pandas_dataframe
 
-    def _upload_image(
-        self, presigned_url: str, image_content: bytes, verbose: bool = True
+    def _upload_media(
+        self, presigned_url: str, media_content: bytes, verbose: bool = True
     ):
-        if not isinstance(image_content, bytes):
+        if not isinstance(media_content, bytes):
             raise ValueError(
-                f"Image needs to be in a bytes format. Currently in {type(image_content)}"
+                f"media needs to be in a bytes format. Currently in {type(media_content)}"
             )
-        response = requests.put(presigned_url, data=image_content)
+        response = requests.put(presigned_url, data=media_content)
         if response.status_code == 200:
             if verbose:
-                print("Image successfully uploaded.")
+                print("media successfully uploaded.")
 
-    def insert_image_url(self, image_url: str, verbose: bool = True):
+    def insert_media_url(self, media_url: str, verbose: bool = True):
         """
-        Insert a single image URL
+        Insert a single media URL
         """
-        # Image to download
+        # media to download
         response = self.datasets.get_file_upload_urls(
-            self.dataset_id, files=[image_url]
+            self.dataset_id, files=[media_url]
         )
         url = response["files"][0]["url"]
-        self._upload_image(
+        self._upload_media(
             presigned_url=response["files"][0]["upload_url"],
-            image_content=requests.get(image_url).content,
+            media_content=requests.get(media_url).content,
         )
         if verbose:
-            print(f"Image is hosted at {url}")
+            print(f"media is hosted at {url}")
         return url
 
-    def insert_image_urls(
+    def insert_media_urls(
         self,
-        image_urls: List[str],
+        media_urls: List[str],
         verbose: bool = True,
-        file_log: str = "insert_image_urls.log",
+        file_log: str = "insert_media_urls.log",
     ):
         """
-        Insert a single image URL
+        Insert a single media URL
         """
-        # Image to download
-        response = self.datasets.get_file_upload_urls(self.dataset_id, files=image_urls)
-        response_docs: dict = {"image_documents": [], "failed_images": []}
+        # media to download
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_urls)
+        response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log):
-            for i, im in enumerate(tqdm(image_urls)):
+            for i, im in enumerate(tqdm(media_urls)):
                 response_doc = {}
-                response_doc["image_file"] = im
-                response_doc["image_url"] = response["files"][i]["url"]
+                response_doc["media_file"] = im
+                response_doc["media_url"] = response["files"][i]["url"]
                 try:
-                    self._upload_image(
+                    self._upload_media(
                         presigned_url=response["files"][i]["upload_url"],
-                        image_content=requests.get(im).content,
+                        media_content=requests.get(im).content,
                         verbose=verbose,
                     )
-                    response_docs["image_documents"].append(response_doc)
+                    response_docs["media_documents"].append(response_doc)
                 except Exception as e:
                     if verbose:
                         print(f"Failed to upload {im}.")
                     if verbose:
                         print(e)
-                    response_docs["failed_images"].append(response_doc)
-        # Return the image URLs
+                    response_docs["failed_medias"].append(response_doc)
+        # Return the media URLs
         return response_docs
 
-    def _open_local_image(self, fn: str) -> bytes:
+    def _open_local_media(self, fn: str) -> bytes:
         with open(fn, "rb") as fn_byte:
             f = fn_byte.read()
             b = bytes(f)
         return b
 
-    def insert_local_image(self, image_fn: str, verbose: bool = True):
+    def insert_local_media(self, media_fn: str, verbose: bool = True):
         """
-        Insert local image
+        Insert local media
 
         Parameters
         -------------
-        image_fn: str
-            A local image to upload
+        media_fn: str
+            A local media to upload
         verbose: bool
-            If True, prints a statement after uploading each image
+            If True, prints a statement after uploading each media
         """
-        # Image to download
-        response = self.datasets.get_file_upload_urls(self.dataset_id, files=[image_fn])
+        # media to download
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=[media_fn])
         url = response["files"][0]["url"]
-        self._upload_image(
+        self._upload_media(
             presigned_url=response["files"][0]["upload_url"],
-            image_content=self._open_local_image(image_fn),
+            media_content=self._open_local_media(media_fn),
             verbose=verbose,
         )
         if verbose:
-            print(f"Image is hosted at {url}.")
+            print(f"media is hosted at {url}.")
         return url
 
-    def insert_local_images(
+    def insert_local_medias(
         self,
-        image_fns: List[str],
+        media_fns: List[str],
         verbose: bool = False,
-        file_log="local_image_upload.log",
+        file_log="local_media_upload.log",
     ):
-        """Insert a list of local images.
+        """Insert a list of local medias.
 
         Parameters
         ------------
-        image_fns: List[str]
-            A list of local images
+        media_fns: List[str]
+            A list of local medias
         verbose: bool
             If True, this will print after each successful upload.
         file_log: str
             The log to write
         """
-        response = self.datasets.get_file_upload_urls(self.dataset_id, files=image_fns)
-        response_docs: dict = {"image_documents": [], "failed_images": []}
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_fns)
+        response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log) as f:
-            for i, image_fn in enumerate(tqdm(image_fns)):
+            for i, media_fn in enumerate(tqdm(media_fns)):
                 response_doc = {}
-                response_doc["image_file"] = image_fn
-                response_doc["image_url"] = response["files"][i]["url"]
+                response_doc["media_file"] = media_fn
+                response_doc["media_url"] = response["files"][i]["url"]
                 try:
-                    self._upload_image(
+                    self._upload_media(
                         presigned_url=response["files"][i]["upload_url"],
-                        image_content=self._open_local_image(image_fn),
+                        media_content=self._open_local_media(media_fn),
                         verbose=verbose,
                     )
-                    response_docs["image_documents"].append(response_doc)
+                    response_docs["media_documents"].append(response_doc)
                 except Exception as e:
-                    print(f"failed to upload {image_fn}")
+                    print(f"failed to upload {media_fn}")
                     print(e)
-                    response_docs["failed_images"].append(response_doc)
+                    response_docs["failed_medias"].append(response_doc)
         return response_docs
 
-    def get_image_documents(
+    def get_media_documents(
         self,
-        image_fns: List[str],
+        media_fns: List[str],
         verbose: bool = False,
-        file_log: str = "image_upload.log",
+        file_log: str = "media_upload.log",
     ) -> dict:
         """
-        Bulk insert images. Returns a link to once it has been hosted
+        Bulk insert medias. Returns a link to once it has been hosted
 
         Parameters
         --------------
-        image_fns: List[str]
-            List of images to upload
+        media_fns: List[str]
+            List of medias to upload
         verbose: bool
             If True, prints statements after uploading
         file_log: str
             The file log to write
         """
-        # Algorithm aims to insert local or hosted images
-        if "http" in image_fns[0]:
-            return self.insert_image_urls(image_fns, verbose=verbose, file_log=file_log)
+        # Algorithm aims to insert local or hosted medias
+        if "http" in media_fns[0]:
+            return self.insert_media_urls(media_fns, verbose=verbose, file_log=file_log)
         else:
-            return self.insert_local_images(
-                image_fns, verbose=verbose, file_log=file_log
+            return self.insert_local_medias(
+                media_fns, verbose=verbose, file_log=file_log
             )
 
-    def upsert_images(
+    def upsert_medias(
         self,
-        image_fns: List[str],
+        media_fns: List[str],
         verbose: bool = False,
-        file_log: str = "image_upload.log",
+        file_log: str = "media_upload.log",
         **kw,
     ):
         """
-        Insert images into a dataset.
+        Insert medias into a dataset.
 
         Parameters
         -------------
 
-        image_fns: List[str]
-            A list of images to upsert
+        media_fns: List[str]
+            A list of medias to upsert
         verbose: bool
             If True, prints statements after uploading
         file_log: str
             The file log to write
         """
-        documents = self.get_image_documents(
-            image_fns=image_fns, verbose=verbose, file_log=file_log
+        documents = self.get_media_documents(
+            media_fns=media_fns, verbose=verbose, file_log=file_log
         )
-        return self.upsert_documents(documents["image_documents"], create_id=True, **kw)
+        return self.upsert_documents(documents["media_documents"], create_id=True, **kw)
