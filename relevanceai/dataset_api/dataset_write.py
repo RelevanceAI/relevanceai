@@ -2,9 +2,9 @@
 """
 Pandas like dataset API
 """
+import requests
 import uuid
 import json
-
 import pandas as pd
 
 from doc_utils import DocUtils
@@ -13,6 +13,9 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
+from tqdm.auto import tqdm
+
+from relevanceai.logger import FileLogger
 
 
 class Write(Read):
@@ -231,6 +234,7 @@ class Write(Read):
         Example
         -------
         .. code-block::
+
             from relevanceai import Client
             client = Client()
             ds = client.Dataset("dataset_id")
@@ -688,3 +692,154 @@ class Write(Read):
         return self.datasets.delete(self.dataset_id)
 
     insert_df = insert_pandas_dataframe
+
+    def _upload_image(
+        self, presigned_url: str, image_content: bytes, verbose: bool = True
+    ):
+        if not isinstance(image_content, bytes):
+            raise ValueError(
+                f"Image needs to be in a bytes format. Currently in {type(image_content)}"
+            )
+        response = requests.put(presigned_url, data=image_content)
+        if response.status_code == 200:
+            if verbose:
+                print("Image successfully uploaded.")
+
+    def insert_image_url(self, image_url: str, verbose: bool = True):
+        """
+        Insert a single image URL
+        """
+        # Image to download
+        response = self.datasets.get_file_upload_urls(
+            self.dataset_id, files=[image_url]
+        )
+        url = response["files"][0]["url"]
+        self._upload_image(
+            presigned_url=response["files"][0]["upload_url"],
+            image_content=requests.get(image_url).content,
+        )
+        if verbose:
+            print(f"Image is hosted at {url}")
+        return url
+
+    def insert_image_urls(
+        self,
+        image_urls: List[str],
+        verbose: bool = True,
+        file_log: str = "insert_image_urls.log",
+    ):
+        """
+        Insert a single image URL
+        """
+        # Image to download
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=image_urls)
+        response_docs: dict = {"image_documents": [], "failed_images": []}
+        with FileLogger(file_log):
+            for i, im in enumerate(tqdm(image_urls)):
+                response_doc = {}
+                response_doc["image_file"] = im
+                response_doc["image_url"] = response["files"][i]["url"]
+                try:
+                    self._upload_image(
+                        presigned_url=response["files"][i]["upload_url"],
+                        image_content=requests.get(im).content,
+                    )
+                    response_docs["image_documents"].append(response_doc)
+                except Exception as e:
+                    print(f"Failed to upload {im}.")
+                    print(e)
+                    response_docs["failed_images"].append(response_doc)
+        # Return the image URLs
+        return response_docs
+
+    def _open_local_image(self, fn: str) -> bytes:
+        with open(fn, "rb") as fn_byte:
+            f = fn_byte.read()
+            b = bytes(f)
+        return b
+
+    def insert_local_image(self, image_fn: str, verbose: bool = True):
+        """
+        Insert local image
+
+        Parameters
+        -------------
+        image_fn: str
+            A local image to upload
+        verbose: bool
+            If True, prints a statement after uploading each image
+        """
+        # Image to download
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=[image_fn])
+        url = response["files"][0]["url"]
+        self._upload_image(
+            presigned_url=response["files"][0]["upload_url"],
+            image_content=self._open_local_image(image_fn),
+            verbose=verbose,
+        )
+        if verbose:
+            print(f"Image is hosted at {url}.")
+        return url
+
+    def insert_local_images(
+        self,
+        image_fns: List[str],
+        verbose: bool = False,
+        file_log="local_image_upload.log",
+    ):
+        """Insert a list of local images.
+
+        Parameters
+        ------------
+        image_fns: List[str]
+            A list of local images
+        verbose: bool
+            If True, this will print after each successful upload.
+        file_log: str
+            The log to write
+        """
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=image_fns)
+        response_docs: dict = {"image_documents": [], "failed_images": []}
+        with FileLogger(file_log) as f:
+            for i, image_fn in enumerate(tqdm(image_fns)):
+                response_doc = {}
+                response_doc["image_file"] = image_fn
+                response_doc["image_url"] = response["files"][i]["url"]
+                try:
+                    self._upload_image(
+                        presigned_url=response["files"][i]["upload_url"],
+                        image_content=self._open_local_image(image_fn),
+                        verbose=verbose,
+                    )
+                    response_docs["image_documents"].append(response_doc)
+                except Exception as e:
+                    print(f"failed to upload {image_fn}")
+                    print(e)
+                    response_docs["failed_images"].append(response_doc)
+        return response_docs
+
+    def insert_images(
+        self,
+        image_fns: List[str],
+        verbose: bool = True,
+        file_log: str = "image_upload.log",
+    ) -> dict:
+        """
+        Bulk insert images. Returns a link to once it has been hosted
+
+        Parameters
+        --------------
+        image_fns: List[str]
+            List of images to upload
+        verbose: bool
+            If True, prints the right statements
+        file_log: str
+            The file log to write
+        """
+        # Algorithm aims to insert local or hosted images
+        if "http" in image_fns[0]:
+            return self.insert_image_urls(image_fns, verbose=verbose, file_log=file_log)
+        else:
+            return self.insert_local_images(
+                image_fns, verbose=verbose, file_log=file_log
+            )
