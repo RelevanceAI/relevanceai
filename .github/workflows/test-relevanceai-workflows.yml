@@ -15,6 +15,7 @@ jobs:
           - os: ubuntu-latest
             path: ~/.cache/pip
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -45,4 +46,4 @@ jobs:
           TEST_US_API_KEY: ${{ secrets.TEST_US_API_KEY }}
           TEST_US_PROJECT: ${{ secrets.TEST_US_PROJECT }}
         run: |
-          python scripts/test_notebooks.py
+          python workflows/scripts/test_notebooks.py
