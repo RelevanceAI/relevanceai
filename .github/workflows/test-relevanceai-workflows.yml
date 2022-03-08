@@ -1,0 +1,46 @@
+name: Test Relevance AI Workflows
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-notebooks:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.7' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+    steps:
+      - name: Checkout RelevanceAI/workflows repository
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/workflows
+          ref: refs/heads/main
+          path: workflows
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.path }}
+          key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.pythonLocation }}-pip-
+            ${{ runner.os }}-${{ env.pythonLocation }}-
+      - name: Check workflow notebooks
+        env:
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          TEST_US_API_KEY: ${{ secrets.TEST_US_API_KEY }}
+          TEST_US_PROJECT: ${{ secrets.TEST_US_PROJECT }}
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install --upgarde pop
+          python -m pip install -e .[tests]
+          python workflows/scripts/test_notebooks.py
