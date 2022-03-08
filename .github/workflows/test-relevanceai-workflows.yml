@@ -33,7 +33,9 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install --upgrade pip
           python -m pip install -e .[tests]
-          python -m pip install nbformat nbclient
+          python -m pip install nbformat nbclient ipykernel
+      - name: Create python3 Jupyter kernel
+        run: python -m ipykernel install --user --name python3
       - name: Checkout RelevanceAI/workflows repository
         uses: actions/checkout@v2
         with:
