@@ -9,7 +9,12 @@ from relevanceai.base import _Base
 
 class Dashboard(ABC, _Base):
     def __init__(
-        self, project: str, api_key: str, deployable_id: str, application: str
+        self,
+        project: str,
+        api_key: str,
+        deployable_id: str,
+        application: str,
+        firebase_uid: str = None,
     ):
         valid_applications = {"cluster"}
         if application not in valid_applications:
@@ -30,7 +35,7 @@ class Dashboard(ABC, _Base):
             else:
                 self.vector_field = configuration[application]["vector_field"]
 
-        super().__init__(project, api_key)
+        super().__init__(project, api_key, firebase_uid)
         self.deployable_id = deployable_id
 
         self._shareable_id = None
@@ -63,9 +68,10 @@ class Dashboard(ABC, _Base):
         application: str,
         share: bool,
         application_configuration: dict,
+        firebase_uid: str = None,
     ):
         # Validation phase
-        schema = DatasetsClient(project, api_key).schema(dataset_id)
+        schema = DatasetsClient(project, api_key, firebase_uid).schema(dataset_id)
         try:
             vector_field_type = schema[vector_field]
             # Since vectors are the only schema types that are objects, this
