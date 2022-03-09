@@ -2520,6 +2520,7 @@ class Operations(Write):
         results = self.deployables.create(
             dataset_id=self.dataset_id, configuration=configuration
         )
+
         # After you have created an app
         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployables_id']}/{self.region}"
         print(f"You can now access your deployable at {url}.")
