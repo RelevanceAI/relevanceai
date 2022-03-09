@@ -11,9 +11,12 @@ from relevanceai.dataset_api.dataset_stats import Stats
 from relevanceai.dataset_api.dataset_operations import Operations
 from relevanceai.dataset_api.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
+from relevanceai.logger import FileLogger
 from relevanceai.utils import introduced_in_version
 
 # from relevanceai.dataset_api.dataset_dr import DR
+
+_GLOBAL_DATASETS = ["_mock_dataset_"]
 
 
 class Dataset(Export, Stats, Operations):
@@ -62,6 +65,16 @@ class Dataset(Export, Stats, Operations):
             dataset_id=dataset_id,
             firebase_uid=firebase_uid,
         )
+        # add global datasets
+        if self.dataset_id in _GLOBAL_DATASETS:
+            from relevanceai.datasets import mock_documents
+            from relevanceai.analytics_funcs import fire_and_forget
+
+            @fire_and_forget
+            def add_mock_dataset():
+                self.upsert_documents(mock_documents(100))
+
+            add_mock_dataset()
 
     @track
     def __getitem__(self, field: Union[List[str], str]):
