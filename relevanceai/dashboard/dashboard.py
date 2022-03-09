@@ -15,7 +15,7 @@ class Dashboard(ABC, _Base):
         api_key: str,
         deployable_id: str,
         application: str,
-        firebase_uid: str = None,
+        firebase_uid: str,
     ):
         valid_applications = {"cluster"}
         if application not in valid_applications:
