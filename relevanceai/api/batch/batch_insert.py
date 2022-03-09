@@ -406,7 +406,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             )
         with FileLogger(fn=log_file, verbose=True):
             # Instantiate the logger to document the successful IDs
-            PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
+            # PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
 
             # Track failed documents
             failed_documents: List[Dict] = []
@@ -417,13 +417,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             original_length = self.get_number_of_documents(dataset_id, filters)
 
             # get the remaining number in case things break
-            remaining_length = (
-                original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
-            )
+            # remaining_length = (
+            #    original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
+            # )
 
-            iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
-
-            completed_documents_list: list = []
+            # iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
+            iterations_required = math.ceil(original_length / retrieve_chunk_size)
 
             # Get incomplete documents from raw collection
             retrieve_filters = filters + [
@@ -474,25 +473,28 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         use_json_encoder=use_json_encoder,
                     )
 
-                # Check success
                 chunk_failed = insert_json["failed_documents"]
                 chunk_documents_detailed = insert_json["failed_documents_detailed"]
                 failed_documents.extend(chunk_failed)
                 failed_documents_detailed.extend(chunk_documents_detailed)
-                success_documents = list(set(updated_documents) - set(failed_documents))
-                PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
+                # success_documents = list(set(updated_documents) - set(failed_documents))
+                # PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
                 self.logger.success(
                     f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
                 )
 
-            self.logger.success(f"Pull, Update, Push is complete!")
+            if failed_documents:
+                # This will be picked up by FileLogger
+                print("The following documents failed to be updated/inserted:")
+                for failed_document in failed_documents:
+                    print(f"  * {failed_document}")
 
-            # if PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn() == original_length:
-            #     os.remove(log_file)
-            return {
-                "failed_documents": failed_documents,
-                "failed_documents_detailed": failed_documents_detailed,
-            }
+        self.logger.success(f"Pull, Update, Push is complete!")
+
+        return {
+            "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
+        }
 
     def pull_update_push_async(
         self,
