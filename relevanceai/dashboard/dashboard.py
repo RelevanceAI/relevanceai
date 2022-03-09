@@ -96,7 +96,7 @@ class Dashboard(ABC, _Base):
         )
         deployable_id = response["deployable_id"]
 
-        dashboard = cls(project, api_key, deployable_id, application)
+        dashboard = cls(project, api_key, deployable_id, application, firebase_uid)
         if share:
             dashboard.share_application()
 
