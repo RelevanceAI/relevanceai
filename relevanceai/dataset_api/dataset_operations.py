@@ -2511,3 +2511,16 @@ class Operations(Write):
             page=page,
             asc=asc,
         )
+
+    @beta
+    def launch_cluster_app(self, configuration: dict):
+        """
+        Launch an app with a given configuration
+        """
+        results = self.deployables.create(
+            dataset_id=self.dataset_id, configuration=configuration
+        )
+        # After you have created an app
+        url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployables_id']}/{self.region}"
+        print(f"You can now access your deployable at {url}.")
+        return url

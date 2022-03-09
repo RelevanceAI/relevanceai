@@ -3,7 +3,7 @@ from typing import Dict, Optional
 from relevanceai.base import _Base
 
 
-class Deployable(_Base):
+class DeployableClient(_Base):
     def __init__(self, project: str, api_key: str):
         super().__init__(project, api_key)
         self.project = project
@@ -15,14 +15,14 @@ class Deployable(_Base):
         TODO: explain what a deployable is
 
         Parameters
-        ----------
+        ------------
         dataset_id: string
             Unique name of dataset
         configuration: None | dict
             A configuration specification
 
         Returns
-        -------
+        ---------
         On success (200): {
             deployable_id, dataset_id, project_id, api_key, configuration
         }
