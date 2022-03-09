@@ -5,7 +5,7 @@ from relevanceai.base import _Base
 
 class DeployableClient(_Base):
     def __init__(self, project: str, api_key: str, firebase_uid: str):
-        super().__init__(project, api_key)
+        super().__init__(project, api_key, firebase_uid)
 
     def create(self, dataset_id: str, configuration: Optional[Dict] = None):
         """
