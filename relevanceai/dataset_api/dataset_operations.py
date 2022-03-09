@@ -2487,6 +2487,22 @@ class Operations(Write):
         page: int = 1,
         asc: bool = False,
     ):
+        """
+        Get a summary of fields - such as most common, their min/max, etc.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            from relevanceai.datasets import mock_documents
+            documents = mock_documents(100)
+            ds = client.Dataset("mock_documents")
+            ds.upsert_documents(documents)
+            ds.facets(["sample_1_value"])
+        """
         return self.datasets.facets(
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
@@ -2495,3 +2511,17 @@ class Operations(Write):
             page=page,
             asc=asc,
         )
+
+    @beta
+    def launch_cluster_app(self, configuration: dict):
+        """
+        Launch an app with a given configuration
+        """
+        results = self.deployables.create(
+            dataset_id=self.dataset_id, configuration=configuration
+        )
+
+        # After you have created an app
+        url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployables_id']}/{self.region}"
+        print(f"You can now access your deployable at {url}.")
+        return url
