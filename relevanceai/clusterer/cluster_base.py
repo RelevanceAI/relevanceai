@@ -4,10 +4,12 @@ from doc_utils import DocUtils
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict, Callable
 
+from relevanceai.integration_checks import is_hdbscan_available, is_sklearn_available
+
 
 class ClusterBase(DocUtils, ABC):
     """
-    A Cluster Base for models to be inherited.
+    A Cluster _Base for models to be inherited.
     The most basic class to inherit.
     Use this class if you have an in-memory fitting algorithm.
 
@@ -277,6 +279,160 @@ class CentroidBase(ABC):
         centroid_docs = []
         for i, c in enumerate(self.centers):
             centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
+
+
+if is_sklearn_available():
+    from sklearn.cluster import KMeans
+
+
+class SklearnCentroidBase(CentroidBase, ClusterBase):
+    def __init__(self, model):
+        self.model: KMeans = model
+
+    def get_centers(self):
+        if hasattr(self.model, "cluster_centers_"):
+            return self.model.cluster_centers_
+        # Get the centers for each label
+        centers = []
+        labels = self.get_unique_labels()
+        for l in sorted(np.unique(labels).tolist()):
+            # self.model.jkjkj
+            centers.append(self._X[self.preds == l].mean(axis=0).tolist())
+        return centers
+
+    def fit_predict(self, X):
+        self._X = np.array(X)
+        self.preds = self.model.fit_predict(X)
+        return self.preds
+
+    def get_unique_labels(self):
+        if hasattr(self.model, "_labels"):
+            labels = self.model._labels
+        # Get labels from hdbscan
+        elif hasattr(self.model, "labels_"):
+            labels = self.model.labels_
+        else:
+            raise AttributeError(
+                "SKLearn has changed labels API - will need to provide way to return cluster centers"
+            )
+        return sorted(np.unique(labels))
+
+    def get_centroid_documents(self) -> List:
+        """
+        Get the centroid documents to store. This enables you to use `list_closest_to_center()`
+        and `list_furthest_from_center`.
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+
+        If multiple vector fields returns this:
+        Returns multiple
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
+        """
+        self.centers = self.get_centers()
+
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+            centroid_vector_field_name = self.vector_fields[0]
+            return [
+                {
+                    "_id": self._label_cluster(self.model.labels_[i]),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(i)}
+            for j, vf in enumerate(self.vector_fields):
+                centroid_doc[vf] = self.centers[i][vf]
+            centroid_docs.append(centroid_doc.copy())
+        return centroid_docs
+
+
+if is_hdbscan_available():
+    import hdbscan
+
+
+class HDBSCANClusterBase(SklearnCentroidBase):
+    model: "hdbscan.HDBSCAN"
+
+    def get_unique_labels(self):
+        return sorted(np.unique(self.model.labels_))
+
+    def get_centers(self):
+        labels = self.get_unique_labels()
+        centers = []
+        for l in labels:
+            centers.append(
+                self.model._raw_data[self.model.labels_ == l].mean(axis=0).tolist()
+            )
+        return centers
+
+    def get_centroid_documents(self) -> List:
+        """
+        Get the centroid documents to store. This enables you to use `list_closest_to_center()`
+        and `list_furthest_from_center`.
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "centroid_vector_": [0.23, 0.24, 0.23]
+            }
+
+        If multiple vector fields returns this:
+        Returns multiple
+
+        .. code-block::
+
+            {
+                "_id": "document-id-1",
+                "blue_vector_": [0.12, 0.312, 0.42],
+                "red_vector_": [0.23, 0.41, 0.3]
+            }
+
+        """
+        self.centers = self.get_centers()
+        labels = self.get_unique_labels()
+
+        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
+
+            if isinstance(self.centers, np.ndarray):
+                self.centers = self.centers.tolist()
+
+            centroid_vector_field_name = self.vector_fields[0]
+            return [
+                {
+                    "_id": self._label_cluster(labels[i]),
+                    centroid_vector_field_name: self.centers[i],
+                }
+                for i in range(len(self.centers))
+            ]
+        # For one or more vectors, separate out the vector fields
+        # centroid documents are created using multiple vector fields
+        centroid_docs = []
+        for i, c in enumerate(self.centers):
+            centroid_doc = {"_id": self._label_cluster(labels[i])}
             for j, vf in enumerate(self.vector_fields):
                 centroid_doc[vf] = self.centers[i][vf]
             centroid_docs.append(centroid_doc.copy())

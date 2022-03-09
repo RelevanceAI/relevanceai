@@ -1,22 +1,28 @@
+from typing import Optional
+
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.services.centroids import CentroidsClient
 
 
 class ClusterClient(_Base):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        self.centroids = CentroidsClient(project=project, api_key=api_key)
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        self.centroids = CentroidsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def aggregate(
         self,
         dataset_id: str,
         vector_fields: list,
-        metrics: list = [],
-        groupby: list = [],
-        sort: list = [],
-        filters: list = [],
+        metrics: Optional[list] = None,
+        groupby: Optional[list] = None,
+        sort: Optional[list] = None,
+        filters: Optional[list] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -52,7 +58,12 @@ class ClusterClient(_Base):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias}vector
         """
-        endpoint = "/services/cluster/aggregate"
+        metrics = [] if metrics is None else metrics
+        groupby = [] if groupby is None else groupby
+        sort = [] if sort is None else sort
+        filters = [] if filters is None else filters
+
+        endpoint = f"/datasets/{dataset_id}/cluster/aggregate"
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,
@@ -78,7 +89,7 @@ class ClusterClient(_Base):
     def facets(
         self,
         dataset_id: str,
-        facets_fields: list = [],
+        facets_fields: Optional[list] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -103,6 +114,8 @@ class ClusterClient(_Base):
         date_interval: string
             Interval for date facets
         """
+        facets_fields = [] if facets_fields is None else facets_fields
+
         return self.make_http_request(
             endpoint="/services/cluster/facets",
             method="GET",

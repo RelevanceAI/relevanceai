@@ -392,13 +392,13 @@ class HDBSCANClusterOps(DensityCluster):
         vectors: np.ndarray,
     ) -> np.ndarray:
         try:
-            from hdbscan import HDBSCAN
+            import hdbscan
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
                 f"{e}\nInstall hdbscan\n \
-                pip install -U relevanceai[hdbscan]"
+                pip install -U hdbscan"
             )
-        hdbscan = HDBSCAN(
+        model = hdbscan.HDBSCAN(
             min_cluster_size=self.min_cluster_size,
             algorithm=self.algorithm,
             approx_min_span_tree=self.approx_min_span_tree,
@@ -409,15 +409,17 @@ class HDBSCANClusterOps(DensityCluster):
             min_samples=self.min_samples,
             p=self.p,
         ).fit(vectors)
-        cluster_labels = hdbscan.labels_
+        cluster_labels = model.labels_
         return cluster_labels
 
 
 class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     @staticmethod
     def _choose_k(vectors: np.ndarray):
@@ -436,17 +438,21 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
     def cluster(
         vectors: np.ndarray,
         cluster: Union[CLUSTER, ClusterBase],
-        cluster_args: Dict = {},
+        cluster_args: Optional[Dict[str, Any]] = None,
         k: Union[None, int] = None,
     ) -> np.ndarray:
         """
         Cluster vectors
         """
-        if isinstance(cluster, str):
-            if cluster_args == {}:
+        if cluster_args is None:
+            if isinstance(cluster, str):
                 cluster_args = CLUSTER_DEFAULT_ARGS[cluster]
+            else:
+                cluster_args = {}
+
+        if isinstance(cluster, str):
             if cluster in ["kmeans", "kmedoids"]:
-                if k is None and cluster_args is None:
+                if k is None:
                     k = Cluster._choose_k(vectors)
                 if cluster == "kmeans":
                     if k not in cluster_args:
@@ -465,7 +471,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         dataset_id: str,
         vector_fields: list,
         alias: str,
-        filters: List = [],
+        filters: Optional[List] = None,
         k: Union[None, int] = 10,
         init: str = "k-means++",
         n_init: int = 10,
@@ -524,10 +530,11 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.kmeans_cluster(
-            dataset_id="sample_dataset",
+            dataset_id="sample_dataset_id",
             vector_fields=vector_fields
         )
         """
+        filters = [] if filters is None else filters
 
         if alias is None:
             alias = "kmeans_" + str(k)
@@ -610,7 +617,7 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         self,
         dataset_id: str,
         vector_fields: list,
-        filters: List = [],
+        filters: Optional[List] = None,
         algorithm: str = "best",
         alpha: float = 1.0,
         approx_min_span_tree: bool = True,
@@ -672,10 +679,11 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.hdbscan_cluster(
-            dataset_id="sample_dataset",
+            dataset_id="sample_dataset_id",
             vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
         )
         """
+        filters = [] if filters is None else filters
 
         if (
             ".".join([cluster_field, vector_fields[0], alias])

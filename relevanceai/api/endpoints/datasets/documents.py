@@ -1,17 +1,19 @@
-from typing import List
+from typing import List, Optional
 from relevanceai.base import _Base
 
 
 class DocumentsClient(_Base):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def list(
         self,
         dataset_id: str,
-        select_fields=[],
+        select_fields: Optional[list] = None,
         cursor: str = None,
         page_size: int = 20,
         include_vector: bool = True,
@@ -35,6 +37,7 @@ class DocumentsClient(_Base):
         random_state: int
             Random Seed for retrieving random documents.
         """
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/list",
@@ -71,7 +74,7 @@ class DocumentsClient(_Base):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df.get(["sample_id"], include_vector=False)
@@ -90,9 +93,8 @@ class DocumentsClient(_Base):
         dataset_id: str,
         ids: List,
         include_vector: bool = True,
-        select_fields: List = [],
+        select_fields: Optional[List] = [],
     ):
-
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field. \n
         For single id lookup version of this request use datasets.documents.get.
@@ -108,6 +110,7 @@ class DocumentsClient(_Base):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
         """
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_get",
@@ -122,16 +125,15 @@ class DocumentsClient(_Base):
     def get_where(
         self,
         dataset_id: str,
-        filters: list = [],
+        filters: Optional[list] = None,
         cursor: str = None,
         page_size: int = 20,
-        sort: list = [],
-        select_fields: list = [],
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
         include_vector: bool = True,
         random_state: int = 0,
         is_random: bool = False,
     ):
-
         """
         Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
 
@@ -176,11 +178,20 @@ class DocumentsClient(_Base):
 
         >>> {'field' : 'ids', 'filter_type' : 'ids', "condition":"==", "condition_value":["1", "10"]}
 
+
+        "or": for filtering with multiple conditions
+
+        .. code-block::
+
+            {'filter_type' : 'or', "condition_value": [{'field' : 'price',
+            'filter_type' : 'numeric', "condition":"<=", "condition_value":90},
+            {'field' : 'price', 'filter_type' : 'numeric',
+            "condition":">=", "condition_value":150}]}
+
         These are the available conditions:
 
         >>> "==", "!=", ">=", ">", "<", "<="
 
-        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
 
         Parameters
         ----------
@@ -203,8 +214,74 @@ class DocumentsClient(_Base):
         random_state: int
             Random Seed for retrieving random documents.
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/documents/get_where",
+            method="POST",
+            parameters={
+                "select_fields": select_fields,
+                "cursor": cursor,
+                "page_size": page_size,
+                "sort": sort,
+                "include_vector": include_vector,
+                "filters": filters,
+                "random_state": random_state,
+                "is_random": is_random,
+            },
+        )
+
+    async def get_where_async(
+        self,
+        dataset_id: str,
+        filters: Optional[list] = None,
+        cursor: str = None,
+        page_size: int = 20,
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        include_vector: bool = True,
+        random_state: int = 0,
+        is_random: bool = False,
+    ):
+        """
+        Asynchronous version of get_where. See get_where for more detials.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+
+        cursor: str
+            Cursor to paginate the document retrieval
+
+        page_size: int
+            Size of each page of results
+
+        include_vector: bool
+            Include vectors in the search results
+
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+
+        filters: list
+            Query for filtering the search results
+
+        is_random: bool
+            If True, retrieves doucments randomly. Cannot be used with cursor.
+
+        random_state: int
+            Random Seed for retrieving random documents.
+        """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
+
+        return await self.make_async_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
             parameters={
@@ -225,9 +302,8 @@ class DocumentsClient(_Base):
         page: int = 1,
         page_size: int = 20,
         include_vector: bool = True,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
     ):
-
         """
         Retrieve documents with filters and support for pagination. \n
         For more information about filters check out datasets.documents.get_where.
@@ -245,6 +321,7 @@ class DocumentsClient(_Base):
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
         """
+        select_fields = [] if select_fields is None else select_fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/paginate",
@@ -279,8 +356,9 @@ class DocumentsClient(_Base):
             parameters={"update": update, "insert_date": insert_date},
         )
 
-    def update_where(self, dataset_id: str, update: dict, filters: list = []):
-
+    def update_where(
+        self, dataset_id: str, update: dict, filters: Optional[list] = None
+    ):
         """
         Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
         For more information about filters refer to datasets.documents.get_where.
@@ -295,6 +373,7 @@ class DocumentsClient(_Base):
             Query for filtering the search results
 
         """
+        filters = [] if filters is None else filters
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/update_where",
@@ -354,6 +433,36 @@ class DocumentsClient(_Base):
                 "status_code": status_code,
             }
 
+    async def bulk_update_async(
+        self,
+        dataset_id: str,
+        updates: list,
+        insert_date: bool = True,
+    ):
+        """
+        Asynchronous version of bulk_update. See bulk_update for details.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        updates : list
+            Updates to make to the documents. It should be specified in a format of {"field_name": "value"}. e.g. {"item.status" : "Sold Out"}
+
+        insert_date	: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        include_updated_ids	: bool
+            Include the inserted IDs in the response
+        """
+        return await self.make_async_http_request(
+            base_url=self.config.get_option("api.base_ingest_url"),
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
+            method="POST",
+            parameters={"updates": updates, "insert_date": insert_date},
+        )
+
     def delete(self, dataset_id: str, id: str):
 
         """
@@ -375,7 +484,6 @@ class DocumentsClient(_Base):
         )
 
     def delete_where(self, dataset_id: str, filters: list):
-
         """
         Delete a document by filters. \n
         For more information about filters refer to datasets.documents.get_where.
@@ -394,8 +502,7 @@ class DocumentsClient(_Base):
             parameters={"filters": filters},
         )
 
-    def bulk_delete(self, dataset_id: str, ids: list = []):
-
+    def bulk_delete(self, dataset_id: str, ids: Optional[list] = None):
         """
         Delete a list of documents by their IDs.
 
@@ -406,6 +513,7 @@ class DocumentsClient(_Base):
         ids : list
             IDs of documents to delete
         """
+        ids = [] if ids is None else ids
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/bulk_delete",
@@ -414,7 +522,6 @@ class DocumentsClient(_Base):
         )
 
     def delete_fields(self, dataset_id: str, id: str, fields: list):
-
         """
         Delete fields in a document in a dataset by its id
 

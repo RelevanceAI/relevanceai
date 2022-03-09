@@ -23,17 +23,20 @@ requirements = [
     "tqdm>=4.49.0",
     "pandas>=1.0.0",
     "loguru>=0.5.3",
-    "document-utils>=1.7.0",
+    "document-utils>=1.7.1",
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
     "scikit-learn",
-    "typing-extensions",
+    "typing-extensions~=4.0.1",
+    "analytics-python~=1.4.0",
+    "aiohttp>=3.8.1",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
+    "matplotlib>=3.5.1",
     "plotly>=5.3.1",
     "typeguard",
     "dash",
@@ -55,6 +58,7 @@ test_requirements = (
     [
         "pytest",
         "pytest-dotenv",
+        "pytest-xdist",
         "pytest-cov",
         "pytest-mock",
         "mypy",
@@ -126,6 +130,7 @@ setup(
         ]
     },
     extras_require={
+        "docs": doc_requirements,
         "dev": dev_requirements,
         "dev-vis": dev_vis_requirements,
         "dev-viz": dev_vis_requirements,

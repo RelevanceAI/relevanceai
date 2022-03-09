@@ -45,10 +45,12 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
 
 
 class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def plot(
         self,
@@ -56,10 +58,9 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         vector_field: str,
         alias: str,
         ground_truth_field: str = None,
-        description_fields: list = [],
+        description_fields: Optional[list] = None,
         marker_size: int = 5,
     ):
-
         """
         Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels
 
@@ -78,7 +79,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         marker_size: int
             Size of scatterplot marker
         """
-
         (
             vectors,
             cluster_labels,
@@ -89,7 +89,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             vector_field=vector_field,
             alias=alias,
             ground_truth_field=ground_truth_field,
-            description_fields=description_fields,
+            description_fields=[] if description_fields is None else description_fields,
         )
         self.plot_from_documents(
             vectors=vectors,
@@ -107,7 +107,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         alias: str,
         ground_truth_field: str = None,
     ):
-
         """
         Determine the performance of clusters through the Silhouette Score, and optionally against ground truth labels through Rand Index, Homogeneity and Completeness
 
@@ -147,7 +146,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         ground_truth_field: str = None,
         transpose=False,
     ):
-
         """
         Determine the distribution of clusters, optionally against the ground truth
 
@@ -200,7 +198,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         distance_measure_mode: CENTROID_DISTANCES = "cosine",
         callable_distance=None,
     ):
-
         """
         Determine the distances of centroid from each other
 
@@ -237,13 +234,13 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         vector_field: str,
         alias: str,
         ground_truth_field: str = None,
-        description_fields: list = [],
+        description_fields: Optional[list] = None,
         get_vectors=True,
     ):
-
         """
         Return vectors, cluster labels, ground truth labels and other fields
         """
+        description_fields = [] if description_fields is None else description_fields
 
         cluster_field = f"_cluster_.{vector_field}.{alias}"
 
@@ -310,7 +307,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         vector_description: dict = None,
         marker_size: int = 5,
     ):
-
         """
         Plot the vectors in a collection to compare performance of cluster labels, optionally, against ground truth labels
 

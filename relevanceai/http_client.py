@@ -18,24 +18,37 @@ log in this way:
     from relevanceai import Client
     project = ""
     api_key = ""
-    client = Client(project=project, api_key=api_key)
+    client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
     client.list_datasets()
 
+If you need to change your token, simply run:
+
+.. code-block::
+
+    from relevanceai import Client
+    client = Client(token="...")
+
 """
-import getpass
-import json
 import os
-from typing import Union, Optional, List, Dict
+import getpass
+import pandas as pd
+from base64 import b64decode as decode
+from typing import Dict, List, Optional, Union
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.dataset_api import Dataset, Datasets
-from relevanceai.clusterer import ClusterOps, ClusterBase
+from relevanceai.dataset_api import Dataset
+from relevanceai.clusterer import ClusterOps
 
 from relevanceai.errors import APIError
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.config import CONFIG
 from relevanceai.vector_tools.plot_text_theme_model import build_and_plot_clusters
+from functools import lru_cache
 
+import analytics
+
+from relevanceai.analytics_funcs import track, identify
+from relevanceai.utils import beta, introduced_in_version
 
 vis_requirements = False
 try:
@@ -56,48 +69,104 @@ def str2bool(v):
 
 class Client(BatchAPIClient, DocUtils):
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
-    _cred_fn = ".creds.json"
 
     def __init__(
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
         api_key=os.getenv("RELEVANCE_API_KEY"),
-        authenticate: bool = False,
+        firebase_uid=os.getenv("RELEVANCE_FIREBASE_UID"),
+        region=None,
+        authenticate: bool = True,
         token: str = None,
+        force_refresh: bool = False,
     ):
-        if project is None or api_key is None:
-            project, api_key = self._token_to_auth(token)
+        """
+        Initialize the client
 
-        super().__init__(project, api_key)
+        Parameters
+        -------------
 
-        # Authenticate user
+        project: str
+            The name of the project
+        api_key: str
+            API key
+        region: str
+            The region to work in. Currently only `us-east-1` is provided
+        token: str
+            You can paste the token here if things need to be refreshed
+        force_refresh: bool
+            If True, it forces you to refresh your client
+        """
+
+        try:
+            self._set_mixpanel_write_key()
+        except Exception as e:
+            pass
+
+        if project is None or api_key is None or force_refresh:
+            credentials = self._token_to_auth(token)
+
+        try:
+            self.project = credentials["project"]
+        except Exception:
+            self.project = project
+
+        try:
+            self.api_key = credentials["api_key"]
+        except Exception:
+            self.api_key = api_key
+
+        try:
+            self.firebase_uid = credentials["firebase_uid"]
+        except Exception:
+            self.firebase_uid = firebase_uid
+
+        self._identify()
+
+        if region is not None:
+            self.region = region
+
+        self.base_url = self._region_to_url(self.region)
+        self.base_ingest_url = self._region_to_ingestion_url(self.region)
+
+        super().__init__(
+            project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
+        )
+
+        # used to debug
         if authenticate:
             if self.check_auth():
-
-                WELCOME_MESSAGE = f"""Welcome to the RelevanceAI Python SDK. Logged in as {project}."""
+                WELCOME_MESSAGE = (
+                    f"""Welcome to RelevanceAI. Logged in as {self.project}."""
+                )
                 print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
         # Import projector and vector tools
         if vis_requirements:
-            self.projector = Projector(project, api_key)
-        else:
-            self.logger.warning(
-                "Projector not loaded. You do not have visualisation requirements installed."
+            self.projector = Projector(
+                project=self.project,
+                api_key=self.api_key,
+                firebase_uid=self.firebase_uid,
             )
-        self.vector_tools = VectorTools(project, api_key)
 
-        # Legacy functions (?) - forgot what they were for
-        # self.Dataset = Dataset(project=project, api_key=api_key)
-        # self.Datasets = Datasets(project=project, api_key=api_key)
+        self.vector_tools = VectorTools(
+            project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
+        )
 
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
-            project=project, api_key=api_key, dataset_id=""
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id="",
         )._insert_documents
         self.insert_csv = Dataset(
-            project=project, api_key=api_key, dataset_id=""
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id="",
         )._insert_csv
 
     # @property
@@ -108,76 +177,64 @@ class Client(BatchAPIClient, DocUtils):
     # def output_format(self, value):
     #     CONFIG.set_option("api.output_format", value)
 
-    ### Configurations
-
-    @property
-    def base_url(self):
-        return CONFIG.get_field("api.base_url", CONFIG.config)
-
-    @base_url.setter
-    def base_url(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        CONFIG.set_option("api.base_url", value)
-
-    @property
-    def base_ingest_url(self):
-        return CONFIG.get_field("api.base_ingest_url", CONFIG.config)
-
-    @base_ingest_url.setter
-    def base_ingest_url(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        CONFIG.set_option("api.base_ingest_url", value)
-
     ### Authentication Details
+
+    @identify
+    def _identify(self):
+        return
+
+    def _set_mixpanel_write_key(self):
+        analytics.write_key = decode(self.mixpanel_write_key).decode("utf-8")
 
     def _process_token(self, token: str):
         split_token = token.split(":")
         project = split_token[0]
         api_key = split_token[1]
-        # If the base URl is included in the pasted token then include it
-        if len(split_token) == 3:
-            region = split_token[2]
-            if region != "old-australia-east":
-                url = f"https://api.{region}.relevance.ai/latest"
-                self.base_url = url
-                self.base_ingest_url = url
-        self._write_credentials(project, api_key)
-        return project, api_key
+        if len(split_token) > 2:
+            self.region = split_token[2]
+            base_url = self._region_to_url(self.region)
 
-    def _token_to_auth(self, token=None):
-        # if verbose:
-        #     print("You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api")
-        #     print("Once you have signed up, click on the value under `Authorization token` and paste it here:")
-        # SIGNUP_URL = "https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api"
+            if len(split_token) > 3:
+                firebase_uid = split_token[3]
+                data = dict(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
+                    firebase_uid=firebase_uid,
+                )
+                return data
+            else:
+                return dict(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
+                )
+
+        else:
+            return dict(project=project, api_key=api_key)
+
+    def _region_to_ingestion_url(self, region: str):
+        # same as region to URL now in case ingestion ever needs to be separate
+        if region == "old-australia-east":
+            url = "https://gateway-api-aueast.relevance.ai/latest"
+        else:
+            url = f"https://api.{region}.relevance.ai/latest"
+        return url
+
+    def _token_to_auth(self, token: Optional[str] = None):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if not os.path.exists(self._cred_fn):
-            # We repeat it twice because of different behaviours
-            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
-            if not token:
-                token = getpass.getpass(f"Activation token:")
-            return self._process_token(token)
-        elif token:
+        if token:
             return self._process_token(token)
         else:
-            data = self._read_credentials()
-            project = data["project"]
-            api_key = data["api_key"]
-        return project, api_key
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
+            if not token:
+                token = self._get_token()
+            return self._process_token(token)  # type: ignore
 
-    def _write_credentials(self, project, api_key):
-        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
-
-    def _read_credentials(self):
-        return json.load(open(self._cred_fn))
-
-    def login(
-        self,
-        authenticate: bool = True,
-    ):
-        project, api_key = self._token_to_auth()
-        return Client(project=project, api_key=api_key, authenticate=authenticate)
+    def _get_token(self):
+        # TODO: either use cache or keyring package
+        token = getpass.getpass(f"Activation token:")
+        return token
 
     @property
     def auth_header(self):
@@ -187,6 +244,7 @@ class Client(BatchAPIClient, DocUtils):
         return self.services.search.make_suggestion()
 
     def check_auth(self):
+        print(f"Connecting to {self.region}...")
         return self.admin._ping()
 
     ### Utility functions
@@ -195,7 +253,8 @@ class Client(BatchAPIClient, DocUtils):
 
     ### CRUD-related utility functions
 
-    def create_dataset(self, dataset_id: str, schema: dict = {}):
+    @track
+    def create_dataset(self, dataset_id: str, schema: Optional[Dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -245,11 +304,13 @@ class Client(BatchAPIClient, DocUtils):
 
             from relevanceai import Client
             client = Client()
-            client.create_dataset("sample_dataset")
+            client.create_dataset("sample_dataset_id")
 
         """
+        schema = {} if schema is None else schema
         return self.datasets.create(dataset_id, schema=schema)
 
+    @track
     def list_datasets(self):
         """List Datasets
 
@@ -268,6 +329,7 @@ class Client(BatchAPIClient, DocUtils):
         )
         return self.datasets.list()
 
+    @track
     def delete_dataset(self, dataset_id):
         """
         Delete a dataset
@@ -284,24 +346,31 @@ class Client(BatchAPIClient, DocUtils):
 
             from relevanceai import Client
             client = Client()
-            client.delete_dataset("sample_dataset")
+            client.delete_dataset("sample_dataset_id")
 
         """
         return self.datasets.delete(dataset_id)
 
+    @track
     def Dataset(
         self,
         dataset_id: str,
-        fields: list = [],
-        image_fields: List[str] = [],
-        audio_fields: List[str] = [],
-        highlight_fields: Dict[str, List] = {},
-        text_fields: List[str] = [],
+        fields: Optional[List[str]] = None,
+        image_fields: Optional[List[str]] = None,
+        audio_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, List]] = None,
+        text_fields: Optional[List[str]] = None,
     ):
+        fields = [] if fields is None else fields
+        image_fields = [] if image_fields is None else image_fields
+        audio_fields = [] if audio_fields is None else audio_fields
+        highlight_fields = {} if highlight_fields is None else highlight_fields
+        text_fields = [] if text_fields is None else text_fields
         return Dataset(
             dataset_id=dataset_id,
             project=self.project,
             api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
             fields=fields,
             image_fields=image_fields,
             audio_fields=audio_fields,
@@ -311,6 +380,7 @@ class Client(BatchAPIClient, DocUtils):
 
     ### Clustering
 
+    @track
     def ClusterOps(
         self,
         alias: str,
@@ -327,12 +397,14 @@ class Client(BatchAPIClient, DocUtils):
             cluster_field=cluster_field,
             project=self.project,
             api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
         )
 
     def _set_logger_to_verbose(self):
         # Use this for debugging
         self.config["logging.logging_level"] = "INFO"
 
+    @track
     def send_dataset(
         self,
         dataset_id: str,
@@ -373,14 +445,15 @@ class Client(BatchAPIClient, DocUtils):
             receiver_api_key=receiver_api_key,
         )
 
+    @track
     def clone_dataset(
         self,
         source_dataset_id: str,
-        new_dataset_id: str = None,
-        source_project: str = None,
-        source_api_key: str = None,
-        project: str = None,
-        api_key: str = None,
+        new_dataset_id: Optional[str] = None,
+        source_project: Optional[str] = None,
+        source_api_key: Optional[str] = None,
+        project: Optional[str] = None,
+        api_key: Optional[str] = None,
     ):
         """
         Clone a dataset from another user's projects into your project.
@@ -438,3 +511,85 @@ class Client(BatchAPIClient, DocUtils):
         print(MESSAGE)
 
     docs = references
+
+    def search_app(self, dataset_id: Optional[str] = None):
+        if dataset_id is not None:
+            self.print_search_dashboard_url(dataset_id)
+        elif hasattr(self, "_dataset_id"):
+            self.print_search_dashboard_url(self._dataset_id)
+        elif hasattr(self, "dataset_id"):
+            self.print_search_dashboard_url(self.dataset_id)
+        else:
+            print("You can build your search app at https://cloud.relevance.ai")
+
+    @introduced_in_version("1.1.3")
+    @track
+    def search_datasets(self, query: str):
+        """
+        Search through your datasets.
+        """
+        return [x for x in self.list_datasets()["datasets"] if query in x]
+
+    @introduced_in_version("2.1.3")
+    @beta
+    def list_cluster_reports(self):
+        """
+
+        List all cluster reports.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.list_cluster_reports()
+
+        """
+        return pd.DataFrame(self.reports.clusters.list()["results"])
+
+    @introduced_in_version("2.1.3")
+    @beta
+    @track
+    def delete_cluster_report(self, cluster_report_id: str):
+        """
+
+        Delete Cluster Report
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.delete_cluster_report("cluster_id_goes_here")
+
+        """
+        return self.reports.clusters.delete(cluster_report_id)
+
+    @introduced_in_version("2.1.3")
+    @beta
+    @track
+    def store_cluster_report(self, report_name: str, report: dict):
+        """
+
+        Store the cluster data.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.store_cluster_report("sample", {"value": 3})
+
+        """
+        response: dict = self.reports.clusters.create(
+            name=report_name, report=self.json_encoder(report)
+        )
+        print(
+            f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+        )
+        return response
+
+    def disable_analytics_tracking(self):
+        """Disable analytics tracking if you would prefer not to send usage
+        data to improve the product. Analytics allows us to improve your experience
+        by examining the most popular flows, dedicating more resources to popular
+        product features and improve user experience.
+        """
+        self.config["mixpanel.is_tracking_enabled"] = False

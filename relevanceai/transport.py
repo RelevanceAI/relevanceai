@@ -1,14 +1,18 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+import asyncio
+import codecs
 import time
 import traceback
-import json
-from typing import Union
+
 from json.decoder import JSONDecodeError
+from typing import Optional
 
 from urllib.parse import urlparse
 
+import aiohttp
 import requests
+
 from requests import Request
 
 from relevanceai.config import Config
@@ -21,7 +25,7 @@ DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
 
 class Transport(JSONEncoderUtils):
-    """Base class for all relevanceai objects"""
+    """_Base class for all relevanceai objects"""
 
     project: str
     api_key: str
@@ -85,15 +89,19 @@ class Transport(JSONEncoderUtils):
             },
         }
         self.logger.debug(request_body)
-        req = Request(
-            method=method.upper(),
-            url=self._dashboard_request_url,
-            headers=self.auth_header,
-            json=request_body,
-            # params=parameters if method.upper() == "GET" else {},
-        ).prepare()
-        with requests.Session() as s:
-            response = s.send(req)
+
+        async def run_request():
+            req = Request(
+                method=method.upper(),
+                url=self._dashboard_request_url,
+                headers=self.auth_header,
+                json=request_body,
+                # params=parameters if method.upper() == "GET" else {},
+            ).prepare()
+            with requests.Session() as s:
+                response = s.send(req)
+
+        asyncio.ensure_future(run_request())
 
         if verbose:
             dashboard_url = (
@@ -101,7 +109,6 @@ class Transport(JSONEncoderUtils):
                 + DASHBOARD_MAPPINGS[dashboard_type]
             )
             self.print_dashboard_url(dashboard_url)
-        return response
 
     def _link_to_dataset_dashboard(self, dataset_id: str, suburl: str = None):
         """Link to a monitoring dashboard
@@ -124,7 +131,7 @@ class Transport(JSONEncoderUtils):
 
     def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
         """Log search to dashboard"""
-        return self._log_to_dashboard(
+        self._log_to_dashboard(
             method=method,
             parameters=parameters,
             endpoint=endpoint,
@@ -143,9 +150,10 @@ class Transport(JSONEncoderUtils):
         self,
         endpoint: str,
         method: str = "GET",
-        parameters: dict = {},
+        parameters: Optional[dict] = None,
         base_url: str = None,
         output_format=None,
+        raise_error: bool = True,
     ):
         """
         Make the HTTP request
@@ -155,7 +163,11 @@ class Transport(JSONEncoderUtils):
             The endpoint from the documentation to use
         method_type: string
             POST or GET request
+        raise_error: bool
+            If True, you will raise error. This is useful for endpoints that don't
+            necessarily need to error.
         """
+        parameters = {} if parameters is None else parameters
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
 
@@ -181,8 +193,8 @@ class Transport(JSONEncoderUtils):
                     self._log_search_to_dashboard(
                         method=method, parameters=parameters, endpoint=endpoint
                     )
-                # TODO: Add other endpoints in here too
 
+                # TODO: Add other endpoints in here too
                 req = Request(
                     method=method.upper(),
                     url=request_url,
@@ -219,7 +231,8 @@ class Transport(JSONEncoderUtils):
                         response.status_code,
                         response.content.decode(),
                     )
-                    raise APIError(response.content.decode())
+                    if raise_error:
+                        raise APIError(response.content.decode())
 
                 # Retry other errors
                 else:
@@ -238,6 +251,106 @@ class Transport(JSONEncoderUtils):
                 time.sleep(seconds_between_retries)
                 continue
 
+            except JSONDecodeError as error:
+                self._log_no_json(base_url, endpoint, response.status_code, response)
+                return response
+
+        return response
+
+    async def make_async_http_request(
+        self,
+        endpoint: str,
+        method: str = "GET",
+        parameters: Optional[dict] = None,
+        base_url: str = None,
+        output_format=None,
+        raise_error: bool = True,
+    ):
+        """
+        Make an asynchronous HTTP request
+
+        Parameters
+        ----------
+        endpoint: str
+            The Relevance AI endpoint to access
+
+        method_type: str
+            Currently only support GET and POST requests
+
+        raise_error: bool
+            If True, error is raised rather than just logged.
+        """
+        parameters = {} if parameters is None else parameters
+        self._last_used_endpoint = endpoint
+        start_time = time.perf_counter()
+
+        base_url = (
+            self.config.get_option("api.base_url") if base_url is None else base_url
+        )
+        output_format = (
+            self.config.get_option("api.output_format")
+            if output_format is None
+            else output_format
+        )
+        retries = int(self.config.get_option("retries.number_of_retries"))
+        seconds_between_retries = int(
+            self.config.get_option("retries.seconds_between_retries")
+        )
+
+        request_url = base_url + endpoint
+
+        for _ in range(retries):
+            self.logger.info(f"URL you are trying to access: {request_url}")
+            try:
+                if Transport._is_search_in_path(request_url):
+                    self._log_search_to_dashboard(
+                        method=method, parameters=parameters, endpoint=endpoint
+                    )
+
+                async with aiohttp.request(
+                    method=method.upper(),
+                    url=request_url,
+                    headers=self.auth_header,
+                    json=parameters if method.upper() == "POST" else {},
+                    params=parameters if method.upper() == "GET" else {},
+                ) as response:
+                    if response.status == 200:
+                        self._log_response_success(base_url, endpoint)
+                        self._log_response_time(
+                            base_url, endpoint, time.perf_counter() - start_time
+                        )
+
+                        if output_format.lower() == "json":
+                            return await response.json()
+                        elif output_format.lower() == "content":
+                            decoded_content = codecs.decode(
+                                await response.content.read()
+                            )
+                            return decoded_content
+                        elif output_format.lower() == "status_code":
+                            return response.status
+                        else:
+                            return response
+                    elif response.status in DO_NOT_REPEAT_STATUS_CODES:
+                        # Cancel bad URLs
+                        # Logged status codes
+                        decoded_content = codecs.decode(await response.content.read())
+                        self._log_response_fail(
+                            base_url, endpoint, response.status, decoded_content
+                        )
+                        if raise_error:
+                            raise APIError(decoded_content)
+                    else:
+                        # Retry other errors
+                        decoded_content = codecs.decode(await response.content.read())
+                        self._log_response_fail(
+                            base_url, endpoint, response.status, decoded_content
+                        )
+            except aiohttp.ClientError as error:
+                traceback.print_exc()
+                self._log_connection_error(base_url, endpoint)
+                time.sleep(seconds_between_retries)
+                continue
             except JSONDecodeError as error:
                 self._log_no_json(base_url, endpoint, response.status_code, response)
                 return response

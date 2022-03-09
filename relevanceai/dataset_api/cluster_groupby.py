@@ -1,3 +1,5 @@
+from typing import Optional
+
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.groupby import Groupby, Agg
 
@@ -9,20 +11,27 @@ class ClusterGroupby(Groupby):
         self,
         project,
         api_key,
+        firebase_uid,
         dataset_id,
         alias: str,
-        vector_fields: list = [],
+        vector_fields: Optional[list] = None,
         _pre_groupby=None,
     ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self._pre_groupby = _pre_groupby
         self.alias = alias
-        self.vector_fields = vector_fields
-        super().__init__(project=project, api_key=api_key, dataset_id=dataset_id)
+        self.vector_fields = [] if vector_fields is None else vector_fields
+        super().__init__(
+            project=project,
+            api_key=api_key,
+            dataset_id=dataset_id,
+            firebase_uid=firebase_uid,
+        )
 
-    def __call__(self, by: list = []):
+    def __call__(self, by: Optional[list] = None):
         """
         Instaniates Groupby Class which stores a groupby call
 
@@ -32,7 +41,7 @@ class ClusterGroupby(Groupby):
             List of fields to groupby
 
         """
-        self.by = by
+        self.by = [] if by is None else by
         self.groupby_fields = self._get_groupby_fields()
         self.groupby_call = self._create_groupby_call()
         if self._pre_groupby is not None:
@@ -40,6 +49,7 @@ class ClusterGroupby(Groupby):
         self.agg = ClusterAgg(
             project=self.project,
             api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
             dataset_id=self.dataset_id,
             groupby_call=self.groupby_call,
             vector_fields=self.vector_fields,
@@ -99,20 +109,23 @@ class ClusterAgg(Agg):
         self,
         project,
         api_key,
+        firebase_uid,
         dataset_id,
         vector_fields: list,
         alias: str,
-        groupby_call=[],
+        groupby_call: Optional[list] = None,
     ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
-        self.groupby_call = groupby_call
+        self.groupby_call = [] if groupby_call is None else groupby_call
         self.vector_fields = vector_fields
         self.alias = alias
         super().__init__(
             project=project,
             api_key=api_key,
+            firebase_uid=firebase_uid,
             dataset_id=dataset_id,
             groupby_call=groupby_call,
         )
@@ -120,7 +133,7 @@ class ClusterAgg(Agg):
     # The call below violates the Liskov principle
     def __call__(  # type: ignore
         self,
-        metrics: dict = {},
+        metrics: Optional[dict] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -144,7 +157,7 @@ class ClusterAgg(Agg):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
-        self.metrics = metrics
+        self.metrics = {} if metrics is None else metrics
         self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
         return self.services.cluster.aggregate(

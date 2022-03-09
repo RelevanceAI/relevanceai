@@ -1,13 +1,17 @@
 """All Dataset related functions
 """
+from typing import Optional
+
 from relevanceai.base import _Base
 
 
 class MonitorClient(_Base):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def health(self, dataset_id: str):
         """
@@ -41,12 +45,12 @@ class MonitorClient(_Base):
     def usage(
         self,
         dataset_id: str,
-        filters: list = [],
+        filters: Optional[list] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        log_ids: list = [],
+        log_ids: Optional[list] = None,
     ):
         """
         Aggregate the logs for a dataset. \n
@@ -71,8 +75,10 @@ class MonitorClient(_Base):
             Whether to flatten
         log_ids: list
             The log dataset IDs to aggregate with - one or more of logs, logs-write, logs-search, logs-task or js-logs
-
         """
+        filters = [] if filters is None else filters
+        log_ids = [] if log_ids is None else log_ids
+
         self._link_to_dataset_dashboard(dataset_id, "monitor/schema")
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/usage",

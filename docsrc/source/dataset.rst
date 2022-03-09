@@ -10,9 +10,9 @@ It is instantiated like this:
 
 .. code-block::
 
-    from relevanceai import Client 
+    from relevanceai import Client
     client = Client()
-    df = client.Dataset("sample_dataset")
+    df = client.Dataset("sample_dataset_id")
     df.head()
 
 .. autoclass:: relevanceai.dataset_api.dataset_write.Write
@@ -35,3 +35,4 @@ It is instantiated like this:
 
 .. autoclass:: relevanceai.dataset_api.dataset_operations.Operations
     :members:
+    :exclude-members: label_with_model_from_dataset, label_vector, label_document

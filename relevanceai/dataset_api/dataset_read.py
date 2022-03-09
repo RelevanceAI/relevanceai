@@ -7,7 +7,8 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
+from relevanceai.analytics_funcs import track
 
 from relevanceai.dataset_api.helpers import _build_filters
 from relevanceai.dataset_api.groupby import Groupby, Agg
@@ -30,27 +31,47 @@ class Read(BatchAPIClient):
         project: str,
         api_key: str,
         dataset_id: str,
-        fields: list = [],
-        image_fields: List[str] = [],
-        audio_fields: List[str] = [],
-        highlight_fields: Dict[str, list] = {},
-        text_fields: List[str] = [],
+        firebase_uid: str,
+        fields: Optional[list] = None,
+        image_fields: Optional[List[str]] = None,
+        audio_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, list]] = None,
+        text_fields: Optional[List[str]] = None,
     ):
         self.project = project
         self.api_key = api_key
-        self.fields = fields
+        self.firebase_uid = firebase_uid
+        self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
-        self.vector_tools = VectorTools(project=project, api_key=api_key)
-        self.groupby = Groupby(self.project, self.api_key, self.dataset_id)
-        self.agg = Agg(self.project, self.api_key, self.dataset_id)
-        self.centroids = Centroids(self.project, self.api_key, self.dataset_id)
-        self.image_fields = image_fields
-        self.audio_fields = audio_fields
-        self.highlight_fields = highlight_fields
+        self.vector_tools = VectorTools(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.groupby = Groupby(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+        )
+        self.agg = Agg(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+        )
+        self.centroids = Centroids(
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
+        )
+        self.image_fields = [] if image_fields is None else image_fields
+        self.audio_fields = [] if audio_fields is None else audio_fields
+        self.highlight_fields = {} if highlight_fields is None else highlight_fields
         self.text_fields = text_fields
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
-    @property
+    @property  # type: ignore
+    @track
     def shape(self):
         """
         Returns the shape (N x C) of a dataset
@@ -70,7 +91,7 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             length, width = df.shape
@@ -103,6 +124,7 @@ class Read(BatchAPIClient):
         self._schema = self.datasets.schema(self.dataset_id)
         return self._schema
 
+    @track
     def info(self, dtype_count: bool = False) -> pd.DataFrame:
         """
         Return a dictionary that contains information about the Dataset
@@ -116,8 +138,8 @@ class Read(BatchAPIClient):
 
         Returns
         ---------
-        Dict
-            Dictionary of information
+        pd.DataFrame
+            a pandas dataframe of information
 
         Example
         ---------------
@@ -127,7 +149,7 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.info()
         """
@@ -153,6 +175,7 @@ class Read(BatchAPIClient):
             print(dtypes_info)
         return info_df
 
+    @track
     def head(
         self, n: int = 5, raw_json: bool = False, **kw
     ) -> Union[dict, pd.DataFrame]:
@@ -184,12 +207,14 @@ class Read(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset", image_fields=["image_url])
+            df = client.Dataset("sample_dataset_id", image_fields=["image_url])
 
             df.head()
         """
+        print(
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
+        )
         head_documents = self.get_documents(
-            dataset_id=self.dataset_id,
             number_of_documents=n,
         )
         if raw_json:
@@ -221,7 +246,15 @@ class Read(BatchAPIClient):
         )
 
     def _repr_html_(self):
-        documents = self.get_documents(dataset_id=self.dataset_id)
+        documents = self.get_documents()
+        documents = [
+            {
+                "_id": document["_id"],
+                "insert_date_": document["insert_date_"],
+                **document,
+            }
+            for document in documents
+        ]
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
@@ -231,17 +264,17 @@ class Read(BatchAPIClient):
             )
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
+    @track
     def sample(
         self,
         n: int = 1,
         frac: float = None,
-        filters: list = [],
+        filters: Optional[list] = None,
         random_state: int = 0,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector: bool = True,
         output_format: str = "json",
     ):
-
         """
         Return a random sample of items from a dataset.
 
@@ -265,9 +298,12 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset", image_fields=["image_url])
+            df = client.Dataset("sample_dataset_id", image_fields=["image_url])
             df.sample()
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if not select_fields and self.fields:
             select_fields = self.fields
 
@@ -295,16 +331,16 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
+    @track
     def get_all_documents(
         self,
         chunksize: int = 1000,
-        filters: List = [],
-        sort: List = [],
-        select_fields: List = [],
+        filters: Optional[List] = None,
+        sort: Optional[List] = None,
+        select_fields: Optional[List] = None,
         include_vector: bool = True,
         show_progress_bar: bool = True,
     ):
-
         """
         Retrieve all documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. For more details see documents.get_where.
 
@@ -328,10 +364,14 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             documents = df.get_all_documents()
+
         """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
 
         return self._get_all_documents(
             dataset_id=self.dataset_id,
@@ -343,6 +383,7 @@ class Read(BatchAPIClient):
             show_progress_bar=show_progress_bar,
         )
 
+    @track
     def get_documents_by_ids(
         self, document_ids: Union[List, str], include_vector: bool = True
     ):
@@ -363,7 +404,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client, Dataset
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.get_documents_by_ids(["sample_id"], include_vector=False)
         """
@@ -377,6 +418,7 @@ class Read(BatchAPIClient):
             )
         raise TypeError("Document IDs needs to be a string or a list")
 
+    @track
     def get(self, document_ids: Union[List, str], include_vector: bool = True):
         """
         Retrieve a document by its ID ("_id" field). This will retrieve the document faster than a filter applied on the "_id" field.
@@ -396,7 +438,7 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.get(["sample_id"], include_vector=False)
         """
@@ -410,7 +452,8 @@ class Read(BatchAPIClient):
             )
         raise TypeError("Document IDs needs to be a string or a list")
 
-    @property
+    @property  # type: ignore
+    @track
     def schema(self) -> Dict:
         """
         Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
@@ -422,13 +465,14 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.schema
         """
         return self.datasets.schema(self.dataset_id)
 
-    @property
+    @property  # type: ignore
+    @track
     def columns(self) -> List[str]:
         """
         Returns a list of columns
@@ -440,13 +484,14 @@ class Read(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.columns
 
         """
         return list(self.schema)
 
+    @track
     def filter(
         self,
         index: Union[str, None] = None,
@@ -531,3 +576,78 @@ class Read(BatchAPIClient):
         filters = [{"filter_type": "or", "condition_value": filters}]
 
         return self.get_all_documents(select_fields=fields, filters=filters)
+
+    @track
+    def get_documents(
+        self,
+        number_of_documents: int = 20,
+        filters: Optional[list] = None,
+        cursor: str = None,
+        batch_size: int = 1000,
+        sort: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        include_vector: bool = True,
+        include_cursor: bool = False,
+    ):
+        """
+        Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
+        If you are looking to combine your filters with multiple ORs, simply add the following inside the query {"strict":"must_or"}.
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        number_of_documents: int
+            Number of documents to retrieve
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields.
+        cursor: string
+            Cursor to paginate the document retrieval
+        batch_size: int
+            Number of documents to retrieve per iteration
+        include_vector: bool
+            Include vectors in the search results
+        sort: list
+            Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
+        filters: list
+            Query for filtering the search results
+        """
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+        select_fields = [] if select_fields is None else select_fields
+
+        return self._get_documents(
+            dataset_id=self.dataset_id,
+            number_of_documents=number_of_documents,
+            filters=filters,
+            cursor=cursor,
+            batch_size=batch_size,
+            sort=sort,
+            select_fields=select_fields,
+            include_vector=include_vector,
+            include_cursor=include_cursor,
+        )
+
+    def get_metadata(self):
+        """
+        Store Metadata
+        """
+        return self.datasets.metadata(self.dataset_id)
+
+    @property
+    def metadata(self):
+        """Get the metadata"""
+        return self.get_metadata()["results"]
+
+    def insert_metadata(self, metadata: dict):
+        """Insert metadata"""
+        results = self.datasets.post_metadata(self.dataset_id, metadata)
+        if results == {}:
+            print("✅ You have successfully inserted data.")
+        else:
+            return results
+
+    def upsert_metadata(self, metadata: dict):
+        """Upsert metadata."""
+        original_metadata: dict = self.datasets.metadata(self.dataset_id)
+        original_metadata.update(metadata)
+        return self.datasets.post_metadata(self.dataset_id, metadata)

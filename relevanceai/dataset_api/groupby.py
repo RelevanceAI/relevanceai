@@ -1,15 +1,25 @@
 from relevanceai.api.client import BatchAPIClient
 
+from typing import List, Optional, Union
+
 GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 
 
 class Groupby(BatchAPIClient):
-    def __init__(self, project, api_key, dataset_id, _pre_groupby=None):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        firebase_uid: str,
+        _pre_groupby: Union[List, None] = None,
+    ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
         self._pre_groupby = _pre_groupby
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(self, by: list = []):
         """
@@ -77,16 +87,24 @@ class Groupby(BatchAPIClient):
 
 
 class Agg(BatchAPIClient):
-    def __init__(self, project, api_key, dataset_id, groupby_call=[]):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        dataset_id: str,
+        firebase_uid: str,
+        groupby_call: Optional[List] = None,
+    ):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
-        self.groupby_call = groupby_call
-        super().__init__(project=project, api_key=api_key)
+        self.groupby_call = [] if groupby_call is None else groupby_call
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(
         self,
-        metrics: dict = {},
+        metrics: Optional[dict] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
@@ -111,7 +129,7 @@ class Agg(BatchAPIClient):
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
-        self.metrics = metrics
+        self.metrics = {} if metrics is None else metrics
         self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
         return self.services.aggregate.aggregate(

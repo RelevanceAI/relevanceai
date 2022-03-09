@@ -1,12 +1,15 @@
+import asyncio
 from relevanceai.base import _Base
 from typing import Optional, Dict, Any, List
 
 
 class CentroidsClient(_Base):
-    def __init__(self, project, api_key):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def list(
         self,
@@ -16,7 +19,6 @@ class CentroidsClient(_Base):
         page_size: int = 5,
         cursor: str = None,
         include_vector: bool = False,
-        base_url="https://gateway-api-aueast.relevance.ai/latest",
     ):
         """
         Retrieve the cluster centroid
@@ -37,17 +39,16 @@ class CentroidsClient(_Base):
             Include vectors in the search results
         """
         return self.make_http_request(
-            "/services/cluster/centroids/list",
+            f"/dataset/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                # "dataset_id": dataset_id,
                 "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
                 "cursor": cursor,
                 "include_vector": include_vector,
             },
-            base_url=base_url,
         )
 
     def get(
@@ -124,8 +125,8 @@ class CentroidsClient(_Base):
     def documents(
         self,
         dataset_id: str,
-        cluster_ids: List,
         vector_fields: List,
+        cluster_ids: Optional[List] = None,
         alias: str = "default",
         page_size: int = 5,
         cursor: str = None,
@@ -137,7 +138,8 @@ class CentroidsClient(_Base):
         Retrieve the cluster centroids by IDs
 
         Parameters
-        ----------
+        -------------
+
         dataset_id : string
             Unique name of dataset
         cluster_ids : list
@@ -156,13 +158,14 @@ class CentroidsClient(_Base):
             Include vectors in the search results
         similarity_metric: string
             Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-
         """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+
         return self.make_http_request(
-            "/services/cluster/centroids/documents",
+            f"/datasets/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                "dataset_id": dataset_id,
+                # "dataset_id": dataset_id,
                 "cluster_ids": cluster_ids,
                 "vector_fields": vector_fields,
                 "alias": alias,
@@ -171,6 +174,7 @@ class CentroidsClient(_Base):
                 "page": page,
                 "include_vector": include_vector,
                 "similarity_metric": similarity_metric,
+                "vector_field": "",
             },
         )
 
@@ -225,16 +229,16 @@ class CentroidsClient(_Base):
         dataset_id: str,
         vector_fields: List,
         alias: str,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: List = [],
-        facets: List = [],
+        filters: Optional[List] = None,
+        facets: Optional[List] = None,
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -279,8 +283,14 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-
         """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+        facets = [] if facets is None else facets
 
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
@@ -320,16 +330,16 @@ class CentroidsClient(_Base):
         dataset_id: str,
         vector_fields: List[str],
         alias: str,
-        centroid_vector_fields: List = [],
-        cluster_ids: List = [],
-        select_fields: List = [],
+        centroid_vector_fields: Optional[List] = None,
+        cluster_ids: Optional[List] = None,
+        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: List = [],
-        facets: List = [],
+        filters: Optional[List] = None,
+        facets: Optional[List] = None,
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
@@ -372,8 +382,15 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-
         """
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+        facets = [] if facets is None else facets
+
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         endpoint = "/services/cluster/centroids/list_furthest_from_center"
@@ -444,7 +461,7 @@ class CentroidsClient(_Base):
         dataset_id: str,
         vector_fields: List,
         id: str,
-        update: dict = {},
+        update: Optional[dict] = None,
         alias: str = "default",
     ):
         """
@@ -463,6 +480,8 @@ class CentroidsClient(_Base):
         update: dict
             The update to be applied to the document
         """
+        update = {} if update is None else update
+
         return self.make_http_request(
             "/services/cluster/centroids/update",
             method="POST",

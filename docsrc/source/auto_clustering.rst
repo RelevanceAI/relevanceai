@@ -9,7 +9,7 @@ Auto clustering is the easiest way to cluster.
 
     client = Client()
 
-    dataset_id = "sample_dataset"
+    dataset_id = "sample_dataset_id"
     df = client.Dataset(dataset_id)
 
     # run kmeans with default 10 clusters
@@ -31,4 +31,3 @@ You can read more about how to cluster using the `auto_cluster` below!
 
 For more advanced clustering methods and to use your own custom clustering
 method, read the other sections under `ClusterOps`.
-

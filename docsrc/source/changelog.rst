@@ -4,6 +4,292 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.4.2
+-----------
+
+- Rename `image` to `media`
+
+v1.4.1
+-----------
+
+- Fix bug with `upsert_images`
+- Suggest link with dashboard link
+
+v1.4.0
+------------
+
+- Improve `Dataset.community_detection` such that it takes vectors as well
+- Add support for image uploads
+
+v1.3.3
+------------
+
+- Add metadata
+
+v1.3.2
+------------
+
+- Add verbose verbose argument
+- Fix cluster_keyphrases
+
+v1.3.1
+------------
+
+- Added pull_update_push_async
+- Introduced asynchronous client
+- Fix bug in facets
+
+v1.3.0
+-----------
+
+- Add support for subclustering
+- Add community detection algorithm `Dataset.community_detection`
+- Update `Dataset.vectorize` to ignore already-vectorized fields and modified output to include those vector names
+
+Additional info on PRs:
+
+* feature/pro-1286-fit_predict_update-vs by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/469
+* feature/pro-1380-add-community-detection-to-relevance-ai by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/499
+* feature/pro-1447-change-output-of-vectorize by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/505
+* Feature/pro 1434 subclustering by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/504
+* Fix report by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/506
+* Feature/pro 1339 improve filter documentation to include by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/507
+* add pypi upload tokens by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/508
+* feature/pro-1403-auto_text_cluster_dashboard by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/498
+* add docs on bias detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/510
+
+v1.2.8
+-----------
+
+- Add dimensionality reduction for documents
+- Change maximum chunksize to 500
+
+v1.2.7
+-----------
+
+- Adjust max cache size, from one to eight, of `Dataset.to_pandas_dataframe` and `Series._get_pandas_series`
+- Fix dataset analytics
+
+v1.2.6
+-----------
+
+- Add initial bias detection
+- Fix analytics support
+- Remove test tracking
+
+v1.2.5
+-----------
+
+- Add hotfix if pandas functions not supported.
+
+v1.2.4
+-----------
+
+- Add `nltk-rake` support for keyphrases
+- Add more documentation around cluster reporting
+- Enable `Dataset` and `Series` access `pandas` `DataFrame` and `Series` methods, respectively
+- Change `Dataset.health` from a property to a method and add `pandas` `DataFrame` output
+- Change `Dataset.vectorize` to call `pull_update_push` just once instead of twice
+
+v1.2.3
+-----------
+
+- Add Cluster Report endpoints
+
+Developer changes:
+
+- Fix bug with analytics and change to an env variable tracker for outermost function
+
+
+v1.2.2
+----------
+
+Developer changes:
+
+**BREAKING CHANGES**
+
+- All list and dict default arguments are changed to `None`.
+
+**Other Changes**
+- Introduced `corr`, a method to plot the correlation between two fields, in `Dataset`
+- Export to Pandas DataFrame
+
+v1.2.1
+----------
+
+**BREAKING CHANGES**
+
+- When upserting, you will no longer be returned confusing inserting/write statements.
+
+**Other Changes**:
+
+- Add option to `create_id` when inserting
+
+Developer changes:
+
+- Reduced number of documents in testing
+- Make tracking only occur at the uppermost level and not the bottom level
+
+v1.2.0
+----------
+
+**BREAKING CHANGES**
+
+- When inserting/writing, you will now no longer be returned confusing insertion/write statements
+but if it errors, it will return the JSON object with the necessary details.
+
+- Add image tooling around processing (currently an alpha feature to be tested)
+- Add `vectorize` method for text and images
+
+v1.1.5
+----------
+
+- Feature/add beta decorator by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/461
+- feature/pro-1267-remove-verbose-logs-from-output by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/457
+- feature/pro-1299-add-a-insert_media_folder by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/456
+- Add filters to clustering  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/464
+- silence dataset retrieval by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/465
+
+
+v1.1.4
+----------
+
+- Add grading to auto_clustering
+- Bug fix for cluster report
+- Add DBSCAN centroids
+- Fix HDBSCAN
+- Add support for BIRCH, OPTICS and all native sklearn algorithms
+
+v1.1.2
+-------
+
+- Added new DR methods to auto_reduce_dimensions
+- Fixed documentation on clustering
+
+v1.1.1
+--------
+
+- Change data structure of report structure
+
+v1.1.0
+--------
+
+- Add low-touch way to label with a given model
+- Add `label_from_dataset`, `label_from_list`, `label_from_common_words`
+
+v1.0.8
+---------
+
+- Fix document-utils for clustering on DR
+
+v1.0.7
+-------
+
+- Add grading for cluster report
+
+v1.0.6
+-------
+
+- Fix http client and regionalisation issues and remove need for firebase
+
+v1.0.5
+--------
+
+**Breaking changes**
+
+- `get_cluster_internal_report` has now been renamed to `internal_report`
+
+Non-breaking changes:
+
+- Remove repetitive print statements
+- Add outlier support for cluster report
+- Support for centroids and medoids in typing
+- Add pretty printing for cluster overall reporting
+
+v1.0.4
+---------
+
+- add launch_search_app for dataset functionality
+- remove saving .creds.json to avoid file caching
+
+v1.0.3
+---------
+
+- Fix print error message with segment
+- Separate out JSON Encoder
+
+v1.0.2
+--------
+
+- Fix pandas serialization for UTF-encoding errors
+- Move search app
+- Change print search dashboard app URL
+- Fix regionalisation error when authenticating client.
+
+v1.0.1
+--------
+- Make pandas dataframe serializable with vectors
+
+v1.0.0
+---------
+
+- Clustering report functionality
+- Add fix and test for new cluster aggregate
+- Add document mocking utility
+- Add integration for cluster reporting
+- Fix bug for sklearn clustering
+- Add segment tracking with option to turn off
+- Add print statement after inserting
+
+v0.33.6
+---------
+
+- Fix warning missing parameter
+- Remove `dataset_id` from `get_documents`
+- Fix URL bug if you are logging in from `old-australia-east`
+
+v0.33.5
+--------
+
+- Fix UX flow
+- Make US-East-1 the default
+- Add force refresh
+- Rework Login UX
+- Mention region when connecting
+- Make the authentication message super cool
+- Fix centroids to Node endpoint
+- Update the delete request
+
+v0.33.4
+---------
+
+- Make asynchronous dashboard request
+
+v0.33.3
+--------
+
+- Fix cluster aggregate
+- Fix for login
+- Make adding firebase UID not breaking
+
+v0.33.2
+--------
+
+- Update References for data imports
+- Add :code-block:`auto_reduce_dimensions` with projector links
+
+v0.33.1
+---------
+
+*BREAKING CHANGES*
+- :code-block:`predict_dataset` has been corrected to :code-block:`predict_update`
+- :code-block:`fit_dataset_by_partial` has been corrected to :code-block:`partial_fit_dataset`
+- :code-block:`fit_partial` instances have been corrected to :code-block:`partial_fit`
+
+- Hotfix auto_cluster when having more clusters than batch size
+- Add dashboard link after clustering
+- Fix references when listing closest and furthest
+
 v0.33.0
 ---------
 
@@ -15,7 +301,7 @@ Now, users
 *BREAKING CHANGES*
 
 - Clustering :code:`fit_transform` is not a :code:`fit_predict` to align with SKLearn's methods
-- Rename :code:`Clusterer` to :code:`ClusterOps` 
+- Rename :code:`Clusterer` to :code:`ClusterOps`
 - :code:`fit` has now been broken down into :code:`fit_predict_update`
 - Removed KMeansClusterer
 

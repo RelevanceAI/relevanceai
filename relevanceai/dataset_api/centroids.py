@@ -1,14 +1,16 @@
+from typing import List, Optional
+
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.groupby import Groupby, Agg
-from typing import List
 
 
 class Centroids(BatchAPIClient):
-    def __init__(self, project: str, api_key: str, dataset_id: str):
+    def __init__(self, project: str, api_key: str, dataset_id: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
+        self.firebase_uid = firebase_uid
         self.dataset_id = dataset_id
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(
         self, vector_fields: list, alias: str, cluster_field: str = "_cluster_"
@@ -32,7 +34,7 @@ class Centroids(BatchAPIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             df.get(["sample_id"], include_vector=False)
 
@@ -58,35 +60,36 @@ class Centroids(BatchAPIClient):
             }
         ]
         self.groupby = Groupby(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             _pre_groupby=self.cluster_groupby,
         )
         self.agg = Agg(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             groupby_call=self.cluster_groupby,
         )
         return self
 
     def closest(
         self,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: List = [],
+        filters: Optional[List] = None,
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
     ):
-
         """
         List of documents closest from the centre.
 
@@ -120,13 +123,14 @@ class Centroids(BatchAPIClient):
         Example
         -----------------
         .. code-block::
+
             from relevanceai import Client
             from relevanceai.clusterer import ClusterOps
             from relevanceai.clusterer.kmeans_clusterer import KMeansModel
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"
@@ -136,8 +140,13 @@ class Centroids(BatchAPIClient):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
 
-
         """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
 
         return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self.dataset_id,
@@ -159,20 +168,19 @@ class Centroids(BatchAPIClient):
 
     def furthest(
         self,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: List = [],
+        filters: Optional[List] = None,
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
     ):
-
         """
         List of documents furthest from the centre.
 
@@ -202,6 +210,12 @@ class Centroids(BatchAPIClient):
             Include the total count of results in the search results
 
         """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
 
         return self.datasets.cluster.centroids.list_furthest_from_center(
             dataset_id=self.dataset_id,

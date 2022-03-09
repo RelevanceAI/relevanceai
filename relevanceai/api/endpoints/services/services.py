@@ -1,5 +1,7 @@
 """Services class
 """
+from typing import Optional
+
 from relevanceai.base import _Base
 
 from relevanceai.api.endpoints.services.encoders import EncodersClient
@@ -13,21 +15,42 @@ from relevanceai.api.endpoints.services.wordclouds import WordcloudsClient
 
 
 class ServicesClient(_Base):
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        self.encoders = EncodersClient(project=project, api_key=api_key)
-        self.cluster = ClusterClient(project=project, api_key=api_key)
-        self.search = SearchClient(project=project, api_key=api_key)
-        self.aggregate = AggregateClient(project=project, api_key=api_key)
-        self.recommend = RecommendClient(project=project, api_key=api_key)
-        self.tagger = TaggerClient(project=project, api_key=api_key)
-        self.prediction = PredictionClient(project=project, api_key=api_key)
-        self.wordclouds = WordcloudsClient(project=project, api_key=api_key)
-        super().__init__(project, api_key)
+        self.firebase_uid = firebase_uid
+
+        self.encoders = EncodersClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.cluster = ClusterClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.search = SearchClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.aggregate = AggregateClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.recommend = RecommendClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.tagger = TaggerClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.prediction = PredictionClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.wordclouds = WordcloudsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def document_diff(
-        self, doc: dict, documents_to_compare: list, difference_fields: list = []
+        self,
+        doc: dict,
+        documents_to_compare: list,
+        difference_fields: Optional[list] = None,
     ):
         """
         Find differences between documents
@@ -42,6 +65,8 @@ class ServicesClient(_Base):
             Fields to compare. Defaults to [], which compares all fields.
 
         """
+        difference_fields = [] if difference_fields is None else difference_fields
+
         return self.make_http_request(
             endpoint=f"/services/document_diff",
             method="POST",

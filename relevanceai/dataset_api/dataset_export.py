@@ -1,26 +1,56 @@
 """
 Pandas like dataset API
 """
-import re
-import math
-import warnings
 import pandas as pd
-import numpy as np
 
-from doc_utils import DocUtils
+from functools import lru_cache
 
-from typing import Dict, List, Union, Callable, Optional
-
-from relevanceai.dataset_api.groupby import Groupby, Agg
-from relevanceai.dataset_api.centroids import Centroids
-from relevanceai.dataset_api.helpers import _build_filters
-
-from relevanceai.vector_tools.client import VectorTools
-from relevanceai.api.client import BatchAPIClient
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
+from relevanceai.utils import introduced_in_version
 
 
 class Export(Read):
+    @lru_cache(maxsize=8)
+    @introduced_in_version("1.1.5")
+    def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
+        """
+        Converts a Relevance AI Dataset to a pandas DataFrame.
+
+        Parameters
+        ----------
+        kwargs: Optional
+            see client.get_all_documents() for extra args
+
+        Example
+        -------
+        .. code-block::
+            from relevanceai import Client
+
+            client = Client()
+
+            relevanceai_dataset = client.Dataset("dataset_id")
+            df = relevance_ai.to_pandas_dataframe()
+        """
+        documents = self.get_all_documents(**kwargs)
+
+        try:
+            df = pd.DataFrame(documents)
+            df.set_index("_id", inplace=True)
+            return df
+        except KeyError:
+            raise Exception("No documents found")
+
+    def __getattr__(self, attr):
+        if hasattr(pd.DataFrame, attr):
+            df = self.to_pandas_dataframe(show_progress_bar=True)
+            try:
+                return getattr(df, attr)
+            except SyntaxError:
+                raise AttributeError(f"'{attr}' is an invalid attribute")
+        raise AttributeError(f"'{attr}' is an invalid attribute")
+
+    @track
     def to_csv(self, filename: str, **kwargs):
         """
         Download a dataset from Relevance AI to a local .csv file
@@ -40,7 +70,7 @@ class Export(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             csv_fname = "path/to/csv/file.csv"
@@ -50,6 +80,7 @@ class Export(Read):
         df = pd.DataFrame(documents)
         df.to_csv(filename)
 
+    @track
     def to_dict(self, orient: str = "records"):
         """
         Returns the raw list of dicts from Relevance AI
@@ -70,7 +101,7 @@ class Export(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             dict = df.to_dict(orient="records")

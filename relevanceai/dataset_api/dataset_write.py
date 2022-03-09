@@ -1,21 +1,25 @@
+# -*- coding: utf-8 -*-
 """
 Pandas like dataset API
 """
-import re
-import math
-import warnings
+import requests
+import uuid
+import json
 import pandas as pd
-import numpy as np
 
 from doc_utils import DocUtils
-
-from typing import Dict, List, Union, Callable
-
+from os import PathLike
+from pathlib import Path
+from typing import Callable, Dict, List, Optional, Union
+from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
-from relevanceai.dataset_api.dataset_series import Series
+from tqdm.auto import tqdm
+
+from relevanceai.logger import FileLogger
 
 
 class Write(Read):
+    @track
     def insert_documents(
         self,
         documents: list,
@@ -25,6 +29,7 @@ class Write(Read):
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
+        create_id: bool = False,
         **kwargs,
     ) -> Dict:
 
@@ -61,7 +66,7 @@ class Write(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             documents = [
@@ -78,7 +83,7 @@ class Write(Read):
             df.insert_documents(documents)
 
         """
-        return self._insert_documents(
+        results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -87,9 +92,12 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
             **kwargs,
         )
+        return self._process_insert_results(results)
 
+    @track
     def insert_csv(
         self,
         filepath_or_buffer,
@@ -98,11 +106,10 @@ class Write(Read):
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
-        csv_args: dict = {},
+        csv_args: Optional[dict] = None,
         col_for_id: str = None,
         auto_generate_id: bool = True,
     ) -> Dict:
-
         """
         Insert data from csv file
 
@@ -131,13 +138,15 @@ class Write(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             csv_filename = "temp.csv"
             df.insert_csv(csv_filename)
 
         """
-        return self._insert_csv(
+        csv_args = {} if csv_args is None else csv_args
+
+        results = self._insert_csv(
             dataset_id=self.dataset_id,
             filepath_or_buffer=filepath_or_buffer,
             chunksize=chunksize,
@@ -149,8 +158,13 @@ class Write(Read):
             col_for_id=col_for_id,
             auto_generate_id=auto_generate_id,
         )
+        self._process_insert_results(results)
+        return results
 
-    def insert_pandas_dataframe(self, df: pd.DataFrame, *args, **kwargs):
+    @track
+    def insert_pandas_dataframe(
+        self, df: pd.DataFrame, col_for_id=None, *args, **kwargs
+    ):
         """
         Insert a dataframe into the dataset.
         Takes additional args and kwargs based on `insert_documents`.
@@ -159,19 +173,127 @@ class Write(Read):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
             pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
             df.insert_pandas_dataframe(pandas_df)
 
         """
-        import pandas as pd
+        if col_for_id is not None:
+            df["_id"] = df[col_for_id]
+
+        else:
+            uuids = [uuid.uuid4() for _ in range(len(df))]
+            df["_id"] = uuids
+
+        def _is_valid(v):
+            try:
+                if pd.isna(v):
+                    return False
+                else:
+                    return True
+            except:
+                return True
 
         documents = [
-            {k: v for k, v in doc.items() if not pd.isna(v)}
+            {k: v for k, v in doc.items() if _is_valid(v)}
             for doc in df.to_dict(orient="records")
         ]
-        return self._insert_documents(self.dataset_id, documents, *args, **kwargs)
 
+        results = self._insert_documents(self.dataset_id, documents, *args, **kwargs)
+        self.print_search_dashboard_url(self.dataset_id)
+        return results
+
+    def insert_media_folder(
+        self,
+        path: Union[Path, str],
+        field: str = "medias",
+        recurse: bool = True,
+        *args,
+        **kwargs,
+    ):
+        """
+        Given a path to a directory, this method loads all media-related files
+        into a Dataset.
+
+        Parameters
+        ----------
+        field: str
+            A text field of a dataset.
+
+        path: Union[Path, str]
+            The path to the directory containing medias.
+
+        recurse: bool
+            Indicator that determines whether to recursively insert medias from
+            subdirectories in the directory.
+
+        Returns
+        -------
+            dict
+
+        Example
+        -------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("dataset_id")
+
+            from pathlib import Path
+            path = Path("medias/")
+            # list(path.iterdir()) returns
+            # [
+            #    PosixPath('media.jpg'),
+            #    PosixPath('more-medias'), # a directory
+            # ]
+
+            get_all_medias: bool = True
+            if get_all_medias:
+                # Inserts all medias, even those in the more-medias directory
+                ds.insert_media_folder(
+                    field="medias", path=path, recurse=True
+                )
+            else:
+                # Only inserts media.jpg
+                ds.insert_media_folder(
+                    field="medias", path=path, recurse=False
+                )
+
+        """
+        if isinstance(path, str):
+            path = Path(path)
+
+            if not path.is_dir():
+                raise Exception(f"{path} is not a proper path")
+
+        from mimetypes import types_map
+
+        media_extensions = set(
+            k.lower() for k, v in types_map.items() if v.startswith("media/")
+        )
+
+        def get_paths(path: Path, medias: List[str]) -> List[str]:
+            for file in path.iterdir():
+                if file.is_dir() and recurse:
+                    medias.extend(get_paths(file, []))
+                elif file.is_file() and file.suffix.lower() in media_extensions:
+                    medias.append(str(file))
+                else:
+                    continue
+
+            return medias
+
+        medias = get_paths(path, [])
+        documents = list(
+            map(
+                lambda media: {"_id": uuid.uuid4(), "path": media, field: media}, medias
+            )
+        )
+        results = self.insert_documents(documents, *args, **kwargs)
+        self.image_fields.append(field)
+        return results
+
+    @track
     def upsert_documents(
         self,
         documents: list,
@@ -181,6 +303,8 @@ class Write(Read):
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
+        return_json: bool = False,
+        create_id: bool = False,
     ) -> Dict:
 
         """
@@ -223,13 +347,13 @@ class Write(Read):
                 }
             ]
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             df.upsert_documents(documents)
 
         """
-        return self._update_documents(
+        results = self._update_documents(
             self.dataset_id,
             documents=documents,
             bulk_fn=bulk_fn,
@@ -238,19 +362,22 @@ class Write(Read):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
+            create_id=create_id,
         )
+        return self._process_insert_results(results, return_json=return_json)
 
+    @track
     def apply(
         self,
         func: Callable,
-        apply_args: dict,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
+        **apply_args,
     ):
         """
         Apply a function along an axis of the DataFrame.
@@ -282,7 +409,7 @@ class Write(Read):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_doc(doc):
                 doc["value"] = 2
@@ -290,7 +417,17 @@ class Write(Read):
 
             df.apply(update_doc)
 
+            def update_doc_wargs(doc, value1, value2):
+                doc["value"] += value1
+                doc["value"] *= value2
+                return doc
+
+            df.apply(func=update_doc, value1=3, value2=2)
+
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         if axis == 1:
             raise ValueError("We do not support column-wise operations!")
 
@@ -312,13 +449,14 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
+    @track
     def bulk_apply(
         self,
         bulk_func: Callable,
         retrieve_chunksize: int = 100,
         max_workers: int = 8,
-        filters: list = [],
-        select_fields: list = [],
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
     ):
@@ -350,7 +488,7 @@ class Write(Read):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
@@ -359,6 +497,9 @@ class Write(Read):
 
             df.apply(update_documents)
         """
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
         return self.pull_update_push(
             self.dataset_id,
             bulk_func,
@@ -370,7 +511,8 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
         )
 
-    def cat(self, vector_name: Union[str, None] = None, fields: List = []):
+    @track
+    def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
         """
         Concatenates numerical fields along an axis and reuploads this vector for other operations
 
@@ -389,7 +531,7 @@ class Write(Read):
 
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
 
             fields = [
@@ -398,13 +540,13 @@ class Write(Read):
                 "numeric_field3"
             ]
 
-            df.cat(fields)
             df.concat(fields)
 
             concat_vector_field_name = "concat_vector_"
-            df.cat(vector_name=concat_vector_field_name, fields=fields)
             df.concat(vector_name=concat_vector_field_name, fields=fields)
         """
+        fields = [] if fields is None else fields
+
         if vector_name is None:
             vector_name = "_".join(fields) + "_cat_vector_"
 
@@ -459,7 +601,8 @@ class Write(Read):
 
         self.pull_update_push(self.dataset_id, add_cluster_labels)
 
-    def create(self, schema: dict = {}) -> Dict:
+    @track
+    def create(self, schema: Optional[dict] = None) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -468,7 +611,7 @@ class Write(Read):
 
         .. code-block::
             {
-                "product_image_vector_": 1024,
+                "product_media_vector_": 1024,
                 "product_text_description_vector_" : 128
             }
 
@@ -519,14 +662,17 @@ class Write(Read):
                 }
             ]
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.create()
 
             df.insert_documents(documents)
         """
+        schema = {} if schema is None else schema
+
         return self.datasets.create(self.dataset_id, schema=schema)
 
+    @track
     def delete(self):
         """
         Delete a dataset
@@ -538,9 +684,190 @@ class Write(Read):
             from relevanceai import Client
             client = Client()
 
-            dataset_id = "sample_dataset"
+            dataset_id = "sample_dataset_id"
             df = client.Dataset(dataset_id)
             df.delete()
 
         """
         return self.datasets.delete(self.dataset_id)
+
+    insert_df = insert_pandas_dataframe
+
+    def _upload_media(
+        self, presigned_url: str, media_content: bytes, verbose: bool = True
+    ):
+        if not isinstance(media_content, bytes):
+            raise ValueError(
+                f"media needs to be in a bytes format. Currently in {type(media_content)}"
+            )
+        response = requests.put(presigned_url, data=media_content)
+        if response.status_code == 200:
+            if verbose:
+                print("media successfully uploaded.")
+
+    def insert_media_url(self, media_url: str, verbose: bool = True):
+        """
+        Insert a single media URL
+        """
+        # media to download
+        response = self.datasets.get_file_upload_urls(
+            self.dataset_id, files=[media_url]
+        )
+        url = response["files"][0]["url"]
+        self._upload_media(
+            presigned_url=response["files"][0]["upload_url"],
+            media_content=requests.get(media_url).content,
+        )
+        if verbose:
+            print(f"media is hosted at {url}")
+        return url
+
+    def insert_media_urls(
+        self,
+        media_urls: List[str],
+        verbose: bool = True,
+        file_log: str = "insert_media_urls.log",
+    ):
+        """
+        Insert a single media URL
+        """
+        # media to download
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_urls)
+        response_docs: dict = {"media_documents": [], "failed_medias": []}
+        with FileLogger(file_log):
+            for i, im in enumerate(tqdm(media_urls)):
+                response_doc = {}
+                response_doc["media_file"] = im
+                response_doc["media_url"] = response["files"][i]["url"]
+                try:
+                    self._upload_media(
+                        presigned_url=response["files"][i]["upload_url"],
+                        media_content=requests.get(im).content,
+                        verbose=verbose,
+                    )
+                    response_docs["media_documents"].append(response_doc)
+                except Exception as e:
+                    if verbose:
+                        print(f"Failed to upload {im}.")
+                    if verbose:
+                        print(e)
+                    response_docs["failed_medias"].append(response_doc)
+        # Return the media URLs
+        return response_docs
+
+    def _open_local_media(self, fn: str) -> bytes:
+        with open(fn, "rb") as fn_byte:
+            f = fn_byte.read()
+            b = bytes(f)
+        return b
+
+    def insert_local_media(self, media_fn: str, verbose: bool = True):
+        """
+        Insert local media
+
+        Parameters
+        -------------
+        media_fn: str
+            A local media to upload
+        verbose: bool
+            If True, prints a statement after uploading each media
+        """
+        # media to download
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=[media_fn])
+        url = response["files"][0]["url"]
+        self._upload_media(
+            presigned_url=response["files"][0]["upload_url"],
+            media_content=self._open_local_media(media_fn),
+            verbose=verbose,
+        )
+        if verbose:
+            print(f"media is hosted at {url}.")
+        return url
+
+    def insert_local_medias(
+        self,
+        media_fns: List[str],
+        verbose: bool = False,
+        file_log="local_media_upload.log",
+    ):
+        """Insert a list of local medias.
+
+        Parameters
+        ------------
+        media_fns: List[str]
+            A list of local medias
+        verbose: bool
+            If True, this will print after each successful upload.
+        file_log: str
+            The log to write
+        """
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_fns)
+        response_docs: dict = {"media_documents": [], "failed_medias": []}
+        with FileLogger(file_log) as f:
+            for i, media_fn in enumerate(tqdm(media_fns)):
+                response_doc = {}
+                response_doc["media_file"] = media_fn
+                response_doc["media_url"] = response["files"][i]["url"]
+                try:
+                    self._upload_media(
+                        presigned_url=response["files"][i]["upload_url"],
+                        media_content=self._open_local_media(media_fn),
+                        verbose=verbose,
+                    )
+                    response_docs["media_documents"].append(response_doc)
+                except Exception as e:
+                    print(f"failed to upload {media_fn}")
+                    print(e)
+                    response_docs["failed_medias"].append(response_doc)
+        return response_docs
+
+    def get_media_documents(
+        self,
+        media_fns: List[str],
+        verbose: bool = False,
+        file_log: str = "media_upload.log",
+    ) -> dict:
+        """
+        Bulk insert medias. Returns a link to once it has been hosted
+
+        Parameters
+        --------------
+        media_fns: List[str]
+            List of medias to upload
+        verbose: bool
+            If True, prints statements after uploading
+        file_log: str
+            The file log to write
+        """
+        # Algorithm aims to insert local or hosted medias
+        if "http" in media_fns[0]:
+            return self.insert_media_urls(media_fns, verbose=verbose, file_log=file_log)
+        else:
+            return self.insert_local_medias(
+                media_fns, verbose=verbose, file_log=file_log
+            )
+
+    def upsert_medias(
+        self,
+        media_fns: List[str],
+        verbose: bool = False,
+        file_log: str = "media_upload.log",
+        **kw,
+    ):
+        """
+        Insert medias into a dataset.
+
+        Parameters
+        -------------
+
+        media_fns: List[str]
+            A list of medias to upsert
+        verbose: bool
+            If True, prints statements after uploading
+        file_log: str
+            The file log to write
+        """
+        documents = self.get_media_documents(
+            media_fns=media_fns, verbose=verbose, file_log=file_log
+        )
+        return self.upsert_documents(documents["media_documents"], create_id=True, **kw)

@@ -1,6 +1,6 @@
 """All Dataset related functions
 """
-from typing import List
+from typing import List, Optional
 
 from relevanceai.base import _Base
 from relevanceai.api.endpoints.datasets.documents import DocumentsClient
@@ -12,15 +12,25 @@ from relevanceai.api.endpoints.datasets.cluster import ClusterClient
 class DatasetsClient(_Base):
     """All dataset-related functions"""
 
-    def __init__(self, project: str, api_key: str):
+    def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
-        self.tasks = TasksClient(project=project, api_key=api_key)
-        self.documents = DocumentsClient(project=project, api_key=api_key)
-        self.monitor = MonitorClient(project=project, api_key=api_key)
-        self.cluster = ClusterClient(project=project, api_key=api_key)
+        self.firebase_uid = firebase_uid
 
-        super().__init__(project, api_key)
+        self.tasks = TasksClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.documents = DocumentsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.monitor = MonitorClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.cluster = ClusterClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def schema(self, dataset_id: str):
         """
@@ -48,7 +58,17 @@ class DatasetsClient(_Base):
             endpoint=f"/datasets/{dataset_id}/metadata", method="GET"
         )
 
-    def create(self, dataset_id: str, schema: dict = {}):
+    def post_metadata(self, dataset_id: str, metadata: dict):
+        """
+        Edit and add metadata about a dataset. Notably description, data source, etc
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/metadata",
+            method="POST",
+            parameters={"dataset_id": dataset_id, "metadata": metadata},
+        )
+
+    def create(self, dataset_id: str, schema: Optional[dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
         A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
@@ -90,6 +110,8 @@ class DatasetsClient(_Base):
             Schema for specifying the field that are vectors and its length
 
         """
+        schema = {} if schema is None else schema
+
         return self.make_http_request(
             endpoint=f"/datasets/create",
             method="POST",
@@ -108,13 +130,12 @@ class DatasetsClient(_Base):
         include_schema_stats: bool = False,
         include_vector_health: bool = False,
         include_active_jobs: bool = False,
-        dataset_ids: list = [],
+        dataset_ids: Optional[list] = None,
         sort_by_created_at_date: bool = False,
         asc: bool = False,
         page_size: int = 20,
         page: int = 1,
     ):
-
         """
         Returns a page of datasets and in detail the dataset's associated information that you are authorized to read/write. The information includes:
 
@@ -150,6 +171,8 @@ class DatasetsClient(_Base):
         page : int
             Page of the results
         """
+        dataset_ids = [] if dataset_ids is None else dataset_ids
+
         return self.make_http_request(
             endpoint="/datasets/list",
             method="POST",
@@ -171,7 +194,7 @@ class DatasetsClient(_Base):
     def facets(
         self,
         dataset_id,
-        fields: list = [],
+        fields: Optional[list] = None,
         date_interval: str = "monthly",
         page_size: int = 5,
         page: int = 1,
@@ -196,6 +219,8 @@ class DatasetsClient(_Base):
             Whether to sort results by ascending or descending order
 
         """
+        fields = [] if fields is None else fields
+
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/facets",
             method="POST",
@@ -288,7 +313,7 @@ class DatasetsClient(_Base):
         insert_date: bool = True,
         overwrite: bool = True,
         update_schema: bool = True,
-        field_transformers=[],
+        field_transformers: Optional[list] = None,
         return_documents: bool = False,
     ):
         """
@@ -324,6 +349,7 @@ class DatasetsClient(_Base):
             >>>    "split_sentences": true
             >>> }
         """
+        field_transformers = [] if field_transformers is None else field_transformers
 
         base_url = self.config.get_option("api.base_ingest_url")
 
@@ -366,6 +392,52 @@ class DatasetsClient(_Base):
                 "status_code": status_code,
             }
 
+    async def bulk_insert_async(
+        self,
+        dataset_id: str,
+        documents: list,
+        insert_date: bool = True,
+        overwrite: bool = True,
+        update_schema: bool = True,
+        field_transformers: Optional[list] = None,
+    ):
+        """
+        Asynchronous version of bulk_insert. See bulk_insert for details.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        documents: list
+            A list of documents. A document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+
+        insert_date: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        overwrite: bool
+            Whether to overwrite document if it exists.
+
+        update_schema: bool
+            Whether the api should check the documents for vector datatype to update the schema.
+
+        field_transformers: list
+        """
+        field_transformers = [] if field_transformers is None else field_transformers
+
+        return await self.make_async_http_request(
+            base_url=self.config.get_option("api.base_ingest_url"),
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
+            method="POST",
+            parameters={
+                "documents": documents,
+                "insert_date": insert_date,
+                "overwrite": overwrite,
+                "update_schema": update_schema,
+                "field_transformers": field_transformers,
+            },
+        )
+
     def delete(self, dataset_id: str, confirm: bool = False):
         """
         Delete a dataset
@@ -384,11 +456,20 @@ class DatasetsClient(_Base):
             user_input = "y"
         # input validation
         if user_input.lower() in ("y", "yes"):
-            return self.make_http_request(
-                endpoint=f"/datasets/delete",
-                method="POST",
-                parameters={"dataset_id": dataset_id},
-            )
+            if "gateway-api-aueast" in self.config["api.base_url"]:
+                return self.make_http_request(
+                    endpoint=f"/datasets/delete",
+                    method="POST",
+                    parameters={"dataset_id": dataset_id},
+                    raise_error=False,
+                )
+            else:
+                return self.make_http_request(
+                    endpoint=f"/datasets/{dataset_id}/delete",
+                    method="POST",
+                    raise_error=False
+                    # parameters={"dataset_id": dataset_id},
+                )
 
         elif user_input.lower() in ("n", "no"):
             self.logger.critical(f"{dataset_id} not deleted")
@@ -402,10 +483,10 @@ class DatasetsClient(_Base):
         self,
         old_dataset: str,
         new_dataset: str,
-        schema: dict = {},
-        rename_fields: dict = {},
-        remove_fields: list = [],
-        filters: list = [],
+        schema: Optional[dict] = None,
+        rename_fields: Optional[dict] = None,
+        remove_fields: Optional[list] = None,
+        filters: Optional[list] = None,
     ):
         """
         Clone a dataset into a new dataset. You can use this to rename fields and change data schemas. This is considered a project job.
@@ -425,6 +506,11 @@ class DatasetsClient(_Base):
         filters : list
             Query for filtering the search results
         """
+        schema = {} if schema is None else schema
+        rename_fields = {} if rename_fields is None else rename_fields
+        remove_fields = [] if remove_fields is None else remove_fields
+        filters = [] if filters is None else filters
+
         dataset_id = old_dataset
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/clone",
@@ -466,54 +552,6 @@ class DatasetsClient(_Base):
             },
         )
 
-    def vectorize(
-        self,
-        dataset_id: str,
-        model_id: str,
-        fields: list = [],
-        filters: list = [],
-        refresh: bool = False,
-        alias: str = "default",
-        chunksize: int = 20,
-        chunk_field: str = None,
-    ):
-        """
-        Queue the encoding of a dataset using the method given by model_id.
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        model_id : string
-            Model ID to use for vectorizing (encoding.)
-        fields : list
-            Fields to remove ['random_field', 'another_random_field']. Defaults to no removes
-        filters : list
-            Filters to run against
-        refresh : bool
-            If True, re-runs encoding on whole dataset.
-        alias : string
-            Alias used to name a vector field. Belongs in field_{alias}vector
-        chunksize : int
-            Batch for each encoding. Change at your own risk.
-        chunk_field : string
-            The chunk field. If the chunk field is specified, the field to be encoded should not include the chunk field.
-
-        """
-        return self.make_http_request(
-            endpoint=f"/datasets/{dataset_id}/vectorize",
-            method="GET",
-            parameters={
-                "model_id": model_id,
-                "fields": fields,
-                "filters": filters,
-                "refresh": refresh,
-                "alias": alias,
-                "chunksize": chunksize,
-                "chunk_field": chunk_field,
-            },
-        )
-
     def task_status(self, dataset_id: str, task_id: str):
         """
         Check the status of an existing encoding task on the given dataset. \n
@@ -532,4 +570,21 @@ class DatasetsClient(_Base):
             endpoint=f"/datasets/{dataset_id}/task_status",
             method="GET",
             parameters={"task_id": task_id},
+        )
+
+    def get_file_upload_urls(self, dataset_id: str, files: List):
+        """
+        Specify a list of file paths. For each file path, a url upload_url is returned. files can be POSTed on upload_url to upload them. They can then be accessed on url. Upon dataset deletion, these files will be deleted.
+
+        Parameters
+        -------------
+        files: list
+            List of files to be uploaded
+        dataset_id: str
+            The dataset
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/get_file_upload_urls",
+            method="POST",
+            parameters={"files": files},
         )

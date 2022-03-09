@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ClusterOps class to run clustering. It is intended to be integrated with
 models that inherit from `ClusterBase`.
@@ -8,12 +7,13 @@ You can run the ClusterOps as such:
 .. code-block::
 
     from relevanceai import Client
-    from relevanceai.clusterer import KMeansModel
     client = Client()
-    model = KMeansModel(n_clusters=2)
-    clusterer = client.ClusterOps(model, alias="kmeans_2")
-    df = client.Dataset("_github_repo_vectorai")
-    clusterer.fit(df, ["documentation_vector_"])
+    df = client.Dataset("sample_dataset")
+
+    from sklearn.cluster import KMeans
+    model = KMeans(n_clusters=2)
+    cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+    cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
 You can view other examples of how to interact with this class here :ref:`integration`.
 
@@ -21,6 +21,7 @@ You can view other examples of how to interact with this class here :ref:`integr
 import os
 import json
 import getpass
+import warnings
 
 import numpy as np
 
@@ -30,15 +31,24 @@ from relevanceai.clusterer.cluster_base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
+    HDBSCANClusterBase,
+    SklearnCentroidBase,
 )
+
+from relevanceai.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
-from relevanceai.integration_checks import is_sklearn_available
+from relevanceai.integration_checks import is_sklearn_available, is_hdbscan_available
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_api import Dataset
+from relevanceai.errors import NoDocumentsError
+from relevanceai.utils import beta
 
 from doc_utils import DocUtils
+
+
+from tqdm.auto import tqdm
 
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
@@ -80,29 +90,38 @@ class ClusterOps(BatchAPIClient):
     .. code-block::
 
         from relevanceai import Client
-        from relevanceai.clusterer import KMeansModel
+        client = Client()
+        df = client.Dataset("sample_dataset")
 
+        from sklearn.cluster import KMeans
         model = KMeans(n_clusters=2)
-        clusterer = client.ClusterOps(model, alias="kmeans_2")
-
-        df = client.Dataset("sample")
-        clusterer.fit(df, vector_fields=["sample_vector_"])
+        cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+        cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
     """
 
     def __init__(
         self,
         alias: str,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
         dataset_id: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
-        project: Union[str, None] = None,
-        api_key: Union[str, None] = None,
         cluster_field: str = "_cluster_",
+        parent_alias: str = None,
     ):
         self.alias = alias
+        self.parent_alias = parent_alias
         self.cluster_field = cluster_field
+        if model is None:
+            warnings.warn(
+                "No model is specified, you will not be able to train a clustering algorithm."
+            )
+
         self.model = self._assign_model(model)
+        self.firebase_uid = firebase_uid
 
         if dataset_id is not None:
             self.dataset_id: str = dataset_id
@@ -115,24 +134,27 @@ class ClusterOps(BatchAPIClient):
             self.project: str = project
             self.api_key: str = api_key
 
-        super().__init__(project=project, api_key=api_key)
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     def __call__(self):
         self.groupby = ClusterGroupby(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             alias=self.alias,
             vector_fields=self.vector_fields,
         )
         self.agg = ClusterAgg(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
 
+    @track
     def groupby(self):
         return ClusterGroupby(
             project=self.project,
@@ -142,12 +164,14 @@ class ClusterOps(BatchAPIClient):
             vector_fields=self.vector_fields,
         )
 
+    @track
     def agg(self, groupby_call):
         """Aggregate the cluster class."""
         self.groupby = ClusterGroupby(
-            self.project,
-            self.api_key,
-            self.dataset_id,
+            project=self.project,
+            api_key=self.api_key,
+            dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             alias=self.alias,
             vector_fields=self.vector_fields,
         )
@@ -155,17 +179,43 @@ class ClusterOps(BatchAPIClient):
             project=self.project,
             api_key=self.api_key,
             dataset_id=self.dataset_id,
+            firebase_uid=self.firebase_uid,
             vector_fields=self.vector_fields,
             alias=self.alias,
-            groupby_call=groupby_call,
         )
 
     # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):
         # Add support for not just sklearn models but sklearn models
         # with first -class integration for kmeans
-        from sklearn.cluster import KMeans, MiniBatchKMeans
+        from sklearn.cluster import (
+            KMeans,
+            MiniBatchKMeans,
+            DBSCAN,
+            Birch,
+            SpectralClustering,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
+        )
 
+        POSSIBLE_MODELS = [
+            SpectralClustering,
+            Birch,
+            DBSCAN,
+            OPTICS,
+            AgglomerativeClustering,
+            AffinityPropagation,
+            MeanShift,
+            FeatureAgglomeration,
+        ]
+        if is_hdbscan_available():
+            import hdbscan
+
+            if hasattr(hdbscan, "HDBSCAN"):
+                POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
@@ -198,21 +248,32 @@ class ClusterOps(BatchAPIClient):
 
             new_model = BatchCentroidClusterModel(model)
             return new_model
-        if hasattr(model, "fit_documents"):
+
+        elif isinstance(model, tuple(POSSIBLE_MODELS)):
+            # new_model = CentroidClusterModel(model)
+            if "sklearn" in str(type(model)).lower():
+                new_model = SklearnCentroidBase(model)
+            elif "hdbscan" in str(type(model)).lower():
+                new_model = HDBSCANClusterBase(model)
+            return new_model
+        elif hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_transform"):
-            data = {"fit_transform": model.fit_transform, "metadata": model.__dict__}
+        elif hasattr(model, "fit_predict"):
+            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
-        elif hasattr(model, "fit_predict"):
-            data = {"fit_transform": model.fit_predict, "metadata": model.__dict__}
+        elif hasattr(model, "fit_transform"):
+            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
 
     def _assign_model(self, model):
         # Check if this is a model that will fit
         # otherwise - forces a Clusterbase
-        if is_sklearn_available() and "sklearn" in str(type(model)):
+        if (is_sklearn_available() or is_hdbscan_available()) and (
+            "sklearn" in str(type(model)).lower()
+            or "hdbscan" in str(type(model)).lower()
+        ):
             model = self._assign_sklearn_model(model)
             if model is not None:
                 return model
@@ -221,11 +282,11 @@ class ClusterOps(BatchAPIClient):
             return model
         elif hasattr(model, "fit_documents"):
             return model
-        elif hasattr(model, "fit_predict"):
-            # Support for SKLEARN interface
-            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
+        # elif hasattr(model, "fit_predict"):
+        #     # Support for SKLEARN interface
+        #     data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
+        #     ClusterModel = type("ClusterBase", (ClusterBase,), data)
+        #     return ClusterModel()
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
@@ -234,52 +295,92 @@ class ClusterOps(BatchAPIClient):
             return model
         raise TypeError("Model should be inherited from ClusterBase.")
 
-    def _token_to_auth(self):
+    def _token_to_auth(self, token=None):
         SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if not os.path.exists(self._cred_fn):
-            # We repeat it twice because of different behaviours
-            print(f"Authorization token (you can find it here: {SIGNUP_URL} )")
-            token = getpass.getpass(f"Auth token:")
-            project = token.split(":")[0]
-            api_key = token.split(":")[1]
-            self._write_credentials(project, api_key)
+
+        if os.path.exists(self._cred_fn):
+            credentials = self._read_credentials()
+            return credentials
+
+        elif token:
+            return self._process_token(token)
+
         else:
-            data = self._read_credentials()
-            project = data["project"]
-            api_key = data["api_key"]
-        return project, api_key
+            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
+            if not token:
+                token = getpass.getpass(f"Activation token:")
+            return self._process_token(token)
+
+    def _process_token(self, token: str):
+        split_token = token.split(":")
+        project = split_token[0]
+        api_key = split_token[1]
+        if len(split_token) > 2:
+            region = split_token[3]
+            base_url = self._region_to_url(region)
+
+            if len(split_token) > 3:
+                firebase_uid = split_token[4]
+                return self._write_credentials(
+                    project=project,
+                    api_key=api_key,
+                    base_url=base_url,
+                    firebase_uid=firebase_uid,
+                )
+
+            else:
+                return self._write_credentials(
+                    project=project, api_key=api_key, base_url=base_url
+                )
+
+        else:
+            return self._write_credentials(project=project, api_key=api_key)
 
     def _read_credentials(self):
         return json.load(open(self._cred_fn))
 
-    def _write_credentials(self, project, api_key):
-        json.dump({"project": project, "api_key": api_key}, open(self._cred_fn, "w"))
+    def _write_credentials(self, **kwargs):
+        print(
+            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
+        )
+        json.dump(
+            kwargs,
+            open(self._cred_fn, "w"),
+        )
+        return kwargs
 
     def _init_dataset(self, dataset):
+        # set dataset ID and dataset attributes for consistent usage
         if isinstance(dataset, Dataset):
             self.dataset_id = dataset.dataset_id
             self.dataset: Dataset = dataset
         elif isinstance(dataset, str):
             self.dataset_id = dataset
-            self.dataset = Dataset(project=self.project, api_key=self.api_key)
+            self.dataset = Dataset(
+                project=self.project,
+                api_key=self.api_key,
+                dataset_id=self.dataset_id,
+                firebase_uid=self.firebase_uid,
+            )
         else:
             raise ValueError(
                 "Dataset type needs to be either a string or Dataset instance."
             )
 
+    @track
     def list_closest_to_center(
         self,
         dataset: Optional[Union[str, Dataset]] = None,
         vector_fields: Optional[List] = None,
-        cluster_ids: List = [],
-        centroid_vector_fields: List = [],
-        select_fields: List = [],
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 1,
         page: int = 1,
         similarity_metric: str = "cosine",
-        filters: List = [],
+        filters: Optional[List] = None,
         # facets: List = [],
         min_score: int = 0,
         include_vector: bool = False,
@@ -327,15 +428,23 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
-            from relevanceai.clusterer import KMeansModel
-            kmeans = KMeans(n_clusters=5)
-            clusterer = client.ClusterOps(kmeans)
-            clusterer.fit(df, ["sample_vector_"])
-            clusterer.list_closest_to_center()
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+
+            cluster_ops.list_closest_to_center()
 
         """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+
         return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields
@@ -356,17 +465,19 @@ class ClusterOps(BatchAPIClient):
             include_count=include_count,
         )
 
+    @track
     def aggregate(
         self,
-        dataset: Optional[Union[str, Dataset]],
-        metrics: list = [],
-        sort: list = [],
-        groupby: list = [],
-        filters: list = [],
+        vector_fields: List[str] = None,
+        metrics: Optional[list] = None,
+        sort: Optional[list] = None,
+        groupby: Optional[list] = None,
+        filters: Optional[list] = None,
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
+        dataset: Optional[Union[str, Dataset]] = None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
@@ -480,23 +591,32 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            df = client.Dataset("sample_dataset_id")
 
-            from relevanceai.clusterer import KMeansModel
-            clusterer = client.ClusterOps(5)
-            clusterer.fit(df, ["sample_vector_"])
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+
             clusterer.aggregate(
-                groupby=[],
-                metrics=[
-                    {"name": "average_score", "field": "final_score", "agg": "avg"},
-                ]
+                "sample_dataset_id",
+                groupby=[{
+                    "field": "title",
+                    "agg": "wordcloud",
+                }],
+                vector_fields=['sample_vector_']
             )
 
 
         """
+        metrics = [] if metrics is None else metrics
+        sort = [] if sort is None else sort
+        groupby = [] if groupby is None else groupby
+        filters = [] if filters is None else filters
+
         return self.services.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),
-            vector_fields=self.vector_fields,
+            vector_fields=self.vector_fields if not vector_fields else vector_fields,
             groupby=groupby,
             metrics=metrics,
             sort=sort,
@@ -549,12 +669,14 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("_github_repo_vectorai")
-            from relevanceai.clusterer import KMeansModel
-            model = KMeansModel()
-            cluster = client.ClusterOps(3)
-            clusterer.fit(df)
-            clusterer.list_furthest_from_center()
+            df = client.Dataset("sample_dataset")
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+
+            cluster_ops.list_furthest_from_center()
 
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(
@@ -567,11 +689,8 @@ class ClusterOps(BatchAPIClient):
 
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
+            print("Inserting centroid documents...")
             centers = self.get_centroid_documents()
-
-            if hasattr(self.model, "get_centers"):
-                center_vectors = self.model.get_centers()
-                centers = self.get_centroid_documents()
 
             # Change centroids insertion
             results = self.services.cluster.centroids.insert(
@@ -582,13 +701,6 @@ class ClusterOps(BatchAPIClient):
             )
             self.logger.info(results)
 
-            self.datasets.cluster.centroids.list_closest_to_center(
-                self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                centroid_vector_fields=self.vector_fields,
-                page_size=20,
-            )
         return
 
     def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
@@ -609,6 +721,7 @@ class ClusterOps(BatchAPIClient):
                 raise ValueError("Please supply dataset.")
         return dataset_id
 
+    @track
     def insert_centroid_documents(
         self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
     ):
@@ -630,10 +743,15 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            clusterer = client.ClusterOps(alias="example")
-            # available if you inherit from centroidbase
-            centroids = model.get_centroid_documents()
-            clusterer.insert_centroid_documents(centroids)
+            df = client.Dataset("sample_dataset")
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+
+            centroids = cluster_ops.get_centroid_documents()
+            cluster_ops.insert_centroid_documents(centroids)
 
         """
 
@@ -645,6 +763,7 @@ class ClusterOps(BatchAPIClient):
         )
         return results
 
+    @track
     def get_centroid_documents(self) -> List:
         """
         Get the centroid documents to store. This enables you to use `list_closest_to_center()`
@@ -669,6 +788,9 @@ class ClusterOps(BatchAPIClient):
             }
 
         """
+        if hasattr(self.model, "get_centroid_documents"):
+            self.model.vector_fields = self.vector_fields
+            return self.model.get_centroid_documents()
         self.centers = self.model.get_centers()
 
         if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
@@ -697,7 +819,7 @@ class ClusterOps(BatchAPIClient):
         """
         See your centroids if there are any.
         """
-        return self.services.cluster.centroids.list(
+        return self.services.cluster.centroids.documents(
             self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -706,6 +828,7 @@ class ClusterOps(BatchAPIClient):
             include_vector=True,
         )
 
+    @track
     def delete_centroids(self, dataset: Union[str, Dataset], vector_fields: List):
         """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
@@ -723,8 +846,160 @@ class ClusterOps(BatchAPIClient):
         )
         return response.json()["status"]
 
+    def fit_predict(
+        self,
+        data: Union[str, Dataset, List[Dict]],
+        vector_fields: List[str],
+        filters: Optional[List[Dict]] = None,
+        return_only_clusters: bool = True,
+        include_grade: bool = False,
+        update: bool = True,
+        inplace: bool = False,
+    ):
+        """
+        Parameters
+        ----------
+        data: Union[str, Dataset, List[Dict]]
+            Either a reference to a Relevance AI Dataset, be it its name
+            (string) or the object itself (Dataset), or a list of documents
+            (List[Dict]).
+
+        vector_fields: List[str]
+            The vector fields over which to fit the model.
+
+        filters: List[Dict]
+            A list of filters to enable for document retrieval. This only
+            applies to a reference to a Relevance AI Dataset.
+
+        return_only_clusters: bool
+            An indicator that determines what is returned. If True, this
+            function returns the clusters. Else, the function returns the
+            original documents.
+
+        include_grade: bool
+            An indictor that determines whether to include (True) a grade
+            base on the mean silhouette score or not (False).
+
+        update: bool
+            An indicator that determines whether to update the documents
+            that were part of the clustering process. This only applies to a
+            reference to a Relevance AI Dataset.
+
+        inplace: bool
+            An indicator that determines whether the documents are edited
+            inplace (True) or a copy is created and edited (False).
+
+        Example
+        -------
+
+        .. code-block::
+
+            from relevanceai import ClusterBase, Client
+
+            client = Client()
+
+            import random
+            class CustomClusterModel(ClusterBase):
+                def fit_predict(self, X):
+                    cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
+                    return cluster_labels
+
+            model = CustomClusterModel()
+
+            df = client.Dataset("sample_dataset")
+            clusterer = client.ClusterOps(alias="random_clustering", model=model)
+            clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
+
+        """
+        filters = [] if filters is None else filters
+
+        if update and isinstance(data, list):
+            warnings.warn(
+                "Cannot update list of datasets that are untethered "
+                "to a Relevance AI dataset. "
+                "Setting update to False."
+            )
+            # If data is of type List[Dict] the value of update doesn't
+            # actually matter. This is more for good practice.
+            update = False
+
+        if isinstance(data, list):
+            documents = data
+        else:
+            self._init_dataset(data)
+            self.vector_fields = vector_fields
+            # make sure to only get fields where vector fields exist
+            filters.extend(
+                [
+                    {
+                        "field": f,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                        "strict": "must_or",
+                    }
+                    for f in vector_fields
+                ]
+            )
+            # load the documents
+            self.logger.warning(
+                "Retrieving documents... This can take a while if the dataset is large."
+            )
+            print("Retrieving all documents")
+            documents = self._get_all_documents(
+                dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
+            )
+            if len(documents) == 0:
+                raise NoDocumentsError()
+
+        vectors = self._get_vectors_from_documents(vector_fields, documents)
+
+        # Label the clusters
+        print("Fitting and predicting on all relevant documents")
+        cluster_labels = self._label_clusters(self.model.fit_predict(vectors))
+
+        if include_grade:
+            try:
+                self._calculate_silhouette_grade(vectors, cluster_labels)
+            except Exception as e:
+                print(e)
+                pass
+
+        clustered_documents = self.set_cluster_labels_across_documents(
+            cluster_labels,
+            documents,
+            inplace=inplace,
+            return_only_clusters=return_only_clusters,
+        )
+
+        if not isinstance(data, list):
+            if update:
+                # Updating the db
+                print("Updating the database...")
+                results = self._update_documents(
+                    self.dataset_id, clustered_documents, chunksize=10000
+                )
+                self.logger.info(results)
+
+                # Update the centroid collection
+                self.model.vector_fields = vector_fields
+
+            self._insert_centroid_documents()
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
+        return clustered_documents
+
+    @track
     def fit_predict_update(
-        self, dataset: Union[Dataset, str], vector_fields: List, filters: List = []
+        self,
+        dataset: Union[Dataset, str],
+        vector_fields: List,
+        filters: Optional[List] = None,
+        include_grade: bool = False,
+        verbose: bool = True,
     ):
         """
         This function fits a cluster model onto a dataset. It sits under `fit`
@@ -748,21 +1023,23 @@ class ClusterOps(BatchAPIClient):
         .. code-block::
 
             from relevanceai import ClusterBase, Client
-            import random
             client = Client()
 
+            import random
             class CustomClusterModel(ClusterBase):
                 def fit_predict(self, X):
                     cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
                     return cluster_labels
 
             model = CustomClusterModel()
-            clusterer = client.ClusterOps(model, alias="random")
-            df = client.Dataset("_github_repo_vectorai")
 
-            clusterer.fit_predict_update(df, vector_fields=["documentation_vector_"])
+            clusterer = client.ClusterOps(model, alias="random_clustering")
+            df = client.Dataset("sample_dataset")
+
+            clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
 
         """
+        filters = [] if filters is None else filters
 
         # load the documents
         self.logger.warning(
@@ -782,21 +1059,33 @@ class ClusterOps(BatchAPIClient):
             }
             for f in vector_fields
         ]
-        print("Retrieving all documents")
+        if verbose:
+            print("Retrieving all documents")
+        fields_to_get = vector_fields.copy()
+        if self.parent_alias:
+            parent_field = self._get_cluster_field_name(self.parent_alias)
+            fields_to_get.append(parent_field)
+
+        if verbose:
+            print("Fitting and predicting on all documents")
         docs = self._get_all_documents(
-            dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
+            dataset_id=self.dataset_id, filters=filters, select_fields=fields_to_get
         )
 
-        print("Fitting and predicting on all documents")
+        if len(docs) == 0:
+            raise NoDocumentsError()
+
         clustered_docs = self.fit_predict_documents(
             vector_fields,
             docs,
             return_only_clusters=True,
             inplace=False,
+            include_grade=include_grade,
         )
 
         # Updating the db
-        print("Updating the database...")
+        if verbose:
+            print("Updating the database...")
         results = self._update_documents(
             self.dataset_id, clustered_docs, chunksize=10000
         )
@@ -805,18 +1094,309 @@ class ClusterOps(BatchAPIClient):
         # Update the centroid collection
         self.model.vector_fields = vector_fields
 
-        print("Inserting centroid documents...")
         self._insert_centroid_documents()
 
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
+    def subfit_predict_update(
+        self,
+        dataset,
+        vector_fields: Optional[List] = None,
+        filters: Optional[List] = None,
+        verbose: bool = False,
+    ):
+        """
+
+        Run subclustering on your dataset using an in-memory clustering algorithm.
+
+        Parameters
+        --------------
+
+        dataset: Dataset
+            The dataset to create
+        vector_fields: List
+            The list of vector fields to run fitting, prediction and updating on
+        filters: Optional[List]
+            The list of filters to run clustering on
+        verbose: bool
+            If True, this should be verbose
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+            ds = client.Dataset("sample")
+
+            # Creates 100 sample documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=10)
+            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer.subfit_predict_update(
+                dataset=ds,
+            )
+
+        """
+        filters = [] if filters is None else filters
+
+        # load the documents
+        self.logger.warning(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
+
+        self._init_dataset(dataset)
+        self.vector_fields = vector_fields  # type: ignore
+
+        # make sure to only get fields where vector fields exist
+        filters += [
+            {
+                "field": f,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for f in vector_fields  # type: ignore
+        ]
+
+        if verbose:
+            print("Fitting and predicting on all documents")
+        # Here we run subfitting on these documents
+        clustered_docs = self.subfit_predict_documents(
+            vector_fields=vector_fields, filters=filters, verbose=verbose
+        )
+
+        # Updating the db
+        # print("Updating the database...")
+        # results = self._update_documents(
+        #     self.dataset_id, clustered_docs, chunksize=10000
+        # )
+        # self.logger.info(results)
+
+        # # Update the centroid collection
+        # self.model.vector_fields = vector_fields
+
+        # self._insert_centroid_documents()
+
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
+    def subpartialfit_predict_update(
+        self,
+        dataset,
+        vector_fields: list,
+        filters: Optional[list] = None,
+        cluster_ids: Optional[list] = None,
+        verbose: bool = True,
+    ):
+        """
+
+        Run partial fit subclustering on your dataset.
+
+        Parameters
+        ------------
+
+        dataset: Dataset
+            The dataset to call fit predict update on
+        vector_fields: list
+            The list of vector fields
+        filters: list
+            The list of filters
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+            ds = client.Dataset("sample")
+            # Creates 100 sample documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=10)
+            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer.subpartialfit_predict_update(
+                dataset=ds,
+            )
+
+        """
+        # Get data
+
+        self._init_dataset(dataset)
+
+        filters = [] if filters is None else filters
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        # Loop through each unique cluster ID and run clustering
+        parent_field = self._get_cluster_field_name(self.parent_alias)
+
+        print("Getting unique cluster IDs...")
+        unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+
+        for i, unique_cluster in enumerate(tqdm(unique_clusters)):
+            cluster_filters = filters.copy()
+            cluster_filters += [
+                {
+                    "field": parent_field,
+                    "filter_type": "category",
+                    "condition": "==",
+                    "condition_value": unique_cluster,
+                }
+            ]
+            self.partial_fit_predict_update(
+                dataset=self.dataset_id,
+                vector_fields=vector_fields,
+                filters=cluster_filters,
+                verbose=False,
+            )
+
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
+    def subfit_predict_documents(
+        self,
+        vector_fields: Optional[List] = None,
+        filters: Optional[List] = None,
+        cluster_ids: Optional[List] = None,
+        verbose: bool = True,
+    ):
+        """
+        Subclustering using fit predict update. This will loop through all of the
+        different clusters and then run subclustering on them. For this, you need to
+
+        Parameters
+        ------------
+
+        Example
+        ---------
+
+        ..code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+
+            # Creating 100 sample documents
+            from relevanceai.datasets import mock_documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            # Run simple clustering first
+            ds.auto_cluster("kmeans-3", vector_fields=["sample_1_vector_"])
+
+            # Start KMeans
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=20)
+
+            # Run subclustering.
+            cluster_ops = client.ClusterOps(
+                alias="subclusteringkmeans",
+                model=model,
+                parent_alias="kmeans-3")
+
+
+        """
+        filters = [] if filters is None else filters
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        # Loop through each unique cluster ID and run clustering
+        parent_field = self._get_cluster_field_name(self.parent_alias)
+
+        if verbose:
+            print("Getting unique cluster IDs...")
+        if not cluster_ids:
+            unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+        else:
+            unique_clusters = cluster_ids
+
+        for i, unique_cluster in enumerate(tqdm(unique_clusters)):
+            cluster_filters = filters.copy()
+            cluster_filters += [
+                {
+                    "field": parent_field,
+                    "filter_type": "category",
+                    "condition": "==",
+                    "condition_value": unique_cluster,
+                }
+            ]
+            self.fit_predict_update(
+                dataset=self.dataset_id,
+                vector_fields=vector_fields,
+                filters=cluster_filters,
+                include_grade=False,
+                verbose=False,
+            )
+
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
+    def unique_cluster_ids(self, alias: str = None, minimum_cluster_size: int = 10):
+        """
+        We call facets on our data, which looks a little like this:
+
+        {'results': {'_cluster_.sample_1_vector_.kmeans-3': [{'_cluster_.sample_1_vector_.kmeans-3': 'cluster-2',
+                'frequency': 41,
+                'value': 'cluster-2'},
+            {'_cluster_.sample_1_vector_.kmeans-3': 'cluster-0',
+                'frequency': 34,
+                'value': 'cluster-0'},
+            {'_cluster_.sample_1_vector_.kmeans-3': 'cluster-1',
+                'frequency': 25,
+                'value': 'cluster-1'}]}}
+        """
+        # Mainly to be used for subclustering
+        # Get the cluster alias
+        cluster_field = self._get_cluster_field_name(alias=alias)
+
+        facet_results = self.dataset.facets(
+            fields=[cluster_field],
+            page_size=int(self.config["data.max_clusters"]),
+            page=1,
+            asc=True,
+        )
+        all_cluster_ids = []
+        if "results" in facet_results:
+            facet_results = facet_results["results"]
+        for facet in facet_results[cluster_field]:
+            if facet["frequency"] > minimum_cluster_size:
+                all_cluster_ids.append(facet[cluster_field])
+        return all_cluster_ids
+
+    @track
     def fit_dataset(
         self,
         dataset,
         vector_fields,
-        filters: list = [],
+        filters: Optional[list] = None,
         return_only_clusters: bool = True,
         inplace=False,
+        verbose: bool = True,
     ):
         """ """
+        filters = [] if filters is None else filters
+
         # load the documents
         self.logger.warning(
             "Retrieving documents... This can take a while if the dataset is large."
@@ -835,12 +1415,14 @@ class ClusterOps(BatchAPIClient):
             }
             for f in vector_fields
         ]
-        print("Retrieving all documents")
+        if verbose:
+            print("Retrieving all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
         )
 
-        print("Fitting and predicting on all documents")
+        if verbose:
+            print("Fitting and predicting on all documents")
         return self.fit_predict_documents(
             vector_fields,
             docs,
@@ -848,19 +1430,11 @@ class ClusterOps(BatchAPIClient):
             inplace=inplace,
         )
 
-    # def list_closest_to_center(self):
-    #     return self.datasets.cluster.centroids.list_closest_to_center(
-    #         dataset_id=self.dataset_id,
-    #         vector_fields=self.vector_fields
-    #         alias=self.alias
-    #     )
-
     def _concat_vectors_from_list(self, list_of_vectors: list):
         """Concatenate 2 vectors together in a pairwise fashion"""
         return [np.concatenate(x) for x in list_of_vectors]
 
     def _get_vectors_from_documents(self, vector_fields: list, documents: List[Dict]):
-
         if len(vector_fields) == 1:
             # filtering out entries not containing the specified vector
             documents = list(filter(DocUtils.list_doc_fields, documents))
@@ -891,6 +1465,7 @@ class ClusterOps(BatchAPIClient):
 
         return vectors
 
+    @track
     def partial_fit_documents(
         self,
         vector_fields: list,
@@ -922,20 +1497,16 @@ class ClusterOps(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai import ClusterBase, Client
-            import random
+            from relevanceai import Client
             client = Client()
+            df = client.Dataset("sample_dataset")
 
-            class CustomClusterModel(ClusterBase):
-                def fit_predict(self, X):
-                    cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
-                    return cluster_labels
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="batchkmeans_2", model=model)
 
-            model = CustomClusterModel()
-            clusterer = client.ClusterOps(model, alias="random")
-            df = client.Dataset("_github_repo_vectorai")
-
-            clusterer.parital_fit(df, vector_fields=["documentation_vector_"])
+            cluster_ops.parital_fit(df, vector_fields=["documentation_vector_"])
+            cluster_ops.predict_update(df, vector_fields=["sample_vector_"])
 
         """
         self.vector_fields = vector_fields
@@ -947,15 +1518,18 @@ class ClusterOps(BatchAPIClient):
     def _chunk_dataset(
         self,
         dataset: Dataset,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         chunksize: int = 100,
-        filters: list = [],
+        filters: Optional[list] = None,
     ):
         """Utility function for chunking a dataset"""
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+
         cursor = None
 
-        docs = self.get_documents(
-            dataset.dataset_id,
+        docs = self._get_documents(
+            dataset_id=self.dataset_id,
             include_cursor=True,
             number_of_documents=chunksize,
             select_fields=select_fields,
@@ -964,8 +1538,8 @@ class ClusterOps(BatchAPIClient):
 
         while len(docs["documents"]) > 0:
             yield docs["documents"]
-            docs = self.get_documents(
-                self.dataset.dataset_id,
+            docs = self._get_documents(
+                dataset_id=self.dataset_id,
                 cursor=docs["cursor"],
                 include_cursor=True,
                 select_fields=select_fields,
@@ -973,15 +1547,16 @@ class ClusterOps(BatchAPIClient):
                 filters=filters,
             )
 
-    def fit_dataset_by_partial(
+    @track
+    def partial_fit_dataset(
         self,
         dataset: Union[str, Dataset],
         vector_fields: List[str],
         chunksize: int = 100,
+        filters: Optional[list] = None,
     ):
         """
         Fit The dataset by partial documents.
-        This is useful if you are retrieving a dataset
 
 
         Example
@@ -991,14 +1566,17 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            clusterer = client.ClusterOps(alias="minibatch_50", model=model)
-            clusterer.fit_dataset_by_partial(df, ["documentation_vector_"])
-            clusterer.predict_dataset(df, ['documentation_vector_'])
-            new_model.vector_fields = ['documentation_vector_']
-            clusterer.insert_centroid_documents(new_model.get_centroid_documents(), df)
+            df = client.Dataset("sample_dataset")
+
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
+
+            cluster_ops.partial_fit_dataset(df, vector_fields=["documentation_vector_"])
 
         """
+        filters = [] if filters is None else filters
+
         self.vector_fields = vector_fields
         if len(vector_fields) > 1:
             raise ValueError(
@@ -1007,7 +1585,10 @@ class ClusterOps(BatchAPIClient):
 
         if isinstance(dataset, str):
             self.dataset = Dataset(
-                project=self.project, api_key=self.api_key, dataset_id=dataset
+                project=self.project,
+                api_key=self.api_key,
+                dataset_id=dataset,
+                firebase_uid=self.firebase_uid,
             )
         else:
             self.dataset = dataset
@@ -1020,7 +1601,7 @@ class ClusterOps(BatchAPIClient):
                 "condition_value": " ",
             }
             for f in vector_fields
-        ]
+        ] + filters
 
         for c in self._chunk_dataset(
             self.dataset, self.vector_fields, chunksize=chunksize, filters=filters
@@ -1028,11 +1609,14 @@ class ClusterOps(BatchAPIClient):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
 
-    def fit_partial_predict_update(
+    @track
+    def partial_fit_predict_update(
         self,
         dataset: Union[Dataset, str],
-        vector_fields: List[str],
+        vector_fields: Optional[List[str]] = None,
         chunksize: int = 100,
+        filters: Optional[List] = None,
+        verbose: bool = True,
     ):
         """
         Fit, predict and update on a dataset.
@@ -1059,25 +1643,46 @@ class ClusterOps(BatchAPIClient):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("research2vec")
-            clusterer = client.ClusterOps(alias="minibatch_50", model=model)
-            clusterer.fit_predict_dataset_by_partial(
+
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=50)
+            cluster_ops = client.ClusterOps(alias="minibatchkmeans_50", model=model)
+
+            cluster_ops.partial_fit_predict_update(
                 df,
                 vector_fields=['title_trainedresearchqgen_vector_'],
                 chunksize=1000
             )
 
         """
-        print("Fitting dataset...")
-        self.fit_dataset_by_partial(
-            dataset=dataset, vector_fields=vector_fields, chunksize=chunksize
-        )
-        print("Updating your dataset...")
-        self.predict_dataset(dataset=dataset)
-        # if hasattr(self, "get_centers"):
-        #     print("Inserting your centroids...")
-        print("Inserting centroids...")
-        self.insert_centroid_documents(self.get_centroid_documents(), dataset=dataset)
+        vector_fields = [] if vector_fields is None else vector_fields
+        filters = [] if filters is None else filters
 
+        if verbose:
+            print("Fitting dataset...")
+        self.partial_fit_dataset(
+            dataset=dataset,
+            vector_fields=vector_fields,
+            chunksize=chunksize,
+            filters=filters,
+        )
+        if verbose:
+            print("Updating your dataset...")
+        self.predict_update(dataset=dataset)
+        if hasattr(self.model, "get_centers"):
+            if verbose:
+                print("Inserting your centroids...")
+            self.insert_centroid_documents(
+                self.get_centroid_documents(), dataset=dataset
+            )
+
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+
+    @track
     def predict_documents(
         self,
         vector_fields,
@@ -1100,8 +1705,13 @@ class ClusterOps(BatchAPIClient):
             return_only_clusters=return_only_clusters,
         )
 
-    def predict_dataset(
-        self, dataset, vector_fields: Optional[List[str]] = None, chunksize: int = 20
+    @track
+    def predict_update(
+        self,
+        dataset,
+        vector_fields: Optional[List[str]] = None,
+        chunksize: int = 20,
+        verbose: bool = True,
     ):
         """
         Predict the dataset.
@@ -1113,14 +1723,14 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
+            df = client.Dataset("sample_dataset")
 
-            from sklearn import MiniBatchKMeans
-            model = MiniBatchKMeans()
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
 
-            clusterer = client.ClusterOps(model, alias="minibatch")
-            clusterer.fit_dataset_by_partial(df)
-            clusterer.predict_dataset(df)
+            cluster_ops.partial_fit_dataset(df)
+            cluster_ops.predict_dataset(df)
 
         """
         if not vector_fields:
@@ -1148,20 +1758,29 @@ class ClusterOps(BatchAPIClient):
             cluster_predictions = self.predict_documents(
                 vector_fields=vector_fields, documents=c
             )
-            response = self.dataset.upsert_documents(cluster_predictions)
+            response = self.dataset._update_documents(
+                dataset_id=self.dataset_id, documents=cluster_predictions
+            )
             for k, v in response.items():
                 if isinstance(all_responses[k], int):
                     all_responses["inserted"] += v
                 elif isinstance(all_responses[k], list):
                     all_responses[k] += v
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
         return all_responses
 
+    @track
     def fit_predict_documents(
         self,
         vector_fields: list,
         documents: List[Dict],
         return_only_clusters: bool = True,
         inplace: bool = True,
+        include_grade: bool = False,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -1189,20 +1808,15 @@ class ClusterOps(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai import ClusterBase, Client
-            import random
+            from relevanceai import Client
             client = Client()
+            df = client.Dataset("sample_dataset")
 
-            class CustomClusterModel(ClusterBase):
-                def fit_predict(self, X):
-                    cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
-                    return cluster_labels
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
 
-            model = CustomClusterModel()
-            clusterer = client.ClusterOps(model, alias="random")
-            df = client.Dataset("_github_repo_vectorai")
-
-            clusterer.fit(df, vector_fields=["documentation_vector_"])
+            cluster_ops.fit_predict_documents(df, vector_fields=["documentation_vector_"])
 
         """
         self.vector_fields = vector_fields
@@ -1211,15 +1825,51 @@ class ClusterOps(BatchAPIClient):
 
         cluster_labels = self.model.fit_predict(vectors)
 
-        # Label the clusters
-        cluster_labels = self._label_clusters(cluster_labels)
+        if not self.parent_alias:
+            cluster_labels_values = self._label_clusters(cluster_labels)
+        else:
+            prev_cluster_labels = self._get_parent_cluster_values(
+                vector_fields=vector_fields,
+                alias=self.parent_alias,
+                documents=documents,
+            )
+            cluster_labels_values = self._label_subclusters(
+                labels=cluster_labels, prev_cluster_labels=prev_cluster_labels
+            )
 
+        if include_grade:
+            try:
+                self._calculate_silhouette_grade(vectors, cluster_labels_values)
+            except Exception as e:
+                print(e)
+                pass
         return self.set_cluster_labels_across_documents(
-            cluster_labels,
-            documents,
+            cluster_labels=cluster_labels_values,
+            documents=documents,
             inplace=inplace,
             return_only_clusters=return_only_clusters,
         )
+
+    def _get_parent_cluster_values(
+        self, vector_fields: list, alias: str, documents
+    ) -> list:
+        field = ".".join([self.cluster_field, ".".join(sorted(vector_fields)), alias])
+        return self.get_field_across_documents(
+            field, documents, missing_treatment="skip"
+        )
+
+    @staticmethod
+    def _calculate_silhouette_grade(vectors, cluster_labels):
+        from relevanceai.cluster_report.grading import get_silhouette_grade
+        from sklearn.metrics import silhouette_samples
+
+        score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
+        grade = get_silhouette_grade(score)
+
+        print("---------------------------")
+        print(f"Grade: {grade}")
+        print(f"Mean Silhouette Score: {score}")
+        print("---------------------------")
 
     def set_cluster_labels_across_documents(
         self,
@@ -1252,7 +1902,7 @@ class ClusterOps(BatchAPIClient):
 
             labels = list(range(10))
             documents = [{"_id": str(x)} for x in range(10)]
-            clusterer.set_cluster_labels_across_documents(labels, documents)
+            cluster_ops.set_cluster_labels_across_documents(labels, documents)
 
         """
         if inplace:
@@ -1264,6 +1914,7 @@ class ClusterOps(BatchAPIClient):
                 ]
             return documents
 
+        # useful if you want to upload as quickly as possible
         new_documents = documents.copy()
 
         self._set_cluster_labels_across_documents(cluster_labels, new_documents)
@@ -1274,15 +1925,19 @@ class ClusterOps(BatchAPIClient):
             ]
         return new_documents
 
-    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
+    def _get_cluster_field_name(self, alias: str = None):
+        if alias is None:
+            alias = self.alias
         if isinstance(self.vector_fields, list):
             set_cluster_field = (
-                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{self.alias}"
+                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
             )
         elif isinstance(self.vector_fields, str):
-            set_cluster_field = (
-                f"{self.cluster_field}.{self.vector_fields}.{self.alias}"
-            )
+            set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
+        return set_cluster_field
+
+    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
+        set_cluster_field = self._get_cluster_field_name()
         self.set_field_across_documents(set_cluster_field, cluster_labels, documents)
 
     def _label_cluster(self, label: Union[int, str]):
@@ -1290,8 +1945,17 @@ class ClusterOps(BatchAPIClient):
             return "cluster-" + str(label)
         return str(label)
 
+    def _label_subcluster(self, label: Union[int, str], prev_cluster_label) -> str:
+        return prev_cluster_label + "-" + str(label)
+
     def _label_clusters(self, labels):
         return [self._label_cluster(x) for x in labels]
+
+    def _label_subclusters(self, labels: List[str], prev_cluster_labels: List[str]):
+        return [
+            self._label_subcluster(label, prev_cluster_label)
+            for label, prev_cluster_label in zip(labels, prev_cluster_labels)
+        ]
 
     @property
     def metadata(self):
@@ -1342,13 +2006,14 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("_github_repo_vectorai")
-            from relevanceai.clusterer import KMeansModel
+            df = client.Dataset("sample_dataset")
 
-            model = KMeansModel()
-            kmeans = client.ClusterOps(model, alias="kmeans_sample")
-            kmeans.fit(df, vector_fields=["sample_1_vector_"])
-            kmeans.metadata
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+
+            cluster_ops.fit(df, vector_fields=["sample_1_vector_"])
+            cluster_ops.metadata
             # {"k": 10}
 
         """
@@ -1359,6 +2024,7 @@ class ClusterOps(BatchAPIClient):
             metadata=metadata,
         )
 
+    @track
     def evaluate(
         self,
         ground_truth_column: Union[str, None] = None,
@@ -1391,15 +2057,16 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("_github_repo_vectorai")
-            from relevanceai.clusterer import KMeansModel
+            df = client.Dataset("sample_dataset")
 
-            model = KMeansModel()
-            kmeans = client.ClusterOps(model, alias="kmeans_sample")
-            kmeans.fit(df, vector_fields=["sample_1_vector_"])
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
 
-            kmeans.evaluate()
-            kmeans.evaluate("truth_column")
+            cluster_ops.fit(df, vector_fields=["sample_vector_"])
+
+            cluster_ops.evaluate()
+            cluster_ops.evaluate("truth_column")
         """
 
         from sklearn.metrics import (
@@ -1479,3 +2146,98 @@ class ClusterOps(BatchAPIClient):
                 }
 
         return stats
+
+    @beta
+    @track
+    def store_cluster_report(
+        self, report_name: str, report: dict, verbose: bool = True
+    ):
+        """
+
+        Store the cluster data.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            client.store_cluster_report("sample", {"value": 3})
+
+        """
+        response: dict = self.reports.clusters.create(
+            name=report_name, report=self.json_encoder(report)
+        )
+        if verbose:
+            print(
+                f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+            )
+        return response
+
+    @track
+    def internal_report(self, verbose: bool = True):
+        """
+        Get a report on your clusters.
+
+        Example
+        ---------
+
+        This is what is returned on an `auto_cluster` method.
+
+        .. code-block::
+
+            from relevanceai.datasets import mock_documents
+            docs = mock_documents(10)
+            df = client.Dataset('sample')
+            df.upsert_documents(docs)
+            cluster_ops = df.auto_cluster('kmeans-2', ['sample_1_vector_'])
+            cluster_ops.internal_report()
+
+        This is what is returned on an `internal_report` method.
+
+        .. code-block::
+
+            from relevanceai import Client
+            # client = Client()
+            from relevanceai.datasets import mock_documents
+            ds = client.Dataset("sample")
+            # Creates 100 sample documents
+            documents = mock_documents(100)
+            ds.upsert_documents(documents)
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=10)
+            clusterer = client.ClusterOps(alias="not-auto-kmeans-10", model=model)
+
+            clusterer.fit_predict_update(dataset=ds, vector_fields=["sample_1_vector_"])
+            cluster_ops.internal_report()
+
+        """
+        if isinstance(self.vector_fields, list) and len(self.vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support more than 1 vector field when reporting."
+            )
+        from relevanceai.cluster_report import ClusterReport
+
+        # X is all the vectors
+        cluster_field_name = self._get_cluster_field_name()
+        all_docs = self._get_all_documents(
+            self.dataset_id, select_fields=self.vector_fields + [cluster_field_name]
+        )
+        cluster_labels = self.get_field_across_documents(cluster_field_name, all_docs)
+        self.number_of_clusters = len(set(cluster_labels))
+        self._report = ClusterReport(
+            self.get_field_across_documents(self.vector_fields[0], all_docs),
+            cluster_labels=self.get_field_across_documents(
+                cluster_field_name, all_docs
+            ),
+            model=self.model,
+            num_clusters=self.number_of_clusters,
+        )
+        cluster_response = self.store_cluster_report(
+            report_name=cluster_field_name,
+            report=self.json_encoder(self._report.internal_report),
+            verbose=verbose,
+        )
+
+        return self._report.internal_report
+
+    report = internal_report
