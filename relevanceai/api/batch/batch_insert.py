@@ -3,6 +3,7 @@
 import asyncio
 import json
 import math
+import os
 import sys
 import time
 import traceback
@@ -355,6 +356,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         update_function,
         updated_dataset_id: str = None,
         log_file: str = None,
+        updated_documents_file: str = None,
         updating_args: Optional[dict] = None,
         retrieve_chunk_size: int = 100,
         max_workers: int = 8,
@@ -371,18 +373,28 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         ----------
         dataset_id: string
             The dataset_id of the collection where your original documents are
+
         update_function: function
             A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+
         updated_dataset_id: string
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+
+        log_file: str
+        updated_documents_file: str
+
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+
         retrieve_chunk_size: int
             The number of documents that are received from the original collection with each loop iteration.
+
         max_workers: int
             The number of processors you want to parallelize with
+
         max_error: int
             How many failed uploads before the function breaks
+
         json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
@@ -404,25 +416,36 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 + "_pull_update_push"
                 + ".log"
             )
+            self.logger.info(f"Created {log_file}")
+
+        if updated_documents_file is None:
+            updated_documents_file = "_".join(
+                [
+                    dataset_id,
+                    str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")),
+                    "pull_update_push-updated_documents.temp",
+                ]
+            )
+            self.logger.info(f"Created {updated_documents_file}")
+
         with FileLogger(fn=log_file, verbose=True):
             # Instantiate the logger to document the successful IDs
-            # PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
+            PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(updated_documents_file)
 
             # Track failed documents
             failed_documents: List[Dict] = []
             failed_documents_detailed: List[Dict] = []
 
-            # Trust the process
             # Get document lengths to calculate iterations
             original_length = self.get_number_of_documents(dataset_id, filters)
 
             # get the remaining number in case things break
-            # remaining_length = (
-            #    original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
-            # )
+            remaining_length = (
+                original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
+            )
 
             # iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
-            iterations_required = math.ceil(original_length / retrieve_chunk_size)
+            iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
             # Get incomplete documents from raw collection
             retrieve_filters = filters + [
@@ -477,8 +500,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 chunk_documents_detailed = insert_json["failed_documents_detailed"]
                 failed_documents.extend(chunk_failed)
                 failed_documents_detailed.extend(chunk_documents_detailed)
-                # success_documents = list(set(updated_documents) - set(failed_documents))
-                # PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
+                success_documents = list(set(updated_documents) - set(failed_documents))
+                PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
                 self.logger.success(
                     f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
                 )
@@ -488,6 +511,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 print("The following documents failed to be updated/inserted:")
                 for failed_document in failed_documents:
                     print(f"  * {failed_document}")
+
+        try:
+            self.logger.info(f"Deleting {updated_documents_file}")
+            os.remove(updated_documents_file)
+        except FileNotFoundError:
+            self.logger.info(f"{updated_documents_file} was never touched")
 
         self.logger.success(f"Pull, Update, Push is complete!")
 
@@ -503,6 +532,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         updating_args: Optional[dict] = None,
         updated_dataset_id: Optional[str] = None,
         log_file: str = None,
+        updated_documents_file: str = None,
         retrieve_chunk_size: int = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
@@ -567,15 +597,19 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 + "_pull_update_push"
                 + ".log"
             )
+            self.logger.info(f"Created {log_file}")
+
+        if updated_documents_file is None:
+            updated_documents_file = "_".join(
+                [
+                    dataset_id,
+                    str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")),
+                    "pull_update_push-updated_documents.temp",
+                ]
+            )
+            self.logger.info(f"Created {updated_documents_file}")
 
         with FileLogger(fn=log_file, verbose=True):
-            # Instantiate the logger to document the successful IDs
-            PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(log_file)
-
-            # Track failed documents
-            failed_documents: List[Dict] = []
-            failed_documents_detailed: List[Dict] = []
-
             num_documents = self.get_number_of_documents(dataset_id, filters)
 
             # This number will determine how many requests are sent.
@@ -708,16 +742,21 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             threaded_loop.terminate()
 
             failed_documents = []
-            all_documents = []
             for future in threaded_loop.futures:
                 inserted, updated_ids = future.result()
                 failed_documents.extend(inserted["failed_documents"])
-                all_documents.extend(updated_ids)
 
-            # log successfully updated pulled/updated/pushed documents
-            PULL_UPDATE_PUSH_LOGGER.log_ids(
-                list(set(all_documents) - set(failed_documents))
-            )
+            if failed_documents:
+                # This will be picked up by FileLogger
+                print("The following documents failed to be updated/inserted:")
+                for failed_document in failed_documents:
+                    print(f"  * {failed_document}")
+
+            try:
+                self.logger.info(f"Deleting {updated_documents_file}")
+                os.remove(updated_documents_file)
+            except FileNotFoundError:
+                self.logger.info(f"{updated_documents_file} was never touched")
 
             self.logger.success("Pull, update, and push is complete!")
 
