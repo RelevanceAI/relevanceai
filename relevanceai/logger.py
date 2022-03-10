@@ -67,9 +67,14 @@ class FileLogger:
 
     def __enter__(self, fn: str = "logs"):
         if not os.path.exists(self.fn):
+            self._existed = False
+            self._initial_length = 0
             sys.stdout = open(self.fn, "w")
             sys.stderr = open(self.fn, "w")
         else:
+            self._existed = True
+            with open(self.fn, "r") as f:
+                self._initial_length = len(f.readlines())
             sys.stdout = open(self.fn, "a")
             sys.stderr = open(self.fn, "a")
 
@@ -78,9 +83,30 @@ class FileLogger:
         sys.stdout.close()
         sys.stdout = self._original_stdout
         sys.stderr = self._original_stderr
-        if self.verbose:
-            if self._if_not_empty():
+        # explicitly spell out the four cases of whether the file existed
+        # beforehand and whether new lines were added
+        if self._existed and self._lines_added():
+            if self.verbose:
+                print("Log {self.fn} has been updated")
+        elif not self._existed and self._lines_added():
+            if self.verbose:
                 print(f"Logs have been saved to {self.fn}")
+        elif self._existed and not self._lines_added():
+            # Do nothing if the file already existed and no lines were added
+            pass
+        elif not self._existed and not self._lines_added():
+            # If the file did not already exist and no lines were added, just
+            # delete the file.
+            os.remove(self.fn)
+
+    def _lines_added(self):
+        with open(self.fn, "r") as f:
+            final_length = len(f.readlines())
+
+        if final_length > self._initial_length:
+            return True
+        else:
+            return False
 
     def _if_not_empty(self):
         with open(self.fn, "r") as f:
