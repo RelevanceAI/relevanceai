@@ -406,10 +406,12 @@ class Write(Read):
         .. code-block::
 
             from relevanceai import Client
+            from relevanceai.datasets import mock_documents
 
             client = Client()
 
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
+            ds.upsert_documents(mock_documents(100))
 
             def update_doc(doc):
                 doc["value"] = 2
@@ -847,7 +849,7 @@ class Write(Read):
                 media_fns, verbose=verbose, file_log=file_log
             )
 
-    def upsert_medias(
+    def upsert_media(
         self,
         media_fns: List[str],
         verbose: bool = False,
@@ -871,3 +873,17 @@ class Write(Read):
             media_fns=media_fns, verbose=verbose, file_log=file_log
         )
         return self.upsert_documents(documents["media_documents"], create_id=True, **kw)
+
+    def delete_documents(self, document_ids: List[str]):
+        """
+        Delete documents in a dataset
+
+        Parameters
+        ------------
+        document_ids: List[str]
+            A list of document IDs to delete
+
+        """
+        return self.datasets.documents.bulk_delete(
+            dataset_id=self.dataset_id, ids=document_ids
+        )

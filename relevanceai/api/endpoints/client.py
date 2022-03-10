@@ -5,6 +5,7 @@ from relevanceai.api.endpoints.admin.admin import AdminClient
 from relevanceai.api.endpoints.datasets.datasets import DatasetsClient
 from relevanceai.api.endpoints.services.services import ServicesClient
 from relevanceai.api.endpoints.reports.reports import ReportsClient
+from relevanceai.api.endpoints.deployables.deployables import DeployableClient
 from relevanceai.datasets import ExampleDatasets
 
 
@@ -27,6 +28,9 @@ class APIClient(_Base):
             project=project, api_key=api_key, firebase_uid=firebase_uid
         )
         self.reports = ReportsClient(
+            project=project, api_key=api_key, firebase_uid=firebase_uid
+        )
+        self.deployables = DeployableClient(
             project=project, api_key=api_key, firebase_uid=firebase_uid
         )
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)

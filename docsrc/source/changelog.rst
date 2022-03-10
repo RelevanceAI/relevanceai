@@ -4,6 +4,14 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.4.3
+-----------
+
+- Reduced `pull_update_push` log file output
+- Add `delete_documents` utility
+- Add deployables functions
+- Check if global datasets already exist
+
 v1.4.2
 -----------
 
