@@ -381,7 +381,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
 
         log_file: str
+            The log file to direct any information or issues that may crop up.
+            If no log file is specified, one will automatically be created.
+
         updated_documents_file: str
+            A file to keep track of documents that have already been update.
+            If a file is not specified, one will automatically be created.
 
         updating_args: dict
             Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
@@ -392,10 +397,13 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         max_workers: int
             The number of processors you want to parallelize with
 
-        max_error: int
-            How many failed uploads before the function breaks
+        filters: list
+            A list of filters to apply on the retrieval query
 
-        json_encoder : bool
+        select_fields: list
+            A list of fields to query over
+
+        use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
         """
         updating_args = {} if updating_args is None else updating_args
@@ -512,11 +520,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 for failed_document in failed_documents:
                     print(f"  * {failed_document}")
 
-        try:
-            self.logger.info(f"Deleting {updated_documents_file}")
-            os.remove(updated_documents_file)
-        except FileNotFoundError:
-            self.logger.info(f"{updated_documents_file} was never touched")
+        self.logger.info(f"Deleting {updated_documents_file}")
+        os.remove(updated_documents_file)
 
         self.logger.success(f"Pull, Update, Push is complete!")
 
@@ -532,7 +537,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         updating_args: Optional[dict] = None,
         updated_dataset_id: Optional[str] = None,
         log_file: str = None,
-        updated_documents_file: str = None,
         retrieve_chunk_size: int = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
@@ -558,6 +562,10 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         updated_dataset_id: str
             The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+
+        log_file: str
+            The log file to direct any information or issues that may crop up.
+            If no log file is specified, one will automatically be created.
 
         retrieve_chunk_size: int
             The number of documents that are received from the original collection with each loop iteration.
@@ -598,16 +606,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 + ".log"
             )
             self.logger.info(f"Created {log_file}")
-
-        if updated_documents_file is None:
-            updated_documents_file = "_".join(
-                [
-                    dataset_id,
-                    str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")),
-                    "pull_update_push-updated_documents.temp",
-                ]
-            )
-            self.logger.info(f"Created {updated_documents_file}")
 
         with FileLogger(fn=log_file, verbose=True):
             num_documents = self.get_number_of_documents(dataset_id, filters)
@@ -751,12 +749,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 print("The following documents failed to be updated/inserted:")
                 for failed_document in failed_documents:
                     print(f"  * {failed_document}")
-
-            try:
-                self.logger.info(f"Deleting {updated_documents_file}")
-                os.remove(updated_documents_file)
-            except FileNotFoundError:
-                self.logger.info(f"{updated_documents_file} was never touched")
 
             self.logger.success("Pull, update, and push is complete!")
 
