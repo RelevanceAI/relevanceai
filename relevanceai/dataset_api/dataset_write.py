@@ -406,10 +406,12 @@ class Write(Read):
         .. code-block::
 
             from relevanceai import Client
+            from relevanceai.datasets import mock_documents
 
             client = Client()
 
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
+            ds.upsert_documents(mock_documents(100))
 
             def update_doc(doc):
                 doc["value"] = 2
