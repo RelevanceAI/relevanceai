@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [ main ]
 
+  push:
+    branches: [ main ]
+
 jobs:
   test-notebooks:
     runs-on: ${{ matrix.os }}
@@ -48,5 +51,8 @@ jobs:
           TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           TEST_US_API_KEY: ${{ secrets.TEST_US_API_KEY }}
           TEST_US_PROJECT: ${{ secrets.TEST_US_PROJECT }}
+          WORKFLOW_TOKEN_VECTORIZE_YOUR_DATA_WITH_RELEVANCE_AI: ${{ secrets.WORKFLOW_TOKEN_VECTORIZE_YOUR_DATA_WITH_RELEVANCE_AI }}
+          WORKFLOW_TOKEN_CLUSTER_YOUR_DATA_WITH_RELEVANCE_AI: ${{ secrets.WORKFLOW_TOKEN_CLUSTER_YOUR_DATA_WITH_RELEVANCE_AI }}
+          WORKFLOW_TOKEN_REDUCE_THE_DIMENSIONS_OF_YOUR_DATA_WITH_RELEVANCE_AI: ${{ secrets.WORKFLOW_TOKEN_REDUCE_THE_DIMENSIONS_OF_YOUR_DATA_WITH_RELEVANCE_AI }}
         run: |
           python workflows/scripts/test_notebooks.py
