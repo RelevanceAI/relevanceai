@@ -352,7 +352,7 @@ class Transport(JSONEncoderUtils):
                 time.sleep(seconds_between_retries)
                 continue
             except JSONDecodeError as error:
-                self._log_no_json(base_url, endpoint, response.status_code, response)
+                self._log_no_json(base_url, endpoint, response.status, response)
                 return response
 
         return response

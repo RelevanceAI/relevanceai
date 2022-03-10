@@ -541,3 +541,14 @@ class Series(BatchAPIClient):
             except SyntaxError:
                 raise AttributeError(f"'{attr}' is an invalid attribute")
         raise AttributeError(f"'{attr}' is an invalid attribute")
+
+    def __add__(self, other):
+        schema = self.datasets.schema(self.dataset_id)
+        if schema[self.field] != "numeric":
+            raise ValueError(f"{self.field} is not a numeric type")
+        if schema[other.field] != "numeric":
+            raise ValueError(f"{other.field} is not a numeric type")
+        if other.field not in schema:
+            raise ValueError(f"{other.field} must be an attribute of {self.dataset_id}")
+
+        return self._get_pandas_series() + other._get_pandas_series()
