@@ -4,6 +4,11 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.4.3
+-----------
+
+- Reduced `pull_update_push` log file output
+
 v1.4.2
 -----------
 
