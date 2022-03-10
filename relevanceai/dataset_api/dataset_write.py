@@ -849,7 +849,7 @@ class Write(Read):
                 media_fns, verbose=verbose, file_log=file_log
             )
 
-    def upsert_medias(
+    def upsert_media(
         self,
         media_fns: List[str],
         verbose: bool = False,
@@ -873,3 +873,17 @@ class Write(Read):
             media_fns=media_fns, verbose=verbose, file_log=file_log
         )
         return self.upsert_documents(documents["media_documents"], create_id=True, **kw)
+
+    def delete_documents(self, document_ids: List[str]):
+        """
+        Delete documents in a dataset
+
+        Parameters
+        ------------
+        document_ids: List[str]
+            A list of document IDs to delete
+
+        """
+        return self.datasets.documents.bulk_delete(
+            dataset_id=self.dataset_id, ids=document_ids
+        )
