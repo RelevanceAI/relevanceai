@@ -2517,6 +2517,8 @@ class Operations(Write):
         """
         Launch an app with a given configuration
         """
+        if "configuration" in configuration:
+            configuration = configuration["configuration"]
         results = self.deployables.create(
             dataset_id=self.dataset_id, configuration=configuration
         )
