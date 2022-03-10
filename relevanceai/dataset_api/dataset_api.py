@@ -67,14 +67,16 @@ class Dataset(Export, Stats, Operations):
         )
         # add global datasets
         if self.dataset_id in _GLOBAL_DATASETS:
-            from relevanceai.datasets import mock_documents
-            from relevanceai.analytics_funcs import fire_and_forget
+            # Check if global dataset already exists
+            if self.dataset_id not in self.datasets.list()["datasets"]:
+                from relevanceai.datasets import mock_documents
+                from relevanceai.analytics_funcs import fire_and_forget
 
-            @fire_and_forget
-            def add_mock_dataset():
-                self.upsert_documents(mock_documents(100))
+                @fire_and_forget
+                def add_mock_dataset():
+                    self.upsert_documents(mock_documents(100))
 
-            add_mock_dataset()
+                add_mock_dataset()
 
     @track
     def __getitem__(self, field: Union[List[str], str]):
