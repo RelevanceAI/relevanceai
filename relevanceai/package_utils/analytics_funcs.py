@@ -9,9 +9,9 @@ from typing import Callable
 from base64 import b64decode as decode
 from functools import wraps
 
-from relevanceai.config import CONFIG
-from relevanceai.json_encoder import json_encoder
-from relevanceai.logger import FileLogger
+from relevanceai.package_utils.config import CONFIG
+from relevanceai.package_utils.json_encoder import json_encoder
+from relevanceai.package_utils.logger import FileLogger
 
 
 def is_tracking_enabled():

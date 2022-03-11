@@ -1451,7 +1451,6 @@ class Operations(Write):
             label_list=[x[0] for x in labels],
         )
 
-
     def _run_dr_algorithm(
         self,
         algorithm: str,
