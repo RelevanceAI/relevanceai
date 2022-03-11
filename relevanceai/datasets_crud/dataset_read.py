@@ -5,7 +5,6 @@ import re
 import math
 import warnings
 import pandas as pd
-import numpy as np
 
 from typing import Dict, List, Optional, Union
 from relevanceai.analytics_funcs import track
@@ -650,4 +649,4 @@ class Read(BatchAPIClient):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
-        return self.datasets.post_metadata(self.dataset_id, metadata)
+        return self.insert_metadata(self.dataset_id, metadata)

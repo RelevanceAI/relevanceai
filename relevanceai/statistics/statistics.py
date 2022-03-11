@@ -10,10 +10,10 @@ from relevanceai.analytics_funcs import track
 from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.dataset_api.dataset_series import Series
-from relevanceai.utils import introduced_in_version
+from relevanceai.package_utils import introduced_in_version
 
 
-class Stats(Read):
+class Statistics(Read):
     @track
     def value_counts(self, field: str):
         """

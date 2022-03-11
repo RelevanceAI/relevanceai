@@ -27,7 +27,7 @@ import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional, Callable
-from relevanceai.clusterer.cluster_base import (
+from relevanceai.clusterops.cluster_base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
