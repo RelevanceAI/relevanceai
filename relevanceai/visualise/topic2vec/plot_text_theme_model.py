@@ -6,11 +6,10 @@ from sklearn import preprocessing
 from tqdm.auto import tqdm
 from typing import List, Optional, Union
 from doc_utils import DocUtils
-from relevanceai.logger import LoguruLogger
+from relevanceai.package_utils.logger import LoguruLogger
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.vector_tools.cluster import KMeans
-from relevanceai.data_tools.base_text_processing import BaseTextProcessing
-
+from relevanceai.ops.clusterops.cluster import KMeans
+from relevanceai.data_utils.base_text_processing import BaseTextProcessing
 
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):
     def __init__(
