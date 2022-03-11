@@ -11,7 +11,6 @@ from relevanceai.api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset_crud.dataset_read import Read
 from relevanceai.dataset_crud.dataset_series import Series
 from relevanceai.package_utils.utils import introduced_in_version
-
 class Statistics(Read):
     @track
     def value_counts(self, field: str):
