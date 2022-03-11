@@ -650,4 +650,8 @@ class Read(BatchAPIClient):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
-        return self.datasets.post_metadata(self.dataset_id, metadata)
+        results = self.datasets.post_metadata(self.dataset_id, metadata)
+        if results == {}:
+            print("✅ You have successfully inserted metadata.")
+        else:
+            return results
