@@ -11,8 +11,6 @@ from functools import wraps
 
 from relevanceai.package_utils.config import CONFIG
 from relevanceai.package_utils.json_encoder import json_encoder
-from relevanceai.package_utils.logger import FileLogger
-
 
 def is_tracking_enabled():
     if CONFIG.is_field("mixpanel.is_tracking_enabled", CONFIG.config):
