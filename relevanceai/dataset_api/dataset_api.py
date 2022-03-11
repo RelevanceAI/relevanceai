@@ -4,22 +4,18 @@ Pandas like dataset API
 from base64 import encode
 from typing import Dict, List, Optional, Union
 
-from relevanceai.analytics_funcs import track
+from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset_api.dataset_export import Export
-from relevanceai.dataset_api.dataset_stats import Stats
-from relevanceai.dataset_api.dataset_operations import Operations
-from relevanceai.dataset_api.dataset_series import Series
+from relevanceai.statistics.statistics import Statistics
+from relevanceai.dataset_ops.dataset_operations import Operations
+from relevanceai.dataset_crud.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
-from relevanceai.logger import FileLogger
-from relevanceai.utils import introduced_in_version
-
-# from relevanceai.dataset_api.dataset_dr import DR
 
 _GLOBAL_DATASETS = ["_mock_dataset_"]
 
 
-class Dataset(Export, Stats, Operations):
+class Dataset(Export, Statistics, Operations):
     """Dataset class"""
 
     @track
@@ -70,7 +66,7 @@ class Dataset(Export, Stats, Operations):
             # Check if global dataset already exists
             if self.dataset_id not in self.datasets.list()["datasets"]:
                 from relevanceai.datasets import mock_documents
-                from relevanceai.analytics_funcs import fire_and_forget
+                from relevanceai.package_utils.analytics_funcs import fire_and_forget
 
                 @fire_and_forget
                 def add_mock_dataset():

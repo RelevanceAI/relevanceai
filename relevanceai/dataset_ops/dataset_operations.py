@@ -6,14 +6,13 @@ import warnings
 import itertools
 from itertools import chain
 from collections import Counter, defaultdict
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional
 from tqdm.auto import tqdm
-from relevanceai.analytics_funcs import track
-from relevanceai.dataset_api.dataset_write import Write
-from relevanceai.dataset_api.dataset_series import Series
+from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.dataset_crud.dataset_write import Write
 from relevanceai.data_utils.base_text_processing import MLStripper
-from relevanceai.logger import FileLogger
-from relevanceai.utils import introduced_in_version, _process_insert_results, beta
+from relevanceai.package_utils.logger import FileLogger
+from relevanceai.package_utils.utils import introduced_in_version, beta
 from relevanceai.vector_tools.nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -1463,19 +1462,19 @@ class Operations(Write):
         # Make sure that the letter case does not matter
         algorithm = algorithm.upper()
         if algorithm == "PCA":
-            from relevanceai.vector_tools.dim_reduction import PCA
+            from relevanceai.ops.dim_reduction_ops.dim_reduction import PCA
 
             model = PCA()
         elif algorithm == "TSNE":
-            from relevanceai.vector_tools.dim_reduction import TSNE
+            from relevanceai.ops.dim_reduction_ops.dim_reduction import TSNE
 
             model = TSNE()
         elif algorithm == "UMAP":
-            from relevanceai.vector_tools.dim_reduction import UMAP
+            from relevanceai.ops.dim_reduction_ops.dim_reduction import UMAP
 
             model = UMAP()
         elif algorithm == "IVIS":
-            from relevanceai.vector_tools.dim_reduction import Ivis
+            from relevanceai.ops.dim_reduction_ops.dim_reduction import Ivis
 
             model = Ivis()
         else:
