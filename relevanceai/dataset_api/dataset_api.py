@@ -6,14 +6,13 @@ from typing import Dict, List, Optional, Union
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.dataset_api.dataset_export import Export
+from relevanceai.export.dataset_export import Export
 from relevanceai.statistics.statistics import Statistics
 from relevanceai.dataset_ops.dataset_operations import Operations
 from relevanceai.dataset_crud.dataset_series import Series
 from relevanceai.dataset_api.dataset_search import Search
 
 _GLOBAL_DATASETS = ["_mock_dataset_"]
-
 
 class Dataset(Export, Statistics, Operations):
     """Dataset class"""
@@ -53,6 +52,7 @@ class Dataset(Export, Statistics, Operations):
             audio_fields=audio_fields,
             highlight_fields=highlight_fields,
             text_fields=text_fields,
+            **kw
         )
         self.search = Search(
             project=project,
@@ -65,7 +65,7 @@ class Dataset(Export, Statistics, Operations):
         if self.dataset_id in _GLOBAL_DATASETS:
             # Check if global dataset already exists
             if self.dataset_id not in self.datasets.list()["datasets"]:
-                from relevanceai.datasets import mock_documents
+                from relevanceai.package_utils.datasets import mock_documents
                 from relevanceai.package_utils.analytics_funcs import fire_and_forget
 
                 @fire_and_forget
