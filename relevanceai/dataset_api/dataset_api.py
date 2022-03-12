@@ -63,7 +63,7 @@ class Dataset(Export, Statistics, Operations):
         )
         # add global datasets
         if self.dataset_id in _GLOBAL_DATASETS:
-            # Check if global dataset already exists
+            # avoid re-inserting if it already exists
             if self.dataset_id not in self.datasets.list()["datasets"]:
                 from relevanceai.package_utils.datasets import mock_documents
                 from relevanceai.package_utils.analytics_funcs import fire_and_forget
@@ -71,7 +71,6 @@ class Dataset(Export, Statistics, Operations):
                 @fire_and_forget
                 def add_mock_dataset():
                     self.upsert_documents(mock_documents(100))
-
                 add_mock_dataset()
 
     @track
