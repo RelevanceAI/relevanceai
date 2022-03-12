@@ -18,6 +18,7 @@ from relevanceai.vector_tools.nearest_neighbours import (
     NEAREST_NEIGHBOURS,
 )
 
+
 class Operations(Write):
     @beta
     @introduced_in_version("1.2.0")

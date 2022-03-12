@@ -1,10 +1,10 @@
 from dash import html
-from relevanceai.visualise.dash_components.sections.header import build_header
-from relevanceai.visualise.dash_components.sections.display_panel import (
+from relevanceai.vis.local_projector.dash_components.sections.header import build_header
+from relevanceai.vis.local_projector.dash_components.sections.display_panel import (
     build_display_panel,
 )
-from relevanceai.visualise.dash_components.sections.graph import build_graph
-from relevanceai.visualise.dash_components.callbacks import (
+from relevanceai.vis.local_projector.dash_components.sections.graph import build_graph
+from relevanceai.vis.local_projector.dash_components.callbacks import (
     display_callbacks,
     neighbour_callbacks,
 )

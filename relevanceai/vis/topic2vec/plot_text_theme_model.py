@@ -11,6 +11,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.ops.clusterops.cluster import KMeans
 from relevanceai.data_utils.base_text_processing import BaseTextProcessing
 
+
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):
     def __init__(
         self,
