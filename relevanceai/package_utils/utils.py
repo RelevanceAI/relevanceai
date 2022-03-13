@@ -127,6 +127,30 @@ def introduced_in_version(version_number):
     return _version
 
 
+def deprecated(version_number: str):
+    def _version(f):
+        old_doc = f.__doc__
+        new_doc = (
+            old_doc
+            + f"""
+
+.. note::
+    This function has been deprecated as of {version_number}
+
+        """
+        )
+        f.__doc__ = new_doc
+
+        @wraps(f)
+        def wrapper(*args, **kwds):
+            warnings.warn("Deprecated.", DeprecationWarning)
+            return f(*args, **kwds)
+
+        return wrapper
+
+    return _version
+
+
 def _process_insert_results(results):
     if len(results["failed_document_ids"]) == 0:
         print("✅ All documents inserted/edited successfully.")

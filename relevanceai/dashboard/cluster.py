@@ -1,3 +1,4 @@
+from typing import Optional
 from relevanceai.dashboard.dashboard import Dashboard
 
 
@@ -14,6 +15,7 @@ class Clusters(Dashboard):
         vector_field: str,
         alias: str,
         share: bool = False,
+        firebase_uid: Optional[str] = None,
         **configuration
     ):
         # TODO: if there is no _cluster_ field in schema, create it here?
@@ -42,4 +44,5 @@ class Clusters(Dashboard):
             application,
             share,
             application_configuration,
+            firebase_uid,
         )

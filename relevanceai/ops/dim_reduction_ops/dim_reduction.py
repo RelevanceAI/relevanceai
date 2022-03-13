@@ -164,7 +164,7 @@ class DimReduction(_Base, DimReductionBase):
         dr: Union[DIM_REDUCTION, DimReductionBase],
         dr_args: Union[None, dict],
         dims: Literal[2, 3],
-    ) -> np.ndarray:
+    ) -> Optional[np.ndarray]:
         """
         Dimensionality reduction
         """

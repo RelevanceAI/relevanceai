@@ -14,6 +14,7 @@ from relevanceai.dataset_api.dataset_search import Search
 
 _GLOBAL_DATASETS = ["_mock_dataset_"]
 
+
 class Dataset(Export, Statistics, Operations):
     """Dataset class"""
 
@@ -52,7 +53,7 @@ class Dataset(Export, Statistics, Operations):
             audio_fields=audio_fields,
             highlight_fields=highlight_fields,
             text_fields=text_fields,
-            **kw
+            **kw,
         )
         self.search = Search(
             project=project,
@@ -71,6 +72,7 @@ class Dataset(Export, Statistics, Operations):
                 @fire_and_forget
                 def add_mock_dataset():
                     self.upsert_documents(mock_documents(100))
+
                 add_mock_dataset()
 
     @track

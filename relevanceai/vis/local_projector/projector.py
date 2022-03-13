@@ -3,18 +3,19 @@
 from doc_utils import DocUtils
 from typing_extensions import Literal
 from typing import List, Union, Dict, Any, Tuple, Optional
-from relevanceai.ops.dim_reduction_ops.dim_reduction import DimReduction, DimReductionBase
+from relevanceai.ops.dim_reduction_ops.dim_reduction import (
+    DimReduction,
+    DimReductionBase,
+)
 from relevanceai.ops.clusterops.clusterbase import ClusterBase
 from relevanceai.vis.local_projector.dash_components.app import create_dash_graph
-from relevanceai.vector_tools.constants import *
-from relevanceai.base import _Base
+from relevanceai.ops.clusterops.constants import *
+from relevanceai.package_utils.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
 import numpy as np
 import pandas as pd
-
-pd.options.mode.chained_assignment = None
 
 
 RELEVANCEAI_BLUE = "#1854FF"
@@ -44,9 +45,10 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
-
+        pd.options.mode.chained_assignment = None
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
+    @deprecated
     @typechecked
     def plot(
         self,
