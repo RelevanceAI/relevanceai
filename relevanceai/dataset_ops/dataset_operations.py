@@ -229,8 +229,8 @@ class Operations(Write):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.clusterops.cluster import ClusterOps
-            from relevanceai.clusterops.kmeans_clusterer import KMeansModel
+            from relevanceai.ops.clusterops.cluster import ClusterOps
+            from relevanceai.ops.clusterops.kmeans_clusterer import KMeansModel
 
             client = Client()
 
@@ -509,8 +509,8 @@ class Operations(Write):
 
 
             from relevanceai import Client
-            from relevanceai.clusterops.cluster import ClusterOps
-            from relevanceai.clusterops.kmeans_clusterer import KMeansModel
+            from relevanceai.ops.clusterops.cluster import ClusterOps
+            from relevanceai.ops.clusterops.kmeans_clusterer import KMeansModel
 
             client = Client()
 
@@ -1764,7 +1764,7 @@ class Operations(Write):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.clusterops import ClusterOps
+        from relevanceai.ops.clusterops import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans

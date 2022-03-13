@@ -1,9 +1,9 @@
 """ClusterOps 
 """
-from relevanceai.clusterops.clusterer import ClusterOps
-from relevanceai.clusterops.cluster_base import (
+from relevanceai.ops.clusterops.cluster import ClusterOps
+from relevanceai.ops.clusterops.clusterbase import (
     ClusterBase,
     CentroidClusterBase,
     AdvancedCentroidClusterBase,
 )
-from relevanceai.clusterops.kmeans_clusterer import KMeansModel
+from relevanceai.ops.clusterops.kmeans_clusterer import KMeansModel

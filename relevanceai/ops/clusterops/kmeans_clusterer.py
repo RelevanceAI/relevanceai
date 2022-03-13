@@ -5,8 +5,8 @@ import numpy as np
 import warnings
 from typing import Union, List, Optional
 
-from relevanceai.clusterops.clusterer import ClusterOps
-from relevanceai.clusterops.cluster_base import ClusterBase
+from relevanceai.ops.clusterops.cluster import ClusterOps
+from relevanceai.ops.clusterops.clusterbase import ClusterBase
 from relevanceai.dataset_api import Dataset
 
 
@@ -37,7 +37,7 @@ class KMeansModel(ClusterBase):
         dataset_id = "_github_repo_vectorai"
         df = client.Dataset(dataset_id)
 
-        from relevanceai.clusterops.cluster import KMeansModel
+        from relevanceai.ops.clusterops.cluster import KMeansModel
         model = KMeansModel(k=3)
 
         cluster_ops = client.ClusterOps(model=model, alias="kmeans")

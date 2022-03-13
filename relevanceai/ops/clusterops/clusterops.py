@@ -1974,7 +1974,7 @@ class ClusterOps(BatchAPIClient):
             from relevanceai import Client
             client = Client()
             df = client.Dataset("_github_repo_vectorai")
-            from relevanceai.clusterops.cluster import KMeansModel
+            from relevanceai.ops.clusterops.cluster import KMeansModel
 
             model = KMeansModel()
             kmeans = client.ClusterOps(model, alias="kmeans_sample")

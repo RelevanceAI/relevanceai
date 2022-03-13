@@ -8,7 +8,7 @@ from relevanceai.interfaces import Dataset, Client
 
 
 def test_cluster(test_df: Dataset):
-    from relevanceai.clusterops.kmeans_clusterer import KMeansModel
+    from relevanceai.ops.clusterops.kmeans_clusterer import KMeansModel
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"

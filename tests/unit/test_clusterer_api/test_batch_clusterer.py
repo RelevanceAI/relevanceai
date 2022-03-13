@@ -5,7 +5,7 @@
 
 import pandas as pd
 import pytest
-from relevanceai.clusterops.cluster import kmeans_clusterer
+from relevanceai.ops.clusterops.cluster import kmeans_clusterer
 from relevanceai.interfaces import Dataset, Client, ClusterOps
 from relevanceai.dataset_api.cluster_groupby import ClusterGroupby
 
