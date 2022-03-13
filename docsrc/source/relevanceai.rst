@@ -100,7 +100,7 @@ relevanceai.print\_formats module
 relevanceai.progress\_bar module
 --------------------------------
 
-.. automodule:: relevanceai.progress_bar
+.. automodule:: relevanceai.package_utils.progress_bar
    :members:
    :undoc-members:
    :show-inheritance:

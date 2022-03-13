@@ -4,7 +4,7 @@ from typing import List, Union
 import pandas as pd
 import math
 
-from relevanceai.progress_bar import progress_bar
+from relevanceai.package_utils.progress_bar import progress_bar
 
 
 class Chunker:

@@ -5,7 +5,7 @@ from typing import List, Optional
 import math
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
-from relevanceai.progress_bar import progress_bar
+from relevanceai.package_utils.progress_bar import progress_bar
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3

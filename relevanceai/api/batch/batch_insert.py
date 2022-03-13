@@ -28,7 +28,7 @@ from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
 from relevanceai.package_utils.errors import MissingFieldError
 from relevanceai.package_utils.logger import FileLogger
-from relevanceai.progress_bar import progress_bar
+from relevanceai.package_utils.progress_bar import progress_bar
 from relevanceai.utils import Utils
 
 BYTE_TO_MB = 1024 * 1024
@@ -698,7 +698,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     self.futures = []
                     self.tasks = tasks
 
-                    from relevanceai.progress_bar import progress_bar
+                    from relevanceai.package_utils.progress_bar import progress_bar
 
                     self.show_progress_bar = show_progress_bar
                     self.progress_tracker = progress_bar(

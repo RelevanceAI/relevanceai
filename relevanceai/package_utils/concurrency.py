@@ -4,7 +4,7 @@ import math
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from typing import Callable
 
-from relevanceai.progress_bar import NullProgressBar, progress_bar
+from relevanceai.package_utils.progress_bar import NullProgressBar, progress_bar
 
 
 def chunk(iterables, n=20):
