@@ -36,7 +36,7 @@ from relevanceai.ops.clusterops.clusterops import ClusterOps
 from relevanceai.package_utils.errors import APIError
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.vis.topic2vec.plot_text_theme_model import build_and_plot_clusters
-
+from relevanceai.search.search import Search
 
 from relevanceai.package_utils.analytics_funcs import track, identify
 from relevanceai.package_utils.version_decorators import beta, introduced_in_version
@@ -115,8 +115,6 @@ class Dataset(Export, Statistics, Operations):
         self.search = Search(
             project=project,
             api_key=api_key,
-            fields=fields,
-            dataset_id=dataset_id,
             firebase_uid=firebase_uid,
         )
         # add global datasets

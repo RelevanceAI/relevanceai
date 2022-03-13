@@ -46,7 +46,7 @@ from relevanceai.package_utils.integration_checks import (
 from relevanceai.dataset_crud.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.interfaces import Dataset
 from relevanceai.package_utils.errors import NoDocumentsError
-from relevanceai.package_utils.utils import beta
+from relevanceai.package_utils.version_decorators import beta
 
 from doc_utils import DocUtils
 
