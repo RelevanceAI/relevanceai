@@ -7,7 +7,7 @@ from typing import Union, List, Optional
 
 from relevanceai.ops.clusterops.cluster import ClusterOps
 from relevanceai.ops.clusterops.clusterbase import ClusterBase
-from relevanceai.dataset_api import Dataset
+from relevanceai.interfaces import Dataset
 
 
 class KMeansModel(ClusterBase):
