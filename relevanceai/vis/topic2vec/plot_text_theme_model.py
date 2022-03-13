@@ -9,7 +9,7 @@ from doc_utils import DocUtils
 from relevanceai.package_utils.logger import LoguruLogger
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.ops.clusterops.cluster import KMeans
-from relevanceai.data_utils.base_text_processing import BaseTextProcessing
+from relevanceai.data_processing.base_text_processing import BaseTextProcessing
 
 
 class PlotTextThemeModel(BatchAPIClient, BaseTextProcessing, LoguruLogger, DocUtils):

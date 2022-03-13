@@ -12,7 +12,10 @@ from typing_extensions import Literal
 
 from relevanceai.package_utils.base import _Base
 from relevanceai.package_utils.logger import LoguruLogger
-from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
+from relevanceai.ops.clusterops.constants import (
+    DIM_REDUCTION,
+    DIM_REDUCTION_DEFAULT_ARGS,
+)
 
 
 class DimReductionBase(LoguruLogger, DocUtils):

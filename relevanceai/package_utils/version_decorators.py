@@ -1,4 +1,5 @@
 import warnings
+from functools import wraps
 
 
 def beta(f):
