@@ -1764,7 +1764,7 @@ class Operations(Write):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.ops.clusterops import ClusterOps
+        from relevanceai.ops.clusterops.clusterops import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans
