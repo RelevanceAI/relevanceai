@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import warnings
 from relevanceai import vector_tools
-from relevanceai.http_client import Client
+from relevanceai.interfaces import Client
 
 # Cluster _Base Utilities
 from relevanceai.clusterops.cluster_base import ClusterBase, CentroidClusterBase

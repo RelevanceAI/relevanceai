@@ -4,7 +4,7 @@
 
 from typing import Dict, List
 
-from relevanceai.http_client import Dataset, Client
+from relevanceai.interfaces import Dataset, Client
 
 
 def test_cluster(test_df: Dataset):

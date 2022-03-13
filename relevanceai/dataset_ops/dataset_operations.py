@@ -244,7 +244,7 @@ class Operations(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.clusterops import ClusterOps
+        from relevanceai.ops.clusterops.clusterops import ClusterOps
 
         clusterer = ClusterOps(
             model=model,

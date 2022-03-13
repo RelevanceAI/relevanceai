@@ -4,18 +4,14 @@ Pandas like dataset API
 """
 import requests
 import uuid
-import json
 import pandas as pd
-
 from doc_utils import DocUtils
-from os import PathLike
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
-from relevanceai.analytics_funcs import track
-from relevanceai.dataset_api.dataset_read import Read
 from tqdm.auto import tqdm
-
-from relevanceai.logger import FileLogger
+from relevanceai.package_utils.logger import FileLogger
+from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.dataset_crud.dataset_read import Read
 
 
 class Write(Read):

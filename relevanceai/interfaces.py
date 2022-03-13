@@ -1,15 +1,4 @@
-"""Relevance AI's base Client class - primarily used to login and access
-the Dataset class or ClusterOps class.
-
-
-The recomended way to log in is using:
-
-.. code-block::
-
-    from relevanceai import Client
-    client = Client()
-    client.list_datasets()
-
+"""Relevance AI's base Client class - primarily used to login and access the Dataset class or ClusterOps class.  The recomended way to log in is using: .. code-block:: from relevanceai import Client client = Client() client.list_datasets()
 If the user already knows their project and API key, they can
 log in this way:
 
@@ -29,9 +18,15 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
+# This file contains:
+# - Client interface
+# - Dataset interface
+
 import os
 import getpass
 import pandas as pd
+import analytics
+
 from base64 import b64decode as decode
 from typing import Dict, List, Optional
 
@@ -42,7 +37,6 @@ from relevanceai.package_utils.errors import APIError
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.vis.topic2vec.plot_text_theme_model import build_and_plot_clusters
 
-import analytics
 
 from relevanceai.package_utils.analytics_funcs import track, identify
 from relevanceai.package_utils.version_decorators import beta, introduced_in_version
@@ -63,7 +57,8 @@ from relevanceai.vector_tools.client import VectorTools
 def str2bool(v: str):
     return v.lower() in ("yes", "true", "t", "1")
 
-from relevanceai.export.dataset_export  import Export
+
+from relevanceai.export.dataset_export import Export
 from relevanceai.statistics.statistics import Statistics
 from relevanceai.dataset_ops.dataset_operations import Operations
 from base64 import encode
@@ -77,6 +72,7 @@ from relevanceai.dataset_ops.dataset_operations import Operations
 from relevanceai.dataset_crud.dataset_series import Series
 
 _GLOBAL_DATASETS = ["_mock_dataset_"]
+
 
 class Dataset(Export, Statistics, Operations):
     @track
