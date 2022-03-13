@@ -26,7 +26,7 @@ from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
 from relevanceai.concurrency import multiprocess, multithread
-from relevanceai.errors import MissingFieldError
+from relevanceai.package_utils.errors import MissingFieldError
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.progress_bar import progress_bar
 from relevanceai.utils import Utils

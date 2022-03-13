@@ -4,7 +4,7 @@
 
 import pandas as pd
 import pytest
-from relevanceai.errors import MissingFieldError
+from relevanceai.package_utils.errors import MissingFieldError
 
 from relevanceai.interfaces import Dataset, Client
 

@@ -17,9 +17,9 @@ from requests import Request
 
 from relevanceai.package_utils.config import Config
 from relevanceai.package_utils.logger import AbstractLogger
-from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
-from relevanceai.errors import APIError
-from relevanceai.json_encoder import JSONEncoderUtils
+from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
+from relevanceai.package_utils.errors import APIError
+from relevanceai.package_utils.json_encoder import JSONEncoderUtils
 
 DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 

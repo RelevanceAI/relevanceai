@@ -57,10 +57,10 @@ relevanceai.datasets module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.errors module
+relevanceai.package_utils.errors module
 -------------------------
 
-.. automodule:: relevanceai.errors
+.. automodule:: relevanceai.package_utils.errors
    :members:
    :undoc-members:
    :show-inheritance:
@@ -76,7 +76,7 @@ relevanceai.http\_client module
 relevanceai.json\_encoder module
 --------------------------------
 
-.. automodule:: relevanceai.json_encoder
+.. automodule:: relevanceai.package_utils.json_encoder
    :members:
    :undoc-members:
    :show-inheritance:
