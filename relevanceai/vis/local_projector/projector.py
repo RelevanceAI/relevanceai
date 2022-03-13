@@ -3,9 +3,9 @@
 from doc_utils import DocUtils
 from typing_extensions import Literal
 from typing import List, Union, Dict, Any, Tuple, Optional
-from relevanceai.vector_tools.dim_reduction import DimReduction, DimReductionBase
-from relevanceai.vector_tools.cluster import Cluster, ClusterBase
-from relevanceai.visualise.dash_components.app import create_dash_graph
+from relevanceai.ops.dim_reduction_ops.dim_reduction import DimReduction, DimReductionBase
+from relevanceai.ops.clusterops.clusterbase import ClusterBase
+from relevanceai.vis.local_projector.dash_components.app import create_dash_graph
 from relevanceai.vector_tools.constants import *
 from relevanceai.base import _Base
 from relevanceai.api.client import BatchAPIClient

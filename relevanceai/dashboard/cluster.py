@@ -2,8 +2,8 @@ from relevanceai.dashboard.dashboard import Dashboard
 
 
 class Clusters(Dashboard):
-    def __init__(self, project: str, api_key: str, deployable_id: str):
-        super().__init__(project, api_key, deployable_id, "cluster")
+    def __init__(self, project: str, api_key: str, deployable_id: str, firebase_uid):
+        super().__init__(project, api_key, deployable_id, "cluster", firebase_uid)
 
     @classmethod
     def create_dashboard(
