@@ -25,11 +25,11 @@ from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
-from relevanceai.concurrency import multiprocess, multithread
+from relevanceai.package_utils.concurrency import multiprocess, multithread
 from relevanceai.package_utils.errors import MissingFieldError
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.progress_bar import progress_bar
-from relevanceai.utils import Utils
+from relevanceai.package_utils.utils import Utils
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3

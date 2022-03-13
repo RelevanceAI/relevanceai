@@ -25,10 +25,10 @@ relevanceai.base module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.concurrency module
+relevanceai.package_utils.concurrency module
 ------------------------------
 
-.. automodule:: relevanceai.concurrency
+.. automodule:: relevanceai.package_utils.concurrency
    :members:
    :undoc-members:
    :show-inheritance:
@@ -113,10 +113,10 @@ relevanceai.package_utils.transport module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.utils module
+relevanceai.package_utils.utils module
 ------------------------
 
-.. automodule:: relevanceai.utils
+.. automodule:: relevanceai.package_utils.utils
    :members:
    :undoc-members:
    :show-inheritance:
