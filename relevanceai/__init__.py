@@ -4,10 +4,12 @@ from relevanceai import vector_tools
 from relevanceai.interfaces import Client
 
 # Cluster _Base Utilities
-from relevanceai.clusterops.cluster_base import ClusterBase, CentroidClusterBase
-from relevanceai.clusterops.clusterer import ClusterOps
+from relevanceai.ops.clusterops.clusterbase import ClusterBase, CentroidClusterBase
+from relevanceai.ops.clusterops.clusterops import ClusterOps
 from relevanceai.ops.dim_reduction_ops.dim_reduction_ops import ReduceDimensionsOps
-from relevanceai.datasets import mock_documents
+
+# Fix the name
+from relevanceai.package_utils import datasets
 import requests
 
 # Import useful utility if possible as well
