@@ -5,7 +5,7 @@ import numpy as np
 import warnings
 from typing import Union, List, Optional
 
-from relevanceai.ops.clusterops.cluster import ClusterOps
+from relevanceai.ops.clusterops.clusterops import ClusterOps
 from relevanceai.ops.clusterops.clusterbase import ClusterBase
 from relevanceai.interfaces import Dataset
 

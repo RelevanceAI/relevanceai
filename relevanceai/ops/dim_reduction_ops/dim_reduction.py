@@ -11,7 +11,7 @@ from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
 from relevanceai.package_utils.base import _Base
-from relevanceai.logger import LoguruLogger
+from relevanceai.package_utils.logger import LoguruLogger
 from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 
 

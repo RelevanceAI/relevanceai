@@ -4,7 +4,7 @@ import sys
 from typing import Callable
 from loguru import logger as loguru_logger
 from abc import abstractmethod
-from relevanceai.config import CONFIG
+from relevanceai.package_utils.config import CONFIG
 
 
 def str2bool(v):

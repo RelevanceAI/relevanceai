@@ -1,6 +1,6 @@
-from relevanceai.config import CONFIG
-from relevanceai.transport import Transport
-from relevanceai.logger import LoguruLogger
+from relevanceai.package_utils.config import CONFIG
+from relevanceai.package_utils.transport import Transport
+from relevanceai.package_utils.logger import LoguruLogger
 
 
 def str2bool(v):

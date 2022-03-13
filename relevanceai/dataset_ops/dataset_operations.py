@@ -1404,7 +1404,7 @@ class Operations(Write):
             import random
             from relevanceai import Client
             from relevanceai.datasets import mock_documents
-            from relevanceai.logger import FileLogger
+            from relevanceai.package_utils.logger import FileLogger
 
             client = Client()
             ds = client.Dataset("sample")

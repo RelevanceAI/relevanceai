@@ -15,8 +15,8 @@ import requests
 
 from requests import Request
 
-from relevanceai.config import Config
-from relevanceai.logger import AbstractLogger
+from relevanceai.package_utils.config import Config
+from relevanceai.package_utils.logger import AbstractLogger
 from relevanceai.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.errors import APIError
 from relevanceai.json_encoder import JSONEncoderUtils

@@ -33,10 +33,10 @@ relevanceai.concurrency module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.config module
+relevanceai.package_utils.config module
 -------------------------
 
-.. automodule:: relevanceai.config
+.. automodule:: relevanceai.package_utils.config
    :members:
    :undoc-members:
    :show-inheritance:
@@ -81,10 +81,10 @@ relevanceai.json\_encoder module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.logger module
+relevanceai.package_utils.logger module
 -------------------------
 
-.. automodule:: relevanceai.logger
+.. automodule:: relevanceai.package_utils.logger
    :members:
    :undoc-members:
    :show-inheritance:
@@ -105,10 +105,10 @@ relevanceai.progress\_bar module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.transport module
+relevanceai.package_utils.transport module
 ----------------------------
 
-.. automodule:: relevanceai.transport
+.. automodule:: relevanceai.package_utils.transport
    :members:
    :undoc-members:
    :show-inheritance:
