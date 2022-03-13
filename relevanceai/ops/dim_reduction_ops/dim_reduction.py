@@ -182,4 +182,4 @@ class DimReduction(_Base, DimReductionBase):
             raise ValueError("not suppported")
         elif isinstance(dr, DimReductionBase):
             return dr().fit_transform(vectors=vectors, dr_args=dr_args, dims=dims)
-        return np.array()
+        return np.array([])

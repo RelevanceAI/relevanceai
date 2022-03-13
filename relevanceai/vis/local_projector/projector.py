@@ -8,6 +8,7 @@ from relevanceai.ops.dim_reduction_ops.dim_reduction import (
     DimReductionBase,
 )
 from relevanceai.ops.clusterops.clusterbase import ClusterBase
+from relevanceai.ops.clusterops.cluster import Cluster
 from relevanceai.vis.local_projector.dash_components.app import create_dash_graph
 from relevanceai.ops.clusterops.constants import *
 from relevanceai.package_utils.base import _Base
@@ -49,7 +50,9 @@ class Projector(BatchAPIClient, _Base, DocUtils):
         pd.options.mode.chained_assignment = None
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
-    @deprecated
+    @deprecated(
+        version_number="1.5.0", message="We recommend using the cloud hosted projector."
+    )
     @typechecked
     def plot(
         self,

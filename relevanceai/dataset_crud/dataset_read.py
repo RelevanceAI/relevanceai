@@ -649,4 +649,4 @@ class Read(BatchAPIClient):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
-        return self.insert_metadata(self.dataset_id, metadata)
+        return self.insert_metadata(metadata)
