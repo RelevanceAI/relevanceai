@@ -44,6 +44,10 @@ def test_groupby_mean_method(test_df: Dataset):
     assert manual_mean == test_df.groupby(["sample_1_label"]).mean("sample_1_value")
 
 
-def test_smoke(test_df: Dataset):
-    test_df.health
-    assert True
+def test_health(test_df: Dataset):
+    import pandas as pd
+
+    dataframe_output = test_df.health(output_format="dataframe")
+    assert type(dataframe_output) == pd.DataFrame
+    json_output = test_df.health(output_format="json")
+    assert type(json_output) == dict

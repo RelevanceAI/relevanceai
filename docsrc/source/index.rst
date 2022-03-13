@@ -10,7 +10,7 @@ In the vector workflow to solve search and relevance problems, we decided to foc
 
 You own any data you upload to Relevance AI.
 
-Everything you upload to Relevance AI is yours, including any vectors, code, configuration, metadata, output metrics, search results, visualisations and model weights. You can choose to log, export, publish, or delete any of these. We collect aggregate statistics across our users to improve our product— we might do a database query to count how many users have used a specific endpoint to help decide if we want to improve our support for that endpoint. We treat your private data, source code, or trade secrets as confidential and private, as consistent with our Terms of Service and Privacy Policy.‌"
+Everything you upload to Relevance AI is yours, including any vectors, code, configuration, metadata, output metrics, search results, visualisations and model weights. You can choose to log, export, publish, or delete any of these. We collect aggregate statistics across our users to improve our product— we might do a database query to count how many users have used a specific endpoint to help decide if we want to improve our support for that endpoint. We treat your private data, source code, or trade secrets as confidential and private, as consistent with our Terms of Service and Privacy Policy.‌
 
 
 
@@ -31,13 +31,14 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    cluster_base
    reloading_clusterers
    relevanceai.cluster_report
+   subclustering
 
 .. toctree::
    :maxdepth: 4
    :caption: Dimensionality Reduction
 
    auto_reduce_dimensions
-
+   relevanceai.dim_reduction_ops.rst
 
 .. toctree::
    :maxdepth: 4
@@ -46,6 +47,12 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    sklearn_clustering_integration
    faiss_clustering_integration 
    hdbscan_integration
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Tools
+
+   relevanceai.bias_detection
 
 .. toctree::
    :maxdepth: 4

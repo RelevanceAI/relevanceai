@@ -6,6 +6,8 @@ from relevanceai.http_client import Client
 # Cluster _Base Utilities
 from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
 from relevanceai.clusterer.clusterer import ClusterOps
+from relevanceai.dim_reduction_ops.dim_reduction_ops import ReduceDimensionsOps
+from relevanceai.datasets import mock_documents
 import requests
 
 # Import useful utility if possible as well
@@ -14,7 +16,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "1.2.1"
+__version__ = "1.4.3"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()
@@ -28,9 +30,9 @@ try:
         changelog_url: str = (
             f"https://relevanceai.readthedocs.io/en/{__version__}/changelog.html"
         )
-        MESSAGE = """We noticed you don't have the latest version! 
+        MESSAGE = """We noticed you don't have the latest version!
 We recommend updating to the latest version ({latest_version}) to get all bug fixes and newest features!
-You can do this by running pip install -U relevanceai. 
+You can do this by running pip install -U relevanceai.
 Changelog: {changelog_url}.""".format(  # type: ignore
             version=__version__,
             latest_version=latest_version,

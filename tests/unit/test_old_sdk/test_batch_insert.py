@@ -88,9 +88,9 @@ class TestInsertImages:
         with open(self.filename, "wb") as f:
             f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
-    def test_insert_images_folder(self, test_client: Client):
+    def test_insert_media_folder(self, test_client: Client):
         self.ds = test_client.Dataset(generate_dataset_id())
-        results = self.ds.insert_images_folder(
+        results = self.ds.insert_media_folder(
             field="images",
             path=self.directory,
             recurse=False,  # No subdirectories exist anyway
@@ -142,4 +142,11 @@ class TestPullUpdatePush:
     ):
         test_client._insert_documents(sample_dataset_id, simple_documents)
         response = test_client.pull_update_push(sample_dataset_id, do_nothing)
+        assert len(response["failed_documents"]) == 0, "Failed to insert documents"
+
+    def test_pull_update_push_async(
+        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
+    ):
+        test_client._insert_documents(sample_dataset_id, simple_documents)
+        response = test_client.pull_update_push_async(sample_dataset_id, do_nothing)
         assert len(response["failed_documents"]) == 0, "Failed to insert documents"

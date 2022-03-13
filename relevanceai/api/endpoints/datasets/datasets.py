@@ -58,6 +58,16 @@ class DatasetsClient(_Base):
             endpoint=f"/datasets/{dataset_id}/metadata", method="GET"
         )
 
+    def post_metadata(self, dataset_id: str, metadata: dict):
+        """
+        Edit and add metadata about a dataset. Notably description, data source, etc
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/metadata",
+            method="POST",
+            parameters={"dataset_id": dataset_id, "metadata": metadata},
+        )
+
     def create(self, dataset_id: str, schema: Optional[dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
@@ -382,6 +392,52 @@ class DatasetsClient(_Base):
                 "status_code": status_code,
             }
 
+    async def bulk_insert_async(
+        self,
+        dataset_id: str,
+        documents: list,
+        insert_date: bool = True,
+        overwrite: bool = True,
+        update_schema: bool = True,
+        field_transformers: Optional[list] = None,
+    ):
+        """
+        Asynchronous version of bulk_insert. See bulk_insert for details.
+
+        Parameters
+        ----------
+        dataset_id: str
+            Unique name of dataset
+
+        documents: list
+            A list of documents. A document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+
+        insert_date: bool
+            Whether to include insert date as a field 'insert_date_'.
+
+        overwrite: bool
+            Whether to overwrite document if it exists.
+
+        update_schema: bool
+            Whether the api should check the documents for vector datatype to update the schema.
+
+        field_transformers: list
+        """
+        field_transformers = [] if field_transformers is None else field_transformers
+
+        return await self.make_async_http_request(
+            base_url=self.config.get_option("api.base_ingest_url"),
+            endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
+            method="POST",
+            parameters={
+                "documents": documents,
+                "insert_date": insert_date,
+                "overwrite": overwrite,
+                "update_schema": update_schema,
+                "field_transformers": field_transformers,
+            },
+        )
+
     def delete(self, dataset_id: str, confirm: bool = False):
         """
         Delete a dataset
@@ -514,4 +570,21 @@ class DatasetsClient(_Base):
             endpoint=f"/datasets/{dataset_id}/task_status",
             method="GET",
             parameters={"task_id": task_id},
+        )
+
+    def get_file_upload_urls(self, dataset_id: str, files: List):
+        """
+        Specify a list of file paths. For each file path, a url upload_url is returned. files can be POSTed on upload_url to upload them. They can then be accessed on url. Upon dataset deletion, these files will be deleted.
+
+        Parameters
+        -------------
+        files: list
+            List of files to be uploaded
+        dataset_id: str
+            The dataset
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/get_file_upload_urls",
+            method="POST",
+            parameters={"files": files},
         )

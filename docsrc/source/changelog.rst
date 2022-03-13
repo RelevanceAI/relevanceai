@@ -4,6 +4,124 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v1.4.3
+-----------
+
+- Reduced `pull_update_push` log file output
+- Add `delete_documents` utility
+- Add deployables functions
+- Check if global datasets already exist
+
+v1.4.2
+-----------
+
+- Rename `image` to `media`
+
+v1.4.1
+-----------
+
+- Fix bug with `upsert_images`
+- Suggest link with dashboard link
+
+v1.4.0
+------------
+
+- Improve `Dataset.community_detection` such that it takes vectors as well
+- Add support for image uploads
+
+v1.3.3
+------------
+
+- Add metadata
+
+v1.3.2
+------------
+
+- Add verbose verbose argument
+- Fix cluster_keyphrases
+
+v1.3.1
+------------
+
+- Added pull_update_push_async
+- Introduced asynchronous client
+- Fix bug in facets
+
+v1.3.0
+-----------
+
+- Add support for subclustering
+- Add community detection algorithm `Dataset.community_detection`
+- Update `Dataset.vectorize` to ignore already-vectorized fields and modified output to include those vector names
+
+Additional info on PRs:
+
+* feature/pro-1286-fit_predict_update-vs by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/469
+* feature/pro-1380-add-community-detection-to-relevance-ai by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/499
+* feature/pro-1447-change-output-of-vectorize by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/505
+* Feature/pro 1434 subclustering by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/504
+* Fix report by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/506
+* Feature/pro 1339 improve filter documentation to include by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/507
+* add pypi upload tokens by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/508
+* feature/pro-1403-auto_text_cluster_dashboard by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/498
+* add docs on bias detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/510
+
+v1.2.8
+-----------
+
+- Add dimensionality reduction for documents
+- Change maximum chunksize to 500
+
+v1.2.7
+-----------
+
+- Adjust max cache size, from one to eight, of `Dataset.to_pandas_dataframe` and `Series._get_pandas_series`
+- Fix dataset analytics
+
+v1.2.6
+-----------
+
+- Add initial bias detection
+- Fix analytics support
+- Remove test tracking
+
+v1.2.5
+-----------
+
+- Add hotfix if pandas functions not supported.
+
+v1.2.4
+-----------
+
+- Add `nltk-rake` support for keyphrases
+- Add more documentation around cluster reporting
+- Enable `Dataset` and `Series` access `pandas` `DataFrame` and `Series` methods, respectively
+- Change `Dataset.health` from a property to a method and add `pandas` `DataFrame` output
+- Change `Dataset.vectorize` to call `pull_update_push` just once instead of twice
+
+v1.2.3
+-----------
+
+- Add Cluster Report endpoints
+
+Developer changes:
+
+- Fix bug with analytics and change to an env variable tracker for outermost function
+
+
+v1.2.2
+----------
+
+Developer changes:
+
+**BREAKING CHANGES**
+
+- All list and dict default arguments are changed to `None`.
+
+**Other Changes**
+- Introduced `corr`, a method to plot the correlation between two fields, in `Dataset`
+- Export to Pandas DataFrame
+
 v1.2.1
 ----------
 
@@ -36,7 +154,7 @@ v1.1.5
 
 - Feature/add beta decorator by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/461
 - feature/pro-1267-remove-verbose-logs-from-output by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/457
-- feature/pro-1299-add-a-insert_images_folder by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/456
+- feature/pro-1299-add-a-insert_media_folder by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/456
 - Add filters to clustering  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/464
 - silence dataset retrieval by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/465
 
@@ -89,7 +207,7 @@ v1.0.5
 
 - `get_cluster_internal_report` has now been renamed to `internal_report`
 
-Non-breaking changes:  
+Non-breaking changes:
 
 - Remove repetitive print statements
 - Add outlier support for cluster report
@@ -111,9 +229,9 @@ v1.0.3
 v1.0.2
 --------
 
-- Fix pandas serialization for UTF-encoding errors 
+- Fix pandas serialization for UTF-encoding errors
 - Move search app
-- Change print search dashboard app URL 
+- Change print search dashboard app URL
 - Fix regionalisation error when authenticating client.
 
 v1.0.1

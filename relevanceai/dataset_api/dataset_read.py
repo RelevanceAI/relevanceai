@@ -211,6 +211,9 @@ class Read(BatchAPIClient):
 
             df.head()
         """
+        print(
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
+        )
         head_documents = self.get_documents(
             number_of_documents=n,
         )
@@ -623,3 +626,28 @@ class Read(BatchAPIClient):
             include_vector=include_vector,
             include_cursor=include_cursor,
         )
+
+    def get_metadata(self):
+        """
+        Store Metadata
+        """
+        return self.datasets.metadata(self.dataset_id)
+
+    @property
+    def metadata(self):
+        """Get the metadata"""
+        return self.get_metadata()["results"]
+
+    def insert_metadata(self, metadata: dict):
+        """Insert metadata"""
+        results = self.datasets.post_metadata(self.dataset_id, metadata)
+        if results == {}:
+            print("✅ You have successfully inserted data.")
+        else:
+            return results
+
+    def upsert_metadata(self, metadata: dict):
+        """Upsert metadata."""
+        original_metadata: dict = self.datasets.metadata(self.dataset_id)
+        original_metadata.update(metadata)
+        return self.datasets.post_metadata(self.dataset_id, metadata)

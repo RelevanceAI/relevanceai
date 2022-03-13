@@ -22,20 +22,20 @@ HDBSCAN Example
     client = Client()
 
     # Retrieve the relevant dataset
-    df = client.Dataset("sample_dataset_id")
+    ds = client.Dataset("sample_dataset_id")
 
-    from relevanceai import mock_documents
-    df.upsert_documents(mock_documents(100))
+    from relevanceai.datasets import mock_documents
+    ds.upsert_documents(mock_documents(100))
 
     model = hdbscan.HDBSCAN()
 
-    clusterer = client.ClusterOps(model, alias="hdbscan")
+    clusterer = client.ClusterOps(alias="hdbscan", model=model)
     clusterer.fit_predict_update(
-        df, vector_fields=["sample_1_vector_"]
+        ds, vector_fields=["sample_1_vector_"]
     )
 
     # check that cluster is now in schema
-    df.schema
+    ds.schema
 
     # List closest to center
     clusterer.list_closest_to_center()

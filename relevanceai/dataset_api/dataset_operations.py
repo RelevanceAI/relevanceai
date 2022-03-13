@@ -4,8 +4,9 @@ Pandas like dataset API
 """
 import warnings
 import itertools
-from collections import Counter
-from typing import Callable, Dict, List, Optional
+from itertools import chain
+from collections import Counter, defaultdict
+from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 from relevanceai.analytics_funcs import track
 from relevanceai.dataset_api.dataset_write import Write
@@ -28,7 +29,7 @@ class Operations(Write):
         text_fields: Optional[List[str]] = None,
         image_encoder=None,
         text_encoder=None,
-    ):
+    ) -> dict:
         """
         Parameters
         ----------
@@ -49,7 +50,9 @@ class Operations(Write):
         Returns
         -------
         dict
-            The request result for the vecotrization process.
+            If the vectorization process is successful, this dict contains
+            the added vector names. Else, the dict is the request result
+            containing error information.
 
         Example
         -------
@@ -72,8 +75,23 @@ class Operations(Write):
             )
 
         """
+        if not image_fields and not text_fields:
+            raise ValueError("'image_fields' and 'text_fields' both cannot be empty.")
+
         image_fields = [] if image_fields is None else image_fields
         text_fields = [] if text_fields is None else text_fields
+
+        fields = image_fields + text_fields
+
+        foreign_fields = []
+        for field in fields:
+            if field not in self.schema:
+                foreign_fields.append(field)
+        else:
+            if foreign_fields:
+                raise ValueError(
+                    f"The following fields are invalid: {', '.join(foreign_fields)}"
+                )
 
         if image_fields and image_encoder is None:
             try:
@@ -88,6 +106,22 @@ class Operations(Write):
                     "Please install vectorhub with `python -m pip install "
                     "vectorhub[clip]` to install Clip2Vec."
                 )
+        if image_fields and not hasattr(image_encoder, "encode_documents"):
+            raise AttributeError(
+                f"{image_encoder} is missing attribute 'encode_documents'"
+            )
+        else:
+            new_image_fields = []
+            existing_image_vectors = []
+            for image_field in image_fields:
+                vector = f"{image_field}_{image_encoder.__name__}_vector_"
+                if vector not in self.schema:
+                    new_image_fields.append(image_field)
+                else:
+                    existing_image_vectors.append(vector)
+                    print(
+                        f"Since '{vector}' already exists, its construction will be skipped."
+                    )
 
         if text_fields and text_encoder is None:
             try:
@@ -101,84 +135,80 @@ class Operations(Write):
                     "Please install vectorhub with `python -m pip install "
                     "vectorhub[encoders-text-tfhub]` to install USE2Vec."
                 )
-
-        with FileLogger("logging.txt"):
-
-            def create_encoder_function(ftype: str, fields: List[str], encoder):
-                if not all(map(lambda field: field in self.schema, fields)):
-                    raise ValueError(f"Invalid {ftype} field detected")
-
-                if hasattr(encoder, "encode_documents"):
-
-                    def encode_documents(documents):
-                        return encoder.encode_documents(fields, documents)
-
+        if text_fields and not hasattr(text_encoder, "encode_documents"):
+            raise AttributeError(
+                f"{text_encoder} is missing attribute 'encode_documents'"
+            )
+        else:
+            new_text_fields = []
+            existing_text_vectors = []
+            for text_field in text_fields:
+                vector = f"{text_field}_{text_encoder.__name__}_vector_"
+                if vector not in self.schema:
+                    new_text_fields.append(text_field)
                 else:
+                    existing_text_vectors.append(vector)
+                    print(
+                        f"Since '{vector}' already exists, its construction will be skipped."
+                    )
 
-                    def encode_documents(documents):
-                        return encoder(documents)
+        if new_image_fields or new_text_fields:
 
-                return encode_documents
+            def dual_encoder_function(documents):
+                updated_documents = []
+                if image_encoder is not None:
+                    updated_documents.extend(
+                        image_encoder.encode_documents(new_image_fields, documents)
+                    )
+                if text_encoder is not None:
+                    updated_documents.extend(
+                        text_encoder.encode_documents(new_text_fields, documents)
+                    )
 
-            if image_fields:
-                image_results = self.pull_update_push(
-                    self.dataset_id,
-                    create_encoder_function("image", image_fields, image_encoder),
-                    select_fields=image_fields,
-                    filters=[
-                        {
-                            "field": image_field,
-                            "filter_type": "exists",
-                            "condition": "==",
-                            "condition_value": " ",
-                            "strict": "must_or",
-                        }
-                        for image_field in image_fields
-                    ],
-                )
+                return updated_documents
+
+            old_schema = self.schema.keys()
+
+            results = self.pull_update_push(
+                self.dataset_id,
+                dual_encoder_function,
+                select_fields=fields,
+                filters=[
+                    {
+                        "field": field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                        "strict": "must_or",
+                    }
+                    for field in fields
+                ],
+            )
+
+            new_schema = self.schema.keys()
+
+            added_vectors = list(new_schema - old_schema)
+        else:
+            results = {"failed_documents": []}
+            added_vectors = []
+
+        if not results["failed_documents"]:
+            if added_vectors:
+                print("✅ All documents inserted/edited successfully.")
+
+            if len(added_vectors) == 1:
+                text = "The following vector was added: "
             else:
-                image_results = {}
+                text = "The following vectors were added: "
+            print(text + ", ".join(added_vectors))
 
-        if len(image_fields) > 0:
-            if len(image_results.get("failed_documents", [])) == 0:
-                print("✅ All image documents inserted/edited successfully.")
-            else:
-                print(
-                    "❗Few errors with vectorizing image documents. Please check logs."
-                )
-
-        with FileLogger("logging.txt"):
-            if text_fields:
-                text_results = self.pull_update_push(
-                    self.dataset_id,
-                    create_encoder_function("text", text_fields, text_encoder),
-                    select_fields=text_fields,
-                    filters=[
-                        {
-                            "field": text_field,
-                            "filter_type": "exists",
-                            "condition": "==",
-                            "condition_value": " ",
-                            "strict": "must_or",
-                        }
-                        for text_field in text_fields
-                    ],
-                )
-            else:
-                text_results = {}
-
-        if len(text_fields) > 0:
-            if len(text_results.get("failed_documents", [])) == 0:
-                print("✅ All text documents inserted/edited successfully.")
-            else:
-                print("❗Few errors with vectorizing text documents. Please check logs.")
-
-        if (
-            len(image_results.get("failed_documents", []))
-            + len(text_results.get("failed_documents", []))
-            != 0
-        ):
-            return {"image": image_results, "text": text_results}
+            return {
+                "added_vectors": added_vectors,
+                "skipped_vectors": existing_image_vectors + existing_text_vectors,
+            }
+        else:
+            print("❗Few errors with vectorizing documents. Please check logs.")
+            return results
 
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
@@ -226,6 +256,207 @@ class Operations(Write):
         )
         clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
         return clusterer
+
+    @beta
+    def community_detection(
+        self,
+        field: str,
+        model=None,
+        retrieval_kwargs: Optional[dict] = None,
+        encode_kwargs: Optional[dict] = None,
+        threshold: float = 0.75,
+        min_community_size: int = 1,
+        init_max_size: int = 1000,
+    ):
+        """
+        Performs community detection on a text field.
+
+        Parameters
+        ----------
+        field: str
+            The field over which to find communities. Must be of type "text"
+            or "vector".
+
+        model
+            A model for computing sentence embeddings.
+
+        retrieval_kwargs: Optional[dict]
+            Keyword arguments for `get_documents` call. See respective
+            details for argument details.
+
+        encode_kwargs: Optional[dict]
+            Keyword arguments for the provide model's `encode` call. See
+            respective method for argument details.
+
+        threshold: float
+            A lower limit of similarity that determines whether two embeddings
+            are similar or not.
+
+        min_community_size: int
+            The minimum size of a community. Only communities that are larger
+            than this value are returned, and the first element of each
+            community is treated as the central point.
+
+        init_max_size: int
+            The maximum size of a community. If the corpus is larger than this
+            value, that is set to the maximum size.
+
+        Example
+        -------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            ds = client.Dataset("sample_dataset_id")
+
+            communities = ds.community_detection("sample_text_field")
+
+        """
+        if field in self.schema:
+            if not (self.schema[field] == "text" or field.endswith("_vector_")):
+                raise ValueError("The field must be a 'text' type or a vector")
+        else:
+            raise ValueError(f"{field} does not exist in the dataset")
+
+        try:
+            with FileLogger("logging.txt"):
+                from sentence_transformers.util import community_detection
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "community_detection function not found. "
+                "Please install sentence-transformers with `python -m "
+                "pip install -U sentence-transformers` to install "
+                "community_detection."
+            )
+
+        field_type = "text" if self.schema[field] == "text" else "vector"
+
+        retrieval_kwargs = {} if retrieval_kwargs is None else retrieval_kwargs
+        encode_kwargs = {} if encode_kwargs is None else encode_kwargs
+
+        if model is None and field_type == "text":
+            from sentence_transformers import SentenceTransformer
+
+            model = SentenceTransformer("all-MiniLM-L6-v2")
+            # encode defaults:
+            #  batch_size: int = 32
+            #  show_progress_bar: bool = None
+            #  output_value: str = 'sentence_embedding'
+            #  convert_to_numpy: bool = True
+            #  convert_to_Tensor: bool = False
+            #  device: str = None
+            #  normalize_embeddings: bool = False
+
+        print("Retrieving documents...")
+        documents = self.get_all_documents(
+            select_fields=[field],
+            **{
+                key: value
+                for key, value in retrieval_kwargs.items()
+                if key != "select_fields"
+            },
+        )
+        print("Documents retrieved.")
+
+        # lists (i.e. vectors) are unhashable therefore handled by converting
+        # them into tuples.
+        if field_type == "vector":
+            for document in documents:
+                try:
+                    document[field] = tuple(document[field])
+                except KeyError:
+                    # If a document is missing a vector, ignore
+                    continue
+
+        # Keep track of the fields. Since two documents could have the same
+        # field, use a list to keep track of multiples
+        element_ids = defaultdict(list)
+
+        # remove duplicates
+        elements = set()
+        for document in documents:
+            try:
+                element = document[field]
+            except KeyError:
+                # It could be that a document does not have a field or a
+                # a vector that other documents in the Dataset has. In that
+                # case, ignore.
+                continue
+            elements.add(element)
+            element_ids[element].append(document["_id"])
+
+        # Storing a mapping like this is fine because when the values are
+        # made a list below, they will be a list in the same order as inserted
+        # in the dictionary.
+        element_map = {}
+        ids_map = {}
+        for i, element in enumerate(elements):
+            element_map[i] = element
+            ids_map[i] = element_ids[element]
+
+        if field_type == "text":
+            print("Encoding the corpus...")
+            embeddings = model.encode(
+                sentences=list(element_map.values()),
+                **{
+                    key: value
+                    for key, value in encode_kwargs.items()
+                    if key != "sentences"
+                },
+            )
+            print("Encoding complete.")
+        else:
+            from numpy import array
+
+            embeddings = array(list(element_map.values()))
+
+        print("Community detection started...")
+        clusters = community_detection(
+            embeddings=embeddings,
+            threshold=threshold,
+            min_community_size=min_community_size,
+            init_max_size=init_max_size,
+        )
+        print("Community detection complete.")
+
+        print("Updating documents...")
+        community_documents = []
+        for i, cluster in enumerate(clusters):
+            ids = []
+            for member in cluster:
+                ids.extend(ids_map[member])
+            # During initial construction update_where did not accept dict
+            # values as valid updates.
+            # self.datasets.documents.update_where(
+            #    self.dataset_id,
+            #    update={
+            #        "_cluster_": {field: {"community-detection": f"community-{i+1}"}}
+            #    },
+            #    filters=[
+            #        {
+            #            "field": "ids",
+            #            "filter_type": "ids",
+            #            "condition": "==",
+            #            "condition_value": ids,
+            #        }
+            #    ],
+            # )
+            for id in ids:
+                community_documents.append(
+                    {
+                        "_id": id,
+                        "_cluster_": {
+                            field: {"community-detection": f"community-{i+1}"}
+                        },
+                    }
+                )
+
+        results = self._update_documents(self.dataset_id, community_documents)
+        print("Documents updated.")
+        return results
 
     @track
     def label_vector(
@@ -848,14 +1079,13 @@ class Operations(Write):
         preprocess_hooks: Optional[list] = None,
     ):
         """Get the bigrams"""
+        from nltk import word_tokenize
+        from nltk.util import ngrams
+
         additional_stopwords = (
             [] if additional_stopwords is None else additional_stopwords
         )
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
-
-        from nltk import word_tokenize
-        from nltk.util import ngrams
-        from itertools import chain
 
         if additional_stopwords:
             [self.eng_stopwords.add(s) for s in additional_stopwords]
@@ -884,9 +1114,11 @@ class Operations(Write):
         # return dict(counter.most_common(most_common))
 
     @track
-    def get_wordcloud(
+    @beta
+    def keyphrases(
         self,
         text_fields: list,
+        algorithm: str = "rake",
         n: int = 2,
         most_common: int = 10,
         filters: Optional[list] = None,
@@ -895,19 +1127,49 @@ class Operations(Write):
         batch_size: int = 1000,
         document_limit: int = None,
         preprocess_hooks: Optional[List[callable]] = None,
+        verbose: bool = True,
     ) -> list:
         """
-        wordcloud return object looks like:
+        Returns the most common phrase in the following format:
 
         .. code-block::
 
-            {'python': 232}
+            [('heavily draping faux fur', 16.0),
+            ('printed sweatshirt fabric made', 14.333333333333334),
+            ('high paper bag waist', 14.25),
+            ('ribbed organic cotton jersey', 13.803030303030303),
+            ('soft sweatshirt fabric', 9.0),
+            ('open back pocket', 8.5),
+            ('layered tulle skirt', 8.166666666666666),
+            ('soft brushed inside', 8.0),
+            ('discreet side pockets', 7.5),
+            ('cotton blend', 5.363636363636363)]
 
         Parameters
         ------------
 
         text_fields: list
             A list of text fields
+        algorithm: str
+            The algorithm to use. Must be one of `nltk` or `rake`.
+        n: int
+            if algorithm is `nltk`, this will set the number of words. If `rake`, then it
+            will do nothing.
+        most_common: int
+            How many to return
+        filters: list
+            A list of filters to supply
+        additional_stopwords: list
+            A list of additional stopwords to supply
+        min_word_length: int
+            The minimum word length to apply to clean. This can be helpful if there are common
+            acronyms that you want to exclude.
+        batch_size: int
+            Batch size is the number of documents to retrieve in a chunk
+        document_limit: int
+            The maximum number of documents in a dataset
+        preprocess_hooks: List[Callable]
+            A list of process hooks to clean text before they count as a word
 
         Example
         ----------
@@ -916,8 +1178,25 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
+            ds = client.Dataset("sample")
+            # Returns the top keywords in a text field
+            ds.keyphrases(text_fields=["sample"])
+
+
+            # Create an e-commerce dataset
+
+            from relevanceai.datasets import get_dummy_ecommerce_dataset
+            docs = get_dummy_ecommerce_dataset()
+            ds = client.Dataset("ecommerce-example")
+            ds.upsert_documents(docs)
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3)
+            def remove_apostrophe(string):
+                return string.replace("'s", "")
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3, preprocess_hooks=[remove_apostrophe])
+            ds.keyphrases(text_fields=text_fields, algorithm="nltk", n=3, additional_stopwords=["Men", "Women"])
 
         """
+        self._check_keyphrase_algorithm_requirements(algorithm)
         filters = [] if filters is None else filters
         additional_stopwords = (
             [] if additional_stopwords is None else additional_stopwords
@@ -926,15 +1205,18 @@ class Operations(Write):
 
         counter: Counter = Counter()
         if not hasattr(self, "_is_set_up"):
-            print("setting up NLTK...")
+            if verbose:
+                print("setting up NLTK...")
             self._set_up_nltk()
 
         # Mock a dummy documents so I can loop immediately without weird logic
         documents: dict = {"documents": [[]], "cursor": None}
-        print("Updating word count...")
+        if verbose:
+            print("Updating word count...")
         while len(documents["documents"]) > 0 and (
             document_limit is None or sum(counter.values()) < document_limit
         ):
+            # TODO: make this into a progress bar instead
             documents = self.get_documents(
                 filters=filters,
                 cursor=documents["cursor"],
@@ -947,39 +1229,88 @@ class Operations(Write):
                 text_fields=text_fields,
             )
 
-            ngram_counter = self._get_ngrams(
-                string,
-                n=n,
-                additional_stopwords=additional_stopwords,
-                min_word_length=min_word_length,
-                preprocess_hooks=preprocess_hooks,
-            )
+            if algorithm == "nltk":
+                ngram_counter = self._get_ngrams(
+                    string,
+                    n=n,
+                    additional_stopwords=additional_stopwords,
+                    min_word_length=min_word_length,
+                    preprocess_hooks=preprocess_hooks,
+                )
+            elif algorithm == "rake":
+                ngram_counter = self._get_rake_keyphrases(
+                    string,
+                )
             counter.update(ngram_counter)
         return counter.most_common(most_common)
 
-    def cluster_word_cloud(
+    def _check_keyphrase_algorithm_requirements(self, algorithm: str):
+        if algorithm == "rake":
+            try:
+                import rake_nltk
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError("Run `pip install rake-nltk`.")
+        elif algorithm == "nltk":
+            try:
+                import nltk
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError("Run `pip install nltk`")
+
+    def _get_rake_keyphrases(self, string, **kw):
+        from rake_nltk import Rake
+
+        r = Rake(**kw)
+        r.extract_keywords_from_sentences(string)
+        results = r.get_ranked_phrases_with_scores()
+        return {v: k for k, v in results}
+
+    def cluster_keyphrases(
         self,
         vector_fields: List[str],
         text_fields: List[str],
         cluster_alias: str,
-        n: int = 2,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
+        most_common: int = 10,
         preprocess_hooks: Optional[List[callable]] = None,
+        algorithm: str = "rake",
+        n: int = 2,
     ):
         """
-        Simple implementation of the cluster word cloud
+        Simple implementation of the cluster word cloud.
+
+        Parameters
+        ------------
+        vector_fields: list
+            The list of vector fields
+        text_fields: list
+            The list of text fields
+        cluster_alias: str
+            The alias of the cluster
+        cluster_field: str
+            The cluster field to try things on
+        num_clusters: int
+            The number of clusters
+        preprocess_hooks: list
+            The preprocess hooks
+        algorithm: str
+            The algorithm to use
+        n: int
+            The number of words
+
         """
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
 
         vector_fields_str = ".".join(sorted(vector_fields))
         field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
         all_clusters = self.facets([field], page_size=num_clusters)
-        most_common = 10
         cluster_counters = {}
+        if "results" in all_clusters:
+            all_clusters = all_clusters["results"]
+        # TODO: Switch to multiprocessing
         for c in tqdm(all_clusters[field]):
             cluster_value = c[field]
-            top_words = self.get_wordcloud(
+            top_words = self.keyphrases(
                 text_fields=text_fields,
                 n=n,
                 filters=[
@@ -992,11 +1323,29 @@ class Operations(Write):
                 ],
                 most_common=most_common,
                 preprocess_hooks=preprocess_hooks,
+                algorithm=algorithm,
             )
-            cluster_counters[c] = top_words
+            cluster_counters[cluster_value] = top_words
         return cluster_counters
 
+    # TODO: Add keyphrases to auto cluster
+    # def auto_cluster_keyphrases(
+    #     vector_fields: List[str],
+    #     text_fields: List[str],
+    #     cluster_alias: str,
+    #     deployable_id: str,
+    #     n: int = 2,
+    #     cluster_field: str = "_cluster_",
+    #     num_clusters: int = 100,
+    #     preprocess_hooks: Optional[List[callable]] = None,
+    # ):
+    #     """
+    #     # TODO:
+    #     """
+    #     pass
+
     def _add_cluster_word_cloud_to_config(self, data, cluster_value, top_words):
+        # TODO: Add this to wordcloud deployable
         # hacky way I implemented to add top words to config
         data["configuration"]["cluster-labels"][cluster_value] = ", ".join(
             [k for k in top_words if k != "machine learning"]
@@ -1013,6 +1362,7 @@ class Operations(Write):
         temp_vector_field: str = "_label_vector_",
         labels_fn="labels.txt",
         stopwords: Optional[list] = None,
+        algorithm: str = "nltk",
     ):
         """
         Label by the most popular keywords.
@@ -1044,6 +1394,8 @@ class Operations(Write):
             The filename for labels to be saved in.
         stopwords: list
             A list of stopwords
+        algorithm: str
+            The algorithm to use. Must be one of `nltk` or `rake`.
 
         Example
         --------
@@ -1073,11 +1425,12 @@ class Operations(Write):
         """
         stopwords = [] if stopwords is None else stopwords
 
-        labels = self.get_wordcloud(
+        labels = self.keyphrases(
             text_fields=[text_field],
             n=n_gram,
             most_common=most_common,
             additional_stopwords=stopwords,
+            algorithm=algorithm,
         )
 
         with open(labels_fn, "w") as f:
@@ -1097,6 +1450,10 @@ class Operations(Write):
             model=model,
             label_list=[x[0] for x in labels],
         )
+
+    ############################
+    # Search operations
+    ############################
 
     @track
     def vector_search(
@@ -1887,6 +2244,7 @@ class Operations(Write):
         vector_fields: List[str],
         chunksize: int = 1024,
         filters: Optional[list] = None,
+        parent_alias: Optional[str] = None,
     ):
         """
         Automatically cluster in 1 line of code.
@@ -1900,6 +2258,9 @@ class Operations(Write):
         after the dash like `kmeans-8` or `minibatchkmeans-50`.
 
         Under the hood, it uses scikit learn defaults or best practices.
+
+        This returns a ClusterOps object and is a wrapper on top of
+        `ClusterOps`.
 
         Parameters
         ----------
@@ -1935,6 +2296,28 @@ class Operations(Write):
             # Run minibatch k means clustering with 20 clusters
             clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
+        You can alternatively run this using kmeans.
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            from relevanceai.datasets import mock_documents
+
+            ds = client.Dataset('sample')
+            ds.upsert_documents(mock_documents(100))
+            # Run initial kmeans to get clusters
+            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            # Run separate K Means to get subclusters
+            cluster_ops = ds.auto_cluster(
+                'kmeans-2',
+                vector_fields=["sample_1_vector_"],
+                parent_alias="kmeans-3"
+            )
+
+
         """
         filters = [] if filters is None else filters
 
@@ -1969,13 +2352,21 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
-            clusterer.fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                include_grade=True,
-                filters=filters,
-            )
+            if parent_alias:
+                clusterer.subfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+            else:
+                clusterer.fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    include_grade=True,
+                    filters=filters,
+                )
 
         elif algorithm.lower() == "hdbscan":
             raise ValueError(
@@ -1994,18 +2385,113 @@ class Operations(Write):
                 firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
+                parent_alias=parent_alias,
             )
 
-            clusterer.partial_fit_predict_update(
-                dataset=self,
-                vector_fields=vector_fields,
-                chunksize=chunksize,
-                filters=filters,
-            )
+            if parent_alias:
+                print("subpartial fit...")
+                clusterer.subpartialfit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    filters=filters,
+                )
+
+            else:
+                clusterer.partial_fit_predict_update(
+                    dataset=self,
+                    vector_fields=vector_fields,
+                    chunksize=chunksize,
+                    filters=filters,
+                )
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
         return clusterer
+
+    def auto_text_cluster_dashboard(
+        self,
+        text_fields: List[str],
+        alias: str,
+        chunksize: int = 1024,
+        filters: Optional[list] = None,
+        text_encoder=None,
+    ):
+        """
+        Convenient way to vectorize and cluster text fields.
+
+        Parameters
+        ----------
+        text_fields: List[str]
+            A list of text fields to vectorize and cluster
+
+        alias: str
+            The name of the clustring application. The alias is required to
+            be of the form "{algorithm}-{n_clusters}" where:
+                * algorithm is the clustering algorithm to be used; and
+                * n_clusters is the number of clusters
+
+        chunksize: int
+            The size of the chunks
+
+        filters: Optional[list]
+            A list of filters to apply over the fields to vectorize
+
+        text_encoder:
+            A deep learning text encoder from the vectorhub library. If no
+            encoder is specified, a default encoder (USE2Vec) is loaded.
+
+        Returns
+        -------
+        A dictionary indicating the outcome status
+
+        Example
+        -------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            ds = client.Dataset("sample_dataset_id")
+
+            ds.auto_text_cluster_dashboard(text_fields=["sample_text_field"])
+
+        """
+        filters = [] if filters is None else filters
+
+        fields = []
+        for field in text_fields:
+            try:
+                if not "text" == self.schema[field]:
+                    fields.append(field)
+            except KeyError:
+                raise KeyError(f"'{field}' is an invalid field")
+        else:
+            if fields:
+                raise ValueError(
+                    "The following fields are not text fields: " f"{', '.join(fields)}"
+                )
+
+        results = self.vectorize(text_fields=text_fields, text_encoder=text_encoder)
+        if "added_vectors" not in results:
+            # If there were errors in vectorizing, then quit immediately and return errors
+            return results
+
+        new_vectors = results["added_vectors"]
+        existing_vectors = results["skipped_vectors"]
+
+        self.auto_cluster(
+            alias=alias,
+            vector_fields=new_vectors + existing_vectors,
+            chunksize=chunksize,
+            filters=filters,
+        )
+
+        print(
+            "Build your clustering app here: "
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
 
     @track
     def aggregate(
@@ -2041,6 +2527,22 @@ class Operations(Write):
         page: int = 1,
         asc: bool = False,
     ):
+        """
+        Get a summary of fields - such as most common, their min/max, etc.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            from relevanceai.datasets import mock_documents
+            documents = mock_documents(100)
+            ds = client.Dataset("mock_documents")
+            ds.upsert_documents(documents)
+            ds.facets(["sample_1_value"])
+        """
         return self.datasets.facets(
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
@@ -2049,3 +2551,19 @@ class Operations(Write):
             page=page,
             asc=asc,
         )
+
+    @beta
+    def launch_cluster_app(self, configuration: dict):
+        """
+        Launch an app with a given configuration
+        """
+        if "configuration" in configuration:
+            configuration = configuration["configuration"]
+        results = self.deployables.create(
+            dataset_id=self.dataset_id, configuration=configuration
+        )
+
+        # After you have created an app
+        url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
+        print(f"You can now access your deployable at {url}.")
+        return url
