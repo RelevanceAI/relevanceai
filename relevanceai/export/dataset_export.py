@@ -6,8 +6,8 @@ import pandas as pd
 from functools import lru_cache
 
 from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset_api.dataset_read import Read
-from relevanceai.package_utils.utils import introduced_in_version
+from relevanceai.dataset_crud.dataset_read import Read
+from relevanceai.package_utils.version_decorators import introduced_in_version
 
 
 class Export(Read):
