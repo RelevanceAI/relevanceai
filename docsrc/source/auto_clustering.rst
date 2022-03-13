@@ -27,7 +27,7 @@ Auto clustering is the easiest way to cluster.
 
 You can read more about how to cluster using the `auto_cluster` below!
 
-.. automethod:: relevanceai.dataset_api.dataset_operations.Operations.auto_cluster
+.. automethod:: relevanceai.dataset_crud.dataset_operations.Operations.auto_cluster
 
 For more advanced clustering methods and to use your own custom clustering
 method, read the other sections under `ClusterOps`.

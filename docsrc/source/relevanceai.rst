@@ -10,7 +10,7 @@ Subpackages
    relevanceai.api
    relevanceai.ops.clusterops
    relevanceai.data_tools
-   relevanceai.dataset_api
+   relevanceai.dataset_crud
    relevanceai.vector_tools
    relevanceai.visualise
 

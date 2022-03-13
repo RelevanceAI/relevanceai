@@ -5,7 +5,7 @@ Test the clustering workflow from getting the documents, clustering and then ins
 import pytest
 
 from relevanceai import Client
-from relevanceai.dataset_api import Dataset
+from relevanceai.interfaces import Dataset
 
 from typing import List
 
