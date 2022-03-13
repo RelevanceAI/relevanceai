@@ -44,5 +44,5 @@ class Clusters(Dashboard):
             application,
             share,
             application_configuration,
-            firebase_uid,
+            firebase_uid, # type: ignore
         )

@@ -11,7 +11,7 @@ from relevanceai.ops.clusterops.clusterbase import ClusterBase
 from relevanceai.vis.local_projector.dash_components.app import create_dash_graph
 from relevanceai.ops.clusterops.constants import *
 from relevanceai.package_utils.base import _Base
-from relevanceai.package_utils.utils import deprecated
+from relevanceai.package_utils.version_decorators import deprecated
 from relevanceai.api.client import BatchAPIClient
 from typeguard import typechecked
 from dataclasses import dataclass
