@@ -10,7 +10,7 @@ from doc_utils import DocUtils
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from relevanceai.logger import LoguruLogger
 from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
 

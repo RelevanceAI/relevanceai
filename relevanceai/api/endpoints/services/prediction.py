@@ -1,6 +1,6 @@
 """Prediction services
 """
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 
 
 class PredictionClient(_Base):

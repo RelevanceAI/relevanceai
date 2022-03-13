@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.vector_tools.dim_reduction import DimReduction
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.vector_tools.constants import CENTROID_DISTANCES
 from doc_utils import DocUtils

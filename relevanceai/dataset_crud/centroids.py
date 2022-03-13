@@ -1,9 +1,6 @@
 from typing import Dict, List, Optional
-
-from sklearn import cluster
-
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.dataset_api.groupby import Groupby, Agg
+from relevanceai.dataset_crud.groupby import Groupby, Agg
 
 
 class Centroids(BatchAPIClient):

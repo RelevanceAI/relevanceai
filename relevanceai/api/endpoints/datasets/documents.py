@@ -1,5 +1,5 @@
 from typing import List, Optional
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 
 
 class DocumentsClient(_Base):
