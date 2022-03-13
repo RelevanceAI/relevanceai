@@ -27,7 +27,7 @@ import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional, Callable
-from relevanceai.clusterops.cluster_base import (
+from relevanceai.ops.clusterops.clusterbase import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
@@ -35,15 +35,18 @@ from relevanceai.clusterops.cluster_base import (
     SklearnCentroidBase,
 )
 
-from relevanceai.analytics_funcs import track
+from relevanceai.package_utils.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset_api import Dataset
-from relevanceai.integration_checks import is_sklearn_available, is_hdbscan_available
-from relevanceai.dataset_api.cluster_groupby import ClusterGroupby, ClusterAgg
-from relevanceai.dataset_api import Dataset
-from relevanceai.errors import NoDocumentsError
-from relevanceai.utils import beta
+from relevanceai.package_utils.integration_checks import (
+    is_sklearn_available,
+    is_hdbscan_available,
+)
+from relevanceai.dataset_crud.cluster_groupby import ClusterGroupby, ClusterAgg
+from relevanceai.interfaces import Dataset
+from relevanceai.package_utils.errors import NoDocumentsError
+from relevanceai.package_utils.utils import beta
 
 from doc_utils import DocUtils
 
