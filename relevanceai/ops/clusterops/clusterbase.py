@@ -4,7 +4,10 @@ from doc_utils import DocUtils
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict, Callable
 
-from relevanceai.integration_checks import is_hdbscan_available, is_sklearn_available
+from relevanceai.package_utils.integration_checks import (
+    is_hdbscan_available,
+    is_sklearn_available,
+)
 
 
 class ClusterBase(DocUtils, ABC):

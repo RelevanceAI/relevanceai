@@ -1863,7 +1863,7 @@ class ClusterOps(BatchAPIClient):
 
     @staticmethod
     def _calculate_silhouette_grade(vectors, cluster_labels):
-        from relevanceai.cluster_report.grading import get_silhouette_grade
+        from relevanceai.reports.cluster_report.grading import get_silhouette_grade
         from sklearn.metrics import silhouette_samples
 
         score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()

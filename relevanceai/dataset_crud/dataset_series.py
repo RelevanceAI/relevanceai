@@ -12,7 +12,7 @@ from functools import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.warnings import warn_function_is_work_in_progress
+from relevanceai.package_utils.warnings import warn_function_is_work_in_progress
 
 from relevanceai.package_utils.analytics_funcs import track
 
