@@ -10,10 +10,10 @@ from typing import Callable, Dict, List, Optional
 from tqdm.auto import tqdm
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset_crud.dataset_write import Write
-from relevanceai.data_utils.base_text_processing import MLStripper
+from relevanceai.data_processing.base_text_processing import MLStripper
 from relevanceai.package_utils.logger import FileLogger
-from relevanceai.package_utils.utils import introduced_in_version, beta
-from relevanceai.vector_tools.nearest_neighbours import (
+from relevanceai.package_utils.version_decorators import introduced_in_version, beta
+from relevanceai.vector_tools.local_nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
 )
