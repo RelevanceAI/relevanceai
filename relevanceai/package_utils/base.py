@@ -3,7 +3,7 @@ from relevanceai.package_utils.transport import Transport
 from relevanceai.package_utils.logger import LoguruLogger
 
 
-def str2bool(v):
+def str2bool(v: str):
     return v.lower() in ("yes", "true", "t", "1")
 
 
