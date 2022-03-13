@@ -20,7 +20,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from doc_utils import DocUtils
 
-from relevanceai.analytics_funcs import track
+from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.chunk import Chunker

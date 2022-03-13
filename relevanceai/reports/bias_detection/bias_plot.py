@@ -26,7 +26,7 @@ can be found below.
 
 from typing import List, Dict, Any, Callable
 from doc_utils import DocUtils
-from relevanceai.analytics_funcs import track_event_usage
+from relevanceai.package_utils.analytics_funcs import track_event_usage
 
 try:
     import matplotlib.pyplot as plt

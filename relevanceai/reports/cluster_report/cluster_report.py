@@ -113,7 +113,7 @@ from typing import Union, List, Dict, Any, Optional
 import functools
 from warnings import warn
 from doc_utils import DocUtils
-from relevanceai.analytics_funcs import track_event_usage
+from relevanceai.package_utils.analytics_funcs import track_event_usage
 
 try:
     from sklearn.metrics import (

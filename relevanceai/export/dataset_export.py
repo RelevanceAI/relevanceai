@@ -5,7 +5,7 @@ import pandas as pd
 
 from functools import lru_cache
 
-from relevanceai.analytics_funcs import track
+from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset_api.dataset_read import Read
 from relevanceai.utils import introduced_in_version
 
