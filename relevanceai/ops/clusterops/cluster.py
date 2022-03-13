@@ -8,10 +8,10 @@ from doc_utils import DocUtils
 from joblib.memory import Memory
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.logger import LoguruLogger
-from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
-from relevanceai.errors import ClusteringResultsAlreadyExistsError
-from relevanceai.vector_tools.cluster_evaluate import ClusterEvaluate
+from relevanceai.package_utils.logger import LoguruLogger
+from relevanceai.ops.clusterops.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.package_utils.errors import ClusteringResultsAlreadyExistsError
+from relevanceai.ops.clusterops.cluster_evaluate import ClusterEvaluate
 
 
 class ClusterBase(LoguruLogger, DocUtils):

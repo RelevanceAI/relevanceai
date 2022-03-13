@@ -8,7 +8,7 @@ Subpackages
    :maxdepth: 4
 
    relevanceai.api
-   relevanceai.clusterer
+   relevanceai.clusterops
    relevanceai.data_tools
    relevanceai.dataset_api
    relevanceai.vector_tools

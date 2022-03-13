@@ -229,8 +229,8 @@ class Operations(Write):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.clusterer import ClusterOps
-            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+            from relevanceai.clusterops.cluster import ClusterOps
+            from relevanceai.clusterops.kmeans_clusterer import KMeansModel
 
             client = Client()
 
@@ -509,8 +509,8 @@ class Operations(Write):
 
 
             from relevanceai import Client
-            from relevanceai.clusterer import ClusterOps
-            from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+            from relevanceai.clusterops.cluster import ClusterOps
+            from relevanceai.clusterops.kmeans_clusterer import KMeansModel
 
             client = Client()
 

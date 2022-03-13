@@ -17,8 +17,8 @@ Faiss Kmeans Example
 
     import numpy as np
     from relevanceai import Client
-    from relevanceai.clusterer import ClusterOps
-    from relevanceai.clusterer import ClusterBase
+    from relevanceai.clusterops.cluster import ClusterOps
+    from relevanceai.clusterops.cluster import ClusterBase
 
     from faiss import Kmeans
 
