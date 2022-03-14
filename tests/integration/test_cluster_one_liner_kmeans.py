@@ -9,8 +9,8 @@ from relevanceai.interfaces import Dataset
 
 from typing import List
 
-from relevanceai.ops.clusterops.cluster import ClusterOps
-from relevanceai.ops.clusterops.cluster import CentroidClusterBase
+from relevanceai.ops.clusterops.clusterops import ClusterOps
+from relevanceai.ops.clusterops.clusterbase import CentroidClusterBase
 
 
 @pytest.mark.parametrize(
