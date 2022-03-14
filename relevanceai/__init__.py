@@ -10,6 +10,7 @@ from relevanceai.ops.dim_reduction_ops.dim_reduction_ops import ReduceDimensions
 
 # Fix the name
 from relevanceai.package_utils import datasets
+from relevanceai.package_utils.datasets import mock_documents
 import requests
 
 # Import useful utility if possible as well
