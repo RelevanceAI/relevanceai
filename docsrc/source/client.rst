@@ -1,6 +1,6 @@
 Client
 ========================================
 
-.. automodule:: relevanceai.http_client
+.. automodule:: relevanceai.interfaces
     :members:
     :exclude-members: __init__
