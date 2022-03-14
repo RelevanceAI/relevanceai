@@ -8,10 +8,10 @@ from sklearn.metrics import (
 import pandas as pd
 import numpy as np
 
-from relevanceai.ops.dim_reduction_ops.dim_reduction import DimReduction
+from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
 from relevanceai.package_utils.base import _Base
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.ops.clusterops.constants import CENTROID_DISTANCES
+from relevanceai.workflows.clusterops.constants import CENTROID_DISTANCES
 from doc_utils import DocUtils
 from typing import Optional, Dict
 

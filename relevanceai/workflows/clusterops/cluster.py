@@ -9,9 +9,9 @@ from joblib.memory import Memory
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.logger import LoguruLogger
-from relevanceai.ops.clusterops.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.workflows.clusterops.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
 from relevanceai.package_utils.errors import ClusteringResultsAlreadyExistsError
-from relevanceai.ops.clusterops.cluster_evaluate import ClusterEvaluate
+from relevanceai.workflows.clusterops.cluster_evaluate import ClusterEvaluate
 
 
 class ClusterBase(LoguruLogger, DocUtils):
@@ -679,9 +679,9 @@ class Cluster(ClusterEvaluate, BatchAPIClient, ClusterBase):
         -------------
 
         >>> client.vector_tools.cluster.hdbscan_cluster(
-            dataset_id="sample_dataset_id",
-            vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
-        )
+                dataset_id="sample_dataset_id",
+                vector_fields=["sample_1_vector_"] # Only 1 vector field is supported for now
+            )
         """
         filters = [] if filters is None else filters
 

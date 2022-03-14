@@ -3,14 +3,14 @@
 from doc_utils import DocUtils
 from typing_extensions import Literal
 from typing import List, Union, Dict, Any, Tuple, Optional
-from relevanceai.ops.dim_reduction_ops.dim_reduction import (
+from relevanceai.workflows.dim_reduction_ops.dim_reduction import (
     DimReduction,
     DimReductionBase,
 )
-from relevanceai.ops.clusterops.clusterbase import ClusterBase
-from relevanceai.ops.clusterops.cluster import Cluster
+from relevanceai.workflows.clusterops.clusterbase import ClusterBase
+from relevanceai.workflows.clusterops.cluster import Cluster
 from relevanceai.vis.local_projector.dash_components.app import create_dash_graph
-from relevanceai.ops.clusterops.constants import *
+from relevanceai.workflows.clusterops.constants import *
 from relevanceai.package_utils.base import _Base
 from relevanceai.package_utils.version_decorators import deprecated
 from relevanceai.api.client import BatchAPIClient

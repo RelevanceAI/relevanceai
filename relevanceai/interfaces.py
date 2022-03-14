@@ -31,7 +31,7 @@ from base64 import b64decode as decode
 from typing import Dict, List, Optional
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.ops.clusterops.clusterops import ClusterOps
+from relevanceai.workflows.clusterops.clusterops import ClusterOps
 
 from relevanceai.package_utils.errors import APIError
 from relevanceai.api.client import BatchAPIClient

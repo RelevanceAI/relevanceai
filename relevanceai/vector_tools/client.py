@@ -1,6 +1,6 @@
 from relevanceai.package_utils.base import _Base
-from relevanceai.ops.clusterops.cluster import Cluster
-from relevanceai.ops.dim_reduction_ops.dim_reduction import DimReduction
+from relevanceai.workflows.clusterops.cluster import Cluster
+from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
 from relevanceai.vector_tools.local_nearest_neighbours import NearestNeighbours
 
 
