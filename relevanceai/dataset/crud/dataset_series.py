@@ -13,8 +13,8 @@ from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.warnings import warn_function_is_work_in_progress
-
 from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.package_utils.constants import MAX_CACHESIZE
 
 
 class Series(BatchAPIClient):
@@ -517,7 +517,7 @@ class Series(BatchAPIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
-    @lru_cache(maxsize=8)
+    @lru_cache(maxsize=MAX_CACHESIZE)
     def _get_pandas_series(self):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,
