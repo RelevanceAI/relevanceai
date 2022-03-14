@@ -9,7 +9,7 @@ from collections import Counter, defaultdict
 from typing import Callable, Dict, List, Optional
 from tqdm.auto import tqdm
 from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset_crud.dataset_write import Write
+from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.data_processing.base_text_processing import MLStripper
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.version_decorators import introduced_in_version, beta
@@ -17,6 +17,8 @@ from relevanceai.vector_tools.local_nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
 )
+
+# TODO: Separate out operations into different files - cluster/search/dr
 
 
 class Operations(Write):

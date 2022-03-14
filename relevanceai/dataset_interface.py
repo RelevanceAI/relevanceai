@@ -1,16 +1,13 @@
-from relevanceai.dataset.export.dataset_export import Export
-from relevanceai.statistics.statistics import Statistics
-from relevanceai.auto.dataset_operations import Operations
 from base64 import encode
 from typing import Dict, List, Optional, Union
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.dataset.export.dataset_export import Export
-from relevanceai.statistics.statistics import Statistics
-from relevanceai.auto.dataset_operations import Operations
-from relevanceai.crud.dataset_series import Series
-from relevanceai.search.search import Search
+from relevanceai.dataset.statistics.statistics import Statistics
+from relevanceai.dataset.auto.dataset_operations import Operations
+from relevanceai.dataset.crud.dataset_series import Series
+from relevanceai.dataset.search.search import Search
 
 # TODO: Add game dataset
 _GLOBAL_DATASETS = ["_mock_dataset_"]

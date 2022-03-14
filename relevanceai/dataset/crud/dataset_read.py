@@ -8,9 +8,9 @@ import pandas as pd
 
 from typing import Dict, List, Optional, Union
 from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset_crud.helpers import _build_filters
-from relevanceai.dataset_crud.groupby import Groupby, Agg
-from relevanceai.dataset_crud.centroids import Centroids
+from relevanceai.dataset.crud.helpers import _build_filters
+from relevanceai.dataset.crud.groupby import Groupby, Agg
+from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 

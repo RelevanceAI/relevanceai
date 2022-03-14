@@ -11,7 +11,7 @@ from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset_crud.dataset_read import Read
+from relevanceai.dataset.crud.dataset_read import Read
 
 
 class Write(Read):

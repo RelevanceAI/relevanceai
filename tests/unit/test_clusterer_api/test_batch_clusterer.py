@@ -6,7 +6,7 @@
 import pandas as pd
 import pytest
 from relevanceai.interfaces import Dataset, Client, ClusterOps
-from relevanceai.dataset_crud.cluster_groupby import ClusterGroupby
+from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "minibatch"
 VECTOR_FIELDS = ["sample_1_vector_"]

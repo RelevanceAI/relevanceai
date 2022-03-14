@@ -1,7 +1,7 @@
 from typing import Optional
 
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.dataset_crud.groupby import Groupby, Agg
+from relevanceai.dataset.crud.groupby import Groupby, Agg
 
 GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 

@@ -5,7 +5,7 @@
 import pandas as pd
 import pytest
 from relevanceai.interfaces import Dataset, Client, ClusterOps
-from relevanceai.dataset_crud.cluster_groupby import ClusterGroupby
+from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby
 from relevanceai.ops.clusterops.cluster import ClusterBase
 
 CLUSTER_ALIAS = "kmeans_10"

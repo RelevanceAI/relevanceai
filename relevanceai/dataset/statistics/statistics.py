@@ -8,8 +8,8 @@ from typing import Dict, List, Optional, Union
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.endpoints.services.cluster import ClusterClient
-from relevanceai.dataset_crud.dataset_read import Read
-from relevanceai.dataset_crud.dataset_series import Series
+from relevanceai.dataset.crud.dataset_read import Read
+from relevanceai.dataset.crud.dataset_series import Series
 from relevanceai.package_utils.version_decorators import introduced_in_version
 
 
