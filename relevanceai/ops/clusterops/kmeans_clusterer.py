@@ -37,7 +37,7 @@ class KMeansModel(ClusterBase):
         dataset_id = "_github_repo_vectorai"
         df = client.Dataset(dataset_id)
 
-        from relevanceai.ops.clusterops.cluster import KMeansModel
+        from relevanceai.ops.clusterops.kmeans_clusterer import KMeansModel
         model = KMeansModel(k=3)
 
         cluster_ops = client.ClusterOps(model=model, alias="kmeans")
