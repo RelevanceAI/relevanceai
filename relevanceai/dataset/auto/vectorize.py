@@ -1,6 +1,7 @@
 from typing import Optional, List
 from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.package_utils.version_decorators import introduced_in_version, beta
+from relevanceai.package_utils.logger import FileLogger
 
 
 class Vectorize(Write):
@@ -12,6 +13,7 @@ class Vectorize(Write):
         text_fields: Optional[List[str]] = None,
         image_encoder=None,
         text_encoder=None,
+        log_file: str = "vectorize.logs",
     ) -> dict:
         """
         Parameters
@@ -78,7 +80,7 @@ class Vectorize(Write):
 
         if image_fields and image_encoder is None:
             try:
-                with FileLogger("logging.txt"):
+                with FileLogger(log_file):
                     from vectorhub.bi_encoders.text_image.torch import Clip2Vec
 
                     image_encoder = Clip2Vec()
@@ -108,7 +110,7 @@ class Vectorize(Write):
 
         if text_fields and text_encoder is None:
             try:
-                with FileLogger("logging.txt"):
+                with FileLogger(log_file):
                     from vectorhub.encoders.text.tfhub import USE2Vec
 
                     text_encoder = USE2Vec()

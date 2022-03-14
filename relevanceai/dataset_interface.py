@@ -83,7 +83,6 @@ class Dataset(Export, Statistics, Operations, Search):
                 raise AttributeError(f"'{attr}' is an invalid attribute")
         raise AttributeError(f"'{attr}' is an invalid attribute")
 
-
     @track
     def __getitem__(self, field: Union[List[str], str]):
         """
