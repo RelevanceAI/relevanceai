@@ -1,11 +1,14 @@
 import random
 
+from relevanceai.dataset.crud.helpers import make_id
+
 from tests.globals.constants import generate_random_vector
 
 
-def simple_document(_id: str):
-    return {
-        "_id": _id,
+def simple_document():
+    document = {
         "value": random.randint(0, 1000),
         "sample_1_vector_": generate_random_vector(),
     }
+    document["_id"] = make_id(document)
+    return document

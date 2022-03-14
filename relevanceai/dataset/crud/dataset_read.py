@@ -38,6 +38,7 @@ class Read(BatchAPIClient):
         audio_fields: Optional[List[str]] = None,
         highlight_fields: Optional[Dict[str, list]] = None,
         text_fields: Optional[List[str]] = None,
+        **kw,
     ):
         self.project = project
         self.api_key = api_key

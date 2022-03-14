@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
 
+from relevanceai.dataset.crud.helpers import make_id
+
 
 def pandas_document(_id: str):
-    return {
+    document = {
         "_id": _id,
         "sample_1_pandas": pd.DataFrame(
             np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
@@ -16,3 +18,5 @@ def pandas_document(_id: str):
             columns=["a", "b", "c"],
         ),
     }
+    document["_id"] = make_id(document)
+    return document

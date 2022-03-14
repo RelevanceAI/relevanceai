@@ -1,11 +1,9 @@
-import warnings
 from typing import List, Dict
-from uuid import uuid4
 from doc_utils import DocUtils
 from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.client import APIClient
-from functools import wraps
 from relevanceai.package_utils.errors import MissingFieldError
+from relevanceai.dataset.crud.helpers import make_id
 
 
 class Utils(APIClient, _Base, DocUtils):
@@ -59,7 +57,7 @@ class Utils(APIClient, _Base, DocUtils):
         except KeyError:
             if create_id:
                 self.set_field_across_documents(
-                    "_id", [str(uuid4()) for i in documents], documents
+                    "_id", [make_id(document) for document in documents], documents
                 )
             else:
                 raise MissingFieldError(

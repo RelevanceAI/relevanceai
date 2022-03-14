@@ -6,12 +6,14 @@ These datasets have been licensed under Apache 2.0.
 
 from typing import Any, Dict, List, Optional, Union
 from typing_extensions import Literal
+
 import random
-import uuid
 import string
 import sys
 import pandas as pd
 import requests
+
+from relevanceai.dataset.crud.helpers import make_id
 
 THIS_MODULE = sys.modules[__name__]
 DATASETS = [
@@ -590,9 +592,8 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
     def generate_random_integer(min: int = 0, max: int = 100) -> int:
         return random.randint(min, max)
 
-    def vector_document(_id: str) -> Dict:
-        return {
-            "_id": _id,
+    def vector_document() -> Dict:
+        document = {
             "sample_1_label": generate_random_label(),
             "sample_2_label": generate_random_label(),
             "sample_3_label": generate_random_label(),
@@ -612,8 +613,10 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
                 }
             ],
         }
+        document["_id"] = make_id(document)
+        return document
 
-    return [vector_document(uuid.uuid4().__str__()) for _ in range(number_of_documents)]
+    return [vector_document() for _ in range(number_of_documents)]
 
 
 def get_titanic_dataset(
