@@ -9,10 +9,11 @@ from relevanceai.interfaces import Dataset
 
 from typing import List
 
-from relevanceai.ops.clusterops.clusterops import ClusterOps
-from relevanceai.ops.clusterops.clusterbase import CentroidClusterBase
+from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+from relevanceai.workflows.cluster_ops.cluster_base import CentroidClusterBase
 
 
+@pytest.mark.skip(reason="no longer supported")
 @pytest.mark.parametrize(
     "vector_fields", [["sample_1_vector_"], ["sample_2_vector_", "sample_1_vector_"]]
 )

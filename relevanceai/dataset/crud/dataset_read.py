@@ -5,7 +5,7 @@ import re
 import math
 import warnings
 import pandas as pd
-from functools import lru_cache
+from relevanceai.package_utils.cache import lru_cache
 from typing import Dict, List, Optional, Union
 
 from relevanceai.package_utils.analytics_funcs import track
@@ -332,7 +332,6 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
-    @list_to_tuple
     @lru_cache(maxsize=MAX_CACHESIZE)
     @track
     def get_all_documents(
