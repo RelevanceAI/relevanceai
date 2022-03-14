@@ -62,6 +62,7 @@ def track(func: Callable):
                     #     dict(zip(func.__code__.co_varnames, args))
                     # )
 
+                    # if hasattr(func, "__code__"):
                     additional_args = dict(zip(func.__code__.co_varnames, args))
 
                     if "dataset_id" in kwargs:
