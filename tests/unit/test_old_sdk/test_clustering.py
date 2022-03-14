@@ -23,7 +23,7 @@ def closest_to_centers(test_client: Client, clustered_dataset_id: List[Dict]):
     results = test_client.datasets.cluster.centroids.list_closest_to_center(
         clustered_dataset_id,
         ["sample_1_vector_"],
-        "kmeans_10",
+        "kmeans-10",
     )
     return results
 
@@ -34,7 +34,7 @@ def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict])
     results = test_client.datasets.cluster.centroids.list_furthest_from_center(
         clustered_dataset_id,
         ["sample_1_vector_"],
-        "kmeans_10",
+        "kmeans-10",
     )
     return results
 
