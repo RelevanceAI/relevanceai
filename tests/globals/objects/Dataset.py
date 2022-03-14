@@ -10,7 +10,7 @@ from relevanceai.interfaces import Dataset
 def test_df(test_client: Client, vector_dataset_id: str) -> Dataset:
     df = test_client.Dataset(vector_dataset_id)
     yield df
-    df.delete()
+    # df.delete()
 
 
 @pytest.fixture(scope="function")
