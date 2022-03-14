@@ -3,9 +3,12 @@
 
 from typing import List, Optional
 import math
+from functools import lru_cache
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.package_utils.progress_bar import progress_bar
+from relevanceai.package_utils.constants import MAX_CACHESIZE
+from relevanceai.package_utils.list_to_tuple import list_to_tuple
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -98,6 +101,8 @@ class BatchRetrieveClient(APIClient, Chunker):
             return {"documents": data, "cursor": resp["cursor"]}
         return data
 
+    @list_to_tuple
+    @lru_cache(maxsize=MAX_CACHESIZE)
     def _get_all_documents(
         self,
         dataset_id: str,
