@@ -34,6 +34,9 @@ from relevanceai.workflows.cluster_ops.cluster_base import (
     HDBSCANClusterBase,
     SklearnCentroidBase,
 )
+from relevanceai.workflows.cluster_ops.cluster_groupby import (
+    ClusterGroupby, ClusterAgg
+)
 
 from relevanceai.package_utils.analytics_funcs import track
 
@@ -43,7 +46,6 @@ from relevanceai.package_utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
 )
-from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.errors import NoDocumentsError
