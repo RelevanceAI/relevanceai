@@ -232,3 +232,68 @@ class DimensionalityReduction(Write):
         results = self.update_documents(self.dataset_id, dr_documents)
 
         return results
+
+    def auto_projector(
+        self,
+        image_field: str,
+        number_of_documents: int = 1000,
+        image_encoder=None,
+        alias: str = "",
+        algorithm: str = "pca",
+        n_components: int = 3,
+        filters: Optional[list] = None,
+    ):
+        """
+        Vectorize and apply dimensionality reduction on a single image field.
+        This is useful if you want to quickly see a projection of your
+        dataset.
+
+        Parameters
+        ----------
+        image_field: str
+            Am image field to vectorize
+
+        number_of_documents: int
+            The number of documents to get
+
+        image_encoder
+            A deep learning image encoder from the vectorhub library. If no
+            encoder is specified, a default encoder (Clip2Vec) is loaded.
+
+        algorithm: str
+            The algorithm to run. The only supported algorithm is `pca` at this
+            current point in time.
+
+        n_components: int
+            The number of components
+
+        filters: list
+            A list of filters to apply on the retrieval query
+
+        Example
+        -------
+        TODO: ADD EXAMPLE
+        """
+        if algorithm.lower() not in {"pca", "tsne", "umap", "ivis"}:
+            raise ValueError(
+                f"{algorithm} is an unspported dimensionality reduction " + "algorithm."
+            )
+        self.vectorize(image_fields=[image_field], image_encoder=image_encoder)
+
+        vector_field = "_".join([image_field, algorithm.lower(), "vector_"])
+        alias = f"{algorithm}-{n_components}" if alias == "" else alias
+        filters = [] if filters is None else filters
+
+        self.reduce_dimensions(
+            vector_fields=[vector_field],
+            alias=alias,
+            number_of_documents=number_of_documents,
+            algorithm=algorithm,
+            n_components=n_components,
+            filters=filters,
+        )
+
+        print(
+            "Build your projection app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
+        )
