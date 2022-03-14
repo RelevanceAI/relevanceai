@@ -24,7 +24,5 @@ def test_datasets_smoke():
 def test_projector_smoke():
     import relevanceai.workflows.cluster_ops.constants
     from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
-    from relevanceai.workflows.cluster_ops.cluster import Cluster
-    from relevanceai.vis.local_projector.projector import Projector
 
     assert True
