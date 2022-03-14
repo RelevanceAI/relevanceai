@@ -402,7 +402,7 @@ class Write(Read):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
 
             client = Client()
 

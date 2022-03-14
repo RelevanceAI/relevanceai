@@ -1184,7 +1184,7 @@ class Operations(Write):
 
             # Create an e-commerce dataset
 
-            from relevanceai.datasets import get_dummy_ecommerce_dataset
+            from relevanceai.package_utils.datasets import get_dummy_ecommerce_dataset
             docs = get_dummy_ecommerce_dataset()
             ds = client.Dataset("ecommerce-example")
             ds.upsert_documents(docs)
@@ -1403,7 +1403,7 @@ class Operations(Write):
 
             import random
             from relevanceai import Client
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             from relevanceai.package_utils.logger import FileLogger
 
             client = Client()
@@ -1730,7 +1730,7 @@ class Operations(Write):
 
             client = Client()
 
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
 
             ds = client.Dataset('sample')
             ds.upsert_documents(mock_documents(100))
@@ -1963,7 +1963,7 @@ class Operations(Write):
 
             from relevanceai import Client
             client = Client()
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             documents = mock_documents(100)
             ds = client.Dataset("mock_documents")
             ds.upsert_documents(documents)

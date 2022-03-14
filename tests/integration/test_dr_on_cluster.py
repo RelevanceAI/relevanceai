@@ -4,7 +4,7 @@ from relevanceai import Client
 
 # def test_dr_on_cluster():
 #     # Run dim reduction d
-#     from relevanceai.datasets import mock_documents
+#     from relevanceai.package_utils.datasets import mock_documents
 
 #     docs = mock_documents()
 #     # Reduce dimensions

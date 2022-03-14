@@ -44,7 +44,7 @@ class Series(BatchAPIClient):
     .. code-block::
 
         from relevanceai import client
-        relevanceai.datasets import get_dummy_ecommerce_dataset
+        relevanceai.package_utils.datasets import get_dummy_ecommerce_dataset
 
         documents = get_dummy_ecommerce_dataset()
         client = Client()

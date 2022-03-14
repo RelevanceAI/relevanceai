@@ -11,7 +11,7 @@ Reducing dimensions for just documents.
     from relevanceai import Client 
     client = Client()
 
-    from relevanceai.datasets import mock_documents
+    from relevanceai.package_utils.datasets import mock_documents
     docs = mock_documents(10)
 
     from relevanceai.dim_reduction_ops import ReduceDimensionsOps

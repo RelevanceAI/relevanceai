@@ -1137,7 +1137,7 @@ class ClusterOps(BatchAPIClient):
             from relevanceai import Client
             client = Client()
 
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             ds = client.Dataset("sample")
 
             # Creates 100 sample documents
@@ -1228,7 +1228,7 @@ class ClusterOps(BatchAPIClient):
             from relevanceai import Client
             client = Client()
 
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             ds = client.Dataset("sample")
             # Creates 100 sample documents
             documents = mock_documents(100)
@@ -1301,7 +1301,7 @@ class ClusterOps(BatchAPIClient):
             ds = client.Dataset("sample")
 
             # Creating 100 sample documents
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             documents = mock_documents(100)
             ds.upsert_documents(documents)
 
@@ -2188,7 +2188,7 @@ class ClusterOps(BatchAPIClient):
 
         .. code-block::
 
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             docs = mock_documents(10)
             df = client.Dataset('sample')
             df.upsert_documents(docs)
@@ -2201,7 +2201,7 @@ class ClusterOps(BatchAPIClient):
 
             from relevanceai import Client
             # client = Client()
-            from relevanceai.datasets import mock_documents
+            from relevanceai.package_utils.datasets import mock_documents
             ds = client.Dataset("sample")
             # Creates 100 sample documents
             documents = mock_documents(100)
