@@ -332,7 +332,6 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
-    @list_to_tuple
     @lru_cache(maxsize=MAX_CACHESIZE)
     @track
     def get_all_documents(

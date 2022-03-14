@@ -101,7 +101,6 @@ class BatchRetrieveClient(APIClient, Chunker):
             return {"documents": data, "cursor": resp["cursor"]}
         return data
 
-    @list_to_tuple
     @lru_cache(maxsize=MAX_CACHESIZE)
     def _get_all_documents(
         self,
