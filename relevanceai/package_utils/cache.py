@@ -188,6 +188,7 @@ def _lru_cache_wrapper(user_function, maxsize, typed, _CacheInfo):
     wrapper.cache_clear = cache_clear
     return wrapper
 
+
 def lru_cache(maxsize=128, typed=False):
     """Least-recently-used cache decorator.
     If *maxsize* is set to None, the LRU features are disabled and the cache
