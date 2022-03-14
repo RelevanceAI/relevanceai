@@ -8,7 +8,7 @@ from relevanceai.interfaces import Client
 def test_kmeans(test_client: Client, clustered_dataset_id: List[Dict]):
     db_health = test_client.datasets.monitor.health(clustered_dataset_id)
     assert "_cluster_" in db_health
-    assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
+    assert "_cluster_.sample_1_vector_.kmeans-10" in db_health
 
 
 def test_kmeans_dashboard(test_client: Client, vector_dataset_id: str):
