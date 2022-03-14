@@ -1,7 +1,7 @@
 import dash
 from dash import dcc
 from dash import html
-from relevanceai.visualise.dash_components.components.sections import Card
+from relevanceai.vis.local_projector.dash_components.components.sections import Card
 
 
 def build_graph(app: dash.Dash, data, layout) -> html.Div:

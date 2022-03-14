@@ -1,8 +1,10 @@
 import dash
 from dash import dcc
 from dash import html
-from relevanceai.visualise.dash_components.components.sections import Card
-from relevanceai.visualise.dash_components.components.buttons import NamedSlider
+from relevanceai.vis.local_projector.dash_components.components.sections import Card
+from relevanceai.vis.local_projector.dash_components.components.buttons import (
+    NamedSlider,
+)
 
 
 def build_control_panel(app: dash.Dash) -> html.Div:
