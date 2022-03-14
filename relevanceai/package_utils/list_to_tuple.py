@@ -3,7 +3,7 @@ from functools import wraps
 
 def list_to_tuple(function):
     @wraps(function)
-    def wrapper(*args):
+    def wrapper(*args, **kw):
         args = [tuple(x) if type(x) == list else x for x in args]
         result = function(*args)
         result = tuple(result) if type(result) == list else result
