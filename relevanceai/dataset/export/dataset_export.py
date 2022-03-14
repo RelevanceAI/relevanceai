@@ -8,10 +8,11 @@ from functools import lru_cache
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_read import Read
 from relevanceai.package_utils.version_decorators import introduced_in_version
+from relevanceai.package_utils.constants import MAX_CACHESIZE
 
 
 class Export(Read):
-    @lru_cache(maxsize=8)
+    @lru_cache(maxsize=MAX_CACHESIZE)
     @introduced_in_version("1.1.5")
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
         """
