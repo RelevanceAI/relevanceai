@@ -3,15 +3,17 @@
 Pandas like dataset API
 """
 import requests
-import uuid
 import pandas as pd
+
 from doc_utils import DocUtils
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
+
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_read import Read
+from relevanceai.package_utils.make_id import _make_id
 
 
 class Write(Read):
@@ -178,7 +180,7 @@ class Write(Read):
             df["_id"] = df[col_for_id]
 
         else:
-            uuids = [uuid.uuid4() for _ in range(len(df))]
+            uuids = [_make_id(df.iloc[index]) for index in range(len(df))]
             df["_id"] = uuids
 
         def _is_valid(v):
@@ -282,7 +284,8 @@ class Write(Read):
         medias = get_paths(path, [])
         documents = list(
             map(
-                lambda media: {"_id": uuid.uuid4(), "path": media, field: media}, medias
+                lambda media: {"_id": _make_id(media), "path": media, field: media},
+                medias,
             )
         )
         results = self.insert_documents(documents, *args, **kwargs)

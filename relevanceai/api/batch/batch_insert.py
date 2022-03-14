@@ -7,18 +7,13 @@ import os
 import sys
 import time
 import traceback
-import uuid
 
 import pandas as pd
 
 from ast import literal_eval
 from datetime import datetime
-from functools import partial
-from pathlib import Path
 from threading import Thread
 from typing import Any, Callable, Dict, List, Optional, Union
-
-from doc_utils import DocUtils
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.endpoints.client import APIClient
@@ -30,6 +25,8 @@ from relevanceai.package_utils.errors import MissingFieldError
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.progress_bar import progress_bar
 from relevanceai.package_utils.utils import Utils
+from relevanceai.package_utils.make_id import _make_id
+
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -235,7 +232,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # auto_generate_id
         if "_id" not in chunk.columns and auto_generate_id:
             index = chunk.index
-            uuids = [uuid.uuid4() for _ in range(len(index))]
+            uuids = [
+                _make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
+            ]
             chunk.insert(0, "_id", uuids, False)
             self.logger.warning(
                 "We will be auto-generating IDs since no id field is detected"
