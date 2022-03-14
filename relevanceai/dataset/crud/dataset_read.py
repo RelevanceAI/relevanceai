@@ -15,6 +15,7 @@ from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
+from relevanceai.package_utils.list_to_tuple import list_to_tuple
 
 
 class Read(BatchAPIClient):
@@ -331,6 +332,7 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
+    @list_to_tuple
     @lru_cache(maxsize=MAX_CACHESIZE)
     @track
     def get_all_documents(
