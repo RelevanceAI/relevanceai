@@ -4,6 +4,7 @@
 
 import pandas as pd
 import pytest
+import time
 from relevanceai.interfaces import Dataset, Client, ClusterOps
 from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby
 from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
@@ -21,6 +22,7 @@ def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
     clusterer: ClusterOps = df.cluster(
         model=model, vector_fields=VECTOR_FIELDS, alias=CLUSTER_ALIAS
     )
+    time.sleep(2)
     return clusterer
 
 
