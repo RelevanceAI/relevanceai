@@ -38,12 +38,12 @@ from relevanceai.ops.clusterops.clusterbase import (
 from relevanceai.package_utils.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
-# from relevanceai.dataset_crud import Dataset
+# from relevanceai.dataset.crud import Dataset
 from relevanceai.package_utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
 )
-from relevanceai.dataset_crud.cluster_groupby import ClusterGroupby, ClusterAgg
+from relevanceai.crud.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.errors import NoDocumentsError

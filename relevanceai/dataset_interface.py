@@ -1,15 +1,15 @@
-from relevanceai.export.dataset_export import Export
+from relevanceai.dataset.export.dataset_export import Export
 from relevanceai.statistics.statistics import Statistics
-from relevanceai.dataset_ops.dataset_operations import Operations
+from relevanceai.auto.dataset_operations import Operations
 from base64 import encode
 from typing import Dict, List, Optional, Union
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.export.dataset_export import Export
+from relevanceai.dataset.export.dataset_export import Export
 from relevanceai.statistics.statistics import Statistics
-from relevanceai.dataset_ops.dataset_operations import Operations
-from relevanceai.dataset_crud.dataset_series import Series
+from relevanceai.auto.dataset_operations import Operations
+from relevanceai.crud.dataset_series import Series
 from relevanceai.search.search import Search
 
 # TODO: Add game dataset
