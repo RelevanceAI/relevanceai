@@ -14,6 +14,7 @@ from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
+from functools import lru_cache
 
 
 class Read(BatchAPIClient):
