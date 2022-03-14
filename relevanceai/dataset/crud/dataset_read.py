@@ -13,6 +13,7 @@ from relevanceai.dataset.crud.groupby import Groupby, Agg
 from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.package_utils.constants import MAX_CACHESIZE
 
 
 class Read(BatchAPIClient):
@@ -330,6 +331,7 @@ class Read(BatchAPIClient):
             return pd.DataFrame.from_dict(documents, orient="records")
 
     @track
+    @lru_cache(maxsize=MAX_CACHESIZE)
     def get_all_documents(
         self,
         chunksize: int = 1000,
