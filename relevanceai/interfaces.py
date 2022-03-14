@@ -122,14 +122,6 @@ class Client(BatchAPIClient, DocUtils):
             else:
                 raise APIError(self.FAIL_MESSAGE)
 
-        # Import projector and vector tools
-        if vis_requirements:
-            self.projector = Projector(
-                project=self.project,
-                api_key=self.api_key,
-                firebase_uid=self.firebase_uid,
-            )
-
         self.vector_tools = VectorTools(
             project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
         )
