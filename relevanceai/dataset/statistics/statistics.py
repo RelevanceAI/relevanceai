@@ -234,6 +234,32 @@ class Statistics(Read):
         else:
             raise ValueError('\'output_format\' must either be "dataframe" or "json"')
 
+    @track
+    def aggregate(
+        self,
+        groupby: Optional[list] = None,
+        metrics: Optional[list] = None,
+        filters: Optional[list] = None,
+        # sort: list = [],
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        alias: str = "default",
+    ):
+        return self.services.aggregate.aggregate(
+            dataset_id=self.dataset_id,
+            groupby=[] if groupby is None else groupby,
+            metrics=[] if metrics is None else metrics,
+            filters=[] if filters is None else filters,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+            alias=alias,
+            # sort=sort
+        )
+
     def facets(
         self,
         fields: Optional[list] = None,
