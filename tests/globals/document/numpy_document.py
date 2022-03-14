@@ -1,6 +1,6 @@
 import numpy as np
 
-from relevanceai.dataset.crud.helpers import make_id
+from relevanceai.package_utils.utils import _make_id
 
 
 def numpy_document():
@@ -9,5 +9,5 @@ def numpy_document():
         "sample_2_numpy": np.random.rand(3, 2),
         "sample_3_numpy": np.nan,
     }
-    document["_id"] = make_id(document)
+    document["_id"] = _make_id(document)
     return document

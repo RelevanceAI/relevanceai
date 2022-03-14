@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from relevanceai.dataset.crud.helpers import make_id
+from relevanceai.package_utils.utils import _make_id
 
 
-def pandas_document(_id: str):
+def pandas_document():
     document = {
         "_id": _id,
         "sample_1_pandas": pd.DataFrame(
@@ -18,5 +18,5 @@ def pandas_document(_id: str):
             columns=["a", "b", "c"],
         ),
     }
-    document["_id"] = make_id(document)
+    document["_id"] = _make_id(document)
     return document

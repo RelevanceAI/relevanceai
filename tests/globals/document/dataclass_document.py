@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 from dataclasses import dataclass
 
-from relevanceai.dataset.crud.helpers import make_id
+from relevanceai.package_utils.utils import _make_id
 
 
 @dataclass
@@ -16,5 +16,5 @@ class DataclassDocument:
 
 def dataclass_document() -> NamedTuple:
     document = DataclassDocument()
-    document._id = make_id(document)
+    document._id = _make_id(document)
     return document
