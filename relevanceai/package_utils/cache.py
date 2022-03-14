@@ -3,8 +3,8 @@ Modified Python code from:
 https://github.com/python/cpython/blob/main/Lib/functools.py#L511
 
 Key purposes of this new caching: 
-- Built-in support for lists
-- Built-in support for dictionaries
+- Built-in support for hashing lists
+- Built-in support for hashing dictionaries
 """
 
 from threading import RLock
@@ -12,6 +12,10 @@ from functools import update_wrapper
 from collections import namedtuple
 
 _CacheInfo = namedtuple("_CacheInfo", ["hits", "misses", "maxsize", "currsize"])
+
+
+def string_hash(obj):
+    return hash(str(obj))
 
 
 class _HashedSeq(list):
@@ -22,7 +26,7 @@ class _HashedSeq(list):
 
     __slots__ = "hashvalue"
 
-    def __init__(self, tup, hash=hash):
+    def __init__(self, tup, hash=string_hash):
         self[:] = tup
         self.hashvalue = hash(tup)
 

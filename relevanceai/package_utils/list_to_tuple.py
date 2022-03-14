@@ -14,4 +14,5 @@ def list_to_tuple(function):
         result = function(*args, **new_kw)
         result = tuple(result) if type(result) == list else result
         return result
+
     return wrapper
