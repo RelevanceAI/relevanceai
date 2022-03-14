@@ -1,3 +1,5 @@
+import uuid
+
 from typing import List, Dict
 from doc_utils import DocUtils
 from relevanceai.package_utils.base import _Base
