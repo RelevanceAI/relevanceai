@@ -24,14 +24,8 @@ def clustered_dataset_id(test_client: Client, vector_documents: List[Dict]):
 
     test_client._insert_documents(test_dataset_id, vector_documents)
 
-    test_client.vector_tools.cluster.kmeans_cluster(
-        dataset_id=test_dataset_id,
-        vector_fields=["sample_1_vector_"],
-        k=10,
-        alias="kmeans_10",
-        overwrite=True,
-    )
-
+    ds = test_client.Dataset(test_dataset_id)
+    ds.auto_cluster("kmeans-10", ["sample_1_vector_"])
     yield test_dataset_id
 
     test_client.datasets.delete(test_dataset_id)

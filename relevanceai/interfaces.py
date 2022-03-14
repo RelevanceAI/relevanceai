@@ -31,25 +31,11 @@ from base64 import b64decode as decode
 from typing import Dict, List, Optional
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.ops.clusterops.clusterops import ClusterOps
-
+from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
 from relevanceai.package_utils.errors import APIError
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.vis.topic2vec.plot_text_theme_model import build_and_plot_clusters
-
 from relevanceai.package_utils.analytics_funcs import track, identify
 from relevanceai.package_utils.version_decorators import beta, introduced_in_version
-
-vis_requirements = False
-try:
-    from relevanceai.vis.local_projector.projector import Projector
-
-    vis_requirements = True
-
-except ModuleNotFoundError as e:
-    # warnings.warn(f"{e} You can fix this by installing RelevanceAI[vis]")
-    pass
-
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
@@ -135,14 +121,6 @@ class Client(BatchAPIClient, DocUtils):
                 print(WELCOME_MESSAGE)
             else:
                 raise APIError(self.FAIL_MESSAGE)
-
-        # Import projector and vector tools
-        if vis_requirements:
-            self.projector = Projector(
-                project=self.project,
-                api_key=self.api_key,
-                firebase_uid=self.firebase_uid,
-            )
 
         self.vector_tools = VectorTools(
             project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
@@ -239,10 +217,6 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.admin._ping()
-
-    ### Utility functions
-
-    build_and_plot_clusters = build_and_plot_clusters
 
     ### CRUD-related utility functions
 

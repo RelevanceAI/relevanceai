@@ -29,7 +29,9 @@ except ModuleNotFoundError:
 try:
     from functools import singledispatchmethod  # type: ignore
 except ImportError:
-    from relevanceai.data_tools.functools_extend import singledispatchmethod
+    from relevanceai.unstructured_data.utils.functools_extend import (
+        singledispatchmethod,
+    )
 
 
 class ImageTools:

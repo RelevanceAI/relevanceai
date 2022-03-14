@@ -8,7 +8,7 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from functools import lru_cache
+from relevanceai.package_utils.cache import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai.api.client import BatchAPIClient
