@@ -11,11 +11,11 @@ from typing import Dict, List, Optional, Union
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.helpers import _build_filters
 from relevanceai.dataset.crud.groupby import Groupby, Agg
-from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 from relevanceai.package_utils.list_to_tuple import list_to_tuple
+from relevanceai.workflows.cluster_ops.centroids import Centroids
 
 
 class Read(BatchAPIClient):
