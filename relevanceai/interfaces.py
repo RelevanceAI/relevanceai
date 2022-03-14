@@ -31,7 +31,7 @@ from base64 import b64decode as decode
 from typing import Dict, List, Optional
 
 from doc_utils.doc_utils import DocUtils
-from relevanceai.workflows.clusterops.clusterops import ClusterOps
+from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
 from relevanceai.package_utils.errors import APIError
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.analytics_funcs import track, identify
@@ -217,10 +217,6 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.admin._ping()
-
-    ### Utility functions
-
-    build_and_plot_clusters = build_and_plot_clusters
 
     ### CRUD-related utility functions
 

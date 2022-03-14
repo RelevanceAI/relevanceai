@@ -8,8 +8,8 @@ import argparse
 import numpy as np
 
 from relevanceai import Client
-from relevanceai.workflows.clusterops.cluster import ClusterOps
-from relevanceai.workflows.clusterops.cluster import ClusterBase
+from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
 
 from faiss import Kmeans
 
