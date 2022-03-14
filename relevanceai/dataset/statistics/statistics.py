@@ -234,6 +234,39 @@ class Statistics(Read):
         else:
             raise ValueError('\'output_format\' must either be "dataframe" or "json"')
 
+    def facets(
+        self,
+        fields: Optional[list] = None,
+        date_interval: str = "monthly",
+        page_size: int = 5,
+        page: int = 1,
+        asc: bool = False,
+    ):
+        """
+        Get a summary of fields - such as most common, their min/max, etc.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            from relevanceai.datasets import mock_documents
+            documents = mock_documents(100)
+            ds = client.Dataset("mock_documents")
+            ds.upsert_documents(documents)
+            ds.facets(["sample_1_value"])
+        """
+        return self.datasets.facets(
+            dataset_id=self.dataset_id,
+            fields=[] if fields is None else fields,
+            date_interval=date_interval,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+        )
+
     def __call__(
         self,
         dataset_id: str,
