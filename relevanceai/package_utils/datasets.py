@@ -65,7 +65,7 @@ class ExampleDatasets:
         db_name, number_of_documents, select_fields: Optional[List[str]] = None
     ):
         from relevanceai.package_utils.logger import FileLogger
-        from .http_client import Client
+        from relevanceai.interfaces import Client
 
         select_fields = [] if select_fields is None else select_fields
         with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
