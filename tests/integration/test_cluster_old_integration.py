@@ -8,7 +8,7 @@ from relevanceai import Client
 from relevanceai.interfaces import Dataset
 
 from relevanceai.workflows.clusterops.clusterops import ClusterOps
-from relevanceai.workflows.clusterops.clusterbase import CentroidClusterBase
+from relevanceai.workflows.clusterops.cluster_base import CentroidClusterBase
 
 
 @pytest.mark.skip(reason="No longer relevant")

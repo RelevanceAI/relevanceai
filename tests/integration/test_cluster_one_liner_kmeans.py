@@ -10,7 +10,7 @@ from relevanceai.interfaces import Dataset
 from typing import List
 
 from relevanceai.workflows.clusterops.clusterops import ClusterOps
-from relevanceai.workflows.clusterops.clusterbase import CentroidClusterBase
+from relevanceai.workflows.clusterops.cluster_base import CentroidClusterBase
 
 
 @pytest.mark.parametrize(

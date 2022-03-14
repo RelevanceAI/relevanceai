@@ -6,7 +6,7 @@ import warnings
 from typing import Union, List, Optional
 
 from relevanceai.workflows.clusterops.clusterops import ClusterOps
-from relevanceai.workflows.clusterops.clusterbase import ClusterBase
+from relevanceai.workflows.clusterops.cluster_base import ClusterBase
 from relevanceai.interfaces import Dataset
 
 

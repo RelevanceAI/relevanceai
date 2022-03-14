@@ -449,7 +449,6 @@ class CentroidClusterBase(ClusterBase, CentroidBase, ABC):
     specify how to get your centers in the
     `get_centers` base. This allows you to store your centers.
     """
-
     ...
 
 

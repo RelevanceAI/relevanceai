@@ -7,8 +7,7 @@ from relevanceai.workflows.dim_reduction_ops.dim_reduction import (
     DimReduction,
     DimReductionBase,
 )
-from relevanceai.workflows.clusterops.clusterbase import ClusterBase
-from relevanceai.workflows.clusterops.cluster import Cluster
+from relevanceai.workflows.clusterops.cluster_base import ClusterBase
 from relevanceai.vis.local_projector.dash_components.app import create_dash_graph
 from relevanceai.workflows.clusterops.constants import *
 from relevanceai.package_utils.base import _Base
