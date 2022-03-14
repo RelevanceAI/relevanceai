@@ -3,7 +3,6 @@ from doc_utils import DocUtils
 from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.package_utils.errors import MissingFieldError
-from relevanceai.dataset.crud.helpers import make_id
 
 
 class Utils(APIClient, _Base, DocUtils):
@@ -57,7 +56,7 @@ class Utils(APIClient, _Base, DocUtils):
         except KeyError:
             if create_id:
                 self.set_field_across_documents(
-                    "_id", [make_id(document) for document in documents], documents
+                    "_id", [_make_id(document) for document in documents], documents
                 )
             else:
                 raise MissingFieldError(
@@ -85,3 +84,8 @@ def _process_insert_results(results):
     if len(results["failed_document_ids"]) == 0:
         print("✅ All documents inserted/edited successfully.")
     print("❗Few errors with inserting/editing documents. Please check logs.")
+
+
+def _make_id(document):
+    _id = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(document)))
+    return _id

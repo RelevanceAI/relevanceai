@@ -25,7 +25,7 @@ from relevanceai.package_utils.errors import MissingFieldError
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.progress_bar import progress_bar
 from relevanceai.package_utils.utils import Utils
-from relevanceai.dataset.crud.helpers import make_id
+from relevanceai.package_utils.utils import _make_id
 
 
 BYTE_TO_MB = 1024 * 1024
@@ -233,7 +233,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if "_id" not in chunk.columns and auto_generate_id:
             index = chunk.index
             uuids = [
-                make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
+                _make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
             ]
             chunk.insert(0, "_id", uuids, False)
             self.logger.warning(

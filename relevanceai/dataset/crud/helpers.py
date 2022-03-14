@@ -51,8 +51,3 @@ def _build_filters(value: Union[List, str], filter_type: str, index: str):
             filters.append(filter)
 
     return filters
-
-
-def make_id(document):
-    _id = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(document)))
-    return _id

@@ -41,7 +41,7 @@ import warnings
 from tqdm.auto import tqdm
 from typing import List
 
-from relevanceai.dataset.crud.helpers import make_id
+from relevanceai.package_utils.utils import _make_id
 
 try:
     from relevanceai import Client
@@ -114,7 +114,7 @@ class MongoImporter(Client):
                 document["_id"] = document["_id"]["$oid"]
             except Exception as e:
                 self.logger.info("Could not use the original id: " + str(e))
-                document["_id"] = make_id(document)
+                document["_id"] = _make_id(document)
         return documents
 
     @staticmethod

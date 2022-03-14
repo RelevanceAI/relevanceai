@@ -13,7 +13,7 @@ from tqdm.auto import tqdm
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_read import Read
-from relevanceai.dataset.crud.helpers import make_id
+from relevanceai.package_utils.utils import _make_id
 
 
 class Write(Read):
@@ -180,7 +180,7 @@ class Write(Read):
             df["_id"] = df[col_for_id]
 
         else:
-            uuids = [make_id(df.iloc[index]) for index in range(len(df))]
+            uuids = [_make_id(df.iloc[index]) for index in range(len(df))]
             df["_id"] = uuids
 
         def _is_valid(v):
@@ -284,7 +284,7 @@ class Write(Read):
         medias = get_paths(path, [])
         documents = list(
             map(
-                lambda media: {"_id": make_id(media), "path": media, field: media},
+                lambda media: {"_id": _make_id(media), "path": media, field: media},
                 medias,
             )
         )
