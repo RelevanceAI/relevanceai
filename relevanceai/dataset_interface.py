@@ -12,6 +12,7 @@ from relevanceai.dataset_ops.dataset_operations import Operations
 from relevanceai.dataset_crud.dataset_series import Series
 from relevanceai.search.search import Search
 
+# TODO: Add game dataset
 _GLOBAL_DATASETS = ["_mock_dataset_"]
 
 
