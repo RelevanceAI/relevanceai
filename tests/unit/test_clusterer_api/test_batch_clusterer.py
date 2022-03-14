@@ -5,7 +5,6 @@
 
 import pandas as pd
 import pytest
-from relevanceai.ops.clusterops.cluster import kmeans_clusterer
 from relevanceai.interfaces import Dataset, Client, ClusterOps
 from relevanceai.dataset_crud.cluster_groupby import ClusterGroupby
 
@@ -14,10 +13,10 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture(scope="function")
-def test_batch_clusterer(test_df: Dataset):
+def test_batch_clusterer(test_client: Client, vector_dataset_id, test_df: Dataset):
     from sklearn.cluster import MiniBatchKMeans
 
-    clusterer = test_client.ClusterOps(
+    clusterer: ClusterOps = test_client.ClusterOps(
         alias=CLUSTER_ALIAS,
         model=MiniBatchKMeans(),
         dataset_id=vector_dataset_id,
