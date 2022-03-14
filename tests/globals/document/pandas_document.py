@@ -6,7 +6,6 @@ from relevanceai.package_utils.id import _make_id
 
 def pandas_document():
     document = {
-        "_id": _id,
         "sample_1_pandas": pd.DataFrame(
             np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
         ),
