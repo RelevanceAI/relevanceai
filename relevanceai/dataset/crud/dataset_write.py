@@ -13,7 +13,7 @@ from tqdm.auto import tqdm
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_read import Read
-from relevanceai.package_utils.id import _make_id
+from relevanceai.package_utils.make_id import _make_id
 
 
 class Write(Read):

@@ -4,7 +4,7 @@ from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.package_utils.errors import MissingFieldError
 
-from relevanceai.package_utils.id import _make_id
+from relevanceai.package_utils.make_id import _make_id
 
 
 class Utils(APIClient, _Base, DocUtils):

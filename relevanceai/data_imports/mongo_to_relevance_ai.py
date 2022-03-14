@@ -41,7 +41,7 @@ import warnings
 from tqdm.auto import tqdm
 from typing import List
 
-from relevanceai.package_utils.id import _make_id
+from relevanceai.package_utils.make_id import _make_id
 
 try:
     from relevanceai import Client
