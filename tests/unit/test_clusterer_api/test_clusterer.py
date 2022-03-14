@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 import time
 from relevanceai.interfaces import Dataset, Client, ClusterOps
-from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby
 from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
+from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
