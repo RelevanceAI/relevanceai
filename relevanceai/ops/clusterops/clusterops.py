@@ -2219,7 +2219,7 @@ class ClusterOps(BatchAPIClient):
             raise ValueError(
                 "We currently do not support more than 1 vector field when reporting."
             )
-        from relevanceai.cluster_report import ClusterReport
+        from relevanceai.reports.cluster_report import ClusterReport
 
         # X is all the vectors
         cluster_field_name = self._get_cluster_field_name()
