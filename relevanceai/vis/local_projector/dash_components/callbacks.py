@@ -1,6 +1,6 @@
 from dash.dependencies import Input, Output
 
-from relevanceai.vector_tools.nearest_neighbours import NearestNeighbours
+from relevanceai.vector_tools.local_nearest_neighbours import NearestNeighbours
 from doc_utils.doc_utils import DocUtils
 
 doc_utils = DocUtils()
