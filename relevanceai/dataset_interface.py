@@ -10,11 +10,14 @@ from relevanceai.export.dataset_export import Export
 from relevanceai.statistics.statistics import Statistics
 from relevanceai.dataset_ops.dataset_operations import Operations
 from relevanceai.dataset_crud.dataset_series import Series
+from relevanceai.search.search import Search
 
 _GLOBAL_DATASETS = ["_mock_dataset_"]
 
+
 def str2bool(v: str):
     return v.lower() in ("yes", "true", "t", "1")
+
 
 class Dataset(Export, Statistics, Operations):
     @track
