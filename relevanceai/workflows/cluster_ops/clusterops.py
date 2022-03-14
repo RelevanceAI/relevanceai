@@ -34,9 +34,7 @@ from relevanceai.workflows.cluster_ops.cluster_base import (
     HDBSCANClusterBase,
     SklearnCentroidBase,
 )
-from relevanceai.workflows.cluster_ops.cluster_groupby import (
-    ClusterGroupby, ClusterAgg
-)
+from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby, ClusterAgg
 
 from relevanceai.package_utils.analytics_funcs import track
 
