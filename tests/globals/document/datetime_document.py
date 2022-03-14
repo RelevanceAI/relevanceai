@@ -5,7 +5,7 @@ from datetime import datetime
 from relevanceai.dataset.crud.helpers import make_id
 
 
-def datetime_document(_id: str) -> Dict:
+def datetime_document() -> Dict:
     document = {
         "sample_1_datetime": datetime.now(),
         "sample_2_datetime": datetime.now(),
