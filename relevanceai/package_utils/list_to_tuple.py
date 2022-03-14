@@ -5,7 +5,7 @@ def list_to_tuple(function):
     @wraps(function)
     def wrapper(*args, **kw):
         args = [tuple(x) if type(x) == list else x for x in args]
-        result = function(*args)
+        result = function(*args, **kw)
         result = tuple(result) if type(result) == list else result
         return result
 
