@@ -20,7 +20,7 @@ def str2bool(v: str):
     return v.lower() in ("yes", "true", "t", "1")
 
 
-class Dataset(Export, Statistics, Operations):
+class Dataset(Export, Statistics, Operations, Search):
     @track
     def __init__(
         self,
