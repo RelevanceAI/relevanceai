@@ -11,7 +11,7 @@ from relevanceai.package_utils.version_decorators import introduced_in_version
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 
 
-class Export(Read):
+class CSVExport(Read):
     @track
     def to_csv(self, filename: str, **kwargs):
         """

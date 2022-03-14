@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.dataset.export.dataset_export import Export
+from relevanceai.dataset.export.interface import Export
 from relevanceai.dataset.statistics.statistics import Statistics
 from relevanceai.dataset.auto.dataset_operations import Operations
 from relevanceai.dataset.crud.dataset_series import Series

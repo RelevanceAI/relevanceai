@@ -11,7 +11,7 @@ from relevanceai.package_utils.version_decorators import introduced_in_version
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 
 
-class Export(Read):
+class PandasExport(Read):
     @lru_cache(maxsize=MAX_CACHESIZE)
     @introduced_in_version("1.1.5")
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
