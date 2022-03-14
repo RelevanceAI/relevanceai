@@ -234,6 +234,65 @@ class Statistics(Read):
         else:
             raise ValueError('\'output_format\' must either be "dataframe" or "json"')
 
+    @track
+    def aggregate(
+        self,
+        groupby: Optional[list] = None,
+        metrics: Optional[list] = None,
+        filters: Optional[list] = None,
+        # sort: list = [],
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        alias: str = "default",
+    ):
+        return self.services.aggregate.aggregate(
+            dataset_id=self.dataset_id,
+            groupby=[] if groupby is None else groupby,
+            metrics=[] if metrics is None else metrics,
+            filters=[] if filters is None else filters,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+            alias=alias,
+            # sort=sort
+        )
+
+    def facets(
+        self,
+        fields: Optional[list] = None,
+        date_interval: str = "monthly",
+        page_size: int = 5,
+        page: int = 1,
+        asc: bool = False,
+    ):
+        """
+        Get a summary of fields - such as most common, their min/max, etc.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            from relevanceai.datasets import mock_documents
+            documents = mock_documents(100)
+            ds = client.Dataset("mock_documents")
+            ds.upsert_documents(documents)
+            ds.facets(["sample_1_value"])
+        """
+        return self.datasets.facets(
+            dataset_id=self.dataset_id,
+            fields=[] if fields is None else fields,
+            date_interval=date_interval,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+        )
+
     def __call__(
         self,
         dataset_id: str,
