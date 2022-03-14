@@ -5,14 +5,17 @@ import re
 import math
 import warnings
 import pandas as pd
-
+from functools import lru_cache
 from typing import Dict, List, Optional, Union
+
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.helpers import _build_filters
 from relevanceai.dataset.crud.groupby import Groupby, Agg
 from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.package_utils.constants import MAX_CACHESIZE
+from relevanceai.package_utils.list_to_tuple import list_to_tuple
 
 
 class Read(BatchAPIClient):
@@ -329,6 +332,8 @@ class Read(BatchAPIClient):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
+    @list_to_tuple
+    @lru_cache(maxsize=MAX_CACHESIZE)
     @track
     def get_all_documents(
         self,

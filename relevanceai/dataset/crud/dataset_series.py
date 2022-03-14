@@ -210,6 +210,7 @@ class Series(BatchAPIClient):
 
     head = sample
 
+    @lru_cache(maxsize=MAX_CACHESIZE)
     @track
     def all(
         self,
