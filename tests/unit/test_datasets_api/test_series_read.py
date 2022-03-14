@@ -1,4 +1,4 @@
-from relevanceai.http_client import Client, Dataset
+from relevanceai.interfaces import Client, Dataset
 
 
 def test_series_sample(test_df: Dataset):

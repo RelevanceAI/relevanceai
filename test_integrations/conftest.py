@@ -4,7 +4,7 @@ import string
 import pytest
 
 from relevanceai import Client
-from relevanceai.datasets import mock_documents
+from relevanceai.package_utils.datasets import mock_documents
 
 REGION = os.getenv("TEST_REGION")
 

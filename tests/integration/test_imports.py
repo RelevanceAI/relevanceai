@@ -12,19 +12,19 @@ def test_client_smoke():
 
 
 def test_datasets_smoke():
-    from relevanceai.datasets import get_games_dataset
-    from relevanceai.datasets import get_ecommerce_1_dataset
-    from relevanceai.datasets import get_online_retail_dataset
-    from relevanceai.datasets import get_news_dataset
-    from relevanceai.datasets import get_ecommerce_3_dataset
+    from relevanceai.package_utils.datasets import get_games_dataset
+    from relevanceai.package_utils.datasets import get_ecommerce_1_dataset
+    from relevanceai.package_utils.datasets import get_online_retail_dataset
+    from relevanceai.package_utils.datasets import get_news_dataset
+    from relevanceai.package_utils.datasets import get_ecommerce_3_dataset
 
     assert True
 
 
 def test_projector_smoke():
-    import relevanceai.vector_tools.constants
-    from relevanceai.vector_tools.dim_reduction import DimReduction
-    from relevanceai.vector_tools.cluster import Cluster
-    from relevanceai.visualise.projector import Projector
+    import relevanceai.ops.clusterops.constants
+    from relevanceai.ops.dim_reduction_ops.dim_reduction import DimReduction
+    from relevanceai.ops.clusterops.cluster import Cluster
+    from relevanceai.vis.local_projector.projector import Projector
 
     assert True

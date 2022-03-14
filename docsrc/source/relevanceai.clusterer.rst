@@ -1,29 +1,29 @@
-relevanceai.clusterer package
+relevanceai.ops.clusterops.cluster package
 =============================
 
 Submodules
 ----------
 
-relevanceai.clusterer.cluster\_base module
+relevanceai.ops.clusterops.cluster\_base module
 ------------------------------------------
 
-.. automodule:: relevanceai.clusterer.cluster_base
+.. automodule:: relevanceai.ops.clusterops.cluster_base
    :members:
    :undoc-members:
    :show-inheritance:
 
-relevanceai.clusterer.clusterer module
+relevanceai.ops.clusterops.clusterer module
 --------------------------------------
 
-.. automodule:: relevanceai.clusterer.clusterer
+.. automodule:: relevanceai.ops.clusterops.clusterer
    :members:
    :undoc-members:
    :show-inheritance:
 
-relevanceai.clusterer.kmeans\_clusterer module
+relevanceai.ops.clusterops.kmeans\_clusterer module
 ----------------------------------------------
 
-.. automodule:: relevanceai.clusterer.kmeans_clusterer
+.. automodule:: relevanceai.ops.clusterops.kmeans_clusterer
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ relevanceai.clusterer.kmeans\_clusterer module
 Module contents
 ---------------
 
-.. automodule:: relevanceai.clusterer
+.. automodule:: relevanceai.ops.clusterops
    :members:
    :undoc-members:
    :show-inheritance:

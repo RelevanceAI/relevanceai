@@ -4,10 +4,9 @@
 
 import pandas as pd
 import pytest
-from relevanceai.clusterer import kmeans_clusterer
-from relevanceai.http_client import Dataset, Client, ClusterOps
-from relevanceai.dataset_api.cluster_groupby import ClusterGroupby
-from relevanceai.vector_tools.cluster import ClusterBase
+from relevanceai.interfaces import Dataset, Client, ClusterOps
+from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby
+from relevanceai.ops.clusterops.cluster import ClusterBase
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -27,7 +26,7 @@ def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
 
 def get_model():
     # get a kmeans model
-    from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+    from relevanceai.ops.clusterops.kmeans_clusterer import KMeansModel
 
     return KMeansModel(verbose=False)
 

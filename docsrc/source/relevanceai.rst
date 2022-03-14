@@ -8,9 +8,9 @@ Subpackages
    :maxdepth: 4
 
    relevanceai.api
-   relevanceai.clusterer
+   relevanceai.ops.clusterops
    relevanceai.data_tools
-   relevanceai.dataset_api
+   relevanceai.dataset_crud
    relevanceai.vector_tools
    relevanceai.visualise
 
@@ -25,18 +25,18 @@ relevanceai.base module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.concurrency module
+relevanceai.package_utils.concurrency module
 ------------------------------
 
-.. automodule:: relevanceai.concurrency
+.. automodule:: relevanceai.package_utils.concurrency
    :members:
    :undoc-members:
    :show-inheritance:
 
-relevanceai.config module
+relevanceai.package_utils.config module
 -------------------------
 
-.. automodule:: relevanceai.config
+.. automodule:: relevanceai.package_utils.config
    :members:
    :undoc-members:
    :show-inheritance:
@@ -57,10 +57,10 @@ relevanceai.datasets module
    :undoc-members:
    :show-inheritance:
 
-relevanceai.errors module
+relevanceai.package_utils.errors module
 -------------------------
 
-.. automodule:: relevanceai.errors
+.. automodule:: relevanceai.package_utils.errors
    :members:
    :undoc-members:
    :show-inheritance:
@@ -76,15 +76,15 @@ relevanceai.http\_client module
 relevanceai.json\_encoder module
 --------------------------------
 
-.. automodule:: relevanceai.json_encoder
+.. automodule:: relevanceai.package_utils.json_encoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-relevanceai.logger module
+relevanceai.package_utils.logger module
 -------------------------
 
-.. automodule:: relevanceai.logger
+.. automodule:: relevanceai.package_utils.logger
    :members:
    :undoc-members:
    :show-inheritance:
@@ -100,23 +100,23 @@ relevanceai.print\_formats module
 relevanceai.progress\_bar module
 --------------------------------
 
-.. automodule:: relevanceai.progress_bar
+.. automodule:: relevanceai.package_utils.progress_bar
    :members:
    :undoc-members:
    :show-inheritance:
 
-relevanceai.transport module
+relevanceai.package_utils.transport module
 ----------------------------
 
-.. automodule:: relevanceai.transport
+.. automodule:: relevanceai.package_utils.transport
    :members:
    :undoc-members:
    :show-inheritance:
 
-relevanceai.utils module
+relevanceai.package_utils.utils module
 ------------------------
 
-.. automodule:: relevanceai.utils
+.. automodule:: relevanceai.package_utils.utils
    :members:
    :undoc-members:
    :show-inheritance:

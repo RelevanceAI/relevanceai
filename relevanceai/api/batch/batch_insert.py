@@ -20,16 +20,16 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from doc_utils import DocUtils
 
-from relevanceai.analytics_funcs import track
+from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
-from relevanceai.concurrency import multiprocess, multithread
-from relevanceai.errors import MissingFieldError
-from relevanceai.logger import FileLogger
-from relevanceai.progress_bar import progress_bar
-from relevanceai.utils import Utils
+from relevanceai.package_utils.concurrency import multiprocess, multithread
+from relevanceai.package_utils.errors import MissingFieldError
+from relevanceai.package_utils.logger import FileLogger
+from relevanceai.package_utils.progress_bar import progress_bar
+from relevanceai.package_utils.utils import Utils
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -698,7 +698,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     self.futures = []
                     self.tasks = tasks
 
-                    from relevanceai.progress_bar import progress_bar
+                    from relevanceai.package_utils.progress_bar import progress_bar
 
                     self.show_progress_bar = show_progress_bar
                     self.progress_tracker = progress_bar(
