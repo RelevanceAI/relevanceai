@@ -53,5 +53,5 @@ If you have both Batches and Centroids, you will want to inherit both.
     clusterer = client.ClusterOps(model=model, alias=alias)
     clusterer.fit_predict_update(dataset=df, vector_fields=vector_fields)
 
-.. automodule:: relevanceai.ops.clusterops.cluster_base
+.. automodule:: relevanceai.ops.clusterops.clusterbase
    :members:

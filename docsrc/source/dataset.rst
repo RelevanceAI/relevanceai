@@ -26,13 +26,13 @@ It is instantiated like this:
 .. autoclass:: relevanceai.dataset_crud.dataset_stats.Stats
     :members:
 
-.. autoclass:: relevanceai.dataset_crud.dataset_export.Export
+.. autoclass:: relevanceai.export.dataset_export.Export
     :members:
 
 .. autoclass:: relevanceai.dataset_crud.dataset_series.Series
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_crud.dataset_operations.Operations
+.. autoclass:: relevanceai.dataset_ops.dataset_operations.Operations
     :members:
     :exclude-members: label_with_model_from_dataset, label_vector, label_document
