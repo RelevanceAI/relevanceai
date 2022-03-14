@@ -1,3 +1,4 @@
+import pandas as pd
 from base64 import encode
 from typing import Dict, List, Optional, Union
 
@@ -72,6 +73,16 @@ class Dataset(Export, Statistics, Operations, Search):
                     self.upsert_documents(mock_documents(100))
 
                 add_mock_dataset()
+
+    def __getattr__(self, attr):
+        if hasattr(pd.DataFrame, attr):
+            df = self.to_pandas_dataframe(show_progress_bar=True)
+            try:
+                return getattr(df, attr)
+            except SyntaxError:
+                raise AttributeError(f"'{attr}' is an invalid attribute")
+        raise AttributeError(f"'{attr}' is an invalid attribute")
+
 
     @track
     def __getitem__(self, field: Union[List[str], str]):
