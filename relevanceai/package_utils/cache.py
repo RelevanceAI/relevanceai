@@ -170,6 +170,23 @@ def _lru_cache_wrapper(user_function, maxsize, typed, _CacheInfo):
                     full = cache_len() >= maxsize
             return result
 
+    def cache_info():
+        """Report cache statistics"""
+        with lock:
+            return _CacheInfo(hits, misses, maxsize, cache_len())
+
+    def cache_clear():
+        """Clear the cache and cache statistics"""
+        nonlocal hits, misses, full
+        with lock:
+            cache.clear()
+            root[:] = [root, root, None, None]
+            hits = misses = 0
+            full = False
+
+    wrapper.cache_info = cache_info
+    wrapper.cache_clear = cache_clear
+    return wrapper
 
 def lru_cache(maxsize=128, typed=False):
     """Least-recently-used cache decorator.
