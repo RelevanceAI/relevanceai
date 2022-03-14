@@ -1,10 +1,10 @@
-import uuid
-
 from typing import List, Dict
 from doc_utils import DocUtils
 from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.package_utils.errors import MissingFieldError
+
+from relevanceai.package_utils.id import _make_id
 
 
 class Utils(APIClient, _Base, DocUtils):
@@ -86,8 +86,3 @@ def _process_insert_results(results):
     if len(results["failed_document_ids"]) == 0:
         print("✅ All documents inserted/edited successfully.")
     print("❗Few errors with inserting/editing documents. Please check logs.")
-
-
-def _make_id(document):
-    _id = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(document)))
-    return _id

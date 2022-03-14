@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 from dataclasses import dataclass
 
-from relevanceai.package_utils.utils import _make_id
+from relevanceai.package_utils.id import _make_id
 
 
 @dataclass

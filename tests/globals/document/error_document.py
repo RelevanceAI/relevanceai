@@ -1,6 +1,6 @@
 import numpy as np
 
-from relevanceai.package_utils.utils import _make_id
+from relevanceai.package_utils.id import _make_id
 
 
 def error_document():

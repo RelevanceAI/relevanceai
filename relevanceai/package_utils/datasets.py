@@ -13,7 +13,7 @@ import sys
 import pandas as pd
 import requests
 
-from relevanceai.package_utils.utils import _make_id
+from relevanceai.package_utils.id import _make_id
 
 THIS_MODULE = sys.modules[__name__]
 DATASETS = [

@@ -25,7 +25,7 @@ from relevanceai.package_utils.errors import MissingFieldError
 from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.progress_bar import progress_bar
 from relevanceai.package_utils.utils import Utils
-from relevanceai.package_utils.utils import _make_id
+from relevanceai.package_utils.id import _make_id
 
 
 BYTE_TO_MB = 1024 * 1024

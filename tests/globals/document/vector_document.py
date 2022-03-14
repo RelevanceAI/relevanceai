@@ -1,6 +1,6 @@
 from typing import Dict
 
-from relevanceai.package_utils.utils import _make_id
+from relevanceai.package_utils.id import _make_id
 
 from tests.globals.constants import (
     generate_random_label,
