@@ -14,5 +14,5 @@ from relevanceai.dataset.export.dict import DictExport
 from relevanceai.dataset.export.pandas import PandasExport
 
 
-class Export(CSVExport):
+class Export(CSVExport, DictExport, PandasExport):
     """Exports"""
