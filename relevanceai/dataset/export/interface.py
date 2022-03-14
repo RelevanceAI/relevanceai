@@ -3,7 +3,7 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from functools import lru_cache
+from relevanceai.package_utils.cache import lru_cache
 
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_read import Read

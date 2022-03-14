@@ -3,7 +3,7 @@
 
 from typing import List, Optional
 import math
-from functools import lru_cache
+from relevanceai.package_utils.cache import lru_cache
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.package_utils.progress_bar import progress_bar
