@@ -495,44 +495,6 @@ def get_realestate_dataset(
     return documents
 
 
-def get_mission_statements_dataset(
-    number_of_documents: Union[None, int] = 1433, select_fields: Optional[List] = []
-) -> List:
-    """Function to download a sample company mission statement dataset.
-    Total Len: 1433
-
-    Parameters
-    ----------
-    number_of_documents: int
-        Number of documents to download
-    select_fields : list
-        Fields to include in the dataset, empty array/list means all fields.
-
-    Example
-    -------
-    .. code-block::
-
-        {
-            '_id': 0,
-            'company': 'Starbucks',
-            'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'
-        }
-    """
-    select_fields = [] if select_fields is None else select_fields
-    if number_of_documents is None:
-        number_of_documents = 514330
-    return ExampleDatasets._get_online_dataset(
-        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv",
-        number_of_documents,
-        select_fields,
-    )
-
-
-def get_machine_learning_research_dataset():
-    """Here we get our Machine Learning research dataset."""
-    raise NotImplementedError
-
-
 def mock_documents(number_of_documents: int = 100, vector_length=5):
     """
     Utility function to mock documents. Aimed at helping users reproduce errors
