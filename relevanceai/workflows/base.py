@@ -28,7 +28,7 @@ class Workflow(DocUtils):
         output_field: str,
         filters: Optional[list] = None,
         log_to_file: bool = True,
-        chunksize: int=20
+        chunksize: int = 20,
     ):
         """
         Fit on dataset
@@ -65,7 +65,7 @@ class Workflow(DocUtils):
             select_fields=[input_field],
             filters=filters,
             log_to_file=log_to_file,
-            retrieve_chunksize=chunksize
+            retrieve_chunksize=chunksize,
         )
         self._store_workflow_to_metadata(input_field, output_field)
         return results

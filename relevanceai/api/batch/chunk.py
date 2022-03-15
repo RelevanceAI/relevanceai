@@ -31,4 +31,3 @@ class Chunker:
         else:
             for i in progress_bar(range(0, math.ceil(len(documents) / chunksize))):
                 yield documents[i * chunksize : ((i + 1) * chunksize)]
-    

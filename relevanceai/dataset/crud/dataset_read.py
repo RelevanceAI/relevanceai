@@ -660,11 +660,16 @@ class Read(BatchAPIClient):
         original_metadata.update(metadata)
         return self.insert_metadata(metadata)
 
-    def chunk_dataset(self, chunksize: int=100, filters: list=None):
-        docs = self.get_documents(number_of_documents=chunksize,
-            include_cursor=True, filters=filters)
-        while len(docs['documents']) > 0:
-            yield docs['documents']
-            docs = self.get_documents(number_of_documents=chunksize,
-                include_cursor=True, cursor=docs['cursor'], filters=filters)
+    def chunk_dataset(self, chunksize: int = 100, filters: list = None):
+        docs = self.get_documents(
+            number_of_documents=chunksize, include_cursor=True, filters=filters
+        )
+        while len(docs["documents"]) > 0:
+            yield docs["documents"]
+            docs = self.get_documents(
+                number_of_documents=chunksize,
+                include_cursor=True,
+                cursor=docs["cursor"],
+                filters=filters,
+            )
         return
