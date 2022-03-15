@@ -11,19 +11,25 @@ from relevanceai.dataset.statistics.statistics import Statistics
 class Plot(Statistics):
     def plot(
         self,
-        x: Union[None, str] = None,
-        y: Union[None, str] = None,
-        z: Union[None, str] = None,
-        dr_alias: Union[Any, str] = None,
-        color: Optional[Union[None, str]] = None,
+        x: Union[str, Any] = None,
+        y: Union[str, Any] = None,
+        z: Union[str, Any] = None,
+        vector_field: Optional[Any] = None,
+        alias: Optional[Any] = None,
+        color: Optional[Any] = None,
         number_of_documents: Union[None, int] = None,
         show_progress_bar: bool = True,
     ):
+        if vector_field and alias:
+            dr_alias = f"__dr__.{alias}.{vector_field}"
+        else:
+            dr_alias = ""
+
         euc_dims = [x, y, z]
-        if [field is None for field in euc_dims].count(True) < 1 and dr_alias is None:
+        if [field is None for field in euc_dims].count(True) < 1 and not dr_alias:
             raise ValueError
 
-        if dr_alias is not None:
+        if dr_alias:
             if not dr_alias in self.schema:
                 raise ValueError("Must reduce vectors before plotting")
 
@@ -46,7 +52,8 @@ class Plot(Statistics):
                 include_vector=True,
             )
 
-        if dr_alias is not None:
+        n_dims: Union[int, str]
+        if dr_alias:
             dr_algo, n_dims = dr_alias.split(".")[1].split("-")
             n_dims = int(n_dims)
 
