@@ -189,7 +189,7 @@ def get_ecommerce_dataset_encoded(
     if number_of_documents is None:
         number_of_documents = 739
     return ExampleDatasets._get_dummy_dataset(
-        "ecommerce-example-encoded", number_of_documents, select_fields
+        "ecommerce_1", number_of_documents, select_fields
     )
 
 
@@ -237,7 +237,7 @@ def get_ecommerce_dataset_clean(
     if number_of_documents is None:
         number_of_documents = 1000
     documents = ExampleDatasets._get_dummy_dataset(
-        "quickstart_data_sample", number_of_documents, select_fields
+        "ecommerce_2", number_of_documents, select_fields
     )
     for d in documents:
         if "image_first" in d:
