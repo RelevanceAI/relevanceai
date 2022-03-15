@@ -12,8 +12,19 @@ It is instantiated like this:
 
     from relevanceai import Client
     client = Client()
-    df = client.Dataset("sample_dataset_id")
-    df.head()
+    ds = client.Dataset("sample_dataset_id")
+    ds.head()
+
+You can also easily access metadata using the following: 
+
+.. code-block::
+
+    ds = client.Dataset("_mock_dataset_")
+    ds.metadata['value'] = 3
+    ds.metadata['strong_values'] = 10
+    import time
+    time.sleep(1)
+    ds.metadata
 
 .. autoclass:: relevanceai.dataset_crud.dataset_write.Write
     :members:

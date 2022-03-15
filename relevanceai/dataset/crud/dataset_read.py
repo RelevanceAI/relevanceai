@@ -654,8 +654,8 @@ class Read(BatchAPIClient):
         else:
             return results
 
-    def upsert_metadata(self, metadata: dict, verbose=False):
+    def upsert_metadata(self, metadata: dict):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
-        return self.insert_metadata(metadata, verbose=verbose)
+        return self.insert_metadata(metadata)
