@@ -303,6 +303,15 @@ class Cluster(Write):
             )
         return clusterer
 
+    def _store_subcluster_metadata(
+        self, vector_fields: list, alias: str, parent_alias: str
+    ):
+        # Store metadata around subclustering
+        field = str("-".join(vector_fields)) + "." + alias
+        if "subcluster" not in self.metadata:
+            self.metadata["subcluster"] = {}
+        self.metadata["subcluster"][field] = {"parent_alias": parent_alias}
+
     @track
     def _auto_cluster_string(
         self,
@@ -426,6 +435,10 @@ class Cluster(Write):
                     vector_fields=vector_fields,
                     filters=filters,
                 )
+
+                self._store_subcluster_metadata(
+                    vector_fields=vector_fields, alias=alias, parent_alias=parent_alias
+                )
             else:
                 clusterer.fit_predict_update(
                     dataset=self,
@@ -460,6 +473,10 @@ class Cluster(Write):
                     dataset=self,
                     vector_fields=vector_fields,
                     filters=filters,
+                )
+
+                self._store_subcluster_metadata(
+                    vector_fields=vector_fields, alias=alias, parent_alias=parent_alias
                 )
 
             else:

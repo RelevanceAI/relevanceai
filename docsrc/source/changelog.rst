@@ -9,7 +9,8 @@ v2.0.0
 
 - Major folder refactor -> official renaming of ops to workflows in certain areas
 - `auto_cluster` now supports models
-- Separation into `interfaces`
+- Backend separation into `interfaces`
+- Change metadata experience into more intuitive object
 
 v1.4.3
 -----------
