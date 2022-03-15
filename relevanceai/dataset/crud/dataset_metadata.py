@@ -7,17 +7,7 @@ import warnings
 import pandas as pd
 from relevanceai.package_utils.cache import lru_cache
 from typing import Dict, List, Optional, Union
-
-from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset.crud.helpers import _build_filters
-from relevanceai.dataset.crud.groupby import Groupby, Agg
-from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.package_utils.constants import MAX_CACHESIZE
-from relevanceai.package_utils.list_to_tuple import list_to_tuple
-from relevanceai.workflows.cluster_ops.centroids import Centroids
-from doc_utils import DocUtils
-from relevanceai.package_utils.analytics_funcs import fire_and_forget
 
 
 class _Metadata(BatchAPIClient):
@@ -47,11 +37,8 @@ class _Metadata(BatchAPIClient):
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
 
-        @fire_and_forget
-        async def insert():
-            return self.insert_metadata(metadata, verbose=verbose)
-
-        insert()
+        # TODO: how do you fire and forget this
+        return self.insert_metadata(metadata)
 
     def __getitem__(self, key):
         return self.get_field(key, self._metadata)
