@@ -62,7 +62,7 @@ class BatchRetrieveClient(APIClient, Chunker):
             dataset_id=dataset_id,
             select_fields=select_fields,
             include_vector=include_vector,
-            page_size=batch_size,
+            page_size=min(number_of_documents, batch_size),
             sort=sort,
             is_random=False,
             random_state=0,
