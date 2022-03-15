@@ -7,10 +7,16 @@ Python library.
 v2.0.0
 -----------
 
-- Major folder refactor -> official renaming of ops to workflows in certain areas
+Features/Updates:
+- Provide a way to turn off logger 
 - `auto_cluster` now supports models
-- Backend separation into `interfaces`
 - Change metadata experience into more intuitive object
+- Add base workflow
+- Add sentiment analysis workflow
+
+Backend:
+- Major folder refactor -> official renaming of ops to workflows in certain areas
+- Backend separation into `interfaces`
 
 v1.4.3
 -----------

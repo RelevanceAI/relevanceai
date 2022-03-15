@@ -376,6 +376,7 @@ class Write(Read):
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
         axis: int = 0,
+        log_to_file: bool = True,
         **apply_args,
     ):
         """
@@ -439,7 +440,7 @@ class Write(Read):
                 new_documents.append(new_d)
             return documents
 
-        return self.pull_update_push(
+        results = self.pull_update_push(
             self.dataset_id,
             bulk_fn,
             retrieve_chunk_size=retrieve_chunksize,
@@ -448,7 +449,16 @@ class Write(Read):
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
             use_json_encoder=use_json_encoder,
+            log_to_file=log_to_file,
         )
+        if results is None:
+            print("️❗❗Errors detected when running apply.")
+            return
+        for k, v in results.items():
+            if k != []:
+                print("️❗❗Errors detected when running apply.")
+                return results
+        print("✅ Successfully ran!")
 
     @track
     def bulk_apply(
@@ -460,6 +470,7 @@ class Write(Read):
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
+        log_to_file: bool = True,
     ):
         """
         Apply a bulk function along an axis of the DataFrame.
@@ -510,6 +521,7 @@ class Write(Read):
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
             use_json_encoder=use_json_encoder,
+            log_to_file=log_to_file,
         )
 
     @track
