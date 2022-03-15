@@ -13,6 +13,8 @@ Features/Updates:
 - Change metadata experience into more intuitive object
 - Add base workflow
 - Add sentiment analysis workflow
+- Add chunking dataset 
+- Add smaller dataset export
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
