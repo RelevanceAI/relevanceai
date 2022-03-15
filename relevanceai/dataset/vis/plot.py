@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 
 import plotly.express as px
-from soupsieve import select
 
 from relevanceai.dataset.statistics.statistics import Statistics
 
