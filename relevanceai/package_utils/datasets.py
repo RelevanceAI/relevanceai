@@ -69,7 +69,7 @@ class ExampleDatasets:
 
         select_fields = [] if select_fields is None else select_fields
         with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
-            project = "dummy-collections"
+            project = "3a4b969f4d5fae6f850e"
             api_key = "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
             client = Client(project, api_key, region="us-east-1")
             documents = client._get_documents(
