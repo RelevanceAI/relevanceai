@@ -31,6 +31,9 @@ class _Metadata(BatchAPIClient):
     def __repr__(self):
         return str(self.to_dict())
 
+    def __contains__(self, m):
+        return m in self.to_dict().keys()
+
     def insert_metadata(self, metadata: dict, verbose: bool = False):
         """Insert metadata"""
         results = self.datasets.post_metadata(self.dataset_id, metadata)

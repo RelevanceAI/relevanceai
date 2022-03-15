@@ -306,8 +306,11 @@ class Cluster(Write):
     def _store_subcluster_metadata(
         self, vector_fields: list, alias: str, parent_alias: str
     ):
-        """Store metadata around subclustering"""
-        self.metadata[str(vector_fields)][alias] = parent_alias
+        # Store metadata around subclustering
+        field = str("-".join(vector_fields)) + "." + alias
+        if "subcluster" not in self.metadata:
+            self.metadata["subcluster"] = {}
+        self.metadata["subcluster"][field] = {"parent_alias": parent_alias}
 
     @track
     def _auto_cluster_string(
