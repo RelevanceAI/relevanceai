@@ -16,6 +16,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 from relevanceai.package_utils.list_to_tuple import list_to_tuple
 from relevanceai.workflows.cluster_ops.centroids import Centroids
+from relevanceai.dataset.crud.dataset_metadata import _Metadata
 
 
 class Read(BatchAPIClient):
@@ -639,7 +640,11 @@ class Read(BatchAPIClient):
     @property
     def metadata(self):
         """Get the metadata"""
-        return self.get_metadata()["results"]
+        _metadata = self.get_metadata()["results"]
+        self._metadata = _Metadata(
+            _metadata, self.project, self.api_key, self.firebase_uid, self.dataset_id
+        )
+        return self._metadata
 
     def insert_metadata(self, metadata: dict):
         """Insert metadata"""
@@ -649,8 +654,8 @@ class Read(BatchAPIClient):
         else:
             return results
 
-    def upsert_metadata(self, metadata: dict):
+    def upsert_metadata(self, metadata: dict, verbose=False):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
-        return self.insert_metadata(metadata)
+        return self.insert_metadata(metadata, verbose=verbose)

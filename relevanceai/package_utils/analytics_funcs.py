@@ -2,7 +2,6 @@ import analytics
 import asyncio
 import json
 import os
-import threading
 import copy
 
 from typing import Callable
@@ -11,6 +10,7 @@ from functools import wraps
 
 from relevanceai.package_utils.config import CONFIG
 from relevanceai.package_utils.json_encoder import json_encoder
+from relevanceai.package_utils.fire_and_forget import fire_and_forget
 
 
 def is_tracking_enabled():
@@ -21,13 +21,6 @@ def is_tracking_enabled():
 def get_json_size(json_obj):
     # Returns it in bytes
     return len(json.dumps(json_obj).encode("utf-8")) / 1024
-
-
-def fire_and_forget(f):
-    def wrapped():
-        threading.Thread(target=f).start()
-
-    return wrapped
 
 
 TRANSIT_ENV_VAR = "_IS_ANALYTICS_IN_TRANSIT"

@@ -303,6 +303,10 @@ class Cluster(Write):
             )
         return clusterer
 
+    def _store_subcluster_metadatas(self, vector_field, alias, parent_alias):
+        """Store metadata around subclustering"""
+        self.metadata["subcluster"] = {vector_field: {parent_alias: alias}}
+
     @track
     def _auto_cluster_string(
         self,
