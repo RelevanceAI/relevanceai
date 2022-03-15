@@ -74,14 +74,14 @@ class Dataset(Export, Plot, Operations, Search):
 
                 add_mock_dataset()
 
-    def __getattr__(self, attr):
-        if hasattr(pd.DataFrame, attr):
-            df = self.to_pandas_dataframe(show_progress_bar=True)
-            try:
-                return getattr(df, attr)
-            except SyntaxError:
-                raise AttributeError(f"'{attr}' is an invalid attribute")
-        raise AttributeError(f"'{attr}' is an invalid attribute")
+    # def __getattr__(self, attr):
+    #     if hasattr(pd.DataFrame, attr):
+    #         df = self.to_pandas_dataframe(show_progress_bar=True)
+    #         try:
+    #             return getattr(df, attr)
+    #         except SyntaxError:
+    #             raise AttributeError(f"'{attr}' is an invalid attribute")
+    #     raise AttributeError(f"'{attr}' is an invalid attribute")
 
     @track
     def __getitem__(self, field: Union[List[str], str]):
