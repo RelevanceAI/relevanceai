@@ -1070,14 +1070,15 @@ class ClusterOps(BatchAPIClient):
             parent_field = self._get_cluster_field_name(self.parent_alias)
             fields_to_get.append(parent_field)
 
-        if verbose:
-            print("Fitting and predicting on all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=fields_to_get
         )
 
         if len(docs) == 0:
             raise NoDocumentsError()
+
+        if verbose:
+            print("Fitting and predicting on all documents")
 
         clustered_docs = self.fit_predict_documents(
             vector_fields,
