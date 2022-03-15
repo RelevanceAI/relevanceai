@@ -12,9 +12,9 @@ from relevanceai.dataset.statistics.statistics import Statistics
 class Plot(Statistics):
     def plot(
         self,
-        x: Union[Any, str] = None,
-        y: Union[Any, str] = None,
-        z: Union[Any, str] = None,
+        x: Union[None, str] = None,
+        y: Union[None, str] = None,
+        z: Union[None, str] = None,
         dr_alias: Union[Any, str] = None,
         color: Optional[Union[None, str]] = None,
         number_of_documents: Union[None, int] = None,
