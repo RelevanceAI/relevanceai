@@ -4,10 +4,12 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
-v1.5.0
+v2.0.0
 -----------
 
-- Major folder refactor
+- Major folder refactor -> official renaming of ops to workflows in certain areas
+- `auto_cluster` now supports models
+- Separation into `interfaces`
 
 v1.4.3
 -----------
