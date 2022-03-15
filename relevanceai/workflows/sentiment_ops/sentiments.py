@@ -3,15 +3,24 @@
 
 # Running a function across each subcluster
 import numpy as np
-
-try:
-    from transformers import AutoTokenizer, AutoModelForSequenceClassification
-    from scipy.special import softmax
-except ModuleNotFoundError:
-    print("Need to install transformers")
+import urllib
+import csv
 
 
-class TextSentiment:
+class SentimentOps:
+    def __init__(self, model_name: str = "cardiffnlp/twitter-roberta-base-sentiment"):
+        """
+        Sentiment Ops.
+
+        Parameters
+        -------------
+
+        model_name: str
+            The name of the model
+
+        """
+        self.model_name = model_name
+
     def preprocess(self, text: str):
         new_text = []
         for t in text.split(" "):
@@ -20,11 +29,17 @@ class TextSentiment:
             new_text.append(t)
         return " ".join(new_text)
 
-    def get_model(self, model="cardiffnlp/twitter-roberta-base-sentiment"):
-        self.tokenizer = AutoTokenizer.from_pretrained(model)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model)
+    def _get_model(self):
+        try:
+            from transformers import AutoTokenizer, AutoModelForSequenceClassification
+        except ModuleNotFoundError:
+            print("Need to install transformers")
 
-    def get_label_mapping(self, task: str):
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+
+    def _get_label_mapping(self, task: str):
+
         labels = []
         mapping_link = f"https://raw.githubusercontent.com/cardiffnlp/tweeteval/main/datasets/{task}/mapping.txt"
         with urllib.request.urlopen(mapping_link) as f:
@@ -38,6 +53,12 @@ class TextSentiment:
         return {0: "negative", 1: "neutral", 2: "positive"}
 
     def analyze_sentiment(self, text):
+        try:
+            from scipy.special import softmax
+        except ModuleNotFoundError:
+            print("Need to install scipy")
+        if not hasattr(self, "model"):
+            self._get_model()
         text = self.preprocess(text)
         encoded_input = self.tokenizer(text, return_tensors="pt")
         output = self.model(**encoded_input)
@@ -49,7 +70,3 @@ class TextSentiment:
             "sentiment": self.label_mapping[ranking[0]],
             "score": np.round(float(scores[ranking[0]]), 4),
         }
-
-
-# sentiment = TextSentiment()
-# sentiment.get_model()
