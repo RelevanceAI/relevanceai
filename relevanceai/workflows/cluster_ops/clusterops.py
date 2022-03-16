@@ -1384,6 +1384,10 @@ class ClusterOps(BatchAPIClient):
         all_cluster_ids = []
         if "results" in facet_results:
             facet_results = facet_results["results"]
+        if cluster_field not in facet_results:
+            raise ValueError(
+                f"No clusters with alias `{alias}`. Please check the schema."
+            )
         for facet in facet_results[cluster_field]:
             if facet["frequency"] > minimum_cluster_size:
                 all_cluster_ids.append(facet[cluster_field])

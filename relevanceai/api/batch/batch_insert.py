@@ -363,6 +363,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
+        log_to_file: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -435,7 +436,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             )
             self.logger.info(f"Created {updated_documents_file}")
 
-        with FileLogger(fn=log_file, verbose=True):
+        with FileLogger(fn=log_file, verbose=True, log_to_file=log_to_file):
             # Instantiate the logger to document the successful IDs
             PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(updated_documents_file)
 
@@ -520,7 +521,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     print(f"  * {failed_document}")
 
         self.logger.info(f"Deleting {updated_documents_file}")
-        os.remove(updated_documents_file)
+        if os.path.exists(updated_documents_file):
+            os.remove(updated_documents_file)
 
         self.logger.success(f"Pull, Update, Push is complete!")
 

@@ -21,3 +21,7 @@ def is_sklearn_available():
 
 def is_hdbscan_available():
     return importlib.util.find_spec("hdbscan") is not None
+
+
+def is_transformers_available():
+    return importlib.util.find_spec("transformers") is not None
