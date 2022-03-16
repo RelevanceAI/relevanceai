@@ -30,6 +30,7 @@ class Workflow(DocUtils):
         filters: Optional[list] = None,
         log_to_file: bool = True,
         chunksize: int = 20,
+        chunk_field: Optional[str] = None,
     ):
         """
         Fit on dataset
@@ -52,12 +53,31 @@ class Workflow(DocUtils):
         ]
         filters += exist_filters
 
+        if chunk_field is not None:
+            if chunk_field not in output_field:
+                output_field = chunk_field + "." + output_field
+
+            if chunk_field not in input_field:
+                input_field = chunk_field + "." + input_field
+
         def update_func(doc):
-            try:
-                value = self.get_field(input_field, doc)
-                self.set_field(output_field, doc, self.func(value))
-            except Exception as e:
-                traceback.print_exc()
+            if chunk_field:
+                try:
+                    self.run_function_across_chunks(
+                        function=self.func,
+                        chunk_field=chunk_field,
+                        field=input_field,
+                        output_field=output_field,
+                        doc=doc,
+                    )
+                except Exception as e:
+                    traceback.print_exc()
+            else:
+                try:
+                    value = self.get_field(input_field, doc)
+                    self.set_field(output_field, doc, self.func(value))
+                except Exception as e:
+                    traceback.print_exc()
             return doc
 
         # Store this workflow inside the dataset's metadata
