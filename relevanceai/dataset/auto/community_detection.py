@@ -2,8 +2,7 @@
 """
 Pandas like dataset API
 """
-import warnings
-import itertools
+import traceback
 from itertools import chain
 from collections import Counter, defaultdict
 from typing import Callable, Dict, List, Optional
