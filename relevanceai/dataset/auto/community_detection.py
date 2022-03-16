@@ -12,7 +12,7 @@ from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.unstructured_data.text.base_text_processing import MLStripper
 from relevanceai.package_utils.logger import FileLogger
-from relevanceai.package_utils.version_decorators import introduced_in_version, beta
+from relevanceai.package_utils.version_decorators import introduced_in_version, beta, track
 from relevanceai.vector_tools.local_nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -22,6 +22,7 @@ from relevanceai.vector_tools.local_nearest_neighbours import (
 
 
 class CommunityDetection(Write):
+    @track
     @beta
     def community_detection(
         self,
