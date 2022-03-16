@@ -241,6 +241,7 @@ class Series(BatchAPIClient):
         self,
         func: Callable,
         output_field: str,
+        filters: list = [],
         axis: int = 0,
     ):
         """
@@ -295,7 +296,7 @@ class Series(BatchAPIClient):
             return documents
 
         return self.pull_update_push(
-            self.dataset_id, bulk_fn, select_fields=[self.field]
+            self.dataset_id, bulk_fn, select_fields=[self.field], filters=filters
         )
 
     @track
