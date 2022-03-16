@@ -590,3 +590,30 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         scatter = go.Scatter3d(**scatter_args)
         return scatter
+
+    def plot_distributions(
+        self,
+        cluster_field: str,
+        numeric_field: str,
+        top_indices: int = 10,
+        dataset_id: str = None,
+    ):
+        """
+        Plot the sentence length distributions across each cluster
+        """
+        try:
+            import seaborn as sns
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+            print("You need to install seaborn! `pip install seaborn`.")
+        docs = self._get_all_documents(
+            dataset_id=self.dataset_id if dataset_id is None else dataset_id,
+            select_fields=[numeric_field, cluster_field],
+        )
+        df = pd.json_normalize(docs)
+        top_comms = df[cluster_field].value_counts()
+        for community in top_comms.index[:top_indices]:
+            sample_comm_df = df[df[cluster_field] == community]
+            sns.displot(sample_comm_df["review_length"])
+            plt.title(community)
+            plt.show()
