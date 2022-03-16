@@ -21,3 +21,11 @@ def is_sklearn_available():
 
 def is_hdbscan_available():
     return importlib.util.find_spec("hdbscan") is not None
+
+
+def is_pandas_available():
+    return importlib.util.find_spec("pandas") is not None
+
+
+def is_plotly_available():
+    return importlib.util.find_spec("plotly") is not None
