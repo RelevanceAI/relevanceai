@@ -17,9 +17,10 @@ class Scale(Write):
     def scale(
         self,
         fields: List[Any],
+        output_field=None,
         scaler: Any = None,
         number_of_documents: Union[int, None] = None,
-        output_field=None,
+        show_progress_bar: bool = True,
     ):
 
         filters = [
@@ -38,7 +39,7 @@ class Scale(Write):
                 select_fields=fields,
                 include_vector=True,
                 filters=filters,
-                show_progress_bar=True,
+                show_progress_bar=show_progress_bar,
             )
         else:
             documents = self.get_documents(
@@ -46,7 +47,7 @@ class Scale(Write):
                 number_of_documents=number_of_documents,
                 include_vector=True,
                 filters=filters,
-                show_progress_bar=True,
+                show_progress_bar=show_progress_bar,
             )
 
         schema = self.schema
@@ -99,4 +100,6 @@ class Scale(Write):
                     document.pop(f"{field}-{n}")
 
         print("Updating fields")
-        self.update_documents(self.dataset_id, documents, show_progress_bar=True)
+        self.update_documents(
+            self.dataset_id, documents, show_progress_bar=show_progress_bar
+        )
