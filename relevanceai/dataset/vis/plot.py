@@ -29,7 +29,7 @@ class Plot(Statistics):
                 "plotly package not found. "
                 "Please install plotly with `python -m "
                 "pip install -U plotly` to install "
-                "community_detection."
+                "plotly."
             )
 
         if vector_field and alias:
@@ -48,9 +48,6 @@ class Plot(Statistics):
         if f"_cluster_.{vector_field}.{color}" in self.schema:
             shorthand = color
             color = f"_cluster_.{vector_field}.{color}"
-
-        if is_plotly_available():
-            pd.options.plotting.backend = "plotly"
 
         select_fields = euc_dims + [dr_alias, color]
         select_fields = [field for field in select_fields if field is not None]
