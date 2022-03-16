@@ -27,7 +27,7 @@ class CommunityDetection(Write):
         retrieval_kwargs: Optional[dict] = None,
         encode_kwargs: Optional[dict] = None,
         threshold: float = 0.75,
-        min_community_size: int = 1,
+        min_community_size: int = 3,
         init_max_size: int = 1000,
         update_chunksize: int = 100,
     ):
