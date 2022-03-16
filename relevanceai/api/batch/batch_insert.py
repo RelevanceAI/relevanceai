@@ -478,7 +478,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 documents = orig_json["documents"]
 
                 try:
-                    updated_data = update_function(documents)
+                    updated_data = update_function(documents, **updating_args)
                 except Exception as e:
                     self.logger.error("Your updating function does not work: " + str(e))
                     traceback.print_exc()
