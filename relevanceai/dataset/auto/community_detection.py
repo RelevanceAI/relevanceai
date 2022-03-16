@@ -12,7 +12,6 @@ from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.unstructured_data.text.base_text_processing import MLStripper
 from relevanceai.package_utils.logger import FileLogger
-from relevanceai.package_utils.version_decorators import introduced_in_version, beta
 from relevanceai.vector_tools.local_nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
@@ -22,7 +21,6 @@ from relevanceai.vector_tools.local_nearest_neighbours import (
 
 
 class CommunityDetection(Write):
-    @beta
     def community_detection(
         self,
         field: str,
@@ -32,6 +30,7 @@ class CommunityDetection(Write):
         threshold: float = 0.75,
         min_community_size: int = 1,
         init_max_size: int = 1000,
+        update_chunksize: int = 100,
     ):
         """
         Performs community detection on a text field.
@@ -118,6 +117,14 @@ class CommunityDetection(Write):
         print("Retrieving documents...")
         documents = self.get_all_documents(
             select_fields=[field],
+            filters=[
+                {
+                    "field": field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": " ",
+                }
+            ],
             **{
                 key: value
                 for key, value in retrieval_kwargs.items()
@@ -131,7 +138,8 @@ class CommunityDetection(Write):
         if field_type == "vector":
             for document in documents:
                 try:
-                    document[field] = tuple(document[field])
+                    value = tuple(self.get_field(field, document))
+                    self.set_field(field, document, value)
                 except KeyError:
                     # If a document is missing a vector, ignore
                     continue
@@ -144,11 +152,12 @@ class CommunityDetection(Write):
         elements = set()
         for document in documents:
             try:
-                element = document[field]
-            except KeyError:
+                element = self.get_field(field, document)
+            except Exception as e:
                 # It could be that a document does not have a field or a
                 # a vector that other documents in the Dataset has. In that
                 # case, ignore.
+                traceback.print_exc()
                 continue
             elements.add(element)
             element_ids[element].append(document["_id"])
@@ -179,6 +188,7 @@ class CommunityDetection(Write):
             embeddings = array(list(element_map.values()))
 
         print("Community detection started...")
+        init_max_size = min(init_max_size, embeddings.shape[0])
         clusters = community_detection(
             embeddings=embeddings,
             threshold=threshold,
@@ -219,7 +229,9 @@ class CommunityDetection(Write):
                     }
                 )
 
-        results = self._update_documents(self.dataset_id, community_documents)
+        results = self._update_documents(
+            self.dataset_id, community_documents, chunksize=update_chunksize
+        )
         print(
             "Build your clustering app here: "
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
