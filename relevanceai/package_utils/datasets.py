@@ -71,9 +71,9 @@ class ExampleDatasets:
 
         select_fields = [] if select_fields is None else select_fields
         with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
-            project = "dummy-collections"
-            api_key = "UzdYRktIY0JxNmlvb1NpOFNsenU6VGdTU0s4UjhUR0NsaDdnQTVwUkpKZw"  # read access
-            client = Client(project, api_key, region="old-australia-east")
+            project = "3a4b969f4d5fae6f850e"
+            api_key = "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+            client = Client(project, api_key, region="us-east-1")
             documents = client._get_documents(
                 db_name,
                 number_of_documents=number_of_documents,
@@ -191,7 +191,7 @@ def get_ecommerce_dataset_encoded(
     if number_of_documents is None:
         number_of_documents = 739
     return ExampleDatasets._get_dummy_dataset(
-        "ecommerce-example-encoded", number_of_documents, select_fields
+        "ecommerce_1", number_of_documents, select_fields
     )
 
 
@@ -239,7 +239,7 @@ def get_ecommerce_dataset_clean(
     if number_of_documents is None:
         number_of_documents = 1000
     documents = ExampleDatasets._get_dummy_dataset(
-        "quickstart_data_sample", number_of_documents, select_fields
+        "ecommerce_2", number_of_documents, select_fields
     )
     for d in documents:
         if "image_first" in d:
@@ -495,44 +495,6 @@ def get_realestate_dataset(
             del doc["_clusters_"]
 
     return documents
-
-
-def get_mission_statements_dataset(
-    number_of_documents: Union[None, int] = 1433, select_fields: Optional[List] = []
-) -> List:
-    """Function to download a sample company mission statement dataset.
-    Total Len: 1433
-
-    Parameters
-    ----------
-    number_of_documents: int
-        Number of documents to download
-    select_fields : list
-        Fields to include in the dataset, empty array/list means all fields.
-
-    Example
-    -------
-    .. code-block::
-
-        {
-            '_id': 0,
-            'company': 'Starbucks',
-            'text': 'Establish Starbucks as the premier purveyor of the finest coffee in the world while maintaining our uncompromising principles while we grow.'
-        }
-    """
-    select_fields = [] if select_fields is None else select_fields
-    if number_of_documents is None:
-        number_of_documents = 514330
-    return ExampleDatasets._get_online_dataset(
-        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211111_company_statements/companies_preprocessed.csv",
-        number_of_documents,
-        select_fields,
-    )
-
-
-def get_machine_learning_research_dataset():
-    """Here we get our Machine Learning research dataset."""
-    raise NotImplementedError
 
 
 def mock_documents(number_of_documents: int = 100, vector_length=5):
