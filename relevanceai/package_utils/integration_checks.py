@@ -29,3 +29,7 @@ def is_pandas_available():
 
 def is_plotly_available():
     return importlib.util.find_spec("plotly") is not None
+
+
+def is_transformers_available():
+    return importlib.util.find_spec("transformers") is not None

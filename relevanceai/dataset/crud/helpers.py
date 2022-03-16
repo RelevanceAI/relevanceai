@@ -1,6 +1,7 @@
 """
 Helper functions for the pandas like dataset api
 """
+import uuid
 
 from typing import Union, List
 

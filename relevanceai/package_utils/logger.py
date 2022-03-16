@@ -59,24 +59,29 @@ class LoguruLogger(AbstractLogger):
 class FileLogger:
     """Log system output to a file if it gets messy."""
 
-    def __init__(self, fn: str = "logs.txt", verbose: bool = False):
+    def __init__(self, fn: str = "logs.txt", verbose: bool = False, log_to_file=True):
         self.fn = fn
         self._original_stdout = sys.stdout
         self._original_stderr = sys.stderr
         self.verbose = verbose
+        # set this as a parameter in case users are in debugging mode and don't want to open a log
+        # file when experimenting
+        self.log_to_file = log_to_file
 
     def __enter__(self, fn: str = "logs"):
         if not os.path.exists(self.fn):
             self._existed = False
             self._initial_length = 0
-            sys.stdout = open(self.fn, "w")
-            sys.stderr = open(self.fn, "w")
+            if self.log_to_file:
+                sys.stdout = open(self.fn, "w")
+                sys.stderr = open(self.fn, "w")
         else:
             self._existed = True
             with open(self.fn, "r") as f:
                 self._initial_length = len(f.readlines())
-            sys.stdout = open(self.fn, "a")
-            sys.stderr = open(self.fn, "a")
+            if self.log_to_file:
+                sys.stdout = open(self.fn, "a")
+                sys.stderr = open(self.fn, "a")
 
     def __exit__(self, *args, **kw):
         sys.stderr.close()
@@ -85,19 +90,22 @@ class FileLogger:
         sys.stderr = self._original_stderr
         # explicitly spell out the four cases of whether the file existed
         # beforehand and whether new lines were added
-        if self._existed and self._lines_added():
-            if self.verbose:
-                print("Log {self.fn} has been updated")
-        elif not self._existed and self._lines_added():
-            if self.verbose:
-                print(f"Logs have been saved to {self.fn}")
-        elif self._existed and not self._lines_added():
-            # Do nothing if the file already existed and no lines were added
-            pass
-        elif not self._existed and not self._lines_added():
-            # If the file did not already exist and no lines were added, just
-            # delete the file.
-            os.remove(self.fn)
+        if self.log_to_file:
+            if self._existed and self._lines_added():
+                if self.verbose:
+                    print("Log {self.fn} has been updated")
+            elif not self._existed and self._lines_added():
+                if self.verbose:
+                    print(
+                        f"📌 Your logs have been saved to {self.fn}. If you are debugging, you can turn file logging off by setting `log_to_file=False`.📌"
+                    )
+            elif self._existed and not self._lines_added():
+                # Do nothing if the file already existed and no lines were added
+                pass
+            elif not self._existed and not self._lines_added():
+                # If the file did not already exist and no lines were added, just
+                # delete the file.
+                os.remove(self.fn)
 
     def _lines_added(self):
         with open(self.fn, "r") as f:

@@ -220,5 +220,8 @@ class CommunityDetection(Write):
                 )
 
         results = self._update_documents(self.dataset_id, community_documents)
-        print("Documents updated.")
+        print(
+            "Build your clustering app here: "
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
         return results

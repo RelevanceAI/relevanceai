@@ -152,6 +152,179 @@ class Cluster(Write):
         self,
         alias: str,
         vector_fields: List[str],
+        model=None,
+        chunksize: int = 1024,
+        filters: Optional[list] = None,
+        parent_alias: Optional[str] = None,
+    ):
+        """
+        Automatically cluster in 1 line of code.
+        It will retrieve documents, run fitting on the documents and then
+        update the database.
+        There are only 2 supported clustering algorithms at the moment:
+        - kmeans
+        - minibatchkmeans
+
+        In order to choose the number of clusters, simply add a number
+        after the dash like `kmeans-8` or `minibatchkmeans-50`.
+
+        Under the hood, it uses scikit learn defaults or best practices.
+
+        This returns a ClusterOps object and is a wrapper on top of
+        `ClusterOps`.
+
+        Parameters
+        ----------
+        alias : str
+            The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
+            Supported aliases at the moment are 'kmeans','kmeans-10', 'kmeans-X' (where X is a number), 'minibatchkmeans',
+                'minibatchkmeans-10', 'minibatchkmeans-X' (where X is a number)
+        vector_fields : List
+            A list vector fields over which to cluster
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            dataset_id = "sample_dataset_id"
+            df = client.Dataset(dataset_id)
+
+            # run kmeans with default 10 clusters
+            clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+            clusterer.list_closest_to_center()
+
+            # Run k means clustering with 8 clusters
+            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 8 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+
+            # Run minibatch k means clustering with 20 clusters
+            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
+
+        You can alternatively run this using kmeans.
+
+        .. code-block::
+
+            from relevanceai import Client
+
+            client = Client()
+
+            from relevanceai.package_utils.datasets import mock_documents
+
+            ds = client.Dataset('sample')
+            ds.upsert_documents(mock_documents(100))
+            # Run initial kmeans to get clusters
+            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            # Run separate K Means to get subclusters
+            cluster_ops = ds.auto_cluster(
+                'kmeans-2',
+                vector_fields=["sample_1_vector_"],
+                parent_alias="kmeans-3"
+            )
+
+
+        """
+        if model is None:
+            return self._auto_cluster_string(
+                alias=alias,
+                vector_fields=vector_fields,
+                chunksize=1024,
+                filters=filters,
+                parent_alias=parent_alias,
+            )
+        else:
+            return self._auto_cluster_model(
+                alias=alias,
+                model=model,
+                vector_fields=vector_fields,
+                chunksize=chunksize,
+                filters=filters,
+                parent_alias=parent_alias,
+            )
+
+    def _auto_cluster_model(
+        self,
+        alias: str,
+        vector_fields: List[str],
+        chunksize: int = 1024,
+        filters: Optional[list] = None,
+        parent_alias: Optional[str] = None,
+        model=None,
+    ):
+        filters = [] if filters is None else filters
+
+        cluster_args = alias.split("-")
+        algorithm = cluster_args[0]
+        if len(cluster_args) > 1:
+            n_clusters = int(cluster_args[1])
+        else:
+            print("No clusters are detected, defaulting to 8")
+            n_clusters = 8
+        if n_clusters >= chunksize:
+            raise ValueError("Number of clustesr exceed chunksize.")
+
+        num_documents = self.get_number_of_documents(self.dataset_id)
+
+        if num_documents <= n_clusters:
+            warnings.warn(
+                "You seem to have more clusters than documents. We recommend reducing the number of clusters."
+            )
+
+        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+
+        clusterer: ClusterOps = ClusterOps(
+            model=model,
+            alias=alias,
+            api_key=self.api_key,
+            project=self.project,
+            firebase_uid=self.firebase_uid,
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+            parent_alias=parent_alias,
+        )
+        if parent_alias:
+            clusterer.subcluster_predict_update(
+                dataset=self,
+                vector_fields=vector_fields,
+                filters=filters,
+            )
+        else:
+            clusterer.fit_predict_update(
+                dataset=self,
+                vector_fields=vector_fields,
+                include_grade=True,
+                filters=filters,
+            )
+        return clusterer
+
+    def _store_subcluster_metadata(
+        self, vector_fields: list, alias: str, parent_alias: str
+    ):
+        # Store metadata around subclustering
+        field = str("-".join(vector_fields)) + "." + alias
+        metadata = self.metadata
+        if "subcluster" not in metadata:
+            metadata["subclusters"] = []
+        metadata["subclusters"].append(
+            {
+                "parent_alias": parent_alias,
+                "alias": alias,
+                "vector_fields": vector_fields,
+            }
+        )
+        self.upsert_metadata(metadata)
+
+    @track
+    def _auto_cluster_string(
+        self,
+        alias: str,
+        vector_fields: List[str],
         chunksize: int = 1024,
         filters: Optional[list] = None,
         parent_alias: Optional[str] = None,
@@ -265,10 +438,14 @@ class Cluster(Write):
                 parent_alias=parent_alias,
             )
             if parent_alias:
-                clusterer.subfit_predict_update(
+                clusterer.subcluster_predict_update(
                     dataset=self,
                     vector_fields=vector_fields,
                     filters=filters,
+                )
+
+                self._store_subcluster_metadata(
+                    vector_fields=vector_fields, alias=alias, parent_alias=parent_alias
                 )
             else:
                 clusterer.fit_predict_update(
@@ -304,6 +481,10 @@ class Cluster(Write):
                     dataset=self,
                     vector_fields=vector_fields,
                     filters=filters,
+                )
+
+                self._store_subcluster_metadata(
+                    vector_fields=vector_fields, alias=alias, parent_alias=parent_alias
                 )
 
             else:

@@ -11,11 +11,12 @@ from typing import Dict, List, Optional, Union
 from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.helpers import _build_filters
 from relevanceai.dataset.crud.groupby import Groupby, Agg
-from relevanceai.dataset.crud.centroids import Centroids
 from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 from relevanceai.package_utils.list_to_tuple import list_to_tuple
+from relevanceai.workflows.cluster_ops.centroids import Centroids
+from relevanceai.dataset.crud.dataset_metadata import _Metadata
 
 
 class Read(BatchAPIClient):
@@ -639,7 +640,11 @@ class Read(BatchAPIClient):
     @property
     def metadata(self):
         """Get the metadata"""
-        return self.get_metadata()["results"]
+        _metadata = self.get_metadata()["results"]
+        self._metadata = _Metadata(
+            _metadata, self.project, self.api_key, self.firebase_uid, self.dataset_id
+        )
+        return self._metadata
 
     def insert_metadata(self, metadata: dict):
         """Insert metadata"""
@@ -654,3 +659,17 @@ class Read(BatchAPIClient):
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
         return self.insert_metadata(metadata)
+
+    def chunk_dataset(self, chunksize: int = 100, filters: list = None):
+        docs = self.get_documents(
+            number_of_documents=chunksize, include_cursor=True, filters=filters
+        )
+        while len(docs["documents"]) > 0:
+            yield docs["documents"]
+            docs = self.get_documents(
+                number_of_documents=chunksize,
+                include_cursor=True,
+                cursor=docs["cursor"],
+                filters=filters,
+            )
+        return

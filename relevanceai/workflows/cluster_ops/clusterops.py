@@ -34,6 +34,7 @@ from relevanceai.workflows.cluster_ops.cluster_base import (
     HDBSCANClusterBase,
     SklearnCentroidBase,
 )
+from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby, ClusterAgg
 
 from relevanceai.package_utils.analytics_funcs import track
 
@@ -43,7 +44,6 @@ from relevanceai.package_utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
 )
-from relevanceai.dataset.crud.cluster_groupby import ClusterGroupby, ClusterAgg
 from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.errors import NoDocumentsError
@@ -1070,14 +1070,15 @@ class ClusterOps(BatchAPIClient):
             parent_field = self._get_cluster_field_name(self.parent_alias)
             fields_to_get.append(parent_field)
 
-        if verbose:
-            print("Fitting and predicting on all documents")
         docs = self._get_all_documents(
             dataset_id=self.dataset_id, filters=filters, select_fields=fields_to_get
         )
 
         if len(docs) == 0:
             raise NoDocumentsError()
+
+        if verbose:
+            print("Fitting and predicting on all documents")
 
         clustered_docs = self.fit_predict_documents(
             vector_fields,
@@ -1106,7 +1107,7 @@ class ClusterOps(BatchAPIClient):
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
 
-    def subfit_predict_update(
+    def subcluster_predict_update(
         self,
         dataset,
         vector_fields: Optional[List] = None,
@@ -1147,7 +1148,7 @@ class ClusterOps(BatchAPIClient):
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=10)
             clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
-            clusterer.subfit_predict_update(
+            clusterer.subcluster_predict_update(
                 dataset=ds,
             )
 
@@ -1176,7 +1177,7 @@ class ClusterOps(BatchAPIClient):
         if verbose:
             print("Fitting and predicting on all documents")
         # Here we run subfitting on these documents
-        clustered_docs = self.subfit_predict_documents(
+        clustered_docs = self.subcluster_predict_documents(
             vector_fields=vector_fields, filters=filters, verbose=verbose
         )
 
@@ -1277,7 +1278,7 @@ class ClusterOps(BatchAPIClient):
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
 
-    def subfit_predict_documents(
+    def subcluster_predict_documents(
         self,
         vector_fields: Optional[List] = None,
         filters: Optional[List] = None,
@@ -1383,6 +1384,10 @@ class ClusterOps(BatchAPIClient):
         all_cluster_ids = []
         if "results" in facet_results:
             facet_results = facet_results["results"]
+        if cluster_field not in facet_results:
+            raise ValueError(
+                f"No clusters with alias `{alias}`. Please check the schema."
+            )
         for facet in facet_results[cluster_field]:
             if facet["frequency"] > minimum_cluster_size:
                 all_cluster_ids.append(facet[cluster_field])

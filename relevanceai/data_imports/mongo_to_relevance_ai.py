@@ -37,10 +37,11 @@ import json
 import math
 import numpy as np
 import pandas as pd
-import uuid
 import warnings
 from tqdm.auto import tqdm
 from typing import List
+
+from relevanceai.package_utils.make_id import _make_id
 
 try:
     from relevanceai import Client
@@ -108,12 +109,12 @@ class MongoImporter(Client):
 
     def update_id(self, documents: List[dict]):
         # makes bson id format json campatible
-        for doc in documents:
+        for document in documents:
             try:
-                doc["_id"] = doc["_id"]["$oid"]
+                document["_id"] = document["_id"]["$oid"]
             except Exception as e:
                 self.logger.info("Could not use the original id: " + str(e))
-                doc["_id"] = uuid.uuid4().__str__()
+                document["_id"] = _make_id(document)
         return documents
 
     @staticmethod
