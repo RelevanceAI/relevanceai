@@ -452,7 +452,7 @@ class Write(Read):
             log_to_file=log_to_file,
         )
         if results is None:
-            print("️❗❗Errors detected when running apply.")
+            print("✅ Successfully ran!")
             return
         for k, v in results.items():
             if k != []:

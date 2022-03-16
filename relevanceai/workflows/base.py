@@ -10,7 +10,8 @@ from uuid import uuid4
 
 class Workflow(DocUtils):
     """
-    Base Workflow
+    Base Workflow. A workflow is useful for measuring what you did with a dataset.
+    By adding an alias, you allow it to continue running even when it errors.
     """
 
     def __init__(
