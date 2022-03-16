@@ -3,8 +3,8 @@
 
 # Running a function across each subcluster
 import numpy as np
-import urllib
 import csv
+from urllib.request import urlopen
 
 
 class SentimentOps:
@@ -42,7 +42,7 @@ class SentimentOps:
 
         labels = []
         mapping_link = f"https://raw.githubusercontent.com/cardiffnlp/tweeteval/main/datasets/{task}/mapping.txt"
-        with urllib.request.urlopen(mapping_link) as f:
+        with urlopen(mapping_link) as f:
             html = f.read().decode("utf-8").split("\n")
             csvreader = csv.reader(html, delimiter="\t")
         labels = [row[1] for row in csvreader if len(row) > 1]
