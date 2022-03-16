@@ -80,7 +80,7 @@ class Scale(Write):
         df = pd.DataFrame(data)
 
         if scaler is None:
-            scaler = StandardScaler()
+            scaler = RobustScaler()
 
         non_id_cols = [col for col in df.columns if col != "_id"]
         scaled = scaler.fit_transform(df[non_id_cols].values)
