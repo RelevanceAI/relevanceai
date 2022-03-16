@@ -3,8 +3,6 @@ from typing import Any, Optional, Union
 import numpy as np
 import pandas as pd
 
-import plotly.express as px
-
 from relevanceai.dataset.statistics.statistics import Statistics
 
 from relevanceai.package_utils.integration_checks import is_plotly_available
@@ -24,6 +22,16 @@ class Plot(Statistics):
         number_of_documents: Union[None, int] = None,
         show_progress_bar: bool = True,
     ):
+        try:
+            import plotly.express as px
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "plotly package not found. "
+                "Please install plotly with `python -m "
+                "pip install -U plotly` to install "
+                "community_detection."
+            )
+
         if vector_field and alias:
             dr_alias = f"_dr_.{alias}.{vector_field}"
         else:
