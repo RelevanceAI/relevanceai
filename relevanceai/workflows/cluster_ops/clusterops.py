@@ -2333,7 +2333,7 @@ class ClusterOps(ClusterEvaluate):
         output[cluster_id] = func(arr)
 
     def create_centroids(
-        self, vector_fields: List[str], operation: Union[Callable, str] = "mean"
+        self, vector_fields: List[str], operation: Optional[Callable] = None
     ):
         """
         Create centroids if there are none. The default operation is to take the centroid
@@ -2360,7 +2360,7 @@ class ClusterOps(ClusterEvaluate):
         if operation == "mean":
             operation = vector_mean
 
-        cluster_centroids = self.operate(field=vector_field, func=operation)
+        cluster_centroids = self.operate(field=vector_field, func=operation) #type: ignore
         centroid_docs = []
         for k, v in cluster_centroids.items():
             centroid_docs.append({"_id": str(k), vector_field: v.tolist()})
