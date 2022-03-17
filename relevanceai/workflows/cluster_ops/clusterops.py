@@ -2297,7 +2297,7 @@ class ClusterOps(ClusterEvaluate):
 
         """
         # Run a function on each cluster
-        output = {}
+        output: Dict = {}
         cluster_field = self._get_cluster_field_name()
         cluster_ids = self.unique_cluster_ids()
         for cluster_id in tqdm(cluster_ids):
