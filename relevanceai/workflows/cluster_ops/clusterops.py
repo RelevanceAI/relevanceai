@@ -2356,7 +2356,7 @@ class ClusterOps(ClusterEvaluate):
         def vector_mean(vectors):
             return np.mean(vectors, axis=0)
 
-        cluster_centroids = self.operate(field=vector_fields, func=vector_mean)
+        cluster_centroids = self.operate(field=vector_field, func=vector_mean)
         centroid_docs = []
         for k, v in cluster_centroids.items():
             centroid_docs.append({"_id": str(k), vector_field: v.tolist()})
