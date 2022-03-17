@@ -25,7 +25,6 @@ from relevanceai.vector_tools.local_nearest_neighbours import (
 
 class CommunityDetection(Write):
     @track
-    @beta
     def community_detection(
         self,
         field: str,
