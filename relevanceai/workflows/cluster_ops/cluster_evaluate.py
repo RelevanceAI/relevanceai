@@ -9,11 +9,12 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
-from relevanceai.package_utils.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.constants import CENTROID_DISTANCES
+from relevanceai.package_utils.analytics_funcs import track
 from doc_utils import DocUtils
 from typing import Optional, Dict
+from tqdm.auto import tqdm
 
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
@@ -591,6 +592,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         scatter = go.Scatter3d(**scatter_args)
         return scatter
 
+    @track
     def plot_distributions(
         self,
         numeric_field: str,
@@ -615,5 +617,91 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         for community in top_comms.index[:top_indices]:
             sample_comm_df = df[df[cluster_field] == community]
             sns.displot(sample_comm_df[numeric_field])
-            plt.title(community)
+            # Get the average in the score too
+            mean = sample_comm_df[numeric_field].mean()
+            std = sample_comm_df[numeric_field].var()
+            plt.title(
+                community + str(f" - average: {round(mean, 2)}, var: {round(std, 2)}")
+            )
             plt.show()
+
+    @track
+    def plot_distributions_measure(
+        self,
+        numeric_field: str,
+        measure_function: callable,
+        top_indices: int = 10,
+        dataset_id: str = None,
+        asc: bool = True,
+    ):
+        """
+        Plot the sentence length distributions across each cluster
+        measure_function is run on each cluster and plots
+
+        Example
+        --------
+
+        .. code-block::
+
+            from scipy.stats import skew
+            ops.plot_distributions_measure(numeric_field, skew, dataset_id=dataset_id)
+        """
+        try:
+            import seaborn as sns
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+            print("You need to install seaborn! `pip install seaborn`.")
+        cluster_field = self._get_cluster_field_name()
+
+        # use the max and min to make the x axis the same
+        numeric_field_facet = self.datasets.facets(
+            dataset_id=dataset_id, fields=[numeric_field]
+        )
+        facet_result = numeric_field_facet["results"][numeric_field]
+
+        docs = self._get_all_documents(
+            dataset_id=dataset_id if dataset_id is None else dataset_id,
+            select_fields=[numeric_field, cluster_field],
+        )
+        df = pd.json_normalize(docs)
+        top_comms = df[cluster_field].value_counts()
+        cluster_measurements = {}
+        skew_values = []
+        for community in tqdm(top_comms.index):
+            sample_comm_df = df[df[cluster_field] == community]
+            # Get the average in the score too
+            measure_output = measure_function(
+                sample_comm_df[numeric_field].dropna().to_list()
+            )
+            cluster_measurements[community] = measure_output
+
+        cluster_measurements = {
+            k: v
+            for k, v in sorted(
+                cluster_measurements.items(), key=lambda item: item[1], reverse=asc
+            )
+        }
+
+        for i, (community, measurement) in enumerate(cluster_measurements.items()):
+            if i == top_indices:
+                return
+            sample_comm_df = df[df[cluster_field] == community]
+            g = sns.displot(sample_comm_df[numeric_field])
+            g.set(xlim=(facet_result["min"], facet_result["max"]))
+            plt.title(community + str(f" - measurement: {measurement}"))
+
+    def plot_skewness(
+        self,
+        numeric_field: str,
+        top_indices: int = 10,
+        dataset_id: str = None,
+        asc: bool = True,
+    ):
+        from scipy.stats import skew
+
+        return self.plot_distributions_measure(
+            numeric_field=numeric_field,
+            measure_function=skew,
+            top_indices=top_indices,
+            dataset_id=dataset_id,
+        )

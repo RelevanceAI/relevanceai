@@ -3,7 +3,7 @@
 from re import I
 import traceback
 from typing import Callable, Optional
-from relevanceai.interfaces import Dataset
+from typing_extensions import Literal
 from doc_utils import DocUtils
 from uuid import uuid4
 
@@ -24,7 +24,7 @@ class Workflow(DocUtils):
 
     def fit_dataset(
         self,
-        dataset: Dataset,
+        dataset: Literal["Dataset"],
         input_field: str,
         output_field: str,
         filters: Optional[list] = None,

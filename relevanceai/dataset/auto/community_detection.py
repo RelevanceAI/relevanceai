@@ -36,6 +36,7 @@ class CommunityDetection(Write):
         min_community_size: int = 3,
         init_max_size: int = 1000,
         update_chunksize: int = 100,
+        alias: str = "community-detection",
     ):
         """
         Performs community detection on a text field.
@@ -228,9 +229,7 @@ class CommunityDetection(Write):
                 community_documents.append(
                     {
                         "_id": id,
-                        "_cluster_": {
-                            field: {"community-detection": f"community-{i+1}"}
-                        },
+                        "_cluster_": {field: {alias: f"cluster-{i+1}"}},
                     }
                 )
 
