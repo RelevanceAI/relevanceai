@@ -443,7 +443,7 @@ class Client(BatchAPIClient, DocUtils):
             The project API key that will send the dataset
 
         """
-        return self.admin.send_dataset(
+        return self.admin.recieve_dataset(
             dataset_id=dataset_id,
             sender_project=sender_project,
             sender_api_key=sender_api_key,
