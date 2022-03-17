@@ -451,7 +451,7 @@ class ClusterOps(ClusterEvaluate):
         filters = [] if filters is None else filters
 
         return self.datasets.cluster.centroids.list_closest_to_center(
-            dataset_id=self._retrieve_dataset_id(dataset),
+            dataset_id=self._check_dataset_id(dataset),
             vector_fields=self.vector_fields
             if vector_fields is None
             else vector_fields,
@@ -620,7 +620,7 @@ class ClusterOps(ClusterEvaluate):
         filters = [] if filters is None else filters
 
         return self.services.cluster.aggregate(
-            dataset_id=self._retrieve_dataset_id(dataset),
+            dataset_id=self._check_dataset_id(dataset),
             vector_fields=self.vector_fields if not vector_fields else vector_fields,
             groupby=groupby,
             metrics=metrics,
@@ -685,7 +685,7 @@ class ClusterOps(ClusterEvaluate):
 
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=self._retrieve_dataset_id(dataset),
+            dataset_id=self._check_dataset_id(dataset),
             vector_fields=self.vector_fields
             if vector_fields is None
             else vector_fields,
@@ -708,7 +708,7 @@ class ClusterOps(ClusterEvaluate):
 
         return
 
-    def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
+    def _check_dataset_id(self, dataset: Optional[Union[str, Dataset]] = None) -> str:
         """Helper method to get multiple dataset values"""
 
         if isinstance(dataset, Dataset):
@@ -761,7 +761,7 @@ class ClusterOps(ClusterEvaluate):
         """
 
         results = self.services.cluster.centroids.insert(
-            dataset_id=self._retrieve_dataset_id(dataset),
+            dataset_id=self._check_dataset_id(dataset),
             cluster_centers=centroid_documents,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -844,7 +844,7 @@ class ClusterOps(ClusterEvaluate):
             base_url + "/services/cluster/centroids/delete",
             headers={"Authorization": self.project + ":" + self.api_key},
             params={
-                "dataset_id": self._retrieve_dataset_id(dataset),
+                "dataset_id": self._check_dataset_id(dataset),
                 "vector_field": vector_fields,
                 "alias": self.alias,
             },
@@ -2332,3 +2332,32 @@ class ClusterOps(ClusterEvaluate):
         # get the field across each
         arr = self.get_field_across_documents(field, documents["documents"])
         output[cluster_id] = func(arr)
+
+    def create_centroids(
+        self, vector_fields: list, operation: Union[Callable, str] = "mean"
+    ):
+        """
+        Create centroids if there are none. The default operation is to take the centroid
+        of each vector.
+        An alternative function can be provided provided.
+
+        Example of the operation in question for mean:
+
+        .. code-block::
+
+            def vector_mean(vectors):
+                return np.mean(vectors, axis=0)
+
+        """
+        if len(vector_fields) > 1:
+            raise ValueError("currently do not support more than 1 vector field.")
+        vector_field = vector_fields[0]
+
+        def vector_mean(vectors):
+            return np.mean(vectors, axis=0)
+
+        cluster_centroids = self.operate(field=vector_fields, func=vector_mean)
+        centroid_docs = []
+        for k, v in cluster_centroids.items():
+            centroid_docs.append({"_id": str(k), vector_field: v.tolist()})
+        return self.insert_centroid_documents(centroid_docs)
