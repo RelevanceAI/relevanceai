@@ -2298,7 +2298,6 @@ class ClusterOps(ClusterEvaluate):
         """
         # Run a function on each cluster
         output: Dict = {}
-        cluster_field = self._get_cluster_field_name()
         cluster_ids = self.unique_cluster_ids()
         for cluster_id in tqdm(cluster_ids):
             self._operate(cluster_id, field, output, func)
@@ -2334,7 +2333,7 @@ class ClusterOps(ClusterEvaluate):
         output[cluster_id] = func(arr)
 
     def create_centroids(
-        self, vector_fields: list, operation: Union[Callable, str] = "mean"
+        self, vector_fields: List[str], operation: Union[Callable, str] = "mean"
     ):
         """
         Create centroids if there are none. The default operation is to take the centroid
@@ -2348,15 +2347,20 @@ class ClusterOps(ClusterEvaluate):
             def vector_mean(vectors):
                 return np.mean(vectors, axis=0)
 
+            clusterops.create_centroids(["sample_vector_"], operation=vector_mean)
+
         """
         if len(vector_fields) > 1:
             raise ValueError("currently do not support more than 1 vector field.")
-        vector_field = vector_fields[0]
+        vector_field: str = vector_fields[0]
 
         def vector_mean(vectors):
             return np.mean(vectors, axis=0)
 
-        cluster_centroids = self.operate(field=vector_field, func=vector_mean)
+        if operation == "mean":
+            operation = vector_mean
+
+        cluster_centroids = self.operate(field=vector_field, func=operation)
         centroid_docs = []
         for k, v in cluster_centroids.items():
             centroid_docs.append({"_id": str(k), vector_field: v.tolist()})
