@@ -8,6 +8,7 @@ import sys
 import time
 import traceback
 
+import orjson
 import pandas as pd
 
 from ast import literal_eval
@@ -763,8 +764,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         select_fields: list,
         num_documents: int = 5,
     ) -> int:
-        import orjson
-
         documents = self.datasets.documents.get_where(
             dataset_id,
             filters=filters,
@@ -796,6 +795,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         include_vector: bool = True,
         show_progress_bar: bool = True,
         insert: bool = False,
+        use_cache: bool = False,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -839,36 +839,146 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         insert: bool
             If True, inserts rather than updates an already-existing dataset
+
+        use_cache: bool
         """
         updating_args = {} if updating_args is None else updating_args
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
-
-        if retrieve_chunk_size is None:
-            retrieve_chunk_size = self._determine_optimal_chunk_size(
-                dataset_id, filters, select_fields
-            )
-            print(f"Setting retrieve_chunk_size to {retrieve_chunk_size}")
-
-        if (
-            max(retrieve_chunk_size, 10_000) == retrieve_chunk_size
-            and retrieve_chunk_size != 10_000
-        ):
-            print("Maximum value of retrieve_chunk_size is 10,000")
-            retrieve_chunk_size = 10_000
 
         if not callable(update_function):
             raise TypeError(
                 "Your update function needs to be a function! Please read the documentation if it is not."
             )
 
+        if retrieve_chunk_size is None:
+            # Regardless of whether the cache is used, retrieve chunk size
+            # needs to be an integer.
+            retrieve_chunk_size = self._determine_optimal_chunk_size(
+                dataset_id, filters, select_fields
+            )
+            if not use_cache:
+                print(f"Setting retrieve_chunk_size to {retrieve_chunk_size}")
+
+        if (
+            retrieve_chunk_size is not None
+            and max(retrieve_chunk_size, 10_000) == retrieve_chunk_size
+            and retrieve_chunk_size != 10_000
+        ):
+            # Elasticsearch has an upperbound, 10,000, on the number of
+            # documents able to be pulled at once
+            print("Maximum value of retrieve_chunk_size is 10,000")
+            retrieve_chunk_size = 10_000
+
         cache_path = (
             Path(".").resolve()
             / Path(".relevanceai")
-            / Path(f"{dataset_id}-{hash(update_function)}")
+            / Path(f"{dataset_id}-{hash(frozenset(select_fields))}")
         )
         if not cache_path.exists():
             cache_path.mkdir(parents=True)
+
+        async def pull_update_push_subset(num: int, page_size: int, cursor: str = None):
+            save_file = cache_path / f"pull-{num}.json"
+            if save_file.exists() and use_cache:
+                with open(save_file, "rb") as infile:
+                    documents = orjson.loads(infile.read())
+            else:
+                response = await self.datasets.documents.get_where_async(
+                    dataset_id,
+                    filters=filters,
+                    cursor=cursor,
+                    page_size=page_size,
+                    select_fields=select_fields,
+                    include_vector=include_vector,
+                )
+
+                documents = response["documents"]
+
+                with open(save_file, "wb") as outfile:
+                    outfile.write(orjson.dumps(documents))
+
+            try:
+                updated_documents = update_function(documents, **updating_args)
+            except Exception as e:
+                self.logger.error("Your updating function does not work: " + str(e))
+                traceback.print_exc()
+                return
+
+            updated_ids = [document["_id"] for document in documents]
+
+            inserted = await self._process_documents(
+                dataset_id=updated_dataset_id
+                if updated_dataset_id is not None
+                else dataset_id,
+                documents=updated_documents,
+                insert=insert,
+                use_json_encoder=use_json_encoder,
+            )
+
+            return inserted, updated_ids
+
+        num_documents = self.get_number_of_documents(dataset_id, filters)
+
+        # Explanation on num_requests.
+        # This number will determine how many requests are sent.
+        # Example: Suppose the number of documents is 1254 and
+        # retrieve_chunk_size is 100. Then the number of requests would
+        # be 1254 // 100, which would be 12, and one, which amounts to
+        # 13 requests. This must be defined ahead of time because the
+        # cursor predetermines the number of documents to retrieve on
+        # the first call. So, The first 12 calls would each get 100
+        # documents and call 13 would retrieve the remaining 54.
+        num_cached = len(list(cache_path.iterdir()))
+        if use_cache and num_cached:
+            print(
+                "Since the cache will be accessed, disregard " + "retrieve_chunk_size"
+            )
+            num_requests = num_cached
+        else:
+            # If use_cache is False or num_cached is zero cache will not
+            # be accessed.
+            num_requests = (num_documents // retrieve_chunk_size) + 1
+
+        tasks = []
+        if num_requests == 1:
+            tasks.append(pull_update_push_subset(0, num_documents, None))
+        elif use_cache:
+            tasks.extend(
+                [
+                    pull_update_push_subset(task_num, 0, None)
+                    for task_num in range(num_requests)
+                ]
+            )
+        else:
+            # Retrieve the cursor. While executing a get_where call just
+            # to retrieve the cursor is somewhat inefficient, this is
+            # the cleanest solution at the moment.
+            cursor = self.datasets.documents.get_where(
+                dataset_id,
+                filters=filters,
+                page_size=retrieve_chunk_size,
+                select_fields=select_fields,
+                include_vector=False,  # Set to false to for speed
+            )["cursor"]
+
+            # The cursor is constrained by its first query. Specifically,
+            # if the query from which we get the cursor has a certain page
+            # size, further accesses through the cursor will be the same
+            # page size. Therefore, in the tasks below, the first task
+            # does a proper query of the first {retrieve_chunk_size}
+            # documents. Subsequent calls use the cursor to access the
+            # next {retrieve_chunk_size} documents {num_requests-1} times.
+            # The 0 is there to make the aforementioned statement
+            # explicit.
+            tasks.extend(
+                [
+                    pull_update_push_subset(task_num, retrieve_chunk_size, None)
+                    if not task_num
+                    else pull_update_push_subset(task_num, 0, cursor)
+                    for task_num in range(num_requests)
+                ]
+            )
 
         if log_file is None:
             log_file = (
@@ -881,83 +991,6 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             self.logger.info(f"Created {log_file}")
 
         with FileLogger(fn=log_file, verbose=True):
-            num_documents = self.get_number_of_documents(dataset_id, filters)
-
-            # This number will determine how many requests are sent.
-            # Example: Suppose the number of documents is 1254 and
-            # retrieve_chunk_size is 100. Then the number of requests would
-            # be 1254 // 100, which would be 12, and one, which amounts to
-            # 13 requests. This must be defined ahead of time because the
-            # cursor predetermines the number of documents to retrieve on
-            # the first call. So, The first 12 calls would each get 100
-            # documents and call 13 would retrieve the remaining 54.
-            num_requests = (num_documents // retrieve_chunk_size) + 1
-
-            async def pull_update_push_subset(page_size: int, cursor: str = None):
-                response = await self.datasets.documents.get_where_async(
-                    dataset_id,
-                    filters=filters,
-                    cursor=cursor,
-                    page_size=page_size,
-                    select_fields=select_fields,
-                    include_vector=include_vector,
-                )
-
-                documents = response["documents"]
-
-                try:
-                    updated_documents = update_function(documents, **updating_args)
-                except Exception as e:
-                    self.logger.error("Your updating function does not work: " + str(e))
-                    traceback.print_exc()
-                    return
-
-                updated_ids = [document["_id"] for document in documents]
-
-                inserted = await self._process_documents(
-                    dataset_id=updated_dataset_id
-                    if updated_dataset_id is not None
-                    else dataset_id,
-                    documents=updated_documents,
-                    insert=insert,
-                    use_json_encoder=use_json_encoder,
-                )
-
-                return inserted, updated_ids
-
-            tasks = []
-            if retrieve_chunk_size >= num_documents:
-                tasks.append(pull_update_push_subset(num_documents, None))
-            else:
-                # Retrieve the cursor. While executing a get_where call just
-                # to retrieve the cursor is somewhat inefficient, this is
-                # the cleanest solution at the moment.
-                cursor = self.datasets.documents.get_where(
-                    dataset_id,
-                    filters=filters,
-                    page_size=retrieve_chunk_size,
-                    select_fields=select_fields,
-                    include_vector=False,  # Set to false to for speed
-                )["cursor"]
-
-                # The cursor is constrained by its first query. Specifically,
-                # if the query from which we get the cursor has a certain page
-                # size, further accesses through the cursor will be the same
-                # page size. Therefore, in the tasks below, the first task
-                # does a proper query of the first {retrieve_chunk_size}
-                # documents. Subsequent calls use the cursor to access the
-                # next {retrieve_chunk_size} documents {num_requests-1} times.
-                # The 0 is there to make the aforementioned statement
-                # explicit.
-                tasks.extend(
-                    [
-                        pull_update_push_subset(retrieve_chunk_size, None)
-                        if not task_num
-                        else pull_update_push_subset(0, cursor)
-                        for task_num in range(num_requests)
-                    ]
-                )
-
             # The event loop is required to call asynchronous functions from
             # a regular (synchronous) function. This class spins off a
             # background thread that runs an event loop. All asynchronous
@@ -1023,9 +1056,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 for failed_document in failed_documents:
                     print(f"  * {failed_document}")
 
-            self.logger.success("Pull, update, and push is complete!")
+        self.logger.success("Pull, update, and push is complete!")
 
-            return {"failed_documents": failed_documents}
+        return {"failed_documents": failed_documents}
 
     def pull_update_push_to_cloud(
         self,
