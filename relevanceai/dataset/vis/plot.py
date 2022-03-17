@@ -38,7 +38,7 @@ class Plot(Statistics):
             dr_alias = ""
 
         euc_dims = [x, y, z]
-        if [field is None for field in euc_dims].count(True) < 1 and not dr_alias:
+        if [not field is None for field in euc_dims].count(True) < 1 and dr_alias == "":
             raise ValueError
 
         if dr_alias:
@@ -50,7 +50,9 @@ class Plot(Statistics):
             color = f"_cluster_.{vector_field}.{color}"
 
         select_fields = euc_dims + [dr_alias, color]
-        select_fields = [field for field in select_fields if field is not None]
+        select_fields = [
+            field for field in select_fields if field is not None and field
+        ]
 
         print("Retrieving documents")
 
