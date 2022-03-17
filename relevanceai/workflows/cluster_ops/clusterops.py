@@ -26,7 +26,7 @@ import warnings
 import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
-from typing import Union, List, Dict, Optional, Callable
+from typing import Union, List, Dict, Optional, Callable, Set
 from relevanceai.workflows.cluster_ops.cluster_base import (
     ClusterBase,
     CentroidClusterBase,
@@ -1394,7 +1394,7 @@ class ClusterOps(ClusterEvaluate):
         # currently the logic for facets is that when it runs out of pages
         # it just loops - therefore we need to store it in a simple hash
         # and then add them to a list
-        all_cluster_ids = set()
+        all_cluster_ids: Set = set()
 
         while len(all_cluster_ids) < num_clusters:
             facet_results = self.datasets.facets(
