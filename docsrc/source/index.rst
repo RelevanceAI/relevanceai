@@ -21,7 +21,6 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    client
    dataset
 
-
 .. toctree::
    :maxdepth: 4
    :caption: Clustering
@@ -52,7 +51,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Tools
 
-   relevanceai.bias_detection
+   relevanceai.reports.bias_detection
 
 .. toctree::
    :maxdepth: 4

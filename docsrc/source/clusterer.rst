@@ -1,6 +1,6 @@
 ClusterOps
 =============================
 
-.. automodule:: relevanceai.clusterer.clusterer
+.. automodule:: relevanceai.ops.clusterops.clusterops
    :members:
    :exclude-members: __init__

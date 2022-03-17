@@ -1,5 +1,9 @@
 import numpy as np
 
+from relevanceai.package_utils.make_id import _make_id
 
-def error_document(_id: str):
-    return {"_id": _id, "value": np.nan}
+
+def error_document():
+    document = {"value": np.nan}
+    document["_id"] = _make_id(document)
+    return document

@@ -2,7 +2,7 @@
 """
 import time
 
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 
 
 class TasksClient(_Base):

@@ -4,6 +4,30 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v2.0.0
+-----------
+
+Features/Updates:
+- Provide a way to turn off logger 
+- `auto_cluster` now supports models
+- Change metadata experience into more intuitive object
+- Add base workflow
+- Add sentiment analysis workflow
+- Add chunking dataset 
+- Add smaller dataset export
+
+Backend:
+- Major folder refactor -> official renaming of ops to workflows in certain areas
+- Backend separation into `interfaces`
+
+v1.4.3
+-----------
+
+- Reduced `pull_update_push` log file output
+- Add `delete_documents` utility
+- Add deployables functions
+- Check if global datasets already exist
+
 v1.4.2
 -----------
 

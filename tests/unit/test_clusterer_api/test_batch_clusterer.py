@@ -5,19 +5,18 @@
 
 import pandas as pd
 import pytest
-from relevanceai.clusterer import kmeans_clusterer
-from relevanceai.http_client import Dataset, Client, ClusterOps
-from relevanceai.dataset_api.cluster_groupby import ClusterGroupby
+from relevanceai.interfaces import Dataset, Client, ClusterOps
+from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "minibatch"
 VECTOR_FIELDS = ["sample_1_vector_"]
 
 
 @pytest.fixture(scope="function")
-def test_batch_clusterer(test_df: Dataset):
+def test_batch_clusterer(test_client: Client, vector_dataset_id, test_df: Dataset):
     from sklearn.cluster import MiniBatchKMeans
 
-    clusterer = test_client.ClusterOps(
+    clusterer: ClusterOps = test_client.ClusterOps(
         alias=CLUSTER_ALIAS,
         model=MiniBatchKMeans(),
         dataset_id=vector_dataset_id,

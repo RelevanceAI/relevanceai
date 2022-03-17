@@ -2,14 +2,9 @@
 """
 import os
 import pytest
-
 import pandas as pd
-
-from relevanceai import Client
-from relevanceai.dataset_api import Dataset
-
 import tempfile
-
+from relevanceai.interfaces import Dataset, Client
 from tests.globals.constants import *
 from tests.globals.document import *
 from tests.globals.documents import *

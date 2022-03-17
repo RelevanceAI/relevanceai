@@ -4,11 +4,11 @@
 
 from typing import Dict, List
 
-from relevanceai.http_client import Dataset, Client
+from relevanceai.interfaces import Dataset, Client
 
 
 def test_cluster(test_df: Dataset):
-    from relevanceai.clusterer.kmeans_clusterer import KMeansModel
+    from relevanceai.workflows.cluster_ops.kmeans_clusterer import KMeansModel
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"
@@ -22,12 +22,12 @@ def test_cluster(test_df: Dataset):
 
 
 def test_centroids(test_clustered_df: Dataset):
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").closest()
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").furthest()
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").agg(
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").closest()
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").furthest()
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").agg(
         {"sample_2_label": "avg"}
     )
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans_10").groupby(
+    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").groupby(
         ["sample_3_description"]
     ).agg({"sample_2_label": "avg"})
     assert True

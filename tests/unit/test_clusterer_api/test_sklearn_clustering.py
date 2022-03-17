@@ -2,7 +2,7 @@
 Sklearn Integration Test
 """
 from relevanceai import Client
-from relevanceai.dataset_api import Dataset
+from relevanceai.interfaces import Dataset
 
 from tests.globals.constants import generate_random_string
 
