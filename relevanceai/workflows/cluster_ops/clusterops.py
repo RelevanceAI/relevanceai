@@ -48,6 +48,7 @@ from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.errors import NoDocumentsError
 from relevanceai.package_utils.version_decorators import beta
+from relevanceai.package_utils.concurrency import multiprocess
 from relevanceai.workflows.cluster_ops.cluster_evaluate import ClusterEvaluate
 from doc_utils import DocUtils
 
@@ -2276,3 +2277,58 @@ class ClusterOps(ClusterEvaluate):
         return self._report.internal_report
 
     report = internal_report
+
+    def operate(self, field: str, func: Callable):
+        """
+        Run an function per cluster.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            import numpy as np
+            def vector_mean(vectors):
+                return np.mean(vectors, axis=0)
+            cluster_centroids = cluster_ops.operate(
+                field="review_sentence_answer_use_vector_",
+                func=vector_mean
+            )
+
+        """
+        # Run a function on each cluster
+        output = {}
+        cluster_field = self._get_cluster_field_name()
+        cluster_ids = self.unique_cluster_ids()
+        for cluster_id in tqdm(cluster_ids):
+            self._operate(cluster_id, field, output, func)
+        return output
+
+    def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
+        """
+        Internal function for operations
+        """
+        cluster_field = self._get_cluster_field_name()
+        # TODO; change this to fetch all documents
+        documents = self.datasets.documents.get_where(
+            self.dataset_id,
+            filters=[
+                {
+                    "field": cluster_field,
+                    "filter_type": "exact_match",
+                    "condition": "==",
+                    "condition_value": cluster_id,
+                },
+                {
+                    "field": field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                },
+            ],
+            select_fields=[field, cluster_field],
+            page_size=9999,
+        )
+        # get the field across each
+        arr = self.get_field_across_documents(field, documents["documents"])
+        output[cluster_id] = func(arr)

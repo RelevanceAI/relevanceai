@@ -17,6 +17,7 @@ Features/Updates:
 - Add smaller dataset export
 - Fix unique cluster IDs
 - Add feature for workflows
+- Add `operate` function to run on each cluster
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
