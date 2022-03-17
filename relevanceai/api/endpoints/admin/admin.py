@@ -123,5 +123,48 @@ class AdminClient(_Base):
             },
         )
 
+    def recieve_dataset(
+        self,
+        dataset_id: str,
+        sender_project: str,
+        sender_api_key: str,
+    ):
+        """
+        Recieve an individual a dataset.
+
+        Example
+        --------
+        >>> client = Client()
+        >>> client.admin.recieve_dataset(
+            dataset_id="research",
+            sender_project="...",
+            sender_api_key="..."
+        )
+
+        Parameters
+        -----------
+
+        dataset_id: str
+            The name of the dataset
+        sender_project: str
+            The project name that will send the dataset
+        sender_api_key: str
+            The project API key that will send the dataset
+
+        """
+        return self.make_http_request(
+            "/admin/copy_foreign_dataset",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "source_dataset_id": dataset_id,
+                "project": self.project,
+                "api_key": self.api_key,
+                "source_project": sender_project,
+                "source_api_key": sender_api_key,
+                # "filters": filters
+            },
+        )
+
     def _ping(self):
         return self.make_http_request("/admin/ping", method="GET")
