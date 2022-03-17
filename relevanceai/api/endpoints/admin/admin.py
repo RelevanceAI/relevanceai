@@ -123,19 +123,19 @@ class AdminClient(_Base):
             },
         )
 
-    def recieve_dataset(
+    def receive_dataset(
         self,
         dataset_id: str,
         sender_project: str,
         sender_api_key: str,
     ):
         """
-        Recieve an individual a dataset.
+        Receive an individual a dataset.
 
         Example
         --------
         >>> client = Client()
-        >>> client.admin.recieve_dataset(
+        >>> client.admin.receive_dataset(
             dataset_id="research",
             sender_project="...",
             sender_api_key="..."

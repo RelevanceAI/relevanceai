@@ -414,7 +414,7 @@ class Client(BatchAPIClient, DocUtils):
 
 
     @track
-    def recieve_dataset(
+    def receive_dataset(
         self,
         dataset_id: str,
         sender_project: str,
@@ -426,7 +426,7 @@ class Client(BatchAPIClient, DocUtils):
         Example
         --------
         >>> client = Client()
-        >>> client.admin.recieve_dataset(
+        >>> client.admin.receive_dataset(
             dataset_id="research",
             sender_project="...",
             sender_api_key="..."
@@ -443,7 +443,7 @@ class Client(BatchAPIClient, DocUtils):
             The project API key that will send the dataset
 
         """
-        return self.admin.recieve_dataset(
+        return self.admin.receive_dataset(
             dataset_id=dataset_id,
             sender_project=sender_project,
             sender_api_key=sender_api_key,
