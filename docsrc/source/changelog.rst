@@ -15,6 +15,8 @@ Features/Updates:
 - Add sentiment analysis workflow
 - Add chunking dataset 
 - Add smaller dataset export
+- Fix unique cluster IDs
+- Add feature for workflows
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
