@@ -37,7 +37,7 @@ excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
     "matplotlib>=3.5.1",
-    "plotly>=5.3.1",
+    "plotly>=5.5.0",
     "typeguard",
     "dash",
     "pillow",
