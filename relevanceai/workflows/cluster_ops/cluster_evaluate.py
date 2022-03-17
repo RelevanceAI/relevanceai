@@ -13,7 +13,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.constants import CENTROID_DISTANCES
 from relevanceai.package_utils.analytics_funcs import track
 from doc_utils import DocUtils
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 from tqdm.auto import tqdm
 
 SILHOUETTE_INFO = """
@@ -629,10 +629,11 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
     def plot_distributions_measure(
         self,
         numeric_field: str,
-        measure_function: callable,
+        measure_function: Callable,
         top_indices: int = 10,
         dataset_id: str = None,
         asc: bool = True,
+        bins: int = None,
     ):
         """
         Plot the sentence length distributions across each cluster
@@ -666,7 +667,6 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         df = pd.json_normalize(docs)
         top_comms = df[cluster_field].value_counts()
         cluster_measurements = {}
-        skew_values = []
         for community in tqdm(top_comms.index):
             sample_comm_df = df[df[cluster_field] == community]
             # Get the average in the score too
@@ -686,7 +686,9 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
             if i == top_indices:
                 return
             sample_comm_df = df[df[cluster_field] == community]
-            g = sns.displot(sample_comm_df[numeric_field])
+            g = sns.displot(
+                sample_comm_df[numeric_field],
+            )
             g.set(xlim=(facet_result["min"], facet_result["max"]))
             plt.title(community + str(f" - measurement: {measurement}"))
 

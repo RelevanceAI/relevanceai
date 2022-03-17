@@ -202,8 +202,11 @@ class CommunityDetection(Write):
         )
         print("Community detection complete.")
 
+        # TODO: add centroids for community detection
+
         print("Updating documents...")
         community_documents = []
+        results = []
         for i, cluster in enumerate(clusters):
             ids = []
             for member in cluster:
@@ -232,9 +235,23 @@ class CommunityDetection(Write):
                     }
                 )
 
-        results = self._update_documents(
-            self.dataset_id, community_documents, chunksize=update_chunksize
-        )
+            # During initial construction update_where did not accept dict
+            # values as valid updates.
+            results.append(
+                self.datasets.documents.update_where(
+                    self.dataset_id,
+                    update={"_cluster_": {field: {alias: f"cluster-{i+1}"}}},
+                    filters=[
+                        {
+                            "field": "ids",
+                            "filter_type": "ids",
+                            "condition": "==",
+                            "condition_value": ids,
+                        }
+                    ],
+                )
+            )
+
         print(
             "Build your clustering app here: "
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"

@@ -3,7 +3,6 @@
 from re import I
 import traceback
 from typing import Callable, Optional
-from typing_extensions import Literal
 from doc_utils import DocUtils
 from uuid import uuid4
 
@@ -24,7 +23,7 @@ class Workflow(DocUtils):
 
     def fit_dataset(
         self,
-        dataset: Literal["Dataset"],
+        dataset,
         input_field: str,
         output_field: str,
         filters: Optional[list] = None,

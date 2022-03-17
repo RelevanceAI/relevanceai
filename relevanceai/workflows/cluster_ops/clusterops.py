@@ -1357,7 +1357,19 @@ class ClusterOps(ClusterEvaluate):
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
 
-    def unique_cluster_ids(self, alias: str = None, minimum_cluster_size: int = 10):
+    def _check_for_dataset_id(self):
+        if not hasattr(self, "dataset_id"):
+            raise ValueError(
+                "You are missing a dataset ID. Please set using the argument dataset_id='...'."
+            )
+
+    def unique_cluster_ids(
+        self,
+        alias: str = None,
+        minimum_cluster_size: int = 3,
+        dataset_id: str = None,
+        num_clusters: int = 1000,
+    ):
         """
         We call facets on our data, which looks a little like this:
 
@@ -1373,25 +1385,39 @@ class ClusterOps(ClusterEvaluate):
         """
         # Mainly to be used for subclustering
         # Get the cluster alias
+        if dataset_id is None:
+            self._check_for_dataset_id()
+            dataset_id = self.dataset_id
+
         cluster_field = self._get_cluster_field_name(alias=alias)
 
-        facet_results = self.dataset.facets(
-            fields=[cluster_field],
-            page_size=int(self.config["data.max_clusters"]),
-            page=1,
-            asc=True,
-        )
-        all_cluster_ids = []
-        if "results" in facet_results:
-            facet_results = facet_results["results"]
-        if cluster_field not in facet_results:
-            raise ValueError(
-                f"No clusters with alias `{alias}`. Please check the schema."
+        # currently the logic for facets is that when it runs out of pages
+        # it just loops - therefore we need to store it in a simple hash
+        # and then add them to a list
+        all_cluster_ids = set()
+
+        while len(all_cluster_ids) < num_clusters:
+            facet_results = self.datasets.facets(
+                dataset_id=dataset_id,
+                fields=[cluster_field],
+                page_size=int(self.config["data.max_clusters"]),
+                page=1,
+                asc=True,
             )
-        for facet in facet_results[cluster_field]:
-            if facet["frequency"] > minimum_cluster_size:
-                all_cluster_ids.append(facet[cluster_field])
-        return all_cluster_ids
+            if "results" in facet_results:
+                facet_results = facet_results["results"]
+            if cluster_field not in facet_results:
+                raise ValueError(
+                    f"No clusters with alias `{alias}`. Please check the schema."
+                )
+            for facet in facet_results[cluster_field]:
+                if facet["frequency"] > minimum_cluster_size:
+                    curr_len = len(all_cluster_ids)
+                    all_cluster_ids.add(facet[cluster_field])
+                    new_len = len(all_cluster_ids)
+                    if new_len == curr_len:
+                        return list(all_cluster_ids)
+        return list(all_cluster_ids)
 
     @track
     def fit_dataset(
