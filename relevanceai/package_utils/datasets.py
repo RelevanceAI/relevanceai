@@ -24,7 +24,7 @@ DATASETS = [
     "online_retail",
     "news",
     "flipkart",
-    "realestate",
+    "realestate2",
 ]
 
 
@@ -485,7 +485,7 @@ def get_realestate_dataset(
         number_of_documents = 50
 
     documents = ExampleDatasets._get_dummy_dataset(
-        "realestate", number_of_documents, select_fields
+        "realestate2", number_of_documents, select_fields
     )
 
     # todo: fix the clustering results in the original dataset

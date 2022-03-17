@@ -455,7 +455,7 @@ class Write(Read):
             print("✅ Successfully ran!")
             return
         for k, v in results.items():
-            if k != []:
+            if v != []:
                 print("️❗❗Errors detected when running apply.")
                 return results
         print("✅ Successfully ran!")

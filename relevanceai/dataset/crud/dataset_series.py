@@ -8,6 +8,8 @@ import warnings
 import pandas as pd
 import numpy as np
 
+from tqdm import tqdm
+
 from relevanceai.package_utils.cache import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
@@ -239,6 +241,7 @@ class Series(BatchAPIClient):
         self,
         func: Callable,
         output_field: str,
+        filters: list = [],
         axis: int = 0,
     ):
         """
@@ -282,7 +285,7 @@ class Series(BatchAPIClient):
             raise ValueError("We do not support column-wise operations!")
 
         def bulk_fn(documents):
-            for d in documents:
+            for d in tqdm(documents):
                 try:
                     if self.is_field(self.field, d):
                         self.set_field(
@@ -293,7 +296,7 @@ class Series(BatchAPIClient):
             return documents
 
         return self.pull_update_push(
-            self.dataset_id, bulk_fn, select_fields=[self.field]
+            self.dataset_id, bulk_fn, select_fields=[self.field], filters=filters
         )
 
     @track
