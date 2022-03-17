@@ -412,6 +412,43 @@ class Client(BatchAPIClient, DocUtils):
             receiver_api_key=receiver_api_key,
         )
 
+
+    @track
+    def recieve_dataset(
+        self,
+        dataset_id: str,
+        sender_project: str,
+        sender_api_key: str,
+    ):
+        """
+        Recieve an individual a dataset.
+
+        Example
+        --------
+        >>> client = Client()
+        >>> client.admin.recieve_dataset(
+            dataset_id="research",
+            sender_project="...",
+            sender_api_key="..."
+        )
+
+        Parameters
+        -----------
+
+        dataset_id: str
+            The name of the dataset
+        sender_project: str
+            The project name that will send the dataset
+        sender_api_key: str
+            The project API key that will send the dataset
+
+        """
+        return self.admin.send_dataset(
+            dataset_id=dataset_id,
+            sender_project=sender_project,
+            sender_api_key=sender_api_key,
+        )
+
     @track
     def clone_dataset(
         self,
@@ -422,6 +459,7 @@ class Client(BatchAPIClient, DocUtils):
         project: Optional[str] = None,
         api_key: Optional[str] = None,
     ):
+        #To do this should be cloning a dataset in a project
         """
         Clone a dataset from another user's projects into your project.
 
