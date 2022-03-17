@@ -44,7 +44,7 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
     }
 
 
-class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
+class ClusterEvaluate(BatchAPIClient, DocUtils):
     def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
@@ -593,7 +593,6 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
     def plot_distributions(
         self,
-        cluster_field: str,
         numeric_field: str,
         top_indices: int = 10,
         dataset_id: str = None,
@@ -606,14 +605,15 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             import matplotlib.pyplot as plt
         except ModuleNotFoundError:
             print("You need to install seaborn! `pip install seaborn`.")
+        cluster_field = self._get_cluster_field_name()
         docs = self._get_all_documents(
-            dataset_id=self.dataset_id if dataset_id is None else dataset_id,
+            dataset_id=dataset_id if dataset_id is None else dataset_id,
             select_fields=[numeric_field, cluster_field],
         )
         df = pd.json_normalize(docs)
         top_comms = df[cluster_field].value_counts()
         for community in top_comms.index[:top_indices]:
             sample_comm_df = df[df[cluster_field] == community]
-            sns.displot(sample_comm_df["review_length"])
+            sns.displot(sample_comm_df[numeric_field])
             plt.title(community)
             plt.show()

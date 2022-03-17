@@ -14,7 +14,6 @@ from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.version_decorators import (
     introduced_in_version,
     beta,
-    track,
 )
 from relevanceai.vector_tools.local_nearest_neighbours import (
     NearestNeighbours,

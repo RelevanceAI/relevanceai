@@ -48,7 +48,7 @@ from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.errors import NoDocumentsError
 from relevanceai.package_utils.version_decorators import beta
-
+from relevanceai.workflows.cluster_ops.cluster_evaluate import ClusterEvaluate
 from doc_utils import DocUtils
 
 
@@ -79,7 +79,7 @@ METRIC_DESCRIPTION = {
 }
 
 
-class ClusterOps(BatchAPIClient):
+class ClusterOps(ClusterEvaluate):
 
     _cred_fn = ".creds.json"
 
