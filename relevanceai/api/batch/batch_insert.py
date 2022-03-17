@@ -12,6 +12,7 @@ import pandas as pd
 
 from ast import literal_eval
 from datetime import datetime
+from pathlib import Path
 from threading import Thread
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -28,7 +29,7 @@ from relevanceai.package_utils.utils import Utils
 from relevanceai.package_utils.make_id import _make_id
 
 
-BYTE_TO_MB = 1024 * 1024
+MB_TO_BYTE = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 
 SUCCESS_CODES = [200]
@@ -755,6 +756,277 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
             return {"failed_documents": failed_documents}
 
+    def _get_avg_document_size(
+        self,
+        dataset_id: str,
+        filters: list,
+        select_fields: list,
+        num_documents: int = 5,
+    ) -> int:
+        import orjson
+
+        documents = self.datasets.documents.get_where(
+            dataset_id,
+            filters=filters,
+            select_fields=select_fields,
+            page_size=num_documents,
+        )["documents"]
+        return (
+            sum(map(lambda document: len(orjson.dumps(document)), documents))
+            // num_documents
+        )
+
+    def _determine_optimal_chunk_size(
+        self, dataset_id: str, filters: list, select_fields: list
+    ):
+        document_size = self._get_avg_document_size(dataset_id, filters, select_fields)
+        return (50 * MB_TO_BYTE) // document_size
+
+    def pull_update_push_async_v2(
+        self,
+        dataset_id: str,
+        update_function,
+        updating_args: Optional[dict] = None,
+        updated_dataset_id: Optional[str] = None,
+        log_file: str = None,
+        retrieve_chunk_size: Optional[int] = None,
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        use_json_encoder: bool = True,
+        include_vector: bool = True,
+        show_progress_bar: bool = True,
+        insert: bool = False,
+    ):
+        """
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+
+        Parameters
+        ----------
+        dataset_id: str
+            The dataset_id of the collection where your original documents are
+
+        update_function
+            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+
+        updating_args: dict
+            Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+
+        updated_dataset_id: str
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+
+        log_file: str
+            The log file to direct any information or issues that may crop up.
+            If no log file is specified, one will automatically be created.
+
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+
+        filters: list
+            A list of filters to apply on the retrieval query
+
+        select_fields: list
+            A list of fields to query over
+
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+
+        include_vector: bool
+            If True, includes vectors in the updating query
+
+        show_progress_bar: bool
+            If True, shows a progress bar
+
+        insert: bool
+            If True, inserts rather than updates an already-existing dataset
+        """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
+        if retrieve_chunk_size is None:
+            retrieve_chunk_size = self._determine_optimal_chunk_size(
+                dataset_id, filters, select_fields
+            )
+            print(f"Setting retrieve_chunk_size to {retrieve_chunk_size}")
+
+        if (
+            max(retrieve_chunk_size, 10_000) == retrieve_chunk_size
+            and retrieve_chunk_size != 10_000
+        ):
+            print("Maximum value of retrieve_chunk_size is 10,000")
+            retrieve_chunk_size = 10_000
+
+        if not callable(update_function):
+            raise TypeError(
+                "Your update function needs to be a function! Please read the documentation if it is not."
+            )
+
+        cache_path = (
+            Path(".").resolve()
+            / Path(".relevanceai")
+            / Path(f"{dataset_id}-{hash(update_function)}")
+        )
+        if not cache_path.exists():
+            cache_path.mkdir(parents=True)
+
+        if log_file is None:
+            log_file = (
+                dataset_id
+                + "_"
+                + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+                + "_pull_update_push"
+                + ".log"
+            )
+            self.logger.info(f"Created {log_file}")
+
+        with FileLogger(fn=log_file, verbose=True):
+            num_documents = self.get_number_of_documents(dataset_id, filters)
+
+            # This number will determine how many requests are sent.
+            # Example: Suppose the number of documents is 1254 and
+            # retrieve_chunk_size is 100. Then the number of requests would
+            # be 1254 // 100, which would be 12, and one, which amounts to
+            # 13 requests. This must be defined ahead of time because the
+            # cursor predetermines the number of documents to retrieve on
+            # the first call. So, The first 12 calls would each get 100
+            # documents and call 13 would retrieve the remaining 54.
+            num_requests = (num_documents // retrieve_chunk_size) + 1
+
+            async def pull_update_push_subset(page_size: int, cursor: str = None):
+                response = await self.datasets.documents.get_where_async(
+                    dataset_id,
+                    filters=filters,
+                    cursor=cursor,
+                    page_size=page_size,
+                    select_fields=select_fields,
+                    include_vector=include_vector,
+                )
+
+                documents = response["documents"]
+
+                try:
+                    updated_documents = update_function(documents, **updating_args)
+                except Exception as e:
+                    self.logger.error("Your updating function does not work: " + str(e))
+                    traceback.print_exc()
+                    return
+
+                updated_ids = [document["_id"] for document in documents]
+
+                inserted = await self._process_documents(
+                    dataset_id=updated_dataset_id
+                    if updated_dataset_id is not None
+                    else dataset_id,
+                    documents=updated_documents,
+                    insert=insert,
+                    use_json_encoder=use_json_encoder,
+                )
+
+                return inserted, updated_ids
+
+            tasks = []
+            if retrieve_chunk_size >= num_documents:
+                tasks.append(pull_update_push_subset(num_documents, None))
+            else:
+                # Retrieve the cursor. While executing a get_where call just
+                # to retrieve the cursor is somewhat inefficient, this is
+                # the cleanest solution at the moment.
+                cursor = self.datasets.documents.get_where(
+                    dataset_id,
+                    filters=filters,
+                    page_size=retrieve_chunk_size,
+                    select_fields=select_fields,
+                    include_vector=False,  # Set to false to for speed
+                )["cursor"]
+
+                # The cursor is constrained by its first query. Specifically,
+                # if the query from which we get the cursor has a certain page
+                # size, further accesses through the cursor will be the same
+                # page size. Therefore, in the tasks below, the first task
+                # does a proper query of the first {retrieve_chunk_size}
+                # documents. Subsequent calls use the cursor to access the
+                # next {retrieve_chunk_size} documents {num_requests-1} times.
+                # The 0 is there to make the aforementioned statement
+                # explicit.
+                tasks.extend(
+                    [
+                        pull_update_push_subset(retrieve_chunk_size, None)
+                        if not task_num
+                        else pull_update_push_subset(0, cursor)
+                        for task_num in range(num_requests)
+                    ]
+                )
+
+            # The event loop is required to call asynchronous functions from
+            # a regular (synchronous) function. This class spins off a
+            # background thread that runs an event loop. All asynchronous
+            # tasks are run there.
+            class EventLoop(Thread):
+                def __init__(self, tasks, num_requests, show_progress_bar):
+                    super().__init__()
+                    self._loop = asyncio.new_event_loop()
+                    self.daemon = True
+
+                    self.futures = []
+                    self.tasks = tasks
+
+                    from relevanceai.package_utils.progress_bar import progress_bar
+
+                    self.show_progress_bar = show_progress_bar
+                    self.progress_tracker = progress_bar(
+                        range(num_requests), show_progress_bar=show_progress_bar
+                    )
+                    self.progress_iterator = iter(self.progress_tracker)
+
+                def run(self):
+                    self._loop.run_forever()
+
+                async def _create_future(self, task):
+                    return await asyncio.create_task(task)
+
+                def execute_tasks(self):
+                    self.futures.extend(
+                        [
+                            asyncio.run_coroutine_threadsafe(
+                                self._create_future(task), self._loop
+                            )
+                            for task in self.tasks
+                        ]
+                    )
+
+                    from concurrent.futures import as_completed
+
+                    for _ in as_completed(self.futures):
+                        if self.progress_tracker is not None:
+                            next(self.progress_iterator)
+                        if self.show_progress_bar:
+                            self.progress_tracker.update(1)
+
+                def terminate(self):
+                    self._loop.call_soon_threadsafe(self._loop.stop)
+                    self.join()
+
+            threaded_loop = EventLoop(tasks, num_requests, show_progress_bar)
+            threaded_loop.start()
+            threaded_loop.execute_tasks()
+            threaded_loop.terminate()
+
+            failed_documents = []
+            for future in threaded_loop.futures:
+                inserted, updated_ids = future.result()
+                failed_documents.extend(inserted["failed_documents"])
+
+            if failed_documents:
+                # This will be picked up by FileLogger
+                print("The following documents failed to be updated/inserted:")
+                for failed_document in failed_documents:
+                    print(f"  * {failed_document}")
+
+            self.logger.success("Pull, update, and push is complete!")
+
+            return {"failed_documents": failed_documents}
+
     def pull_update_push_to_cloud(
         self,
         dataset_id: str,
@@ -1016,7 +1288,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Insert documents
         test_doc = json.dumps(documents[0], indent=4)
-        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / BYTE_TO_MB
+        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
