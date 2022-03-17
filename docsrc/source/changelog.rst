@@ -18,6 +18,7 @@ Features/Updates:
 - Fix unique cluster IDs
 - Add feature for workflows
 - Add `operate` function to run on each cluster
+- Add a way to create centroids if they do not exist using the `create_centroids` function
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
