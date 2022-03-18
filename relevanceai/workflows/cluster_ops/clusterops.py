@@ -2312,6 +2312,8 @@ class ClusterOps(ClusterEvaluate):
         cluster_ids = self.unique_cluster_ids()
         for cluster_id in tqdm(cluster_ids):
             self._operate(cluster_id, field, output, func)
+        if output_field is not None:
+            self.update_documents_within_clusters(output, output_field)
         return output
 
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
