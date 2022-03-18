@@ -88,7 +88,7 @@ class Client(BatchAPIClient, DocUtils):
             credentials = self._token_to_auth(project)
         elif project is None or api_key is None or force_refresh:
             credentials = self._token_to_auth(token)
-            
+
         try:
             self.project = credentials["project"]
         except Exception:
