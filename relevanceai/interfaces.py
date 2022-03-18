@@ -412,7 +412,6 @@ class Client(BatchAPIClient, DocUtils):
             receiver_api_key=receiver_api_key,
         )
 
-
     @track
     def receive_dataset(
         self,
@@ -459,7 +458,7 @@ class Client(BatchAPIClient, DocUtils):
         project: Optional[str] = None,
         api_key: Optional[str] = None,
     ):
-        #To do this should be cloning a dataset in a project
+        # To do this should be cloning a dataset in a project
         """
         Clone a dataset from another user's projects into your project.
 
