@@ -39,6 +39,7 @@ class Read(BatchAPIClient):
         audio_fields: Optional[List[str]] = None,
         highlight_fields: Optional[Dict[str, list]] = None,
         text_fields: Optional[List[str]] = None,
+        config=None,
         **kw,
     ):
         self.project = project
@@ -71,6 +72,7 @@ class Read(BatchAPIClient):
         self.audio_fields = [] if audio_fields is None else audio_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
         self.text_fields = text_fields
+        self.config = config
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     @property  # type: ignore

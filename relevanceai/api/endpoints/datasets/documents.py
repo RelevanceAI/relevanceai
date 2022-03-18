@@ -405,8 +405,7 @@ class DocumentsClient(_Base):
 
         """
 
-        base_url = self.config.get_option("api.base_ingest_url")
-
+        base_url = self.base_ingest_url
         if return_documents is False:
             return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",

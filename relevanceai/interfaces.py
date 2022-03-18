@@ -132,12 +132,14 @@ class Client(BatchAPIClient, DocUtils):
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
             dataset_id="",
+            config=self.config,
         )._insert_documents
         self.insert_csv = Dataset(
             project=self.project,
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
             dataset_id="",
+            config=self.config,
         )._insert_csv
 
     # @property
@@ -345,6 +347,7 @@ class Client(BatchAPIClient, DocUtils):
             audio_fields=audio_fields,
             highlight_fields=highlight_fields,
             text_fields=text_fields,
+            config=self.config,
         )
 
     ### Clustering
@@ -562,3 +565,12 @@ class Client(BatchAPIClient, DocUtils):
         product features and improve user experience.
         """
         self.config["mixpanel.is_tracking_enabled"] = False
+
+    @property
+    def api_docs(self):
+        """
+        API documentation
+        """
+        doc_url = self.base_url + "/documentation"
+        print(doc_url)
+        return doc_url

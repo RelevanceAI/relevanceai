@@ -172,9 +172,6 @@ class Transport(JSONEncoderUtils):
         start_time = time.perf_counter()
 
         if base_url is None:
-            # if Transport.is_search_in_path(base_url) and not hasattr(self, "output_format"):
-            #     base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
-            # else:
             base_url = self.config.get_option("api.base_url")
 
         if output_format is None:

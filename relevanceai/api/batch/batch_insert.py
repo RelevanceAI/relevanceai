@@ -288,15 +288,15 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         >>> from relevanceai import Client
         >>> url = "https://api-aueast.relevance.ai/v1/"
-        >>> collection = ""
+        >>> dataset_id = ""
         >>> project = ""
         >>> api_key = ""
         >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
-        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
+        >>> documents = client.datasets.documents.get_where(dataset_id, select_fields=['title'])
         >>> while len(documents['documents']) > 0:
         >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
-        >>>     client.update_documents(collection, documents['documents'])
-        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=documents['cursor'])
+        >>>     client.update_documents(dataset_id, documents['documents'])
+        >>>     documents = client.datasets.documents.get_where(dataset_id, select_fields=['product_name'], cursor=documents['cursor'])
 
         Parameters
         ----------

@@ -29,6 +29,7 @@ class Dataset(Export, Plot, Operations, Search):
         audio_fields: Optional[List[str]] = None,
         highlight_fields: Optional[Dict[str, List]] = None,
         text_fields: Optional[List[str]] = None,
+        config=None,
         **kw,
     ):
         self.project = project
@@ -41,6 +42,7 @@ class Dataset(Export, Plot, Operations, Search):
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
         self.text_fields = [] if text_fields is None else text_fields
         self.firebase_uid = firebase_uid
+        self.config = config
 
         super().__init__(
             project=project,
@@ -52,6 +54,7 @@ class Dataset(Export, Plot, Operations, Search):
             audio_fields=audio_fields,
             highlight_fields=highlight_fields,
             text_fields=text_fields,
+            config=config,
             **kw,
         )
         self.search = Search(
