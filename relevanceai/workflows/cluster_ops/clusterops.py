@@ -35,6 +35,7 @@ from relevanceai.workflows.cluster_ops.cluster_base import (
     SklearnCentroidBase,
 )
 from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby, ClusterAgg
+from relevanceai.reports.cluster_report import ClusterReport
 
 from relevanceai.package_utils.analytics_funcs import track
 
@@ -856,7 +857,7 @@ class ClusterOps(BatchAPIClient):
         vector_fields: List[str],
         filters: Optional[List[Dict]] = None,
         return_only_clusters: bool = True,
-        include_grade: bool = False,
+        include_report: bool = True,
         update: bool = True,
         inplace: bool = False,
     ):
@@ -880,8 +881,8 @@ class ClusterOps(BatchAPIClient):
             function returns the clusters. Else, the function returns the
             original documents.
 
-        include_grade: bool
-            An indictor that determines whether to include (True) a grade
+        include_report: bool
+            An indictor that determines whether to include (True) a report and grade
             base on the mean silhouette score or not (False).
 
         update: bool
@@ -962,9 +963,17 @@ class ClusterOps(BatchAPIClient):
         print("Fitting and predicting on all relevant documents")
         cluster_labels = self._label_clusters(self.model.fit_predict(vectors))
 
-        if include_grade:
+        if include_report:
             try:
                 self._calculate_silhouette_grade(vectors, cluster_labels)
+                report = ClusterReport(
+                    X=vectors, cluster_labels=cluster_labels,
+                    num_clusters=len(cluster_labels), model=self.model
+                )
+                response = self.store_cluster_report(
+                    report_name=self._get_cluster_field_name(self.alias),
+                    report=report.internal_report
+                )
             except Exception as e:
                 print(e)
                 pass
@@ -1002,7 +1011,7 @@ class ClusterOps(BatchAPIClient):
         dataset: Union[Dataset, str],
         vector_fields: List,
         filters: Optional[List] = None,
-        include_grade: bool = False,
+        include_report: bool = False,
         verbose: bool = True,
     ):
         """
@@ -1085,7 +1094,7 @@ class ClusterOps(BatchAPIClient):
             docs,
             return_only_clusters=True,
             inplace=False,
-            include_grade=include_grade,
+            include_report=include_report,
         )
 
         # Updating the db
@@ -1347,7 +1356,7 @@ class ClusterOps(BatchAPIClient):
                 dataset=self.dataset_id,
                 vector_fields=vector_fields,
                 filters=cluster_filters,
-                include_grade=False,
+                include_report=False,
                 verbose=False,
             )
 
@@ -1789,7 +1798,7 @@ class ClusterOps(BatchAPIClient):
         documents: List[Dict],
         return_only_clusters: bool = True,
         inplace: bool = True,
-        include_grade: bool = False,
+        include_report: bool = False,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -1846,7 +1855,7 @@ class ClusterOps(BatchAPIClient):
                 labels=cluster_labels, prev_cluster_labels=prev_cluster_labels
             )
 
-        if include_grade:
+        if include_report:
             try:
                 self._calculate_silhouette_grade(vectors, cluster_labels_values)
             except Exception as e:
