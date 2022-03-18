@@ -133,6 +133,8 @@ class DocumentsClient(_Base):
         include_vector: bool = True,
         random_state: int = 0,
         is_random: bool = False,
+        use_cursor: bool = True,
+        after_id: List[str] = [],
     ):
         """
         Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -230,6 +232,8 @@ class DocumentsClient(_Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
+                "after_id": after_id,
+                "use_cursor": use_cursor,
             },
         )
 
