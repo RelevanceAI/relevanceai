@@ -216,7 +216,9 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         print(f"Connecting to {self.region}...")
-        return self.admin._ping()
+        return self.list_datasets()
+        # the ping function is now defunct
+        # return self.admin._ping()
 
     ### CRUD-related utility functions
 
@@ -292,7 +294,7 @@ class Client(BatchAPIClient, DocUtils):
 
         """
         self.print_dashboard_message(
-            "You can view all your datasets at https://cloud.relevance.ai/datasets."
+            "You can view all your datasets at https://cloud.relevance.ai/datasets/"
         )
         return self.datasets.list()
 

@@ -66,7 +66,10 @@ class SentimentOps:
         scores = softmax(scores)
         ranking = np.argsort(scores)
         ranking = ranking[::-1]
+        sentiment = self.label_mapping[ranking[0]]
+        score = np.round(float(scores[ranking[0]]), 4)
         return {
-            "sentiment": self.label_mapping[ranking[0]],
+            "sentiment": sentiment,
             "score": np.round(float(scores[ranking[0]]), 4),
+            "overall_sentiment_score": score if sentiment == "positive" else -score,
         }

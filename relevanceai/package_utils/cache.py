@@ -10,6 +10,8 @@ Key purposes of this new caching:
 from threading import RLock
 from functools import update_wrapper
 from collections import namedtuple
+from urllib.parse import MAX_CACHE_SIZE
+from relevanceai.package_utils.constants import MAX_CACHESIZE
 
 _CacheInfo = namedtuple("_CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 
@@ -189,7 +191,7 @@ def _lru_cache_wrapper(user_function, maxsize, typed, _CacheInfo):
     return wrapper
 
 
-def lru_cache(maxsize=128, typed=False):
+def lru_cache(maxsize=MAX_CACHE_SIZE, typed=False):
     """Least-recently-used cache decorator.
     If *maxsize* is set to None, the LRU features are disabled and the cache
     can grow without bound.
