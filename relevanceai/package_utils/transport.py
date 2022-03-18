@@ -195,16 +195,29 @@ class Transport(JSONEncoderUtils):
                     )
 
                 # TODO: Add other endpoints in here too
-                req = Request(
-                    method=method.upper(),
-                    url=request_url,
-                    headers=self.auth_header,
-                    json=parameters if method.upper() == "POST" else {},
-                    params=parameters if method.upper() == "GET" else {},
-                ).prepare()
+                if method.upper() == "POST":
+                    response = requests.post(
+                        url=request_url, headers=self.auth_header, json=parameters
+                    )
+                elif method.upper() == "GET":
+                    response = requests.get(
+                        url=request_url, headers=self.auth_header, params=parameters
+                    )
+                else:
+                    raise ValueError(
+                        "Requests call is not currently supported at the moment."
+                    )
 
-                with requests.Session() as s:
-                    response = s.send(req)
+                # req = Request(
+                #     method=method.upper(),
+                #     url=request_url,
+                #     headers=self.auth_header,
+                #     json=parameters if method.upper() == "POST" else {},
+                #     params=parameters if method.upper() == "GET" else {},
+                # ).prepare()
+
+                # with requests.Session() as s:
+                #     response = s.send(req)
 
                 # Successful response
                 if response.status_code == 200:

@@ -210,7 +210,7 @@ class Statistics(Read):
         Gives you a summary of the health of your vectors, e.g. how many documents with vectors are missing, how many documents with zero vectors
 
         Parameters
-        ----------
+        -------------
 
         output_format: str
             The format of the output. Must either be "dataframe" or "json".
@@ -228,6 +228,7 @@ class Statistics(Read):
         """
         results = self.datasets.monitor.health(self.dataset_id)
         if output_format == "dataframe":
+            pd.set_option("display.max_rows", None)
             return pd.DataFrame(results).T
         elif output_format == "json":
             return results
