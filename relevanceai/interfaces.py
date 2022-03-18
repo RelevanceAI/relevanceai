@@ -82,7 +82,11 @@ class Client(BatchAPIClient, DocUtils):
         except Exception as e:
             pass
 
-        if project is None or api_key is None or force_refresh:
+        if token:
+            credentials = self._token_to_auth(token)
+        elif project and project.count(":") >= 1:
+            credentials = self._token_to_auth(project)
+        elif project is None or api_key is None or force_refresh:
             credentials = self._token_to_auth(token)
 
         try:
