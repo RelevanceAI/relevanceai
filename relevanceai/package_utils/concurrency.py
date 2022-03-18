@@ -41,6 +41,7 @@ def multiprocess(
     chunksize=20,
     post_func_hook: Callable = None,
     show_progress_bar: bool = False,
+    process_args: tuple = (),
 ):
     # with progress_bar(total=int(len(iterables) / chunksize),
     #     show_progress_bar=show_progress_bar) as pbar:
@@ -52,7 +53,10 @@ def multiprocess(
         )
         progress_iterator = iter(progress_tracker)
 
-        futures = [executor.submit(func, it) for it in chunk(iterables, chunksize)]
+        futures = [
+            executor.submit(func, it, process_args)
+            for it in chunk(iterables, chunksize)
+        ]
         results = []
         for future in as_completed(futures):
             if post_func_hook:
