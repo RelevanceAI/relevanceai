@@ -2426,7 +2426,7 @@ class ClusterOps(ClusterEvaluate):
                         specify `output_field=`.
                     """
                     )
-                update = {}
+                update: dict = {}
                 self.set_field(output_field, update, update_value)
             else:
                 update = update_value
