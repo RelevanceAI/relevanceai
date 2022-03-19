@@ -132,3 +132,9 @@ class Plot(Statistics):
             fig = px.scatter_3d(df, **dims, color=color, width=width, height=height)
 
         fig.show()
+
+    def show_workflows(self):
+        from relevanceai.workflows.diagrams import create_diagram
+
+        workflows = self.metadata["workflows"]
+        return create_diagram(workflows)
