@@ -4,7 +4,12 @@ Create workflow diagrams.
 
 
 def create_diagram(workflows):
-    import graphviz
+    try:
+        import graphviz
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError(
+            "Install graphviz following instructions here: https://graphviz.org/download/"
+        )
 
     dot = graphviz.Digraph(
         engine="dot",
