@@ -106,16 +106,17 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
 
 import pandas as pd
 import numpy as np
+import functools
+
+from typing import Union, List, Dict, Any, Optional
+from warnings import warn
+from doc_utils import DocUtils
 from relevanceai.package_utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
 )
 from relevanceai.package_utils.warnings import warn_function_is_work_in_progress
 from relevanceai.reports.cluster_report.grading import get_silhouette_grade
-from typing import Union, List, Dict, Any, Optional
-import functools
-from warnings import warn
-from doc_utils import DocUtils
 from relevanceai.package_utils.analytics_funcs import track_event_usage
 
 try:
@@ -304,6 +305,9 @@ class ClusterReport(DocUtils):
                     "No centroids detected. We recommend including centroids to get all stats."
                 )
             return
+
+    def report(self):
+        return self.internal_report()
 
     @property  # type: ignore
     @functools.lru_cache(maxsize=128)
@@ -624,70 +628,3 @@ class ClusterReport(DocUtils):
         )
         medoids = X[medoid_indexes]
         return medoids
-
-    def get_class_rules(self, tree: DecisionTreeClassifier, feature_names: list):
-        self.inner_tree: _tree.Tree = tree.tree_
-        self.classes = tree.classes_
-        self.class_rules_dict: Dict[Any, Any] = dict()
-        self.tree_dfs()
-
-    def tree_dfs(self, node_id=0, current_rule: Optional[list] = None):
-        current_rule = [] if current_rule is None else current_rule
-        # if not hasattr(self, "classes"):
-        #    self.get_class_rules()
-
-        # feature[i] holds the feature to split on, for the internal node i.
-        split_feature = self.inner_tree.feature[node_id]
-        if split_feature != _tree.TREE_UNDEFINED:  # internal node
-            name = self.feature_names[split_feature]
-            threshold = self.inner_tree.threshold[node_id]
-            # left child
-            left_rule = current_rule + ["({} <= {})".format(name, threshold)]
-            self.tree_dfs(self.inner_tree.children_left[node_id], left_rule)
-            # right child
-            right_rule = current_rule + ["({} > {})".format(name, threshold)]
-            self.tree_dfs(self.inner_tree.children_right[node_id], right_rule)
-        else:  # leaf
-            dist = self.inner_tree.value[node_id][0]
-            dist = dist / dist.sum()
-            max_idx = dist.argmax()
-            if len(current_rule) == 0:
-                rule_string = "ALL"
-            else:
-                rule_string = " and ".join(current_rule)
-            # register new rule to dictionary
-            selected_class = self.classes[max_idx]
-            class_probability = dist[max_idx]
-            class_rules = self.class_rules_dict.get(selected_class, [])
-            class_rules.append((rule_string, class_probability))
-            self.class_rules_dict[selected_class] = class_rules
-
-    def cluster_reporting(self, data: pd.DataFrame, clusters, max_depth: int = 5):
-        # Create Model
-        tree = DecisionTreeClassifier(max_depth=max_depth, criterion="entropy")
-        tree.fit(data, clusters)
-        print(tree.score(data, clusters))
-
-        # Generate Report
-        self.feature_names = data.columns
-        self.get_class_rules(tree, self.feature_names)
-
-        report_class_list = []
-
-        for class_name in self.class_rules_dict.keys():
-            rule_list = self.class_rules_dict[class_name]
-            combined_string = ""
-            for rule in rule_list:
-                combined_string += "[{}] {}\n\n".format(rule[1], rule[0])
-            report_class_list.append((class_name, combined_string))
-
-        cluster_instance_df = pd.Series(clusters).value_counts().reset_index()
-        cluster_instance_df.columns = ["class_name", "instance_count"]
-
-        report_df = pd.DataFrame(report_class_list, columns=["class_name", "rule_list"])
-        report_df = pd.merge(
-            cluster_instance_df, report_df, on="class_name", how="left"
-        )
-        return report_df.sort_values(by="class_name")[
-            ["class_name", "instance_count", "rule_list"]
-        ]
