@@ -1896,7 +1896,7 @@ class ClusterOps(ClusterEvaluate):
 
     @staticmethod
     def _calculate_silhouette_grade(vectors, cluster_labels):
-        from relevanceai.reports.cluster_report.grading import get_silhouette_grade
+        from relevanceai.report.cluster.grading import get_silhouette_grade
         from sklearn.metrics import silhouette_samples
 
         score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
@@ -2251,7 +2251,7 @@ class ClusterOps(ClusterEvaluate):
             raise ValueError(
                 "We currently do not support more than 1 vector field when reporting."
             )
-        from relevanceai.reports.cluster_report import ClusterReport
+        from relevanceai.report.cluster import ClusterReport
 
         # X is all the vectors
         cluster_field_name = self._get_cluster_field_name()

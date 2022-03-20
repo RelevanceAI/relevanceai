@@ -25,7 +25,7 @@ to store it in Relevance AI.
     X = np.array(df['base_vector_'].tolist())
 
 
-    from relevanceai.reports.cluster_report import ClusterReport
+    from relevanceai.report.cluster import ClusterReport
     from sklearn.cluster import KMeans
 
     N_CLUSTERS = 2
@@ -68,7 +68,7 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
 
 .. code-block::
 
-    from relevanceai.reports.cluster_report import ClusterReport
+    from relevanceai.report.cluster import ClusterReport
 
     import hdbscan
     clusterer = hdbscan.HDBSCAN()
@@ -87,7 +87,7 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
 
 .. code-block::
 
-    from relevanceai.reports.cluster_report import ClusterReport
+    from relevanceai.report.cluster import ClusterReport
 
     import hdbscan
     clusterer = hdbscan.HDBSCAN()
@@ -116,8 +116,9 @@ from relevanceai.package_utils.integration_checks import (
     is_sklearn_available,
 )
 from relevanceai.package_utils.warnings import warn_function_is_work_in_progress
-from relevanceai.reports.cluster_report.grading import get_silhouette_grade
 from relevanceai.package_utils.analytics_funcs import track_event_usage
+from relevanceai.report.cluster.grading import get_silhouette_grade
+
 
 try:
     from sklearn.metrics import (
@@ -307,7 +308,7 @@ class ClusterReport(DocUtils):
             return
 
     def report(self):
-        return self.internal_report()
+        return self.internal_report
 
     @property  # type: ignore
     @functools.lru_cache(maxsize=128)

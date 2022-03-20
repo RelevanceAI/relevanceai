@@ -29,7 +29,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    clusterer
    cluster_base
    reloading_clusterers
-   relevanceai.cluster_report
+   relevanceai.report.cluster
    subclustering
 
 .. toctree::

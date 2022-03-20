@@ -1,6 +1,6 @@
 Cluster Evaluation
 ===================================
 
-.. automodule:: relevanceai.reports.cluster_report.cluster_report
+.. automodule:: relevanceai.report.cluster.report
    :members:
    :undoc-members: tree_df
