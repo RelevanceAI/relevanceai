@@ -5,12 +5,13 @@ Test the clustering workflow from getting the documents, clustering and then ins
 import pytest
 
 from relevanceai import Client
-from relevanceai.dataset_api import Dataset
+from relevanceai.interfaces import Dataset
 
-from relevanceai.clusterer import ClusterOps
-from relevanceai.clusterer import CentroidClusterBase
+from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+from relevanceai.workflows.cluster_ops.cluster_base import CentroidClusterBase
 
 
+@pytest.mark.skip(reason="No longer relevant")
 def test_old_cluster_integration(test_client: Client, vector_dataset_id):
     """Test for the entire clustering workflow."""
     # Retrieve a previous dataset

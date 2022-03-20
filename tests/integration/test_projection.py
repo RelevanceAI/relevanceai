@@ -3,8 +3,12 @@
 import pytest
 from typing_extensions import get_args
 
-from relevanceai.vector_tools.constants import DIM_REDUCTION, DIM_REDUCTION_DEFAULT_ARGS
-from relevanceai.vector_tools.constants import CLUSTER, CLUSTER_DEFAULT_ARGS
+from relevanceai.workflows.cluster_ops.constants import (
+    DIM_REDUCTION,
+    DIM_REDUCTION_DEFAULT_ARGS,
+    CLUSTER,
+    CLUSTER_DEFAULT_ARGS,
+)
 
 
 @pytest.fixture(

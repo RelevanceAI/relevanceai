@@ -1,4 +1,4 @@
-from relevanceai.dataset_api import Dataset
+from relevanceai.interfaces import Dataset
 
 from tests.globals.constants import generate_random_vector
 

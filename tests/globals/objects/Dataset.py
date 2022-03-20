@@ -3,14 +3,14 @@ import pytest
 from typing import Dict, List, NamedTuple
 
 from relevanceai import Client
-from relevanceai.dataset_api import Dataset
+from relevanceai.interfaces import Dataset
 
 
 @pytest.fixture(scope="function")
 def test_df(test_client: Client, vector_dataset_id: str) -> Dataset:
     df = test_client.Dataset(vector_dataset_id)
     yield df
-    df.delete()
+    # df.delete()
 
 
 @pytest.fixture(scope="function")

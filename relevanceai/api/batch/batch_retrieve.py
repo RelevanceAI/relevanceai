@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """Batch Retrieve"""
 
-from typing import List, Optional
 import math
+import traceback
+from typing import List, Optional
+from relevanceai.package_utils.cache import lru_cache
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.chunk import Chunker
-from relevanceai.progress_bar import progress_bar
+from relevanceai.package_utils.progress_bar import progress_bar
+from relevanceai.package_utils.constants import MAX_CACHESIZE
+from relevanceai.package_utils.list_to_tuple import list_to_tuple
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -98,6 +102,7 @@ class BatchRetrieveClient(APIClient, Chunker):
             return {"documents": data, "cursor": resp["cursor"]}
         return data
 
+    @lru_cache(maxsize=MAX_CACHESIZE)
     def _get_all_documents(
         self,
         dataset_id: str,
@@ -161,12 +166,16 @@ class BatchRetrieveClient(APIClient, Chunker):
                 select_fields=select_fields,
                 include_vector=include_vector,
             )
-            length = len(x["documents"])
-            cursor = x["cursor"]
+            try:
+                length = len(x["documents"])
+                cursor = x["cursor"]
 
-            # Append fetched data to the full data
-            if length > 0:
-                full_data += x["documents"]
+                # Append fetched data to the full data
+                if length > 0:
+                    full_data += x["documents"]
+            except Exception as e:
+                traceback.print_exc()
+                pass
         return full_data
 
     def get_number_of_documents(self, dataset_id, filters: Optional[List] = None):

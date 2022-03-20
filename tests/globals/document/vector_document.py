@@ -1,5 +1,7 @@
 from typing import Dict
 
+from relevanceai.package_utils.make_id import _make_id
+
 from tests.globals.constants import (
     generate_random_label,
     generate_random_string,
@@ -8,9 +10,8 @@ from tests.globals.constants import (
 )
 
 
-def vector_document(_id: str) -> Dict:
-    return {
-        "_id": _id,
+def vector_document() -> Dict:
+    document = {
         "sample_1_label": generate_random_label(),
         "sample_2_label": generate_random_label(),
         "sample_3_label": generate_random_label(),
@@ -30,3 +31,5 @@ def vector_document(_id: str) -> Dict:
             }
         ],
     }
+    document["_id"] = _make_id(document)
+    return document

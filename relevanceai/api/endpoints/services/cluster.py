@@ -1,6 +1,6 @@
 from typing import Optional
 
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.services.centroids import CentroidsClient
 
 

@@ -12,27 +12,38 @@ It is instantiated like this:
 
     from relevanceai import Client
     client = Client()
-    df = client.Dataset("sample_dataset_id")
-    df.head()
+    ds = client.Dataset("sample_dataset_id")
+    ds.head()
 
-.. autoclass:: relevanceai.dataset_api.dataset_write.Write
+You can also easily access metadata using the following: 
+
+.. code-block::
+
+    ds = client.Dataset("_mock_dataset_")
+    ds.metadata['value'] = 3
+    ds.metadata['strong_values'] = 10
+    import time
+    time.sleep(1)
+    ds.metadata
+
+.. autoclass:: relevanceai.dataset_crud.dataset_write.Write
     :members:
-    :special-members: relevanceai.dataset_api.dataset.Write.insert_csv
+    :special-members: relevanceai.dataset_crud.dataset.Write.insert_csv
 
-.. autoclass:: relevanceai.dataset_api.dataset_read.Read
+.. autoclass:: relevanceai.dataset_crud.dataset_read.Read
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset_stats.Stats
+.. autoclass:: relevanceai.dataset_crud.dataset_stats.Stats
     :members:
 
-.. autoclass:: relevanceai.dataset_api.dataset_export.Export
+.. autoclass:: relevanceai.export.dataset_export.Export
     :members:
 
-.. autoclass:: relevanceai.dataset_api.dataset_series.Series
+.. autoclass:: relevanceai.dataset_crud.dataset_series.Series
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset_operations.Operations
+.. autoclass:: relevanceai.dataset_ops.dataset_operations.Operations
     :members:
     :exclude-members: label_with_model_from_dataset, label_vector, label_document

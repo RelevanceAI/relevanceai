@@ -7,29 +7,26 @@ import os
 import sys
 import time
 import traceback
-import uuid
 
 import pandas as pd
 
 from ast import literal_eval
 from datetime import datetime
-from functools import partial
-from pathlib import Path
 from threading import Thread
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from doc_utils import DocUtils
-
-from relevanceai.analytics_funcs import track
+from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.api.endpoints.client import APIClient
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.batch.chunk import Chunker
 from relevanceai.api.batch.local_logger import PullUpdatePushLocalLogger
-from relevanceai.concurrency import multiprocess, multithread
-from relevanceai.errors import MissingFieldError
-from relevanceai.logger import FileLogger
-from relevanceai.progress_bar import progress_bar
-from relevanceai.utils import Utils
+from relevanceai.package_utils.concurrency import multiprocess, multithread
+from relevanceai.package_utils.errors import MissingFieldError
+from relevanceai.package_utils.logger import FileLogger
+from relevanceai.package_utils.progress_bar import progress_bar
+from relevanceai.package_utils.utils import Utils
+from relevanceai.package_utils.make_id import _make_id
+
 
 BYTE_TO_MB = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
@@ -235,7 +232,9 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         # auto_generate_id
         if "_id" not in chunk.columns and auto_generate_id:
             index = chunk.index
-            uuids = [uuid.uuid4() for _ in range(len(index))]
+            uuids = [
+                _make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
+            ]
             chunk.insert(0, "_id", uuids, False)
             self.logger.warning(
                 "We will be auto-generating IDs since no id field is detected"
@@ -364,6 +363,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
         use_json_encoder: bool = True,
+        log_to_file: bool = True,
     ):
         """
         Loops through every document in your collection and applies a function (that is specified by you) to the documents.
@@ -436,7 +436,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             )
             self.logger.info(f"Created {updated_documents_file}")
 
-        with FileLogger(fn=log_file, verbose=True):
+        with FileLogger(fn=log_file, verbose=True, log_to_file=log_to_file):
             # Instantiate the logger to document the successful IDs
             PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(updated_documents_file)
 
@@ -478,7 +478,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 documents = orig_json["documents"]
 
                 try:
-                    updated_data = update_function(documents)
+                    updated_data = update_function(documents, **updating_args)
                 except Exception as e:
                     self.logger.error("Your updating function does not work: " + str(e))
                     traceback.print_exc()
@@ -521,7 +521,8 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     print(f"  * {failed_document}")
 
         self.logger.info(f"Deleting {updated_documents_file}")
-        os.remove(updated_documents_file)
+        if os.path.exists(updated_documents_file):
+            os.remove(updated_documents_file)
 
         self.logger.success(f"Pull, Update, Push is complete!")
 
@@ -698,7 +699,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                     self.futures = []
                     self.tasks = tasks
 
-                    from relevanceai.progress_bar import progress_bar
+                    from relevanceai.package_utils.progress_bar import progress_bar
 
                     self.show_progress_bar = show_progress_bar
                     self.progress_tracker = progress_bar(

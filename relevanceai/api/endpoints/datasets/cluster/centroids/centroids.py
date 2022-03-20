@@ -1,4 +1,4 @@
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from typing import List, Optional
 
 
