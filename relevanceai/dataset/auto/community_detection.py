@@ -20,7 +20,6 @@ from relevanceai.vector_tools.local_nearest_neighbours import (
     NEAREST_NEIGHBOURS,
 )
 
-from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
 
 # TODO: Separate out operations into different files - cluster/search/dr
 
@@ -260,6 +259,9 @@ class CommunityDetection(Write):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
         )
         # Return a ClusterOps object
+
+        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+
         cluster_ops = ClusterOps(
             # model=model,
             alias=alias,
