@@ -19,6 +19,8 @@ Features/Updates:
 - Add feature for workflows
 - Add `operate` function to run on each cluster
 - Add a way to create centroids if they do not exist using the `create_centroids` function
+- Fix metadata insertion eperience
+- Fix community detection to return clusterops object
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
