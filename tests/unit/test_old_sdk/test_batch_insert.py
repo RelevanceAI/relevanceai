@@ -4,15 +4,22 @@ import pytest
 
 import numpy as np
 
+from functools import partial
 from typing import Dict, List
 
 from relevanceai import Client
 
-from tests.globals.constants import generate_dataset_id
+from tests.globals.constants import generate_dataset_id, generate_random_integer
 from tests.conftest import correct_client_config, test_client
 
 
 def do_nothing(documents):
+    return documents
+
+
+def add_new_column(documents, column, value):
+    for document in documents:
+        document[column] = value
     return documents
 
 
@@ -144,9 +151,20 @@ class TestPullUpdatePush:
         response = test_client.pull_update_push(sample_dataset_id, do_nothing)
         assert len(response["failed_documents"]) == 0, "Failed to insert documents"
 
+
+class TestPullUpdatePushAsync:
     def test_pull_update_push_async(
-        self, test_client: Client, simple_documents: List[Dict], sample_dataset_id: str
+        self, test_client: Client, vector_documents: List[Dict], sample_dataset_id: str
     ):
-        test_client._insert_documents(sample_dataset_id, simple_documents)
-        response = test_client.pull_update_push_async(sample_dataset_id, do_nothing)
-        assert len(response["failed_documents"]) == 0, "Failed to insert documents"
+        column = "sample_7_value"
+        value = -1
+        fn = partial(add_new_column, column=column, value=value)
+
+        test_client._insert_documents(sample_dataset_id, vector_documents)
+
+        ds = test_client.Dataset(sample_dataset_id)
+        ds.pull_update_push_async(sample_dataset_id, fn)
+
+        documents = ds.get_all_documents()
+        for document in documents:
+            assert document[column] == value
