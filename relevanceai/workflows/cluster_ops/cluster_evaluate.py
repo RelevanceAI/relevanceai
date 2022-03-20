@@ -633,11 +633,24 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         top_indices: int = 10,
         dataset_id: str = None,
         asc: bool = True,
-        bins: int = None,
     ):
         """
         Plot the sentence length distributions across each cluster
         measure_function is run on each cluster and plots
+
+        Parameters
+        ------------
+
+        numeric_field: str
+            The numeric field to use
+        measure_function: Callable
+            Measure function to use on the array
+        top_indices: int
+            The number of graphs you want to see what they are ranked
+        dataset_id: str
+            The dataset ID to use. If None is specified, it will assume the last one.
+        asc: bool
+            If True, returns the top functions
 
         Example
         --------
@@ -645,7 +658,11 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         .. code-block::
 
             from scipy.stats import skew
-            ops.plot_distributions_measure(numeric_field, skew, dataset_id=dataset_id)
+            ops.plot_distributions_measure(
+                numeric_field, skew,
+                dataset_id=dataset_id
+            )
+
         """
         try:
             import seaborn as sns
