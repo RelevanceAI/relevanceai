@@ -20,7 +20,7 @@ from relevanceai.vector_tools.local_nearest_neighbours import (
     NEAREST_NEIGHBOURS,
 )
 
-from relevanceai import ClusterOps
+from relevanceai.interfaces import ClusterOps
 
 # TODO: Separate out operations into different files - cluster/search/dr
 
