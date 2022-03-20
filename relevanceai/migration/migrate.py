@@ -35,10 +35,6 @@ def migrate_dataset(
             new_dataset_id="new_sample_dataset")
 
     """
-
-    SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-    print(f"Access tokens from: {SIGNUP_URL}")
-
     from relevanceai import Client
     from relevanceai.package_utils.logger import FileLogger
 
