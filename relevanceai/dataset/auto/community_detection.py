@@ -272,6 +272,8 @@ class CommunityDetection(Write):
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
         )
+        print("Creating centroids...")
         with FileLogger(log_file):
             result = cluster_ops.create_centroids([field])
+        print("✅ Uploaded centroids.")
         return cluster_ops
