@@ -188,9 +188,7 @@ class ClusterReport(DocUtils):
             self.cluster_labels = np.array(cluster_labels)
         else:
             self.cluster_labels = cluster_labels
-        self.n_clusters = (
-            len(set(cluster_labels)) if n_clusters is None else n_clusters
-        )
+        self.n_clusters = len(set(cluster_labels)) if n_clusters is None else n_clusters
         self.model = model
         self.outlier_label = outlier_label
         self._typecheck_centroid_vectors(centroids)
