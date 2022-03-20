@@ -14,7 +14,7 @@ can be found below.
     from vectorhub.encoders.text.tfhub import USE2Vec
     enc = USE2Vec()
 
-    from relevanceai.bias_detection import bias_indicator
+    from relevanceai.report.vector import bias_indicator
 
     bias_indicator(
         ["boy", "girl"], # the categories of bias
@@ -177,7 +177,7 @@ def bias_indicator(anchors: List, values: List, model: Callable):
 
     .. code-block::
 
-        from relevanceai.bias_detection import bias_indicator
+        from relevanceai.report.vector import bias_indicator
         from vectorhub.encoders.text.tfhub import USE2Vec
         enc = USE2Vec()
 

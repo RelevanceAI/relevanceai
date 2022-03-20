@@ -1,7 +1,7 @@
 Bias Detection
 ===================================
 
-.. automodule:: relevanceai.bias_detection.bias_plot
+.. automodule:: relevanceai.report.vector.bias_plot
    :members:
    :undoc-members:
    :show-inheritance:

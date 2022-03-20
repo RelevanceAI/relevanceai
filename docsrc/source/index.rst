@@ -51,7 +51,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Tools
 
-   relevanceai.reports.bias_detection
+   relevanceai.report.vector
 
 .. toctree::
    :maxdepth: 4

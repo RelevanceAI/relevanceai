@@ -2266,7 +2266,7 @@ class ClusterOps(ClusterEvaluate):
                 cluster_field_name, all_docs
             ),
             model=self.model,
-            num_clusters=self.number_of_clusters,
+            n_clusters=self.number_of_clusters,
         )
         cluster_response = self.store_cluster_report(
             report_name=cluster_field_name,

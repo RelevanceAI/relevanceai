@@ -35,7 +35,7 @@ to store it in Relevance AI.
     report = ClusterReport(
         X=X,
         cluster_labels=cluster_labels,
-        num_clusters=N_CLUSTERS,
+        n_clusters=N_CLUSTERS,
         model=kmeans
     )
 
@@ -138,7 +138,7 @@ except ModuleNotFoundError as e:
 
 class ClusterReport(DocUtils):
     """
-    Receive an automated cluster reprot
+    Receive an automated cluster report
 
     .. warning::
         This is a beta feature.
@@ -156,7 +156,7 @@ class ClusterReport(DocUtils):
         A list of cluster labels
     model
         The model to analyze. Currently only used
-    num_clusters: Optional[int]
+    n_clusters: Optional[int]
         The number of clusters. This is required if we can't actually tell how many clusters there are
     outlier_label: Optional[str, int]
         The label if it is an outlier
@@ -171,7 +171,7 @@ class ClusterReport(DocUtils):
         X: Union[list, np.ndarray],
         cluster_labels: Union[List[Union[str, float]], np.ndarray],
         model: KMeans = None,
-        num_clusters: int = None,
+        n_clusters: int = None,
         outlier_label: Union[str, int] = -1,
         centroids: Union[list, np.ndarray] = None,
         verbose: bool = False,
@@ -188,8 +188,8 @@ class ClusterReport(DocUtils):
             self.cluster_labels = np.array(cluster_labels)
         else:
             self.cluster_labels = cluster_labels
-        self.num_clusters = (
-            len(set(cluster_labels)) if num_clusters is None else num_clusters
+        self.n_clusters = (
+            len(set(cluster_labels)) if n_clusters is None else n_clusters
         )
         self.model = model
         self.outlier_label = outlier_label
@@ -559,7 +559,7 @@ class ClusterReport(DocUtils):
             overall_report["grand_centroids"] = []
             overall_report["average_distance_between_centroids"] = (
                 overall_report["centroids_distance_matrix"].sum(axis=1) - 1
-            ) / self.num_clusters
+            ) / self.n_clusters
 
     @property
     def davies_bouldin_score(self):
