@@ -53,6 +53,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
 
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
+    @track
     def plot(
         self,
         dataset_id: str,
@@ -101,6 +102,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         )
         return
 
+    @track
     def metrics(
         self,
         dataset_id: str,
@@ -139,6 +141,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
             vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
         )
 
+    @track
     def distribution(
         self,
         dataset_id: str,
@@ -191,6 +194,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         else:
             return self.label_distribution_from_documents(cluster_labels)
 
+    @track
     def centroid_distances(
         self,
         dataset_id: str,
@@ -300,6 +304,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
 
         return vectors, cluster_labels, ground_truth, vector_description
 
+    @track
     @staticmethod
     def plot_from_documents(
         vectors: list,
@@ -709,6 +714,7 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
             g.set(xlim=(facet_result["min"], facet_result["max"]))
             plt.title(community + str(f" - measurement: {measurement}"))
 
+    @track
     def plot_skewness(
         self,
         numeric_field: str,
@@ -716,6 +722,34 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         dataset_id: str = None,
         asc: bool = True,
     ):
+        """
+        Plot the skewness.
+
+        Parameters
+        -------------
+        numeric_field: str
+            The numeric field to use
+        top_indices: int
+            The number of the
+        dataset_id: str
+            The dataset ID to use
+        asc: bool
+            If True
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="community-detection",
+                vector_fields=["sample_vector_"]
+            )
+            cluster_ops.plot_skewness(numeric_field="sample_1_label")
+
+        """
         from scipy.stats import skew
 
         return self.plot_distributions_measure(
@@ -723,4 +757,12 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
             measure_function=skew,
             top_indices=top_indices,
             dataset_id=dataset_id,
+            asc=asc,
         )
+
+    @track
+    def show(self, fields: list = []):
+        """Preview each cluster"""
+        # Be able to preview the clusters easily - auto set up the cluster app
+        raise NotImplementedError()
+        # return self.launch_cluster_app()

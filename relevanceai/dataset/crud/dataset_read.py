@@ -673,3 +673,28 @@ class Read(BatchAPIClient):
                 filters=filters,
             )
         return
+
+    def list_vector_fields(self):
+        """
+        Returns list of valid vector fields in dataset
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("_mock_dataset_")
+            ds.list_vector_fields()
+
+        """
+        schema = self.datasets.schema(self.dataset_id)
+        return [k for k in schema.keys() if k.endswith("_vector_")]
+
+    def list_cluster_aliases(self):
+        raise NotImplementedError()

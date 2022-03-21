@@ -21,6 +21,8 @@ Features/Updates:
 - Add a way to create centroids if they do not exist using the `create_centroids` function
 - Fix metadata insertion eperience
 - Fix community detection to return clusterops object
+- Move backend of apply and bulk_apply to asynchronous function
+- Add way to list vector fields
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
