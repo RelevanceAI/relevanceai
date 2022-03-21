@@ -48,7 +48,7 @@ You can also easily access metadata using the following:
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset.crud.dataset_metadata._Metadata
+.. autoclass:: relevanceai.dataset.crud.dataset_metadata.Metadata
     :members:
     :exclude-members: __init__
 
