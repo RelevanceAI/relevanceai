@@ -590,6 +590,12 @@ class Cluster(Write):
     def launch_cluster_app(self, configuration: dict):
         """
         Launch an app with a given configuration
+
+        Parameters
+        -----------
+
+        configuration: dict
+            The configuration can be found in the deployable once created.
         """
         if "configuration" in configuration:
             configuration = configuration["configuration"]

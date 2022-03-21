@@ -106,4 +106,6 @@ class Workflow(DocUtils):
         metadata = self.dataset.metadata
         if "workflows" not in metadata:
             metadata["workflows"] = []
-        self.dataset.metadata["workflows"].append(workflow_metadata)
+        workflows = metadata["workflows"]
+        workflows.append(workflow_metadata)
+        self.dataset.metadata["workflows"] = workflows
