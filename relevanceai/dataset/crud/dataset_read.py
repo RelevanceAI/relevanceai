@@ -658,9 +658,15 @@ class Read(BatchAPIClient):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
+        results = self.datasets.post_metadata(self.dataset_id, metadata)
+        if results == {}:
+            print("✅ You have successfully inserted metadata.")
+        else:
+            return results
         return self.insert_metadata(metadata)
 
     def chunk_dataset(self, chunksize: int = 100, filters: list = None):
+        """Function for chunking a dataset"""
         docs = self.get_documents(
             number_of_documents=chunksize, include_cursor=True, filters=filters
         )
