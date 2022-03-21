@@ -2370,7 +2370,7 @@ class ClusterOps(ClusterEvaluate):
         def vector_mean(vectors):
             return np.mean(vectors, axis=0)
 
-        if operation == "mean":
+        if operation == "mean" or operation is None:
             operation = vector_mean
 
         cluster_centroids = self.operate(field=vector_field, func=operation)  # type: ignore
