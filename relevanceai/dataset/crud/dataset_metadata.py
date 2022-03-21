@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Union
 from relevanceai.api.client import BatchAPIClient
 
 
-class _Metadata(BatchAPIClient):
+class Metadata(BatchAPIClient):
     """Metadata object"""
 
     def __init__(self, metadata: dict, project, api_key, firebase_uid, dataset_id):

@@ -138,3 +138,10 @@ class Dataset(Export, Plot, Operations, Search):
         return (
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
         )
+
+    @track
+    def launch_projector_app(self):
+        """
+        Launches the link to the projector application to start building
+        """
+        return f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"

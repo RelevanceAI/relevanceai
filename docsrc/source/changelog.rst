@@ -8,6 +8,7 @@ v2.0.0
 -----------
 
 Features/Updates:
+
 - Provide a way to turn off logger 
 - `auto_cluster` now supports models
 - Change metadata experience into more intuitive object
