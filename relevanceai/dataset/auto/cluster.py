@@ -6,12 +6,11 @@ import warnings
 from typing import List, Optional
 from tqdm.auto import tqdm
 from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset.crud.dataset_write import Write
-from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.version_decorators import introduced_in_version, beta
+from relevanceai.dataset.auto.community_detection import CommunityDetection
 
 
-class Cluster(Write):
+class Cluster(CommunityDetection):
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
@@ -494,6 +493,13 @@ class Cluster(Write):
                     chunksize=chunksize,
                     filters=filters,
                 )
+
+        elif algorithm.lower() == "community-detection":
+            if len(vector_fields) > 1:
+                raise ValueError(
+                    "Currently we do not support more than 1 vector field."
+                )
+            return self.community_detection(field=vector_fields[0], alias=alias)
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 
