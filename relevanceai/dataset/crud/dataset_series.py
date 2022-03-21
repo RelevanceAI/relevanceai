@@ -59,7 +59,8 @@ class Series(BatchAPIClient):
 
     .. code-block::
 
-        product_images = df['product_image'] # A Series object of every every product image url in dataset
+        # A Series object of every every product image url in dataset
+        product_images = df['product_image']
 
     """
 

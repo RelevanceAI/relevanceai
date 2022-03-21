@@ -220,6 +220,24 @@ class DocumentsClient(_Base):
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
 
+        if after_id is not None:
+            return self.make_http_request(
+                endpoint=f"/datasets/{dataset_id}/documents/get_where",
+                method="POST",
+                parameters={
+                    "select_fields": select_fields,
+                    "cursor": cursor,
+                    "page_size": page_size,
+                    "sort": sort,
+                    "include_vector": include_vector,
+                    "filters": filters,
+                    "random_state": random_state,
+                    "is_random": is_random,
+                    "after_id": after_id,
+                    "use_cursor": use_cursor,
+                },
+            )
+
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
@@ -232,7 +250,6 @@ class DocumentsClient(_Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
-                "after_id": after_id,
                 "use_cursor": use_cursor,
             },
         )
