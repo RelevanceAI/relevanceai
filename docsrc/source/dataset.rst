@@ -26,24 +26,32 @@ You can also easily access metadata using the following:
     time.sleep(1)
     ds.metadata
 
-.. autoclass:: relevanceai.dataset_crud.dataset_write.Write
+.. autoclass:: relevanceai.dataset.crud.dataset_write.Write
     :members:
-    :special-members: relevanceai.dataset_crud.dataset.Write.insert_csv
+    :special-members: relevanceai.dataset.crud.write.Write.insert_csv
 
-.. autoclass:: relevanceai.dataset_crud.dataset_read.Read
-    :members:
-    :exclude-members: __init__
-
-.. autoclass:: relevanceai.dataset_crud.dataset_stats.Stats
-    :members:
-
-.. autoclass:: relevanceai.export.dataset_export.Export
-    :members:
-
-.. autoclass:: relevanceai.dataset_crud.dataset_series.Series
+.. autoclass:: relevanceai.dataset.crud.dataset_read.Read
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_ops.dataset_operations.Operations
+.. autoclass:: relevanceai.dataset.search.search.Search
+    :members:
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset.statistics.interface.Stats
+    :members:
+
+.. autoclass:: relevanceai.dataset.export.interface.Export
+    :members:
+
+.. autoclass:: relevanceai.dataset.crud.dataset_series.Series
+    :members:
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset.crud.dataset_metadata._Metadata
+    :members:
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset.ops.dataset_operations.Operations
     :members:
     :exclude-members: label_with_model_from_dataset, label_vector, label_document
