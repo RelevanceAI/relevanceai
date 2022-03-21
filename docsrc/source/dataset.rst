@@ -38,7 +38,10 @@ You can also easily access metadata using the following:
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset.statistics.interface.Stats
+.. autoclass:: relevanceai.dataset.statistics.interface.Statistics
+    :members:
+
+.. autoclass:: relevanceai.dataset.vis.plot.Plot
     :members:
 
 .. autoclass:: relevanceai.dataset.export.interface.Export
