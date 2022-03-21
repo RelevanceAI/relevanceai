@@ -262,7 +262,7 @@ class CommunityDetection(Write):
 
         from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
 
-        cluster_ops = ClusterOps(
+        cluster_ops: ClusterOps = ClusterOps(
             # model=model,
             alias=alias,
             dataset_id=self.dataset_id,
