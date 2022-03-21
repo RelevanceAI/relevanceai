@@ -325,7 +325,8 @@ class Write(Read):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
-
+        create_id: bool
+            If True, creates ID for users automatically
 
         Example
         ----------
