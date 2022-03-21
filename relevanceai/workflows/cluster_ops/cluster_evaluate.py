@@ -716,6 +716,33 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
         dataset_id: str = None,
         asc: bool = True,
     ):
+        """
+        Plot the skewness.
+
+        Parameters
+        -------------
+        numeric_field: str
+            The numeric field to use
+        top_indices: int
+            The number of the
+        dataset_id: str
+            The dataset ID to use
+        asc: bool
+            If True
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="community-detection",
+                vector_fields=["sample_vector_"]
+            )
+
+        """
         from scipy.stats import skew
 
         return self.plot_distributions_measure(
@@ -723,4 +750,5 @@ class ClusterEvaluate(BatchAPIClient, DocUtils):
             measure_function=skew,
             top_indices=top_indices,
             dataset_id=dataset_id,
+            asc=asc,
         )
