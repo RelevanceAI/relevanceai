@@ -695,3 +695,6 @@ class Read(BatchAPIClient):
         """
         schema = self.datasets.schema(self.dataset_id)
         return [k for k in schema.keys() if k.endswith("_vector_")]
+
+    def list_cluster_aliases(self):
+        raise NotImplementedError()
