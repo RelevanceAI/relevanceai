@@ -370,7 +370,6 @@ class Write(Read):
         self,
         func: Callable,
         retrieve_chunksize: int = 100,
-        max_workers: int = 8,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
@@ -440,11 +439,10 @@ class Write(Read):
                 new_documents.append(new_d)
             return documents
 
-        results = self.pull_update_push(
+        results = self.pull_update_push_async(
             self.dataset_id,
             bulk_fn,
             retrieve_chunk_size=retrieve_chunksize,
-            max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
@@ -465,7 +463,6 @@ class Write(Read):
         self,
         bulk_func: Callable,
         retrieve_chunksize: int = 100,
-        max_workers: int = 8,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
@@ -512,11 +509,10 @@ class Write(Read):
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
 
-        return self.pull_update_push(
+        return self.pull_update_push_async(
             self.dataset_id,
             bulk_func,
             retrieve_chunk_size=retrieve_chunksize,
-            max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
