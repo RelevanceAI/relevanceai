@@ -494,7 +494,7 @@ class Cluster(CommunityDetection):
                     filters=filters,
                 )
 
-        elif algorithm.lower() == "community-detection":
+        elif algorithm.lower() == "communitydetection":
             if len(vector_fields) > 1:
                 raise ValueError(
                     "Currently we do not support more than 1 vector field."
