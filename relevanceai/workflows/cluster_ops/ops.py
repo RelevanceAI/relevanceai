@@ -22,6 +22,7 @@ You can view other examples of how to interact with this class here :ref:`integr
 import warnings
 
 import numpy as np
+import pandas as pd
 
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.partial import PartialClusterOps
@@ -43,7 +44,6 @@ from relevanceai.package_utils.analytics_funcs import track
 # from relevanceai.dataset.crud import Dataset
 
 from relevanceai.dataset_interface import Dataset
-
 from relevanceai.package_utils.errors import NoDocumentsError
 from relevanceai.package_utils.version_decorators import beta
 from relevanceai.package_utils.concurrency import multiprocess
@@ -1525,3 +1525,80 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             )
             results.append(result)
         return results
+
+    def show(
+        self,
+        dataset_id: str,
+        field: str,
+        vector_field: str,
+        alias: str,
+        preview_num: int = 10,
+    ):
+        """
+        Shows the values of a clustering.
+
+        dataset_id: str
+            The dataset ID of with the clustering of interest.
+
+        field: str
+            The field whose values are of interest.
+
+        vector_field: str
+            The vector field that was used for the clustering.
+
+        alias: str
+            The alias of the clustering.
+
+        preview_num: int
+            The maximum number of values to preview. If a cluster has fewer
+            values than preview_num, the cluster list will be extended by
+            the appropriate number of np.nans to make up the difference.
+        """
+        if type(preview_num) is not int and preview_num <= 0:
+            raise TypeError(
+                f"Please provide a valid non-zero integer for {preview_num}."
+            )
+
+        if not vector_field.startswith(field):
+            raise ValueError(f"{vector_field} must be a vector of {field}.")
+
+        # Since there is no gaurantee self.dataset_id will be not None, it is
+        # safer to force the user to specify the dataset_id
+        ds = Dataset(
+            self.project, self.api_key, dataset_id, self.firebase_uid, fields=[]
+        )
+        schema = ds.schema
+
+        if field not in schema:
+            raise ValueError(f"{field} does not exist")
+
+        cluster_field = ".".join(["_cluster_", vector_field])
+        if cluster_field not in schema:
+            raise ValueError(f"{vector_field} has not been clustered yet.")
+
+        alias_field = ".".join([cluster_field, alias])
+        if alias_field not in schema:
+            raise ValueError(f"A clustering with alias {alias} has not been made yet.")
+
+        cluster_values = ds.to_pandas_dataframe(
+            select_fields=[alias_field, field], show_progress_bar=False
+        )
+        # converts {"vector_field": {"alias": "cluster-k"}} to "cluster-k"
+        cluster_values["_cluster_"] = cluster_values["_cluster_"].apply(
+            lambda cluster: cluster[vector_field][alias]
+        )
+
+        cluster_groups = dict(list(cluster_values.groupby("_cluster_")[field]))
+        clusters = {}
+        for cluster, values in cluster_groups.items():
+            length = min(len(values), preview_num)
+            # It is faster to index a list than a pandas Series
+            clusters[cluster] = values.tolist()[:length]
+
+            # If the number of values in the cluster is fewer than the desired
+            # preview number, insert np.nan to make up the difference. Note
+            # that the range of a negative number is not a range.
+            difference = preview_num - len(clusters[cluster])
+            clusters[cluster].extend([np.nan for _ in range(difference)])
+
+        return pd.DataFrame(clusters)
