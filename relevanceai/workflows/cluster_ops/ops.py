@@ -768,7 +768,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         dataset: Union[Dataset, str],
         vector_fields: List,
         filters: Optional[List] = None,
-        include_report: bool = False,
+        include_report: bool = True,
         verbose: bool = True,
     ):
         """
