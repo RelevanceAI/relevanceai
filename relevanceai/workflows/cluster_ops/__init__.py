@@ -1,3 +1,3 @@
 """ClusterOps
 """
-from .ops import ClusterOps
+from relevanceai.workflows.cluster_ops.ops import ClusterOps
