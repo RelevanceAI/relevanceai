@@ -11,15 +11,21 @@ from relevanceai.package_utils.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.unstructured_data.text.base_text_processing import MLStripper
 from relevanceai.package_utils.logger import FileLogger
+from relevanceai.package_utils.version_decorators import (
+    introduced_in_version,
+    beta,
+)
 from relevanceai.vector_tools.local_nearest_neighbours import (
     NearestNeighbours,
     NEAREST_NEIGHBOURS,
 )
 
+
 # TODO: Separate out operations into different files - cluster/search/dr
 
 
 class CommunityDetection(Write):
+    @track
     def community_detection(
         self,
         field: str,
@@ -30,6 +36,9 @@ class CommunityDetection(Write):
         min_community_size: int = 3,
         init_max_size: int = 1000,
         update_chunksize: int = 100,
+        alias: str = "community-detection",
+        log_file: str = "logs.txt",
+        cluster_field: str = "_cluster_",
     ):
         """
         Performs community detection on a text field.
@@ -85,7 +94,7 @@ class CommunityDetection(Write):
             raise ValueError(f"{field} does not exist in the dataset")
 
         try:
-            with FileLogger("logging.txt"):
+            with FileLogger(log_file):
                 from sentence_transformers.util import community_detection
         except ModuleNotFoundError:
             raise ModuleNotFoundError(
@@ -194,7 +203,9 @@ class CommunityDetection(Write):
             min_community_size=min_community_size,
             init_max_size=init_max_size,
         )
-        print("Community detection complete.")
+        print(f"Detected {len(clusters)} communities.")
+
+        # TODO: add centroids for community detection
 
         print("Updating documents...")
         community_documents = []
@@ -222,17 +233,47 @@ class CommunityDetection(Write):
                 community_documents.append(
                     {
                         "_id": id,
-                        "_cluster_": {
-                            field: {"community-detection": f"community-{i+1}"}
-                        },
+                        cluster_field: {field: {alias: f"cluster-{i+1}"}},
                     }
                 )
 
-        results = self._update_documents(
-            self.dataset_id, community_documents, chunksize=update_chunksize
-        )
+            # During initial construction update_where did not accept dict
+            # values as valid updates.
+            with FileLogger(log_file):
+                result = self.datasets.documents.update_where(
+                    self.dataset_id,
+                    update={"_cluster_": {field: {alias: f"cluster-{i+1}"}}},
+                    filters=[
+                        {
+                            "field": "ids",
+                            "filter_type": "ids",
+                            "condition": "==",
+                            "condition_value": ids,
+                        }
+                    ],
+                )
+                print(result)
+
         print(
             "Build your clustering app here: "
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
         )
-        return results
+        # Return a ClusterOps object
+
+        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+
+        cluster_ops: ClusterOps = ClusterOps(
+            # model=model,
+            alias=alias,
+            dataset_id=self.dataset_id,
+            vector_fields=[field],
+            cluster_field=cluster_field,
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+        )
+        print("Creating centroids...")
+        with FileLogger(log_file):
+            result = cluster_ops.create_centroids([field])
+        print("✅ Uploaded centroids.")
+        return cluster_ops

@@ -9,11 +9,12 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
-from relevanceai.package_utils.base import _Base
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.constants import CENTROID_DISTANCES
+from relevanceai.package_utils.analytics_funcs import track
 from doc_utils import DocUtils
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
+from tqdm.auto import tqdm
 
 SILHOUETTE_INFO = """
 Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
@@ -44,7 +45,7 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
     }
 
 
-class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
+class ClusterEvaluate(BatchAPIClient, DocUtils):
     def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
@@ -52,6 +53,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
+    @track
     def plot(
         self,
         dataset_id: str,
@@ -100,6 +102,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         )
         return
 
+    @track
     def metrics(
         self,
         dataset_id: str,
@@ -138,6 +141,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
             vectors=vectors, cluster_labels=cluster_labels, ground_truth=ground_truth
         )
 
+    @track
     def distribution(
         self,
         dataset_id: str,
@@ -190,6 +194,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
         else:
             return self.label_distribution_from_documents(cluster_labels)
 
+    @track
     def centroid_distances(
         self,
         dataset_id: str,
@@ -299,6 +304,7 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         return vectors, cluster_labels, ground_truth, vector_description
 
+    @track
     @staticmethod
     def plot_from_documents(
         vectors: list,
@@ -590,3 +596,173 @@ class ClusterEvaluate(BatchAPIClient, _Base, DocUtils):
 
         scatter = go.Scatter3d(**scatter_args)
         return scatter
+
+    @track
+    def plot_distributions(
+        self,
+        numeric_field: str,
+        top_indices: int = 10,
+        dataset_id: str = None,
+    ):
+        """
+        Plot the sentence length distributions across each cluster
+        """
+        try:
+            import seaborn as sns
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+            print("You need to install seaborn! `pip install seaborn`.")
+        cluster_field = self._get_cluster_field_name()
+        docs = self._get_all_documents(
+            dataset_id=dataset_id if dataset_id is None else dataset_id,
+            select_fields=[numeric_field, cluster_field],
+        )
+        df = pd.json_normalize(docs)
+        top_comms = df[cluster_field].value_counts()
+        for community in top_comms.index[:top_indices]:
+            sample_comm_df = df[df[cluster_field] == community]
+            sns.displot(sample_comm_df[numeric_field])
+            # Get the average in the score too
+            mean = sample_comm_df[numeric_field].mean()
+            std = sample_comm_df[numeric_field].var()
+            plt.title(
+                community + str(f" - average: {round(mean, 2)}, var: {round(std, 2)}")
+            )
+            plt.show()
+
+    @track
+    def plot_distributions_measure(
+        self,
+        numeric_field: str,
+        measure_function: Callable,
+        top_indices: int = 10,
+        dataset_id: str = None,
+        asc: bool = True,
+    ):
+        """
+        Plot the sentence length distributions across each cluster
+        measure_function is run on each cluster and plots
+
+        Parameters
+        ------------
+
+        numeric_field: str
+            The numeric field to use
+        measure_function: Callable
+            Measure function to use on the array
+        top_indices: int
+            The number of graphs you want to see what they are ranked
+        dataset_id: str
+            The dataset ID to use. If None is specified, it will assume the last one.
+        asc: bool
+            If True, returns the top functions
+
+        Example
+        --------
+
+        .. code-block::
+
+            from scipy.stats import skew
+            ops.plot_distributions_measure(
+                numeric_field, skew,
+                dataset_id=dataset_id
+            )
+
+        """
+        try:
+            import seaborn as sns
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+            print("You need to install seaborn! `pip install seaborn`.")
+        cluster_field = self._get_cluster_field_name()
+
+        # use the max and min to make the x axis the same
+        numeric_field_facet = self.datasets.facets(
+            dataset_id=dataset_id, fields=[numeric_field]
+        )
+        facet_result = numeric_field_facet["results"][numeric_field]
+
+        docs = self._get_all_documents(
+            dataset_id=dataset_id if dataset_id is None else dataset_id,
+            select_fields=[numeric_field, cluster_field],
+        )
+        df = pd.json_normalize(docs)
+        top_comms = df[cluster_field].value_counts()
+        cluster_measurements = {}
+        for community in tqdm(top_comms.index):
+            sample_comm_df = df[df[cluster_field] == community]
+            # Get the average in the score too
+            measure_output = measure_function(
+                sample_comm_df[numeric_field].dropna().to_list()
+            )
+            cluster_measurements[community] = measure_output
+
+        cluster_measurements = {
+            k: v
+            for k, v in sorted(
+                cluster_measurements.items(), key=lambda item: item[1], reverse=asc
+            )
+        }
+
+        for i, (community, measurement) in enumerate(cluster_measurements.items()):
+            if i == top_indices:
+                return
+            sample_comm_df = df[df[cluster_field] == community]
+            g = sns.displot(
+                sample_comm_df[numeric_field],
+            )
+            g.set(xlim=(facet_result["min"], facet_result["max"]))
+            plt.title(community + str(f" - measurement: {measurement}"))
+
+    @track
+    def plot_skewness(
+        self,
+        numeric_field: str,
+        top_indices: int = 10,
+        dataset_id: str = None,
+        asc: bool = True,
+    ):
+        """
+        Plot the skewness.
+
+        Parameters
+        -------------
+        numeric_field: str
+            The numeric field to use
+        top_indices: int
+            The number of the
+        dataset_id: str
+            The dataset ID to use
+        asc: bool
+            If True
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="community-detection",
+                vector_fields=["sample_vector_"]
+            )
+            cluster_ops.plot_skewness(numeric_field="sample_1_label")
+
+        """
+        from scipy.stats import skew
+
+        return self.plot_distributions_measure(
+            numeric_field=numeric_field,
+            measure_function=skew,
+            top_indices=top_indices,
+            dataset_id=dataset_id,
+            asc=asc,
+        )
+
+    @track
+    def show(self, fields: list = []):
+        """Preview each cluster"""
+        # Be able to preview the clusters easily - auto set up the cluster app
+        raise NotImplementedError()
+        # return self.launch_cluster_app()

@@ -13,7 +13,7 @@ import pandas as pd
 from relevanceai.dataset.crud.dataset_write import Write
 
 
-class Scale(Write):
+class Scaler(Write):
     def scale(
         self,
         fields: List[Any],

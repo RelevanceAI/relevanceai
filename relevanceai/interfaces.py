@@ -82,7 +82,11 @@ class Client(BatchAPIClient, DocUtils):
         except Exception as e:
             pass
 
-        if project is None or api_key is None or force_refresh:
+        if token:
+            credentials = self._token_to_auth(token)
+        elif project and project.count(":") >= 1:
+            credentials = self._token_to_auth(project)
+        elif project is None or api_key is None or force_refresh:
             credentials = self._token_to_auth(token)
 
         try:
@@ -216,7 +220,9 @@ class Client(BatchAPIClient, DocUtils):
 
     def check_auth(self):
         print(f"Connecting to {self.region}...")
-        return self.admin._ping()
+        return self.list_datasets()
+        # the ping function is now defunct
+        # return self.admin._ping()
 
     ### CRUD-related utility functions
 
@@ -292,7 +298,7 @@ class Client(BatchAPIClient, DocUtils):
 
         """
         self.print_dashboard_message(
-            "You can view all your datasets at https://cloud.relevance.ai/datasets."
+            "You can view all your datasets at https://cloud.relevance.ai/datasets/"
         )
         return self.datasets.list()
 
@@ -413,6 +419,42 @@ class Client(BatchAPIClient, DocUtils):
         )
 
     @track
+    def receive_dataset(
+        self,
+        dataset_id: str,
+        sender_project: str,
+        sender_api_key: str,
+    ):
+        """
+        Recieve an individual a dataset.
+
+        Example
+        --------
+        >>> client = Client()
+        >>> client.admin.receive_dataset(
+            dataset_id="research",
+            sender_project="...",
+            sender_api_key="..."
+        )
+
+        Parameters
+        -----------
+
+        dataset_id: str
+            The name of the dataset
+        sender_project: str
+            The project name that will send the dataset
+        sender_api_key: str
+            The project API key that will send the dataset
+
+        """
+        return self.admin.receive_dataset(
+            dataset_id=dataset_id,
+            sender_project=sender_project,
+            sender_api_key=sender_api_key,
+        )
+
+    @track
     def clone_dataset(
         self,
         source_dataset_id: str,
@@ -422,6 +464,7 @@ class Client(BatchAPIClient, DocUtils):
         project: Optional[str] = None,
         api_key: Optional[str] = None,
     ):
+        # To do this should be cloning a dataset in a project
         """
         Clone a dataset from another user's projects into your project.
 

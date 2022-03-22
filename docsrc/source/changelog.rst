@@ -8,6 +8,7 @@ v2.0.0
 -----------
 
 Features/Updates:
+
 - Provide a way to turn off logger 
 - `auto_cluster` now supports models
 - Change metadata experience into more intuitive object
@@ -15,6 +16,14 @@ Features/Updates:
 - Add sentiment analysis workflow
 - Add chunking dataset 
 - Add smaller dataset export
+- Fix unique cluster IDs
+- Add feature for workflows
+- Add `operate` function to run on each cluster
+- Add a way to create centroids if they do not exist using the `create_centroids` function
+- Fix metadata insertion eperience
+- Fix community detection to return clusterops object
+- Move backend of apply and bulk_apply to asynchronous function
+- Add way to list vector fields
 
 Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas

@@ -16,7 +16,7 @@ from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 from relevanceai.package_utils.list_to_tuple import list_to_tuple
 from relevanceai.workflows.cluster_ops.centroids import Centroids
-from relevanceai.dataset.crud.dataset_metadata import _Metadata
+from relevanceai.dataset.crud.dataset_metadata import Metadata
 
 
 class Read(BatchAPIClient):
@@ -641,7 +641,7 @@ class Read(BatchAPIClient):
     def metadata(self):
         """Get the metadata"""
         _metadata = self.get_metadata()["results"]
-        self._metadata = _Metadata(
+        self._metadata = Metadata(
             _metadata, self.project, self.api_key, self.firebase_uid, self.dataset_id
         )
         return self._metadata
@@ -658,9 +658,15 @@ class Read(BatchAPIClient):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
+        results = self.datasets.post_metadata(self.dataset_id, metadata)
+        if results == {}:
+            print("✅ You have successfully inserted metadata.")
+        else:
+            return results
         return self.insert_metadata(metadata)
 
     def chunk_dataset(self, chunksize: int = 100, filters: list = None):
+        """Function for chunking a dataset"""
         docs = self.get_documents(
             number_of_documents=chunksize, include_cursor=True, filters=filters
         )
@@ -673,3 +679,28 @@ class Read(BatchAPIClient):
                 filters=filters,
             )
         return
+
+    def list_vector_fields(self):
+        """
+        Returns list of valid vector fields in dataset
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("_mock_dataset_")
+            ds.list_vector_fields()
+
+        """
+        schema = self.datasets.schema(self.dataset_id)
+        return [k for k in schema.keys() if k.endswith("_vector_")]
+
+    def list_cluster_aliases(self):
+        raise NotImplementedError()
