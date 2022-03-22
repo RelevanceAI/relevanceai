@@ -22,7 +22,7 @@ def test_datasets_smoke():
 
 
 def test_projector_smoke():
-    import relevanceai.workflows.cluster_ops.constants
+    import relevanceai.workflows.clusterops.constants
     from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
 
     assert True

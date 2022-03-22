@@ -9,8 +9,8 @@ from relevanceai.interfaces import Dataset
 
 from typing import List
 
-from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
-from relevanceai.workflows.cluster_ops.cluster_base import CentroidClusterBase
+from relevanceai.workflows.clusterops.ops import ClusterOps
+from relevanceai.workflows.clusterops.cluster_base import CentroidClusterBase
 
 
 @pytest.mark.skip(reason="no longer supported")

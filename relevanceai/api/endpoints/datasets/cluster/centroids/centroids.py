@@ -1,5 +1,5 @@
 from relevanceai.package_utils.base import _Base
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 class CentroidsClient(_Base):
@@ -13,7 +13,7 @@ class CentroidsClient(_Base):
     def list_closest_to_center(
         self,
         dataset_id: str,
-        vector_fields: List,
+        vector_fields: List[Any],
         alias: str,
         cluster_ids: Optional[List] = None,
         centroid_vector_fields: Optional[List] = None,

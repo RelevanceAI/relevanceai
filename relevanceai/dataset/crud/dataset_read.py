@@ -15,7 +15,7 @@ from relevanceai.vector_tools.client import VectorTools
 from relevanceai.api.client import BatchAPIClient
 from relevanceai.package_utils.constants import MAX_CACHESIZE
 from relevanceai.package_utils.list_to_tuple import list_to_tuple
-from relevanceai.workflows.cluster_ops.centroids import Centroids
+from relevanceai.workflows.clusterops.centroids import Centroids
 from relevanceai.dataset.crud.dataset_metadata import Metadata
 
 

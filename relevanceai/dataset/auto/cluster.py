@@ -46,7 +46,7 @@ class Cluster(CommunityDetection):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.clusterops.ops import ClusterOps
 
         clusterer = ClusterOps(
             model=model,
@@ -55,7 +55,7 @@ class Cluster(CommunityDetection):
             project=self.project,
             firebase_uid=self.firebase_uid,
         )
-        clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
+        clusterer.fit(dataset=self, vector_fields=vector_fields)
         return clusterer
 
     def cluster_keyphrases(
@@ -275,7 +275,7 @@ class Cluster(CommunityDetection):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.clusterops.ops import ClusterOps
 
         clusterer: ClusterOps = ClusterOps(
             model=model,
@@ -294,7 +294,7 @@ class Cluster(CommunityDetection):
                 filters=filters,
             )
         else:
-            clusterer.fit_predict_update(
+            clusterer.fit(
                 dataset=self,
                 vector_fields=vector_fields,
                 include_grade=True,
@@ -420,7 +420,7 @@ class Cluster(CommunityDetection):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.clusterops.ops import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans
@@ -447,7 +447,7 @@ class Cluster(CommunityDetection):
                     vector_fields=vector_fields, alias=alias, parent_alias=parent_alias
                 )
             else:
-                clusterer.fit_predict_update(
+                clusterer.fit(
                     dataset=self,
                     vector_fields=vector_fields,
                     include_grade=True,

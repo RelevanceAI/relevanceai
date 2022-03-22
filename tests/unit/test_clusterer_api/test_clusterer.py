@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 import time
 from relevanceai.interfaces import Dataset, Client, ClusterOps
-from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
-from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby
+from relevanceai.workflows.clusterops.cluster_base import ClusterBase
+from relevanceai.workflows.clusterops.cluster_groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -28,7 +28,7 @@ def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
 
 def get_model():
     # get a kmeans model
-    from relevanceai.workflows.cluster_ops.kmeans_clusterer import KMeansModel
+    from relevanceai.workflows.clusterops.kmeans_clusterer import KMeansModel
 
     return KMeansModel(verbose=False)
 
