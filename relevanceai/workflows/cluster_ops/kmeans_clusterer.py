@@ -5,8 +5,8 @@ import numpy as np
 import warnings
 from typing import Union, List, Optional
 
-from relevanceai.workflows.clusterops.ops import ClusterOps
-from relevanceai.workflows.clusterops.cluster_base import ClusterBase
+from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
 from relevanceai.interfaces import Dataset
 
 
@@ -264,7 +264,6 @@ class KMeansClusterOps(ClusterOps):
         dataset: Union[Dataset, str],
         vector_fields: List,
         filters: Optional[list] = None,
-        verbose: bool = False,
     ):
         """
         Train clustering algorithm on documents and then store the labels
@@ -278,36 +277,5 @@ class KMeansClusterOps(ClusterOps):
             The vector field of the documents
         """
         filters = [] if filters is None else filters
-        filters = [] if filters is None else filters
-
-        # load the documents
-        self.logger.warning(
-            "Retrieving documents... This can take a while if the dataset is large."
-        )
-
-        self._init_dataset(dataset)
-        self.vector_fields = vector_fields
-
-        # make sure to only get fields where vector fields exist
-        filters += [
-            {
-                "field": f,
-                "filter_type": "exists",
-                "condition": "==",
-                "condition_value": " ",
-            }
-            for f in vector_fields
-        ]
-        if verbose:
-            print("Retrieving all documents")
-        docs = self._get_all_documents(
-            dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
-        )
-
-        if verbose:
-            print("Fitting and predicting on all documents")
-        return self._fit(
-            vector_fields,
-            docs,
-            return_only_clusters=True,
-        )
+        self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
+        return self._insert_centroid_documents()

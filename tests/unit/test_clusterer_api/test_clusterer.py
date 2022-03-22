@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 import time
 from relevanceai.interfaces import Dataset, Client, ClusterOps
-from relevanceai.workflows.clusterops.cluster_base import ClusterBase
-from relevanceai.workflows.clusterops.cluster_groupby import ClusterGroupby
+from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
+from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -28,7 +28,7 @@ def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
 
 def get_model():
     # get a kmeans model
-    from relevanceai.workflows.clusterops.kmeans_clusterer import KMeansModel
+    from relevanceai.workflows.cluster_ops.kmeans_clusterer import KMeansModel
 
     return KMeansModel(verbose=False)
 
@@ -76,7 +76,7 @@ def test_fit_predict(test_client: Client, vector_dataset_id: str):
     import random
 
     class CustomClusterModel(ClusterBase):
-        def fit(self, X):
+        def fit_predict(self, X):
             cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
             return cluster_labels
 
@@ -87,5 +87,5 @@ def test_fit_predict(test_client: Client, vector_dataset_id: str):
         alias="random_clustering",
         model=model,
     )
-    clusterer.fit(df, vector_fields=["sample_1_vector_"])
+    clusterer.fit_predict(df, vector_fields=["sample_1_vector_"])
     assert "_cluster_.sample_1_vector_.random_clustering" in df.schema

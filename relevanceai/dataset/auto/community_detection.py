@@ -260,7 +260,7 @@ class CommunityDetection(Write):
         )
         # Return a ClusterOps object
 
-        from relevanceai.workflows.clusterops.ops import ClusterOps
+        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
 
         cluster_ops: ClusterOps = ClusterOps(
             # model=model,
