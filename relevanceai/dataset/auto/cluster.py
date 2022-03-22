@@ -46,7 +46,7 @@ class Cluster(CommunityDetection):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
         clusterer = ClusterOps(
             model=model,
@@ -275,7 +275,7 @@ class Cluster(CommunityDetection):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
         clusterer: ClusterOps = ClusterOps(
             model=model,
@@ -420,7 +420,7 @@ class Cluster(CommunityDetection):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans

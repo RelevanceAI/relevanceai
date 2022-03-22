@@ -5,8 +5,8 @@ import numpy as np
 import warnings
 from typing import Union, List, Optional
 
-from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
-from relevanceai.workflows.cluster_ops.cluster_base import ClusterBase
+from relevanceai.workflows.cluster_ops.ops import ClusterOps
+from relevanceai.workflows.cluster_ops.base import ClusterBase
 from relevanceai.interfaces import Dataset
 
 

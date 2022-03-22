@@ -27,14 +27,14 @@ import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
 from typing import Union, List, Dict, Optional, Callable, Set
-from relevanceai.workflows.cluster_ops.cluster_base import (
+from relevanceai.workflows.cluster_ops.base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
     HDBSCANClusterBase,
     SklearnCentroidBase,
 )
-from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby, ClusterAgg
+from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby, ClusterAgg
 from relevanceai.reports.cluster_report import ClusterReport
 
 from relevanceai.package_utils.analytics_funcs import track
@@ -50,7 +50,7 @@ from relevanceai.dataset_interface import Dataset
 from relevanceai.package_utils.errors import NoDocumentsError
 from relevanceai.package_utils.version_decorators import beta
 from relevanceai.package_utils.concurrency import multiprocess
-from relevanceai.workflows.cluster_ops.cluster_evaluate import ClusterEvaluate
+from relevanceai.workflows.cluster_ops.evaluate import ClusterEvaluate
 from relevanceai.workflows.cluster_ops.constants import METRIC_DESCRIPTION
 from doc_utils import DocUtils
 
