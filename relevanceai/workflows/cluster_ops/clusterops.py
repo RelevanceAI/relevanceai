@@ -51,34 +51,11 @@ from relevanceai.package_utils.errors import NoDocumentsError
 from relevanceai.package_utils.version_decorators import beta
 from relevanceai.package_utils.concurrency import multiprocess
 from relevanceai.workflows.cluster_ops.cluster_evaluate import ClusterEvaluate
+from relevanceai.workflows.cluster_ops.constants import METRIC_DESCRIPTION
 from doc_utils import DocUtils
 
 
 from tqdm.auto import tqdm
-
-SILHOUETTE_INFO = """
-Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
-<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
-
-RANDOM_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
-<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs that have a matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>"""
-
-HOMOGENEITY_INFO = """Good clusters only have elements from the same ground truth within the same cluster<br/>
-<b>Homogeneity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
-
-COMPLETENESS_INFO = """Good clusters have all elements from the same ground truth within the same cluster <br/>
-<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
-
-AVERAGE_SCORE = """Averages other metrics by first normalising values between 0 and 1 <br/>
-<b>Average</b> is a metric from <b>0 to 1</b> that averages other metrics by first normalising values between 0 and 1."""
-
-METRIC_DESCRIPTION = {
-    "silhouette": SILHOUETTE_INFO,
-    "random": RANDOM_INFO,
-    "homogeneity": HOMOGENEITY_INFO,
-    "completeness": COMPLETENESS_INFO,
-    "average": AVERAGE_SCORE,
-}
 
 
 class ClusterOps(ClusterEvaluate):
