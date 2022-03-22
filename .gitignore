@@ -131,7 +131,6 @@ dmypy.json
 
 .vscode/
 
-test_projection/*
 *.ipynb
 .creds.json
 

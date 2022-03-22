@@ -30,7 +30,7 @@ For guides and tutorials on how to use this package, visit https://docs.relevanc
 
 You can easily access our documentation while using the SDK using:
 
-```{python}
+```python
 from relevanceai import Client
 client = Client()
 
@@ -44,12 +44,12 @@ client.docs
 
 Using pip:
 
-```{bash}
+```bash
 pip install -U relevanceai
 ```
 Using conda:
 
-```{bash}
+```bash
 conda install -c relevance relevanceai
 ```
 
@@ -57,7 +57,7 @@ conda install -c relevance relevanceai
 
 ### Login into your project space
 
-```{python}
+```python
 from relevanceai import Client
 
 client = Client(<project_name>, <api_key>)
@@ -68,7 +68,7 @@ Prepare your documents for insertion by following the below format:
 - Include a field `_id` as a primary key, otherwise it's automatically generated
 - Suffix vector fields with `_vector_`
 
-```{python}
+```python
 docs = [
     {"_id": "1", "example_vector_": [0.1, 0.1, 0.1], "data": "Documentation"},
     {"_id": "2", "example_vector_": [0.2, 0.2, 0.2], "data": "Best document!"},
@@ -83,14 +83,14 @@ docs = [
 Create a dataset object with the name of the dataset you'd like to use. If it doesn't exist, it'll be created for you.
 > Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
 
-```{python}
+```python
 ds = client.Dataset("quickstart")
 ds.insert_documents(docs)
 ```
 
 ### Perform vector search
 
-```{python}
+```python
 results = ds.vector_search(
     multivector_query=[{"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]}],
     page_size=3,
@@ -101,7 +101,7 @@ results = ds.vector_search(
 ### Cluster dataset with Auto Cluster
 
 Generate 12 clusters using kmeans
-```{python}
+```python
 clusterop = ds.auto_cluster("kmeans-12", vector_fields=["example_vector_"])
 clusterop.list_closest_to_center()
 ```
@@ -112,7 +112,11 @@ clusterop.list_closest_to_center()
 ### Getting Started
 To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
 
-```{bash}
+```bash
+python -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements-dev.txt
 python -m pip install pytest mypy
 ```
 
@@ -120,7 +124,7 @@ Then run testing using:
 
 > Don't forget to set your test credentials!
 
-```{bash}
+```bash
 export TEST_PROJECT = xxx
 export TEST_API_KEY = xxx
 
@@ -130,7 +134,7 @@ mypy relevanceai
 
 Set up precommit
 
-```{bash}
+```bash
 pip install precommit
 pre-commit install
 ```
@@ -141,13 +145,13 @@ The config object contains the adjustable global settings for the SDK. For a des
 
 To view setting options, run the following:
 
-```{python}
+```python
 client.config.options
 ```
 
 The syntax for selecting an option is section.key. For example, to disable logging, run the following to modify logging.enable_logging:
 
-```{python}
+```python
 client.config.set_option('logging.enable_logging', False)
 ```
 
@@ -157,12 +161,12 @@ To restore all options to their default, run the following:
 
 You can change the base URL as such:
 
-```{python}
+```python
 client.base_url = "https://.../latest"
 ```
 
 You can also update the ingest base URL:
 
-```{python}
+```python
 client.ingest_base_url = "https://.../latest
 ```

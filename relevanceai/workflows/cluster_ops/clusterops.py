@@ -471,6 +471,145 @@ class ClusterOps(ClusterEvaluate):
         )
 
     @track
+    def summarize_closest_to_center(
+        self,
+        select_fields: List,
+        dataset: Optional[Union[str, Dataset]] = None,
+        vector_fields: Optional[List] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        model: str = "sshleifer/distilbart-cnn-12-6",
+        tokenizer: str = "sshleifer/distilbart-cnn-12-6",
+        max_length: int = 142,
+    ):
+        """
+        List of documents closest from the centre
+
+        Parameters
+        ----------
+
+        cluster_ids: list
+            Any of the cluster ids
+        centroid_vector_fields: list
+            Vector fields stored
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        model: str
+            Model to use for summarization
+        tokenizer: str
+            Tokenizer to use for summarization
+        max_length: int
+
+
+        Example
+        --------------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset_id")
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+
+            cluster_ops.summarize_closest_to_center()
+
+        """
+        try:
+            from transformers import pipeline
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall transformers\n \
+                pip install -U transformers"
+            )
+
+        summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
+        center_docs = self.list_closest_to_center(
+            dataset=dataset,
+            vector_fields=vector_fields,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            # facets: List = [],
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+        )
+
+        def clean_sentence(s):
+            s = (
+                s.replace(". .", ".")
+                .replace(" .", ".")
+                .replace("\n", "")
+                .replace("..", ".")
+                .strip()
+            )
+            if s[-1] != ".":
+                s += "."
+            return s
+
+        cluster_summary = {}
+        for cluster, results in center_docs["results"].items():
+            summary = []
+            for f in select_fields:
+                summary_fields = [
+                    clean_sentence(d[f])
+                    for d in results["results"]
+                    if d.get(f) and d[f] not in [" ", "."]
+                ]
+                summary.append(
+                    {
+                        f: summarizer(" ".join(summary_fields))[0]["summary_text"]
+                        .replace(" .", ".")
+                        .strip()
+                    }
+                )
+            cluster_summary[cluster] = summary
+
+        return cluster_summary
+
+    @track
     def aggregate(
         self,
         vector_fields: List[str] = None,
