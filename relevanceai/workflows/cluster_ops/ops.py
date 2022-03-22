@@ -49,6 +49,8 @@ from relevanceai.package_utils.version_decorators import beta
 from relevanceai.package_utils.concurrency import multiprocess
 from relevanceai.workflows.cluster_ops.constants import METRIC_DESCRIPTION
 
+from relevanceai.workflows.cluster_ops.transformers import TransformersLMSummarizer
+
 from tqdm.auto import tqdm
 
 
@@ -279,7 +281,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         include_count: bool = True,
         model: str = "sshleifer/distilbart-cnn-12-6",
         tokenizer: str = "sshleifer/distilbart-cnn-12-6",
-        max_length: int = 142,
     ):
         """
         List of documents closest from the centre
@@ -336,18 +337,22 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
             cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
-            cluster_ops.summarize_closest_to_center()
-
-        """
-        try:
-            from transformers import pipeline
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall transformers\n \
-                pip install -U transformers"
+            cluster_ops.summarize_closest_to_center(
+                select_fields="sample_text_field"
             )
 
-        summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
+        """
+        # try:
+        #     from transformers import pipelines
+        # except ModuleNotFoundError as e:
+        #     raise ModuleNotFoundError(
+        #         f"{e}\nInstall transformers\n \
+        #         pip install -U transformers"
+        #     )
+        # summarizer = pipeline("summarization", model=model, tokenizer=tokenizer, framework="pt")
+
+        summarizer = TransformersLMSummarizer(model, tokenizer)
+
         center_docs = self.list_closest_to_center(
             dataset=dataset,
             vector_fields=vector_fields,
@@ -396,7 +401,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
                 )
             cluster_summary[cluster] = summary
 
-        return cluster_summary
+        return {"results": cluster_summary}
 
     @track
     def aggregate(
@@ -1022,13 +1027,13 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         """
         We call facets on our data, which looks a little like this:
 
-        {'results': {'_cluster_.sample_1_vector_.kmeans-3': [{'_cluster_.sample_1_vector_.kmeans-3': 'cluster-2',
+        {'results': {'_cluster_.sample_1_vector_.kmeans_3': [{'_cluster_.sample_1_vector_.kmeans_3': 'cluster-2',
                 'frequency': 41,
                 'value': 'cluster-2'},
-            {'_cluster_.sample_1_vector_.kmeans-3': 'cluster-0',
+            {'_cluster_.sample_1_vector_.kmeans_3': 'cluster-0',
                 'frequency': 34,
                 'value': 'cluster-0'},
-            {'_cluster_.sample_1_vector_.kmeans-3': 'cluster-1',
+            {'_cluster_.sample_1_vector_.kmeans_3': 'cluster-1',
                 'frequency': 25,
                 'value': 'cluster-1'}]}}
         """
@@ -1490,7 +1495,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             docs = mock_documents(10)
             df = client.Dataset('sample')
             df.upsert_documents(docs)
-            cluster_ops = df.auto_cluster('kmeans-2', ['sample_1_vector_'])
+            cluster_ops = df.auto_cluster('kmeans_2', ['sample_1_vector_'])
             cluster_ops.internal_report()
 
         This is what is returned on an `internal_report` method.
@@ -1507,7 +1512,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=10)
-            clusterer = client.ClusterOps(alias="not-auto-kmeans-10", model=model)
+            clusterer = client.ClusterOps(alias="kmeans_10", model=model)
 
             clusterer.fit_predict_update(dataset=ds, vector_fields=["sample_1_vector_"])
             cluster_ops.internal_report()
