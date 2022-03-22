@@ -59,7 +59,9 @@ class LoguruLogger(AbstractLogger):
 class FileLogger:
     """Log system output to a file if it gets messy."""
 
-    def __init__(self, fn: str = "logs.txt", verbose: bool = False, log_to_file=True):
+    def __init__(
+        self, fn: str = "logs.txt", verbose: bool = False, log_to_file: bool = True
+    ):
         self.fn = fn
         self._original_stdout = sys.stdout
         self._original_stderr = sys.stderr
@@ -67,6 +69,7 @@ class FileLogger:
         # set this as a parameter in case users are in debugging mode and don't want to open a log
         # file when experimenting
         self.log_to_file = log_to_file
+        self._printed_log_statement = False
 
     def __enter__(self, fn: str = "logs"):
         if not os.path.exists(self.fn):
@@ -80,6 +83,14 @@ class FileLogger:
             with open(self.fn, "r") as f:
                 self._initial_length = len(f.readlines())
             if self.log_to_file:
+                if self._existed and self._lines_added():
+                    if self.verbose:
+                        print(f"Log {self.fn} has been updated")
+                elif not self._existed and self._lines_added():
+                    if self.verbose:
+                        print(
+                            f"📌 Your logs have been saved to {self.fn}. If you are debugging, you can turn file logging off by setting `log_to_file=False`.📌"
+                        )
                 sys.stdout = open(self.fn, "a")
                 sys.stderr = open(self.fn, "a")
 
@@ -93,7 +104,7 @@ class FileLogger:
         if self.log_to_file:
             if self._existed and self._lines_added():
                 if self.verbose:
-                    print("Log {self.fn} has been updated")
+                    print(f"Log {self.fn} has been updated")
             elif not self._existed and self._lines_added():
                 if self.verbose:
                     print(
