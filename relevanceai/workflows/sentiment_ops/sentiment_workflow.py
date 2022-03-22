@@ -3,6 +3,17 @@ from relevanceai.workflows.base import Workflow
 
 
 class SentimentWorkflow(Workflow, SentimentOps):
+    def __init__(
+        self,
+        workflow_alias: str = "sentiment-analysis",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
+    ):
+        """
+        workflow
+        """
+        self.workflow_alias = workflow_alias
+        self.model_name = model_name
+
     def fit_dataset(
         self,
         dataset,
