@@ -846,7 +846,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         if verbose:
             print("Fitting and predicting on all documents")
 
-        clustered_docs = self.fit_predict_documents(
+        clustered_docs = self.fit_predict(
             vector_fields,
             docs,
             return_only_clusters=True,
@@ -968,7 +968,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         if verbose:
             print("Fitting and predicting on all documents")
-        return self.fit_predict_documents(
+        return self.fit_predict(
             vector_fields,
             docs,
             return_only_clusters=True,
@@ -1065,83 +1065,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
         return all_responses
-
-    @track
-    def fit_predict_documents(
-        self,
-        vector_fields: list,
-        documents: List[Dict],
-        return_only_clusters: bool = True,
-        inplace: bool = True,
-        include_report: bool = False,
-    ):
-        """
-        Train clustering algorithm on documents and then store the labels
-        inside the documents.
-
-        Parameters
-        -----------
-        vector_field: list
-            The vector field of the documents
-        docs: list
-            List of documents to run clustering on
-        alias: str
-            What the clusters can be called
-        cluster_field: str
-            What the cluster fields should be called
-        return_only_clusters: bool
-            If True, return only clusters, otherwise returns the original document
-        inplace: bool
-            If True, the documents are edited inplace otherwise, a copy is made first
-        kwargs: dict
-            Any other keyword argument will go directly into the clustering algorithm
-
-        Example
-        -----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-
-            from sklearn.cluster import MiniBatchKMeans
-            model = MiniBatchKMeans(n_clusters=2)
-            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
-
-            cluster_ops.fit_predict_documents(df, vector_fields=["documentation_vector_"])
-
-        """
-        self.vector_fields = vector_fields
-
-        vectors = self._get_vectors_from_documents(vector_fields, documents)
-
-        cluster_labels = self.model.fit_predict(vectors)
-
-        if not self.parent_alias:
-            cluster_labels_values = self._label_clusters(cluster_labels)
-        else:
-            prev_cluster_labels = self._get_parent_cluster_values(
-                vector_fields=vector_fields,
-                alias=self.parent_alias,
-                documents=documents,
-            )
-            cluster_labels_values = self._label_subclusters(
-                labels=cluster_labels, prev_cluster_labels=prev_cluster_labels
-            )
-
-        if include_report:
-            try:
-                self._calculate_silhouette_grade(vectors, cluster_labels_values)
-            except Exception as e:
-                print(e)
-                pass
-        return self.set_cluster_labels_across_documents(
-            cluster_labels=cluster_labels_values,
-            documents=documents,
-            inplace=inplace,
-            return_only_clusters=return_only_clusters,
-        )
 
     def set_cluster_labels_across_documents(
         self,
