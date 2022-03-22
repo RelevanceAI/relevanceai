@@ -847,8 +847,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             print("Fitting and predicting on all documents")
 
         clustered_docs = self.fit_predict(
-            vector_fields,
-            docs,
+            data=docs,
+            vector_fields=vector_fields,
             return_only_clusters=True,
             inplace=False,
             include_report=include_report,
