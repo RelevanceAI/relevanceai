@@ -26,8 +26,49 @@ Features/Updates:
 - Add way to list vector fields
 
 Backend:
+
 - Major folder refactor -> official renaming of ops to workflows in certain areas
 - Backend separation into `interfaces`
+
+Automated Changes: 
+
+## What's Changed
+* V1.4.3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/538
+* Added Missing Centroid Endpoints by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/540
+* Feature/refactor folders by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/542
+* add cachesize max by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/543
+* Feature/cleanup by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/544
+* standardised the way that _id is created for each document by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/545
+* feature/pro-1622-add-dffacets-and-dfaggregate by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/548
+* feature/pro-1624-move-certain-files-around by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/547
+* move the fitting and predicting to after by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/549
+* add fix for testing by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/550
+* Feature/pro 1613 better clusters auto clustering 3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/551
+* Update Metadata Experience  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/554
+* feature/pro-1309-migrate-datasets-from-australia-to-us by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/546
+* Feature/pro 1626 sentiment analysis by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/555
+* Feature/fix community detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/557
+* Feature/ploty from docs by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/553
+* Feature/scaling by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/556
+* Feature/pull update push args by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/559
+* feature/pro-1507-add-2-series-together-in-pandas by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/539
+* Feature/add comm detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/558
+* Feature/add centroid insertion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/561
+* fix common mistake of inputting token as project by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/564
+* add a way to run the function for operating by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/565
+* Fix metadata for workflows by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/567
+* add recieve dataset by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/563
+* Feature/create workflow diagrams by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/568
+* add parameters for migration by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/569
+* Fix community detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/571
+* fix distribution measure plot by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/572
+* feature/pro-1666-improving-original-pull-update-push by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/562
+* Feature/add references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/573
+* Feature/add references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/574
+* fix the metadata insertion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/541
+* Feature/pro 1698 fix references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/575
+
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v1.4.3...v2.0.0
 
 v1.4.3
 -----------
