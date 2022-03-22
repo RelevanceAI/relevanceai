@@ -55,7 +55,9 @@ class Cluster(CommunityDetection):
             project=self.project,
             firebase_uid=self.firebase_uid,
         )
-        clusterer.fit_predict_update(dataset=self, vector_fields=vector_fields)
+        clusterer.fit_predict_update(
+            dataset=self, vector_fields=vector_fields, **kwargs
+        )
         return clusterer
 
     def cluster_keyphrases(
