@@ -233,7 +233,7 @@ class Cluster(CommunityDetection):
             return self._auto_cluster_string(
                 alias=alias,
                 vector_fields=vector_fields,
-                chunksize=1024,
+                chunksize=chunksize,
                 filters=filters,
                 parent_alias=parent_alias,
             )
@@ -303,7 +303,7 @@ class Cluster(CommunityDetection):
         return clusterer
 
     def _store_subcluster_metadata(
-        self, vector_fields: list, alias: str, parent_alias: str
+        self, vector_fields: list, alias: str, parent_alias: Optional[str]
     ):
         # Store metadata around subclustering
         field = str("-".join(vector_fields)) + "." + alias

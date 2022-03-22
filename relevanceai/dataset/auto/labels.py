@@ -369,7 +369,7 @@ class Labels(Write):
         similarity_metric="cosine",
         number_of_labels: int = 1,
         score_field: str = "_search_score",
-        alias: Optional[str] = None,
+        alias: str = None,
     ):
         """Label from a given list.
 

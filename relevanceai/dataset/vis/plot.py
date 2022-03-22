@@ -15,7 +15,7 @@ class Plot(Statistics):
         y: Optional[Any] = None,
         z: Optional[Any] = None,
         vector_field: Optional[Any] = None,
-        alias: Optional[Any] = None,
+        alias: str = None,
         color: Optional[Any] = None,
         height: int = 800,
         width: int = 1200,

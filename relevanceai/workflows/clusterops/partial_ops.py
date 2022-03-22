@@ -113,7 +113,7 @@ class PartialClusterOps(ClusterEvaluate):
         ] + filters
 
         for c in self._chunk_dataset(
-            self.dataset, self.vector_fields, chunksize=chunksize, filters=filters
+            self.vector_fields, chunksize=chunksize, filters=filters
         ):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
