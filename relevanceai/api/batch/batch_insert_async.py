@@ -5,7 +5,7 @@ import traceback
 import orjson
 
 from datetime import datetime
-from collections.abc import Coroutine
+from concurrent.futures import as_completed, wait
 from pathlib import Path
 from threading import Thread
 from typing import Callable, Optional, Tuple
@@ -28,7 +28,7 @@ class EventLoop(Thread):
     tasks are run there.
     """
 
-    def __init__(self, tasks, num_requests, show_progress_bar):
+    def __init__(self, tasks, show_progress_bar):
         super().__init__()
         self._loop = asyncio.new_event_loop()
         self.daemon = True
@@ -37,10 +37,9 @@ class EventLoop(Thread):
         self.tasks = tasks
 
         self.show_progress_bar = show_progress_bar
-        self.progress_tracker = progress_bar(
-            range(num_requests), show_progress_bar=show_progress_bar
+        self.progress_bar = progress_bar(
+            range(len(tasks)), show_progress_bar=show_progress_bar
         )
-        self.progress_iterator = iter(self.progress_tracker)
 
     def run(self):
         self._loop.run_forever()
@@ -56,13 +55,12 @@ class EventLoop(Thread):
             ]
         )
 
-        from concurrent.futures import as_completed
-
-        for _ in as_completed(self.futures):
-            if self.progress_tracker is not None:
-                next(self.progress_iterator)
-            if self.show_progress_bar:
-                self.progress_tracker.update(1)
+        if self.show_progress_bar:
+            with self.progress_bar as progress_bar:
+                for _ in as_completed(self.futures):
+                    progress_bar.update(1)
+        else:
+            wait(self.futures)
 
     def terminate(self):
         self._loop.call_soon_threadsafe(self._loop.stop)
@@ -242,10 +240,10 @@ class BatchInsertAsyncHelpers(Utils, BatchRetrieveClient, APIClient):
 
     def _set_chunk_size(
         self,
-        retrieve_chunk_size: Optional[int],
         dataset_id: str,
         filters: list,
         select_fields: list,
+        retrieve_chunk_size: Optional[int],
     ) -> int:
         """
         Sets the chunk size to an "optimal" size is the chunk size is not
@@ -419,14 +417,18 @@ class BatchInsertAsyncHelpers(Utils, BatchRetrieveClient, APIClient):
     def _get_tasks(
         self,
         valid_cache: bool,
-        subset_function,
         chunk_size: int,
-        num_requests: int,
-        cursor: Optional[str],
+        dataset_id: str,
+        filters: list,
+        select_fields: list,
+        subset_function,
     ) -> list:
         """
         Gets the list of tasks to be executed in the event loop.
         """
+        num_requests, cursor = self._get_task_parameters(
+            valid_cache, chunk_size, dataset_id, filters, select_fields
+        )
         if valid_cache:
             return [
                 subset_function(task_num, 0, cursor) for task_num in range(num_requests)
@@ -487,16 +489,18 @@ class BatchInsertAsyncHelpers(Utils, BatchRetrieveClient, APIClient):
         )
         valid_cache = self._validate_cache(use_cache, dataset_id, select_fields)
         chunk_size = self._set_chunk_size(
-            retrieve_chunk_size, dataset_id, filters, select_fields
-        )
-        num_requests, cursor = self._get_task_parameters(
-            valid_cache, chunk_size, dataset_id, filters, select_fields
+            dataset_id, filters, select_fields, retrieve_chunk_size
         )
         tasks = self._get_tasks(
-            valid_cache, pull_update_push_subset, chunk_size, num_requests, cursor
+            valid_cache,
+            chunk_size,
+            dataset_id,
+            filters,
+            select_fields,
+            pull_update_push_subset,
         )
 
-        threaded_loop = EventLoop(tasks, num_requests, show_progress_bar)
+        threaded_loop = EventLoop(tasks, show_progress_bar)
         threaded_loop.start()
         threaded_loop.execute_tasks()
         threaded_loop.terminate()
