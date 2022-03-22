@@ -10,31 +10,14 @@ import numpy as np
 
 from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
 from relevanceai.api.client import BatchAPIClient
-from relevanceai.workflows.cluster_ops.constants import CENTROID_DISTANCES
+from relevanceai.workflows.cluster_ops.constants import (
+    CENTROID_DISTANCES,
+    METRIC_DESCRIPTION,
+)
 from relevanceai.package_utils.analytics_funcs import track
 from doc_utils import DocUtils
 from typing import Optional, Dict, Callable
 from tqdm.auto import tqdm
-
-SILHOUETTE_INFO = """
-Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
-<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
-
-RAND_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
-<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs that have a matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>"""
-
-HOMOGENEITY_INFO = """Good clusters only have elements from the same ground truth within the same cluster<br/>
-<b>Homogeneity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
-
-COMPLETENESS_INFO = """Good clusters have all elements from the same ground truth within the same cluster <br/>
-<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
-
-METRIC_DESCRIPTION = {
-    "Silhouette Score": SILHOUETTE_INFO,
-    "Rand Score": RAND_INFO,
-    "Homogeneity": HOMOGENEITY_INFO,
-    "Completeness": COMPLETENESS_INFO,
-}
 
 
 def sort_dict(dict, reverse: bool = True, cut_off=0):
