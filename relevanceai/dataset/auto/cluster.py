@@ -450,7 +450,7 @@ class Cluster(CommunityDetection):
                 clusterer.fit(
                     dataset=self,
                     vector_fields=vector_fields,
-                    include_grade=True,
+                    include_report=True,
                     filters=filters,
                 )
 

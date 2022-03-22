@@ -445,7 +445,7 @@ class _ClusterOps(BatchAPIClient):
         filters = [] if filters is None else filters
 
         docs = self._get_documents(
-            dataset_id=self.dataset_id,
+            dataset_id=self.dataset.dataset_id,
             include_cursor=True,
             number_of_documents=chunksize,
             select_fields=select_fields,
@@ -455,7 +455,7 @@ class _ClusterOps(BatchAPIClient):
         while len(docs["documents"]) > 0:
             yield docs["documents"]
             docs = self._get_documents(
-                dataset_id=self.dataset_id,
+                dataset_id=self.dataset.dataset_id,
                 cursor=docs["cursor"],
                 include_cursor=True,
                 select_fields=select_fields,
