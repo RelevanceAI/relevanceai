@@ -4,11 +4,11 @@ from relevanceai import vector_tools
 from relevanceai.interfaces import Client
 
 # Cluster _Base Utilities
-from relevanceai.workflows.cluster_ops.cluster_base import (
+from relevanceai.workflows.cluster_ops.base import (
     ClusterBase,
     CentroidClusterBase,
 )
-from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+from relevanceai.workflows.cluster_ops.ops import ClusterOps
 from relevanceai.workflows.dim_reduction_ops.dim_reduction_ops import (
     ReduceDimensionsOps,
 )
