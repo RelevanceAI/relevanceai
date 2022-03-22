@@ -299,7 +299,7 @@ class Cluster(CommunityDetection):
             clusterer.fit_predict_update(
                 dataset=self,
                 vector_fields=vector_fields,
-                include_grade=True,
+                include_report=True,
                 filters=filters,
             )
         return clusterer
