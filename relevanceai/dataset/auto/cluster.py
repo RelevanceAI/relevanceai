@@ -44,7 +44,7 @@ class Cluster(CommunityDetection):
 
             model = KMeansModel(k=n_clusters)
 
-            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
+            df.cluster(model=model, alias=f"kmeans_{n_clusters}", vector_fields=[vector_field])
         """
         from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
@@ -165,7 +165,7 @@ class Cluster(CommunityDetection):
         - minibatchkmeans
 
         In order to choose the number of clusters, simply add a number
-        after the dash like `kmeans-8` or `minibatchkmeans-50`.
+        after the dash like `kmeans_8` or `minibatchkmeans_50`.
 
         Under the hood, it uses scikit learn defaults or best practices.
 
@@ -176,8 +176,8 @@ class Cluster(CommunityDetection):
         ----------
         alias : str
             The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
-            Supported aliases at the moment are 'kmeans','kmeans-10', 'kmeans-X' (where X is a number), 'minibatchkmeans',
-                'minibatchkmeans-10', 'minibatchkmeans-X' (where X is a number)
+            Supported aliases at the moment are 'kmeans','kmeans_10', 'kmeans_X' (where X is a number), 'minibatchkmeans',
+                'minibatchkmeans_10', 'minibatchkmeans_X' (where X is a number)
         vector_fields : List
             A list vector fields over which to cluster
 
@@ -198,13 +198,13 @@ class Cluster(CommunityDetection):
             clusterer.list_closest_to_center()
 
             # Run k means clustering with 8 clusters
-            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+            clusterer = df.auto_cluster("kmeans_8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 8 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+            clusterer = df.auto_cluster("minibatchkmeans_8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 20 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
+            clusterer = df.auto_cluster("minibatchkmeans_20", vector_fields=[vector_field])
 
         You can alternatively run this using kmeans.
 
@@ -219,12 +219,12 @@ class Cluster(CommunityDetection):
             ds = client.Dataset('sample')
             ds.upsert_documents(mock_documents(100))
             # Run initial kmeans to get clusters
-            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            ds.auto_cluster('kmeans_3', vector_fields=["sample_1_vector_"])
             # Run separate K Means to get subclusters
             cluster_ops = ds.auto_cluster(
-                'kmeans-2',
+                'kmeans_2',
                 vector_fields=["sample_1_vector_"],
-                parent_alias="kmeans-3"
+                parent_alias="kmeans_3"
             )
 
 
@@ -337,7 +337,7 @@ class Cluster(CommunityDetection):
         - minibatchkmeans
 
         In order to choose the number of clusters, simply add a number
-        after the dash like `kmeans-8` or `minibatchkmeans-50`.
+        after the dash like `kmeans_8` or `minibatchkmeans_50`.
 
         Under the hood, it uses scikit learn defaults or best practices.
 
@@ -348,8 +348,8 @@ class Cluster(CommunityDetection):
         ----------
         alias : str
             The clustering model (as a str) to use and n_clusters. Delivered in a string separated by a '-'
-            Supported aliases at the moment are 'kmeans','kmeans-10', 'kmeans-X' (where X is a number), 'minibatchkmeans',
-                'minibatchkmeans-10', 'minibatchkmeans-X' (where X is a number)
+            Supported aliases at the moment are 'kmeans','kmeans_10', 'kmeans_X' (where X is a number), 'minibatchkmeans',
+                'minibatchkmeans_10', 'minibatchkmeans_X' (where X is a number)
         vector_fields : List
             A list vector fields over which to cluster
 
@@ -370,13 +370,13 @@ class Cluster(CommunityDetection):
             clusterer.list_closest_to_center()
 
             # Run k means clustering with 8 clusters
-            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+            clusterer = df.auto_cluster("kmeans_8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 8 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+            clusterer = df.auto_cluster("minibatchkmeans_8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 20 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
+            clusterer = df.auto_cluster("minibatchkmeans_20", vector_fields=[vector_field])
 
         You can alternatively run this using kmeans.
 
@@ -391,12 +391,12 @@ class Cluster(CommunityDetection):
             ds = client.Dataset('sample')
             ds.upsert_documents(mock_documents(100))
             # Run initial kmeans to get clusters
-            ds.auto_cluster('kmeans-3', vector_fields=["sample_1_vector_"])
+            ds.auto_cluster('kmeans_3', vector_fields=["sample_1_vector_"])
             # Run separate K Means to get subclusters
             cluster_ops = ds.auto_cluster(
-                'kmeans-2',
+                'kmeans_2',
                 vector_fields=["sample_1_vector_"],
-                parent_alias="kmeans-3"
+                parent_alias="kmeans_3"
             )
 
 

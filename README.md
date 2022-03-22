@@ -102,7 +102,7 @@ results = ds.vector_search(
 
 Generate 12 clusters using kmeans
 ```python
-clusterop = ds.auto_cluster("kmeans-12", vector_fields=["example_vector_"])
+clusterop = ds.auto_cluster("kmeans_12", vector_fields=["example_vector_"])
 clusterop.list_closest_to_center()
 ```
 > Quick tip! After each of these steps, the output will provide a URL to the Relevance AI dashboard where you can see a visualisation of your results

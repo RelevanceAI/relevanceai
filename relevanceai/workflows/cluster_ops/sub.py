@@ -50,7 +50,7 @@ class SubClusterOps(_ClusterOps):
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=10)
-            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer = ClusterOps(alias="minibatchkmeans_10", model=model)
             clusterer.subcluster_predict_update(
                 dataset=ds,
             )
@@ -140,7 +140,7 @@ class SubClusterOps(_ClusterOps):
 
             from sklearn.cluster import MiniBatchKMeans
             model = MiniBatchKMeans(n_clusters=10)
-            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer = ClusterOps(alias="minibatchkmeans_10", model=model)
             clusterer.subpartialfit_predict_update(
                 dataset=ds,
             )
@@ -210,7 +210,7 @@ class SubClusterOps(_ClusterOps):
             ds.upsert_documents(documents)
 
             # Run simple clustering first
-            ds.auto_cluster("kmeans-3", vector_fields=["sample_1_vector_"])
+            ds.auto_cluster("kmeans_3", vector_fields=["sample_1_vector_"])
 
             # Start KMeans
             from sklearn.cluster import KMeans
@@ -220,7 +220,7 @@ class SubClusterOps(_ClusterOps):
             cluster_ops = client.ClusterOps(
                 alias="subclusteringkmeans",
                 model=model,
-                parent_alias="kmeans-3")
+                parent_alias="kmeans_3")
 
 
         """

@@ -4,7 +4,7 @@ from relevanceai.interfaces import Dataset
 
 from .utils import VECTOR_FIELDS
 
-ORIGINAL_ALIAS = "minibatchkmeans-3"
+ORIGINAL_ALIAS = "minibatchkmeans_3"
 
 
 @pytest.fixture(scope="function")
@@ -17,7 +17,7 @@ def minibatch_clusterer(test_df: Dataset):
 @pytest.fixture(scope="function")
 def minibatch_subclusterer(test_df: Dataset):
     # Running batch k means after clustering
-    ALIAS = "minibatchkmeans-4"
+    ALIAS = "minibatchkmeans_4"
     clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
     clusterer = test_df.auto_cluster(
         ALIAS,
@@ -31,7 +31,7 @@ def minibatch_subclusterer(test_df: Dataset):
 @pytest.fixture(scope="function")
 def kmeans_subclusterer(test_df: Dataset):
     # Running K Means after clustering
-    ALIAS = "kmeans-4"
+    ALIAS = "kmeans_4"
     clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
     clusterer = test_df.auto_cluster(
         ALIAS,

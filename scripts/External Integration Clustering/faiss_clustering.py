@@ -39,7 +39,7 @@ def main(args):
 
     model = FaissKMeans(model=Kmeans(d=4, k=n_clusters))
 
-    clusterer = ClusterOps(model=model, alias=f"kmeans-{n_clusters}")
+    clusterer = ClusterOps(model=model, alias=f"kmeans_{n_clusters}")
 
     clusterer.fit(dataset=df, vector_fields=[vector_field])
 

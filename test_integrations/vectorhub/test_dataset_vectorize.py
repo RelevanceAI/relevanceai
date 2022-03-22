@@ -12,7 +12,7 @@ def test_dataset_vectorize(test_dataset: Dataset):
 
 
 def test_dataset_auto_text_cluster_dashboard(test_dataset: Dataset):
-    alias = "kmeans-3"
+    alias = "kmeans_3"
     test_dataset.auto_text_cluster_dashboard(text_fields=["data"], alias=alias)
 
     vector = "data_use_vector_"

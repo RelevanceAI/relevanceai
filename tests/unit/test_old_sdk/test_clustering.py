@@ -8,12 +8,12 @@ from relevanceai.interfaces import Client
 def test_kmeans(test_client: Client, clustered_dataset_id: List[Dict]):
     db_health = test_client.datasets.monitor.health(clustered_dataset_id)
     assert "_cluster_" in db_health
-    assert "_cluster_.sample_1_vector_.kmeans-10" in db_health
+    assert "_cluster_.sample_1_vector_.kmeans_10" in db_health
 
 
 def test_kmeans_dashboard(test_client: Client, vector_dataset_id: str):
     ds = test_client.Dataset(vector_dataset_id)
-    ds.auto_cluster("kmeans-10", ["sample_1_vector_"])
+    ds.auto_cluster("kmeans_10", ["sample_1_vector_"])
     assert True
 
 
@@ -23,7 +23,7 @@ def closest_to_centers(test_client: Client, clustered_dataset_id: List[Dict]):
     results = test_client.datasets.cluster.centroids.list_closest_to_center(
         clustered_dataset_id,
         ["sample_1_vector_"],
-        "kmeans-10",
+        "kmeans_10",
     )
     return results
 
@@ -34,7 +34,7 @@ def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict])
     results = test_client.datasets.cluster.centroids.list_furthest_from_center(
         clustered_dataset_id,
         ["sample_1_vector_"],
-        "kmeans-10",
+        "kmeans_10",
     )
     return results
 

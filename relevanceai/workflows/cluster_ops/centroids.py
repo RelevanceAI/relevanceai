@@ -137,7 +137,7 @@ class Centroids(BatchAPIClient):
 
             model = KMeansModel(k=n_clusters)
 
-            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
+            df.cluster(model=model, alias=f"kmeans_{n_clusters}", vector_fields=[vector_field])
 
         """
         cluster_ids = [] if cluster_ids is None else cluster_ids

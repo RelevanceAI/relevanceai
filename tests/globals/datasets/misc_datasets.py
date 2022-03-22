@@ -25,7 +25,7 @@ def clustered_dataset_id(test_client: Client, vector_documents: List[Dict]):
     test_client._insert_documents(test_dataset_id, vector_documents)
 
     ds = test_client.Dataset(test_dataset_id)
-    ds.auto_cluster("kmeans-10", ["sample_1_vector_"])
+    ds.auto_cluster("kmeans_10", ["sample_1_vector_"])
     yield test_dataset_id
 
     test_client.datasets.delete(test_dataset_id)
