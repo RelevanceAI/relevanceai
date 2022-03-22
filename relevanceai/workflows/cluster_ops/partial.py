@@ -4,7 +4,7 @@ from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.analytics_funcs import track
 
-from relevanceai.workflows.cluster_ops._ops import _ClusterOps
+from relevanceai.workflows.cluster_ops.utils import _ClusterOps
 
 
 class PartialClusterOps(_ClusterOps):
