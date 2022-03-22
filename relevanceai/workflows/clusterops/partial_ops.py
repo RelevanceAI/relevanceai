@@ -190,3 +190,65 @@ class PartialClusterOps(ClusterEvaluate):
                 "Build your clustering app here: "
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
+
+    @track
+    def predict_update(
+        self,
+        dataset,
+        vector_fields: Optional[List[str]] = None,
+        chunksize: int = 20,
+        verbose: bool = True,
+    ):
+        """
+        Predict the dataset.
+        Example
+        ---------
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+            from sklearn.cluster import MiniBatchKMeans
+            model = MiniBatchKMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
+            cluster_ops.partial_fit_dataset(df)
+            cluster_ops.predict_dataset(df)
+        """
+        if not vector_fields:
+            vector_fields = self.vector_fields
+
+        all_responses = {
+            "inserted": 0,
+            "failed_documents": [],
+            "failed_documents_detailed": [],
+        }
+
+        filters = [
+            {
+                "field": f,
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+            for f in vector_fields
+        ]
+
+        for c in self._chunk_dataset(
+            self.vector_fields, chunksize=chunksize, filters=filters
+        ):
+            cluster_predictions = self.predict_documents(
+                vector_fields=vector_fields, documents=c
+            )
+            response = self.dataset._update_documents(
+                dataset_id=self.dataset_id, documents=cluster_predictions
+            )
+            for k, v in response.items():
+                if isinstance(all_responses[k], int):
+                    all_responses["inserted"] += v
+                elif isinstance(all_responses[k], list):
+                    all_responses[k] += v
+        if verbose:
+            print(
+                "Build your clustering app here: "
+                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+        return all_responses

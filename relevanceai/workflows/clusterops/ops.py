@@ -78,10 +78,10 @@ class ClusterOps(SubClusterOps, PartialClusterOps):
         api_key: str,
         firebase_uid: str,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
-        dataset_id: str = None,
-        vector_fields: List[Any] = None,
+        dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
-        parent_alias: Optional[Union[str, None]] = None,
+        parent_alias: str = None,
     ):
         self.alias = alias
         self.parent_alias = parent_alias
