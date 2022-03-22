@@ -1,7 +1,4 @@
-from typing import Union, List
-
 from collections import Counter
-
 from sklearn.metrics import (
     silhouette_score,
     adjusted_rand_score,
@@ -11,16 +8,33 @@ from sklearn.metrics import (
 import pandas as pd
 import numpy as np
 
-from relevanceai.dataset_interface import Dataset
-from relevanceai.workflows.clusterops._ops import _ClusterOps
 from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
-from relevanceai.workflows.clusterops.constants import (
-    METRIC_DESCRIPTION,
-    CENTROID_DISTANCES,
-)
+from relevanceai.api.client import BatchAPIClient
+from relevanceai.workflows.clusterops.constants import CENTROID_DISTANCES
 from relevanceai.package_utils.analytics_funcs import track
+from doc_utils import DocUtils
 from typing import Optional, Dict, Callable
 from tqdm.auto import tqdm
+
+SILHOUETTE_INFO = """
+Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
+<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
+
+RAND_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
+<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs that have a matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>"""
+
+HOMOGENEITY_INFO = """Good clusters only have elements from the same ground truth within the same cluster<br/>
+<b>Homogeneity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
+
+COMPLETENESS_INFO = """Good clusters have all elements from the same ground truth within the same cluster <br/>
+<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
+
+METRIC_DESCRIPTION = {
+    "Silhouette Score": SILHOUETTE_INFO,
+    "Rand Score": RAND_INFO,
+    "Homogeneity": HOMOGENEITY_INFO,
+    "Completeness": COMPLETENESS_INFO,
+}
 
 
 def sort_dict(dict, reverse: bool = True, cut_off=0):
@@ -31,7 +45,7 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
     }
 
 
-class ClusterEvaluate(_ClusterOps):
+class ClusterEvaluate(BatchAPIClient, DocUtils):
     def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
@@ -752,82 +766,3 @@ class ClusterEvaluate(_ClusterOps):
         # Be able to preview the clusters easily - auto set up the cluster app
         raise NotImplementedError()
         # return self.launch_cluster_app()
-
-    @track
-    def insert_centroid_documents(
-        self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
-    ):
-        """
-        Insert the centroid documents
-        Parameters
-        ------------
-        centroid_documents: List[Dict]
-            Insert centroid documents
-        dataset: Union[str, Dataset]
-            Dataset to insert
-        Example
-        ------------
-        .. code-block::
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-            from sklearn.cluster import KMeans
-            model = KMeans(n_clusters=2)
-            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
-            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
-            centroids = cluster_ops.get_centroid_documents()
-            cluster_ops.insert_centroid_documents(centroids)
-        """
-
-        results = self.services.cluster.centroids.insert(
-            dataset_id=self._check_dataset_id(dataset),
-            cluster_centers=centroid_documents,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-        )
-        return results
-
-    @track
-    def get_centroid_documents(self) -> List:
-        """
-        Get the centroid documents to store. This enables you to use `list_closest_to_center()`
-        and `list_furthest_from_center`.
-        .. code-block::
-            {
-                "_id": "document-id-1",
-                "centroid_vector_": [0.23, 0.24, 0.23]
-            }
-        If multiple vector fields returns this:
-        Returns multiple
-        .. code-block::
-            {
-                "_id": "document-id-1",
-                "blue_vector_": [0.12, 0.312, 0.42],
-                "red_vector_": [0.23, 0.41, 0.3]
-            }
-        """
-        if hasattr(self.model, "get_centroid_documents"):
-            self.model.vector_fields = self.vector_fields
-            return self.model.get_centroid_documents()
-        self.centers = self.model.get_centers()
-
-        if not hasattr(self, "vector_fields") or len(self.vector_fields) == 1:
-            if isinstance(self.centers, np.ndarray):
-                self.centers = self.centers.tolist()
-            centroid_vector_field_name = self.vector_fields[0]
-            return [
-                {
-                    "_id": self._label_cluster(i),
-                    centroid_vector_field_name: self.centers[i],
-                }
-                for i in range(len(self.centers))
-            ]
-        # For one or more vectors, separate out the vector fields
-        # centroid documents are created using multiple vector fields
-        centroid_docs = []
-        for i, c in enumerate(self.centers):
-            centroid_doc = {"_id": self._label_cluster(i)}
-            for j, vf in enumerate(self.vector_fields):
-                centroid_doc[vf] = self.centers[i][vf]
-            centroid_docs.append(centroid_doc.copy())
-        return centroid_docs

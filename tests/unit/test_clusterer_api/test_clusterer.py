@@ -76,7 +76,7 @@ def test_fit_predict(test_client: Client, vector_dataset_id: str):
     import random
 
     class CustomClusterModel(ClusterBase):
-        def fit_predict(self, X):
+        def fit(self, X):
             cluster_labels = [random.randint(0, 100) for _ in range(len(X))]
             return cluster_labels
 
@@ -87,5 +87,5 @@ def test_fit_predict(test_client: Client, vector_dataset_id: str):
         alias="random_clustering",
         model=model,
     )
-    clusterer.fit_predict(df, vector_fields=["sample_1_vector_"])
+    clusterer.fit(df, vector_fields=["sample_1_vector_"])
     assert "_cluster_.sample_1_vector_.random_clustering" in df.schema

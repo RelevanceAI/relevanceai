@@ -30,7 +30,7 @@ class ClusterBase(DocUtils, ABC):
         return self.fit_predict(*args, **kwargs)
 
     @abstractmethod
-    def fit_predict(self, vectors: list) -> List[str]:
+    def fit_predict(self, vectors: list) -> List[Union[str, float, int]]:
         """Edit this method to implement a ClusterBase.
 
         Parameters
