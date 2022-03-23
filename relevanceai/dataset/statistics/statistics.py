@@ -302,6 +302,8 @@ class Statistics(Read):
             ):
                 vectors[key] = value
 
+        return vectors
+
     def __call__(
         self,
         dataset_id: str,
