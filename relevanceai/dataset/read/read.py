@@ -658,10 +658,15 @@ class Read(BatchAPIClient):
             return results
         return self.insert_metadata(metadata)
 
-    def chunk_dataset(self, chunksize: int = 100, filters: list = None):
+    def chunk_dataset(
+        self, select_fields: List = None, chunksize: int = 100, filters: list = None
+    ):
         """Function for chunking a dataset"""
         docs = self.get_documents(
-            number_of_documents=chunksize, include_cursor=True, filters=filters
+            number_of_documents=chunksize,
+            include_cursor=True,
+            filters=filters,
+            select_fields=select_fields,
         )
         while len(docs["documents"]) > 0:
             yield docs["documents"]
