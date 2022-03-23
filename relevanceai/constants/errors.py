@@ -1,43 +1,62 @@
 """Missing field error
 """
 
+MISSING_FIELD = "Missing field in dataset"
+
+API_ERROR = "API Error"
+
+CLUSTERING_ALREADY_EXISTS = "Clustering already exists for this Field"
+
+NO_DOCUMENTS = "No Documents were returned"
+
+NO_MODEL = "No Model was specified"
+
 
 class RelevanceAIError(Exception):
     """_Base class for all errors"""
+
+    def __init__(self, message: str):
+        self.message = message
+
+    def __str__(self):
+        return self.message
 
 
 class MissingFieldError(RelevanceAIError):
     """Error handling for missing fields"""
 
+    def __init__(self, *args, **kwargs):
+        message = MISSING_FIELD
+        super().__init__(message)
+
 
 class APIError(RelevanceAIError):
     """Error related to API"""
 
+    def __init__(self, *args, **kwargs):
+        message = API_ERROR
+        super().__init__(message)
+
 
 class ClusteringResultsAlreadyExistsError(RelevanceAIError):
-    """Exception raised for existing clustering results
+    """Error for when clustering results already exist"""
 
-    Attributes:
-        message -- explanation of the error
-    """
-
-    def __init__(
-        self, field_name, message="""Clustering results for %s already exist"""
-    ):
-        self.field_name = field_name
-        self.message = message
-        super().__init__(self.message)
-
-    def __str__(self):
-        return self.message % (self.field_name)
+    def __init__(self, *args, **kwargs):
+        message = CLUSTERING_ALREADY_EXISTS
+        super().__init__(message)
 
 
 class NoDocumentsError(RelevanceAIError):
     """Error for when no documents are retrieved for an operation."""
 
-    def __init__(self, message="""No documents were found."""):
-        self.message = message
-        super().__init__(self.message)
+    def __init__(self, *args, **kwargs):
+        message = NO_DOCUMENTS
+        super().__init__(message)
 
-    def __str__(self):
-        return self.message
+
+class NoModelError(RelevanceAIError):
+    """Error for when no model is specified when clustering."""
+
+    def __init__(self, **kwargs):
+        message = NO_MODEL
+        super().__init__(message)

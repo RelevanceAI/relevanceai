@@ -13,7 +13,7 @@ def test_dataset_api_kmeans_centroids_properties(test_client: Client, test_df: D
     model = KMeansModel()
 
     clusterer: ClusterOps = test_client.ClusterOps(model=model, alias=alias)
-    clusterer.fit_predict_update(dataset=test_df, vector_fields=[vector_field])
+    clusterer.fit(dataset=test_df, vector_fields=[vector_field])
 
     assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
 

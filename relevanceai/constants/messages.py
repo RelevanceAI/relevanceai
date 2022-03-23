@@ -23,3 +23,5 @@ class Messages:
 
     """
     DEPRECEATED = "Deprecated. Revert to versions before {} for function. {}"
+
+    FAIL_MESSAGE = """Your API key is invalid. Please login again"""

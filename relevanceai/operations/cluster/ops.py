@@ -25,7 +25,7 @@ import numpy as np
 
 from tqdm.auto import tqdm
 
-from typing import Union, List, Dict, Optional, Callable, Set
+from typing import Union, Optional, Callable, Set, List, Dict, Any
 
 from relevanceai.dataset import Dataset
 
@@ -42,7 +42,7 @@ from relevanceai.operations.cluster.base import (
     BatchClusterBase,
 )
 from relevanceai.reports.cluster import ClusterReport
-from relevanceai.constants.errors import NoDocumentsError
+from relevanceai.constants.errors import NoDocumentsError, NoModelError
 
 
 class ClusterOps(PartialClusterOps, SubClusterOps):
@@ -76,9 +76,9 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         project: str,
         api_key: str,
         firebase_uid: str,
-        model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase] = None,
-        dataset_id: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
+        dataset_id: str,
+        vector_fields: List[str],
+        model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase, Any] = None,
         cluster_field: str = "_cluster_",
         parent_alias: str = None,
         verbose: bool = True,
@@ -87,24 +87,22 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         self.parent_alias = parent_alias
         self.cluster_field = cluster_field
         if model is None:
-            if verbose:
-                warnings.warn(
-                    "No model is specified, you will not be able to train a clustering algorithm."
-                )
+            raise NoModelError
 
         self.model = self._assign_model(model)
+
         self.firebase_uid = firebase_uid
 
-        if dataset_id is not None:
-            self.dataset_id: str = dataset_id
-        if vector_fields is not None:
-            self.vector_fields = vector_fields
+        self.dataset_id = dataset_id
+        self.vector_fields = vector_fields
 
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
         else:
             self.project: str = project
             self.api_key: str = api_key
+
+        self.verbose = True
 
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
@@ -137,8 +135,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         )
 
     @track
-    def agg(self, groupby_call):
-        """Aggregate the cluster class."""
+    def agg(self):
         self.groupby = ClusterGroupby(
             project=self.project,
             api_key=self.api_key,
@@ -758,12 +755,10 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         return clustered_documents
 
     @track
-    def fit_predict_update(
+    def fit(
         self,
-        dataset: Union[Dataset, str],
-        vector_fields: List,
         filters: Optional[List] = None,
-        include_report: bool = False,
+        include_report: bool = True,
         verbose: bool = True,
     ):
         """
@@ -811,9 +806,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             "Retrieving documents... This can take a while if the dataset is large."
         )
 
-        self._init_dataset(dataset)
-        self.vector_fields = vector_fields
-
         # make sure to only get fields where vector fields exist
         filters += [
             {
@@ -822,11 +814,11 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
                 "condition": "==",
                 "condition_value": " ",
             }
-            for f in vector_fields
+            for f in self.vector_fields
         ]
         if verbose:
             print("Retrieving all documents")
-        fields_to_get = vector_fields.copy()
+        fields_to_get = self.vector_fields.copy()
         if self.parent_alias:
             parent_field = self._get_cluster_field_name(self.parent_alias)
             fields_to_get.append(parent_field)
@@ -843,7 +835,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         clustered_docs = self.fit_predict(
             data=docs,
-            vector_fields=vector_fields,
+            vector_fields=self.vector_fields,
             return_only_clusters=True,
             inplace=False,
             include_report=include_report,
@@ -858,7 +850,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         self.logger.info(results)
 
         # Update the centroid collection
-        self.model.vector_fields = vector_fields
+        self.model.vector_fields = self.vector_fields
 
         self._insert_centroid_documents()
 

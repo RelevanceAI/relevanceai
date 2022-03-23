@@ -33,3 +33,5 @@ class Warning:
     MISSING_BSON = (
         "you are missing `bson.json_util`. Please install this using `pip install bson`"
     )
+
+    DEFAULT_MODEL = "No model selected, defaulting to sklearn implementation of KMeans with 10 clusters"

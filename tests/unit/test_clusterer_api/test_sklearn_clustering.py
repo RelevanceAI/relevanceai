@@ -31,5 +31,5 @@ def test_dbscan(test_client: Client, test_df: Dataset):
 
     model = DBSCAN()
     clusterer = test_client.ClusterOps(alias=ALIAS, model=model)
-    clusterer.fit_predict_update(test_df, ["sample_3_vector_"])
+    clusterer.fit(test_df, ["sample_3_vector_"])
     assert any([x for x in test_df.schema if ALIAS in x])

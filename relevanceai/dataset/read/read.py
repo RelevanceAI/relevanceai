@@ -6,13 +6,14 @@ import math
 import warnings
 import pandas as pd
 
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union, Dict, List, Any
 
 from relevanceai._api.client import BatchAPIClient
 from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.groupby import Groupby, Agg
+from relevanceai.dataset.read.statistics import Statistics
 from relevanceai.dataset.helpers import _build_filters
 
 from relevanceai.utils.cache import lru_cache
@@ -22,7 +23,7 @@ from relevanceai.constants.constants import MAX_CACHESIZE
 from relevanceai.constants.warning import Warning
 
 
-class Read(BatchAPIClient):
+class Read(Statistics):
     """
 
     Dataset Read
@@ -40,8 +41,8 @@ class Read(BatchAPIClient):
         fields: Optional[list] = None,
         image_fields: Optional[List[str]] = None,
         audio_fields: Optional[List[str]] = None,
-        highlight_fields: Optional[Dict[str, list]] = None,
         text_fields: Optional[List[str]] = None,
+        highlight_fields: Optional[Dict[str, list]] = None,
         **kw,
     ):
         self.project = project
@@ -69,8 +70,8 @@ class Read(BatchAPIClient):
         )
         self.image_fields = [] if image_fields is None else image_fields
         self.audio_fields = [] if audio_fields is None else audio_fields
+        self.text_fields = [] if text_fields is None else text_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
-        self.text_fields = text_fields
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
     @property  # type: ignore

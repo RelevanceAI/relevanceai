@@ -21,6 +21,6 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_df: Dataset):
 
     clusterer = test_client.ClusterOps(model=KMeans(n_clusters=2), alias=alias)
 
-    clusterer.fit_predict_update(dataset=test_df, vector_fields=[vector_field])
+    clusterer.fit(dataset=test_df, vector_fields=[vector_field])
 
     assert f"_cluster_.{vector_field}.{alias}" in test_df.schema

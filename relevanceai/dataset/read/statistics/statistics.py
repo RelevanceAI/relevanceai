@@ -6,16 +6,18 @@ import pandas as pd
 
 from typing import Dict, List, Optional, Union
 
+from relevanceai._api.client import BatchAPIClient
 from relevanceai._api.endpoints.services.cluster import ClusterClient
 
-from relevanceai.dataset.read import Read
 from relevanceai.dataset.series import Series
 
 from relevanceai.utils.decorators.version import added
 from relevanceai.utils.decorators.analytics import track
 
 
-class Statistics(Read):
+class Statistics(BatchAPIClient):
+    dataset_id: str
+
     @track
     def value_counts(self, field: str):
         """
@@ -72,7 +74,7 @@ class Statistics(Read):
         """
         facets = self.datasets.facets(self.dataset_id)
         if return_type == "pandas":
-            schema = self.schema
+            schema = self.datasets.schema(self.dataset_id)
             dataframe = {
                 col: facets["results"][col]
                 for col in schema
@@ -264,7 +266,7 @@ class Statistics(Read):
 
     def facets(
         self,
-        fields: Optional[list] = None,
+        fields: Optional[list] = [],
         date_interval: str = "monthly",
         page_size: int = 5,
         page: int = 1,
@@ -288,26 +290,9 @@ class Statistics(Read):
         """
         return self.datasets.facets(
             dataset_id=self.dataset_id,
-            fields=[] if fields is None else fields,
+            fields=fields,
             date_interval=date_interval,
             page_size=page_size,
             page=page,
             asc=asc,
         )
-
-    def __call__(
-        self,
-        dataset_id: str,
-        image_fields: Optional[List] = None,
-        text_fields: Optional[List] = None,
-        audio_fields: Optional[List] = None,
-        highlight_fields: Optional[Dict[str, List]] = None,
-        output_format: str = "pandas",
-    ):
-        self.dataset_id = dataset_id
-        self.image_fields = [] if image_fields is None else image_fields
-        self.text_fields = [] if text_fields is None else text_fields
-        self.audio_fields = [] if audio_fields is None else audio_fields
-        self.highlight_fields = {} if highlight_fields is None else highlight_fields
-        self.output_format = output_format
-        return self

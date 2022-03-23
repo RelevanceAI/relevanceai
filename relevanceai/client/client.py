@@ -39,8 +39,6 @@ from relevanceai.utils.decorators.version import beta, added
 
 
 class Client(BatchAPIClient, DocUtils):
-    FAIL_MESSAGE = """Your API key is invalid. Please login again"""
-
     def __init__(
         self,
         project=os.getenv("RELEVANCE_PROJECT"),
@@ -344,21 +342,21 @@ class Client(BatchAPIClient, DocUtils):
     @track
     def ClusterOps(
         self,
+        model,
         alias: str,
-        model=None,
-        dataset_id: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
-        cluster_field: str = "_cluster_",
+        dataset_id: str,
+        vector_fields: List[str],
+        **kwargs,
     ):
         return ClusterOps(
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
             model=model,
             alias=alias,
             dataset_id=dataset_id,
             vector_fields=vector_fields,
-            cluster_field=cluster_field,
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            **kwargs,
         )
 
     def _set_logger_to_verbose(self):
