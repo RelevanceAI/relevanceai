@@ -5,7 +5,7 @@ import re
 import math
 import warnings
 import pandas as pd
-from relevanceai.utils.cache import lru_cache
+
 from typing import Dict, List, Optional, Union
 
 from relevanceai._api.client import BatchAPIClient
@@ -15,6 +15,7 @@ from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.groupby import Groupby, Agg
 from relevanceai.dataset.helpers import _build_filters
 
+from relevanceai.utils.cache import lru_cache
 from relevanceai.utils.decorators.analytics import track
 
 from relevanceai.constants.constants import MAX_CACHESIZE

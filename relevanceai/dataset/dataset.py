@@ -7,12 +7,12 @@ from relevanceai.dataset.write import Write
 from relevanceai.dataset.io import IO
 from relevanceai.dataset.series import Series
 
-from relevanceai.workflows.vector.search import Search
+from relevanceai.workflows import Workflows
 
 from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECT_APP_LINK
 
 
-class Dataset(IO, Read, Write):
+class Dataset(IO, Read, Write, Workflows):
     @track
     def __init__(
         self,
@@ -49,11 +49,6 @@ class Dataset(IO, Read, Write):
             highlight_fields=highlight_fields,
             text_fields=text_fields,
             **kw,
-        )
-        self.search = Search(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
         )
         # add global datasets
         if self.dataset_id in GLOBAL_DATASETS:
