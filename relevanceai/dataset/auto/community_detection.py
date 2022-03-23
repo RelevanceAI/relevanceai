@@ -209,7 +209,7 @@ class CommunityDetection(Write):
 
         print("Updating documents...")
         community_documents = []
-        for i, cluster in enumerate(clusters):
+        for i, cluster in enumerate(tqdm(clusters)):
             ids = []
             for member in cluster:
                 ids.extend(ids_map[member])
@@ -271,6 +271,7 @@ class CommunityDetection(Write):
             project=self.project,
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
+            verbose=False,
         )
         print("Creating centroids...")
         with FileLogger(log_file):
