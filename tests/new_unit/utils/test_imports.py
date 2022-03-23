@@ -3,15 +3,13 @@ Simple tests to ensure import errors don't happen
 """
 
 
-def test_client_smoke():
-    """Simple test to ensure there are no breaking installations."""
-    # Import the client
+def test_client():
     from relevanceai import Client
 
     assert True
 
 
-def test_datasets_smoke():
+def test_datasets():
     from relevanceai.utils.datasets import get_games_dataset
     from relevanceai.utils.datasets import get_ecommerce_1_dataset
     from relevanceai.utils.datasets import get_online_retail_dataset
@@ -21,8 +19,8 @@ def test_datasets_smoke():
     assert True
 
 
-def test_projector_smoke():
-    import relevanceai.workflows.cluster_ops.constants
+def test_core():
+    from relevanceai.core.cluster.ops import ClusterOps
     from relevanceai.core.dr.dim_reduction import DimReduction
 
     assert True

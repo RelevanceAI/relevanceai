@@ -1,37 +1,40 @@
 # -*- coding: utf-8 -*-
 """Batch Insert"""
-import json
-import math
 import os
 import sys
+import json
+import math
 import time
 import traceback
 
 import pandas as pd
 
 from ast import literal_eval
+
 from datetime import datetime
+
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from relevanceai.utils.decorators.analytics import track
 from relevanceai._api.endpoints.client import APIClient
-from relevanceai._api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai._api.batch.chunk import Chunker
+from relevanceai._api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
-from relevanceai.utils.concurrency import multiprocess, multithread
-from relevanceai.constants.errors import MissingFieldError
-from relevanceai.utils.logger import FileLogger
-from relevanceai.utils.progress_bar import progress_bar
+
 from relevanceai.utils.utils import Utils
-from relevanceai.utils.make_id import _make_id
+from relevanceai.utils.logger import FileLogger
+from relevanceai.utils.helpers import make_id
+from relevanceai.utils.progress_bar import progress_bar
+from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils.concurrency import multiprocess, multithread
 
-
-MB_TO_BYTE = 1024 * 1024
-LIST_SIZE_MULTIPLIER = 3
-
-SUCCESS_CODES = [200]
-RETRY_CODES = [400, 404]
-HALF_CHUNK_CODES = [413, 524]
+from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constants import (
+    MB_TO_BYTE,
+    LIST_SIZE_MULTIPLIER,
+    SUCCESS_CODES,
+    RETRY_CODES,
+    HALF_CHUNK_CODES,
+)
 
 
 class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
@@ -231,7 +234,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         if "_id" not in chunk.columns and auto_generate_id:
             index = chunk.index
             uuids = [
-                _make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
+                make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
             ]
             chunk.insert(0, "_id", uuids, False)
             self.logger.warning(

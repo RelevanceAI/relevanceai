@@ -2,7 +2,7 @@ from typing import Dict
 
 from datetime import datetime
 
-from relevanceai.utils.make_id import _make_id
+from relevanceai.utils.helpers import make_id
 
 
 def datetime_document() -> Dict:
@@ -10,5 +10,5 @@ def datetime_document() -> Dict:
         "sample_1_datetime": datetime.now(),
         "sample_2_datetime": datetime.now(),
     }
-    document["_id"] = _make_id(document)
+    document["_id"] = make_id(document)
     return document

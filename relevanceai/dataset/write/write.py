@@ -14,7 +14,7 @@ from relevanceai._api.client import BatchAPIClient
 
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.make_id import _make_id
+from relevanceai.utils.helpers import make_id
 
 
 class Write(BatchAPIClient):
@@ -181,7 +181,7 @@ class Write(BatchAPIClient):
             df["_id"] = df[col_for_id]
 
         else:
-            uuids = [_make_id(df.iloc[index]) for index in range(len(df))]
+            uuids = [make_id(df.iloc[index]) for index in range(len(df))]
             df["_id"] = uuids
 
         def _is_valid(v):
@@ -285,7 +285,7 @@ class Write(BatchAPIClient):
         medias = get_paths(path, [])
         documents = list(
             map(
-                lambda media: {"_id": _make_id(media), "path": media, field: media},
+                lambda media: {"_id": make_id(media), "path": media, field: media},
                 medias,
             )
         )

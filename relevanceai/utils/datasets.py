@@ -13,19 +13,10 @@ import sys
 import pandas as pd
 import requests
 
-from relevanceai.utils.make_id import _make_id
+from relevanceai.utils.helpers import make_id
+from relevanceai.constants import DATASETS
 
 THIS_MODULE = sys.modules[__name__]
-DATASETS = [
-    "games",
-    "ecommerce_1",
-    "ecommerce_2",
-    "ecommerce_3",
-    "online_retail",
-    "news",
-    "flipkart",
-    "realestate2",
-]
 
 
 def select_fields_from_json(json, select_fields):
@@ -575,7 +566,7 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
                 }
             ],
         }
-        document["_id"] = _make_id(document)
+        document["_id"] = make_id(document)
         return document
 
     return [vector_document() for _ in range(number_of_documents)]

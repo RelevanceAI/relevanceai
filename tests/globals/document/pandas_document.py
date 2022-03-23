@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from relevanceai.utils.make_id import _make_id
+from relevanceai.utils.helpers import make_id
 
 
 def pandas_document():
@@ -17,5 +17,5 @@ def pandas_document():
             columns=["a", "b", "c"],
         ),
     }
-    document["_id"] = _make_id(document)
+    document["_id"] = make_id(document)
     return document

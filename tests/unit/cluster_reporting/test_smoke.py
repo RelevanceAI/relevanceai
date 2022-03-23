@@ -1,4 +1,10 @@
 import requests
+import numpy as np
+import pandas as pd
+
+from sklearn.cluster import KMeans
+
+from relevanceai.core.cluster.reports import ClusterReport
 
 
 def test_cluster_reporting_smoke():
@@ -17,23 +23,15 @@ def test_cluster_reporting_smoke():
             b["Speed"],
         ]
 
-    import pandas as pd
-    import numpy as np
-
     df = pd.DataFrame(docs)
-    X = np.array(df["base_vector_"].tolist())
+    vectors = np.array(df["base_vector_"].tolist())
 
-    from relevanceai.core.cluster.reports.cluster_report.cluster_report import (
-        ClusterReport,
-    )
-    from sklearn.cluster import KMeans
-
-    N_CLUSTERS = 2
-    kmeans = KMeans(n_clusters=N_CLUSTERS)
-    cluster_labels = kmeans.fit_predict(X)
+    n_clusters = 2
+    kmeans = KMeans(n_clusters=n_clusters)
+    cluster_labels = kmeans.fit_predict(vectors)
 
     report = ClusterReport(
-        X=X, cluster_labels=cluster_labels, num_clusters=N_CLUSTERS, model=kmeans
+        X=vectors, cluster_labels=cluster_labels, num_clusters=n_clusters, model=kmeans
     )
 
     internal_report = report.internal_report

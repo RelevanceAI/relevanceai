@@ -1,9 +1,10 @@
 import pytest
 
+from sklearn.cluster import MiniBatchKMeans
+
 from relevanceai.client import Client
 from relevanceai.dataset import Dataset
 from relevanceai.core.cluster import ClusterOps
-
 
 CLUSTER_ALIAS = "minibatch"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -11,7 +12,6 @@ VECTOR_FIELDS = ["sample_1_vector_"]
 
 @pytest.fixture(scope="function")
 def test_batch_clusterer(test_client: Client, vector_dataset_id, test_df: Dataset):
-    from sklearn.cluster import MiniBatchKMeans
 
     clusterer: ClusterOps = test_client.ClusterOps(
         alias=CLUSTER_ALIAS,

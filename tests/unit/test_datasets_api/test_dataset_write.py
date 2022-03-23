@@ -3,14 +3,13 @@ import pytest
 import pandas as pd
 from relevanceai.constants.errors import MissingFieldError
 
-from relevanceai.client import Client
 from relevanceai.dataset import Dataset
 
 
 def test_apply(test_df: Dataset):
-    RANDOM_STRING = "you are the kingj"
+    random_string = "you are the kingj"
     test_df["sample_1_label"].apply(
-        lambda x: x + RANDOM_STRING, output_field="sample_1_label_2"
+        lambda x: x + random_string, output_field="sample_1_label_2"
     )
     filtered_documents = test_df.datasets.documents.get_where(
         test_df.dataset_id,
@@ -19,7 +18,7 @@ def test_apply(test_df: Dataset):
                 "field": "sample_1_label_2",
                 "filter_type": "contains",
                 "condition": "==",
-                "condition_value": RANDOM_STRING,
+                "condition_value": random_string,
             }
         ],
     )
@@ -36,12 +35,12 @@ def test_create_id_in_documents(test_df: Dataset):
 
 
 def test_bulk_apply(test_df: Dataset):
-    RANDOM_STRING = "you are the queen"
-    LABEL = "sample_output"
+    random_string = "you are the queen"
+    label = "sample_output"
 
     def bulk_fn(docs):
         for d in docs:
-            d[LABEL] = d.get("sample_1_label", "") + RANDOM_STRING
+            d[label] = d.get("sample_1_label", "") + random_string
         return docs
 
     test_df.bulk_apply(bulk_fn)
@@ -52,7 +51,7 @@ def test_bulk_apply(test_df: Dataset):
                 "field": "sample_output",
                 "filter_type": "contains",
                 "condition": "==",
-                "condition_value": RANDOM_STRING,
+                "condition_value": random_string,
             }
         ],
     )

@@ -4,7 +4,7 @@ from relevanceai.utils.base import _Base
 from relevanceai._api.endpoints.client import APIClient
 from relevanceai.constants.errors import MissingFieldError
 
-from relevanceai.utils.make_id import _make_id
+from relevanceai.utils.helpers import make_id
 
 
 class Utils(APIClient, _Base, DocUtils):
@@ -58,7 +58,7 @@ class Utils(APIClient, _Base, DocUtils):
         except KeyError:
             if create_id:
                 self.set_field_across_documents(
-                    "_id", [_make_id(document) for document in documents], documents
+                    "_id", [make_id(document) for document in documents], documents
                 )
             else:
                 raise MissingFieldError(

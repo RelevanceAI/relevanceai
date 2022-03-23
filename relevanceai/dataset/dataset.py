@@ -9,7 +9,7 @@ from relevanceai.dataset.series import Series
 
 from relevanceai.core.vector.search import Search
 
-from relevanceai.constants import GLOBAL_DATASETS
+from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECT_APP_LINK
 
 
 class Dataset(IO, Read, Write):
@@ -122,13 +122,11 @@ class Dataset(IO, Read, Write):
         """
         Launches the link to the search application to start building
         """
-        return (
-            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/search"
-        )
+        return SEARCH_APP_LINK.format(self.dataset_id)
 
     @track
     def launch_projector_app(self):
         """
         Launches the link to the projector application to start building
         """
-        return f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
+        return PROJECT_APP_LINK.format(self.dataset_id)
