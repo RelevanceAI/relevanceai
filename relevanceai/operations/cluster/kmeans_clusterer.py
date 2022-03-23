@@ -6,8 +6,8 @@ import warnings
 from relevanceai.constants.warning import Warning
 from typing import Union, List, Optional
 
-from relevanceai.workflows.cluster import ClusterOps
-from relevanceai.workflows.cluster.base import ClusterBase
+from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.cluster.base import ClusterBase
 from relevanceai.dataset import Dataset
 
 

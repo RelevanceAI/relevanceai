@@ -15,9 +15,9 @@ from tqdm.auto import tqdm
 
 from relevanceai.dataset.write.write import Write
 
-from relevanceai.workflows.vector.local_nearest_neighbours import NearestNeighbours
-from relevanceai.workflows.preprocessing.text.base_text_processing import MLStripper
-from relevanceai.workflows.cluster.constants import NEAREST_NEIGHBOURS
+from relevanceai.operations.vector.local_nearest_neighbours import NearestNeighbours
+from relevanceai.operations.preprocessing.text.base_text_processing import MLStripper
+from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS
 
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.logger import FileLogger

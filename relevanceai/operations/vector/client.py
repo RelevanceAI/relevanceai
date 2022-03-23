@@ -1,6 +1,6 @@
 from relevanceai.utils.base import _Base
-from relevanceai.workflows.dr.dim_reduction import DimReduction
-from relevanceai.workflows.vector.local_nearest_neighbours import NearestNeighbours
+from relevanceai.operations.dr.dim_reduction import DimReduction
+from relevanceai.operations.vector.local_nearest_neighbours import NearestNeighbours
 
 
 class VectorTools(_Base):

@@ -113,7 +113,7 @@ from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
 )
-from relevanceai.workflows.report.cluster.grading import get_silhouette_grade
+from relevanceai.reports.cluster.grading import get_silhouette_grade
 from typing import Union, List, Dict, Any, Optional
 import functools
 from doc_utils import DocUtils

@@ -5,7 +5,7 @@ This script demonstrates a function based approach for clustering with KMeans Us
 import argparse
 
 from relevanceai import Client
-from relevanceai.workflows.cluster.kmeans_clusterer import KMeansModel
+from relevanceai.operations.cluster.kmeans_clusterer import KMeansModel
 
 
 def main(args):

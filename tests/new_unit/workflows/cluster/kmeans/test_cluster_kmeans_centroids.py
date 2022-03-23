@@ -1,6 +1,6 @@
 from relevanceai.client import Client
 from relevanceai.dataset import Dataset
-from relevanceai.workflows.cluster import ClusterOps
+from relevanceai.operations.cluster import ClusterOps
 
 
 def test_dataset_api_kmeans_centroids_properties(test_client: Client, test_df: Dataset):
@@ -8,7 +8,7 @@ def test_dataset_api_kmeans_centroids_properties(test_client: Client, test_df: D
     alias: str = "test_alias"
     vector_field: str = "sample_1_vector_"
 
-    from relevanceai.workflows.cluster.kmeans_clusterer import KMeansModel
+    from relevanceai.operations.cluster.kmeans_clusterer import KMeansModel
 
     model = KMeansModel()
 

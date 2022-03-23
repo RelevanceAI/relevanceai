@@ -20,35 +20,29 @@ You can view other examples of how to interact with this class here :ref:`integr
 """
 
 import warnings
-from relevanceai.constants.warning import Warning
 
 import numpy as np
 
-from relevanceai._api.client import BatchAPIClient
-from relevanceai.workflows.cluster.partial import PartialClusterOps
-from relevanceai.workflows.cluster.sub import SubClusterOps
+from tqdm.auto import tqdm
+
 from typing import Union, List, Dict, Optional, Callable, Set
-from relevanceai.workflows.cluster.base import (
+
+from relevanceai.dataset import Dataset
+
+from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils.decorators.version import beta
+
+from relevanceai.operations.cluster.partial import PartialClusterOps
+from relevanceai.operations.cluster.sub import SubClusterOps
+from relevanceai.operations.cluster.groupby import ClusterGroupby, ClusterAgg
+from relevanceai.operations.cluster.constants import METRIC_DESCRIPTION
+from relevanceai.operations.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
 )
-from relevanceai.workflows.cluster.groupby import ClusterGroupby, ClusterAgg
-from relevanceai.workflows.report.cluster import ClusterReport
-
-from relevanceai.utils.decorators.analytics import track
-
-# We use the second import because the first one seems to be causing errors with isinstance
-# from relevanceai.dataset.crud import Dataset
-
-from relevanceai.dataset import Dataset
-
+from relevanceai.reports.cluster import ClusterReport
 from relevanceai.constants.errors import NoDocumentsError
-from relevanceai.utils.decorators.version import beta
-from relevanceai.utils.concurrency import multiprocess
-from relevanceai.workflows.cluster.constants import METRIC_DESCRIPTION
-
-from tqdm.auto import tqdm
 
 
 class ClusterOps(PartialClusterOps, SubClusterOps):
@@ -1379,7 +1373,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             raise ValueError(
                 "We currently do not support more than 1 vector field when reporting."
             )
-        from relevanceai.workflows.report.cluster import ClusterReport
+        from relevanceai.reports.cluster import ClusterReport
 
         # X is all the vectors
         cluster_field_name = self._get_cluster_field_name()

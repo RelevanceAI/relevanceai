@@ -9,7 +9,7 @@ import pandas as pd
 from typing import Dict, List, Optional, Union
 
 from relevanceai._api.client import BatchAPIClient
-from relevanceai.workflows.cluster.centroids import Centroids
+from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.groupby import Groupby, Agg

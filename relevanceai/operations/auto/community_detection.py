@@ -1,4 +1,7 @@
 import traceback
+
+from tqdm import tqdm
+
 from collections import defaultdict
 from typing import Optional
 
@@ -244,7 +247,7 @@ class CommunityDetection(Write):
         )
         # Return a ClusterOps object
 
-        from relevanceai.workflows.cluster import ClusterOps
+        from relevanceai.operations.cluster import ClusterOps
 
         cluster_ops: ClusterOps = ClusterOps(
             # model=model,

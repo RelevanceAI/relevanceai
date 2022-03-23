@@ -1,7 +1,7 @@
 from typing import Optional
 
 from relevanceai.dataset.read.groupby import Groupby, Agg
-from relevanceai.workflows.cluster.constants import GROUPBY_MAPPING
+from relevanceai.operations.cluster.constants import GROUPBY_MAPPING
 
 
 class ClusterGroupby(Groupby):

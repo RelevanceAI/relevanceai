@@ -20,7 +20,7 @@ def test_datasets():
 
 
 def test_core():
-    from relevanceai.workflows.cluster.ops import ClusterOps
-    from relevanceai.workflows.dr.dim_reduction import DimReduction
+    from relevanceai.operations.cluster.ops import ClusterOps
+    from relevanceai.operations.dr.dim_reduction import DimReduction
 
     assert True

@@ -8,7 +8,7 @@ from typing import Union, Callable, Optional, List, Dict, Any
 
 from doc_utils import DocUtils
 
-from relevanceai.workflows.cluster.base import (
+from relevanceai.operations.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
@@ -23,10 +23,15 @@ from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
 )
 
-from relevanceai.workflows.cluster.evaluate import ClusterEvaluate
+from relevanceai.operations.cluster.evaluate import ClusterEvaluate
 
 
 class _ClusterOps(ClusterEvaluate):
+
+    alias: str
+    dataset_id: str
+    vector_fields: List[Any]
+
     # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):
         # Add support for not just sklearn models but sklearn models
@@ -329,7 +334,7 @@ class _ClusterOps(ClusterEvaluate):
 
     @staticmethod
     def _calculate_silhouette_grade(vectors, cluster_labels):
-        from relevanceai.workflows.cluster.reports.grading import (
+        from relevanceai.reports.cluster.grading import (
             get_silhouette_grade,
         )
         from sklearn.metrics import silhouette_samples

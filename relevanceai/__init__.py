@@ -3,12 +3,12 @@ import warnings
 from relevanceai.client import Client
 
 # Cluster _Base Utilities
-from relevanceai.workflows.cluster.base import (
+from relevanceai.operations.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
 )
-from relevanceai.workflows.cluster import ClusterOps
-from relevanceai.workflows.dr.dim_reduction_ops import (
+from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.dr.dim_reduction_ops import (
     ReduceDimensionsOps,
 )
 

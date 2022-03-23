@@ -8,9 +8,9 @@ from sklearn.metrics import (
 import pandas as pd
 import numpy as np
 
-from relevanceai.workflows.dr.dim_reduction import DimReduction
+from relevanceai.operations.dr.dim_reduction import DimReduction
 from relevanceai._api.client import BatchAPIClient
-from relevanceai.workflows.cluster.constants import (
+from relevanceai.operations.cluster.constants import (
     CENTROID_DISTANCES,
     METRIC_DESCRIPTION,
 )

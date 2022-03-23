@@ -1,6 +1,6 @@
 from relevanceai.utils.base import _Base
 from doc_utils.doc_utils import DocUtils
-from relevanceai.workflows.cluster.constants import NEAREST_NEIGHBOURS
+from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS
 
 doc_utils = DocUtils()
 

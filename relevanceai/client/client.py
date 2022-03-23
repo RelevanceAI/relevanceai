@@ -30,7 +30,7 @@ from relevanceai._api import BatchAPIClient
 
 from doc_utils.doc_utils import DocUtils
 
-from relevanceai.workflows.cluster import ClusterOps
+from relevanceai.operations.cluster import ClusterOps
 from relevanceai.constants.errors import APIError
 from relevanceai.dataset import Dataset
 

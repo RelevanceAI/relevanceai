@@ -1,12 +1,8 @@
-import warnings
-
 from typing import Optional, List, Any
 
 from tqdm import tqdm
 
-from relevanceai.constants.warning import Warning
-
-from relevanceai.workflows.cluster.utils import _ClusterOps
+from relevanceai.operations.cluster.utils import _ClusterOps
 
 
 class SubClusterOps(_ClusterOps):

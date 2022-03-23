@@ -4,7 +4,7 @@ from sklearn.cluster import MiniBatchKMeans
 
 from relevanceai.client import Client
 from relevanceai.dataset import Dataset
-from relevanceai.workflows.cluster import ClusterOps
+from relevanceai.operations.cluster import ClusterOps
 
 CLUSTER_ALIAS = "minibatch"
 VECTOR_FIELDS = ["sample_1_vector_"]

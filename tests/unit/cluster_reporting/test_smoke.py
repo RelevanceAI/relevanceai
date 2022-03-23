@@ -4,7 +4,7 @@ import pandas as pd
 
 from sklearn.cluster import KMeans
 
-from relevanceai.workflows.cluster.reports import ClusterReport
+from relevanceai.operations.cluster.reports import ClusterReport
 
 
 def test_cluster_reporting_smoke():

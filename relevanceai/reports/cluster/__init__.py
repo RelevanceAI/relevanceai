@@ -1,1 +1,1 @@
-from relevanceai.workflows.report.cluster import ClusterReport
+from relevanceai.reports.cluster.report import ClusterReport

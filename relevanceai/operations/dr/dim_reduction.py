@@ -12,7 +12,7 @@ from typing_extensions import Literal
 
 from relevanceai.utils.base import _Base
 from relevanceai.utils.logger import LoguruLogger
-from relevanceai.workflows.cluster.constants import (
+from relevanceai.operations.cluster.constants import (
     DIM_REDUCTION,
     DIM_REDUCTION_DEFAULT_ARGS,
 )

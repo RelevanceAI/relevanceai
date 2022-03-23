@@ -3,9 +3,9 @@ import time
 
 from relevanceai.client import Client
 from relevanceai.dataset import Dataset
-from relevanceai.workflows.cluster import ClusterOps
-from relevanceai.workflows.cluster.base import ClusterBase
-from relevanceai.workflows.cluster.groupby import ClusterGroupby
+from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.cluster.base import ClusterBase
+from relevanceai.operations.cluster.groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -26,7 +26,7 @@ def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
 
 def get_model():
     # get a kmeans model
-    from relevanceai.workflows.cluster.kmeans_clusterer import KMeansModel
+    from relevanceai.operations.cluster.kmeans_clusterer import KMeansModel
 
     return KMeansModel(verbose=False)
 

@@ -7,12 +7,12 @@ from relevanceai.dataset.write import Write
 from relevanceai.dataset.io import IO
 from relevanceai.dataset.series import Series
 
-from relevanceai.workflows import Workflows
+from relevanceai.operations import Operations
 
 from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECT_APP_LINK
 
 
-class Dataset(IO, Read, Write, Workflows):
+class Dataset(IO, Read, Write, Operations):
     @track
     def __init__(
         self,

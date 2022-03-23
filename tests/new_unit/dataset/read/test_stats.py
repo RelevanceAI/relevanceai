@@ -2,7 +2,7 @@ from relevanceai.dataset import Dataset
 
 
 def test_cluster(test_df: Dataset):
-    from relevanceai.workflows.cluster.kmeans_clusterer import KMeansModel
+    from relevanceai.operations.cluster.kmeans_clusterer import KMeansModel
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"
