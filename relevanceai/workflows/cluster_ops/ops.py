@@ -24,10 +24,9 @@ import warnings
 import numpy as np
 import pandas as pd
 
-from relevanceai.api.client import BatchAPIClient
-from relevanceai.workflows.cluster_ops.partial import PartialClusterOps
-from relevanceai.workflows.cluster_ops.sub import SubClusterOps
 from typing import Union, List, Dict, Optional, Callable, Set
+
+from relevanceai.api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.base import (
     ClusterBase,
     CentroidClusterBase,
@@ -36,8 +35,10 @@ from relevanceai.workflows.cluster_ops.base import (
     SklearnCentroidBase,
 )
 from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby, ClusterAgg
+from relevanceai.workflows.cluster_ops.partial import PartialClusterOps
+from relevanceai.workflows.cluster_ops.sub import SubClusterOps
+from relevanceai.workflows.cluster_ops.utils import _ClusterOpsShow
 from relevanceai.reports.cluster_report import ClusterReport
-
 from relevanceai.package_utils.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
@@ -1533,6 +1534,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         vector_field: str,
         alias: str,
         preview_num: int = 10,
+        is_image_field: bool = False,
     ):
         """
         Shows the values of a clustering.
@@ -1553,6 +1555,10 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             The maximum number of values to preview. If a cluster has fewer
             values than preview_num, the cluster list will be extended by
             the appropriate number of np.nans to make up the difference.
+
+        is_image_field: bool
+            If set to True, will show the values as the images rather than
+            links.
         """
         if type(preview_num) is not int and preview_num <= 0:
             raise TypeError(
@@ -1601,4 +1607,5 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             difference = preview_num - len(clusters[cluster])
             clusters[cluster].extend([np.nan for _ in range(difference)])
 
-        return pd.DataFrame(clusters)
+        # return pd.DataFrame(clusters)
+        return _ClusterOpsShow(pd.DataFrame(clusters), is_image_field)
