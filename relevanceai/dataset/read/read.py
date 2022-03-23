@@ -629,12 +629,12 @@ class Read(BatchAPIClient):
         """
         Store Metadata
         """
-        return self.datasets.metadata(self.dataset_id)
+        return self.datasets.metadata(self.dataset_id)["results"]
 
     @property
     def metadata(self):
         """Get the metadata"""
-        _metadata = self.get_metadata()["results"]
+        _metadata = self.get_metadata()
         self._metadata = Metadata(
             _metadata, self.project, self.api_key, self.firebase_uid, self.dataset_id
         )
@@ -650,7 +650,7 @@ class Read(BatchAPIClient):
 
     def upsert_metadata(self, metadata: dict):
         """Upsert metadata."""
-        original_metadata: dict = self.datasets.metadata(self.dataset_id)
+        original_metadata: dict = self.get_metadata()
         original_metadata.update(metadata)
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
