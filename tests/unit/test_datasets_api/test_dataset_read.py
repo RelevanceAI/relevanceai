@@ -7,7 +7,7 @@ import time
 
 from relevanceai import Client
 
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 
 def test_Dataset_init(test_df: Dataset):

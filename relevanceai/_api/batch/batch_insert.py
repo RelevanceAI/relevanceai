@@ -13,7 +13,7 @@ from ast import literal_eval
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from relevanceai.utils.decorators.analytics_funcs import track
+from relevanceai.utils.decorators.analytics import track
 from relevanceai._api.endpoints.client import APIClient
 from relevanceai._api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai._api.batch.chunk import Chunker

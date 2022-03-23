@@ -7,8 +7,9 @@ from relevanceai._api.batch.batch_insert import BatchInsertClient
 from relevanceai._api.batch.batch_insert_async import BatchInsertAsync
 from relevanceai._api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai._api.endpoints.client import APIClient
-from relevanceai.constants.config import CONFIG
 from relevanceai.utils.utils import Utils
+
+from relevanceai.constants import CONFIG
 
 
 class BatchAPIClient(

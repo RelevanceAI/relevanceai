@@ -23,7 +23,9 @@ def test_cluster_reporting_smoke():
     df = pd.DataFrame(docs)
     X = np.array(df["base_vector_"].tolist())
 
-    from relevanceai.reports.cluster_report.cluster_report import ClusterReport
+    from relevanceai.core.cluster.reports.cluster_report.cluster_report import (
+        ClusterReport,
+    )
     from sklearn.cluster import KMeans
 
     N_CLUSTERS = 2

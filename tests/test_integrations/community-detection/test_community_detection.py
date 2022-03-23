@@ -1,4 +1,4 @@
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 
 def test_community_detection(test_dataset: Dataset):

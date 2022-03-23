@@ -1,4 +1,4 @@
-from relevanceai.constants.config import CONFIG
+from relevanceai.constants import CONFIG
 from relevanceai.utils.transport import Transport
 from relevanceai.utils.logger import LoguruLogger
 

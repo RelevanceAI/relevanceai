@@ -1,4 +1,4 @@
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 
 def test_reduce_dimensions(test_df: Dataset):

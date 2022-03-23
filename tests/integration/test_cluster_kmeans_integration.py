@@ -7,10 +7,10 @@ import pytest
 
 import time
 from relevanceai import Client
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
-from relevanceai.workflows.cluster_ops.ops import ClusterOps
-from relevanceai.workflows.cluster_ops.base import CentroidClusterBase
+from relevanceai.core.cluster import ClusterOps
+from relevanceai.core.cluster.base import CentroidClusterBase
 
 
 def test_dataset_api_kmeans_integration(test_client: Client, test_df: Dataset):

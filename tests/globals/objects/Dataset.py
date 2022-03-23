@@ -3,7 +3,7 @@ import pytest
 from typing import Dict, List, NamedTuple
 
 from relevanceai import Client
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 
 @pytest.fixture(scope="function")

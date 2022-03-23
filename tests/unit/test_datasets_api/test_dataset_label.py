@@ -1,8 +1,9 @@
 """Testing for dataset labels.
 """
 import pytest
-import random
-from relevanceai.client import Dataset, Client
+
+from relevanceai.client import Client
+from relevanceai.dataset import Dataset
 
 from tests.globals.constants import (
     generate_random_vector,

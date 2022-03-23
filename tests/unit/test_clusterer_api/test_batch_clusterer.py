@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-    Testing Batch CLustering
-"""
-
-import pandas as pd
 import pytest
-from relevanceai.client import Dataset, Client, ClusterOps
-from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby
+
+from relevanceai.client import Client
+from relevanceai.dataset import Dataset
+from relevanceai.core.cluster import ClusterOps
+
 
 CLUSTER_ALIAS = "minibatch"
 VECTOR_FIELDS = ["sample_1_vector_"]

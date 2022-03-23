@@ -1,4 +1,4 @@
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 
 def test_dataset_vectorize(test_dataset: Dataset):

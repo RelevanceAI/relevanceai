@@ -1,11 +1,7 @@
 """Configuration Settings"""
 import configparser
-import os
 
 from doc_utils.doc_utils import DocUtils
-
-PATH = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.path.join(PATH, "..", "config.ini")
 
 
 class Config(DocUtils):
@@ -33,9 +29,10 @@ class Config(DocUtils):
 
     """
 
-    def __init__(self):
+    def __init__(self, config_path):
+        self.config_path = config_path
         self.config = configparser.ConfigParser()
-        self._read_config(CONFIG_PATH)
+        self._read_config(config_path)
         super().__init__()
 
     def _read_config(self, config_path):
@@ -80,7 +77,7 @@ class Config(DocUtils):
 
     def reset_to_default(self):
         """Reset config to default"""
-        self._read_config(CONFIG_PATH)
+        self._read_config(self.config_path)
 
     reset = reset_to_default
 
@@ -124,8 +121,6 @@ class Config(DocUtils):
         """
         return self.set_option(key, value)
 
-
-CONFIG = Config()
 
 # To create the initial config
 if __name__ == "__main__":

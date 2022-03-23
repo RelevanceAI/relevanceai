@@ -1,12 +1,10 @@
-"""
-    Testing dataset read operations
-"""
+import pytest
 
 import pandas as pd
-import pytest
 from relevanceai.constants.errors import MissingFieldError
 
-from relevanceai.client import Dataset, Client
+from relevanceai.client import Client
+from relevanceai.dataset import Dataset
 
 
 def test_apply(test_df: Dataset):

@@ -1,6 +1,6 @@
 import pytest
 
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 from .utils import VECTOR_FIELDS
 

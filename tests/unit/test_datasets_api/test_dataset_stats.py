@@ -1,14 +1,8 @@
-"""
-    Testing dataset
-"""
-
-from typing import Dict, List
-
-from relevanceai.client import Dataset, Client
+from relevanceai.dataset import Dataset
 
 
 def test_cluster(test_df: Dataset):
-    from relevanceai.workflows.cluster_ops.kmeans_clusterer import KMeansModel
+    from relevanceai.core.cluster.kmeans_clusterer import KMeansModel
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"

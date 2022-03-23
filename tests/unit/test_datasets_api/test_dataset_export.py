@@ -1,6 +1,6 @@
 import pandas as pd
 
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 
 def test_to_pandas_dataframe(test_df: Dataset):

@@ -5,12 +5,12 @@ Test the clustering workflow from getting the documents, clustering and then ins
 import pytest
 
 from relevanceai import Client
-from relevanceai.client import Dataset
+from relevanceai.dataset import Dataset
 
 from typing import List
 
-from relevanceai.workflows.cluster_ops.ops import ClusterOps
-from relevanceai.workflows.cluster_ops.base import CentroidClusterBase
+from relevanceai.core.cluster import ClusterOps
+from relevanceai.core.cluster.base import CentroidClusterBase
 
 
 @pytest.mark.skip(reason="no longer supported")

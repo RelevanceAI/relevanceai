@@ -4,7 +4,10 @@ import os
 import pytest
 import pandas as pd
 import tempfile
-from relevanceai.client import Dataset, Client
+
+from relevanceai.client import Client
+from relevanceai.dataset import Dataset
+
 from tests.globals.constants import *
 from tests.globals.document import *
 from tests.globals.documents import *

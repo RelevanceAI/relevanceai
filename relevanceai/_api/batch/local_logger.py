@@ -1,10 +1,11 @@
 """Local logger for pull_update_push.
 """
 import os
-from os import PathLike
+
 from typing import Union
-from relevanceai.constants.config import CONFIG
+
 from relevanceai.utils.logger import LoguruLogger
+from relevanceai.constants import CONFIG
 
 
 class PullUpdatePushLocalLogger(LoguruLogger):

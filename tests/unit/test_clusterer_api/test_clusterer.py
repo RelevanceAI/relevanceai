@@ -1,13 +1,11 @@
-"""
-    Testing dataset
-"""
-
-import pandas as pd
 import pytest
 import time
-from relevanceai.client import Dataset, Client, ClusterOps
-from relevanceai.workflows.cluster_ops.base import ClusterBase
-from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby
+
+from relevanceai.client import Client
+from relevanceai.dataset import Dataset
+from relevanceai.core.cluster import ClusterOps
+from relevanceai.core.cluster.base import ClusterBase
+from relevanceai.core.cluster.groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "kmeans_10"
 VECTOR_FIELDS = ["sample_1_vector_"]
@@ -28,7 +26,7 @@ def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
 
 def get_model():
     # get a kmeans model
-    from relevanceai.workflows.cluster_ops.kmeans_clusterer import KMeansModel
+    from relevanceai.core.cluster.kmeans_clusterer import KMeansModel
 
     return KMeansModel(verbose=False)
 
