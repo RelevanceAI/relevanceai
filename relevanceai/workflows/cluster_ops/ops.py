@@ -88,14 +88,16 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         vector_fields: Optional[List[str]] = None,
         cluster_field: str = "_cluster_",
         parent_alias: str = None,
+        verbose: bool = True,
     ):
         self.alias = alias
         self.parent_alias = parent_alias
         self.cluster_field = cluster_field
         if model is None:
-            warnings.warn(
-                "No model is specified, you will not be able to train a clustering algorithm."
-            )
+            if verbose:
+                warnings.warn(
+                    "No model is specified, you will not be able to train a clustering algorithm."
+                )
 
         self.model = self._assign_model(model)
         self.firebase_uid = firebase_uid
