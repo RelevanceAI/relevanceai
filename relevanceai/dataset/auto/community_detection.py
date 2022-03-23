@@ -7,11 +7,11 @@ from itertools import chain
 from collections import Counter, defaultdict
 from typing import Callable, Dict, List, Optional
 from tqdm.auto import tqdm
-from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.utils.decorators.analytics_funcs import track
 from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.unstructured_data.text.base_text_processing import MLStripper
-from relevanceai.package_utils.logger import FileLogger
-from relevanceai.package_utils.version_decorators import (
+from relevanceai.utils.logger import FileLogger
+from relevanceai.utils.decorators.version_decorators import (
     introduced_in_version,
     beta,
 )

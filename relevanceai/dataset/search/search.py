@@ -1,8 +1,8 @@
 """Search In A Dataset
 """
 from typing import List, Optional
-from relevanceai.api.client import BatchAPIClient
-from relevanceai.package_utils.analytics_funcs import track
+from relevanceai._api.client import BatchAPIClient
+from relevanceai.utils.decorators.analytics_funcs import track
 
 
 class Search(BatchAPIClient):

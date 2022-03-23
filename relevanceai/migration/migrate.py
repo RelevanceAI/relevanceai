@@ -36,7 +36,7 @@ def migrate_dataset(
 
     """
     from relevanceai import Client
-    from relevanceai.package_utils.logger import FileLogger
+    from relevanceai.utils.logger import FileLogger
 
     filters = filters if filters is not None else []
 

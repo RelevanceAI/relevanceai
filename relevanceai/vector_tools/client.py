@@ -1,4 +1,4 @@
-from relevanceai.package_utils.base import _Base
+from relevanceai.utils.base import _Base
 from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
 from relevanceai.vector_tools.local_nearest_neighbours import NearestNeighbours
 

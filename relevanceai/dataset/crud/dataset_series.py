@@ -10,13 +10,13 @@ import numpy as np
 
 from tqdm import tqdm
 
-from relevanceai.package_utils.cache import lru_cache
+from relevanceai.utils.cache import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
-from relevanceai.api.client import BatchAPIClient
-from relevanceai.package_utils.warnings import warn_function_is_work_in_progress
-from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.package_utils.constants import MAX_CACHESIZE
+from relevanceai._api.client import BatchAPIClient
+from relevanceai.utils.warnings import warn_function_is_work_in_progress
+from relevanceai.utils.decorators.analytics_funcs import track
+from relevanceai.constants.constants import MAX_CACHESIZE
 
 
 class Series(BatchAPIClient):

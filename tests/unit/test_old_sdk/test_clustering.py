@@ -2,7 +2,7 @@ import pytest
 import time
 from typing import Dict, List
 
-from relevanceai.interfaces import Client
+from relevanceai.client import Client
 
 
 def test_kmeans(test_client: Client, clustered_dataset_id: List[Dict]):

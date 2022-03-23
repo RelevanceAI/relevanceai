@@ -1,4 +1,4 @@
-from relevanceai.package_utils.base import _Base
+from relevanceai.utils.base import _Base
 from doc_utils.doc_utils import DocUtils
 from relevanceai.workflows.cluster_ops.constants import NEAREST_NEIGHBOURS
 

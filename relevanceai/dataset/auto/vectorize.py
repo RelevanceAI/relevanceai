@@ -1,7 +1,7 @@
 from typing import Optional, List
 from relevanceai.dataset.crud.dataset_write import Write
-from relevanceai.package_utils.version_decorators import introduced_in_version, beta
-from relevanceai.package_utils.logger import FileLogger
+from relevanceai.utils.decorators.version_decorators import introduced_in_version, beta
+from relevanceai.utils.logger import FileLogger
 
 
 class Vectorize(Write):

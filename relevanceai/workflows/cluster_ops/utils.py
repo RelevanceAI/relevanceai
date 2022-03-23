@@ -18,7 +18,7 @@ from relevanceai.workflows.cluster_ops.base import (
 
 from relevanceai.dataset_interface import Dataset
 
-from relevanceai.package_utils.integration_checks import (
+from relevanceai.utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
 )

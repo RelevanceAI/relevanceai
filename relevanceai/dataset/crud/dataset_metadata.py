@@ -5,9 +5,9 @@ import re
 import math
 import warnings
 import pandas as pd
-from relevanceai.package_utils.cache import lru_cache
+from relevanceai.utils.cache import lru_cache
 from typing import Dict, List, Optional, Union
-from relevanceai.api.client import BatchAPIClient
+from relevanceai._api.client import BatchAPIClient
 
 
 class Metadata(BatchAPIClient):

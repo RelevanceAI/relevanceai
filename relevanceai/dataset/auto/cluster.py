@@ -5,8 +5,8 @@ Pandas like dataset API
 import warnings
 from typing import List, Optional
 from tqdm.auto import tqdm
-from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.package_utils.version_decorators import introduced_in_version, beta
+from relevanceai.utils.decorators.analytics_funcs import track
+from relevanceai.utils.decorators.version_decorators import introduced_in_version, beta
 from relevanceai.dataset.auto.community_detection import CommunityDetection
 
 

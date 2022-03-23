@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import warnings
 from relevanceai import vector_tools
-from relevanceai.interfaces import Client
+from relevanceai.client import Client
 
 # Cluster _Base Utilities
 from relevanceai.workflows.cluster_ops.base import (
@@ -14,8 +14,8 @@ from relevanceai.workflows.dim_reduction_ops.dim_reduction_ops import (
 )
 
 # Fix the name
-from relevanceai.package_utils import datasets
-from relevanceai.package_utils.datasets import mock_documents
+from relevanceai.utils import datasets
+from relevanceai.utils.datasets import mock_documents
 import requests
 
 # Import useful utility if possible as well

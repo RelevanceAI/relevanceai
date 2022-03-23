@@ -23,7 +23,7 @@ import warnings
 
 import numpy as np
 
-from relevanceai.api.client import BatchAPIClient
+from relevanceai._api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.partial import PartialClusterOps
 from relevanceai.workflows.cluster_ops.sub import SubClusterOps
 from typing import Union, List, Dict, Optional, Callable, Set
@@ -37,16 +37,16 @@ from relevanceai.workflows.cluster_ops.base import (
 from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby, ClusterAgg
 from relevanceai.reports.cluster_report import ClusterReport
 
-from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.utils.decorators.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset.crud import Dataset
 
 from relevanceai.dataset_interface import Dataset
 
-from relevanceai.package_utils.errors import NoDocumentsError
-from relevanceai.package_utils.version_decorators import beta
-from relevanceai.package_utils.concurrency import multiprocess
+from relevanceai.constants.errors import NoDocumentsError
+from relevanceai.utils.decorators.version_decorators import beta
+from relevanceai.utils.concurrency import multiprocess
 from relevanceai.workflows.cluster_ops.constants import METRIC_DESCRIPTION
 
 from tqdm.auto import tqdm

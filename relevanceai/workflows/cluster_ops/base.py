@@ -4,7 +4,7 @@ from doc_utils import DocUtils
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict, Callable
 
-from relevanceai.package_utils.integration_checks import (
+from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
 )

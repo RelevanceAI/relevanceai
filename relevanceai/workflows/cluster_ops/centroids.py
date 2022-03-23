@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from relevanceai.api.client import BatchAPIClient
+from relevanceai._api.client import BatchAPIClient
 from relevanceai.dataset.crud.groupby import Groupby, Agg
 
 

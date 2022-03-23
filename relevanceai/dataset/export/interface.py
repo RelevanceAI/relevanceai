@@ -4,8 +4,8 @@ Pandas like dataset API
 import pandas as pd
 from typing import Callable
 
-from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.package_utils.version_decorators import introduced_in_version
+from relevanceai.utils.decorators.analytics_funcs import track
+from relevanceai.utils.decorators.version_decorators import introduced_in_version
 from relevanceai.dataset.export.csv import CSVExport
 from relevanceai.dataset.export.dict import DictExport
 from relevanceai.dataset.export.pandas import PandasExport

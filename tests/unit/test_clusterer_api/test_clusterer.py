@@ -5,7 +5,7 @@
 import pandas as pd
 import pytest
 import time
-from relevanceai.interfaces import Dataset, Client, ClusterOps
+from relevanceai.client import Dataset, Client, ClusterOps
 from relevanceai.workflows.cluster_ops.base import ClusterBase
 from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby
 

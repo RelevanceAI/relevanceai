@@ -6,11 +6,11 @@ import pandas as pd
 
 from typing import Dict, List, Optional, Union
 
-from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.api.endpoints.services.cluster import ClusterClient
+from relevanceai.utils.decorators.analytics_funcs import track
+from relevanceai._api.endpoints.services.cluster import ClusterClient
 from relevanceai.dataset.crud.dataset_read import Read
 from relevanceai.dataset.crud.dataset_series import Series
-from relevanceai.package_utils.version_decorators import introduced_in_version
+from relevanceai.utils.decorators.version_decorators import introduced_in_version
 
 
 class Statistics(Read):

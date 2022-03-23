@@ -1,4 +1,4 @@
-from relevanceai.api.client import BatchAPIClient
+from relevanceai._api.client import BatchAPIClient
 
 from typing import List, Optional, Union
 

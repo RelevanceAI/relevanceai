@@ -4,9 +4,9 @@
 
 import pandas as pd
 import pytest
-from relevanceai.package_utils.errors import MissingFieldError
+from relevanceai.constants.errors import MissingFieldError
 
-from relevanceai.interfaces import Dataset, Client
+from relevanceai.client import Dataset, Client
 
 
 def test_apply(test_df: Dataset):

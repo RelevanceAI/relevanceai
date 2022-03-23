@@ -7,7 +7,7 @@ import pytest
 
 import time
 from relevanceai import Client
-from relevanceai.interfaces import Dataset
+from relevanceai.client import Dataset
 
 from relevanceai.workflows.cluster_ops.ops import ClusterOps
 from relevanceai.workflows.cluster_ops.base import CentroidClusterBase

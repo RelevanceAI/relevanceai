@@ -5,16 +5,16 @@ import re
 import math
 import warnings
 import pandas as pd
-from relevanceai.package_utils.cache import lru_cache
+from relevanceai.utils.cache import lru_cache
 from typing import Dict, List, Optional, Union
 
-from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.utils.decorators.analytics_funcs import track
 from relevanceai.dataset.crud.helpers import _build_filters
 from relevanceai.dataset.crud.groupby import Groupby, Agg
 from relevanceai.vector_tools.client import VectorTools
-from relevanceai.api.client import BatchAPIClient
-from relevanceai.package_utils.constants import MAX_CACHESIZE
-from relevanceai.package_utils.list_to_tuple import list_to_tuple
+from relevanceai._api.client import BatchAPIClient
+from relevanceai.constants.constants import MAX_CACHESIZE
+from relevanceai.utils.list_to_tuple import list_to_tuple
 from relevanceai.workflows.cluster_ops.centroids import Centroids
 from relevanceai.dataset.crud.dataset_metadata import Metadata
 

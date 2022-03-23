@@ -5,7 +5,7 @@
 
 import pandas as pd
 import pytest
-from relevanceai.interfaces import Dataset, Client, ClusterOps
+from relevanceai.client import Dataset, Client, ClusterOps
 from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby
 
 CLUSTER_ALIAS = "minibatch"

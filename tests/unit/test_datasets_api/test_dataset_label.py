@@ -2,7 +2,7 @@
 """
 import pytest
 import random
-from relevanceai.interfaces import Dataset, Client
+from relevanceai.client import Dataset, Client
 
 from tests.globals.constants import (
     generate_random_vector,

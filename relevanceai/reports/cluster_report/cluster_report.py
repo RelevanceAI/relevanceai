@@ -46,14 +46,14 @@ to store it in Relevance AI.
     report.internal_overall_report
 
     # Storing your cluster report
-    from relevanceai import Client 
+    from relevanceai import Client
     client = Client()
     response = client.store_cluster_report(
         report_name="kmeans",
         report=report.internal_report
     )
 
-    # Listing all cluster reports 
+    # Listing all cluster reports
     client.list_cluster_reports()
 
     # Deleting cluster report
@@ -106,17 +106,17 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
 
 import pandas as pd
 import numpy as np
-from relevanceai.package_utils.integration_checks import (
+from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
 )
-from relevanceai.package_utils.warnings import warn_function_is_work_in_progress
+from relevanceai.utils.warnings import warn_function_is_work_in_progress
 from relevanceai.reports.cluster_report.grading import get_silhouette_grade
 from typing import Union, List, Dict, Any, Optional
 import functools
 from warnings import warn
 from doc_utils import DocUtils
-from relevanceai.package_utils.analytics_funcs import track_event_usage
+from relevanceai.utils.decorators.analytics_funcs import track_event_usage
 
 try:
     from sklearn.metrics import (

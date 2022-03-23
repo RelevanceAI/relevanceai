@@ -9,12 +9,12 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.workflows.dim_reduction_ops.dim_reduction import DimReduction
-from relevanceai.api.client import BatchAPIClient
+from relevanceai._api.client import BatchAPIClient
 from relevanceai.workflows.cluster_ops.constants import (
     CENTROID_DISTANCES,
     METRIC_DESCRIPTION,
 )
-from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.utils.decorators.analytics_funcs import track
 from doc_utils import DocUtils
 from typing import Optional, Dict, Callable
 from tqdm.auto import tqdm

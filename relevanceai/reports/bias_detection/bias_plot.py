@@ -1,10 +1,10 @@
 """
 Users can detect bias in a model by seeing which concepts certain vectors are closer to.
 This is a particularly useful tool when users are looking at semantic vectors and
-would like to check if certain words are leaning particularly towards any 
+would like to check if certain words are leaning particularly towards any
 specific category.
 
-An example of analysing gender bias inside Google's Universal Sentence Encoder 
+An example of analysing gender bias inside Google's Universal Sentence Encoder
 can be found below.
 
 .. code-block::
@@ -26,7 +26,7 @@ can be found below.
 
 from typing import List, Dict, Any, Callable
 from doc_utils import DocUtils
-from relevanceai.package_utils.analytics_funcs import track_event_usage
+from relevanceai.utils.decorators.analytics_funcs import track_event_usage
 
 try:
     import matplotlib.pyplot as plt

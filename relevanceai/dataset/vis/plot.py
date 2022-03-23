@@ -5,7 +5,7 @@ import pandas as pd
 
 from relevanceai.dataset.statistics.statistics import Statistics
 
-from relevanceai.package_utils.integration_checks import is_plotly_available
+from relevanceai.utils.integration_checks import is_plotly_available
 
 
 class Plot(Statistics):

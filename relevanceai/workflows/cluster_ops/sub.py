@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from relevanceai.dataset_interface import Dataset
 
-from relevanceai.package_utils.analytics_funcs import track
+from relevanceai.utils.decorators.analytics_funcs import track
 
 from relevanceai.workflows.cluster_ops.utils import _ClusterOps
 
