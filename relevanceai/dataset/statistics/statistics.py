@@ -293,6 +293,15 @@ class Statistics(Read):
             asc=asc,
         )
 
+    def health_check(self):
+        details = self.datasets.monitor.health(self.dataset_id)
+        vectors = {}
+        for key, value in details.items():
+            if "_vector_" in key and not any(
+                prefix in key for prefix in ["_cluster_", "_dr_"]
+            ):
+                vectors[key] = value
+
     def __call__(
         self,
         dataset_id: str,
