@@ -8,7 +8,7 @@ from relevanceai.utils.cache import lru_cache
 from relevanceai._api.endpoints.client import APIClient
 from relevanceai._api.batch.chunk import Chunker
 from relevanceai.utils.progress_bar import progress_bar
-from relevanceai.constant.constants import MAX_CACHESIZE
+from relevanceai.constants.constants import MAX_CACHESIZE
 from relevanceai.utils.list_to_tuple import list_to_tuple
 
 BYTE_TO_MB = 1024 * 1024

@@ -3,12 +3,12 @@ import warnings
 from relevanceai.client import Client
 
 # Cluster _Base Utilities
-from relevanceai.core.cluster.base import (
+from relevanceai.workflows.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
 )
-from relevanceai.core.cluster import ClusterOps
-from relevanceai.core.dr.dim_reduction_ops import (
+from relevanceai.workflows.cluster import ClusterOps
+from relevanceai.workflows.dr.dim_reduction_ops import (
     ReduceDimensionsOps,
 )
 
@@ -17,7 +17,7 @@ from relevanceai.utils import datasets
 from relevanceai.utils.datasets import mock_documents
 import requests
 
-from relevanceai.constant.warning import Warning
+from relevanceai.constants.warning import Warning
 
 # Import useful utility if possible as well
 try:

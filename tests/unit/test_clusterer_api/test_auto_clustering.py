@@ -1,7 +1,7 @@
 import time
 import pytest
 from relevanceai import Client
-from relevanceai.core.cluster import ClusterOps
+from relevanceai.workflows.cluster import ClusterOps
 from ...utils import is_subname_in_schema
 
 

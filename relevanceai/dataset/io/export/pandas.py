@@ -4,7 +4,7 @@ from relevanceai.utils.cache import lru_cache
 
 from relevanceai.dataset.read import Read
 from relevanceai.utils.decorators.version import added
-from relevanceai.constant.constants import MAX_CACHESIZE
+from relevanceai.constants.constants import MAX_CACHESIZE
 
 
 class PandasExport(Read):

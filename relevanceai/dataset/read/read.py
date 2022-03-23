@@ -9,7 +9,7 @@ from relevanceai.utils.cache import lru_cache
 from typing import Dict, List, Optional, Union
 
 from relevanceai._api.client import BatchAPIClient
-from relevanceai.core.cluster.centroids import Centroids
+from relevanceai.workflows.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.groupby import Groupby, Agg
@@ -17,8 +17,8 @@ from relevanceai.dataset.helpers import _build_filters
 
 from relevanceai.utils.decorators.analytics import track
 
-from relevanceai.constant.constants import MAX_CACHESIZE
-from relevanceai.constant.warning import Warning
+from relevanceai.constants.constants import MAX_CACHESIZE
+from relevanceai.constants.warning import Warning
 
 
 class Read(BatchAPIClient):

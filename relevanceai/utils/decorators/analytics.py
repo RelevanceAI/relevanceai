@@ -8,8 +8,8 @@ from typing import Callable
 from base64 import b64decode as decode
 from functools import wraps
 
-from relevanceai.constant import CONFIG
-from relevanceai.constant import TRANSIT_ENV_VAR
+from relevanceai.constants import CONFIG
+from relevanceai.constants import TRANSIT_ENV_VAR
 
 from relevanceai.utils.json_encoder import json_encoder
 from relevanceai.utils.decorators.thread import thread

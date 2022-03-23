@@ -2,7 +2,7 @@ import warnings
 
 from functools import wraps
 
-from relevanceai.constant.messages import Messages
+from relevanceai.constants.messages import Messages
 
 
 def beta(f):

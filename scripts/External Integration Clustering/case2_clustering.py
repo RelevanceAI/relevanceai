@@ -5,8 +5,8 @@ This script demonstrates a class based approach for clustering with KMeans Using
 import argparse
 
 from relevanceai import Client
-from relevanceai.core.cluster import ClusterOps
-from relevanceai.core.cluster.kmeans_clusterer import KMeansModel
+from relevanceai.workflows.cluster import ClusterOps
+from relevanceai.workflows.cluster.kmeans_clusterer import KMeansModel
 
 
 def main(args):

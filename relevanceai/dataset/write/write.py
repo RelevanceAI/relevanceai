@@ -17,7 +17,7 @@ from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.helpers import make_id
 
-from relevanceai.constant.warning import Warning
+from relevanceai.constants.warning import Warning
 
 
 class Write(BatchAPIClient):

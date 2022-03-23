@@ -11,7 +11,7 @@ from threading import RLock
 from functools import update_wrapper
 from collections import namedtuple
 from urllib.parse import MAX_CACHE_SIZE
-from relevanceai.constant.constants import MAX_CACHESIZE
+from relevanceai.constants.constants import MAX_CACHESIZE
 
 _CacheInfo = namedtuple("_CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 

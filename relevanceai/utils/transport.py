@@ -15,10 +15,10 @@ import requests
 
 from requests import Request
 
-from relevanceai.constant.config import Config
+from relevanceai.constants.config import Config
 from relevanceai.utils.logger import AbstractLogger
 from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
-from relevanceai.constant.errors import APIError
+from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
 
 DO_NOT_REPEAT_STATUS_CODES = {404, 422}

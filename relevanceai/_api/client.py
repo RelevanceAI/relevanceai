@@ -10,7 +10,7 @@ from relevanceai._api.endpoints.client import APIClient
 
 from relevanceai.utils import Utils
 
-from relevanceai.constant import CONFIG
+from relevanceai.constants import CONFIG
 
 
 class BatchAPIClient(

@@ -30,9 +30,9 @@ from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.concurrency import multiprocess, multithread
 
-from relevanceai.constant.errors import MissingFieldError
-from relevanceai.constant.warning import Warning
-from relevanceai.constant import (
+from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constants.warning import Warning
+from relevanceai.constants import (
     MB_TO_BYTE,
     LIST_SIZE_MULTIPLIER,
     SUCCESS_CODES,

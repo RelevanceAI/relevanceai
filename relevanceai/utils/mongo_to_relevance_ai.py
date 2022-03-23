@@ -43,7 +43,7 @@ from tqdm.auto import tqdm
 from typing import List
 
 from relevanceai.utils.helpers import make_id
-from relevanceai.constant.warning import Warning
+from relevanceai.constants.warning import Warning
 
 try:
     from relevanceai import Client

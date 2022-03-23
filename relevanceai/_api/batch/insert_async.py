@@ -17,7 +17,7 @@ from relevanceai._api.endpoints.client import APIClient
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils import Utils
-from relevanceai.constant.warning import Warning
+from relevanceai.constants.warning import Warning
 
 MB_TO_BYTE = 1024 * 1024
 

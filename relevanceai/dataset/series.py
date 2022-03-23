@@ -1,6 +1,6 @@
 import math
 import warnings
-from relevanceai.constant.warning import Warning
+from relevanceai.constants.warning import Warning
 
 import pandas as pd
 import numpy as np
@@ -12,7 +12,7 @@ from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai._api.client import BatchAPIClient
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.constant import MAX_CACHESIZE
+from relevanceai.constants import MAX_CACHESIZE
 
 
 class Series(BatchAPIClient):
