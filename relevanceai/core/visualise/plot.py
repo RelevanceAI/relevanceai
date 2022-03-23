@@ -134,7 +134,7 @@ class Plot(Statistics):
         fig.show()
 
     def show_workflows(self):
-        from relevanceai.workflows.diagrams import create_diagram
+        from relevanceai.workflow.diagrams import create_diagram
 
         workflows = self.metadata["workflows"]
         return create_diagram(workflows)

@@ -5,7 +5,7 @@ import os
 from typing import Union
 
 from relevanceai.utils.logger import LoguruLogger
-from relevanceai.constants import CONFIG
+from relevanceai.constant import CONFIG
 
 
 class PullUpdatePushLocalLogger(LoguruLogger):

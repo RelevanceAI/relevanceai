@@ -7,7 +7,8 @@ from typing import List, Optional
 from tqdm.auto import tqdm
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.decorators.version import added, beta
-from relevanceai.dataset.auto.community_detection import CommunityDetection
+from relevanceai.core.auto.community_detection import CommunityDetection
+from relevanceai.constant.warning import Warning
 
 
 class Cluster(CommunityDetection):
@@ -271,9 +272,7 @@ class Cluster(CommunityDetection):
         num_documents = self.get_number_of_documents(self.dataset_id)
 
         if num_documents <= n_clusters:
-            warnings.warn(
-                "You seem to have more clusters than documents. We recommend reducing the number of clusters."
-            )
+            warnings.warn(Warning.NCLUSTERS_GREATER_THAN_NDOCS)
 
         from relevanceai.core.cluster import ClusterOps
 

@@ -1,7 +1,7 @@
 import pytest
 
 import pandas as pd
-from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constant.errors import MissingFieldError
 
 from relevanceai.dataset import Dataset
 

@@ -2,6 +2,7 @@
 """
 Pandas like dataset API
 """
+import warnings
 import requests
 import pandas as pd
 
@@ -15,6 +16,8 @@ from relevanceai._api.client import BatchAPIClient
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.helpers import make_id
+
+from relevanceai.constant.warning import Warning
 
 
 class Write(BatchAPIClient):
@@ -572,20 +575,6 @@ class Write(BatchAPIClient):
         )
 
     concat = cat
-
-    # def insert_csv(self, filename: str, **kwargs):
-    #     """
-    #     Wrapper for client.insert_csv
-
-    #     Parameters
-    #     ----------
-    #     filename: str
-    #         path to .csv file
-    #     kwargs: Optional
-    #         see client.insert_csv() for extra args
-    #     """
-    #     warnings.warn("Functionality of this may change. Make sure to use insert_csv if possible")
-    #     return self.insert_csv(self.dataset_id, filename, **kwargs)
 
     def _label_cluster(self, label: Union[int, str]):
         if isinstance(label, (int, float)):

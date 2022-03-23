@@ -38,10 +38,12 @@ import math
 import numpy as np
 import pandas as pd
 import warnings
+
 from tqdm.auto import tqdm
 from typing import List
 
 from relevanceai.utils.helpers import make_id
+from relevanceai.constant.warning import Warning
 
 try:
     from relevanceai import Client
@@ -50,9 +52,7 @@ try:
     PYMONGO_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     PYMONGO_AVAILABLE = False
-    warnings.warn(
-        "you are missing `pymongo.MongoClient`. Please install this using `pip install pymongo==3.12`"
-    )
+    warnings.warn(Warning.MISSING_MONGO)
 
 try:
     from bson import json_util
@@ -60,9 +60,7 @@ try:
     BSON_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     BSON_AVAILABLE = False
-    warnings.warn(
-        "you are missing `bson.json_util`. Please install this using `pip install bson`"
-    )
+    warnings.warn(Warning.MISSING_BSON)
 
 
 class MongoImporter(Client):

@@ -9,7 +9,7 @@ from relevanceai.dataset.series import Series
 
 from relevanceai.core.vector.search import Search
 
-from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECT_APP_LINK
+from relevanceai.constant import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECT_APP_LINK
 
 
 class Dataset(IO, Read, Write):

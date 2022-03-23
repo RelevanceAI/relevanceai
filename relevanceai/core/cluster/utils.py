@@ -329,7 +329,7 @@ class _ClusterOps(ClusterEvaluate):
 
     @staticmethod
     def _calculate_silhouette_grade(vectors, cluster_labels):
-        from relevanceai.core.cluster.reports.cluster_report.grading import (
+        from relevanceai.core.cluster.reports.grading import (
             get_silhouette_grade,
         )
         from sklearn.metrics import silhouette_samples

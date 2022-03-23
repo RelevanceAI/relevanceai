@@ -1,5 +1,5 @@
-from relevanceai.workflows.sentiment.sentiments import SentimentOps
-from relevanceai.workflows.base import Workflow
+from relevanceai.workflow.sentiment.sentiments import SentimentOps
+from relevanceai.workflow.base import Workflow
 
 
 class SentimentWorkflow(Workflow, SentimentOps):

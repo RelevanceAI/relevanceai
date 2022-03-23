@@ -16,7 +16,9 @@ from relevanceai.dataset.read.groupby import Groupby, Agg
 from relevanceai.dataset.helpers import _build_filters
 
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.constants.constants import MAX_CACHESIZE
+
+from relevanceai.constant.constants import MAX_CACHESIZE
+from relevanceai.constant.warning import Warning
 
 
 class Read(BatchAPIClient):
@@ -223,10 +225,7 @@ class Read(BatchAPIClient):
             try:
                 return self._show_json(head_documents, **kw)
             except Exception as e:
-                warnings.warn(
-                    "Displaying using Pandas. To get image functionality please install RelevanceAI[notebook]. "
-                    + str(e)
-                )
+                warnings.warn(Warning.MISSING_RELEVANCE_NOTEBOOK + str(e))
                 return pd.json_normalize(head_documents).head(n=n)
 
     def _show_json(self, documents, **kw):
@@ -258,10 +257,7 @@ class Read(BatchAPIClient):
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
-            warnings.warn(
-                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
-                + str(e)
-            )
+            warnings.warn(Warning.MISSING_RELEVANCE_NOTEBOOK + str(e))
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
     @track

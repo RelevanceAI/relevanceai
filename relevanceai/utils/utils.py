@@ -2,7 +2,7 @@ from typing import List, Dict
 from doc_utils import DocUtils
 from relevanceai.utils.base import _Base
 from relevanceai._api.endpoints.client import APIClient
-from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constant.errors import MissingFieldError
 
 from relevanceai.utils.helpers import make_id
 

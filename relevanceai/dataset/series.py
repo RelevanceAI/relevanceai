@@ -1,5 +1,7 @@
 import math
 import warnings
+from relevanceai.constant.warning import Warning
+
 import pandas as pd
 import numpy as np
 
@@ -10,7 +12,7 @@ from typing import Dict, List, Union, Callable, Optional
 
 from relevanceai._api.client import BatchAPIClient
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.constants import MAX_CACHESIZE
+from relevanceai.constant import MAX_CACHESIZE
 
 
 class Series(BatchAPIClient):
@@ -92,18 +94,13 @@ class Series(BatchAPIClient):
             include_vector=include_vector,
         )
         if include_vector:
-            warnings.warn(
-                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
-            )
+            warnings.warn(Warning.MISSING_RELEVANCE_NOTEBOOK)
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
         try:
             return self._show_json(documents, return_html=True)
         except Exception as e:
-            warnings.warn(
-                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
-                + str(e)
-            )
+            warnings.warn(Warning.MISSING_RELEVANCE_NOTEBOOK + str(e))
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
 
     @track
@@ -503,9 +500,7 @@ class Series(BatchAPIClient):
             document = df[field][index]
         """
         if isinstance(loc, int):
-            warnings.warn(
-                "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
-            )
+            warnings.warn(Warning.INDEX_STRING)
             return self.get_documents(loc + 1, select_fields=[self.field])[loc][
                 self.field
             ]

@@ -17,6 +17,8 @@ from relevanceai.utils import datasets
 from relevanceai.utils.datasets import mock_documents
 import requests
 
+from relevanceai.constant.warning import Warning
+
 # Import useful utility if possible as well
 try:
     from jsonshower import show_json
@@ -37,14 +39,12 @@ try:
         changelog_url: str = (
             f"https://relevanceai.readthedocs.io/en/{__version__}/changelog.html"
         )
-        MESSAGE = """We noticed you don't have the latest version!
-We recommend updating to the latest version ({latest_version}) to get all bug fixes and newest features!
-You can do this by running pip install -U relevanceai.
-Changelog: {changelog_url}.""".format(  # type: ignore
-            version=__version__,
-            latest_version=latest_version,
-            changelog_url=changelog_url,
+        warnings.warn(
+            Warning.LATEST_VERSION.format(
+                version=__version__,
+                latest_version=latest_version,
+                changelog_url=changelog_url,
+            )
         )
-        warnings.warn(MESSAGE)
 except:
     pass

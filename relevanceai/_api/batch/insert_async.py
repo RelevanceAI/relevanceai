@@ -1,6 +1,7 @@
 import asyncio
 import time
 import traceback
+import warnings
 
 import orjson
 
@@ -11,11 +12,12 @@ from threading import Thread
 from typing import Callable, Optional, Tuple
 
 from appdirs import user_cache_dir
-from relevanceai._api.batch.batch_retrieve import BatchRetrieveClient
+from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.endpoints.client import APIClient
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
-from relevanceai.utils.utils import Utils
+from relevanceai.utils import Utils
+from relevanceai.constant.warning import Warning
 
 MB_TO_BYTE = 1024 * 1024
 
@@ -81,7 +83,7 @@ class BatchInsertAsyncHelpers(Utils, BatchRetrieveClient, APIClient):
             A list of documents
         """
         if len(documents) == 0:
-            self.logger.warning("No document is detected")
+            warnings.warn(Warning.NO_DOCUMENT_DETECTED)
             return {
                 "inserted": 0,
                 "failed_documents": [],

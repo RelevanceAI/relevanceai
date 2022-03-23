@@ -5,6 +5,8 @@ import sys
 import json
 import math
 import time
+
+import warnings
 import traceback
 
 import pandas as pd
@@ -17,8 +19,9 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from relevanceai._api.endpoints.client import APIClient
 from relevanceai._api.batch.chunk import Chunker
-from relevanceai._api.batch.batch_retrieve import BatchRetrieveClient
+from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai.utils.decorators.version import beta
 
 from relevanceai.utils.utils import Utils
 from relevanceai.utils.logger import FileLogger
@@ -27,8 +30,9 @@ from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.concurrency import multiprocess, multithread
 
-from relevanceai.constants.errors import MissingFieldError
-from relevanceai.constants import (
+from relevanceai.constant.errors import MissingFieldError
+from relevanceai.constant.warning import Warning
+from relevanceai.constant import (
     MB_TO_BYTE,
     LIST_SIZE_MULTIPLIER,
     SUCCESS_CODES,
@@ -227,9 +231,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
             if col_for_id in chunk:
                 chunk.insert(0, "_id", chunk[col_for_id], False)
             else:
-                self.logger.warning(
-                    f"The specified column {col_for_id} does not exist in the CSV file"
-                )
+                warnings.warn(Warning.COLUMN_DNE.format(col_for_id))
         # auto_generate_id
         if "_id" not in chunk.columns and auto_generate_id:
             index = chunk.index
@@ -237,9 +239,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                 make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
             ]
             chunk.insert(0, "_id", uuids, False)
-            self.logger.warning(
-                "We will be auto-generating IDs since no id field is detected"
-            )
+            warnings.warn(Warning.AUTO_GENERATE_IDS)
 
         # Check for _id
         if "_id" not in chunk.columns:
@@ -700,9 +700,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
                     # If fail, try to reduce retrieve chunk
                     if len(chunk_failed) > 0:
-                        self.logger.warning(
-                            "Failed to upload. Retrieving half of previous number."
-                        )
+                        warnings.warn(Warning.UPLOAD_FAILED)
                         retrieve_chunk_size = int(
                             retrieve_chunk_size
                             * retrieve_chunk_size_failure_retry_multiplier
@@ -784,7 +782,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
 
         # Get one document to test the size
         if len(documents) == 0:
-            self.logger.warning("No document is detected")
+            warnings.warn(Warning.NO_DOCUMENT_DETECTED)
             return {
                 "inserted": 0,
                 "failed_documents": [],
@@ -877,9 +875,7 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
                 # Update documents to retry which have failed
-                self.logger.warning(
-                    f"Failed to upload {failed_ids}. Automatically retrying for you with chunksize {chunksize}"
-                )
+                warnings.warn(Warning.UPLOAD_FAILED)
                 documents = [i for i in documents if i["_id"] in failed_ids]
 
             else:
@@ -896,13 +892,11 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         }
         return output
 
+    @beta
     def rename_fields(
         self,
         dataset_id: str,
         field_mappings: dict,
-        retrieve_chunk_size: int = 100,
-        max_workers: int = 8,
-        show_progress_bar: bool = True,
     ):
         """
         Loops through every document in your collection and renames specified fields by deleting the old one and
@@ -928,15 +922,12 @@ class BatchInsertClient(Utils, BatchRetrieveClient, APIClient, Chunker):
         show_progress_bar: bool
             Shows a progress bar if True
         """
-        self.logger.warning(
-            "Currently this function is in beta and may change in the future."
-        )
 
         skip = set()
         for old_f, new_f in field_mappings.items():
             if len(old_f.split(".")) != len(new_f.split(".")):
                 skip.add(old_f)
-                self.logger.warning(f"{old_f} does not match {new_f}.")
+                warnings.warn(Warning.FIELD_MISMATCH.format(old_f, new_f))
 
         for k in skip:
             del field_mappings[k]

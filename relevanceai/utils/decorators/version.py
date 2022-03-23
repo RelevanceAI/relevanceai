@@ -1,23 +1,15 @@
 import warnings
+
 from functools import wraps
+
+from relevanceai.constant.messages import Messages
 
 
 def beta(f):
-    old_doc = f.__doc__
-    f.__doc__ = (
-        old_doc
-        + """
-
-.. warning::
-    This function is currently in beta and is liable to change in the future. We
-    recommend not using this in production systems.
-
-    """
-    )
+    f.__doc__ = Messages.BETA_DOCSTRING.format(f.__doc__)
 
     @wraps(f)
     def wrapper(*args, **kwds):
-        warnings.warn("This function currently in beta and may change in the future.")
         return f(*args, **kwds)
 
     return wrapper
@@ -25,17 +17,7 @@ def beta(f):
 
 def added(version):
     def _version(f):
-        old_doc = f.__doc__
-        new_doc = (
-            old_doc
-            + f"""
-
-.. note::
-    This function was introduced in **{version}**.
-
-        """
-        )
-        f.__doc__ = new_doc
+        f.__doc__ = Messages.ADDED_DOCSTRING.format(version)
 
         @wraps(f)
         def wrapper(*args, **kwds):
@@ -46,27 +28,15 @@ def added(version):
     return _version
 
 
-def deprecated(version_number: str, message: str = ""):
+def deprecated(version: str, message: str = ""):
     def _version(f):
-        old_doc = f.__doc__
-        new_doc = (
-            old_doc
-            + f"""
-
-.. note::
-    This function has been deprecated as of {version_number}
-
-        """
-        )
-        f.__doc__ = new_doc
+        f.__doc__ = Messages.DEPRECEATED_DOCSTRING.format(version)
 
         @wraps(f)
         def wrapper(*args, **kwds):
-            DEPRECATION_MESSAGE = (
-                f"Deprecated. Revert to versions before {version_number} for function. "
-                + message
+            warnings.warn(
+                Messages.DEPRECEATED.format(version, message), DeprecationWarning
             )
-            warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
             return f(*args, **kwds)
 
         return wrapper

@@ -3,6 +3,7 @@
 Pandas like dataset API
 """
 import warnings
+from relevanceai.constant.warning import Warning
 import itertools
 
 from itertools import chain

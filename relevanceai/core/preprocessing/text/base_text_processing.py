@@ -1,5 +1,7 @@
 import string
 import warnings
+from relevanceai.constant.warning import Warning
+
 from typing import List, Optional
 from collections import Counter
 

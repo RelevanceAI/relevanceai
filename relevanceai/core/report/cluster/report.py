@@ -104,33 +104,34 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
 
 """
 
+import warnings
 import pandas as pd
 import numpy as np
+
+from relevanceai.constant.warning import Warning
 from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
 )
-from relevanceai.core.cluster.reports.grading import get_silhouette_grade
+from relevanceai.core.report.cluster.grading import get_silhouette_grade
 from typing import Union, List, Dict, Any, Optional
 import functools
-from warnings import warn
 from doc_utils import DocUtils
 from relevanceai.utils.decorators.analytics import track_event_usage
 
-try:
-    from sklearn.metrics import (
-        davies_bouldin_score,
-        calinski_harabasz_score,
-        silhouette_samples,
-    )
-    from sklearn.metrics.pairwise import (
-        pairwise_distances,
-    )
-    from sklearn.cluster import MiniBatchKMeans, KMeans
-    from sklearn.tree import _tree, DecisionTreeClassifier
-    from sklearn.neighbors import NearestNeighbors
-except ModuleNotFoundError as e:
-    pass
+from sklearn.metrics import (
+    davies_bouldin_score,
+    calinski_harabasz_score,
+    silhouette_samples,
+)
+from sklearn.metrics.pairwise import (
+    pairwise_distances,
+)
+from sklearn.cluster import MiniBatchKMeans, KMeans
+from sklearn.tree import _tree, DecisionTreeClassifier
+from sklearn.neighbors import NearestNeighbors
+
+from relevanceai.constant.warning import Warning
 
 
 class ClusterReport(DocUtils):
@@ -197,11 +198,7 @@ class ClusterReport(DocUtils):
         self, centroid_vectors: Optional[Union[list, Dict, np.ndarray]] = None
     ):
         if isinstance(centroid_vectors, (list, np.ndarray)):
-            warn(
-                "Centroid vectors are a list. Assuming they are in the order of the cluster labels."
-                + "To specify which vectors mapped to which label, place in the format of "
-                + "{cluster_label: centroid_vector}."
-            )
+            warnings.warn(Warning.CENTROID_VECTORS)
 
     def _typecheck_model(self, model):
         if is_hdbscan_available():
@@ -209,7 +206,7 @@ class ClusterReport(DocUtils):
         if is_sklearn_available():
             if isinstance(model, (KMeans, MiniBatchKMeans)):
                 return
-        warn("Model not directly supported. Will try to infer.")
+        warnings.warn(Warning.MODEL_NOT_SUPPORTED)
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
@@ -529,7 +526,7 @@ class ClusterReport(DocUtils):
             try:
                 centroid_vector = centers[cluster_label]
             except KeyError:
-                warn("cluster label not detected in centroid vectors")
+                warnings.warn(Warning.CLUSTER_LABEL_NOT_IN_CENTROIDS)
                 centroid_vector = default_vector
         else:
             raise ValueError("Centroid vector needs to be a list or a dictionary.")

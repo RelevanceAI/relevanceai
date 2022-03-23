@@ -3,6 +3,7 @@
 """
 import numpy as np
 import warnings
+from relevanceai.constant.warning import Warning
 from typing import Union, List, Optional
 
 from relevanceai.core.cluster import ClusterOps

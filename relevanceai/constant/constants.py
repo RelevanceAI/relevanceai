@@ -1,5 +1,5 @@
-from relevanceai.constants.config import Config
-from relevanceai.constants.links import *
+from relevanceai.constant.config import Config
+from relevanceai.constant.links import *
 
 CONFIG_PATH = "relevanceai/constants/config.ini"
 CONFIG = Config(CONFIG_PATH)

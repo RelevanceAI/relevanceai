@@ -20,6 +20,7 @@ You can view other examples of how to interact with this class here :ref:`integr
 """
 
 import warnings
+from relevanceai.constant.warning import Warning
 
 import numpy as np
 
@@ -31,11 +32,9 @@ from relevanceai.core.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
-    HDBSCANClusterBase,
-    SklearnCentroidBase,
 )
 from relevanceai.core.cluster.groupby import ClusterGroupby, ClusterAgg
-from relevanceai.core.cluster.reports.cluster_report import ClusterReport
+from relevanceai.core.report.cluster import ClusterReport
 
 from relevanceai.utils.decorators.analytics import track
 
@@ -44,7 +43,7 @@ from relevanceai.utils.decorators.analytics import track
 
 from relevanceai.dataset import Dataset
 
-from relevanceai.constants.errors import NoDocumentsError
+from relevanceai.constant.errors import NoDocumentsError
 from relevanceai.utils.decorators.version import beta
 from relevanceai.utils.concurrency import multiprocess
 from relevanceai.core.cluster.constants import METRIC_DESCRIPTION
@@ -1378,7 +1377,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             raise ValueError(
                 "We currently do not support more than 1 vector field when reporting."
             )
-        from relevanceai.core.cluster.reports.cluster_report import ClusterReport
+        from relevanceai.core.report.cluster import ClusterReport
 
         # X is all the vectors
         cluster_field_name = self._get_cluster_field_name()
