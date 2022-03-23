@@ -195,13 +195,22 @@ class Transport(JSONEncoderUtils):
                     )
 
                 # TODO: Add other endpoints in here too
-                req = Request(
-                    method=method.upper(),
-                    url=request_url,
-                    headers=self.auth_header,
-                    json=parameters if method.upper() == "POST" else {},
-                    params=parameters if method.upper() == "GET" else {},
-                ).prepare()
+                if method.upper() in {"POST", "PUT"}:
+                    req = Request(
+                        method=method.upper(),
+                        url=request_url,
+                        headers=self.auth_header,
+                        json=parameters if method.upper() == "POST" else {},
+                    ).prepare()
+                elif method.upper() == "GET":
+                    # Get requests do not have JSONs - which will error out
+                    # cloudfront
+                    req = Request(
+                        method=method.upper(),
+                        url=request_url,
+                        headers=self.auth_header,
+                        params=parameters if method.upper() == "GET" else {},
+                    ).prepare()
 
                 with requests.Session() as s:
                     response = s.send(req)

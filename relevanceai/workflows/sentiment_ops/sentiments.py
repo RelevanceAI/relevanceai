@@ -33,7 +33,9 @@ class SentimentOps:
         try:
             from transformers import AutoTokenizer, AutoModelForSequenceClassification
         except ModuleNotFoundError:
-            print("Need to install transformers")
+            print(
+                "Need to install transformers by running `pip install -q transformers`."
+            )
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)

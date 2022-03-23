@@ -325,7 +325,8 @@ class Write(Read):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
-
+        create_id: bool
+            If True, creates ID for users automatically
 
         Example
         ----------
@@ -347,9 +348,8 @@ class Write(Read):
             ]
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-
-            df.upsert_documents(documents)
+            ds = client.Dataset(dataset_id)
+            ds.upsert_documents(documents)
 
         """
         results = self._update_documents(
@@ -370,7 +370,6 @@ class Write(Read):
         self,
         func: Callable,
         retrieve_chunksize: int = 100,
-        max_workers: int = 8,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
@@ -440,11 +439,10 @@ class Write(Read):
                 new_documents.append(new_d)
             return documents
 
-        results = self.pull_update_push(
+        results = self.pull_update_push_async(
             self.dataset_id,
             bulk_fn,
             retrieve_chunk_size=retrieve_chunksize,
-            max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
@@ -465,7 +463,6 @@ class Write(Read):
         self,
         bulk_func: Callable,
         retrieve_chunksize: int = 100,
-        max_workers: int = 8,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         show_progress_bar: bool = True,
@@ -512,11 +509,10 @@ class Write(Read):
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
 
-        return self.pull_update_push(
+        return self.pull_update_push_async(
             self.dataset_id,
             bulk_func,
             retrieve_chunk_size=retrieve_chunksize,
-            max_workers=max_workers,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,

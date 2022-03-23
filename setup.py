@@ -31,6 +31,8 @@ requirements = [
     "typing-extensions~=4.0.1",
     "analytics-python~=1.4.0",
     "aiohttp>=3.8.1",
+    "appdirs>=1.4.4",
+    "orjson>=3.6.7",
 ]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]

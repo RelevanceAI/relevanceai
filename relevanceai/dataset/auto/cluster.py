@@ -6,12 +6,11 @@ import warnings
 from typing import List, Optional
 from tqdm.auto import tqdm
 from relevanceai.package_utils.analytics_funcs import track
-from relevanceai.dataset.crud.dataset_write import Write
-from relevanceai.package_utils.logger import FileLogger
 from relevanceai.package_utils.version_decorators import introduced_in_version, beta
+from relevanceai.dataset.auto.community_detection import CommunityDetection
 
 
-class Cluster(Write):
+class Cluster(CommunityDetection):
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
@@ -47,7 +46,7 @@ class Cluster(Write):
 
             df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
         clusterer = ClusterOps(
             model=model,
@@ -276,7 +275,7 @@ class Cluster(Write):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
         clusterer: ClusterOps = ClusterOps(
             model=model,
@@ -421,7 +420,7 @@ class Cluster(Write):
                 "You seem to have more clusters than documents. We recommend reducing the number of clusters."
             )
 
-        from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
+        from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
         if algorithm.lower() == "kmeans":
             from sklearn.cluster import KMeans
@@ -451,7 +450,7 @@ class Cluster(Write):
                 clusterer.fit_predict_update(
                     dataset=self,
                     vector_fields=vector_fields,
-                    include_grade=True,
+                    include_report=True,
                     filters=filters,
                 )
 
@@ -494,6 +493,13 @@ class Cluster(Write):
                     chunksize=chunksize,
                     filters=filters,
                 )
+
+        elif algorithm.lower() == "communitydetection":
+            if len(vector_fields) > 1:
+                raise ValueError(
+                    "Currently we do not support more than 1 vector field."
+                )
+            return self.community_detection(field=vector_fields[0], alias=alias)
         else:
             raise ValueError("Only KMeans clustering is supported at the moment.")
 

@@ -18,69 +18,41 @@ You can run the ClusterOps as such:
 You can view other examples of how to interact with this class here :ref:`integration`.
 
 """
-import os
-import json
-import getpass
+
 import warnings
 
 import numpy as np
 
 from relevanceai.api.client import BatchAPIClient
+from relevanceai.workflows.cluster_ops.partial import PartialClusterOps
+from relevanceai.workflows.cluster_ops.sub import SubClusterOps
 from typing import Union, List, Dict, Optional, Callable, Set
-from relevanceai.workflows.cluster_ops.cluster_base import (
+from relevanceai.workflows.cluster_ops.base import (
     ClusterBase,
     CentroidClusterBase,
     BatchClusterBase,
     HDBSCANClusterBase,
     SklearnCentroidBase,
 )
-from relevanceai.workflows.cluster_ops.cluster_groupby import ClusterGroupby, ClusterAgg
+from relevanceai.workflows.cluster_ops.groupby import ClusterGroupby, ClusterAgg
+from relevanceai.reports.cluster_report import ClusterReport
 
 from relevanceai.package_utils.analytics_funcs import track
 
 # We use the second import because the first one seems to be causing errors with isinstance
 # from relevanceai.dataset.crud import Dataset
-from relevanceai.package_utils.integration_checks import (
-    is_sklearn_available,
-    is_hdbscan_available,
-)
+
 from relevanceai.dataset_interface import Dataset
 
 from relevanceai.package_utils.errors import NoDocumentsError
 from relevanceai.package_utils.version_decorators import beta
 from relevanceai.package_utils.concurrency import multiprocess
-from relevanceai.workflows.cluster_ops.cluster_evaluate import ClusterEvaluate
-from doc_utils import DocUtils
-
+from relevanceai.workflows.cluster_ops.constants import METRIC_DESCRIPTION
 
 from tqdm.auto import tqdm
 
-SILHOUETTE_INFO = """
-Good clusters have clusters which are highly seperated and elements within which are highly cohesive. <br/>
-<b>Silohuette Score</b> is a metric from <b>-1 to 1</b> that calculates the average cohesion and seperation of each element, with <b>1</b> being clustered perfectly, <b>0</b> being indifferent and <b>-1</b> being clustered the wrong way"""
 
-RANDOM_INFO = """Good clusters have elements, which, when paired, belong to the same cluster label and same ground truth label. <br/>
-<b>Rand Index</b> is a metric from <b>0 to 1</b> that represents the percentage of element pairs that have a matching cluster and ground truth labels with <b>1</b> matching perfect and <b>0</b> matching randomly. <br/> <i>Note: This measure is adjusted for randomness so does not equal the exact numerical percentage.</i>"""
-
-HOMOGENEITY_INFO = """Good clusters only have elements from the same ground truth within the same cluster<br/>
-<b>Homogeneity</b> is a metric from <b>0 to 1</b> that represents whether clusters contain only elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
-
-COMPLETENESS_INFO = """Good clusters have all elements from the same ground truth within the same cluster <br/>
-<b>Completeness</b> is a metric from <b>0 to 1</b> that represents whether clusters contain all elements in the same ground truth with <b>1</b> being perfect and <b>0</b> being absolutely incorrect."""
-
-AVERAGE_SCORE = """Averages other metrics by first normalising values between 0 and 1 <br/>
-<b>Average</b> is a metric from <b>0 to 1</b> that averages other metrics by first normalising values between 0 and 1."""
-
-METRIC_DESCRIPTION = {
-    "silhouette": SILHOUETTE_INFO,
-    "random": RANDOM_INFO,
-    "homogeneity": HOMOGENEITY_INFO,
-    "completeness": COMPLETENESS_INFO,
-    "average": AVERAGE_SCORE,
-}
-
-
-class ClusterOps(ClusterEvaluate):
+class ClusterOps(PartialClusterOps, SubClusterOps):
 
     _cred_fn = ".creds.json"
 
@@ -188,189 +160,6 @@ class ClusterOps(ClusterEvaluate):
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
-
-    # Adding first-class sklearn integration
-    def _assign_sklearn_model(self, model):
-        # Add support for not just sklearn models but sklearn models
-        # with first -class integration for kmeans
-        from sklearn.cluster import (
-            KMeans,
-            MiniBatchKMeans,
-            DBSCAN,
-            Birch,
-            SpectralClustering,
-            OPTICS,
-            AgglomerativeClustering,
-            AffinityPropagation,
-            MeanShift,
-            FeatureAgglomeration,
-        )
-
-        POSSIBLE_MODELS = [
-            SpectralClustering,
-            Birch,
-            DBSCAN,
-            OPTICS,
-            AgglomerativeClustering,
-            AffinityPropagation,
-            MeanShift,
-            FeatureAgglomeration,
-        ]
-        if is_hdbscan_available():
-            import hdbscan
-
-            if hasattr(hdbscan, "HDBSCAN"):
-                POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
-        if model.__class__ == KMeans:
-
-            class CentroidClusterModel(CentroidClusterBase):
-                def __init__(self, model):
-                    self.model: Union[KMeans, MiniBatchKMeans] = model
-
-                def fit_predict(self, X):
-                    return self.model.fit_predict(X)
-
-                def get_centers(self):
-                    return self.model.cluster_centers_
-
-            new_model = CentroidClusterModel(model)
-            return new_model
-
-        elif model.__class__ == MiniBatchKMeans:
-
-            class BatchCentroidClusterModel(CentroidClusterBase, BatchClusterBase):
-                def __init__(self, model):
-                    self.model: MiniBatchKMeans = model
-
-                def partial_fit(self, X):
-                    return self.model.partial_fit(X)
-
-                def predict(self, X):
-                    return self.model.predict(X)
-
-                def get_centers(self):
-                    return self.model.cluster_centers_
-
-            new_model = BatchCentroidClusterModel(model)
-            return new_model
-
-        elif isinstance(model, tuple(POSSIBLE_MODELS)):
-            # new_model = CentroidClusterModel(model)
-            if "sklearn" in str(type(model)).lower():
-                new_model = SklearnCentroidBase(model)
-            elif "hdbscan" in str(type(model)).lower():
-                new_model = HDBSCANClusterBase(model)
-            return new_model
-        elif hasattr(model, "fit_documents"):
-            return model
-        elif hasattr(model, "fit_predict"):
-            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
-        elif hasattr(model, "fit_transform"):
-            data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
-
-    def _assign_model(self, model):
-        # Check if this is a model that will fit
-        # otherwise - forces a Clusterbase
-        if (is_sklearn_available() or is_hdbscan_available()) and (
-            "sklearn" in str(type(model)).lower()
-            or "hdbscan" in str(type(model)).lower()
-        ):
-            model = self._assign_sklearn_model(model)
-            if model is not None:
-                return model
-
-        if isinstance(model, ClusterBase):
-            return model
-        elif hasattr(model, "fit_documents"):
-            return model
-        # elif hasattr(model, "fit_predict"):
-        #     # Support for SKLEARN interface
-        #     data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
-        #     ClusterModel = type("ClusterBase", (ClusterBase,), data)
-        #     return ClusterModel()
-        elif hasattr(model, "fit_predict"):
-            data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
-            ClusterModel = type("ClusterBase", (ClusterBase,), data)
-            return ClusterModel()
-        elif model is None:
-            return model
-        raise TypeError("Model should be inherited from ClusterBase.")
-
-    def _token_to_auth(self, token=None):
-        SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-
-        if os.path.exists(self._cred_fn):
-            credentials = self._read_credentials()
-            return credentials
-
-        elif token:
-            return self._process_token(token)
-
-        else:
-            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
-            if not token:
-                token = getpass.getpass(f"Activation token:")
-            return self._process_token(token)
-
-    def _process_token(self, token: str):
-        split_token = token.split(":")
-        project = split_token[0]
-        api_key = split_token[1]
-        if len(split_token) > 2:
-            region = split_token[3]
-            base_url = self._region_to_url(region)
-
-            if len(split_token) > 3:
-                firebase_uid = split_token[4]
-                return self._write_credentials(
-                    project=project,
-                    api_key=api_key,
-                    base_url=base_url,
-                    firebase_uid=firebase_uid,
-                )
-
-            else:
-                return self._write_credentials(
-                    project=project, api_key=api_key, base_url=base_url
-                )
-
-        else:
-            return self._write_credentials(project=project, api_key=api_key)
-
-    def _read_credentials(self):
-        return json.load(open(self._cred_fn))
-
-    def _write_credentials(self, **kwargs):
-        print(
-            f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
-        )
-        json.dump(
-            kwargs,
-            open(self._cred_fn, "w"),
-        )
-        return kwargs
-
-    def _init_dataset(self, dataset):
-        # set dataset ID and dataset attributes for consistent usage
-        if isinstance(dataset, Dataset):
-            self.dataset_id = dataset.dataset_id
-            self.dataset: Dataset = dataset
-        elif isinstance(dataset, str):
-            self.dataset_id = dataset
-            self.dataset = Dataset(
-                project=self.project,
-                api_key=self.api_key,
-                dataset_id=self.dataset_id,
-                firebase_uid=self.firebase_uid,
-            )
-        else:
-            raise ValueError(
-                "Dataset type needs to be either a string or Dataset instance."
-            )
 
     @track
     def list_closest_to_center(
@@ -692,40 +481,6 @@ class ClusterOps(ClusterEvaluate):
             alias=self.alias,
         )
 
-    def _insert_centroid_documents(self):
-        if hasattr(self.model, "get_centroid_documents"):
-            print("Inserting centroid documents...")
-            centers = self.get_centroid_documents()
-
-            # Change centroids insertion
-            results = self.services.cluster.centroids.insert(
-                dataset_id=self.dataset_id,
-                cluster_centers=centers,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-            )
-            self.logger.info(results)
-
-        return
-
-    def _check_dataset_id(self, dataset: Optional[Union[str, Dataset]] = None) -> str:
-        """Helper method to get multiple dataset values"""
-
-        if isinstance(dataset, Dataset):
-            dataset_id: str = dataset.dataset_id
-        elif isinstance(dataset, str):
-            dataset_id = dataset
-        elif dataset is None:
-            if hasattr(self, "dataset_id"):
-                # let's not surprise users
-                print(
-                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
-                )
-                dataset_id = str(self.dataset_id)
-            else:
-                raise ValueError("Please supply dataset.")
-        return dataset_id
-
     @track
     def insert_centroid_documents(
         self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
@@ -857,7 +612,7 @@ class ClusterOps(ClusterEvaluate):
         vector_fields: List[str],
         filters: Optional[List[Dict]] = None,
         return_only_clusters: bool = True,
-        include_grade: bool = False,
+        include_report: bool = True,
         update: bool = True,
         inplace: bool = False,
     ):
@@ -881,8 +636,8 @@ class ClusterOps(ClusterEvaluate):
             function returns the clusters. Else, the function returns the
             original documents.
 
-        include_grade: bool
-            An indictor that determines whether to include (True) a grade
+        include_report: bool
+            An indictor that determines whether to include (True) a report and grade
             base on the mean silhouette score or not (False).
 
         update: bool
@@ -963,9 +718,19 @@ class ClusterOps(ClusterEvaluate):
         print("Fitting and predicting on all relevant documents")
         cluster_labels = self._label_clusters(self.model.fit_predict(vectors))
 
-        if include_grade:
+        if include_report:
             try:
                 self._calculate_silhouette_grade(vectors, cluster_labels)
+                report = ClusterReport(
+                    X=vectors,
+                    cluster_labels=cluster_labels,
+                    num_clusters=len(cluster_labels),
+                    model=self.model,
+                )
+                response = self.store_cluster_report(
+                    report_name=self._get_cluster_field_name(self.alias),
+                    report=report.internal_report,
+                )
             except Exception as e:
                 print(e)
                 pass
@@ -1003,7 +768,7 @@ class ClusterOps(ClusterEvaluate):
         dataset: Union[Dataset, str],
         vector_fields: List,
         filters: Optional[List] = None,
-        include_grade: bool = False,
+        include_report: bool = False,
         verbose: bool = True,
     ):
         """
@@ -1081,12 +846,12 @@ class ClusterOps(ClusterEvaluate):
         if verbose:
             print("Fitting and predicting on all documents")
 
-        clustered_docs = self.fit_predict_documents(
-            vector_fields,
-            docs,
+        clustered_docs = self.fit_predict(
+            data=docs,
+            vector_fields=vector_fields,
             return_only_clusters=True,
             inplace=False,
-            include_grade=include_grade,
+            include_report=include_report,
         )
 
         # Updating the db
@@ -1106,262 +871,6 @@ class ClusterOps(ClusterEvaluate):
             print(
                 "Build your clustering app here: "
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-            )
-
-    def subcluster_predict_update(
-        self,
-        dataset,
-        vector_fields: Optional[List] = None,
-        filters: Optional[List] = None,
-        verbose: bool = False,
-    ):
-        """
-
-        Run subclustering on your dataset using an in-memory clustering algorithm.
-
-        Parameters
-        --------------
-
-        dataset: Dataset
-            The dataset to create
-        vector_fields: List
-            The list of vector fields to run fitting, prediction and updating on
-        filters: Optional[List]
-            The list of filters to run clustering on
-        verbose: bool
-            If True, this should be verbose
-
-        Example
-        ----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-
-            from relevanceai.package_utils.datasets import mock_documents
-            ds = client.Dataset("sample")
-
-            # Creates 100 sample documents
-            documents = mock_documents(100)
-            ds.upsert_documents(documents)
-
-            from sklearn.cluster import KMeans
-            model = KMeans(n_clusters=10)
-            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
-            clusterer.subcluster_predict_update(
-                dataset=ds,
-            )
-
-        """
-        filters = [] if filters is None else filters
-
-        # load the documents
-        self.logger.warning(
-            "Retrieving documents... This can take a while if the dataset is large."
-        )
-
-        self._init_dataset(dataset)
-        self.vector_fields = vector_fields  # type: ignore
-
-        # make sure to only get fields where vector fields exist
-        filters += [
-            {
-                "field": f,
-                "filter_type": "exists",
-                "condition": "==",
-                "condition_value": " ",
-            }
-            for f in vector_fields  # type: ignore
-        ]
-
-        if verbose:
-            print("Fitting and predicting on all documents")
-        # Here we run subfitting on these documents
-        clustered_docs = self.subcluster_predict_documents(
-            vector_fields=vector_fields, filters=filters, verbose=verbose
-        )
-
-        # Updating the db
-        # print("Updating the database...")
-        # results = self._update_documents(
-        #     self.dataset_id, clustered_docs, chunksize=10000
-        # )
-        # self.logger.info(results)
-
-        # # Update the centroid collection
-        # self.model.vector_fields = vector_fields
-
-        # self._insert_centroid_documents()
-
-        if verbose:
-            print(
-                "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-            )
-
-    def subpartialfit_predict_update(
-        self,
-        dataset,
-        vector_fields: list,
-        filters: Optional[list] = None,
-        cluster_ids: Optional[list] = None,
-        verbose: bool = True,
-    ):
-        """
-
-        Run partial fit subclustering on your dataset.
-
-        Parameters
-        ------------
-
-        dataset: Dataset
-            The dataset to call fit predict update on
-        vector_fields: list
-            The list of vector fields
-        filters: list
-            The list of filters
-
-        Example
-        ----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-
-            from relevanceai.package_utils.datasets import mock_documents
-            ds = client.Dataset("sample")
-            # Creates 100 sample documents
-            documents = mock_documents(100)
-            ds.upsert_documents(documents)
-
-            from sklearn.cluster import MiniBatchKMeans
-            model = MiniBatchKMeans(n_clusters=10)
-            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
-            clusterer.subpartialfit_predict_update(
-                dataset=ds,
-            )
-
-        """
-        # Get data
-
-        self._init_dataset(dataset)
-
-        filters = [] if filters is None else filters
-        cluster_ids = [] if cluster_ids is None else cluster_ids
-        # Loop through each unique cluster ID and run clustering
-        parent_field = self._get_cluster_field_name(self.parent_alias)
-
-        print("Getting unique cluster IDs...")
-        unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
-
-        for i, unique_cluster in enumerate(tqdm(unique_clusters)):
-            cluster_filters = filters.copy()
-            cluster_filters += [
-                {
-                    "field": parent_field,
-                    "filter_type": "category",
-                    "condition": "==",
-                    "condition_value": unique_cluster,
-                }
-            ]
-            self.partial_fit_predict_update(
-                dataset=self.dataset_id,
-                vector_fields=vector_fields,
-                filters=cluster_filters,
-                verbose=False,
-            )
-
-        if verbose:
-            print(
-                "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-            )
-
-    def subcluster_predict_documents(
-        self,
-        vector_fields: Optional[List] = None,
-        filters: Optional[List] = None,
-        cluster_ids: Optional[List] = None,
-        verbose: bool = True,
-    ):
-        """
-        Subclustering using fit predict update. This will loop through all of the
-        different clusters and then run subclustering on them. For this, you need to
-
-        Parameters
-        ------------
-
-        Example
-        ---------
-
-        ..code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-
-            # Creating 100 sample documents
-            from relevanceai.package_utils.datasets import mock_documents
-            documents = mock_documents(100)
-            ds.upsert_documents(documents)
-
-            # Run simple clustering first
-            ds.auto_cluster("kmeans-3", vector_fields=["sample_1_vector_"])
-
-            # Start KMeans
-            from sklearn.cluster import KMeans
-            model = KMeans(n_clusters=20)
-
-            # Run subclustering.
-            cluster_ops = client.ClusterOps(
-                alias="subclusteringkmeans",
-                model=model,
-                parent_alias="kmeans-3")
-
-
-        """
-        filters = [] if filters is None else filters
-        cluster_ids = [] if cluster_ids is None else cluster_ids
-        # Loop through each unique cluster ID and run clustering
-        parent_field = self._get_cluster_field_name(self.parent_alias)
-
-        if verbose:
-            print("Getting unique cluster IDs...")
-        if not cluster_ids:
-            unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
-        else:
-            unique_clusters = cluster_ids
-
-        for i, unique_cluster in enumerate(tqdm(unique_clusters)):
-            cluster_filters = filters.copy()
-            cluster_filters += [
-                {
-                    "field": parent_field,
-                    "filter_type": "category",
-                    "condition": "==",
-                    "condition_value": unique_cluster,
-                }
-            ]
-            self.fit_predict_update(
-                dataset=self.dataset_id,
-                vector_fields=vector_fields,
-                filters=cluster_filters,
-                include_grade=False,
-                verbose=False,
-            )
-
-        if verbose:
-            print(
-                "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-            )
-
-    def _check_for_dataset_id(self):
-        if not hasattr(self, "dataset_id"):
-            raise ValueError(
-                "You are missing a dataset ID. Please set using the argument dataset_id='...'."
             )
 
     def unique_cluster_ids(
@@ -1459,264 +968,12 @@ class ClusterOps(ClusterEvaluate):
 
         if verbose:
             print("Fitting and predicting on all documents")
-        return self.fit_predict_documents(
+        return self.fit_predict(
             vector_fields,
             docs,
             return_only_clusters=True,
             inplace=inplace,
         )
-
-    def _concat_vectors_from_list(self, list_of_vectors: list):
-        """Concatenate 2 vectors together in a pairwise fashion"""
-        return [np.concatenate(x) for x in list_of_vectors]
-
-    def _get_vectors_from_documents(self, vector_fields: list, documents: List[Dict]):
-        if len(vector_fields) == 1:
-            # filtering out entries not containing the specified vector
-            documents = list(filter(DocUtils.list_doc_fields, documents))
-            vectors = self.get_field_across_documents(
-                vector_fields[0], documents, missing_treatment="skip"
-            )
-        else:
-            # In multifield clusering, we get all the vectors in each document
-            # (skip if they are missing any of the vectors)
-            # Then run clustering on the result
-            documents = list(self.filter_docs_for_fields(vector_fields, documents))
-            all_vectors = self.get_fields_across_documents(
-                vector_fields, documents, missing_treatment="skip_if_any_missing"
-            )
-            # Store the vector field lengths to de-concatenate them later
-            self._vector_field_length: dict = {}
-            prev_vf = 0
-            for i, vf in enumerate(self.vector_fields):
-                self._vector_field_length[vf] = {}
-                self._vector_field_length[vf]["start"] = prev_vf
-                end_vf = prev_vf + len(all_vectors[0][i])
-                self._vector_field_length[vf]["end"] = end_vf
-                # Update the ending
-                prev_vf = end_vf
-
-            # Store the vector lengths
-            vectors = self._concat_vectors_from_list(all_vectors)
-
-        return vectors
-
-    @track
-    def partial_fit_documents(
-        self,
-        vector_fields: list,
-        documents: List[Dict],
-    ):
-        """
-        Train clustering algorithm on documents and then store the labels
-        inside the documents.
-
-        Parameters
-        -----------
-        vector_field: list
-            The vector field of the documents
-        docs: list
-            List of documents to run clustering on
-        alias: str
-            What the clusters can be called
-        cluster_field: str
-            What the cluster fields should be called
-        return_only_clusters: bool
-            If True, return only clusters, otherwise returns the original document
-        inplace: bool
-            If True, the documents are edited inplace otherwise, a copy is made first
-        kwargs: dict
-            Any other keyword argument will go directly into the clustering algorithm
-
-        Example
-        -----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-
-            from sklearn.cluster import MiniBatchKMeans
-            model = MiniBatchKMeans(n_clusters=2)
-            cluster_ops = client.ClusterOps(alias="batchkmeans_2", model=model)
-
-            cluster_ops.parital_fit(df, vector_fields=["documentation_vector_"])
-            cluster_ops.predict_update(df, vector_fields=["sample_vector_"])
-
-        """
-        self.vector_fields = vector_fields
-
-        vectors = self._get_vectors_from_documents(vector_fields, documents)
-
-        self.model.partial_fit(vectors)
-
-    def _chunk_dataset(
-        self,
-        dataset: Dataset,
-        select_fields: Optional[list] = None,
-        chunksize: int = 100,
-        filters: Optional[list] = None,
-    ):
-        """Utility function for chunking a dataset"""
-        select_fields = [] if select_fields is None else select_fields
-        filters = [] if filters is None else filters
-
-        cursor = None
-
-        docs = self._get_documents(
-            dataset_id=self.dataset_id,
-            include_cursor=True,
-            number_of_documents=chunksize,
-            select_fields=select_fields,
-            filters=filters,
-        )
-
-        while len(docs["documents"]) > 0:
-            yield docs["documents"]
-            docs = self._get_documents(
-                dataset_id=self.dataset_id,
-                cursor=docs["cursor"],
-                include_cursor=True,
-                select_fields=select_fields,
-                number_of_documents=chunksize,
-                filters=filters,
-            )
-
-    @track
-    def partial_fit_dataset(
-        self,
-        dataset: Union[str, Dataset],
-        vector_fields: List[str],
-        chunksize: int = 100,
-        filters: Optional[list] = None,
-    ):
-        """
-        Fit The dataset by partial documents.
-
-
-        Example
-        --------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset")
-
-            from sklearn.cluster import MiniBatchKMeans
-            model = MiniBatchKMeans(n_clusters=2)
-            cluster_ops = client.ClusterOps(alias="minibatchkmeans_2", model=model)
-
-            cluster_ops.partial_fit_dataset(df, vector_fields=["documentation_vector_"])
-
-        """
-        filters = [] if filters is None else filters
-
-        self.vector_fields = vector_fields
-        if len(vector_fields) > 1:
-            raise ValueError(
-                "We currently do not support multiple vector fields on partial fit"
-            )
-
-        if isinstance(dataset, str):
-            self.dataset = Dataset(
-                project=self.project,
-                api_key=self.api_key,
-                dataset_id=dataset,
-                firebase_uid=self.firebase_uid,
-            )
-        else:
-            self.dataset = dataset
-
-        filters = [
-            {
-                "field": f,
-                "filter_type": "exists",
-                "condition": "==",
-                "condition_value": " ",
-            }
-            for f in vector_fields
-        ] + filters
-
-        for c in self._chunk_dataset(
-            self.dataset, self.vector_fields, chunksize=chunksize, filters=filters
-        ):
-            vectors = self._get_vectors_from_documents(vector_fields, c)
-            self.model.partial_fit(vectors)
-
-    @track
-    def partial_fit_predict_update(
-        self,
-        dataset: Union[Dataset, str],
-        vector_fields: Optional[List[str]] = None,
-        chunksize: int = 100,
-        filters: Optional[List] = None,
-        verbose: bool = True,
-    ):
-        """
-        Fit, predict and update on a dataset.
-        Users can also start to run these separately one by one.
-
-        Parameters
-        --------------
-
-        dataset: Union[Dataset]
-            The dataset class
-
-        vector_fields: List[str]
-            The list of vector fields
-
-        chunksize: int
-            The size of the chunks
-
-        Example
-        -----------
-
-        .. code-block::
-
-            # Real-life example from Research Dashboard
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("research2vec")
-
-            from sklearn.cluster import MiniBatchKMeans
-            model = MiniBatchKMeans(n_clusters=50)
-            cluster_ops = client.ClusterOps(alias="minibatchkmeans_50", model=model)
-
-            cluster_ops.partial_fit_predict_update(
-                df,
-                vector_fields=['title_trainedresearchqgen_vector_'],
-                chunksize=1000
-            )
-
-        """
-        vector_fields = [] if vector_fields is None else vector_fields
-        filters = [] if filters is None else filters
-
-        if verbose:
-            print("Fitting dataset...")
-        self.partial_fit_dataset(
-            dataset=dataset,
-            vector_fields=vector_fields,
-            chunksize=chunksize,
-            filters=filters,
-        )
-        if verbose:
-            print("Updating your dataset...")
-        self.predict_update(dataset=dataset)
-        if hasattr(self.model, "get_centers"):
-            if verbose:
-                print("Inserting your centroids...")
-            self.insert_centroid_documents(
-                self.get_centroid_documents(), dataset=dataset
-            )
-
-        if verbose:
-            print(
-                "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-            )
 
     @track
     def predict_documents(
@@ -1960,38 +1217,6 @@ class ClusterOps(ClusterEvaluate):
                 for d in new_documents
             ]
         return new_documents
-
-    def _get_cluster_field_name(self, alias: str = None):
-        if alias is None:
-            alias = self.alias
-        if isinstance(self.vector_fields, list):
-            set_cluster_field = (
-                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
-            )
-        elif isinstance(self.vector_fields, str):
-            set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
-        return set_cluster_field
-
-    def _set_cluster_labels_across_documents(self, cluster_labels, documents):
-        set_cluster_field = self._get_cluster_field_name()
-        self.set_field_across_documents(set_cluster_field, cluster_labels, documents)
-
-    def _label_cluster(self, label: Union[int, str]):
-        if not isinstance(label, str):
-            return "cluster-" + str(label)
-        return str(label)
-
-    def _label_subcluster(self, label: Union[int, str], prev_cluster_label) -> str:
-        return prev_cluster_label + "-" + str(label)
-
-    def _label_clusters(self, labels):
-        return [self._label_cluster(x) for x in labels]
-
-    def _label_subclusters(self, labels: List[str], prev_cluster_labels: List[str]):
-        return [
-            self._label_subcluster(label, prev_cluster_label)
-            for label, prev_cluster_label in zip(labels, prev_cluster_labels)
-        ]
 
     @property
     def metadata(self):
@@ -2316,35 +1541,6 @@ class ClusterOps(ClusterEvaluate):
             self.update_documents_within_clusters(output, output_field)
         return output
 
-    def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
-        """
-        Internal function for operations
-        """
-        cluster_field = self._get_cluster_field_name()
-        # TODO; change this to fetch all documents
-        documents = self.datasets.documents.get_where(
-            self.dataset_id,
-            filters=[
-                {
-                    "field": cluster_field,
-                    "filter_type": "exact_match",
-                    "condition": "==",
-                    "condition_value": cluster_id,
-                },
-                {
-                    "field": field,
-                    "filter_type": "exists",
-                    "condition": ">=",
-                    "condition_value": " ",
-                },
-            ],
-            select_fields=[field, cluster_field],
-            page_size=9999,
-        )
-        # get the field across each
-        arr = self.get_field_across_documents(field, documents["documents"])
-        output[cluster_id] = func(arr)
-
     def create_centroids(
         self, vector_fields: List[str], operation: Optional[Callable] = None
     ):
@@ -2378,18 +1574,6 @@ class ClusterOps(ClusterEvaluate):
         for k, v in cluster_centroids.items():
             centroid_docs.append({"_id": str(k), vector_field: v.tolist()})
         return self.insert_centroid_documents(centroid_docs)
-
-    def _get_filter_for_cluster(self, cluster_id):
-        cluster_field = self._get_cluster_field_name()
-        filters = [
-            {
-                "field": cluster_field,
-                "filter_type": "exact_match",
-                "condition": "==",
-                "condition_value": cluster_id,
-            }
-        ]
-        return filters
 
     def update_documents_within_cluster(self, cluster_id: str, update: dict):
         """
