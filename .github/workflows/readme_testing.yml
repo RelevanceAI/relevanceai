@@ -153,7 +153,7 @@ jobs:
           python scripts/update_semver_ref.py -d -p . -pn RelevanceAI -v $RELEVANCEAI_VERSION
           python scripts/build_docs.py -d -p . -pn RelevanceAI -v $GIT_BRANCH_VERSION
 
-          # ./scripts/sync_readme_docs.sh true ./docs/ $RELEVANCEAI_VERSION
+          # ./scripts/sync_readme.sh true ./docs/ $RELEVANCEAI_VERSION
 
           git add .
           git status | grep -q "Changes to be committed"

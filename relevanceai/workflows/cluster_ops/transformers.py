@@ -25,7 +25,7 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         if not any([f in model for f in ["t5", "bart"]]):
             raise ValueError(
                 "Model must be of t5 or  bart base.\n \
-             The models that this pipeline can use are models that have been fine-tuned on a summarization task, \
+                The models that this pipeline can use are models that have been fine-tuned on a summarization task, \
                 which is currently, '`bart-large-cnn`', '`t5-small`', '`t5-base`', '`t5-large`', '`t5-3b`', '`t5-11b`'. \
                 See the up-to-date list of available models on \
                     `huggingface.co/models <https://huggingface.co/models?filter=summarization>`__."

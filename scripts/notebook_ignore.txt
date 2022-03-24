@@ -1,2 +1,2 @@
-docs/GETTING_STARTED/example-applications/_notebooks/RelevanceAI-ReadMe-Text-Search-using-USE-VectorHub.ipynb
-docs/GETTING_STARTED/example-applications/_notebooks/RelevanceAI-ReadMe-Question-Answering-using-USE-QA-Tensorflow-Hub.ipynb
+docs/getting-started/example-applications/_notebooks/RelevanceAI-ReadMe-Text-Search-using-USE-VectorHub.ipynb
+docs/getting-started/example-applications/_notebooks/RelevanceAI-ReadMe-Question-Answering-using-USE-QA-Tensorflow-Hub.ipynb

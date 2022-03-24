@@ -183,9 +183,10 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = None,
     ):
         """
-        List of documents closest from the centre.
+        List of documents closest to the center
 
         Parameters
         ----------
@@ -218,6 +219,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+           Filter if clusters with certain characteristics should be hidden in results
 
         Example
         --------------
@@ -261,6 +264,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
         )
 
     @track
@@ -281,11 +285,12 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        model: str = "sshleifer/distilbart-cnn-12-6",
-        tokenizer: str = "sshleifer/distilbart-cnn-12-6",
+        cluster_properties_filter: Optional[Dict] = None,
+        model: str = "sshleifer/distilbart-cnn-6-6",
+        tokenizer: str = "sshleifer/distilbart-cnn-6-6",
     ):
         """
-        List of documents closest from the centre
+        Summarize documents closest to the center
 
         Parameters
         ----------
@@ -318,11 +323,12 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
         model: str
             Model to use for summarization
         tokenizer: str
             Tokenizer to use for summarization
-
 
         Example
         --------------
@@ -370,6 +376,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
         )
 
         def clean_sentence(s):
@@ -550,11 +557,102 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             flatten=flatten,
         )
 
+    @track
     def list_furthest_from_center(
-        self, dataset: Union[str, Dataset] = None, vector_fields: list = None
+        self,
+        select_fields: List,
+        dataset: Optional[Union[str, Dataset]] = None,
+        vector_fields: Optional[List] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = None,
     ):
         """
         List of documents furthest from the centre.
+
+        Parameters
+        ----------
+        cluster_ids: list
+            Any of the cluster ids
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+
+
+        Example
+        ---------
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset")
+
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+
+            cluster_ops.list_furthest_from_center()
+
+        """
+        return self.datasets.cluster.centroids.list_furthest_from_center(
+            dataset_id=self._check_dataset_id(dataset),
+            vector_fields=self.vector_fields
+            if vector_fields is None
+            else vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+        )
+
+    @track
+    def summarize_furthest_from_center(
+        self, dataset: Union[str, Dataset] = None, vector_fields: list = None
+    ):
+        """
+        Summarize documents furthest from the centre.
 
         Parameters
         ----------

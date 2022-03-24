@@ -1,5 +1,5 @@
 from relevanceai.package_utils.base import _Base
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class CentroidsClient(_Base):
@@ -27,6 +27,7 @@ class CentroidsClient(_Base):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = None,
     ):
         """
         List of documents closest from the centre.
@@ -67,6 +68,9 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+           Filter if clusters with certain characteristics should be hidden in results
+
         """
         cluster_ids = [] if cluster_ids is None else cluster_ids
         centroid_vector_fields = (
@@ -93,6 +97,7 @@ class CentroidsClient(_Base):
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
+            "cluster_properties_filter": cluster_properties_filter,
         }
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
@@ -121,6 +126,7 @@ class CentroidsClient(_Base):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = None,
     ):
         centroid_vector_fields = (
             [] if centroid_vector_fields is None else centroid_vector_fields
@@ -165,6 +171,8 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+           Filter if clusters with certain characteristics should be hidden in results
 
         """
         if not centroid_vector_fields:
@@ -187,6 +195,7 @@ class CentroidsClient(_Base):
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
+            "cluster_properties_filter": cluster_properties_filter,
         }
         self._log_to_dashboard(
             method=method,
