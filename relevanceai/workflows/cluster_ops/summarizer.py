@@ -35,12 +35,12 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
                 f"{e}\nInstall torch\n \
                 pip install -U torch"
             )
-        self.model.to(device)
+        self.model = self.model.to(device)
 
         # tokenize without truncation
         inputs_no_trunc = self.tokenizer(
             text, max_length=None, return_tensors="pt", truncation=False
-        )
+        ).to(device)
 
         # get batches of tokens corresponding to the exact model_max_length
         chunk_start = 0
@@ -50,7 +50,9 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
             inputs_batch = inputs_no_trunc["input_ids"][0][
                 chunk_start:chunk_end
             ]  # get batch of n tokens
-            inputs_batch = torch.unsqueeze(inputs_batch, 0)
+            inputs_batch = inputs_batch.reshape(
+                (1,) + inputs_batch.shape
+            )  ## add batch dimension
             inputs_batch_l.append(inputs_batch)
             chunk_start += self.tokenizer.model_max_length
             chunk_end += self.tokenizer.model_max_length
@@ -58,7 +60,7 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         # generate a summary on each batch
         summary_ids_l = [
             self.model.generate(
-                inputs, num_beams=4, max_length=100, early_stopping=True
+                inputs.to(device), num_beams=4, max_length=100, early_stopping=True
             ).to(device)
             for inputs in inputs_batch_l
         ]
