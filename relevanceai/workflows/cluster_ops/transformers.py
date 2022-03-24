@@ -1,6 +1,16 @@
 from relevanceai.package_utils.logger import LoguruLogger
 from doc_utils import DocUtils
 
+try:
+    import torch
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(
+        f"{e}\nInstall torch\n \
+        pip install -U torch"
+    )
+
 
 class TransformersLMSummarizer(LoguruLogger, DocUtils):
     def __init__(self, model, tokenizer, *args, **kwargs):
@@ -10,15 +20,6 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
             raise ModuleNotFoundError(
                 f"{e}\nInstall transformers\n \
                 pip install -U transformers"
-            )
-        try:
-            import torch
-
-            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall torch\n \
-                pip install -U torch"
             )
 
         if not any([f in model for f in ["t5", "bart"]]):

@@ -322,7 +322,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             Model to use for summarization
         tokenizer: str
             Tokenizer to use for summarization
-        max_length: int
 
 
         Example
@@ -506,23 +505,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             Whether to flatten
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
-
-        Parameters
-        ----------
-        metrics: list
-            Fields and metrics you want to calculate
-        groupby: list
-            Fields you want to split the data into
-        filters: list
-            Query for filtering the search results
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        asc: bool
-            Whether to sort results by ascending or descending order
-        flatten: bool
-            Whether to flatten
 
         Example
         ---------
