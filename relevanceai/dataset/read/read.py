@@ -58,7 +58,12 @@ class Read(Statistics):
         self.audio_fields = [] if audio_fields is None else audio_fields
         self.text_fields = [] if text_fields is None else text_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(
+            dataset_id=dataset_id,
+            project=project,
+            api_key=api_key,
+            firebase_uid=firebase_uid,
+        )
 
     @property  # type: ignore
     @track

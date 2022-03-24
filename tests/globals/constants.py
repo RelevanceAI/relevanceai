@@ -4,18 +4,15 @@ import string
 
 from typing import List
 
-TEST_REGION = os.getenv("TEST_REGION")
-TEST_PROJECT = (
-    os.getenv("TEST_US_PROJECT")
-    if TEST_REGION is not None and "us-east-1" in TEST_REGION
-    else os.getenv("TEST_PROJECT")
-)
-TEST_API_KEY = (
-    os.getenv("TEST_US_API_KEY")
-    if TEST_REGION is not None and "us-east-1" in TEST_REGION
-    else os.getenv("TEST_API_KEY")
-)
+TEST_TOKEN = os.getenv("TEST_TOKEN")
+if TEST_TOKEN is None:
+    raise ValueError("Set Env Var TEST_TOKEN")
+
+TEST_TOKEN = TEST_TOKEN.split(":")
 TEST_FIREBASE_UID = "relevanceai-sdk-test-user"
+TEST_TOKEN[-1] = TEST_FIREBASE_UID
+TEST_TOKEN = ":".join(TEST_TOKEN)
+
 
 VECTOR_LENGTH = 8
 NUMBER_OF_DOCUMENTS = int(os.getenv("TEST_NUMBER_OF_DOCUMENTS", 20))

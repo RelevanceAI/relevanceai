@@ -1,12 +1,16 @@
 from typing import Optional, Tuple, List
 
-from relevanceai.dataset.read import Read
-from relevanceai.dataset.write import Write
+from relevanceai._api import APIClient
+
 from relevanceai.utils.decorators.version import added, beta
 from relevanceai.utils.logger import FileLogger
 
 
-class _VectorizeHelper(Read):
+class _VectorizeHelper(APIClient):
+    def __init__(self, dataset_id: str, **kwargs):
+        self.dataset_id = dataset_id
+        super().__init__(**kwargs)
+
     def _check_vector_existence(
         self, schema: dict, fields: List[str], encoder
     ) -> Tuple[list, list, list]:
@@ -56,7 +60,7 @@ class _VectorizeHelper(Read):
             A list of tuples containing information about the newly created
             vectors.
         """
-        updated_metadata = self.get_metadata()
+        updated_metadata = self.datasets.metadata(self.dataset_id)["results"]
         if "_vector_" not in updated_metadata:
             updated_metadata["_vector_"] = {}
 
@@ -71,7 +75,22 @@ class _VectorizeHelper(Read):
         self.upsert_metadata(updated_metadata)
 
 
-class Vectorize(_VectorizeHelper, Write):
+class Vectorize(_VectorizeHelper):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
+        dataset_id: str,
+    ):
+        self.dataset_id = dataset_id
+        super().__init__(
+            dataset_id=dataset_id,
+            project=project,
+            api_key=api_key,
+            firebase_uid=firebase_uid,
+        )
+
     @beta
     @added(version="1.2.0")
     def vectorize(
@@ -127,6 +146,7 @@ class Vectorize(_VectorizeHelper, Write):
             )
 
         """
+        schema = self.datasets.schema(self.dataset_id)
         if not image_fields and not text_fields:
             raise ValueError("'image_fields' and 'text_fields' both cannot be empty.")
 
@@ -134,16 +154,6 @@ class Vectorize(_VectorizeHelper, Write):
         text_fields = [] if text_fields is None else text_fields
 
         fields = image_fields + text_fields
-
-        foreign_fields = []
-        for field in fields:
-            if field not in self.schema:
-                foreign_fields.append(field)
-        else:
-            if foreign_fields:
-                raise ValueError(
-                    f"The following fields are invalid: {', '.join(foreign_fields)}"
-                )
 
         if image_fields and image_encoder is None:
             try:
@@ -167,7 +177,7 @@ class Vectorize(_VectorizeHelper, Write):
             new_image_fields,
             image_metadata,
             existing_image_vectors,
-        ) = self._check_vector_existence(self.schema, image_fields, image_encoder)
+        ) = self._check_vector_existence(schema, image_fields, image_encoder)
 
         if text_fields and text_encoder is None:
             try:
@@ -190,7 +200,7 @@ class Vectorize(_VectorizeHelper, Write):
             new_text_fields,
             text_metadata,
             existing_text_vectors,
-        ) = self._check_vector_existence(self.schema, text_fields, text_encoder)
+        ) = self._check_vector_existence(schema, text_fields, text_encoder)
 
         if new_image_fields or new_text_fields:
 
@@ -207,7 +217,7 @@ class Vectorize(_VectorizeHelper, Write):
 
                 return updated_documents
 
-            old_schema = self.schema.keys()
+            old_schema = schema.keys()
 
             results = self.pull_update_push(
                 self.dataset_id,
@@ -225,7 +235,7 @@ class Vectorize(_VectorizeHelper, Write):
                 ],
             )
 
-            new_schema = self.schema.keys()
+            new_schema = schema.keys()
 
             added_vectors = list(new_schema - old_schema)
         else:

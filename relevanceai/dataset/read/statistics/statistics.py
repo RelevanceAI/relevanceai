@@ -4,7 +4,7 @@ Pandas like dataset API
 """
 import pandas as pd
 
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 from relevanceai._api import APIClient
 from relevanceai._api.endpoints.services.cluster import ClusterClient
@@ -16,7 +16,9 @@ from relevanceai.utils.decorators.analytics import track
 
 
 class Statistics(APIClient):
-    dataset_id: str
+    def __init__(self, dataset_id: str, **kwargs):
+        self.dataset_id = dataset_id
+        super().__init__(**kwargs)
 
     @track
     def value_counts(self, field: str):

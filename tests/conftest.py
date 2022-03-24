@@ -19,38 +19,13 @@ from tests.utils import *
 
 
 @pytest.fixture(scope="session")
-def test_region():
-    return TEST_REGION
+def test_token():
+    return TEST_TOKEN
 
 
 @pytest.fixture(scope="session")
-def test_project():
-    return TEST_PROJECT
-
-
-@pytest.fixture(scope="session")
-def test_api_key():
-    return TEST_API_KEY
-
-
-@pytest.fixture(scope="session")
-def test_firebase_uid():
-    return TEST_FIREBASE_UID
-
-
-@pytest.fixture(scope="session")
-def test_client(test_region, test_project, test_api_key, test_firebase_uid):
-    if test_region is None:
-        client = Client(
-            project=test_project, api_key=test_api_key, firebase_uid=test_firebase_uid
-        )
-    else:
-        client = Client(
-            project=test_project,
-            api_key=test_api_key,
-            firebase_uid=test_firebase_uid,
-            region=test_region,
-        )
+def test_client(test_token):
+    client = Client(token=test_token)
     client.config["mixpanel.is_tracking_enabled"] = False
     client.disable_analytics_tracking()
     yield client
