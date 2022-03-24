@@ -140,7 +140,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     @track
     def list_closest_to_center(
         self,
-        dataset_id: str,
         vector_fields: Optional[List] = None,
         cluster_ids: Optional[List] = None,
         centroid_vector_fields: Optional[List] = None,
@@ -216,7 +215,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         filters = [] if filters is None else filters
 
         return self.datasets.cluster.centroids.list_closest_to_center(
-            dataset_id=dataset_id,
+            dataset_id=self.dataset_id,
             vector_fields=self.vector_fields
             if vector_fields is None
             else vector_fields,
@@ -397,7 +396,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             flatten=flatten,
         )
 
-    def list_furthest_from_center(self, dataset_id: str, vector_fields: list = None):
+    def list_furthest_from_center(self, vector_fields: list = None):
         """
         List of documents furthest from the centre.
 
@@ -447,7 +446,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=dataset_id,
+            dataset_id=self.dataset_id,
             vector_fields=self.vector_fields
             if vector_fields is None
             else vector_fields,
@@ -826,6 +825,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
                 "Build your clustering app here: "
                 + f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/cluster"
             )
+
+        return self
 
     def unique_cluster_ids(
         self,

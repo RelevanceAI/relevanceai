@@ -50,19 +50,6 @@ def test_furthest_different_from_closest(closest_to_centers, furthest_from_cente
     assert closest_to_centers != furthest_from_centers
 
 
-@pytest.fixture
-def test_clusterer(test_client: Client, clustered_dataset_id: Dataset):
-    df: Dataset = test_client.Dataset(clustered_dataset_id)
-
-    model = get_model()
-
-    clusterer: ClusterOps = df.cluster(
-        model=model, vector_fields=VECTOR_FIELDS, alias=CLUSTER_ALIAS
-    )
-    time.sleep(2)
-    return clusterer
-
-
 def get_model():
     # get a kmeans model
     from relevanceai.operations.cluster.models.kmeans import KMeansModel
