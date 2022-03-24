@@ -2,16 +2,6 @@ from relevanceai.package_utils.logger import LoguruLogger
 from doc_utils import DocUtils
 from typing import Dict, List
 
-try:
-    import torch
-
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-except ModuleNotFoundError as e:
-    raise ModuleNotFoundError(
-        f"{e}\nInstall torch\n \
-        pip install -U torch"
-    )
-
 
 class TransformersLMSummarizer(LoguruLogger, DocUtils):
     def __init__(self, model: str, tokenizer: str, *args, **kwargs):
@@ -32,10 +22,21 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
                     `huggingface.co/models <https://huggingface.co/models?filter=summarization>`__."
             )
 
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model).to(device)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
 
     def __call__(self, text: str):
+        try:
+            import torch
+
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall torch\n \
+                pip install -U torch"
+            )
+        self.model.to(device)
+
         # tokenize without truncation
         inputs_no_trunc = self.tokenizer(
             text, max_length=None, return_tensors="pt", truncation=False
