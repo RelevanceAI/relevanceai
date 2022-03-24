@@ -5,7 +5,7 @@ import math
 import traceback
 from typing import List, Optional
 from relevanceai.utils.cache import lru_cache
-from relevanceai._api.endpoints.client import APIClient
+from relevanceai._api.endpoints.api_client import APIEndpointsClient
 from relevanceai._api.batch.chunk import Chunker
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.constants.constants import MAX_CACHESIZE
@@ -17,7 +17,7 @@ LIST_SIZE_MULTIPLIER = 3
 # ADD SUPPORT FOR SAVING TO JSON
 
 
-class BatchRetrieveClient(APIClient, Chunker):
+class BatchRetrieveClient(APIEndpointsClient, Chunker):
     def _get_documents(
         self,
         dataset_id: str,

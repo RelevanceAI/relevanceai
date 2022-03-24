@@ -1,9 +1,8 @@
 from typing import Dict, List, Optional
-from relevanceai._api.client import BatchAPIClient
-from relevanceai.dataset.read.groupby import Groupby, Agg
+from relevanceai._api import APIClient
 
 
-class Centroids(BatchAPIClient):
+class Centroids(APIClient):
     def __init__(self, project: str, api_key: str, dataset_id: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key
@@ -44,33 +43,6 @@ class Centroids(BatchAPIClient):
         self.cluster_field = cluster_field
         self.cluster_doc_field = (
             f"{self.cluster_field}.{self.vector_fields[0]}.{self.alias}"
-        )
-
-        # Check if cluster is in schema
-        schema = self.datasets.schema(self.dataset_id)
-        self._are_fields_in_schema([self.cluster_doc_field], self.dataset_id, schema)
-        self.cluster_field_type = schema[self.cluster_doc_field]
-
-        self.cluster_groupby = [
-            {
-                "name": "cluster",
-                "field": self.cluster_doc_field,
-                "agg": self.cluster_field_type,
-            }
-        ]
-        self.groupby = Groupby(
-            project=self.project,
-            api_key=self.api_key,
-            dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
-            _pre_groupby=self.cluster_groupby,
-        )
-        self.agg = Agg(
-            project=self.project,
-            api_key=self.api_key,
-            dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
-            groupby_call=self.cluster_groupby,
         )
         return self
 

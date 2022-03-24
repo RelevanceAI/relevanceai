@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.operations.dr.dim_reduction import DimReduction
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 from relevanceai.operations.cluster.constants import (
     CENTROID_DISTANCES,
     METRIC_DESCRIPTION,
@@ -28,7 +28,7 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
     }
 
 
-class ClusterEvaluate(BatchAPIClient, DocUtils):
+class ClusterEvaluate(APIClient, DocUtils):
     def __init__(self, project: str, api_key: str, firebase_uid: str):
         self.project = project
         self.api_key = api_key

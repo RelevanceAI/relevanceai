@@ -16,8 +16,6 @@ from relevanceai.operations.cluster.base import (
     SklearnCentroidBase,
 )
 
-from relevanceai.dataset import Dataset
-
 from relevanceai.utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
@@ -198,24 +196,6 @@ class _ClusterOps(ClusterEvaluate):
         )
         return kwargs
 
-    def _init_dataset(self, dataset):
-        # set dataset ID and dataset attributes for consistent usage
-        if isinstance(dataset, Dataset):
-            self.dataset_id = dataset.dataset_id
-            self.dataset: Dataset = dataset
-        elif isinstance(dataset, str):
-            self.dataset_id = dataset
-            self.dataset = Dataset(
-                project=self.project,
-                api_key=self.api_key,
-                dataset_id=self.dataset_id,
-                firebase_uid=self.firebase_uid,
-            )
-        else:
-            raise ValueError(
-                "Dataset type needs to be either a string or Dataset instance."
-            )
-
     def _insert_centroid_documents(self):
         if hasattr(self.model, "get_centroid_documents"):
             print("Inserting centroid documents...")
@@ -231,24 +211,6 @@ class _ClusterOps(ClusterEvaluate):
             self.logger.info(results)
 
         return
-
-    def _check_dataset_id(self, dataset: Optional[Union[str, Dataset]] = None) -> str:
-        """Helper method to get multiple dataset values"""
-
-        if isinstance(dataset, Dataset):
-            dataset_id: str = dataset.dataset_id
-        elif isinstance(dataset, str):
-            dataset_id = dataset
-        elif dataset is None:
-            if hasattr(self, "dataset_id"):
-                # let's not surprise users
-                print(
-                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
-                )
-                dataset_id = str(self.dataset_id)
-            else:
-                raise ValueError("Please supply dataset.")
-        return dataset_id
 
     def _check_for_dataset_id(self):
         if not hasattr(self, "dataset_id"):
@@ -295,7 +257,7 @@ class _ClusterOps(ClusterEvaluate):
 
     def _chunk_dataset(
         self,
-        dataset: Dataset,
+        dataset_id: str,
         select_fields: Optional[list] = None,
         chunksize: int = 100,
         filters: Optional[list] = None,
@@ -303,8 +265,6 @@ class _ClusterOps(ClusterEvaluate):
         """Utility function for chunking a dataset"""
         select_fields = [] if select_fields is None else select_fields
         filters = [] if filters is None else filters
-
-        cursor = None
 
         docs = self._get_documents(
             dataset_id=self.dataset_id,

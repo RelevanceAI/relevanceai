@@ -13,10 +13,9 @@ from typing import Callable, Optional, Tuple
 
 from appdirs import user_cache_dir
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
-from relevanceai._api.endpoints.client import APIClient
+from relevanceai._api.endpoints.api_client import APIEndpointsClient
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
-from relevanceai.utils import Utils
 from relevanceai.constants.warning import Warning
 
 MB_TO_BYTE = 1024 * 1024
@@ -69,7 +68,7 @@ class EventLoop(Thread):
         self.join()
 
 
-class BatchInsertAsyncHelpers(Utils, BatchRetrieveClient, APIClient):
+class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
     async def _apply_bulk_fn(self, bulk_fn, documents: list):
         """
         Called from _process_documents. Calls bulk_fn on documents.
@@ -515,7 +514,7 @@ class BatchInsertAsyncHelpers(Utils, BatchRetrieveClient, APIClient):
         return failed_documents
 
 
-class BatchInsertAsync(BatchInsertAsyncHelpers):
+class BatchInsertAsyncClient(BatchInsertAsyncHelpers):
     def pull_update_push_async(
         self,
         dataset_id: str,

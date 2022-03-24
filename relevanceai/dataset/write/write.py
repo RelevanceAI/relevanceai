@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
@@ -20,7 +20,7 @@ from relevanceai.utils.helpers import make_id
 from relevanceai.constants.warning import Warning
 
 
-class Write(BatchAPIClient):
+class Write(APIClient):
     @track
     def insert_documents(
         self,

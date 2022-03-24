@@ -1,7 +1,5 @@
 from typing import Union, Optional, List, Dict, Any
 
-from relevanceai.dataset import Dataset
-
 from relevanceai.utils.decorators.analytics import track
 
 from relevanceai.operations.cluster.utils import _ClusterOps
@@ -61,7 +59,7 @@ class PartialClusterOps(_ClusterOps):
     @track
     def partial_fit_dataset(
         self,
-        dataset: Union[str, Dataset],
+        dataset_id: str,
         vector_fields: List[str],
         chunksize: int = 100,
         filters: Optional[list] = None,
@@ -94,16 +92,6 @@ class PartialClusterOps(_ClusterOps):
                 "We currently do not support multiple vector fields on partial fit"
             )
 
-        if isinstance(dataset, str):
-            self.dataset = Dataset(
-                project=self.project,
-                api_key=self.api_key,
-                dataset_id=dataset,
-                firebase_uid=self.firebase_uid,
-            )
-        else:
-            self.dataset = dataset
-
         filters = [
             {
                 "field": f,
@@ -115,7 +103,7 @@ class PartialClusterOps(_ClusterOps):
         ] + filters
 
         for c in self._chunk_dataset(
-            self.dataset, self.vector_fields, chunksize=chunksize, filters=filters
+            dataset_id, self.vector_fields, chunksize=chunksize, filters=filters
         ):
             vectors = self._get_vectors_from_documents(vector_fields, c)
             self.model.partial_fit(vectors)
@@ -123,7 +111,7 @@ class PartialClusterOps(_ClusterOps):
     @track
     def partial_fit_predict_update(
         self,
-        dataset: Union[Dataset, str],
+        dataset_id: str,
         vector_fields: Optional[List[str]] = None,
         chunksize: int = 100,
         filters: Optional[List] = None,
@@ -172,19 +160,19 @@ class PartialClusterOps(_ClusterOps):
         if verbose:
             print("Fitting dataset...")
         self.partial_fit_dataset(
-            dataset=dataset,
+            dataset_id=dataset_id,
             vector_fields=vector_fields,
             chunksize=chunksize,
             filters=filters,
         )
         if verbose:
             print("Updating your dataset...")
-        self.predict_update(dataset=dataset)
+        self.predict_update(dataset_id=dataset_id)
         if hasattr(self.model, "get_centers"):
             if verbose:
                 print("Inserting your centroids...")
             self.insert_centroid_documents(
-                self.get_centroid_documents(), dataset=dataset
+                self.get_centroid_documents(), dataset=dataset_id
             )
 
         if verbose:

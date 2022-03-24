@@ -18,16 +18,11 @@ You can run the ClusterOps as such:
 You can view other examples of how to interact with this class here :ref:`integration`.
 
 """
-
-import warnings
-
 import numpy as np
 
 from tqdm.auto import tqdm
 
 from typing import Union, Optional, Callable, Set, List, Dict, Any
-
-from relevanceai.dataset import Dataset
 
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.decorators.version import beta
@@ -46,9 +41,6 @@ from relevanceai.constants.errors import NoDocumentsError, NoModelError
 
 
 class ClusterOps(PartialClusterOps, SubClusterOps):
-
-    _cred_fn = ".creds.json"
-
     """
     ClusterOps class allows users to set up any clustering model to fit on a Dataset.
 
@@ -148,7 +140,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     @track
     def list_closest_to_center(
         self,
-        dataset: Optional[Union[str, Dataset]] = None,
+        dataset_id: str,
         vector_fields: Optional[List] = None,
         cluster_ids: Optional[List] = None,
         centroid_vector_fields: Optional[List] = None,
@@ -224,7 +216,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         filters = [] if filters is None else filters
 
         return self.datasets.cluster.centroids.list_closest_to_center(
-            dataset_id=self._check_dataset_id(dataset),
+            dataset_id=dataset_id,
             vector_fields=self.vector_fields
             if vector_fields is None
             else vector_fields,
@@ -255,7 +247,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        dataset: Optional[Union[str, Dataset]] = None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
@@ -393,7 +384,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         filters = [] if filters is None else filters
 
         return self.services.cluster.aggregate(
-            dataset_id=self._check_dataset_id(dataset),
+            dataset_id=self.dataset_id,
             vector_fields=self.vector_fields if not vector_fields else vector_fields,
             groupby=groupby,
             metrics=metrics,
@@ -406,9 +397,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             flatten=flatten,
         )
 
-    def list_furthest_from_center(
-        self, dataset: Union[str, Dataset] = None, vector_fields: list = None
-    ):
+    def list_furthest_from_center(self, dataset_id: str, vector_fields: list = None):
         """
         List of documents furthest from the centre.
 
@@ -458,7 +447,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         """
         return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=self._check_dataset_id(dataset),
+            dataset_id=dataset_id,
             vector_fields=self.vector_fields
             if vector_fields is None
             else vector_fields,
@@ -466,9 +455,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         )
 
     @track
-    def insert_centroid_documents(
-        self, centroid_documents: List[Dict], dataset: Union[str, Dataset] = None
-    ):
+    def insert_centroid_documents(self, centroid_documents: List[Dict]):
         """
         Insert the centroid documents
 
@@ -477,7 +464,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         centroid_documents: List[Dict]
             Insert centroid documents
-        dataset: Union[str, Dataset]
+        dataset_id: str
             Dataset to insert
 
         Example
@@ -500,7 +487,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         """
 
         results = self.services.cluster.centroids.insert(
-            dataset_id=self._check_dataset_id(dataset),
+            dataset_id=self.dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=self.vector_fields,
             alias=self.alias,
@@ -573,7 +560,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         )
 
     @track
-    def delete_centroids(self, dataset: Union[str, Dataset], vector_fields: List):
+    def delete_centroids(self, dataset_id: str, vector_fields: List):
         """Delete the centroids after clustering."""
         # TODO: Fix delete centroids once its moved over to Node JS
         import requests
@@ -583,7 +570,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             base_url + "/services/cluster/centroids/delete",
             headers={"Authorization": self.project + ":" + self.api_key},
             params={
-                "dataset_id": self._check_dataset_id(dataset),
+                "dataset_id": dataset_id,
                 "vector_field": vector_fields,
                 "alias": self.alias,
             },
@@ -592,7 +579,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
     def fit_predict(
         self,
-        data: Union[str, Dataset, List[Dict]],
         vector_fields: List[str],
         filters: Optional[List[Dict]] = None,
         return_only_clusters: bool = True,
@@ -657,44 +643,30 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         """
         filters = [] if filters is None else filters
 
-        if update and isinstance(data, list):
-            warnings.warn(
-                "Cannot update list of datasets that are untethered "
-                "to a Relevance AI dataset. "
-                "Setting update to False."
-            )
-            # If data is of type List[Dict] the value of update doesn't
-            # actually matter. This is more for good practice.
-            update = False
-
-        if isinstance(data, list):
-            documents = data
-        else:
-            self._init_dataset(data)
-            self.vector_fields = vector_fields
-            # make sure to only get fields where vector fields exist
-            filters.extend(
-                [
-                    {
-                        "field": f,
-                        "filter_type": "exists",
-                        "condition": "==",
-                        "condition_value": " ",
-                        "strict": "must_or",
-                    }
-                    for f in vector_fields
-                ]
-            )
-            # load the documents
-            self.logger.warning(
-                "Retrieving documents... This can take a while if the dataset is large."
-            )
-            print("Retrieving all documents")
-            documents = self._get_all_documents(
-                dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
-            )
-            if len(documents) == 0:
-                raise NoDocumentsError()
+        self.vector_fields = vector_fields
+        # make sure to only get fields where vector fields exist
+        filters.extend(
+            [
+                {
+                    "field": f,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": " ",
+                    "strict": "must_or",
+                }
+                for f in vector_fields
+            ]
+        )
+        # load the documents
+        self.logger.warning(
+            "Retrieving documents... This can take a while if the dataset is large."
+        )
+        print("Retrieving all documents")
+        documents = self._get_all_documents(
+            dataset_id=self.dataset_id, filters=filters, select_fields=vector_fields
+        )
+        if len(documents) == 0:
+            raise NoDocumentsError()
 
         vectors = self._get_vectors_from_documents(vector_fields, documents)
 
@@ -726,23 +698,22 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             return_only_clusters=return_only_clusters,
         )
 
-        if not isinstance(data, list):
-            if update:
-                # Updating the db
-                print("Updating the database...")
-                results = self._update_documents(
-                    self.dataset_id, clustered_documents, chunksize=10000
-                )
-                self.logger.info(results)
-
-                # Update the centroid collection
-                self.model.vector_fields = vector_fields
-
-            self._insert_centroid_documents()
-            print(
-                "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        if update:
+            # Updating the db
+            print("Updating the database...")
+            results = self._update_documents(
+                self.dataset_id, clustered_documents, chunksize=10000
             )
+            self.logger.info(results)
+
+            # Update the centroid collection
+            self.model.vector_fields = vector_fields
+
+        self._insert_centroid_documents()
+        print(
+            "Build your clustering app here: "
+            + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+        )
 
         return clustered_documents
 
@@ -831,7 +802,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             print("Fitting and predicting on all documents")
 
         clustered_docs = self.fit_predict(
-            data=docs,
             vector_fields=vector_fields,
             return_only_clusters=True,
             inplace=False,

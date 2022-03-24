@@ -271,7 +271,7 @@ class KMeansClusterOps(ClusterOps):
 
         Parameters
         -----------
-        dataset: Union[str, Dataset]
+        dataset_id: str
             The dataset to fit it. If string, it will create a dataset
         vector_field: list
             The vector field of the documents

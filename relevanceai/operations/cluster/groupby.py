@@ -1,10 +1,10 @@
 from typing import Optional
 
-from relevanceai.dataset.read.groupby import Groupby, Agg
+from relevanceai._api import APIClient
 from relevanceai.operations.cluster.constants import GROUPBY_MAPPING
 
 
-class ClusterGroupby(Groupby):
+class ClusterGroupby(APIClient):
     def __init__(
         self,
         project,
@@ -22,12 +22,6 @@ class ClusterGroupby(Groupby):
         self._pre_groupby = _pre_groupby
         self.alias = alias
         self.vector_fields = [] if vector_fields is None else vector_fields
-        super().__init__(
-            project=project,
-            api_key=api_key,
-            dataset_id=dataset_id,
-            firebase_uid=firebase_uid,
-        )
 
     def __call__(self, by: Optional[list] = None):
         """
@@ -102,7 +96,7 @@ class ClusterGroupby(Groupby):
         return self.agg({field: "avg"})
 
 
-class ClusterAgg(Agg):
+class ClusterAgg(APIClient):
     def __init__(
         self,
         project,
@@ -120,15 +114,7 @@ class ClusterAgg(Agg):
         self.groupby_call = [] if groupby_call is None else groupby_call
         self.vector_fields = vector_fields
         self.alias = alias
-        super().__init__(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
-            dataset_id=dataset_id,
-            groupby_call=groupby_call,
-        )
 
-    # The call below violates the Liskov principle
     def __call__(  # type: ignore
         self,
         metrics: Optional[dict] = None,

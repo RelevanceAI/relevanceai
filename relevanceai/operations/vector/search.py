@@ -1,11 +1,11 @@
 """Search In A Dataset
 """
 from typing import List, Optional
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
 
 
-class Search(BatchAPIClient):
+class Search(APIClient):
     @track
     def vector_search(
         self,

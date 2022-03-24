@@ -10,12 +10,12 @@ from tqdm import tqdm
 from relevanceai.utils.cache import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import MAX_CACHESIZE
 
 
-class Series(BatchAPIClient):
+class Series(APIClient):
     """
     Dataset Series Object
     -----------------------------

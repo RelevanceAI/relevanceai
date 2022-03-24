@@ -25,7 +25,7 @@ import analytics
 from base64 import b64decode as decode
 from typing import Dict, List, Optional
 
-from relevanceai._api import BatchAPIClient
+from relevanceai._api import APIClient
 
 from doc_utils.doc_utils import DocUtils
 
@@ -47,7 +47,7 @@ from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
 
 
-class Client(BatchAPIClient, DocUtils):
+class Client(APIClient, DocUtils):
     def __init__(
         self,
         token: str,

@@ -6,7 +6,7 @@ import pandas as pd
 
 from typing import Dict, List, Optional, Union
 
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 from relevanceai._api.endpoints.services.cluster import ClusterClient
 
 from relevanceai.dataset.series import Series
@@ -15,7 +15,7 @@ from relevanceai.utils.decorators.version import added
 from relevanceai.utils.decorators.analytics import track
 
 
-class Statistics(BatchAPIClient):
+class Statistics(APIClient):
     dataset_id: str
 
     @track

@@ -2,7 +2,7 @@ from typing import Union, List, Any
 
 from doc_utils import DocUtils
 
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 
 from relevanceai.operations.dr.dim_reduction import PCA
 from relevanceai.operations.dr.dim_reduction import TSNE
@@ -10,7 +10,7 @@ from relevanceai.operations.dr.dim_reduction import Ivis
 from relevanceai.operations.dr.dim_reduction import UMAP
 
 
-class ReduceDimensionsOps(BatchAPIClient, DocUtils):
+class ReduceDimensionsOps(APIClient, DocUtils):
     def __init__(
         self,
         alias: str,

@@ -11,7 +11,6 @@ from typing import Optional, Union, Dict, List
 from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
-from relevanceai.dataset.read.groupby import Groupby, Agg
 from relevanceai.dataset.read.statistics import Statistics
 from relevanceai.dataset.helpers import _build_filters
 
@@ -49,18 +48,6 @@ class Read(Statistics):
         self.firebase_uid = firebase_uid
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
-        self.groupby = Groupby(
-            project=self.project,
-            api_key=self.api_key,
-            dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
-        )
-        self.agg = Agg(
-            project=self.project,
-            api_key=self.api_key,
-            dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
-        )
         self.centroids = Centroids(
             project=self.project,
             api_key=self.api_key,
@@ -705,3 +692,25 @@ class Read(Statistics):
 
     def list_cluster_aliases(self):
         raise NotImplementedError()
+
+    def aggregate(
+        self,
+        groupby: Optional[list] = None,
+        metrics: Optional[list] = None,
+        filters: Optional[list] = None,
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        alias: str = "default",
+    ):
+        return self.services.aggregate.aggregate(
+            dataset_id=self.dataset_id,
+            metrics=groupby,
+            groupby=metrics,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+            alias=alias,
+        )

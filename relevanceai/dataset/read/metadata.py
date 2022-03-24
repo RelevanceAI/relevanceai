@@ -1,7 +1,7 @@
-from relevanceai._api.client import BatchAPIClient
+from relevanceai._api import APIClient
 
 
-class Metadata(BatchAPIClient):
+class Metadata(APIClient):
     """Metadata object"""
 
     def __init__(self, metadata: dict, project, api_key, firebase_uid, dataset_id):

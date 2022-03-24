@@ -7,12 +7,12 @@ from typing import List
 TEST_REGION = os.getenv("TEST_REGION")
 TEST_PROJECT = (
     os.getenv("TEST_US_PROJECT")
-    if "us-east-1" in TEST_REGION
+    if TEST_REGION is not None and "us-east-1" in TEST_REGION
     else os.getenv("TEST_PROJECT")
 )
 TEST_API_KEY = (
     os.getenv("TEST_US_API_KEY")
-    if "us-east-1" in TEST_REGION
+    if TEST_REGION is not None and "us-east-1" in TEST_REGION
     else os.getenv("TEST_API_KEY")
 )
 TEST_FIREBASE_UID = "relevanceai-sdk-test-user"
