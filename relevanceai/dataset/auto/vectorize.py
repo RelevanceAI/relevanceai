@@ -1,10 +1,77 @@
-from typing import Optional, List
+from typing import Optional, List, Tuple
+
+from relevanceai.dataset.crud.dataset_read import Read
 from relevanceai.dataset.crud.dataset_write import Write
 from relevanceai.package_utils.version_decorators import introduced_in_version, beta
 from relevanceai.package_utils.logger import FileLogger
 
 
-class Vectorize(Write):
+class _VectorizeHelper(Read):
+    def _check_vector_existence(
+        self, schema: dict, fields: List[str], encoder
+    ) -> Tuple[list, list, list]:
+        """
+        This function distinguishes new and existing fields, as well as colect
+        metadata.
+
+        Parameters
+        ----------
+        schema: dict
+            The schema of a dataset
+
+        fields: List[str]
+            The fields to be distinguished.
+
+        encoder_name:
+            The name of the encoder to be applied on the fields.
+        """
+        new_fields = []
+        metadata_additions = []
+        existing_vectors = []
+
+        if encoder is not None:
+            for field in fields:
+                vector_parts = (field, encoder.__name__, "vector_")
+                vector = "_".join(vector_parts)
+                if vector not in schema:
+                    new_fields.append(field)
+                    metadata_additions.append(vector_parts)
+                else:
+                    existing_vectors.append(vector)
+                    print(
+                        f"Since '{vector}' already exists, its construction "
+                        + "will be skipped."
+                    )
+
+        return new_fields, metadata_additions, existing_vectors
+
+    def _update_vector_metadata(self, new_vector_metadata: List[tuple]) -> None:
+        """
+        Given the new vector metdata information, updates the Dataset
+        metadata.
+
+        Parameters
+        ----------
+        new_vector_metadata: List[tuple]
+            A list of tuples containing information about the newly created
+            vectors.
+        """
+        updated_metadata = self.get_metadata()
+        if "_vector_" not in updated_metadata:
+            updated_metadata["_vector_"] = {}
+
+        for new_data in new_vector_metadata:
+            field, model_name, _ = new_data
+
+            if field not in updated_metadata["_vector_"]:
+                updated_metadata["_vector_"][field] = {}
+
+            updated_metadata["_vector_"][field][model_name] = "_".join(new_data)
+
+        self.upsert_metadata(updated_metadata)
+
+
+class Vectorize(_VectorizeHelper, Write):
     @beta
     @introduced_in_version("1.2.0")
     def vectorize(
@@ -95,18 +162,12 @@ class Vectorize(Write):
             raise AttributeError(
                 f"{image_encoder} is missing attribute 'encode_documents'"
             )
-        else:
-            new_image_fields = []
-            existing_image_vectors = []
-            for image_field in image_fields:
-                vector = f"{image_field}_{image_encoder.__name__}_vector_"
-                if vector not in self.schema:
-                    new_image_fields.append(image_field)
-                else:
-                    existing_image_vectors.append(vector)
-                    print(
-                        f"Since '{vector}' already exists, its construction will be skipped."
-                    )
+
+        (
+            new_image_fields,
+            image_metadata,
+            existing_image_vectors,
+        ) = self._check_vector_existence(self.schema, image_fields, image_encoder)
 
         if text_fields and text_encoder is None:
             try:
@@ -124,18 +185,12 @@ class Vectorize(Write):
             raise AttributeError(
                 f"{text_encoder} is missing attribute 'encode_documents'"
             )
-        else:
-            new_text_fields = []
-            existing_text_vectors = []
-            for text_field in text_fields:
-                vector = f"{text_field}_{text_encoder.__name__}_vector_"
-                if vector not in self.schema:
-                    new_text_fields.append(text_field)
-                else:
-                    existing_text_vectors.append(vector)
-                    print(
-                        f"Since '{vector}' already exists, its construction will be skipped."
-                    )
+
+        (
+            new_text_fields,
+            text_metadata,
+            existing_text_vectors,
+        ) = self._check_vector_existence(self.schema, text_fields, text_encoder)
 
         if new_image_fields or new_text_fields:
 
@@ -180,6 +235,7 @@ class Vectorize(Write):
         if not results["failed_documents"]:
             if added_vectors:
                 print("✅ All documents inserted/edited successfully.")
+                self._update_vector_metadata(image_metadata + text_metadata)
 
             if len(added_vectors) == 1:
                 text = "The following vector was added: "

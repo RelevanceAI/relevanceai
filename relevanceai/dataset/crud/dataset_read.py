@@ -635,12 +635,12 @@ class Read(BatchAPIClient):
         """
         Store Metadata
         """
-        return self.datasets.metadata(self.dataset_id)
+        return self.datasets.metadata(self.dataset_id)["results"]
 
     @property
     def metadata(self):
         """Get the metadata"""
-        _metadata = self.get_metadata()["results"]
+        _metadata = self.get_metadata()
         self._metadata = Metadata(
             _metadata, self.project, self.api_key, self.firebase_uid, self.dataset_id
         )
@@ -656,7 +656,7 @@ class Read(BatchAPIClient):
 
     def upsert_metadata(self, metadata: dict):
         """Upsert metadata."""
-        original_metadata: dict = self.datasets.metadata(self.dataset_id)
+        original_metadata: dict = self.get_metadata()
         original_metadata.update(metadata)
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
@@ -665,10 +665,15 @@ class Read(BatchAPIClient):
             return results
         return self.insert_metadata(metadata)
 
-    def chunk_dataset(self, chunksize: int = 100, filters: list = None):
+    def chunk_dataset(
+        self, select_fields: List = None, chunksize: int = 100, filters: list = None
+    ):
         """Function for chunking a dataset"""
         docs = self.get_documents(
-            number_of_documents=chunksize, include_cursor=True, filters=filters
+            number_of_documents=chunksize,
+            include_cursor=True,
+            filters=filters,
+            select_fields=select_fields,
         )
         while len(docs["documents"]) > 0:
             yield docs["documents"]
@@ -700,7 +705,9 @@ class Read(BatchAPIClient):
 
         """
         schema = self.datasets.schema(self.dataset_id)
-        return [k for k in schema.keys() if k.endswith("_vector_")]
+        return [
+            k for k in schema.keys() if k.endswith("_vector_") and "_cluster_" not in k
+        ]
 
     def list_cluster_aliases(self):
         raise NotImplementedError()

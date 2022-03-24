@@ -209,8 +209,16 @@ class CommunityDetection(Write):
 
         print("Updating documents...")
         community_documents = []
-        for i, cluster in enumerate(clusters):
+        centroids: List[dict] = []
+        for i, cluster in enumerate(tqdm(clusters)):
             ids = []
+            centroid = cluster[0]
+            centroids.append(
+                {
+                    "_id": ids_map[centroid][0],  # choose the first ID as centroid
+                    "centroid_vector_": embeddings[centroid].tolist(),
+                }
+            )
             for member in cluster:
                 ids.extend(ids_map[member])
             # During initial construction update_where did not accept dict
@@ -271,9 +279,10 @@ class CommunityDetection(Write):
             project=self.project,
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
+            verbose=False,
         )
         print("Creating centroids...")
         with FileLogger(log_file):
-            result = cluster_ops.create_centroids([field])
+            result = cluster_ops.insert_centroid_documents(centroids)
         print("✅ Uploaded centroids.")
         return cluster_ops
