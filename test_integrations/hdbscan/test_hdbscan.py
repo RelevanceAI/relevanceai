@@ -1,16 +1,12 @@
-from relevanceai import Client
+import hdbscan
+
+from relevanceai import Client, mock_documents
 
 
-def test_hdbscan(test_client):
-    import hdbscan
-    from relevanceai import mock_documents
-
-    DATASET_ID = "_test_sample_hdbscan"
-    ALIAS = "hdbscan"
-    ds = test_client.Dataset(DATASET_ID)
+def test_hdbscan(test_client: Client, test_dataset_id: str):
+    ds = test_client.Dataset(test_dataset_id + "_hdbscan")
     ds.upsert_documents(mock_documents(100))
-    model = hdbscan.HDBSCAN()
-    clusterer = test_client.ClusterOps(alias="hdbscan", model=model)
+    clusterer = test_client.ClusterOps(alias="hdbscan", model=hdbscan.HDBSCAN())
     clusterer.fit_predict_update(ds, vector_fields=["sample_1_vector_"])
     docs = clusterer.get_centroid_documents()
     all_ids = [d["_id"] for d in docs]
