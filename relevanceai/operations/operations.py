@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from relevanceai._api import APIClient
 
 from relevanceai.operations.cluster import ClusterOps
@@ -81,24 +83,42 @@ class Operations(APIClient):
             image_fields=image_fields,
         )
 
-    def vector_search(
-        self,
-        multivector_query,
-        filters=[],
-        pages_size=20,
-        **kwargs,
-    ):
+    def vector_search(self, **kwargs):
         ops = Search(
             project=self.project,
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
             dataset_id=self.dataset_id,
-            **kwargs,
         )
 
-        return ops.vector_search(
-            multivector_query,
-            filters,
-            pages_size,
-            **kwargs,
+        return ops.vector_search(**kwargs)
+
+    def hybrid_search(self, **kwargs):
+        ops = Search(
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id=self.dataset_id,
         )
+
+        return ops.hybrid_search(**kwargs)
+
+    def chunk_search(self, **kwargs):
+        ops = Search(
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id=self.dataset_id,
+        )
+
+        return ops.chunk_search(**kwargs)
+
+    def multistep_chunk_search(self, **kwargs):
+        ops = Search(
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id=self.dataset_id,
+        )
+
+        return ops.multistep_chunk_search(**kwargs)
