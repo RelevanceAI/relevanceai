@@ -721,6 +721,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     def fit(
         self,
         dataset_id: str,
+        alias: str,
         vector_fields: List[str],
         filters: Optional[List] = None,
         include_report: bool = True,
@@ -766,6 +767,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         """
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
+        self.alias = alias
 
         filters = [] if filters is None else filters
 

@@ -9,37 +9,18 @@ def test_cluster(test_dataset: Dataset):
 
     model = KMeansModel()
 
-    test_dataset.cluster(
-        model=model, alias=alias, vector_fields=[vector_field], overwrite=True
-    )
+    test_dataset.cluster(model=model, alias=alias, vector_fields=[vector_field])
     assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
 
 def test_centroids(test_clustered_df: Dataset):
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").closest()
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").furthest()
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").agg(
-        {"sample_2_label": "avg"}
-    )
-    test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").groupby(
-        ["sample_3_description"]
-    ).agg({"sample_2_label": "avg"})
-    assert True
+    closest = test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").closest()
+    assert "results" in closest
+    assert all("cluster" in cluster for cluster in list(closest["results"]))
 
-
-def test_groupby_agg(test_dataset: Dataset):
-    test_dataset.agg({"sample_1_label": "avg"})
-    test_dataset.groupby(["sample_1_description"]).mean("sample_1_label")
-    assert True
-
-
-def test_groupby_mean_method(test_dataset: Dataset):
-    manual_mean = test_dataset.groupby(["sample_1_label"]).agg(
-        {"sample_1_value": "avg"}
-    )
-    assert manual_mean == test_dataset.groupby(["sample_1_label"]).mean(
-        "sample_1_value"
-    )
+    furthest = test_clustered_df.centroids(["sample_1_vector_"], "kmeans-10").furthest()
+    assert "results" in furthest
+    assert all("cluster" in cluster for cluster in list(furthest["results"]))
 
 
 def test_health(test_dataset: Dataset):
