@@ -196,8 +196,16 @@ from relevanceai.utils.logger import FileLogger
 
 #         print("Updating documents...")
 #         community_documents = []
+#         centroids: List[dict] = []
 #         for i, cluster in enumerate(tqdm(clusters)):
 #             ids = []
+#             centroid = cluster[0]
+#             centroids.append(
+#                 {
+#                     "_id": ids_map[centroid][0],  # choose the first ID as centroid
+#                     "centroid_vector_": embeddings[centroid].tolist(),
+#                 }
+#             )
 #             for member in cluster:
 #                 ids.extend(ids_map[member])
 #             # During initial construction update_where did not accept dict
@@ -247,7 +255,7 @@ from relevanceai.utils.logger import FileLogger
 #         )
 #         # Return a ClusterOps object
 
-#         from relevanceai.operations.cluster import ClusterOps
+#         from relevanceai.workflows.cluster_ops.ops import ClusterOps
 
 #         cluster_ops: ClusterOps = ClusterOps(
 #             # model=model,
@@ -262,6 +270,6 @@ from relevanceai.utils.logger import FileLogger
 #         )
 #         print("Creating centroids...")
 #         with FileLogger(log_file):
-#             result = cluster_ops.create_centroids([field])
+#             result = cluster_ops.insert_centroid_documents(centroids)
 #         print("✅ Uploaded centroids.")
 #         return cluster_ops
