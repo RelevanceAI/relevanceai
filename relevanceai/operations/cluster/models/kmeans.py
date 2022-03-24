@@ -202,7 +202,6 @@ class KMeansClusterOps(ClusterOps):
 
     def __init__(
         self,
-        alias: str,
         project: str,
         api_key: str,
         firebase_uid: str,
@@ -230,7 +229,6 @@ class KMeansClusterOps(ClusterOps):
         )
         super().__init__(
             model=self.model,
-            alias=alias,
             cluster_field=cluster_field,
             project=project,
             api_key=api_key,
@@ -238,7 +236,7 @@ class KMeansClusterOps(ClusterOps):
         )
         warnings.warn("Function has been deprecated.", DeprecationWarning)
 
-    def _insert_centroid_documents(self):
+    def _insert_centroid_documents(self, alias: str):
         if hasattr(self.model, "get_centroid_documents"):
             centers = self.model.get_centroid_documents()
 
@@ -247,23 +245,24 @@ class KMeansClusterOps(ClusterOps):
                 dataset_id=self.dataset_id,
                 cluster_centers=centers,
                 vector_fields=self.vector_fields,
-                alias=self.alias,
+                alias=alias,
             )
             self.logger.info(results)
 
             self.datasets.cluster.centroids.list_closest_to_center(
                 self.dataset_id,
                 vector_fields=self.vector_fields,
-                alias=self.alias,
                 centroid_vector_fields=self.vector_fields,
+                alias=alias,
                 page_size=20,
             )
         return
 
     def fit(
         self,
-        dataset: Union[Dataset, str],
+        dataset: str,
         vector_fields: List,
+        alias: str,
         filters: Optional[list] = None,
     ):
         """
@@ -279,4 +278,4 @@ class KMeansClusterOps(ClusterOps):
         """
         filters = [] if filters is None else filters
         self.fit_dataset(dataset, vector_fields=vector_fields, filters=filters)
-        return self._insert_centroid_documents()
+        return self._insert_centroid_documents(alias)

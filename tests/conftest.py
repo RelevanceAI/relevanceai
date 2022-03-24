@@ -1,6 +1,5 @@
 """All fixtures go here.
 """
-import os
 import pytest
 import pandas as pd
 import tempfile
@@ -14,56 +13,34 @@ from tests.globals.documents import *
 from tests.globals.objects import *
 from tests.globals.datasets import *
 from tests.globals.clusterers import *
-from tests.globals.constants import SAMPLE_DATASET_DATASET_PREFIX
+from tests.globals.constants import *
 
-REGION = os.getenv("TEST_REGION")
+from tests.utils import *
 
 
-# def pytest_sessionstart(session):
-#     """
-#     Pytest's configuration
-#     """
-#     # Deleting all mixpanel analytics from tests
-#     CONFIG_FN = os.path.join("relevanceai", "config.ini")
-#     with open(CONFIG_FN, "r") as f:
-#         lines = f.readlines()
-
-#     os.remove(CONFIG_FN)
-
-#     with open(CONFIG_FN, "w") as f:
-#         for i, line in enumerate(lines):
-#             if i < 27:
-#                 f.write(line)
+@pytest.fixture(scope="session")
+def test_region():
+    return TEST_REGION
 
 
 @pytest.fixture(scope="session")
 def test_project():
-    if REGION == "us-east-1":
-        return os.getenv("TEST_US_PROJECT")
-    return os.getenv("TEST_PROJECT")
+    return TEST_PROJECT
 
 
 @pytest.fixture(scope="session")
 def test_api_key():
-    if REGION == "us-east-1":
-        return os.getenv("TEST_US_API_KEY")
-    return os.getenv("TEST_API_KEY")
+    return TEST_API_KEY
 
 
 @pytest.fixture(scope="session")
 def test_firebase_uid():
-    return "relevanceai-sdk-test-user"
-
-
-def correct_client_config(client):
-    client.config.reset()
-    if client.region != "us-east-1":
-        raise ValueError("default value aint RIGHT")
+    return TEST_FIREBASE_UID
 
 
 @pytest.fixture(scope="session")
-def test_client(test_project, test_api_key, test_firebase_uid):
-    if REGION is None:
+def test_client(test_region, test_project, test_api_key, test_firebase_uid):
+    if test_region is None:
         client = Client(
             project=test_project, api_key=test_api_key, firebase_uid=test_firebase_uid
         )
@@ -72,15 +49,12 @@ def test_client(test_project, test_api_key, test_firebase_uid):
             project=test_project,
             api_key=test_api_key,
             firebase_uid=test_firebase_uid,
-            region=REGION,
+            region=test_region,
         )
-    # For some reason not resetting to default
-    # correct_client_config(client)
     client.config["mixpanel.is_tracking_enabled"] = False
     client.disable_analytics_tracking()
     yield client
 
-    # To avoid flooding backend
     for d in client.list_datasets()["datasets"]:
         if SAMPLE_DATASET_DATASET_PREFIX in d:
             client.delete_dataset(d)

@@ -1,49 +1,57 @@
-"""
-Dimensionality Reduction Ops
+from typing import Union, List, Any
 
-.. warning::
-    This is a beta feature and is currently in development.
-
-Reducing dimensions for just documents.
-
-.. code-block::
-
-    from relevanceai import Client
-    client = Client()
-
-    from relevanceai.package_utils.datasets import mock_documents
-    docs = mock_documents(10)
-
-    from relevanceai.dim_reduction_ops import ReduceDimensionsOps
-    from sklearn.decomposition import PCA
-    model = PCA(n_components=2)
-    dim_reducer = ReduceDimensionsOps(model)
-    dim_reducer.reduce_dimensions(fields=["sample_1_vector_"], documents=documents)
-
-"""
-import copy
 from doc_utils import DocUtils
 
+from relevanceai._api.client import BatchAPIClient
 
-class ReduceDimensionsOps(DocUtils):
-    def __init__(self, model, alias: str):
-        """
-        Dim Reduction Ops
+from relevanceai.operations.dr.dim_reduction import PCA
+from relevanceai.operations.dr.dim_reduction import TSNE
+from relevanceai.operations.dr.dim_reduction import Ivis
+from relevanceai.operations.dr.dim_reduction import UMAP
 
-        Parameters
-        --------------
 
-        model
-            The model to run dimensionality reduction. This requires a `fit_transform` method.
-        alias: str
-            The alias of the dimensionality reduction
-        """
+class ReduceDimensionsOps(BatchAPIClient, DocUtils):
+    def __init__(
+        self,
+        alias: str,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
+        dataset_id: str,
+        n_components: int,
+        vector_fields: List[str],
+        model: Union[PCA, TSNE, Ivis, PCA, str, Any],
+        dr_field: str = "_dr_",
+        verbose: bool = True,
+    ):
+        if isinstance(model, str):
+            algorithm = model.upper()
+            if algorithm == "PCA":
+
+                model = PCA()
+            elif algorithm == "TSNE":
+
+                model = TSNE()
+            elif algorithm == "UMAP":
+
+                model = UMAP()
+            elif algorithm == "IVIS":
+
+                model = Ivis()
+            else:
+                raise ValueError()
+
+        self.dr_field = dr_field
+        self.verbose = verbose
+        self.dataset_id = dataset_id
         self.model = model
-        if not hasattr(model, "fit_transform"):
-            raise AttributeError("‼️ Model needs to have a fit_transform method.")
         self.alias = alias
+        self.vector_fields = vector_fields
+        self.n_components = n_components
 
-    def reduce_dimensions(self, fields: list, documents: list, inplace: bool = True):
+        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+
+    def fit(self):
         """
         Reduce Dimensions
 
@@ -59,43 +67,13 @@ class ReduceDimensionsOps(DocUtils):
             If True, replaces the original documents, otherwise it returns
             a new set of documents with only the dr vectors in it and the _id
         """
-        self.fields = fields
-        self.documents = documents
-        if len(fields) == 1:
-            values = self.get_field_across_documents(fields[0], documents)
-        else:
-            raise ValueError("Supporting multiple fields not supported yet.")
-        dr_values = self.model.fit_transform(values)
-        new_documents = self.set_dr_field_across_documents(
-            fields, dr_values, documents, inplace=inplace
+        documents = self._get_all_documents(
+            self.dataset_id, select_fields=self.vector_fields, include_vector=True
         )
-        return new_documents
 
-    def set_dr_field_across_documents(
-        self, fields: list, values: list, documents: list, inplace: bool = True
-    ):
-        """
-        Setting the DR field allows users to quickly follow Relevance AI
-        best practice in naming.
-        It follows `_dr_.*field_name*.alias`
-
-        Parameters
-        -------------
-
-        fields:
-            The list of fields to set
-        values:
-            The list of values to set
-        documents:
-            List of documents to set
-
-        """
-        fields_joined = ".".join(fields)
-        field_name = f"_dr_.{fields_joined}.{self.alias}"
-
-        if inplace:
-            self.set_field_across_documents(field_name, values, documents)
-            return documents
-        new_documents = [{"_id": d["_id"]} for d in documents]
-        self.set_field_across_documents(field_name, values, new_documents)
-        return new_documents
+        return self.model.fit_transform_documents(
+            vector_field=self.vector_fields[0],
+            documents=documents,
+            alias=self.alias,
+            dims=self.n_components,
+        )

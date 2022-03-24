@@ -6,9 +6,8 @@ import math
 import warnings
 import pandas as pd
 
-from typing import Optional, Union, Dict, List, Any
+from typing import Optional, Union, Dict, List
 
-from relevanceai._api.client import BatchAPIClient
 from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata

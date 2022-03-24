@@ -72,18 +72,13 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
     def __init__(
         self,
-        alias: str,
         project: str,
         api_key: str,
         firebase_uid: str,
-        dataset_id: str,
-        vector_fields: List[str],
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase, Any] = None,
         cluster_field: str = "_cluster_",
         parent_alias: str = None,
-        verbose: bool = True,
     ):
-        self.alias = alias
         self.parent_alias = parent_alias
         self.cluster_field = cluster_field
         if model is None:
@@ -92,9 +87,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         self.model = self._assign_model(model)
 
         self.firebase_uid = firebase_uid
-
-        self.dataset_id = dataset_id
-        self.vector_fields = vector_fields
 
         if project is None or api_key is None:
             project, api_key = self._token_to_auth()
@@ -757,6 +749,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     @track
     def fit(
         self,
+        dataset_id: str,
+        vector_fields: List[str],
         filters: Optional[List] = None,
         include_report: bool = True,
         verbose: bool = True,
@@ -799,6 +793,9 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             clusterer.fit_predict_update(df, vector_fields=["sample_vector_"])
 
         """
+        self.dataset_id = dataset_id
+        self.vector_fields = vector_fields
+
         filters = [] if filters is None else filters
 
         # load the documents
@@ -814,17 +811,17 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
                 "condition": "==",
                 "condition_value": " ",
             }
-            for f in self.vector_fields
+            for f in vector_fields
         ]
         if verbose:
             print("Retrieving all documents")
-        fields_to_get = self.vector_fields.copy()
+        fields_to_get = vector_fields.copy()
         if self.parent_alias:
             parent_field = self._get_cluster_field_name(self.parent_alias)
             fields_to_get.append(parent_field)
 
         docs = self._get_all_documents(
-            dataset_id=self.dataset_id, filters=filters, select_fields=fields_to_get
+            dataset_id=dataset_id, filters=filters, select_fields=fields_to_get
         )
 
         if len(docs) == 0:
@@ -835,7 +832,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         clustered_docs = self.fit_predict(
             data=docs,
-            vector_fields=self.vector_fields,
+            vector_fields=vector_fields,
             return_only_clusters=True,
             inplace=False,
             include_report=include_report,
@@ -844,20 +841,18 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         # Updating the db
         if verbose:
             print("Updating the database...")
-        results = self._update_documents(
-            self.dataset_id, clustered_docs, chunksize=10000
-        )
+        results = self._update_documents(dataset_id, clustered_docs, chunksize=10000)
         self.logger.info(results)
 
         # Update the centroid collection
-        self.model.vector_fields = self.vector_fields
+        self.model.vector_fields = vector_fields
 
         self._insert_centroid_documents()
 
         if verbose:
             print(
                 "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+                + f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/cluster"
             )
 
     def unique_cluster_ids(

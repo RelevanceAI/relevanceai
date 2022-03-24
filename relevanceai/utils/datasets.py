@@ -64,7 +64,12 @@ class ExampleDatasets:
         with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
             project = "3a4b969f4d5fae6f850e"
             api_key = "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
-            client = Client(project, api_key, region="us-east-1")
+            region = "us-east-1"
+            firebase_uid = "dummy"
+
+            token = f"{project}:{api_key}:{region}:{firebase_uid}"
+
+            client = Client(token=token)
             documents = client._get_documents(
                 db_name,
                 number_of_documents=number_of_documents,

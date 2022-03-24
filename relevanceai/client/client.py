@@ -18,7 +18,6 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
-import os
 import getpass
 import pandas as pd
 import analytics
@@ -30,8 +29,18 @@ from relevanceai._api import BatchAPIClient
 
 from doc_utils.doc_utils import DocUtils
 
+from relevanceai.client.helpers import *
+
 from relevanceai.operations.cluster import ClusterOps
-from relevanceai.constants.errors import APIError
+from relevanceai.constants.errors import (
+    APIError,
+    ProjectNotFoundError,
+    APIKeyNotFoundError,
+    FireBaseUIDNotFoundError,
+    RegionFoundError,
+    TokenNotFoundError,
+)
+from relevanceai.constants.messages import Messages
 from relevanceai.dataset import Dataset
 
 from relevanceai.utils.decorators.analytics import track, identify
@@ -41,13 +50,8 @@ from relevanceai.utils.decorators.version import beta, added
 class Client(BatchAPIClient, DocUtils):
     def __init__(
         self,
-        project=os.getenv("RELEVANCE_PROJECT"),
-        api_key=os.getenv("RELEVANCE_API_KEY"),
-        firebase_uid=os.getenv("RELEVANCE_FIREBASE_UID"),
-        region=None,
+        token: str,
         authenticate: bool = True,
-        token: str = None,
-        force_refresh: bool = False,
     ):
         """
         Initialize the client
@@ -55,17 +59,16 @@ class Client(BatchAPIClient, DocUtils):
         Parameters
         -------------
 
-        project: str
-            The name of the project
-        api_key: str
-            API key
-        region: str
-            The region to work in. Currently only `us-east-1` is provided
         token: str
             You can paste the token here if things need to be refreshed
+
         force_refresh: bool
             If True, it forces you to refresh your client
         """
+
+        if not token:
+            raise TokenNotFoundError
+        self.token = token
 
         try:
             self._set_mixpanel_write_key()
@@ -73,34 +76,32 @@ class Client(BatchAPIClient, DocUtils):
             pass
 
         if token:
-            credentials = self._token_to_auth(token)
-        elif project and project.count(":") >= 1:
-            credentials = self._token_to_auth(project)
-        elif project is None or api_key is None or force_refresh:
-            credentials = self._token_to_auth(token)
+            credentials = token_to_auth(token)
 
         try:
             self.project = credentials["project"]
         except Exception:
-            self.project = project
+            raise ProjectNotFoundError
 
         try:
             self.api_key = credentials["api_key"]
         except Exception:
-            self.api_key = api_key
+            raise APIKeyNotFoundError
 
         try:
             self.firebase_uid = credentials["firebase_uid"]
         except Exception:
-            self.firebase_uid = firebase_uid
+            raise FireBaseUIDNotFoundError
+
+        try:
+            self.region = credentials["region"]
+        except Exception:
+            raise RegionFoundError
 
         self._identify()
 
-        if region is not None:
-            self.region = region
-
-        self.base_url = self._region_to_url(self.region)
-        self.base_ingest_url = self._region_to_ingestion_url(self.region)
+        self.base_url = region_to_url(self.region)
+        self.base_ingest_url = region_to_url(self.region)
 
         super().__init__(
             project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
@@ -109,12 +110,9 @@ class Client(BatchAPIClient, DocUtils):
         # used to debug
         if authenticate:
             if self.check_auth():
-                WELCOME_MESSAGE = (
-                    f"""Welcome to RelevanceAI. Logged in as {self.project}."""
-                )
-                print(WELCOME_MESSAGE)
+                print(Messages.WELCOME_MESSAGE.format(self.project))
             else:
-                raise APIError(self.FAIL_MESSAGE)
+                raise APIError(Messages.FAIL_MESSAGE)
 
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
@@ -130,67 +128,12 @@ class Client(BatchAPIClient, DocUtils):
             dataset_id="",
         )._insert_csv
 
-    # @property
-    # def output_format(self):
-    #     return CONFIG.get_field("api.output_format", CONFIG.config)
-
-    # @output_format.setter
-    # def output_format(self, value):
-    #     CONFIG.set_option("api.output_format", value)
-
-    ### Authentication Details
-
     @identify
     def _identify(self):
         return
 
     def _set_mixpanel_write_key(self):
         analytics.write_key = decode(self.mixpanel_write_key).decode("utf-8")
-
-    def _process_token(self, token: str):
-        split_token = token.split(":")
-        project = split_token[0]
-        api_key = split_token[1]
-        if len(split_token) > 2:
-            self.region = split_token[2]
-            base_url = self._region_to_url(self.region)
-
-            if len(split_token) > 3:
-                firebase_uid = split_token[3]
-                data = dict(
-                    project=project,
-                    api_key=api_key,
-                    base_url=base_url,
-                    firebase_uid=firebase_uid,
-                )
-                return data
-            else:
-                return dict(
-                    project=project,
-                    api_key=api_key,
-                    base_url=base_url,
-                )
-
-        else:
-            return dict(project=project, api_key=api_key)
-
-    def _region_to_ingestion_url(self, region: str):
-        # same as region to URL now in case ingestion ever needs to be separate
-        if region == "old-australia-east":
-            url = "https://gateway-api-aueast.relevance.ai/latest"
-        else:
-            url = f"https://api.{region}.relevance.ai/latest"
-        return url
-
-    def _token_to_auth(self, token: Optional[str] = None):
-        SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
-        if token:
-            return self._process_token(token)
-        else:
-            print(f"Activation token (you can find it here: {SIGNUP_URL} )")
-            if not token:
-                token = self._get_token()
-            return self._process_token(token)  # type: ignore
 
     def _get_token(self):
         # TODO: either use cache or keyring package
@@ -207,10 +150,6 @@ class Client(BatchAPIClient, DocUtils):
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.list_datasets()
-        # the ping function is now defunct
-        # return self.admin._ping()
-
-    ### CRUD-related utility functions
 
     @track
     def create_dataset(self, dataset_id: str, schema: Optional[Dict] = None):
@@ -343,9 +282,6 @@ class Client(BatchAPIClient, DocUtils):
     def ClusterOps(
         self,
         model,
-        alias: str,
-        dataset_id: str,
-        vector_fields: List[str],
         **kwargs,
     ):
         return ClusterOps(
@@ -353,9 +289,6 @@ class Client(BatchAPIClient, DocUtils):
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
             model=model,
-            alias=alias,
-            dataset_id=dataset_id,
-            vector_fields=vector_fields,
             **kwargs,
         )
 

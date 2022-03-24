@@ -6,7 +6,7 @@ import argparse
 
 from relevanceai import Client
 from relevanceai.operations.cluster import ClusterOps
-from relevanceai.operations.cluster.kmeans_clusterer import KMeansModel
+from relevanceai.operations.cluster.models.kmeans import KMeansModel
 
 
 def main(args):

@@ -25,3 +25,7 @@ class Messages:
     DEPRECEATED = "Deprecated. Revert to versions before {} for function. {}"
 
     FAIL_MESSAGE = """Your API key is invalid. Please login again"""
+
+    WELCOME_MESSAGE = """Welcome to RelevanceAI. Logged in as {}."""
+
+    TOKEN_MESSAGE = "Activation token (you can find it here: {} )"

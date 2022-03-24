@@ -60,3 +60,43 @@ class NoModelError(RelevanceAIError):
     def __init__(self, **kwargs):
         message = NO_MODEL
         super().__init__(message)
+
+
+class TokenNotFoundError(RelevanceAIError):
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        message = ""
+        super().__init__(message)
+
+
+class ProjectNotFoundError(RelevanceAIError):
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        message = ""
+        super().__init__(message)
+
+
+class APIKeyNotFoundError(RelevanceAIError):
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        message = ""
+        super().__init__(message)
+
+
+class FireBaseUIDNotFoundError(RelevanceAIError):
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        message = ""
+        super().__init__(message)
+
+
+class RegionFoundError(RelevanceAIError):
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        message = ""
+        super().__init__(message)

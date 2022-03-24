@@ -32,10 +32,7 @@ class _ClusterOps(ClusterEvaluate):
     dataset_id: str
     vector_fields: List[Any]
 
-    # Adding first-class sklearn integration
     def _assign_sklearn_model(self, model):
-        # Add support for not just sklearn models but sklearn models
-        # with first -class integration for kmeans
         from sklearn.cluster import (
             KMeans,
             MiniBatchKMeans,
@@ -59,11 +56,13 @@ class _ClusterOps(ClusterEvaluate):
             MeanShift,
             FeatureAgglomeration,
         ]
+
         if is_hdbscan_available():
             import hdbscan
 
             if hasattr(hdbscan, "HDBSCAN"):
                 POSSIBLE_MODELS.append(hdbscan.HDBSCAN)
+
         if model.__class__ == KMeans:
 
             class CentroidClusterModel(CentroidClusterBase):
@@ -98,26 +97,29 @@ class _ClusterOps(ClusterEvaluate):
             return new_model
 
         elif isinstance(model, tuple(POSSIBLE_MODELS)):
-            # new_model = CentroidClusterModel(model)
             if "sklearn" in str(type(model)).lower():
                 new_model = SklearnCentroidBase(model)
+
             elif "hdbscan" in str(type(model)).lower():
                 new_model = HDBSCANClusterBase(model)
+
             return new_model
+
         elif hasattr(model, "fit_documents"):
             return model
+
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
+
         elif hasattr(model, "fit_transform"):
             data = {"fit_predict": model.fit_transform, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
 
     def _assign_model(self, model):
-        # Check if this is a model that will fit
-        # otherwise - forces a Clusterbase
+
         if (is_sklearn_available() or is_hdbscan_available()) and (
             "sklearn" in str(type(model)).lower()
             or "hdbscan" in str(type(model)).lower()
@@ -128,19 +130,18 @@ class _ClusterOps(ClusterEvaluate):
 
         if isinstance(model, ClusterBase):
             return model
+
         elif hasattr(model, "fit_documents"):
             return model
-        # elif hasattr(model, "fit_predict"):
-        #     # Support for SKLEARN interface
-        #     data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
-        #     ClusterModel = type("ClusterBase", (ClusterBase,), data)
-        #     return ClusterModel()
+
         elif hasattr(model, "fit_predict"):
             data = {"fit_predict": model.fit_predict, "metadata": model.__dict__}
             ClusterModel = type("ClusterBase", (ClusterBase,), data)
             return ClusterModel()
+
         elif model is None:
             return model
+
         raise TypeError("Model should be inherited from ClusterBase.")
 
     def _token_to_auth(self, token=None):

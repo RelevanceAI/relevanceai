@@ -8,7 +8,7 @@ def test_dataset_api_kmeans_centroids_properties(test_client: Client, test_df: D
     alias: str = "test_alias"
     vector_field: str = "sample_1_vector_"
 
-    from relevanceai.operations.cluster.kmeans_clusterer import KMeansModel
+    from relevanceai.operations.cluster.models.kmeans import KMeansModel
 
     model = KMeansModel()
 
