@@ -195,7 +195,7 @@ class Transport(JSONEncoderUtils):
                     )
 
                 # TODO: Add other endpoints in here too
-                if method.upper == "POST":
+                if method.upper() == "POST":
                     req = Request(
                         method=method.upper(),
                         url=request_url,
@@ -203,7 +203,7 @@ class Transport(JSONEncoderUtils):
                         json=parameters,
                     ).prepare()
 
-                elif method.upper == "GET":
+                elif method.upper() == "GET":
                     req = Request(
                         method=method.upper(),
                         url=request_url,
