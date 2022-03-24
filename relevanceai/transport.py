@@ -195,13 +195,21 @@ class Transport(JSONEncoderUtils):
                     )
 
                 # TODO: Add other endpoints in here too
-                req = Request(
-                    method=method.upper(),
-                    url=request_url,
-                    headers=self.auth_header,
-                    json=parameters if method.upper() == "POST" else {},
-                    params=parameters if method.upper() == "GET" else {},
-                ).prepare()
+                if method.upper() == "POST":
+                    req = Request(
+                        method=method.upper(),
+                        url=request_url,
+                        headers=self.auth_header,
+                        json=parameters,
+                    ).prepare()
+
+                elif method.upper() == "GET":
+                    req = Request(
+                        method=method.upper(),
+                        url=request_url,
+                        headers=self.auth_header,
+                        params=parameters,
+                    ).prepare()
 
                 with requests.Session() as s:
                     response = s.send(req)
