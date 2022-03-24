@@ -13,13 +13,10 @@ from relevanceai.operations.dr.dim_reduction import UMAP
 class ReduceDimensionsOps(APIClient, DocUtils):
     def __init__(
         self,
-        alias: str,
         project: str,
         api_key: str,
         firebase_uid: str,
-        dataset_id: str,
         n_components: int,
-        vector_fields: List[str],
         model: Union[PCA, TSNE, Ivis, PCA, str, Any],
         dr_field: str = "_dr_",
         verbose: bool = True,
@@ -41,17 +38,19 @@ class ReduceDimensionsOps(APIClient, DocUtils):
             else:
                 raise ValueError()
 
+        self.model = model
         self.dr_field = dr_field
         self.verbose = verbose
-        self.dataset_id = dataset_id
-        self.model = model
-        self.alias = alias
-        self.vector_fields = vector_fields
         self.n_components = n_components
 
         super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
 
-    def fit(self):
+    def fit(
+        self,
+        dataset_id: str,
+        vector_fields: str,
+        alias: str,
+    ):
         """
         Reduce Dimensions
 
@@ -68,12 +67,14 @@ class ReduceDimensionsOps(APIClient, DocUtils):
             a new set of documents with only the dr vectors in it and the _id
         """
         documents = self._get_all_documents(
-            self.dataset_id, select_fields=self.vector_fields, include_vector=True
+            dataset_id, select_fields=vector_fields, include_vector=True
         )
 
-        return self.model.fit_transform_documents(
-            vector_field=self.vector_fields[0],
+        dr_documents = self.model.fit_transform_documents(
+            vector_field=vector_fields[0],
             documents=documents,
-            alias=self.alias,
+            alias=alias,
             dims=self.n_components,
         )
+
+        return self.update_documents(dataset_id, dr_documents)

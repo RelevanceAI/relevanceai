@@ -6,6 +6,21 @@ from relevanceai.utils.decorators.analytics import track
 
 
 class Search(APIClient):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
+        dataset_id: str,
+    ):
+        self.dataset_id = dataset_id
+
+        super().__init__(
+            project=project,
+            api_key=api_key,
+            firebase_uid=firebase_uid,
+        )
+
     @track
     def vector_search(
         self,

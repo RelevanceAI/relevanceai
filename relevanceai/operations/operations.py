@@ -2,6 +2,7 @@ from relevanceai._api import APIClient
 
 from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.vector import Vectorize
+from relevanceai.operations.vector import Search
 from relevanceai.operations.dr import ReduceDimensionsOps
 
 
@@ -14,9 +15,19 @@ class Operations(APIClient):
         dataset_id: str,
     ):
         self.dataset_id = dataset_id
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(
+            project=project,
+            api_key=api_key,
+            firebase_uid=firebase_uid,
+        )
 
-    def cluster(self, model, alias, vector_fields, **kwargs):
+    def cluster(
+        self,
+        model,
+        alias,
+        vector_fields,
+        **kwargs,
+    ):
         ops = ClusterOps(
             project=self.project,
             api_key=self.api_key,
@@ -30,12 +41,20 @@ class Operations(APIClient):
             alias=alias,
         )
 
-    def dr(self, model, alias, vector_fields, **kwargs):
+    def dr(
+        self,
+        model,
+        n_components,
+        alias,
+        vector_fields,
+        **kwargs,
+    ):
         ops = ReduceDimensionsOps(
             project=self.project,
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
             model=model,
+            n_components=n_components,
             **kwargs,
         )
         return ops.fit(
@@ -60,4 +79,26 @@ class Operations(APIClient):
         return ops.vectorize(
             text_fields=text_fields,
             image_fields=image_fields,
+        )
+
+    def vector_search(
+        self,
+        multivector_query,
+        filters=[],
+        pages_size=20,
+        **kwargs,
+    ):
+        ops = Search(
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            dataset_id=self.dataset_id,
+            **kwargs,
+        )
+
+        return ops.vector_search(
+            multivector_query,
+            filters,
+            pages_size,
+            **kwargs,
         )
