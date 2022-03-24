@@ -41,7 +41,7 @@ class Read(Statistics):
         audio_fields: Optional[List[str]] = None,
         text_fields: Optional[List[str]] = None,
         highlight_fields: Optional[Dict[str, list]] = None,
-        **kw,
+        **kwargs,
     ):
         self.project = project
         self.api_key = api_key
@@ -63,6 +63,7 @@ class Read(Statistics):
             project=project,
             api_key=api_key,
             firebase_uid=firebase_uid,
+            **kwargs,
         )
 
     @property  # type: ignore

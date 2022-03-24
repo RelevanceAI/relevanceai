@@ -25,7 +25,7 @@ class Dataset(IO, Read, Write, Operations):
         audio_fields: Optional[List[str]] = None,
         highlight_fields: Optional[Dict[str, List]] = None,
         text_fields: Optional[List[str]] = None,
-        **kw,
+        **kwargs,
     ):
         self.project = project
         self.api_key = api_key
@@ -48,7 +48,7 @@ class Dataset(IO, Read, Write, Operations):
             audio_fields=audio_fields,
             highlight_fields=highlight_fields,
             text_fields=text_fields,
-            **kw,
+            **kwargs,
         )
         # add global datasets
         if self.dataset_id in GLOBAL_DATASETS:

@@ -32,7 +32,7 @@ class LoguruLogger(AbstractLogger):
 
     # Add Logging
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self._init_logger()
 
     @property

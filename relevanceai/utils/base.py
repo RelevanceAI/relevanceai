@@ -10,14 +10,20 @@ def str2bool(v: str):
 class _Base(Transport, LoguruLogger):
     """_Base class for all relevanceai client utilities"""
 
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
+        **kwargs,
+    ):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
 
         self.config = CONFIG
         # Initialize logger
-        super().__init__()
+        super().__init__(**kwargs)
 
     ### Configurations
 

@@ -16,9 +16,21 @@ from relevanceai.utils.decorators.analytics import track
 
 
 class Statistics(APIClient):
-    def __init__(self, dataset_id: str, **kwargs):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
+        dataset_id: str,
+        **kwargs,
+    ):
         self.dataset_id = dataset_id
-        super().__init__(**kwargs)
+        super().__init__(
+            project=project,
+            api_key=api_key,
+            firebase_uid=firebase_uid,
+            **kwargs,
+        )
 
     @track
     def value_counts(self, field: str):

@@ -1,6 +1,7 @@
 """API Client
 """
 from relevanceai.utils.base import _Base
+
 from relevanceai._api.endpoints.admin.admin import AdminClient
 from relevanceai._api.endpoints.datasets.datasets import DatasetsClient
 from relevanceai._api.endpoints.services.services import ServicesClient
@@ -15,14 +16,16 @@ from relevanceai.utils.helpers import make_id
 from doc_utils import DocUtils
 
 
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-
 class APIEndpointsClient(_Base, DocUtils):
     """API Client"""
 
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
+    def __init__(
+        self,
+        project: str,
+        api_key: str,
+        firebase_uid: str,
+        **kwargs,
+    ):
         self.datasets = DatasetsClient(
             project=project, api_key=api_key, firebase_uid=firebase_uid
         )
@@ -39,7 +42,12 @@ class APIEndpointsClient(_Base, DocUtils):
         self.deployables = DeployableClient(
             project=project, api_key=api_key, firebase_uid=firebase_uid
         )
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(
+            project=project,
+            api_key=api_key,
+            firebase_uid=firebase_uid,
+            **kwargs,
+        )
 
     def _convert_id_to_string(self, documents, create_id: bool = False):
         try:
