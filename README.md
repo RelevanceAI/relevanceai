@@ -60,7 +60,7 @@ conda install -c relevance relevanceai
 ```python
 from relevanceai import Client
 
-client = Client(<project_name>, <api_key>)
+client = Client(<token>)
 ```
 
 Prepare your documents for insertion by following the below format:
