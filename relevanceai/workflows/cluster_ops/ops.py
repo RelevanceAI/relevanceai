@@ -384,15 +384,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             )
 
         """
-        # try:
-        #     from transformers import pipeline
-        # except ModuleNotFoundError as e:
-        #     raise ModuleNotFoundError(
-        #         f"{e}\nInstall transformers\n \
-        #         pip install -U transformers"
-        #     )
-        # summarizer = pipeline("summarization", model=model, tokenizer=tokenizer, framework="pt")
-
         summarizer = TransformersLMSummarizer(model, tokenizer)
 
         center_docs = self.list_closest_to_center(
