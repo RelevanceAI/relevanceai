@@ -23,7 +23,6 @@ DATASETS = [
     "realestate2",
 ]
 
-
 MB_TO_BYTE = 1024 * 1024
 LIST_SIZE_MULTIPLIER = 3
 

@@ -88,17 +88,17 @@ def get_model():
     return KMeansModel(verbose=False)
 
 
-def test_cluster(test_df: Dataset):
+def test_cluster(test_dataset: Dataset):
 
     vector_field = "sample_1_vector_"
     alias = "test_alias"
 
     model = get_model()
 
-    test_df.cluster(
+    test_dataset.cluster(
         model=model, alias=alias, vector_fields=[vector_field], overwrite=True
     )
-    assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
+    assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
 
 def test_closest(test_clusterer: ClusterOps):
@@ -146,24 +146,24 @@ def test_fit_predict(test_client: Client, vector_dataset_id: str):
     assert "_cluster_.sample_1_vector_.random_clustering" in df.schema
 
 
-def test_cluster(test_df: Dataset):
+def test_cluster(test_dataset: Dataset):
     from sklearn.cluster import KMeans
 
     vector_field = "sample_1_vector_"
     alias = generate_random_string().lower()
 
     # check they're not in first
-    assert f"_cluster_.{vector_field}.{alias}" not in test_df.schema
+    assert f"_cluster_.{vector_field}.{alias}" not in test_dataset.schema
 
     model = KMeans()
-    clusterer = test_df.cluster(
+    clusterer = test_dataset.cluster(
         model=model, alias=alias, vector_fields=[vector_field], overwrite=True
     )
-    assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
+    assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
     assert len(clusterer.list_closest_to_center()) > 0
 
 
-def test_dbscan(test_client: Client, test_df: Dataset):
+def test_dbscan(test_client: Client, test_dataset: Dataset):
     from sklearn.cluster import DBSCAN
 
     ALIAS = "dbscan"
@@ -171,11 +171,11 @@ def test_dbscan(test_client: Client, test_df: Dataset):
     model = DBSCAN()
     clusterer = test_client.ClusterOps(alias=ALIAS, model=model)
     clusterer.fit(test_df, ["sample_3_vector_"])
-    assert any([x for x in test_df.schema if ALIAS in x])
+    assert any([x for x in test_dataset.schema if ALIAS in x])
 
 
 @pytest.fixture(scope="function")
-def test_batch_clusterer(test_client: Client, vector_dataset_id, test_df: Dataset):
+def test_batch_clusterer(test_client: Client, vector_dataset_id, test_dataset: Dataset):
 
     clusterer: ClusterOps = test_client.ClusterOps(
         alias=CLUSTER_ALIAS,

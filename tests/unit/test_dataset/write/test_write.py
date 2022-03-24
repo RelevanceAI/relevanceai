@@ -6,13 +6,13 @@ from relevanceai.constants.errors import MissingFieldError
 from relevanceai.dataset import Dataset
 
 
-def test_apply(test_df: Dataset):
+def test_apply(test_dataset: Dataset):
     random_string = "you are the kingj"
-    test_df["sample_1_label"].apply(
+    test_dataset["sample_1_label"].apply(
         lambda x: x + random_string, output_field="sample_1_label_2"
     )
-    filtered_documents = test_df.datasets.documents.get_where(
-        test_df.dataset_id,
+    filtered_documents = test_dataset.datasets.documents.get_where(
+        test_dataset.dataset_id,
         filters=[
             {
                 "field": "sample_1_label_2",
@@ -25,16 +25,16 @@ def test_apply(test_df: Dataset):
     assert len(filtered_documents["documents"]) > 0
 
 
-def test_create_id_in_documents(test_df: Dataset):
+def test_create_id_in_documents(test_dataset: Dataset):
     docs = [{"value": 2}]
     with pytest.raises(MissingFieldError):
-        test_df.insert_documents(docs)
+        test_dataset.insert_documents(docs)
 
-    results = test_df.insert_documents(docs, create_id=True)
+    results = test_dataset.insert_documents(docs, create_id=True)
     assert results is None, "Documents are inserted."
 
 
-def test_bulk_apply(test_df: Dataset):
+def test_bulk_apply(test_dataset: Dataset):
     random_string = "you are the queen"
     label = "sample_output"
 
@@ -43,9 +43,9 @@ def test_bulk_apply(test_df: Dataset):
             d[label] = d.get("sample_1_label", "") + random_string
         return docs
 
-    test_df.bulk_apply(bulk_fn)
-    filtered_documents = test_df.datasets.documents.get_where(
-        test_df.dataset_id,
+    test_dataset.bulk_apply(bulk_fn)
+    filtered_documents = test_dataset.datasets.documents.get_where(
+        test_dataset.dataset_id,
         filters=[
             {
                 "field": "sample_output",
@@ -58,7 +58,7 @@ def test_bulk_apply(test_df: Dataset):
     assert len(filtered_documents["documents"]) > 0
 
 
-def test_insert_df(test_df: Dataset):
+def test_insert_df(test_dataset: Dataset):
     pandas_df = pd.DataFrame({"pandas_value": [3, 2, 1], "_id": ["10", "11", "12"]})
-    test_df.insert_pandas_dataframe(pandas_df)
+    test_dataset.insert_pandas_dataframe(pandas_df)
     assert "pandas_value" in pandas_df.columns

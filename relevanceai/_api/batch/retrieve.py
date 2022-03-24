@@ -3,16 +3,16 @@
 
 import math
 import traceback
-from typing import List, Optional
-from relevanceai.utils.cache import lru_cache
-from relevanceai._api.endpoints.api_client import APIEndpointsClient
-from relevanceai._api.batch.chunk import Chunker
-from relevanceai.utils.progress_bar import progress_bar
-from relevanceai.constants.constants import MAX_CACHESIZE
-from relevanceai.utils.list_to_tuple import list_to_tuple
 
-BYTE_TO_MB = 1024 * 1024
-LIST_SIZE_MULTIPLIER = 3
+from typing import List, Optional
+
+from relevanceai._api.batch.chunk import Chunker
+from relevanceai._api.endpoints.api_client import APIEndpointsClient
+
+from relevanceai.utils.cache import lru_cache
+from relevanceai.utils.progress_bar import progress_bar
+
+from relevanceai.constants.constants import MAX_CACHESIZE
 
 # ADD SUPPORT FOR SAVING TO JSON
 

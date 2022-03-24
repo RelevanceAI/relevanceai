@@ -8,35 +8,35 @@ ORIGINAL_ALIAS = "minibatchkmeans-3"
 
 
 @pytest.fixture(scope="function")
-def minibatch_clusterer(test_df: Dataset):
-    clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
+def minibatch_clusterer(test_dataset: Dataset):
+    clusterer = test_dataset.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
     yield clusterer
-    clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
+    clusterer.delete_centroids(test_dataset.dataset_id, VECTOR_FIELDS)
 
 
 @pytest.fixture(scope="function")
-def minibatch_subclusterer(test_df: Dataset):
+def minibatch_subclusterer(test_dataset: Dataset):
     # Running batch k means after clustering
     ALIAS = "minibatchkmeans-4"
-    clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
-    clusterer = test_df.auto_cluster(
+    clusterer = test_dataset.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
+    clusterer = test_dataset.auto_cluster(
         ALIAS,
         vector_fields=VECTOR_FIELDS,
         parent_alias=ORIGINAL_ALIAS,
     )
     yield test_df, ALIAS
-    clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
+    clusterer.delete_centroids(test_dataset.dataset_id, VECTOR_FIELDS)
 
 
 @pytest.fixture(scope="function")
-def kmeans_subclusterer(test_df: Dataset):
+def kmeans_subclusterer(test_dataset: Dataset):
     # Running K Means after clustering
     ALIAS = "kmeans-4"
-    clusterer = test_df.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
-    clusterer = test_df.auto_cluster(
+    clusterer = test_dataset.auto_cluster(ORIGINAL_ALIAS, vector_fields=VECTOR_FIELDS)
+    clusterer = test_dataset.auto_cluster(
         ALIAS,
         vector_fields=VECTOR_FIELDS,
         parent_alias=ORIGINAL_ALIAS,
     )
     yield test_df, ALIAS
-    # clusterer.delete_centroids(test_df.dataset_id, VECTOR_FIELDS)
+    # clusterer.delete_centroids(test_dataset.dataset_id, VECTOR_FIELDS)

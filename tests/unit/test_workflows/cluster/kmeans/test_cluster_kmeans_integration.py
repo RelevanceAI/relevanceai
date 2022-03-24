@@ -13,7 +13,7 @@ from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.cluster.base import CentroidClusterBase
 
 
-def test_dataset_api_kmeans_integration(test_client: Client, test_df: Dataset):
+def test_dataset_api_kmeans_integration(test_client: Client, test_dataset: Dataset):
     from sklearn.cluster import KMeans
 
     vector_field = "sample_1_vector_"
@@ -23,4 +23,4 @@ def test_dataset_api_kmeans_integration(test_client: Client, test_df: Dataset):
 
     clusterer.fit(dataset=test_df, vector_fields=[vector_field])
 
-    assert f"_cluster_.{vector_field}.{alias}" in test_df.schema
+    assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
