@@ -26,6 +26,7 @@ class Statistics(APIClient):
     ):
         self.dataset_id = dataset_id
         super().__init__(
+            dataset_id=dataset_id,
             project=project,
             api_key=api_key,
             firebase_uid=firebase_uid,
