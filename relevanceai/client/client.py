@@ -50,7 +50,11 @@ from relevanceai.utils.decorators.version import beta, added
 class Client(APIClient, DocUtils):
     def __init__(
         self,
-        token: str,
+        token: Optional[str] = None,
+        project: Optional[str] = None,
+        api_key: Optional[str] = None,
+        region: Optional[str] = None,
+        firebase_uid: Optional[str] = None,
         authenticate: bool = True,
     ):
         """
@@ -67,7 +71,12 @@ class Client(APIClient, DocUtils):
         """
 
         if not token:
-            raise TokenNotFoundError
+            if all(
+                secret is None for secret in [project, api_key, region, firebase_uid]
+            ):
+                raise TokenNotFoundError
+            else:
+                token = f"{project}:{api_key}:{region}:{firebase_uid}"
         self.token = token
 
         try:

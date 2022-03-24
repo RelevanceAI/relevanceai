@@ -6,7 +6,13 @@ from typing import List
 
 TEST_TOKEN = os.getenv("TEST_TOKEN")
 if TEST_TOKEN is None:
-    raise ValueError("Set Env Var TEST_TOKEN")
+    PROJECT = os.getenv("TEST_PROJECT")
+    API_KEY = os.getenv("TEST_API_KEY")
+
+    if PROJECT is None and API_KEY is None:
+        raise ValueError("Set Env Var TEST_TOKEN")
+    else:
+        TEST_TOKEN = f"{PROJECT}:{API_KEY}:us-east-1:{None}"
 
 TEST_TOKEN = TEST_TOKEN.split(":")
 TEST_FIREBASE_UID = "relevanceai-sdk-test-user"
