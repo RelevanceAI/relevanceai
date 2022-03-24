@@ -1,5 +1,6 @@
 from relevanceai.package_utils.logger import LoguruLogger
 from doc_utils import DocUtils
+from typing import Dict, List
 
 try:
     import torch
@@ -13,7 +14,7 @@ except ModuleNotFoundError as e:
 
 
 class TransformersLMSummarizer(LoguruLogger, DocUtils):
-    def __init__(self, model, tokenizer, *args, **kwargs):
+    def __init__(self, model: str, tokenizer: str, *args, **kwargs):
         try:
             from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
         except ModuleNotFoundError as e:
@@ -34,7 +35,7 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
 
-    def __call__(self, text):
+    def __call__(self, text: str):
         # tokenize without truncation
         inputs_no_trunc = self.tokenizer(
             text, max_length=None, return_tensors="pt", truncation=False

@@ -27,7 +27,7 @@ class CentroidsClient(_Base):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = None,
+        cluster_properties_filter: Optional[Dict] = {},
     ):
         """
         List of documents closest from the centre.
@@ -126,7 +126,7 @@ class CentroidsClient(_Base):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = None,
+        cluster_properties_filter: Optional[Dict] = {},
     ):
         centroid_vector_fields = (
             [] if centroid_vector_fields is None else centroid_vector_fields

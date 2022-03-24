@@ -49,7 +49,7 @@ from relevanceai.package_utils.version_decorators import beta
 from relevanceai.package_utils.concurrency import multiprocess
 from relevanceai.workflows.cluster_ops.constants import METRIC_DESCRIPTION
 
-from relevanceai.workflows.cluster_ops.transformers import TransformersLMSummarizer
+from relevanceai.workflows.cluster_ops.summarizer import TransformersLMSummarizer
 
 from tqdm.auto import tqdm
 
@@ -183,10 +183,10 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = None,
+        cluster_properties_filter: Optional[Dict] = {},
     ):
         """
-        List of documents closest to the center
+        List of documents closest to the center.
 
         Parameters
         ----------
@@ -267,6 +267,41 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             cluster_properties_filter=cluster_properties_filter,
         )
 
+    @staticmethod
+    def get_cluster_summary(summarizer, docs: Dict, select_fields: List[str]):
+        def _clean_sentence(s):
+            s = (
+                s.replace(". .", ".")
+                .replace(" .", ".")
+                .replace("\n", "")
+                .replace("..", ".")
+                .strip()
+            )
+            if s[-1] != ".":
+                s += "."
+            return s
+
+        cluster_summary = {}
+        for cluster, results in docs["results"].items():
+            summary = []
+            for f in select_fields:
+                summary_fields = [
+                    _clean_sentence(d[f])
+                    for d in results["results"]
+                    if d.get(f) and d[f] not in [" ", "."]
+                ]
+                summary.append(
+                    {
+                        f: summarizer(" ".join(summary_fields))[0]["summary_text"]
+                        .replace(" .", ".")
+                        .strip()
+                    }
+                )
+            cluster_summary[cluster] = summary
+
+        return cluster_summary
+
+    @beta
     @track
     def summarize_closest_to_center(
         self,
@@ -285,12 +320,12 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = None,
+        cluster_properties_filter: Optional[Dict] = {},
         model: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: str = "sshleifer/distilbart-cnn-6-6",
     ):
         """
-        Summarize documents closest to the center
+        Summarize documents closest to the center.
 
         Parameters
         ----------
@@ -350,7 +385,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         """
         # try:
-        #     from transformers import pipelines
+        #     from transformers import pipeline
         # except ModuleNotFoundError as e:
         #     raise ModuleNotFoundError(
         #         f"{e}\nInstall transformers\n \
@@ -379,35 +414,9 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             cluster_properties_filter=cluster_properties_filter,
         )
 
-        def clean_sentence(s):
-            s = (
-                s.replace(". .", ".")
-                .replace(" .", ".")
-                .replace("\n", "")
-                .replace("..", ".")
-                .strip()
-            )
-            if s[-1] != ".":
-                s += "."
-            return s
-
-        cluster_summary = {}
-        for cluster, results in center_docs["results"].items():
-            summary = []
-            for f in select_fields:
-                summary_fields = [
-                    clean_sentence(d[f])
-                    for d in results["results"]
-                    if d.get(f) and d[f] not in [" ", "."]
-                ]
-                summary.append(
-                    {
-                        f: summarizer(" ".join(summary_fields))[0]["summary_text"]
-                        .replace(" .", ".")
-                        .strip()
-                    }
-                )
-            cluster_summary[cluster] = summary
+        cluster_summary = self.get_cluster_summary(
+            summarizer, docs=center_docs, select_fields=select_fields
+        )
 
         return {"results": cluster_summary}
 
@@ -575,10 +584,10 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = None,
+        cluster_properties_filter: Optional[Dict] = {},
     ):
         """
-        List of documents furthest from the centre.
+        List of documents furthest from the center.
 
         Parameters
         ----------
@@ -608,7 +617,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
 
         Example
         ---------
@@ -647,12 +657,31 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             cluster_properties_filter=cluster_properties_filter,
         )
 
+    @beta
     @track
     def summarize_furthest_from_center(
-        self, dataset: Union[str, Dataset] = None, vector_fields: list = None
+        self,
+        select_fields: List,
+        dataset: Optional[Union[str, Dataset]] = None,
+        vector_fields: Optional[List] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+        model: str = "sshleifer/distilbart-cnn-6-6",
+        tokenizer: str = "sshleifer/distilbart-cnn-6-6",
     ):
         """
-        Summarize documents furthest from the centre.
+        Summarize documents furthest from the center.
 
         Parameters
         ----------
@@ -682,6 +711,12 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
+        model: str
+            Model to use for summarization
+        tokenizer: str
+            Tokenizer to use for summarization
 
         Example
         ---------
@@ -696,16 +731,37 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
             cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
 
-            cluster_ops.list_furthest_from_center()
+            cluster_ops.summarize_furthest_from_center(
+                select_fields="sample_text_field"
+            )
 
         """
-        return self.datasets.cluster.centroids.list_furthest_from_center(
-            dataset_id=self._check_dataset_id(dataset),
-            vector_fields=self.vector_fields
-            if vector_fields is None
-            else vector_fields,
-            alias=self.alias,
+        summarizer = TransformersLMSummarizer(model, tokenizer)
+
+        furthest_docs = self.list_furthest_from_center(
+            dataset=dataset,
+            vector_fields=vector_fields,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            # facets: List = [],
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
         )
+
+        cluster_summary = self.get_cluster_summary(
+            summarizer, docs=furthest_docs, select_fields=select_fields
+        )
+
+        return {"results": cluster_summary}
 
     @track
     def insert_centroid_documents(
