@@ -72,6 +72,7 @@ class Client(APIClient, DocUtils):
 
         if token is None:
             token = auth()
+
         self.token = token
 
         try:

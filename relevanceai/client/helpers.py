@@ -37,4 +37,4 @@ def process_token(token: str):
 def auth():
     print(Messages.TOKEN_MESSAGE.format(SIGNUP_URL))
     token = getpass.getpass(f"Activation Token: ")
-    return process_token(token)
+    return token
