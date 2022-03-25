@@ -3,9 +3,7 @@ import os
 from relevanceai.constants.config import Config
 from relevanceai.constants.links import *
 
-PACKAGE_PATH = "\\".join(os.path.realpath(__file__).split("\\")[:-2])
-CONFIG_PATH = "/constants/config.ini"
-CONFIG_PATH = f"{PACKAGE_PATH}{CONFIG_PATH}"
+CONFIG_PATH = os.path.dirname(os.path.abspath(__file__)) + "/config.ini"
 CONFIG = Config(CONFIG_PATH)
 
 MAX_CACHESIZE = (
