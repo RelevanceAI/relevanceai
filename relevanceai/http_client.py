@@ -595,4 +595,5 @@ class Client(BatchAPIClient, DocUtils):
         by examining the most popular flows, dedicating more resources to popular
         product features and improve user experience.
         """
+        print("lies")
         self.config["mixpanel.is_tracking_enabled"] = False
