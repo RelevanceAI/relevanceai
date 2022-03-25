@@ -155,6 +155,18 @@ class Vectorize(_VectorizeHelper):
 
         fields = image_fields + text_fields
 
+        # we should raise an error here to ensure that if there are any missing fields
+        # users know immediately
+        foreign_fields = []
+        for field in fields:
+            if field not in self.schema:
+                foreign_fields.append(field)
+        else:
+            if foreign_fields:
+                raise ValueError(
+                    f"The following fields are invalid: {', '.join(foreign_fields)}"
+                )
+
         if image_fields and image_encoder is None:
             try:
                 with FileLogger(log_file):
