@@ -1,14 +1,19 @@
-from relevanceai.dataset import Dataset
+import pytest
+
+from relevanceai import Client, mock_documents
 
 
-def test_community_detection(test_dataset: Dataset):
-    # test text field first
-    text_field = "data"
-    test_dataset.community_detection(field=text_field)
-    assert f"_cluster_.{text_field}.community-detection" in test_dataset.schema
+@pytest.mark.skip(
+    msg="community detection needs to be selected as a model under cluster"
+)
+def test_community_detection(test_client: Client, test_dataset_id: str):
+    ds = test_client.Dataset(test_dataset_id + "_community-detection")
+    ds.upsert_documents(mock_documents(100, 10))
 
-    # vectorize a field to test that community detection works on vectors
-    test_dataset.vectorize(image_fields=["image_url"])
-    vector_field = "image_url_clip_vector_"
-    test_dataset.community_detection(field=vector_field)
-    assert f"_cluster_.{vector_field}.community-detection" in test_dataset.schema
+    text_field = "sample_1_label"
+    ds.community_detection(field=text_field)
+    assert f"_cluster_.{text_field}.community-detection" in ds.schema
+
+    vector_field = "sample_1_vector_"
+    ds.community_detection(field=vector_field)
+    assert f"_cluster_.{vector_field}.community-detection" in ds.schema
