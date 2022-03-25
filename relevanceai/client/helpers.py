@@ -1,7 +1,7 @@
 import getpass
 
 from relevanceai.constants.messages import Messages
-from relevanceai.constants.constants import (
+from relevanceai.constants import (
     SIGNUP_URL,
     AUSTRALIA_URL,
     WIDER_URL,

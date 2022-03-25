@@ -52,7 +52,7 @@ try:
     PYMONGO_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     PYMONGO_AVAILABLE = False
-    warnings.warn(Warning.MISSING_MONGO)
+    warnings.warn(Warning.MISSING_PACKAGE)
 
 try:
     from bson import json_util
@@ -60,7 +60,7 @@ try:
     BSON_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     BSON_AVAILABLE = False
-    warnings.warn(Warning.MISSING_BSON)
+    warnings.warn(Warning.MISSING_PACKAGE)
 
 
 class MongoImporter(Client):

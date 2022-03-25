@@ -32,7 +32,6 @@ SUCCESS_CODES = [200]
 RETRY_CODES = [400, 404]
 HALF_CHUNK_CODES = [413, 524]
 
-SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
+US_EAST_1 = "us-east-1"
+AP_SOUTEAST_1 = "ap-southeast-1"
 OLD_AUSTRALIA_EAST = "old-australia-east"
-AUSTRALIA_URL = "https://gateway-api-aueast.relevance.ai/latest"
-WIDER_URL = "https://api.{}.relevance.ai/latest"

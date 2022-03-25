@@ -28,10 +28,6 @@ class Warning:
 
     INDEX_STRING = "Integer selection of dataframe is not stable at the moment. Please use a string ID if possible to ensure exact selection."
 
-    MISSING_MONGO = "you are missing `pymongo.MongoClient`. Please install this using `pip install pymongo==3.12`"
-
-    MISSING_BSON = (
-        "you are missing `bson.json_util`. Please install this using `pip install bson`"
-    )
+    MISSING_PACKAGE = "You are missing a package."
 
     DEFAULT_MODEL = "No model selected, defaulting to sklearn implementation of KMeans with 10 clusters"
