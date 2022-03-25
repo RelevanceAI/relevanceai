@@ -17,4 +17,4 @@ def kmeans_clusterer(test_dataset: Dataset):
         vector_fields=VECTOR_FIELDS,
     )
     yield clusterer
-    clusterer.delete_centroid(test_dataset.dataset_id, VECTOR_FIELDS)
+    clusterer.delete_centroids(test_dataset.dataset_id, VECTOR_FIELDS)
