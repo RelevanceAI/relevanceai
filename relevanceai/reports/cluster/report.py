@@ -201,10 +201,13 @@ class ClusterReport(DocUtils):
             warnings.warn(Warning.CENTROID_VECTORS)
 
     def _typecheck_model(self, model):
+        # Warns users that their model may not be supported
+        # this may not be necessary and is removable in future
         if is_hdbscan_available():
-            return
+            if "hdbscan" in str(type(model)):
+                return
         if is_sklearn_available():
-            if isinstance(model, (KMeans, MiniBatchKMeans)):
+            if "sklearn" in str(type(model)):
                 return
         warnings.warn(Warning.MODEL_NOT_SUPPORTED)
 

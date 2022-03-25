@@ -792,6 +792,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
             parent_field = self._get_cluster_field_name(self.parent_alias)
             fields_to_get.append(parent_field)
 
+        # TODO: Figure out why this isn't cached
         docs = self._get_all_documents(
             dataset_id=dataset_id, filters=filters, select_fields=fields_to_get
         )
