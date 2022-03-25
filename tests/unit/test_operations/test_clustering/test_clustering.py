@@ -77,8 +77,7 @@ def test_agg_std(test_clusterer: ClusterOps):
     assert len(groupby_agg) > 0
 
 
-@pytest.mark.skip(msg="Keep getting TypeError: cannot pickle 'EncodedFile' object")
-def test_clusterops_fit(test_client: Client, vector_dataset_id: str):
+def test_clusterops(test_client: Client, vector_dataset_id: str):
     import random
 
     class CustomClusterModel(ClusterBase):
@@ -88,12 +87,12 @@ def test_clusterops_fit(test_client: Client, vector_dataset_id: str):
 
     model = CustomClusterModel()
 
-    df = test_client.Dataset(vector_dataset_id)
-    clusterer = test_client.ClusterOps(
+    dataset = test_client.Dataset(vector_dataset_id)
+    operator = test_client.ClusterOps(
         model=model,
     )
-    clusterer.fit(df, alias="random_clustering", vector_fields=["sample_1_vector_"])
-    assert "_cluster_.sample_1_vector_.random_clustering" in df.schema
+    operator(dataset, vector_fields=["sample_1_vector_"])
+    assert "_cluster_.sample_1_vector_.customclustermodel" in dataset.schema
 
 
 def test_cluster(test_dataset: Dataset):

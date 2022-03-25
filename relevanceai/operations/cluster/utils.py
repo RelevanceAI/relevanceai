@@ -8,6 +8,7 @@ import numpy as np
 from typing import Union, Callable, Optional, List, Dict, Any
 
 from doc_utils import DocUtils
+from relevanceai._api import APIClient
 
 from relevanceai.operations.cluster.base import (
     ClusterBase,
@@ -22,10 +23,10 @@ from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
 )
 
-from relevanceai.operations.cluster.evaluate import ClusterEvaluate
+from relevanceai.reports.cluster.evaluate import ClusterEvaluate
 
 
-class _ClusterOps(ClusterEvaluate):
+class _ClusterOps(APIClient, DocUtils):
 
     alias: str
     dataset_id: str

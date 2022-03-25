@@ -1,7 +1,7 @@
 import pytest
 
 import pandas as pd
-from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constants.errors import FieldNotFoundError
 
 from relevanceai.dataset import Dataset
 
@@ -27,7 +27,7 @@ def test_apply(test_dataset: Dataset):
 
 def test_create_id_in_documents(test_dataset: Dataset):
     docs = [{"value": 2}]
-    with pytest.raises(MissingFieldError):
+    with pytest.raises(FieldNotFoundError):
         test_dataset.insert_documents(docs)
 
     results = test_dataset.insert_documents(docs, create_id=True)

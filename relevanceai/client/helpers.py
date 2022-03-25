@@ -22,15 +22,31 @@ def process_token(token: str):
 
     project = split_token[0]
     api_key = split_token[1]
-    region = split_token[2]
-    firebase_uid = split_token[3]
 
-    data = dict(
-        project=project,
-        api_key=api_key,
-        region=region,
-        firebase_uid=firebase_uid,
-    )
+    if len(split_token) == 4:
+        region = split_token[2]
+        firebase_uid = split_token[3]
+        data = dict(
+            project=project,
+            api_key=api_key,
+            region=region,
+            firebase_uid=firebase_uid,
+        )
+
+    elif len(split_token) == 3:
+        region = split_token[2]
+        data = dict(
+            project=project,
+            api_key=api_key,
+            region=region,
+        )
+
+    else:
+        data = dict(
+            project=project,
+            api_key=api_key,
+        )
+
     return data
 
 

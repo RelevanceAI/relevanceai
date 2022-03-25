@@ -29,7 +29,7 @@ from relevanceai.utils.decorators.version import beta
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.concurrency import multiprocess, multithread
 
-from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constants.errors import FieldNotFoundError
 from relevanceai.constants.warning import Warning
 from relevanceai.constants import (
     MB_TO_BYTE,
@@ -242,7 +242,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         # Check for _id
         if "_id" not in chunk.columns:
-            raise MissingFieldError("Need _id as a column")
+            raise FieldNotFoundError("Need _id as a column")
 
         # add fix for when lists are read in as strings
         EXCEPTION_COLUMNS = ("_vector_", "_chunk_")

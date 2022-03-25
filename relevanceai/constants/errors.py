@@ -22,7 +22,7 @@ class RelevanceAIError(Exception):
         return self.message
 
 
-class MissingFieldError(RelevanceAIError):
+class FieldNotFoundError(RelevanceAIError):
     """Error handling for missing fields"""
 
     def __init__(self, *args, **kwargs):

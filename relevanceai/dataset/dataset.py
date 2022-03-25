@@ -9,7 +9,7 @@ from relevanceai.dataset.series import Series
 
 from relevanceai.operations import Operations
 
-from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECT_APP_LINK
+from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECTOR_APP_LINK
 
 
 class Dataset(IO, Read, Write, Operations):
@@ -124,4 +124,4 @@ class Dataset(IO, Read, Write, Operations):
         """
         Launches the link to the projector application to start building
         """
-        return PROJECT_APP_LINK.format(self.dataset_id)
+        return PROJECTOR_APP_LINK.format(self.dataset_id)

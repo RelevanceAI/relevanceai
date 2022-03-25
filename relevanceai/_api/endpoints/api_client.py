@@ -8,7 +8,7 @@ from relevanceai._api.endpoints.services.services import ServicesClient
 from relevanceai._api.endpoints.reports.reports import ReportsClient
 from relevanceai._api.endpoints.deployables.deployables import DeployableClient
 
-from relevanceai.constants.errors import MissingFieldError
+from relevanceai.constants.errors import FieldNotFoundError
 
 from relevanceai.utils.datasets import ExampleDatasets
 from relevanceai.utils.helpers import make_id
@@ -60,7 +60,7 @@ class APIEndpointsClient(_Base, DocUtils):
                     "_id", [make_id(document) for document in documents], documents
                 )
             else:
-                raise MissingFieldError(
+                raise FieldNotFoundError(
                     "Missing _id field. Set `create_id=True` to automatically generate IDs."
                 )
 

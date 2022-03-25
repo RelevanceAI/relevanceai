@@ -1,4 +1,4 @@
-from typing import List, Sequence, Union, Dict, Any, Tuple, Optional
+from typing import Dict, Any
 from typing_extensions import Literal
 
 from joblib.memory import Memory
@@ -34,8 +34,6 @@ CLUSTER_DEFAULT_ARGS: Dict[str, Dict[str, Any]] = {
         "k": 10,
         "init": "k-means++",
         "verbose": 0,
-        # "compute_labels": True,
-        # "max_no_improvement": 2,
     },
     "kmedoids": {
         "metric": "euclidean",
@@ -54,18 +52,6 @@ CLUSTER_DEFAULT_ARGS: Dict[str, Dict[str, Any]] = {
         "min_samples": None,
         "p": None,
     },
-    # 'kmodes': {
-    #     "init": "Huang",
-    #     "verbose": 0,
-    #     "random_state": 42,
-    #     "n_jobs": -1
-    # },
-    # 'kprototypes': {
-    #     "init": "Huang",
-    #     "verbose": 0,
-    #     "random_state": 42,
-    #     "n_jobs": -1
-    # },
 }
 
 NEAREST_NEIGHBOURS = Literal["cosine", "l2"]

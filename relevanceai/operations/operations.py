@@ -1,8 +1,8 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from relevanceai._api import APIClient
 
-from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.cluster.cluster import ClusterOps
 from relevanceai.operations.vector import Vectorize
 from relevanceai.operations.vector import Search
 from relevanceai.operations.dr import ReduceDimensionsOps
@@ -25,9 +25,9 @@ class Operations(APIClient):
 
     def cluster(
         self,
-        model,
-        alias,
-        vector_fields,
+        model: str,
+        vector_fields: List[str],
+        alias: Optional[str] = None,
         **kwargs,
     ):
         ops = ClusterOps(
@@ -35,12 +35,12 @@ class Operations(APIClient):
             api_key=self.api_key,
             firebase_uid=self.firebase_uid,
             model=model,
+            alias=alias,
             **kwargs,
         )
-        return ops.fit(
+        return ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
-            alias=alias,
         )
 
     def dr(

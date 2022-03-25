@@ -68,9 +68,11 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         api_key: str,
         firebase_uid: str,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase, Any] = None,
+        alias: Optional[str] = None,
         cluster_field: str = "_cluster_",
         parent_alias: str = None,
     ):
+        self.alias = alias  # type: ignore
         self.parent_alias = parent_alias
         self.cluster_field = cluster_field
         if model is None:
@@ -720,7 +722,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     def fit(
         self,
         dataset_id: str,
-        alias: str,
         vector_fields: List[str],
         filters: Optional[List] = None,
         include_report: bool = True,
@@ -766,7 +767,6 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         """
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
-        self.alias = alias
 
         filters = [] if filters is None else filters
 

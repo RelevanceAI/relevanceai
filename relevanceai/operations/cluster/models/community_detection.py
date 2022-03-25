@@ -82,7 +82,7 @@ from relevanceai.utils.logger import FileLogger
 
 #         try:
 #             with FileLogger(log_file):
-#                 from sentence_transformers.util import community_detection
+# from sentence_transformers.util import community_detection
 #         except ModuleNotFoundError:
 #             raise ModuleNotFoundError(
 #                 "community_detection function not found. "
