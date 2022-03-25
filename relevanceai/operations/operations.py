@@ -2,10 +2,12 @@ from typing import List, Dict, Optional
 
 from relevanceai._api import APIClient
 
-from relevanceai.operations.cluster.cluster import ClusterOps
+from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.vector import Vectorize
 from relevanceai.operations.vector import Search
 from relevanceai.operations.dr import ReduceDimensionsOps
+
+from relevanceai.utils.decorators import deprecated
 
 
 class Operations(APIClient):
@@ -30,6 +32,27 @@ class Operations(APIClient):
         alias: Optional[str] = None,
         **kwargs,
     ):
+        ops = ClusterOps(
+            project=self.project,
+            api_key=self.api_key,
+            firebase_uid=self.firebase_uid,
+            model=model,
+            alias=alias,
+            **kwargs,
+        )
+        return ops(
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+        )
+
+    @deprecated(version="2.0", message="auto_cluster does not work as intended")
+    def auto_cluster(
+        self,
+        alias: str,
+        vector_fields: List[str],
+        **kwargs,
+    ):
+        model = alias.split("-")[0]
         ops = ClusterOps(
             project=self.project,
             api_key=self.api_key,
