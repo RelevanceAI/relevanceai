@@ -34,7 +34,10 @@ class APIError(RelevanceAIError):
     """Error related to API"""
 
     def __init__(self, *args, **kwargs):
-        message = API_ERROR
+        if args:
+            message = args[0]
+        else:
+            message = API_ERROR
         super().__init__(message)
 
 

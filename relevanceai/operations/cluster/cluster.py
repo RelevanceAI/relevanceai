@@ -58,11 +58,13 @@ class ClusterOps(APIClient):
                     else self.model.n_clusters
                 )
                 alias = f"{self.model_name}-{n_clusters}"
-            if hasattr(self.model, "k"):
+
+            elif hasattr(self.model, "k"):
                 n_clusters = (
                     self.n_clusters if self.n_clusters is not None else self.model.k
                 )
                 alias = f"{self.model_name}-{n_clusters}"
+
             else:
                 alias = self.model_name
 
@@ -305,4 +307,37 @@ class ClusterOps(APIClient):
             centroid_documents=centroid_documents,
         )
 
+        # link back to dashboard
         self._print_app_link()
+
+    def closest(
+        self,
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+    ):
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        return self.services.cluster.centroids.list_closest_to_center(
+            dataset_id=dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
+        )
+
+    def furthest(
+        self,
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+    ):
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        return self.services.cluster.centroids.list_furthest_from_center(
+            dataset_id=dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
+        )

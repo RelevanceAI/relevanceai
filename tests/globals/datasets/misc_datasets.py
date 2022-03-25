@@ -1,6 +1,6 @@
 import pytest
 
-from relevanceai.package_utils.integration_checks import is_sklearn_available
+from relevanceai.utils.integration_checks import is_sklearn_available
 
 if is_sklearn_available():
     from sklearn.cluster import KMeans
@@ -32,7 +32,6 @@ def clustered_dataset_id(test_client: Client, vector_documents: List[NamedTuple]
     dataset.cluster(
         model=KMeans(n_clusters=10),
         vector_fields=["sample_1_vector_"],
-        alias="kmeans-10",
     )
     yield test_dataset_id
 
