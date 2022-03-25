@@ -12,7 +12,7 @@ from relevanceai.constants import CONFIG
 from relevanceai.constants import TRANSIT_ENV_VAR
 
 from relevanceai.utils.json_encoder import json_encoder
-from relevanceai.utils.decorators.thread import thread
+from relevanceai.utils.decorators.thread import fire_and_forget
 
 
 def is_tracking_enabled():
@@ -36,7 +36,7 @@ def track(func: Callable):
         try:
             if is_tracking_enabled():
 
-                @thread
+                @fire_and_forget
                 def send_analytics():
                     properties = {}
                     if "firebase_uid" in kwargs:
