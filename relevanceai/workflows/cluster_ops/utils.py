@@ -1,5 +1,6 @@
 import os
 import json
+import warnings
 import getpass
 
 import numpy as np
@@ -8,6 +9,7 @@ from typing import Union, Callable, Optional, List, Dict, Any
 
 from doc_utils import DocUtils
 
+from relevanceai.dataset.crud.dataset_read import Read
 from relevanceai.workflows.cluster_ops.base import (
     ClusterBase,
     CentroidClusterBase,
@@ -15,14 +17,11 @@ from relevanceai.workflows.cluster_ops.base import (
     HDBSCANClusterBase,
     SklearnCentroidBase,
 )
-
 from relevanceai.dataset_interface import Dataset
-
 from relevanceai.package_utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
 )
-
 from relevanceai.workflows.cluster_ops.evaluate import ClusterEvaluate
 
 
@@ -412,3 +411,35 @@ class _ClusterOps(ClusterEvaluate):
             }
         ]
         return filters
+
+
+class _ClusterOpsShow(Read):
+    def __init__(self, df, is_image_field: bool):
+        self.df = df
+        if is_image_field:
+            self.text_fields = []
+            self.image_fields = df.columns.tolist()
+        else:
+            self.text_fields = df.columns.tolist()
+            self.image_fields = []
+
+    def _repr_html_(self):
+        try:
+            documents = self.df.to_dict(orient="records")
+            return self._show_json(documents, return_html=True)
+        except Exception as e:
+            warnings.warn(
+                "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+                + str(e)
+            )
+            return self.df._repr_html_()
+
+    def _show_json(self, documents, **kw):
+        from jsonshower import show_json
+
+        return show_json(
+            documents,
+            text_fields=self.text_fields,
+            image_fields=self.image_fields,
+            **kw,
+        )
