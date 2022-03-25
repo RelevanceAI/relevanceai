@@ -17,13 +17,11 @@ from datetime import datetime
 
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from relevanceai._api.endpoints.api_client import APIEndpointsClient
-from relevanceai._api.batch.chunk import Chunker
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
 
+from relevanceai.utils import make_id
 from relevanceai.utils.logger import FileLogger
-from relevanceai.utils.helpers import make_id
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils.decorators.version import beta
 from relevanceai.utils.decorators.analytics import track

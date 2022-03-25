@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from relevanceai.utils.helpers import make_id
+from relevanceai.utils import make_id
 
 
 def pandas_document():

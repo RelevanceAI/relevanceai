@@ -11,7 +11,7 @@ from relevanceai._api.endpoints.deployables.deployables import DeployableClient
 from relevanceai.constants.errors import FieldNotFoundError
 
 from relevanceai.utils.datasets import ExampleDatasets
-from relevanceai.utils.helpers import make_id
+from relevanceai.utils import make_id
 
 from doc_utils import DocUtils
 

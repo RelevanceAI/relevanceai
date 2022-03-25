@@ -1,6 +1,6 @@
 import random
 
-from relevanceai.utils.helpers import make_id
+from relevanceai.utils import make_id
 
 from tests.globals.constants import generate_random_vector
 

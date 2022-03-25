@@ -15,7 +15,7 @@ from relevanceai._api import APIClient
 
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.helpers import make_id
+from relevanceai.utils import make_id
 
 from relevanceai.constants.warning import Warning
 

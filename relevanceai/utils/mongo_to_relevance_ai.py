@@ -42,7 +42,7 @@ import warnings
 from tqdm.auto import tqdm
 from typing import List
 
-from relevanceai.utils.helpers import make_id
+from relevanceai.utils import make_id
 from relevanceai.constants.warning import Warning
 
 try:

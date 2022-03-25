@@ -2,7 +2,7 @@ from typing import Dict
 
 from datetime import datetime
 
-from relevanceai.utils.helpers import make_id
+from relevanceai.utils import make_id
 
 
 def datetime_document() -> Dict:
