@@ -874,8 +874,9 @@ class BatchInsertClient(BatchRetrieveClient):
                         failed_ids += [i["_id"] for i in chunk["documents"]]
 
                 # Update documents to retry which have failed
-                warnings.warn(Warning.UPLOAD_FAILED)
-                documents = [i for i in documents if i["_id"] in failed_ids]
+                if failed_ids:
+                    warnings.warn(Warning.UPLOAD_FAILED)
+                    documents = [i for i in documents if i["_id"] in failed_ids]
 
             else:
                 break
