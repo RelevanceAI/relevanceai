@@ -55,9 +55,9 @@ class Dataset(IO, Read, Write, Operations):
             # avoid re-inserting if it already exists
             if self.dataset_id not in self.datasets.list()["datasets"]:
                 from relevanceai.utils.datasets import mock_documents
-                from relevanceai.utils.decorators.analytics import thread
+                from relevanceai.utils.decorators.analytics import fire_and_forget
 
-                @thread
+                @fire_and_forget
                 def add_mock_dataset():
                     self.upsert_documents(mock_documents(100))
 

@@ -1,6 +1,9 @@
 import pytest
 
-from sklearn.cluster import KMeans
+from relevanceai.package_utils.integration_checks import is_sklearn_available
+
+if is_sklearn_available():
+    from sklearn.cluster import KMeans
 
 from typing import Dict, List, NamedTuple
 

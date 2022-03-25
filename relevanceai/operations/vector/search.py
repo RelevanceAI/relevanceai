@@ -25,18 +25,18 @@ class Search(APIClient):
     def vector_search(
         self,
         multivector_query: List,
-        positive_document_ids: dict = {},
-        negative_document_ids: dict = {},
+        positive_document_ids: Optional[dict] = None,
+        negative_document_ids: Optional[dict] = None,
         vector_operation="sum",
         approximation_depth=0,
         sum_fields=True,
         page_size=20,
         page=1,
         similarity_metric="cosine",
-        facets: list = [],
-        filters: list = [],
+        facets: Optional[list] = None,
+        filters: Optional[list] = None,
         min_score=0,
-        select_fields: list = [],
+        select_fields: Optional[list] = None,
         include_vector=False,
         include_count=True,
         asc=False,
@@ -148,6 +148,16 @@ class Search(APIClient):
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
+
+        positive_document_ids = (
+            {} if positive_document_ids is None else positive_document_ids
+        )
+        negative_document_ids = (
+            {} if negative_document_ids is None else negative_document_ids
+        )
+        facets = [] if facets is None else facets
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
 
         return self.services.search.vector(
             dataset_id=self.dataset_id,

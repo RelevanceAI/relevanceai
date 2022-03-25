@@ -1,7 +1,7 @@
 import threading
 
 
-def thread(f):
+def fire_and_forget(f):
     """
     Use as such:
 
