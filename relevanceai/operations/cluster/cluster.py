@@ -13,6 +13,7 @@ class ClusterOps(APIClient):
         api_key: str,
         firebase_uid: str,
         model: str,
+        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         n_clusters: Optional[int] = None,
         config: Optional[Dict[str, Any]] = None,
@@ -21,6 +22,8 @@ class ClusterOps(APIClient):
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
+
+        self.vector_field = None if vector_fields is None else vector_fields[0]
 
         self.config = {} if config is None else config  # type: ignore
         if n_clusters is not None:
@@ -338,6 +341,6 @@ class ClusterOps(APIClient):
 
         return self.services.cluster.centroids.list_furthest_from_center(
             dataset_id=dataset_id,
-            vector_fields=[vector_field],
+            vector_fields=[vector_field],  # type: ignore
             alias=alias,
         )
