@@ -107,6 +107,7 @@ In the example below, we show how you calculate centroids or medoids for HDBSCAN
 import warnings
 import pandas as pd
 import numpy as np
+import functools
 
 from relevanceai.constants.warning import Warning
 from relevanceai.utils.integration_checks import (
@@ -115,21 +116,21 @@ from relevanceai.utils.integration_checks import (
 )
 from relevanceai.reports.cluster.grading import get_silhouette_grade
 from typing import Union, List, Dict, Any, Optional
-import functools
 from doc_utils import DocUtils
 from relevanceai.utils.decorators.analytics import track_event_usage
 
-from sklearn.metrics import (
-    davies_bouldin_score,
-    calinski_harabasz_score,
-    silhouette_samples,
-)
-from sklearn.metrics.pairwise import (
-    pairwise_distances,
-)
-from sklearn.cluster import MiniBatchKMeans, KMeans
-from sklearn.tree import _tree, DecisionTreeClassifier
-from sklearn.neighbors import NearestNeighbors
+if is_sklearn_available():
+    from sklearn.metrics import (
+        davies_bouldin_score,
+        calinski_harabasz_score,
+        silhouette_samples,
+    )
+    from sklearn.metrics.pairwise import (
+        pairwise_distances,
+    )
+    from sklearn.cluster import MiniBatchKMeans, KMeans
+    from sklearn.tree import _tree, DecisionTreeClassifier
+    from sklearn.neighbors import NearestNeighbors
 
 from relevanceai.constants.warning import Warning
 
