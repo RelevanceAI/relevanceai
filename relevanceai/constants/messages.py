@@ -28,4 +28,4 @@ class Messages:
 
     WELCOME_MESSAGE = """Welcome to RelevanceAI. Logged in as {}."""
 
-    TOKEN_MESSAGE = "Activation token (you can find it here: {} )"
+    TOKEN_MESSAGE = "Activation token (you can find it here: {} )\n"

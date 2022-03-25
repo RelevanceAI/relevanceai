@@ -1,3 +1,5 @@
+import getpass
+
 from relevanceai.constants.messages import Messages
 from relevanceai.constants.constants import (
     SIGNUP_URL,
@@ -32,9 +34,7 @@ def process_token(token: str):
     return data
 
 
-def token_to_auth(token: str):
-    if token:
-        return process_token(token)
-    else:
-        print(Messages.TOKEN_MESSAGE.format(SIGNUP_URL))
-        return process_token(token)
+def auth():
+    print(Messages.TOKEN_MESSAGE.format(SIGNUP_URL))
+    token = getpass.getpass(f"Activation Token: ")
+    return process_token(token)

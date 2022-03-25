@@ -70,13 +70,8 @@ class Client(APIClient, DocUtils):
             If True, it forces you to refresh your client
         """
 
-        if not token:
-            if all(
-                secret is None for secret in [project, api_key, region, firebase_uid]
-            ):
-                raise TokenNotFoundError
-            else:
-                token = f"{project}:{api_key}:{region}:{firebase_uid}"
+        if token is None:
+            token = auth()
         self.token = token
 
         try:
@@ -85,7 +80,7 @@ class Client(APIClient, DocUtils):
             pass
 
         if token:
-            credentials = token_to_auth(token)
+            credentials = process_token(token)
 
         try:
             self.project = credentials["project"]
@@ -106,6 +101,14 @@ class Client(APIClient, DocUtils):
             self.region = credentials["region"]
         except Exception:
             raise RegionFoundError
+
+        if all(
+            secret is None
+            for secret in [self.project, self.api_key, self.region, self.firebase_uid]
+        ):
+            raise TokenNotFoundError
+        else:
+            token = f"{project}:{api_key}:{region}:{firebase_uid}"
 
         self._identify()
 
