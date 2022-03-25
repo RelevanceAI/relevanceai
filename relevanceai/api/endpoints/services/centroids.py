@@ -1,5 +1,5 @@
 import asyncio
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from typing import Optional, Dict, Any, List
 
 

@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 
+from relevanceai.package_utils.make_id import _make_id
 
-def pandas_document(_id: str):
-    return {
-        "_id": _id,
+
+def pandas_document():
+    document = {
         "sample_1_pandas": pd.DataFrame(
             np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
         ),
@@ -16,3 +17,5 @@ def pandas_document(_id: str):
             columns=["a", "b", "c"],
         ),
     }
+    document["_id"] = _make_id(document)
+    return document

@@ -1,12 +1,12 @@
 """API Client
 """
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.admin.admin import AdminClient
 from relevanceai.api.endpoints.datasets.datasets import DatasetsClient
 from relevanceai.api.endpoints.services.services import ServicesClient
 from relevanceai.api.endpoints.reports.reports import ReportsClient
 from relevanceai.api.endpoints.deployables.deployables import DeployableClient
-from relevanceai.datasets import ExampleDatasets
+from relevanceai.package_utils.datasets import ExampleDatasets
 
 
 def str2bool(v):

@@ -7,7 +7,7 @@ Submodules
 relevanceai.dataset\_api.centroids module
 -----------------------------------------
 
-.. automodule:: relevanceai.dataset_api.centroids
+.. automodule:: relevanceai.dataset_crud.centroids
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ relevanceai.dataset\_api.centroids module
 relevanceai.dataset\_api.dataset module
 ---------------------------------------
 
-.. automodule:: relevanceai.dataset_api.dataset
+.. automodule:: relevanceai.dataset_crud.dataset
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ relevanceai.dataset\_api.dataset module
 relevanceai.dataset\_api.groupby module
 ---------------------------------------
 
-.. automodule:: relevanceai.dataset_api.groupby
+.. automodule:: relevanceai.dataset_crud.groupby
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ relevanceai.dataset\_api.groupby module
 Module contents
 ---------------
 
-.. automodule:: relevanceai.dataset_api
+.. automodule:: relevanceai.dataset_crud
    :members:
    :undoc-members:
    :show-inheritance:

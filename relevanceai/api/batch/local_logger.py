@@ -3,8 +3,8 @@
 import os
 from os import PathLike
 from typing import Union
-from relevanceai.config import CONFIG
-from relevanceai.logger import LoguruLogger
+from relevanceai.package_utils.config import CONFIG
+from relevanceai.package_utils.logger import LoguruLogger
 
 
 class PullUpdatePushLocalLogger(LoguruLogger):

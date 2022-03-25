@@ -4,13 +4,16 @@
 from typing import Callable
 
 from relevanceai.api.batch.batch_insert import BatchInsertClient
+from relevanceai.api.batch.batch_insert_async import BatchInsertAsync
 from relevanceai.api.batch.batch_retrieve import BatchRetrieveClient
 from relevanceai.api.endpoints.client import APIClient
-from relevanceai.config import CONFIG
-from relevanceai.utils import Utils
+from relevanceai.package_utils.config import CONFIG
+from relevanceai.package_utils.utils import Utils
 
 
-class BatchAPIClient(BatchInsertClient, Utils, BatchRetrieveClient, APIClient):
+class BatchAPIClient(
+    BatchInsertClient, BatchInsertAsync, Utils, BatchRetrieveClient, APIClient
+):
     """Batch API client"""
 
     def batch_insert(self):

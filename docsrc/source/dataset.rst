@@ -12,27 +12,49 @@ It is instantiated like this:
 
     from relevanceai import Client
     client = Client()
-    df = client.Dataset("sample_dataset_id")
-    df.head()
+    ds = client.Dataset("sample_dataset_id")
+    ds.head()
 
-.. autoclass:: relevanceai.dataset_api.dataset_write.Write
+You can also easily access metadata using the following: 
+
+.. code-block::
+
+    import time
+    ds = client.Dataset("_mock_dataset_")
+    ds.metadata['value'] = 3
+    ds.metadata['strong_values'] = 10
+    time.sleep(1)
+    ds.metadata
+
+.. autoclass:: relevanceai.dataset.crud.dataset_write.Write
     :members:
-    :special-members: relevanceai.dataset_api.dataset.Write.insert_csv
+    :special-members: relevanceai.dataset.crud.write.Write.insert_csv
 
-.. autoclass:: relevanceai.dataset_api.dataset_read.Read
+.. autoclass:: relevanceai.dataset.crud.dataset_read.Read
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset_stats.Stats
-    :members:
-
-.. autoclass:: relevanceai.dataset_api.dataset_export.Export
-    :members:
-
-.. autoclass:: relevanceai.dataset_api.dataset_series.Series
+.. autoclass:: relevanceai.dataset.search.search.Search
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_api.dataset_operations.Operations
+.. autoclass:: relevanceai.dataset.statistics.statistics.Statistics
+    :members:
+
+.. autoclass:: relevanceai.dataset.vis.plot.Plot
+    :members:
+
+.. autoclass:: relevanceai.dataset.export.interface.Export
+    :members:
+
+.. autoclass:: relevanceai.dataset.crud.dataset_series.Series
+    :members:
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset.crud.dataset_metadata.Metadata
+    :members:
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset.ops.dataset_operations.Operations
     :members:
     :exclude-members: label_with_model_from_dataset, label_vector, label_document

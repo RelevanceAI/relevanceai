@@ -1,41 +1,30 @@
-import os
-import random
-import string
 import pytest
 
 from relevanceai import Client
-from relevanceai.datasets import mock_documents
 
-REGION = os.getenv("TEST_REGION")
-
-
-SAMPLE_DATASET_DATASET_PREFIX = "_sample_integration_test_dataset_"
-
-
-def generate_random_string(string_length: int = 5) -> str:
-    """Generate a random string of letters and numbers"""
-    return "".join(
-        random.choice(string.ascii_uppercase + string.digits)
-        for _ in range(string_length)
-    )
-
-
-def generate_dataset_id():
-    return SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
+from test_integrations.constants import (
+    REGION,
+    SAMPLE_DATASET_DATASET_PREFIX,
+    TEST_API_KEY,
+    TEST_PROJECT,
+    TEST_US_API_KEY,
+    TEST_US_PROJECT,
+)
+from test_integrations.utils import generate_dataset_id
 
 
 @pytest.fixture(scope="session")
 def test_project():
     if REGION == "us-east-1":
-        return os.getenv("TEST_US_PROJECT")
-    return os.getenv("TEST_PROJECT")
+        return TEST_US_PROJECT
+    return TEST_PROJECT
 
 
 @pytest.fixture(scope="session")
 def test_api_key():
     if REGION == "us-east-1":
-        return os.getenv("TEST_US_API_KEY")
-    return os.getenv("TEST_API_KEY")
+        return TEST_US_API_KEY
+    return TEST_API_KEY
 
 
 @pytest.fixture(scope="session")
@@ -44,7 +33,7 @@ def test_firebase_uid():
 
 
 @pytest.fixture(scope="session")
-def test_client(test_project, test_api_key, test_firebase_uid):
+def test_client(test_project: str, test_api_key: str, test_firebase_uid: str):
     if REGION is None:
         client = Client(
             project=test_project, api_key=test_api_key, firebase_uid=test_firebase_uid
@@ -65,14 +54,20 @@ def test_client(test_project, test_api_key, test_firebase_uid):
 
     # While unnecessary since test_dataset is deleted upon return, put in
     # place for future use.
-    for d in client.datasets.list()["datasets"]:
-        if d.startswith(SAMPLE_DATASET_DATASET_PREFIX):
-            client.delete_dataset(d)
+    for dataset in client.datasets.list()["datasets"]:
+        if dataset.startswith(SAMPLE_DATASET_DATASET_PREFIX):
+            client.delete_dataset(dataset)
 
 
+# scope set to function so that a new ID is generated for each test
 @pytest.fixture(scope="function")
-def test_dataset(test_client):
-    docs = [
+def test_dataset_id():
+    return generate_dataset_id()
+
+
+@pytest.fixture(scope="session")
+def test_documents():
+    return [
         {
             "_id": "1",
             "data": "xkcd_existential",
@@ -119,8 +114,3 @@ def test_dataset(test_client):
             "image_url": "https://static.scientificamerican.com/sciam/cache/file/7A715AD8-449D-4B5A-ABA2C5D92D9B5A21_source.png",
         },
     ]
-
-    ds = test_client.Dataset(generate_dataset_id())
-    ds.upsert_documents(docs)
-    yield ds
-    ds.delete()

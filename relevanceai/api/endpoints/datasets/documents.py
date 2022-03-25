@@ -1,5 +1,5 @@
 from typing import List, Optional
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 
 
 class DocumentsClient(_Base):
@@ -249,31 +249,24 @@ class DocumentsClient(_Base):
         Asynchronous version of get_where. See get_where for more detials.
 
         Parameters
-        ----------
+        -------------
+
         dataset_id: str
             Unique name of dataset
-
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
-
         cursor: str
             Cursor to paginate the document retrieval
-
         page_size: int
             Size of each page of results
-
         include_vector: bool
             Include vectors in the search results
-
         sort: list
             Fields to sort by. For each field, sort by descending or ascending. If you are using descending by datetime, it will get the most recent ones.
-
         filters: list
             Query for filtering the search results
-
         is_random: bool
             If True, retrieves doucments randomly. Cannot be used with cursor.
-
         random_state: int
             Random Seed for retrieving random documents.
         """

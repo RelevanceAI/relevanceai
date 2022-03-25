@@ -2,7 +2,7 @@
 """
 from typing import List, Optional
 
-from relevanceai.base import _Base
+from relevanceai.package_utils.base import _Base
 from relevanceai.api.endpoints.datasets.documents import DocumentsClient
 from relevanceai.api.endpoints.datasets.monitor import MonitorClient
 from relevanceai.api.endpoints.datasets.tasks import TasksClient
