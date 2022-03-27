@@ -328,7 +328,7 @@ class CentroidsClient(_Base):
     def list_furthest_from_center(
         self,
         dataset_id: str,
-        vector_fields: List[str],
+        vector_fields: List,
         alias: str,
         centroid_vector_fields: Optional[List] = None,
         cluster_ids: Optional[List] = None,
