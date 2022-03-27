@@ -13,7 +13,6 @@ MAX_CACHESIZE = (
 TRANSIT_ENV_VAR = "_IS_ANALYTICS_IN_TRANSIT"
 
 GLOBAL_DATASETS = ["_mock_dataset_"]
-
 DATASETS = [
     "games",
     "ecommerce_1",
@@ -23,6 +22,7 @@ DATASETS = [
     "news",
     "flipkart",
     "realestate2",
+    "toy_image_caption_coco_image_encoded",
 ]
 
 MB_TO_BYTE = 1024 * 1024
