@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from relevanceai.package_utils.make_id import _make_id
+from relevanceai.utils import make_id
 
 
 def complex_nested_document():
@@ -37,7 +37,7 @@ def complex_nested_document():
             },
         },
     }
-    document["_id"] = _make_id(document)
+    document["_id"] = make_id(document)
     return document
 
 
@@ -48,5 +48,5 @@ def simple_nested_document():
         "col3": {"subcol5": random.random(), "subcol6": random.random()},
         "col4": {"subcol7": random.random(), "subcol8": random.random()},
     }
-    document["_id"] = _make_id(document)
+    document["_id"] = make_id(document)
     return document

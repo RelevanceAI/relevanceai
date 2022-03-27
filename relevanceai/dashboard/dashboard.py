@@ -3,9 +3,9 @@ import webbrowser
 from abc import ABC
 from typing import Optional
 
-from relevanceai.api.endpoints.datasets.datasets import DatasetsClient
-from relevanceai.api.endpoints.deployables.deployables import DeployableClient
-from relevanceai.package_utils.base import _Base
+from relevanceai._api.endpoints.datasets.datasets import DatasetsClient
+from relevanceai._api.endpoints.deployables.deployables import DeployableClient
+from relevanceai.utils.base import _Base
 
 
 class Dashboard(ABC, _Base):
