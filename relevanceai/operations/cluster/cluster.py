@@ -15,7 +15,7 @@ class ClusterOps(APIClient):
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         n_clusters: Optional[int] = None,
-        config: Optional[Dict[str, Any]] = None,
+        cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
         outlier_label: str = "outlier",
         **kwargs,
@@ -36,7 +36,7 @@ class ClusterOps(APIClient):
 
         self.vector_field = None if vector_fields is None else vector_fields[0]
 
-        self.config = {} if config is None else config  # type: ignore
+        self.config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
             self.config["n_clusters"] = n_clusters  # type: ignore
 
