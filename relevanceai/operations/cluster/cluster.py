@@ -201,13 +201,13 @@ class ClusterOps(APIClient):
 
     def _format_labels(self, labels: np.ndarray) -> List[str]:
         labels = labels.flatten().tolist()
-        labels = [  # type: ignore
+        cluster_labels = [
             f"cluster-{str(label)}"
             if label == self.outlier_value
             else self.outlier_label
             for label in labels
         ]
-        return labels  # type: ignore
+        return cluster_labels
 
     def _get_centroid_documents(
         self, vectors: np.ndarray, labels: List[str]
@@ -295,7 +295,8 @@ class ClusterOps(APIClient):
         show_progress_bar: bool = True,
     ) -> None:
         if not isinstance(dataset_id, str):
-            dataset_id = dataset_id.dataset_id
+            if hasattr(dataset_id, "dataset_id"):
+                dataset_id = dataset_id.dataset_id
 
         self.dataset_id = dataset_id
         vector_field = vector_fields[0]
