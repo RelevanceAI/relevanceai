@@ -268,7 +268,13 @@ class ClusterOps(APIClient):
     def _fit_predict(
         self, documents: List[Dict[str, Any]], vector_field: str
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-        vectors = np.array([document[vector_field] for document in documents])
+        vectors = np.array(
+            [
+                document[vector_field]
+                for document in documents
+                if document.get(vector_field)
+            ]
+        )
 
         if self.package == "sklearn":
             labels = self.model.fit_predict(vectors)
