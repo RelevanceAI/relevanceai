@@ -60,8 +60,8 @@ class ExampleDatasets:
         select_fields: Optional[List[str]] = None,
         include_vector: bool = True,
     ):
-        from relevanceai.package_utils.logger import FileLogger
-        from relevanceai.interfaces import Client
+        from relevanceai.utils.logger import FileLogger
+        from relevanceai import Client
 
         select_fields = [] if select_fields is None else select_fields
         with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
