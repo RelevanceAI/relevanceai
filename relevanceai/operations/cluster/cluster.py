@@ -11,7 +11,7 @@ class ClusterOps(APIClient):
         project: str,
         api_key: str,
         firebase_uid: str,
-        model: str,
+        model: Union[str, Any],
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         n_clusters: Optional[int] = None,
@@ -26,8 +26,30 @@ class ClusterOps(APIClient):
         Parameters
         -------------
 
-        outlier_label: int
-            The outlier label to be called `outlier`
+        model: Union[str, Any]
+            The string of clustering algorithm, class of clustering algorithm or custom clustering class.
+            If custom, the model must contain the method for fit_predict and must output a numpy array for labels
+
+        vector_fields: Optional[List[str]] = None
+            A list of vector_fields to cluster over
+
+        alias: Optional[str] = None
+            An alias to be given for clustering.
+            If no alias is provided, alias becomes the cluster model name hypen n_clusters e.g. (kmeans-5, birch-8)
+
+        n_clusters: Optional[int] = None
+            Number of clusters to find, should the argument be required of the algorithm.
+            If None, n_clusters defaults to 8 for sklearn models ONLY.
+
+        cluster_config: Optional[Dict[str, Any]] = None
+            Hyperparameters for the clustering model.
+            See the documentation for supported clustering models for list of hyperparameters
+
+        outlier_value: int = -1
+            For unsupervised clustering models like OPTICS etc. outliers are given the integer label -1
+
+        outlier_label: str = "outlier"
+            When viewing the cluster app dashboard, outliers will be prefixed with outlier_label
 
         """
         self.project = project
