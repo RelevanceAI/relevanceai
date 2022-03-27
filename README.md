@@ -115,6 +115,7 @@ To get started with development, ensure you have pytest and mypy installed. Thes
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+pip install -U pip
 
 pip install -r requirements-dev.txt
 python -m pip install pytest mypy
