@@ -201,11 +201,13 @@ class ClusterOps(APIClient):
 
     def _format_labels(self, labels: np.ndarray) -> List[str]:
         labels = labels.flatten().tolist()
-        labels = [
-            f"cluster-{label}" if label == self.outlier_value else self.outlier_label
+        labels = [  # type: ignore
+            f"cluster-{str(label)}"
+            if label == self.outlier_value
+            else self.outlier_label
             for label in labels
         ]
-        return labels
+        return labels  # type: ignore
 
     def _get_centroid_documents(
         self, vectors: np.ndarray, labels: List[str]
