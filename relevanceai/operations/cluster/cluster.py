@@ -85,7 +85,7 @@ class ClusterOps(APIClient):
         )
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
-        self.forward(dataset_id=dataset_id, vector_fields=vector_fields)
+        self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
 
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here
@@ -310,7 +310,7 @@ class ClusterOps(APIClient):
         link = CLUSTER_APP_LINK.format(self.dataset_id)
         print(link)
 
-    def forward(
+    def operate(
         self,
         dataset_id: Union[str, Any],
         vector_fields: List[str],
