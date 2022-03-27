@@ -16,8 +16,20 @@ class ClusterOps(APIClient):
         alias: Optional[str] = None,
         n_clusters: Optional[int] = None,
         config: Optional[Dict[str, Any]] = None,
+        outlier_value: int = -1,
+        outlier_label: str = "outlier",
         **kwargs,
     ):
+        """
+        ClusterOps object
+
+        Parameters
+        -------------
+
+        outlier_label: int
+            The outlier label to be called `outlier`
+
+        """
         self.project = project
         self.api_key = api_key
         self.firebase_uid = firebase_uid
@@ -40,6 +52,8 @@ class ClusterOps(APIClient):
             self.n_clusters = n_clusters
 
         self.alias = self._get_alias(alias)
+        self.outlier_value = outlier_value
+        self.outlier_label = outlier_label
 
         super().__init__(
             project=project,
@@ -186,13 +200,14 @@ class ClusterOps(APIClient):
         return model
 
     def _format_labels(self, labels: np.ndarray) -> List[str]:
-        if labels.min() < 0:
-            labels += 1
-
         labels = labels.flatten().tolist()
-        labels = [f"cluster-{label}" for label in labels]
-
-        return labels
+        labels = [  # type: ignore
+            f"cluster-{str(label)}"
+            if label == self.outlier_value
+            else self.outlier_label
+            for label in labels
+        ]
+        return labels  # type: ignore
 
     def _get_centroid_documents(
         self, vectors: np.ndarray, labels: List[str]
