@@ -25,6 +25,7 @@ DATASETS = [
     "news",
     "flipkart",
     "realestate2",
+    "toy_image_caption_coco_image_encoded",
 ]
 
 
@@ -64,7 +65,10 @@ class ExampleDatasets:
 
     @staticmethod
     def _get_dummy_dataset(
-        db_name, number_of_documents, select_fields: Optional[List[str]] = None
+        db_name,
+        number_of_documents,
+        select_fields: Optional[List[str]] = None,
+        include_vector: bool = True,
     ):
         from relevanceai.package_utils.logger import FileLogger
         from relevanceai.interfaces import Client
@@ -78,6 +82,7 @@ class ExampleDatasets:
                 db_name,
                 number_of_documents=number_of_documents,
                 select_fields=select_fields,
+                include_vector=include_vector,
             )
             client.config.reset()
             return documents
@@ -611,6 +616,34 @@ def get_titanic_dataset(
     for d in docs:
         d["value_vector_"] = eval(d["value_vector_"])
     return docs
+
+
+def get_coco_dataset(
+    number_of_documents: int = 1000,
+    include_vector: bool = True,
+    select_fields: Optional[list] = None,
+):
+    """
+    Get the coco dataset
+    """
+    select_fields = [] if select_fields is None else select_fields
+    if number_of_documents is None:
+        number_of_documents = 50
+
+    documents = ExampleDatasets._get_dummy_dataset(
+        "toy_image_caption_coco_image_encoded",
+        number_of_documents,
+        select_fields,
+        include_vector=include_vector,
+    )
+
+    # todo: fix the clustering results in the original dataset
+    # insert_documents fails if they are included
+    for doc in documents:
+        if "_clusters_" in doc:
+            del doc["_clusters_"]
+
+    return documents
 
 
 ### For backwards compatability
