@@ -1,9 +1,8 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
-
 import numpy as np
-
+import warnings
+from typing import Any, Dict, List, Optional, Tuple, Union
 from relevanceai._api import APIClient
-from relevanceai.constants import CLUSTER_APP_LINK
+from relevanceai.constants import CLUSTER_APP_LINK, Warning
 
 
 class ClusterOps(APIClient):
@@ -53,6 +52,7 @@ class ClusterOps(APIClient):
         self.forward(dataset_id=dataset_id, vector_fields=vector_fields)
 
     def _get_alias(self, alias: Any) -> str:
+        # Auto-generates alias here
         if alias is None:
             if hasattr(self.model, "n_clusters"):
                 n_clusters = (
@@ -71,6 +71,7 @@ class ClusterOps(APIClient):
             else:
                 alias = self.model_name
 
+            Warning.MISSING_ALIAS.format(alias=alias)
         return alias.lower()
 
     def _get_package(self, model):
@@ -88,7 +89,7 @@ class ClusterOps(APIClient):
             package = "hdbscan"
 
         elif "community_detection" in model_name:
-            package = "community_detection"
+            package = "sentence-transformers"
 
         return package
 
@@ -101,80 +102,82 @@ class ClusterOps(APIClient):
             self.package = "custom"
             return model
 
-        if model == "affinitypropagation":
-            from sklearn.cluster import AffinityPropagation
+        if isinstance(model, str):
+            if model == "affinitypropagation":
+                from sklearn.cluster import AffinityPropagation
 
-            model = AffinityPropagation(**self.config)
+                model = AffinityPropagation(**self.config)
 
-        elif model == "agglomerativeclustering":
-            from sklearn.cluster import AgglomerativeClustering
+            elif model == "agglomerativeclustering":
+                from sklearn.cluster import AgglomerativeClustering
 
-            model = AgglomerativeClustering(**self.config)
+                model = AgglomerativeClustering(**self.config)
 
-        elif model == "birch":
-            from sklearn.cluster import Birch
+            elif model == "birch":
+                from sklearn.cluster import Birch
 
-            model = Birch(**self.config)
+                model = Birch(**self.config)
 
-        elif model == "dbscan":
-            from sklearn.cluster import DBSCAN
+            elif model == "dbscan":
+                from sklearn.cluster import DBSCAN
 
-            model = DBSCAN(**self.config)
+                model = DBSCAN(**self.config)
 
-        elif model == "optics":
-            from sklearn.cluster import OPTICS
+            elif model == "optics":
+                from sklearn.cluster import OPTICS
 
-            model = OPTICS(**self.config)
+                model = OPTICS(**self.config)
 
-        elif model == "kmeans":
-            from sklearn.cluster import KMeans
+            elif model == "kmeans":
+                from sklearn.cluster import KMeans
 
-            model = KMeans(**self.config)
+                model = KMeans(**self.config)
 
-        elif model == "featureagglomeration":
-            from sklearn.cluster import FeatureAgglomeration
+            elif model == "featureagglomeration":
+                from sklearn.cluster import FeatureAgglomeration
 
-            model = FeatureAgglomeration(**self.config)
+                model = FeatureAgglomeration(**self.config)
 
-        elif model == "meanshift":
-            from sklearn.cluster import MeanShift
+            elif model == "meanshift":
+                from sklearn.cluster import MeanShift
 
-            model = MeanShift(**self.config)
+                model = MeanShift(**self.config)
 
-        elif model == "minibatchkmeans":
-            from sklearn.cluster import MiniBatchKMeans
+            elif model == "minibatchkmeans":
+                from sklearn.cluster import MiniBatchKMeans
 
-            model = MiniBatchKMeans(**self.config)
+                model = MiniBatchKMeans(**self.config)
 
-        elif model == "spectralclustering":
-            from sklearn.cluster import SpectralClustering
+            elif model == "spectralclustering":
+                from sklearn.cluster import SpectralClustering
 
-            model = SpectralClustering(**self.config)
+                model = SpectralClustering(**self.config)
 
-        elif model == "spectralbiclustering":
-            from sklearn.cluster import SpectralBiclustering
+            elif model == "spectralbiclustering":
+                from sklearn.cluster import SpectralBiclustering
 
-            model = SpectralBiclustering(**self.config)
+                model = SpectralBiclustering(**self.config)
 
-        elif model == "spectralcoclustering":
-            from sklearn.cluster import SpectralCoclustering
+            elif model == "spectralcoclustering":
+                from sklearn.cluster import SpectralCoclustering
 
-            model = SpectralCoclustering(**self.config)
+                model = SpectralCoclustering(**self.config)
 
-        elif model == "hdbscan":
-            from hdbscan import HDBSCAN
+            elif model == "hdbscan":
+                from hdbscan import HDBSCAN
 
-            model = HDBSCAN(**self.config)
+                model = HDBSCAN(**self.config)
 
-        elif model == "communitydetection":
-            from sentence_transformers.util import community_detection
+            elif model == "community_detection":
+                # TODO: this is a callable (?)
+                from sentence_transformers.util import community_detection
 
-            model = community_detection
+                model = community_detection
 
-        elif "faiss" in model:
-            from faiss import Kmeans
+            elif "faiss" in model:
+                from faiss import Kmeans
 
-            model = Kmeans(**self.config)
+                model = Kmeans(**self.config)
 
         else:
             # TODO: this needs to be referenced from relevance.constants.errors
@@ -242,7 +245,8 @@ class ClusterOps(APIClient):
             self.model.train(vectors)
             labels = self.model.assign(vectors)[1]
 
-        elif self.package == "community_detection":
+        elif self.package == "sentencetransformers":
+            # TODO: make teh config here better
             labels = self.model(vectors)
             labels = np.array(labels)
 
@@ -344,3 +348,7 @@ class ClusterOps(APIClient):
             vector_fields=[vector_field],  # type: ignore
             alias=alias,
         )
+
+    # Convenience functions
+    list_closest = closest
+    list_furthest = furthest

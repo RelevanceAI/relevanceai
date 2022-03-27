@@ -31,3 +31,5 @@ class Warning:
     MISSING_PACKAGE = "You are missing a package."
 
     DEFAULT_MODEL = "No model selected, defaulting to sklearn implementation of KMeans with 10 clusters"
+
+    MISSING_ALIAS = "No alias is provided. Auto-generating one for you - `{alias}`."
