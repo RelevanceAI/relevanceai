@@ -71,9 +71,6 @@ class Series(APIClient):
         text_fields: Optional[List[str]] = None,
     ):
         super().__init__(credentials)
-        self.project = credentials.project
-        self.api_key = credentials.api_key
-        self.firebase_uid = credentials.firebase_uid
         self.dataset_id = dataset_id
         self.field = field
         self.image_fields = [] if image_fields is None else image_fields

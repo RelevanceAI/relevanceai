@@ -24,9 +24,6 @@ class Dataset(IO, Read, Write, Operations):
         **kwargs,
     ):
         self.credentials = credentials
-        self.project = self.credentials.project
-        self.api_key = self.credentials.api_key
-        self.firebase_uid = self.credentials.firebase_uid
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
         self.image_fields = [] if image_fields is None else image_fields

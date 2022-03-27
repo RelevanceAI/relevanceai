@@ -51,11 +51,9 @@ class AutoClusterOps(CommunityDetection):
         from relevanceai.operations.cluster import ClusterOps
 
         clusterer = ClusterOps(
+            credentials=self.credentials,
             model=model,
             alias=alias,
-            api_key=self.api_key,
-            project=self.project,
-            firebase_uid=self.firebase_uid,
         )
         clusterer.fit(dataset=self, vector_fields=vector_fields)
         return clusterer
@@ -277,11 +275,9 @@ class AutoClusterOps(CommunityDetection):
         from relevanceai.operations.cluster import ClusterOps
 
         clusterer: ClusterOps = ClusterOps(
+            credentials=self.credentials,
             model=model,
             alias=alias,
-            api_key=self.api_key,
-            project=self.project,
-            firebase_uid=self.firebase_uid,
         )
         if parent_alias:
             clusterer.subcluster_predict_update(
@@ -423,11 +419,9 @@ class AutoClusterOps(CommunityDetection):
 
             model = KMeans(n_clusters=n_clusters)
             clusterer: ClusterOps = ClusterOps(
+                credentials=self.credentials,
                 model=model,
                 alias=alias,
-                api_key=self.api_key,
-                project=self.project,
-                firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
                 parent_alias=parent_alias,
@@ -460,11 +454,9 @@ class AutoClusterOps(CommunityDetection):
             model = MiniBatchKMeans(n_clusters=n_clusters)
 
             clusterer = ClusterOps(
+                credentials=self.credentials,
                 model=model,
                 alias=alias,
-                api_key=self.api_key,
-                project=self.project,
-                firebase_uid=self.firebase_uid,
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
                 parent_alias=parent_alias,

@@ -1,5 +1,6 @@
 import webbrowser
 
+from abc import ABC
 from typing import Optional
 
 from relevanceai.client.helpers import Credentials
@@ -8,7 +9,7 @@ from relevanceai._api.endpoints.datasets.datasets import DatasetsClient
 from relevanceai._api.endpoints.deployables.deployables import DeployableClient
 
 
-class Dashboard(_Base):
+class Dashboard(ABC, _Base):
     def __init__(
         self,
         credentials: Credentials,
@@ -55,9 +56,7 @@ class Dashboard(_Base):
         if self._shareable_id is None:
             raise Exception("Dashboard is already unshareable")
         else:
-            deployables = DeployableClient(
-                self.project, self.api_key, self.firebase_uid
-            )
+            deployables = DeployableClient(self.credentials)
             deployables.unshare(self.deployable_id)
             self._shareable_id = None
 
@@ -116,9 +115,7 @@ class Dashboard(_Base):
         if self._shareable_id is None:
             raise Exception(f"This {self._application} application is not shareable")
         else:
-            deployables = DeployableClient(
-                self.project, self.api_key, self.firebase_uid
-            )
+            deployables = DeployableClient(self.credentials)
             deployable = deployables.get(self.deployable_id)
             url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
             return url.format(

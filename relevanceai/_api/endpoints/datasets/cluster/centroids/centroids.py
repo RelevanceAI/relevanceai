@@ -5,10 +5,6 @@ from typing import List, Optional
 
 class CentroidsClient(_Base):
     def __init__(self, credentials: Credentials):
-        self.project = credentials.project
-        self.api_key = credentials.api_key
-        self.firebase_uid = credentials.firebase_uid
-
         super().__init__(credentials)
 
     def list_closest_to_center(

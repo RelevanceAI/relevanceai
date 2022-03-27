@@ -43,9 +43,6 @@ class Read(Statistics):
         **kwargs,
     ):
         self.credentials = credentials
-        self.project = self.credentials.project
-        self.api_key = self.credentials.api_key
-        self.firebase_uid = self.credentials.firebase_uid
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
         self.centroids = Centroids(
