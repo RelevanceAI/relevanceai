@@ -270,9 +270,9 @@ class ClusterOps(APIClient):
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         vectors = np.array(
             [
-                document[vector_field]
+                self.get_field(vector_field, document)
                 for document in documents
-                if document.get(vector_field)
+                if self.is_field(vector_field, document)
             ]
         )
 
