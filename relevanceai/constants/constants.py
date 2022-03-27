@@ -15,7 +15,7 @@ TRANSIT_ENV_VAR = "_IS_ANALYTICS_IN_TRANSIT"
 GLOBAL_DATASETS = ["_mock_dataset_"]
 
 DATASETS = [
-    "games",
+    "news" "games",
     "ecommerce_1",
     "ecommerce_2",
     "ecommerce_3",
