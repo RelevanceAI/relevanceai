@@ -3,7 +3,7 @@
 
 MISSING_FIELD = "Missing field in dataset"
 
-API_ERROR = "API Error"
+API_ERROR = "Unfortunately you have encountered an API Error! If this is urgent, please submit a ticket to support@relevance.ai"
 
 CLUSTERING_ALREADY_EXISTS = "Clustering already exists for this Field"
 

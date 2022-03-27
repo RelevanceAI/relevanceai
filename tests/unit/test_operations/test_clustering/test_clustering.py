@@ -48,13 +48,11 @@ def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict])
     return results
 
 
-@pytest.mark.xfail("api error")
 def test_closest(test_clusterer: ClusterOps):
     closest = test_clusterer.closest()
     assert len(closest["results"]) > 0
 
 
-@pytest.mark.xfail("api error")
 def test_furthest(test_clusterer: ClusterOps):
     furthest = test_clusterer.furthest()
     assert len(furthest["results"]) > 0
@@ -114,7 +112,7 @@ def test_cluster(test_dataset: Dataset):
         model=model, alias=alias, vector_fields=[vector_field]
     )
     assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
-    assert len(clusterer.list_closest_to_center()) > 0
+    assert len(clusterer.closest()) > 0
 
 
 @pytest.mark.skip(msg="Keep getting TypeError: cannot pickle 'EncodedFile' object")
@@ -139,9 +137,9 @@ def test_batch_clusterer(test_client: Client, vector_dataset_id, test_dataset: D
     operator(test_dataset, vector_fields=VECTOR_FIELDS)
 
     operator.vector_fields = VECTOR_FIELDS
-    closest = operator.list_closest_to_center(dataset=vector_dataset_id)
+    closest = operator.closest(dataset=vector_dataset_id)
     assert len(closest["results"]) > 0
 
     operator.vector_fields = VECTOR_FIELDS
-    furthest = operator.list_furthest_from_center(dataset=vector_dataset_id)
+    furthest = operator.furthest(dataset=vector_dataset_id)
     assert len(furthest["results"]) > 0
