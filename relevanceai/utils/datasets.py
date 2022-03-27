@@ -570,7 +570,7 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
                 }
             ],
         }
-        document["_id"] = _make_id(document)
+        document["_id"] = make_id(document)
         return document
 
     return [vector_document() for _ in range(number_of_documents)]
