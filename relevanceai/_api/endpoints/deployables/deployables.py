@@ -1,11 +1,12 @@
 from typing import Dict, Optional
 
+from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 
 
 class DeployableClient(_Base):
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        super().__init__(project, api_key, firebase_uid)
+    def __init__(self, credentials: Credentials):
+        super().__init__(credentials)
 
     def create(self, dataset_id: str, configuration: Optional[Dict] = None):
         """

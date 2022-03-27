@@ -1,14 +1,15 @@
+from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 from typing import List, Optional
 
 
 class CentroidsClient(_Base):
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+    def __init__(self, credentials: Credentials):
+        self.project = credentials.project
+        self.api_key = credentials.api_key
+        self.firebase_uid = credentials.firebase_uid
 
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(credentials)
 
     def list_closest_to_center(
         self,

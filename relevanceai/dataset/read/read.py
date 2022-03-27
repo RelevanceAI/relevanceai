@@ -7,6 +7,7 @@ import warnings
 import pandas as pd
 
 from typing import Optional, Union, Dict, List
+from relevanceai.client.helpers import Credentials
 
 from relevanceai.operations.cluster.centroids import Centroids
 
@@ -32,10 +33,8 @@ class Read(Statistics):
 
     def __init__(
         self,
-        project: str,
-        api_key: str,
+        credentials: Credentials,
         dataset_id: str,
-        firebase_uid: str,
         fields: Optional[list] = None,
         image_fields: Optional[List[str]] = None,
         audio_fields: Optional[List[str]] = None,
@@ -43,26 +42,23 @@ class Read(Statistics):
         highlight_fields: Optional[Dict[str, list]] = None,
         **kwargs,
     ):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+        self.credentials = credentials
+        self.project = self.credentials.project
+        self.api_key = self.credentials.api_key
+        self.firebase_uid = self.credentials.firebase_uid
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
         self.centroids = Centroids(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=credentials,
             dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
         )
         self.image_fields = [] if image_fields is None else image_fields
         self.audio_fields = [] if audio_fields is None else audio_fields
         self.text_fields = [] if text_fields is None else text_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
         super().__init__(
+            credentials=credentials,
             dataset_id=dataset_id,
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
             **kwargs,
         )
 
@@ -628,9 +624,7 @@ class Read(Statistics):
     def metadata(self):
         """Get the metadata"""
         _metadata = self.get_metadata()
-        self._metadata = Metadata(
-            _metadata, self.project, self.api_key, self.firebase_uid, self.dataset_id
-        )
+        self._metadata = Metadata(_metadata, self.credentials, self.dataset_id)
         return self._metadata
 
     def insert_metadata(self, metadata: dict):

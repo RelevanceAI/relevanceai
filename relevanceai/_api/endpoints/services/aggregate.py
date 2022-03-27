@@ -1,4 +1,5 @@
 from typing import Optional
+from relevanceai.client.helpers import Credentials
 
 from relevanceai.utils.base import _Base
 
@@ -6,12 +7,8 @@ from relevanceai.utils.base import _Base
 class AggregateClient(_Base):
     """Aggregate service"""
 
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
-
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+    def __init__(self, credentials: Credentials):
+        super().__init__(credentials)
 
     def aggregate(
         self,

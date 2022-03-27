@@ -5,14 +5,15 @@ from relevanceai.constants.warning import Warning
 import pandas as pd
 import numpy as np
 
-from tqdm import tqdm
-
-from relevanceai.utils.cache import lru_cache
 from typing import Dict, List, Union, Callable, Optional
 
-from relevanceai._api import APIClient
-from relevanceai.utils.decorators.analytics import track
+from tqdm import tqdm
+
+from relevanceai.client.helpers import Credentials
 from relevanceai.constants import MAX_CACHESIZE
+from relevanceai.utils.cache import lru_cache
+from relevanceai.utils.decorators.analytics import track
+from relevanceai._api import APIClient
 
 
 class Series(APIClient):
@@ -61,9 +62,7 @@ class Series(APIClient):
 
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         dataset_id: str,
         field: str,
         image_fields: Optional[List[str]] = None,
@@ -71,10 +70,10 @@ class Series(APIClient):
         highlight_fields: Optional[Dict[str, List]] = None,
         text_fields: Optional[List[str]] = None,
     ):
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+        super().__init__(credentials)
+        self.project = credentials.project
+        self.api_key = credentials.api_key
+        self.firebase_uid = credentials.firebase_uid
         self.dataset_id = dataset_id
         self.field = field
         self.image_fields = [] if image_fields is None else image_fields

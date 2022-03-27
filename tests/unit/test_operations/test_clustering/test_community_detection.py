@@ -4,7 +4,7 @@ from relevanceai import Client, mock_documents
 
 
 @pytest.mark.skip(
-    msg="community detection needs to be selected as a model under cluster"
+    reason="community detection needs to be selected as a model under cluster"
 )
 def test_community_detection(test_client: Client, test_dataset_id: str):
     ds = test_client.Dataset(test_dataset_id + "_community-detection")

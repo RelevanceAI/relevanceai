@@ -1,25 +1,21 @@
 from typing import Dict, List, Optional, Union
 
-from relevanceai.utils.decorators.analytics import track
-
+from relevanceai.client.helpers import Credentials
+from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECTOR_APP_LINK
 from relevanceai.dataset.read import Read
 from relevanceai.dataset.write import Write
 from relevanceai.dataset.io import IO
 from relevanceai.dataset.series import Series
-
 from relevanceai.operations import Operations
-
-from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECTOR_APP_LINK
+from relevanceai.utils.decorators.analytics import track
 
 
 class Dataset(IO, Read, Write, Operations):
     @track
     def __init__(
         self,
-        project: str,
-        api_key: str,
+        credentials: Credentials,
         dataset_id: str,
-        firebase_uid: str,
         fields: Optional[list] = None,
         image_fields: Optional[List[str]] = None,
         audio_fields: Optional[List[str]] = None,
@@ -27,21 +23,19 @@ class Dataset(IO, Read, Write, Operations):
         text_fields: Optional[List[str]] = None,
         **kwargs,
     ):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+        self.credentials = credentials
+        self.project = self.credentials.project
+        self.api_key = self.credentials.api_key
+        self.firebase_uid = self.credentials.firebase_uid
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
         self.image_fields = [] if image_fields is None else image_fields
         self.audio_fields = [] if audio_fields is None else audio_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
         self.text_fields = [] if text_fields is None else text_fields
-        self.firebase_uid = firebase_uid
 
         super().__init__(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
+            credentials=credentials,
             dataset_id=self.dataset_id,
             fields=fields,
             image_fields=image_fields,
@@ -87,10 +81,8 @@ class Dataset(IO, Read, Write, Operations):
         """
         if isinstance(field, str):
             return Series(
-                project=self.project,
-                api_key=self.api_key,
+                credentials=self.credentials,
                 dataset_id=self.dataset_id,
-                firebase_uid=self.firebase_uid,
                 field=field,
                 image_fields=self.image_fields,
                 audio_fields=self.audio_fields,
@@ -99,10 +91,8 @@ class Dataset(IO, Read, Write, Operations):
             )
         elif isinstance(field, list):
             return Dataset(
-                project=self.project,
-                api_key=self.api_key,
+                credentials=self.credentials,
                 dataset_id=self.dataset_id,
-                firebase_uid=self.firebase_uid,
                 fields=field,
                 image_fields=self.image_fields,
                 audio_fields=self.audio_fields,
