@@ -1,6 +1,6 @@
 from typing import Dict
 
-from relevanceai.package_utils.make_id import _make_id
+from relevanceai.utils import make_id
 
 from tests.globals.constants import (
     generate_random_label,
@@ -31,5 +31,5 @@ def vector_document() -> Dict:
             }
         ],
     }
-    document["_id"] = _make_id(document)
+    document["_id"] = make_id(document)
     return document

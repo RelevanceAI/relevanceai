@@ -1,7 +1,7 @@
 from typing import List
 
 from relevanceai import Client
-from relevanceai.package_utils.datasets import ExampleDatasets
+from relevanceai.utils.datasets import ExampleDatasets
 
 
 def determine_datasets(client: Client) -> frozenset:

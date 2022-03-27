@@ -26,35 +26,22 @@ You can also easily access metadata using the following:
     time.sleep(1)
     ds.metadata
 
-.. autoclass:: relevanceai.dataset.crud.dataset_write.Write
-    :members:
-    :special-members: relevanceai.dataset.crud.write.Write.insert_csv
-
-.. autoclass:: relevanceai.dataset.crud.dataset_read.Read
+.. automodule:: relevanceai.dataset.read.read
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset.search.search.Search
+.. automodule:: relevanceai.dataset.write.write
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset.statistics.statistics.Statistics
-    :members:
+.. autoclass:: relevanceai.dataset.io.export.Export
+    :members: to_csv, to_dict, to_pandas_dataframe
+    :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset.vis.plot.Plot
-    :members:
-
-.. autoclass:: relevanceai.dataset.export.interface.Export
-    :members:
-
-.. autoclass:: relevanceai.dataset.crud.dataset_series.Series
+.. automodule:: relevanceai.dataset.read.metadata
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset.crud.dataset_metadata.Metadata
-    :members:
+.. autoclass:: relevanceai.dataset.read.statistics.Statistics
     :exclude-members: __init__
-
-.. autoclass:: relevanceai.dataset.ops.dataset_operations.Operations
     :members:
-    :exclude-members: label_with_model_from_dataset, label_vector, label_document
