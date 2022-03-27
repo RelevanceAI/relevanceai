@@ -355,14 +355,17 @@ class ClusterOps(APIClient):
         vector_field: Optional[str] = None,
         alias: Optional[str] = None,
     ):
-        dataset_id = self.dataset_id if dataset_id is None else dataset_id
-        vector_field = self.vector_field if vector_field is None else vector_field
-        alias = self.alias if alias is None else alias
+        """
+        List furthest from cluster centers
+        """
+        dataset_id_ = self.dataset_id if dataset_id is None else dataset_id
+        vector_field_ = self.vector_field if vector_field is None else vector_field
+        alias_ = self.alias if alias is None else alias
 
         return self.services.cluster.centroids.list_furthest_from_center(
-            dataset_id=dataset_id,
-            vector_fields=[vector_field],  # type: ignore
-            alias=alias,
+            dataset_id=dataset_id_,
+            vector_fields=[vector_field_],  # type: ignore
+            alias=alias_,
         )
 
     # Convenience functions

@@ -13,7 +13,6 @@ import sys
 import pandas as pd
 import requests
 
-from relevanceai.utils import make_id
 from relevanceai.constants import DATASETS
 
 THIS_MODULE = sys.modules[__name__]
@@ -570,6 +569,9 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
                 }
             ],
         }
+
+        from relevanceai.utils import make_id
+
         document["_id"] = make_id(document)
         return document
 
