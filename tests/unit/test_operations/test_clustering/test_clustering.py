@@ -48,13 +48,11 @@ def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict])
     return results
 
 
-@pytest.mark.xfail("api error")
 def test_closest(test_clusterer: ClusterOps):
     closest = test_clusterer.closest()
     assert len(closest["results"]) > 0
 
 
-@pytest.mark.xfail("api error")
 def test_furthest(test_clusterer: ClusterOps):
     furthest = test_clusterer.furthest()
     assert len(furthest["results"]) > 0
