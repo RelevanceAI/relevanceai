@@ -168,17 +168,25 @@ class TestDatasetStats:
 
 
 class TestDatasetMetadata:
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_insert_metadata(self):
-        assert False
+    payload = {"test_metavalue": 1}
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_upsert_metadata(self):
-        assert False
+    def test_insert_metadata(self, test_dataset: Dataset):
+        result = test_dataset.insert_metadata(self.payload)
+        assert result is None
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_to_dict(self):
-        assert False
+    def test_upsert_metadata(self, test_dataset: Dataset):
+        result = test_dataset.upsert_metadata(self.payload)
+        assert result is None
+
+    def test_to_dict(self, test_dataset: Dataset):
+        metadata = test_dataset.metadata.to_dict()
+        assert metadata == {}
+
+        result = test_dataset.insert_metadata(self.payload)
+        assert result is None
+
+        metadata = test_dataset.metadata.to_dict()
+        assert metadata == self.payload
 
 
 class TestDatasetRead:
