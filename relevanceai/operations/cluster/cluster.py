@@ -335,14 +335,13 @@ class ClusterOps(APIClient):
             vector_field=vector_field,
         )
 
-        # update all documents
+        # TODO: need to change this to an update_where
         self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
         )
 
-        # insert centroids
         self._insert_centroids(
             dataset_id=dataset_id,
             vector_field=vector_field,
