@@ -1,5 +1,6 @@
 RUN_EXCLUDE = [
-    "*__init__.py" "relevanceai/_api/*",
+    "*__init__.py",
+    "relevanceai/_api/*",
     "relevanceai/dashboard/*",
     "relevanceai/operations/auto/*",
     "relevanceai/operations/cluster/base.py",

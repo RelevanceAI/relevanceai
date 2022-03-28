@@ -7,6 +7,8 @@ from typing import Dict, List
 
 from relevanceai import Client
 
+from relevanceai.dataset import Dataset
+
 from tests.globals.constants import generate_dataset_id
 
 from tests.unit.test_api.helpers import *
@@ -17,51 +19,56 @@ class TestInsert:
 
     def test_batch_insert(
         self,
+        test_dataset: Dataset,
         vector_documents: List[Dict],
-        test_client: Client,
     ):
-        results = test_client._insert_documents(self.test_dataset_id, vector_documents)
-        test_client.datasets.monitor.health(self.test_dataset_id)
+        results = test_dataset._insert_documents(
+            test_dataset.dataset_id,
+            vector_documents,
+        )
         assert len(results["failed_documents"]) == 0
 
     def test_datetime_upload(
         self,
+        test_dataset: Dataset,
         datetime_documents: List[Dict],
-        test_client: Client,
     ):
-        results = test_client._insert_documents(
-            self.test_dataset_id, datetime_documents
+        results = test_dataset._insert_documents(
+            test_dataset.dataset_id,
+            datetime_documents,
         )
-        assert results["inserted"] == len(datetime_documents)
+        assert len(results["failed_documents"]) == 0
 
     def test_numpy_upload(
         self,
-        test_client: Client,
+        test_dataset: Dataset,
         numpy_documents: List[Dict],
     ):
-        results = test_client._insert_documents(
-            self.test_dataset_id,
+        results = test_dataset._insert_documents(
+            test_dataset.dataset_id,
             numpy_documents,
         )
-        test_client.datasets.monitor.health(self.test_dataset_id)
         assert len(results["failed_documents"]) == 0
 
     def test_pandas_upload(
         self,
-        test_client: Client,
+        test_dataset: Dataset,
         pandas_documents: List[Dict],
     ):
-        results = test_client._insert_documents(self.test_dataset_id, pandas_documents)
-        test_client.datasets.monitor.health(self.test_dataset_id)
+        results = test_dataset._insert_documents(
+            test_dataset.dataset_id,
+            pandas_documents,
+        )
         assert len(results["failed_documents"]) == 0
 
     def test_assorted_nested_upload(
         self,
-        test_client: Client,
+        test_dataset: Dataset,
         assorted_nested_documents: List[Dict],
     ):
-        results = test_client._insert_documents(
-            self.test_dataset_id, assorted_nested_documents
+        results = test_dataset._insert_documents(
+            test_dataset.dataset_id,
+            assorted_nested_documents,
         )
         assert len(results["failed_documents"]) == 0
 
