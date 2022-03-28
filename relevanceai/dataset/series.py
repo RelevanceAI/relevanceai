@@ -193,7 +193,7 @@ class Series(APIClient):
         if output_format == "json":
             return documents
         elif output_format == "pandas":
-            return pd.DataFrame.from_dict(documents, orient="records")
+            return pd.DataFrame.from_records(documents)
         else:
             raise ValueError("Incorrect output format")
 

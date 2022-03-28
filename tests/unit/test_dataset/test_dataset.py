@@ -6,9 +6,13 @@ import os
 import uuid
 import pandas as pd
 
+import pytest
+
 from relevanceai import Client
 
 from relevanceai.dataset import Dataset
+
+from tests.globals.constants import NOT_IMPLEMENTED
 
 
 class TestDatasetExport:
@@ -51,9 +55,11 @@ class TestDatasetImport:
 
 
 class TestDatasetSeries:
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_list_aliases(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_head(self):
         assert False
 
@@ -65,15 +71,19 @@ class TestDatasetSeries:
         sample_n = test_dataset["sample_1_label"].sample(n=10)
         assert len(sample_n) == 10
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_all(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_apply(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_bulk_apply(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_numpy(self):
         assert False
 
@@ -94,17 +104,21 @@ class TestDatasetSeries:
         except ValueError:
             assert True
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def value_counts(self):
         assert False
 
 
 class TestDatasetStats:
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_value_counts(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_describe(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_corr(self):
         assert False
 
@@ -115,49 +129,63 @@ class TestDatasetStats:
         json_output = test_dataset.health(output_format="json")
         assert type(json_output) == dict
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_aggregate(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_facets(self):
         assert False
 
 
 class TestDatasetMetadata:
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_insert_metadata(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_upsert_metadata(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_to_dict(self):
         assert False
 
 
 class TestDatasetRead:
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_shape(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_info(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_head(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_get(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_schema(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_columns(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_filter(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_list_vector_fields(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_list_cluster_aliases(self):
         assert False
 
@@ -204,12 +232,15 @@ class TestDatasetWrite:
         )
         assert len(filtered_documents["documents"]) > 0
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_concat(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_create(self):
         assert False
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_delete(self):
         assert False
 
@@ -218,5 +249,6 @@ class TestDatasetWrite:
         test_dataset.insert_pandas_dataframe(pandas_df)
         assert "pandas_value" in pandas_df.columns
 
+    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_insert_csv(self):
         assert False

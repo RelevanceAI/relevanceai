@@ -1,14 +1,11 @@
 import pytest
-import time
-
-from typing import Dict, List
-
-import numpy as np
 
 from sklearn.cluster import MiniBatchKMeans
 
 from relevanceai.client import Client
 from relevanceai.dataset import Dataset
+
+from tests.globals.constants import NOT_IMPLEMENTED
 
 
 class TestClusterOps:
@@ -58,8 +55,10 @@ class TestClusterOps:
         assert f"_cluster_{vector_field}" in schema
         assert f"_cluster_{vector_field}.{alias}" in schema
 
+    @pytest.mark.skip(NOT_IMPLEMENTED)
     def test_list_closest(self, test_client: Client, test_dataset: Dataset):
         assert False
 
+    @pytest.mark.skip(NOT_IMPLEMENTED)
     def test_list_furthest(self, test_client: Client, test_dataset: Dataset):
         assert False
