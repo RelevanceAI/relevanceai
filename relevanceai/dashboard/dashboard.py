@@ -3,20 +3,21 @@ import webbrowser
 from abc import ABC
 from typing import Optional
 
-from relevanceai.api.endpoints.datasets.datasets import DatasetsClient
-from relevanceai.api.endpoints.deployables.deployables import DeployableClient
-from relevanceai.package_utils.base import _Base
+from relevanceai.client.helpers import Credentials
+from relevanceai.utils.base import _Base
+from relevanceai._api.endpoints.datasets.datasets import DatasetsClient
+from relevanceai._api.endpoints.deployables.deployables import DeployableClient
 
 
 class Dashboard(ABC, _Base):
     def __init__(
         self,
-        project: str,
-        api_key: str,
+        credentials: Credentials,
         deployable_id: str,
         application: str,
-        firebase_uid: str,
     ):
+        self.credentials = credentials
+
         valid_applications = {"cluster"}
         if application not in valid_applications:
             raise ValueError(
@@ -25,7 +26,7 @@ class Dashboard(ABC, _Base):
                 + f"{', '.join(valid_applications)}"
             )
 
-        deployables = DeployableClient(project, api_key, firebase_uid)
+        deployables = DeployableClient(self.credentials)
         deployables_ids = map(lambda d: d["_id"], deployables.list()["deployables"])
         if deployable_id not in deployables_ids:
             raise ValueError(f"No deployable with ID {deployable_id}")
@@ -36,7 +37,7 @@ class Dashboard(ABC, _Base):
             else:
                 self.vector_field = configuration[application]["vector_field"]
 
-        super().__init__(project, api_key, firebase_uid)
+        super().__init__(self.credentials)
         self.deployable_id = deployable_id
 
         self._shareable_id = None
@@ -44,9 +45,7 @@ class Dashboard(ABC, _Base):
 
     def share_application(self) -> None:
         if self._shareable_id is None:
-            deployables = DeployableClient(
-                self.project, self.api_key, self.firebase_uid
-            )
+            deployables = DeployableClient(self.credentials)
             deployables.share(self.deployable_id)
             response = deployables.get(self.deployable_id)
             self._shareable_id = response["api_key"]
@@ -57,26 +56,22 @@ class Dashboard(ABC, _Base):
         if self._shareable_id is None:
             raise Exception("Dashboard is already unshareable")
         else:
-            deployables = DeployableClient(
-                self.project, self.api_key, self.firebase_uid
-            )
+            deployables = DeployableClient(self.credentials)
             deployables.unshare(self.deployable_id)
             self._shareable_id = None
 
     @classmethod
     def create_dashboard(
         cls,
-        project: str,
-        api_key: str,
+        credentials: Credentials,
         dataset_id: str,
         vector_field: str,
         application: str,
         share: bool,
         application_configuration: dict,
-        firebase_uid: str,
     ):
         # Validation phase
-        schema = DatasetsClient(project, api_key, firebase_uid).schema(dataset_id)
+        schema = DatasetsClient(credentials).schema(dataset_id)
         try:
             vector_field_type = schema[vector_field]
             # Since vectors are the only schema types that are objects, this
@@ -87,7 +82,7 @@ class Dashboard(ABC, _Base):
             raise ValueError(f"{vector_field} is not a field of {dataset_id}")
 
         # Creation phase
-        deployables = DeployableClient(project, api_key, firebase_uid)
+        deployables = DeployableClient(credentials)
         # TODO: Should we if the deployable already exists? I think I would
         # need to check the cluster/field/alias combo
         response = deployables.create(
@@ -96,7 +91,7 @@ class Dashboard(ABC, _Base):
         )
         deployable_id = response["deployable_id"]
 
-        dashboard = cls(project, api_key, deployable_id, application, firebase_uid)
+        dashboard = cls(credentials, deployable_id, application)
         if share:
             dashboard.share_application()
 
@@ -104,7 +99,7 @@ class Dashboard(ABC, _Base):
 
     @property
     def deployable_url(self) -> str:
-        deployables = DeployableClient(self.project, self.api_key, self.firebase_uid)
+        deployables = DeployableClient(self.credentials)
         deployable = deployables.get(self.deployable_id)
         url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
         return url.format(
@@ -120,9 +115,7 @@ class Dashboard(ABC, _Base):
         if self._shareable_id is None:
             raise Exception(f"This {self._application} application is not shareable")
         else:
-            deployables = DeployableClient(
-                self.project, self.api_key, self.firebase_uid
-            )
+            deployables = DeployableClient(self.credentials)
             deployable = deployables.get(self.deployable_id)
             url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
             return url.format(
