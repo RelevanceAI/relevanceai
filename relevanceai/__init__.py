@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 import warnings
-from relevanceai import vector_tools
-from relevanceai.interfaces import Client
+from relevanceai.client import Client
 
 # Cluster _Base Utilities
-from relevanceai.workflows.cluster_ops.cluster_base import (
+from relevanceai.operations.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
 )
-from relevanceai.workflows.cluster_ops.clusterops import ClusterOps
-from relevanceai.workflows.dim_reduction_ops.dim_reduction_ops import (
+from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.dr.dim_reduction_ops import (
     ReduceDimensionsOps,
 )
 
 # Fix the name
-from relevanceai.package_utils import datasets
-from relevanceai.package_utils.datasets import mock_documents
+from relevanceai.utils import datasets
+from relevanceai.utils.datasets import mock_documents
 import requests
+
+from relevanceai.constants.warning import Warning
 
 # Import useful utility if possible as well
 try:
@@ -38,14 +39,12 @@ try:
         changelog_url: str = (
             f"https://relevanceai.readthedocs.io/en/{__version__}/changelog.html"
         )
-        MESSAGE = """We noticed you don't have the latest version!
-We recommend updating to the latest version ({latest_version}) to get all bug fixes and newest features!
-You can do this by running pip install -U relevanceai.
-Changelog: {changelog_url}.""".format(  # type: ignore
-            version=__version__,
-            latest_version=latest_version,
-            changelog_url=changelog_url,
+        warnings.warn(
+            Warning.LATEST_VERSION.format(
+                version=__version__,
+                latest_version=latest_version,
+                changelog_url=changelog_url,
+            )
         )
-        warnings.warn(MESSAGE)
 except:
     pass

@@ -27,7 +27,7 @@ requirements = [
     "requests>=2.0.0",
     "numpy>=1.19.0",
     "joblib>=1.0.0",
-    "scikit-learn",
+    "scikit-learn>=0.20.0",  # last version of support to Python3.4
     "typing-extensions~=4.0.1",
     "analytics-python~=1.4.0",
     "aiohttp>=3.8.1",

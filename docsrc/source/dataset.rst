@@ -19,31 +19,29 @@ You can also easily access metadata using the following:
 
 .. code-block::
 
+    import time
     ds = client.Dataset("_mock_dataset_")
     ds.metadata['value'] = 3
     ds.metadata['strong_values'] = 10
-    import time
     time.sleep(1)
     ds.metadata
 
-.. autoclass:: relevanceai.dataset_crud.dataset_write.Write
-    :members:
-    :special-members: relevanceai.dataset_crud.dataset.Write.insert_csv
-
-.. autoclass:: relevanceai.dataset_crud.dataset_read.Read
+.. automodule:: relevanceai.dataset.read.read
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_crud.dataset_stats.Stats
-    :members:
-
-.. autoclass:: relevanceai.export.dataset_export.Export
-    :members:
-
-.. autoclass:: relevanceai.dataset_crud.dataset_series.Series
+.. automodule:: relevanceai.dataset.write.write
     :members:
     :exclude-members: __init__
 
-.. autoclass:: relevanceai.dataset_ops.dataset_operations.Operations
+.. autoclass:: relevanceai.dataset.io.export.Export
+    :members: to_csv, to_dict, to_pandas_dataframe
+    :exclude-members: __init__
+
+.. automodule:: relevanceai.dataset.read.metadata
     :members:
-    :exclude-members: label_with_model_from_dataset, label_vector, label_document
+    :exclude-members: __init__
+
+.. autoclass:: relevanceai.dataset.read.statistics.Statistics
+    :exclude-members: __init__
+    :members:
