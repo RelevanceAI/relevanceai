@@ -87,6 +87,7 @@ class TestInsertImages:
         with open(self.filename, "wb") as f:
             f.write(b"ghuewiogahweuaioghweqrofleuwaiolfheaswufg9oeawhfgaeuw")
 
+    @pytest.mark.skip(reason="need to fix image folder")
     def test_insert_media_folder(self, test_client: Client):
         self.ds = test_client.Dataset(generate_dataset_id())
         results = self.ds.insert_media_folder(
