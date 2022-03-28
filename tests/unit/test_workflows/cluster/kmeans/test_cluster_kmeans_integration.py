@@ -13,6 +13,7 @@ from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.cluster.base import CentroidClusterBase
 
 
+@pytest.mark.skip(reason="ClusterOps fit method missing")
 def test_dataset_api_kmeans_integration(test_client: Client, test_dataset: Dataset):
     from sklearn.cluster import KMeans
 

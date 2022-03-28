@@ -8,6 +8,7 @@ from sklearn.metrics import (
 import pandas as pd
 import numpy as np
 
+from relevanceai.client.helpers import Credentials
 from relevanceai.operations.dr.dim_reduction import DimReduction
 from relevanceai._api import APIClient
 from relevanceai.operations.cluster.constants import (
@@ -29,12 +30,8 @@ def sort_dict(dict, reverse: bool = True, cut_off=0):
 
 
 class ClusterEvaluate(APIClient, DocUtils):
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
-
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+    def __init__(self, credentials: Credentials):
+        super().__init__(credentials)
 
     @track
     def plot(

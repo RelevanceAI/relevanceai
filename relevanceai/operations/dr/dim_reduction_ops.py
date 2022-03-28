@@ -2,20 +2,18 @@ from typing import Union, List, Any
 
 from doc_utils import DocUtils
 
-from relevanceai._api import APIClient
-
+from relevanceai.client.helpers import Credentials
 from relevanceai.operations.dr.dim_reduction import PCA
 from relevanceai.operations.dr.dim_reduction import TSNE
 from relevanceai.operations.dr.dim_reduction import Ivis
 from relevanceai.operations.dr.dim_reduction import UMAP
+from relevanceai._api import APIClient
 
 
 class ReduceDimensionsOps(APIClient, DocUtils):
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         n_components: int,
         model: Union[PCA, TSNE, Ivis, PCA, str, Any],
         dr_field: str = "_dr_",
@@ -43,7 +41,7 @@ class ReduceDimensionsOps(APIClient, DocUtils):
         self.verbose = verbose
         self.n_components = n_components
 
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(credentials)
 
     def fit(
         self,

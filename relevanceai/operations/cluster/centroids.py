@@ -1,14 +1,12 @@
 from typing import Dict, List, Optional
 from relevanceai._api import APIClient
+from relevanceai.client.helpers import Credentials
 
 
 class Centroids(APIClient):
-    def __init__(self, project: str, api_key: str, dataset_id: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+    def __init__(self, credentials: Credentials, dataset_id: str):
         self.dataset_id = dataset_id
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(credentials)
 
     def __call__(
         self, vector_fields: list, alias: str, cluster_field: str = "_cluster_"

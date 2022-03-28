@@ -1,25 +1,21 @@
 """Search In A Dataset
 """
 from typing import List, Optional
-from relevanceai._api import APIClient
+
+from relevanceai.client.helpers import Credentials
 from relevanceai.utils.decorators.analytics import track
+from relevanceai._api import APIClient
 
 
 class Search(APIClient):
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         dataset_id: str,
     ):
         self.dataset_id = dataset_id
 
-        super().__init__(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
-        )
+        super().__init__(credentials)
 
     @track
     def vector_search(

@@ -1,13 +1,14 @@
+from relevanceai.client.helpers import Credentials
 from relevanceai._api import APIClient
 
 
 class Metadata(APIClient):
     """Metadata object"""
 
-    def __init__(self, metadata: dict, project, api_key, firebase_uid, dataset_id):
+    def __init__(self, metadata: dict, credentials: Credentials, dataset_id: str):
         self._metadata = metadata
         self.dataset_id = dataset_id
-        super().__init__(project, api_key, firebase_uid)
+        super().__init__(credentials)
 
     def __repr__(self):
         return str(self.to_dict())
