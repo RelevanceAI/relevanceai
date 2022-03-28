@@ -39,4 +39,5 @@ jobs:
           python -m pip install -e .[tests]
           python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist
           python -m pip install vectorhub[clip,encoders-text-tfhub]
+          python -m pip install --upgrade pip
           python -m pytest tests/integration/ --cov-config=coverage/coverage.cfg --cov-fail-under=1

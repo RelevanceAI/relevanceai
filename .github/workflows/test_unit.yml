@@ -51,4 +51,5 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m pip install -e .[tests]
           python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist
+          python -m pip install --upgrade pip
           python -m pytest tests/unit --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=50
