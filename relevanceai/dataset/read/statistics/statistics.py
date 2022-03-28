@@ -304,13 +304,6 @@ class Statistics(APIClient):
             asc=asc,
         )
 
-    def health_check(self):
-        details = self.datasets.monitor.health(self.dataset_id)
-        vectors = {}
-        for key, value in details.items():
-            if "_vector_" in key and not any(
-                prefix in key for prefix in ["_cluster_", "_dr_"]
-            ):
-                vectors[key] = value
-
-        return vectors
+    def health_check(self, **kwargs):
+        details = self.datasets.monitor.health(self.dataset_id, **kwargs)
+        return details
