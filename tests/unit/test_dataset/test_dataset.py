@@ -12,7 +12,7 @@ from relevanceai import Client
 
 from relevanceai.dataset import Dataset
 
-from tests.globals.constants import NOT_IMPLEMENTED
+from tests.globals.constants import NOT_IMPLEMENTED, generate_dataset_id
 
 
 class TestDatasetExport:
@@ -31,7 +31,7 @@ class TestDatasetExport:
         assert data[0]
 
     def test_to_dataset(self, test_client: Client, test_dataset: Dataset):
-        child_dataset_id = f"{uuid.uuid4().__str__()}_dataset"
+        child_dataset_id = generate_dataset_id()
 
         test_dataset.to_dataset(child_dataset_id=child_dataset_id)
         child_dataset = test_client.Dataset(child_dataset_id)
