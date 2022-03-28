@@ -9,42 +9,45 @@ from tests.globals.constants import NOT_IMPLEMENTED
 
 
 class TestClusterOps:
-    def test_dataset_cluster(self, test_dataset: Dataset):
-        vector_field = "sample_1_vector_"
+    vector_field = "sample_1_vector_"
 
+    def test_dataset_cluster_1(self, test_dataset: Dataset):
         alias = "cluster_test_1"
         test_dataset.cluster(
             model="kmeans",
             n_clusters=10,
             alias=alias,
-            vector_fields=[vector_field],
+            vector_fields=[self.vector_field],
         )
-        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
+        assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
+    def test_dataset_cluster_2(self, test_dataset: Dataset):
         alias = "cluster_test_2"
         test_dataset.cluster(
             model="kmeans",
             cluster_config=dict(n_clusters=10),
             alias=alias,
-            vector_fields=[vector_field],
+            vector_fields=[self.vector_field],
         )
-        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
+        assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
+    def test_dataset_cluster_3(self, test_dataset: Dataset):
         alias = "cluster_test_3"
         test_dataset.cluster(
             model="optics",
             alias=alias,
-            vector_fields=[vector_field],
+            vector_fields=[self.vector_field],
         )
-        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
+        assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
+    def test_dataset_cluster_4(self, test_dataset: Dataset):
         alias = "cluster_test_4"
         test_dataset.cluster(
             model=MiniBatchKMeans(n_clusters=10),
             alias=alias,
-            vector_fields=[vector_field],
+            vector_fields=[self.vector_field],
         )
-        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
+        assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
     def test_ClusterOps(self, test_client: Client, test_dataset: Dataset):
         vector_field = "sample_1_vector_"
