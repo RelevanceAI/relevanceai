@@ -8,6 +8,7 @@ from relevanceai.constants import (
     AUSTRALIA_URL,
     WIDER_URL,
     OLD_AUSTRALIA_EAST,
+    DEV_URL,
 )
 from relevanceai.constants.errors import (
     APIKeyNotFoundError,
@@ -19,7 +20,13 @@ from relevanceai.constants.errors import (
 
 
 def region_to_url(region: str):
-    if region == OLD_AUSTRALIA_EAST:
+    """
+    Convert region to URL
+    """
+    if "dev" in region:
+        actual_region = region.replace("dev-", "")
+        url = DEV_URL.format(actual_region)
+    elif region == OLD_AUSTRALIA_EAST:
         url = AUSTRALIA_URL
     else:
         url = WIDER_URL.format(region)
