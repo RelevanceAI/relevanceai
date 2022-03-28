@@ -37,6 +37,7 @@ from relevanceai.operations.cluster.base import (
     CentroidClusterBase,
     BatchClusterBase,
 )
+from relevanceai.operations.base_operations import BaseOps
 from relevanceai.reports.cluster import ClusterReport
 from relevanceai.constants.errors import NoDocumentsError, NoModelError
 
@@ -70,6 +71,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         alias: Optional[str] = None,
         cluster_field: str = "_cluster_",
         parent_alias: str = None,
+        vector_fields: Optional[List[str]] = None,
+        dataset_id: Optional[str] = None,
     ):
         self.credentials = credentials
         self.alias = alias  # type: ignore
@@ -81,6 +84,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         self.model = self._assign_model(model)
 
         self.verbose = True
+        self.vector_fields = vector_fields  # type: ignore
+        self.dataset_id = dataset_id  # type: ignore
 
         super().__init__(self.credentials)
 
