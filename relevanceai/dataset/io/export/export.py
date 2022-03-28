@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Dict, Any, Callable
 
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.decorators.version import added
@@ -33,8 +33,7 @@ class Export(CSVExport, DictExport, PandasExport):
             dataset_id=child_dataset_id, metadata={"parent_dataset_id": self.dataset_id}
         )
         # Useful for viewing flowcharts
-        metadata = self.metadata
-        if "child_dataset_ids" in metadata:
-            metadata["child_dataset_ids"] = []
+        metadata: Dict[str, Any] = {}
+        metadata["child_dataset_ids"] = []
         metadata["child_dataset_ids"].append(child_dataset_id)
         self.upsert_metadata(metadata=metadata)

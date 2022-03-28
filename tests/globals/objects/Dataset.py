@@ -10,8 +10,7 @@ def test_dataset(
     vector_dataset_id: str,
 ) -> Dataset:
     dataset = test_client.Dataset(vector_dataset_id)
-    yield dataset
-    dataset.delete()
+    return dataset
 
 
 @pytest.fixture(scope="function")
