@@ -1,29 +1,23 @@
 from typing import List, Dict, Optional
 
-from relevanceai._api import APIClient
-
+from relevanceai.client.helpers import Credentials
 from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.vector import Vectorize
 from relevanceai.operations.vector import Search
 from relevanceai.operations.dr import ReduceDimensionsOps
-
 from relevanceai.utils.decorators import deprecated
+from relevanceai._api import APIClient
 
 
 class Operations(APIClient):
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         dataset_id: str,
     ):
+        self.credentials = credentials
         self.dataset_id = dataset_id
-        super().__init__(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
-        )
+        super().__init__(self.credentials)
 
     def cluster(
         self,
@@ -33,9 +27,7 @@ class Operations(APIClient):
         **kwargs,
     ):
         ops = ClusterOps(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             model=model,
             alias=alias,
             **kwargs,
@@ -54,9 +46,7 @@ class Operations(APIClient):
     ):
         model = alias.split("-")[0]
         ops = ClusterOps(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             model=model,
             alias=alias,
             **kwargs,
@@ -75,9 +65,7 @@ class Operations(APIClient):
         **kwargs,
     ):
         ops = ReduceDimensionsOps(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             model=model,
             n_components=n_components,
             **kwargs,
@@ -95,9 +83,7 @@ class Operations(APIClient):
         **kwargs,
     ):
         ops = Vectorize(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
             **kwargs,
         )
@@ -108,9 +94,7 @@ class Operations(APIClient):
 
     def vector_search(self, **kwargs):
         ops = Search(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
         )
 
@@ -118,9 +102,7 @@ class Operations(APIClient):
 
     def hybrid_search(self, **kwargs):
         ops = Search(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
         )
 
@@ -128,9 +110,7 @@ class Operations(APIClient):
 
     def chunk_search(self, **kwargs):
         ops = Search(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
         )
 
@@ -138,9 +118,7 @@ class Operations(APIClient):
 
     def multistep_chunk_search(self, **kwargs):
         ops = Search(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
         )
 

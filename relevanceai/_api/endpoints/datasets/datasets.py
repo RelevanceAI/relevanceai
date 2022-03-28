@@ -2,6 +2,7 @@
 """
 from typing import List, Optional
 
+from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 from relevanceai._api.endpoints.datasets.documents import DocumentsClient
 from relevanceai._api.endpoints.datasets.monitor import MonitorClient
@@ -12,25 +13,13 @@ from relevanceai._api.endpoints.datasets.cluster import ClusterClient
 class DatasetsClient(_Base):
     """All dataset-related functions"""
 
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+    def __init__(self, credentials: Credentials):
+        self.tasks = TasksClient(credentials)
+        self.documents = DocumentsClient(credentials)
+        self.monitor = MonitorClient(credentials)
+        self.cluster = ClusterClient(credentials)
 
-        self.tasks = TasksClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.documents = DocumentsClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.monitor = MonitorClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.cluster = ClusterClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(credentials)
 
     def schema(self, dataset_id: str):
         """

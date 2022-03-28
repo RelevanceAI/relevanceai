@@ -1,5 +1,6 @@
 """API Client
 """
+from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 
 from relevanceai._api.endpoints.admin.admin import AdminClient
@@ -21,31 +22,17 @@ class APIEndpointsClient(_Base, DocUtils):
 
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         **kwargs,
     ):
-        self.datasets = DatasetsClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.services = ServicesClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
+        self.datasets = DatasetsClient(credentials)
+        self.services = ServicesClient(credentials)
         self.example_datasets = ExampleDatasets()
-        self.admin = AdminClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.reports = ReportsClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.deployables = DeployableClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
+        self.admin = AdminClient(credentials)
+        self.reports = ReportsClient(credentials)
+        self.deployables = DeployableClient(credentials)
         super().__init__(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
+            credentials=credentials,
             **kwargs,
         )
 

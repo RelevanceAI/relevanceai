@@ -1,3 +1,4 @@
+from relevanceai.client.helpers import Credentials
 from relevanceai.constants import CONFIG
 from relevanceai.utils.transport import Transport
 from relevanceai.utils.logger import LoguruLogger
@@ -12,14 +13,12 @@ class _Base(Transport, LoguruLogger):
 
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         **kwargs,
     ):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+        self.project = credentials.project
+        self.api_key = credentials.api_key
+        self.firebase_uid = credentials.firebase_uid
 
         self.config = CONFIG
         # Initialize logger
