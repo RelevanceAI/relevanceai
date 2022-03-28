@@ -32,14 +32,7 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.client.helpers import *
 
 from relevanceai.operations.cluster import ClusterOps
-from relevanceai.constants.errors import (
-    APIError,
-    ProjectNotFoundError,
-    APIKeyNotFoundError,
-    FireBaseUIDNotFoundError,
-    RegionFoundError,
-    TokenNotFoundError,
-)
+from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
 from relevanceai.dataset import Dataset
 
@@ -51,10 +44,6 @@ class Client(APIClient, DocUtils):
     def __init__(
         self,
         token: Optional[str] = None,
-        project: Optional[str] = None,
-        api_key: Optional[str] = None,
-        region: Optional[str] = None,
-        firebase_uid: Optional[str] = None,
         authenticate: bool = True,
     ):
         """
@@ -74,51 +63,27 @@ class Client(APIClient, DocUtils):
             token = auth()
 
         self.token = token
+        self.credentials = process_token(token)
+        # Eventually the following should be accessed directly from
+        # self.credentials, but keep for now.
+        (
+            self.project,
+            self.api_key,
+            self.region,
+            self.firebase_uid,
+        ) = self.credentials.split_token()
+
+        self.base_url = region_to_url(self.region)
+        self.base_ingest_url = region_to_url(self.region)
 
         try:
             self._set_mixpanel_write_key()
         except Exception as e:
             pass
 
-        if token:
-            credentials = process_token(token)
-
-        try:
-            self.project = credentials["project"]
-        except Exception:
-            raise ProjectNotFoundError
-
-        try:
-            self.api_key = credentials["api_key"]
-        except Exception:
-            raise APIKeyNotFoundError
-
-        try:
-            self.firebase_uid = credentials["firebase_uid"]
-        except Exception:
-            raise FireBaseUIDNotFoundError
-
-        try:
-            self.region = credentials["region"]
-        except Exception:
-            raise RegionFoundError
-
-        if all(
-            secret is None
-            for secret in [self.project, self.api_key, self.region, self.firebase_uid]
-        ):
-            raise TokenNotFoundError
-        else:
-            token = f"{project}:{api_key}:{region}:{firebase_uid}"
-
         self._identify()
 
-        self.base_url = region_to_url(self.region)
-        self.base_ingest_url = region_to_url(self.region)
-
-        super().__init__(
-            project=self.project, api_key=self.api_key, firebase_uid=self.firebase_uid
-        )
+        super().__init__(self.credentials)
 
         # used to debug
         if authenticate:
@@ -129,15 +94,11 @@ class Client(APIClient, DocUtils):
 
         # Add non breaking changes to support old ways of inserting documents and csv
         self.insert_documents = Dataset(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id="",
         )._insert_documents
         self.insert_csv = Dataset(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id="",
         )._insert_csv
 
@@ -278,10 +239,8 @@ class Client(APIClient, DocUtils):
         highlight_fields = {} if highlight_fields is None else highlight_fields
         text_fields = [] if text_fields is None else text_fields
         return Dataset(
+            credentials=self.credentials,
             dataset_id=dataset_id,
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
             fields=fields,
             image_fields=image_fields,
             audio_fields=audio_fields,
@@ -298,9 +257,7 @@ class Client(APIClient, DocUtils):
         **kwargs,
     ):
         return ClusterOps(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             model=model,
             **kwargs,
         )
