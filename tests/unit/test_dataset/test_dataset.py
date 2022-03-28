@@ -3,7 +3,6 @@
 """
 
 import os
-from typing_extensions import assert_type
 import uuid
 
 import numpy as np
