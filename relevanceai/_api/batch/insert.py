@@ -797,7 +797,10 @@ class BatchInsertClient(BatchRetrieveClient):
                 if int(target_chunk_mb / doc_mb) + 1 < len(documents)
                 else len(documents)
             )
-            chunksize = max(chunksize, max_chunk_size)
+            chunksize = min(chunksize, max_chunk_size)
+            # Add edge case handling
+            if chunksize == 0:
+                chunksize = 1
 
         # Initialise number of inserted documents
         inserted: List[str] = []
