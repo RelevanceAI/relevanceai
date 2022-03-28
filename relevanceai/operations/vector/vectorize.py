@@ -76,7 +76,7 @@ class _VectorizeHelper(APIClient):
         self.upsert_metadata(updated_metadata)
 
 
-class Vectorize(_VectorizeHelper):
+class VectorizeOps(_VectorizeHelper):
     def __init__(
         self,
         credentials: Credentials,
