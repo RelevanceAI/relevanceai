@@ -26,6 +26,7 @@ class TestClusterOps:
             model="kmeans",
             cluster_config=dict(n_clusters=10),
             alias=alias,
+            vector_fields=[vector_field],
         )
         assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
@@ -33,6 +34,7 @@ class TestClusterOps:
         test_dataset.cluster(
             model="optics",
             alias=alias,
+            vector_fields=[vector_field],
         )
         assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
@@ -40,6 +42,7 @@ class TestClusterOps:
         test_dataset.cluster(
             model=MiniBatchKMeans(n_clusters=10),
             alias=alias,
+            vector_fields=[vector_field],
         )
         assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
