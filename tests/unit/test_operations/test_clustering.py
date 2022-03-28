@@ -58,8 +58,8 @@ class TestClusterOps:
 
         schema = test_dataset.schema
         assert f"_cluster_" in schema
-        assert f"_cluster_{vector_field}" in schema
-        assert f"_cluster_{vector_field}.{alias}" in schema
+        assert f"_cluster_.{vector_field}" in schema
+        assert f"_cluster_.{vector_field}.{alias}" in schema
 
     @pytest.mark.skip(NOT_IMPLEMENTED)
     def test_list_closest(self, test_client: Client, test_dataset: Dataset):
