@@ -132,7 +132,7 @@ class TestDatasetSeries:
 
 class TestDatasetStats:
     def test_value_counts(self, test_dataset: Dataset):
-        value_counts = test_dataset.value_counts()
+        value_counts = test_dataset.value_counts(field="sample_1_label")
         assert isinstance(value_counts, pd.DataFrame)
 
     def test_describe(self, test_dataset: Dataset):
