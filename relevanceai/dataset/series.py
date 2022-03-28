@@ -333,7 +333,7 @@ class Series(APIClient):
             df.bulk_apply(update_documents)
         """
         filters = [] if filters is None else filters
-        select_fields = [] if select_fields is None else select_fields
+        select_fields = [self.field] if select_fields is None else select_fields
 
         return self.pull_update_push_async(
             self.dataset_id,
