@@ -73,6 +73,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         parent_alias: str = None,
         vector_fields: Optional[List[str]] = None,
         dataset_id: Optional[str] = None,
+        **kwargs,
     ):
         self.credentials = credentials
         self.alias = alias  # type: ignore
@@ -86,6 +87,8 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
         self.verbose = True
         self.vector_fields = vector_fields  # type: ignore
         self.dataset_id = dataset_id  # type: ignore
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
         super().__init__(self.credentials)
 

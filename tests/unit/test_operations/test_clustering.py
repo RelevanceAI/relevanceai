@@ -15,7 +15,7 @@ class TestClusterOps:
         alias = "cluster_test_1"
         test_dataset.cluster(
             model="kmeans",
-            n_clusters=10,
+            cluster_config=dict(n_clusters=3),
             alias=alias,
             vector_fields=[self.vector_field],
         )
