@@ -1,3 +1,4 @@
+from http.client import NOT_IMPLEMENTED
 import os
 import random
 import string
@@ -52,3 +53,5 @@ def generate_dataset_id():
 RANDOM_PANDAS_DATASET_SUFFIX = generate_random_string().lower()
 SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
+
+NOT_IMPLEMENTED = "Test Not Implemented Yet"

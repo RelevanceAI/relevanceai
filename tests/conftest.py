@@ -28,11 +28,14 @@ def test_client(test_token):
     client = Client(token=test_token)
     client.config["mixpanel.is_tracking_enabled"] = False
     client.disable_analytics_tracking()
-    yield client
+    return client
 
-    for dataset in client.list_datasets()["datasets"]:
+
+@pytest.fixture(scope="session", autouse=True)
+def remove_test_datasets(test_client: Client):
+    for dataset in test_client.list_datasets()["datasets"]:
         if SAMPLE_DATASET_DATASET_PREFIX in dataset:
-            client.delete_dataset(dataset)
+            test_client.delete_dataset(dataset)
 
 
 @pytest.fixture(scope="module")
