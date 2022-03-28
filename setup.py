@@ -41,11 +41,9 @@ vis_requirements = requirements + [
     "matplotlib>=3.5.1",
     "plotly>=5.5.0",
     "typeguard",
-    "dash",
     "pillow",
     "opencv-python",
     "scikit-image",
-    "dash_bootstrap_components",
 ]
 
 umap = ["umap-learn>=0.5.2"]
