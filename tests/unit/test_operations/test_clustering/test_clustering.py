@@ -10,145 +10,56 @@ from sklearn.cluster import MiniBatchKMeans
 from relevanceai.client import Client
 from relevanceai.dataset import Dataset
 
-from relevanceai.operations.cluster import ClusterOps
-from relevanceai.operations.cluster.base import ClusterBase
-from relevanceai.operations.cluster.groupby import ClusterGroupby
 
-from tests.globals.constants import generate_random_string
+class TestClusterOps:
+    def test_dataset_cluster(self, test_dataset: Dataset):
+        vector_field = "sample_1_vector_"
 
-CLUSTER_ALIAS = "kmeans_10"
-VECTOR_FIELDS = ["sample_1_vector_"]
+        alias = "cluster_test_1"
+        test_dataset.cluster(
+            model="kmeans",
+            n_clusters=10,
+            alias=alias,
+            vector_fields=[vector_field],
+        )
+        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
+        alias = "cluster_test_2"
+        test_dataset.cluster(
+            model="kmeans",
+            cluster_config=dict(n_clusters=10),
+            alias=alias,
+        )
+        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
-def test_kmeans(test_client: Client, clustered_dataset_id: List[Dict]):
-    db_health = test_client.datasets.monitor.health(clustered_dataset_id)
-    assert "_cluster_" in db_health
-    assert "_cluster_.sample_1_vector_.kmeans-10" in db_health
+        alias = "cluster_test_3"
+        test_dataset.cluster(
+            model="optics",
+            alias=alias,
+        )
+        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
+        alias = "cluster_test_4"
+        test_dataset.cluster(
+            model=MiniBatchKMeans(n_clusters=10),
+            alias=alias,
+        )
+        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
-@pytest.fixture
-def closest_to_centers(test_client: Client, clustered_dataset_id: List[Dict]):
-    time.sleep(2)
-    results = test_client.datasets.cluster.centroids.list_closest_to_center(
-        clustered_dataset_id,
-        ["sample_1_vector_"],
-        "kmeans-10",
-    )
-    return results
+    def test_ClusterOps(self, test_client: Client, test_dataset: Dataset):
+        vector_field = "sample_1_vector_"
+        alias = "kmeans-10"
 
+        operator = test_client.ClusterOps(model="kmeans", n_clusters=10)
+        operator(test_dataset, vector_fields=[vector_field])
 
-@pytest.fixture
-def furthest_from_centers(test_client: Client, clustered_dataset_id: List[Dict]):
-    time.sleep(2)
-    results = test_client.datasets.cluster.centroids.list_furthest_from_center(
-        clustered_dataset_id,
-        ["sample_1_vector_"],
-        "kmeans-10",
-    )
-    return results
+        schema = test_dataset.schema
+        assert f"_cluster_" in schema
+        assert f"_cluster_{vector_field}" in schema
+        assert f"_cluster_{vector_field}.{alias}" in schema
 
+    def test_list_closest(self, test_client: Client, test_dataset: Dataset):
+        assert False
 
-@pytest.mark.skip(
-    reason="If closest is not found, None is returned causing test to fail."
-)
-def test_closest(test_clusterer: ClusterOps):
-    closest = test_clusterer.closest()
-    assert len(closest["results"]) > 0
-
-
-@pytest.mark.skip(
-    reason="If furthest is not found, None is returned causing test to fail."
-)
-def test_furthest(test_clusterer: ClusterOps):
-    furthest = test_clusterer.furthest()
-    assert len(furthest["results"]) > 0
-
-
-@pytest.mark.skip(
-    reason="hard to debug, aggregations and groupybys need to be more carefully thought about"
-)
-def test_agg(test_clusterer: ClusterOps):
-    agg = test_clusterer.agg({"sample_2_value": "avg"})
-    cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
-    groupby_agg = cluster_groupby.agg({"sample_2_value": "avg"})
-    assert isinstance(groupby_agg, dict)
-    assert len(groupby_agg) > 0
-
-
-@pytest.mark.skip(
-    reason="hard to debug, aggregations and groupybys need to be more carefully thought about"
-)
-def test_agg_std(test_clusterer: ClusterOps):
-    agg = test_clusterer.agg({"sample_2_value": "avg"})
-    cluster_groupby: ClusterGroupby = test_clusterer.groupby(["sample_3_description"])
-    groupby_agg = cluster_groupby.agg({"sample_2_value": "std_deviation"})
-    assert isinstance(groupby_agg, dict)
-    assert len(groupby_agg) > 0
-
-
-def test_clusterops(test_client: Client, vector_dataset_id: str):
-    import random
-
-    class CustomClusterModel(ClusterBase):
-        def fit_predict(self, X):
-            cluster_labels = np.array([random.randint(0, 100) for _ in range(len(X))])
-            return cluster_labels
-
-    model = CustomClusterModel()
-
-    dataset = test_client.Dataset(vector_dataset_id)
-    operator = test_client.ClusterOps(
-        model=model,
-    )
-    operator(dataset, vector_fields=["sample_1_vector_"])
-    assert "_cluster_.sample_1_vector_.customclustermodel" in dataset.schema
-
-
-@pytest.mark.skip(
-    reason="If closest is not found, None is returned causing test to fail."
-)
-def test_cluster(test_dataset: Dataset):
-    from sklearn.cluster import KMeans
-
-    vector_field = "sample_1_vector_"
-    alias = generate_random_string().lower()
-
-    # check they're not in first
-    assert f"_cluster_.{vector_field}.{alias}" not in test_dataset.schema
-
-    model = KMeans()
-    clusterer = test_dataset.cluster(
-        model=model, alias=alias, vector_fields=[vector_field]
-    )
-    assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
-    assert len(clusterer.closest()) > 0
-
-
-@pytest.mark.skip(reason="Keep getting TypeError: cannot pickle 'EncodedFile' object")
-def test_dbscan(test_client: Client, test_dataset: Dataset):
-    from sklearn.cluster import DBSCAN
-
-    ALIAS = "dbscan"
-
-    model = DBSCAN()
-    clusterer = test_client.ClusterOps(model=model)
-    clusterer.fit(test_dataset, ["sample_3_vector_"], alias=ALIAS)
-    assert any([x for x in test_dataset.schema if ALIAS in x])
-
-
-@pytest.fixture(scope="function")
-def test_batch_clusterer(test_client: Client, vector_dataset_id, test_dataset: Dataset):
-
-    operator = test_client.ClusterOps(
-        model=MiniBatchKMeans(),
-    )
-
-    operator(test_dataset, vector_fields=VECTOR_FIELDS)
-
-    operator.vector_fields = VECTOR_FIELDS
-    closest = operator.closest(dataset=vector_dataset_id)
-    assert len(closest["results"]) > 0
-
-    operator.vector_fields = VECTOR_FIELDS
-    furthest = operator.furthest(dataset=vector_dataset_id)
-    assert len(furthest["results"]) > 0
+    def test_list_furthest(self, test_client: Client, test_dataset: Dataset):
+        assert False
