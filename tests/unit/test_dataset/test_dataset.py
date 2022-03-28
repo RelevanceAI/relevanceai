@@ -146,6 +146,7 @@ class TestDatasetStats:
             Y="sample_2_value",
             vector_field="sample_1_vector_",
             alias="kmeans-8",
+            show_plot=False,
         )
         assert corr is None
 
