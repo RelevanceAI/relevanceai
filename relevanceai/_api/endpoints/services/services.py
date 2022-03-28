@@ -15,36 +15,16 @@ from relevanceai._api.endpoints.services.wordclouds import WordcloudsClient
 
 
 class ServicesClient(_Base):
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
-
-        self.encoders = EncodersClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.cluster = ClusterClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.search = SearchClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.aggregate = AggregateClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.recommend = RecommendClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.tagger = TaggerClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.prediction = PredictionClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        self.wordclouds = WordcloudsClient(
-            project=project, api_key=api_key, firebase_uid=firebase_uid
-        )
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+    def __init__(self, credentials):
+        self.encoders = EncodersClient(credentials)
+        self.cluster = ClusterClient(credentials)
+        self.search = SearchClient(credentials)
+        self.aggregate = AggregateClient(credentials)
+        self.recommend = RecommendClient(credentials)
+        self.tagger = TaggerClient(credentials)
+        self.prediction = PredictionClient(credentials)
+        self.wordclouds = WordcloudsClient(credentials)
+        super().__init__(credentials)
 
     def document_diff(
         self,

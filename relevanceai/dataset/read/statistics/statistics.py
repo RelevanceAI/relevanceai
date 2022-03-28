@@ -6,30 +6,26 @@ import pandas as pd
 
 from typing import Optional, Union
 
-from relevanceai._api import APIClient
-from relevanceai._api.endpoints.services.cluster import ClusterClient
-
+from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
-
 from relevanceai.utils.decorators.version import added
 from relevanceai.utils.decorators.analytics import track
+from relevanceai._api import APIClient
+from relevanceai._api.endpoints.services.cluster import ClusterClient
 
 
 class Statistics(APIClient):
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         dataset_id: str,
         **kwargs,
     ):
+        self.credentials = credentials
         self.dataset_id = dataset_id
         super().__init__(
-            dataset_id=dataset_id,
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
+            dataset_id=self.dataset_id,
+            credentials=credentials,
             **kwargs,
         )
 
@@ -60,10 +56,8 @@ class Statistics(APIClient):
 
         """
         return Series(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
             field=field,
         ).value_counts()
 
@@ -139,7 +133,7 @@ class Statistics(APIClient):
         import matplotlib.pyplot as plt
 
         # todo: how to cover cases when fields are in schema but not "calculable" fields like clusters and deployables
-        cclient = ClusterClient(self.project, self.api_key, self.firebase_uid)
+        cclient = ClusterClient(self.credentials)
         groupby_agg = (
             []
             if groupby is None
@@ -159,10 +153,8 @@ class Statistics(APIClient):
             categories = ["cluster"]
         else:
             series = Series(
-                project=self.project,
-                api_key=self.api_key,
+                credentials=self.credentials,
                 dataset_id=self.dataset_id,
-                firebase_uid=self.firebase_uid,
                 field=groupby,
             ).all(show_progress_bar=False)
 
