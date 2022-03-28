@@ -577,3 +577,28 @@ class DatasetsClient(_Base):
             method="POST",
             parameters={"files": files},
         )
+
+    def details(
+        self,
+        dataset_id: str,
+        include_schema: bool = True,
+        include_stats: bool = True,
+        include_metadata: bool = True,
+        include_schema_stats: bool = False,
+        include_vector_health: bool = False,
+        include_active_jobs: bool = False,
+        include_settings: bool = False,
+    ):
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/details",
+            method="POST",
+            parameters={
+                "include_schema": include_schema,
+                "include_stats": include_stats,
+                "include_metadata": include_metadata,
+                "include_schema_stats": include_schema_stats,
+                "include_vector_health": include_vector_health,
+                "include_active_jobs": include_active_jobs,
+                "include_settings": include_settings,
+            },
+        )

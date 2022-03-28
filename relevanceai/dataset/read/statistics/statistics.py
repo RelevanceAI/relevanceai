@@ -303,3 +303,7 @@ class Statistics(APIClient):
             page=page,
             asc=asc,
         )
+
+    def health_check(self, **kwargs):
+        details = self.datasets.monitor.health(self.dataset_id, **kwargs)
+        return details
