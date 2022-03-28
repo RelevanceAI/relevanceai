@@ -33,7 +33,7 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops()
+        return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
 
     @deprecated(version="2.0", message="auto_cluster does not work as intended")
     def auto_cluster(
@@ -51,7 +51,7 @@ class Operations(APIClient):
             vector_fields=vector_fields,
             **kwargs,
         )
-        return ops()
+        return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
 
     def dr(
         self,
