@@ -101,3 +101,12 @@ class ReduceDimensionsOps(APIClient, DocUtils):
         )
 
         return self.update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
+
+    def operate(
+        self,
+        dataset_id: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
+        alias: Optional[str] = None,
+    ):
+        """Operate the dashboard"""
+        return self.fit(dataset_id=dataset_id, vector_fields=vector_fields, alias=alias)
