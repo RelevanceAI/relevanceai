@@ -1,16 +1,16 @@
 import numpy as np
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
-from relevanceai._api import APIClient
+
+from relevanceai.client.helpers import Credentials
 from relevanceai.constants import CLUSTER_APP_LINK, Warning
+from relevanceai._api import APIClient
 
 
 class ClusterOps(APIClient):
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         model: Union[str, Any],
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
@@ -52,10 +52,6 @@ class ClusterOps(APIClient):
             When viewing the cluster app dashboard, outliers will be prefixed with outlier_label
 
         """
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
-
         self.vector_field = None if vector_fields is None else vector_fields[0]
 
         self.config = {} if cluster_config is None else cluster_config  # type: ignore
@@ -77,12 +73,7 @@ class ClusterOps(APIClient):
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
 
-        super().__init__(
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
-            **kwargs,
-        )
+        super().__init__(credentials, **kwargs)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
         self.forward(dataset_id=dataset_id, vector_fields=vector_fields)

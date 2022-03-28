@@ -2,7 +2,7 @@ import pytest
 from relevanceai import Client, mock_documents
 
 
-@pytest.mark.skip(msg="no module named hdbscan")
+@pytest.mark.skip(reason="no module named hdbscan")
 def test_hdbscan(test_client: Client, test_dataset_id: str):
     import hdbscan
 

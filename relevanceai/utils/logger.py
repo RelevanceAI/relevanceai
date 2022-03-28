@@ -77,7 +77,9 @@ class FileLogger:
                 sys.stderr = open(self.fn, "w")
         else:
             self._existed = True
-            with open(self.fn, "r") as f:
+            with open(self.fn, "rb") as f:
+                # must include "b" because of occasional test failure,
+                # probably due to the use of emojis.
                 self._initial_length = len(f.readlines())
             if self.log_to_file:
                 sys.stdout = open(self.fn, "a")
@@ -108,7 +110,7 @@ class FileLogger:
                 os.remove(self.fn)
 
     def _lines_added(self):
-        with open(self.fn, "r") as f:
+        with open(self.fn, "rb") as f:
             final_length = len(f.readlines())
 
         if final_length > self._initial_length:
@@ -117,7 +119,7 @@ class FileLogger:
             return False
 
     def _if_not_empty(self):
-        with open(self.fn, "r") as f:
+        with open(self.fn, "rb") as f:
             lines = f.readlines()
         if len(lines) > 1:
             return True

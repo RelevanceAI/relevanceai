@@ -1,23 +1,20 @@
 from typing import Optional
 
-from relevanceai._api import APIClient
+from relevanceai.client.helpers import Credentials
 from relevanceai.operations.cluster.constants import GROUPBY_MAPPING
+from relevanceai._api import APIClient
 
 
 class ClusterGroupby(APIClient):
     def __init__(
         self,
-        project,
-        api_key,
-        firebase_uid,
-        dataset_id,
+        credentials: Credentials,
+        dataset_id: str,
         alias: str,
         vector_fields: Optional[list] = None,
         _pre_groupby=None,
     ):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+        self.credentials = credentials
         self.dataset_id = dataset_id
         self._pre_groupby = _pre_groupby
         self.alias = alias
@@ -39,9 +36,7 @@ class ClusterGroupby(APIClient):
         if self._pre_groupby is not None:
             self.groupby_call += self._pre_groupby
         self.agg = ClusterAgg(
-            project=self.project,
-            api_key=self.api_key,
-            firebase_uid=self.firebase_uid,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
             groupby_call=self.groupby_call,
             vector_fields=self.vector_fields,
@@ -99,17 +94,13 @@ class ClusterGroupby(APIClient):
 class ClusterAgg(APIClient):
     def __init__(
         self,
-        project,
-        api_key,
-        firebase_uid,
-        dataset_id,
+        credentials: Credentials,
+        dataset_id: str,
         vector_fields: list,
         alias: str,
         groupby_call: Optional[list] = None,
     ):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
+        self.credentials = credentials
         self.dataset_id = dataset_id
         self.groupby_call = [] if groupby_call is None else groupby_call
         self.vector_fields = vector_fields

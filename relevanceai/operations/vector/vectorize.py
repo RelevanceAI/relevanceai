@@ -1,6 +1,7 @@
 from typing import Optional, Tuple, List
 
 from relevanceai._api import APIClient
+from relevanceai.client.helpers import Credentials
 
 from relevanceai.utils.decorators.version import added, beta
 from relevanceai.utils.logger import FileLogger
@@ -78,18 +79,11 @@ class _VectorizeHelper(APIClient):
 class Vectorize(_VectorizeHelper):
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         dataset_id: str,
     ):
         self.dataset_id = dataset_id
-        super().__init__(
-            dataset_id=dataset_id,
-            project=project,
-            api_key=api_key,
-            firebase_uid=firebase_uid,
-        )
+        super().__init__(dataset_id=dataset_id, credentials=credentials)
 
     @beta
     @added(version="1.2.0")

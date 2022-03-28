@@ -5,7 +5,7 @@ from typing import Dict, List
 from relevanceai.client import Client
 
 
-@pytest.mark.skip(msg="torch._C.Node is not subscriptable")
+@pytest.mark.skip(reason="torch._C.Node is not subscriptable")
 def test_dataset_vectorize(
     test_client: Client, test_dataset_id: str, test_documents: List[Dict]
 ):
@@ -25,7 +25,7 @@ def test_dataset_vectorize(
     assert "image_url_clip_vector_" in results["skipped_vectors"]
 
 
-@pytest.mark.skip(msg="auto functions are non functional at the moment")
+@pytest.mark.skip(reason="auto functions are non functional at the moment")
 def test_dataset_auto_text_cluster_dashboard(
     test_client: Client, test_dataset_id: str, test_documents: List[Dict]
 ):
