@@ -97,7 +97,7 @@ class FireBaseUIDNotFoundError(RelevanceAIError):
         super().__init__(message)
 
 
-class RegionFoundError(RelevanceAIError):
+class RegionNotFoundError(RelevanceAIError):
     """"""
 
     def __init__(self, *args, **kwargs):

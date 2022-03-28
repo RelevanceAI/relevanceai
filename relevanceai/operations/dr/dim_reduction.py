@@ -9,6 +9,7 @@ from doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
+from relevanceai.client.helpers import Credentials
 
 from relevanceai.utils.base import _Base
 from relevanceai.utils.logger import LoguruLogger
@@ -154,12 +155,8 @@ class Ivis(DimReductionBase):
 
 
 class DimReduction(_Base, DimReductionBase):
-    def __init__(self, project: str, api_key: str, firebase_uid: str):
-        self.project = project
-        self.api_key = api_key
-        self.firebase_uid = firebase_uid
-
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+    def __init__(self, credentials: Credentials):
+        super().__init__(credentials)
 
     @staticmethod
     def dim_reduce(

@@ -23,6 +23,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from typing import Union, Optional, Callable, Set, List, Dict, Any
+from relevanceai.client.helpers import Credentials
 
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.decorators.version import beta
@@ -64,14 +65,13 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
     def __init__(
         self,
-        project: str,
-        api_key: str,
-        firebase_uid: str,
+        credentials: Credentials,
         model: Union[BatchClusterBase, ClusterBase, CentroidClusterBase, Any] = None,
         alias: Optional[str] = None,
         cluster_field: str = "_cluster_",
         parent_alias: str = None,
     ):
+        self.credentials = credentials
         self.alias = alias  # type: ignore
         self.parent_alias = parent_alias
         self.cluster_field = cluster_field
@@ -80,32 +80,20 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
 
         self.model = self._assign_model(model)
 
-        self.firebase_uid = firebase_uid
-
-        if project is None or api_key is None:
-            project, api_key = self._token_to_auth()
-        else:
-            self.project: str = project
-            self.api_key: str = api_key
-
         self.verbose = True
 
-        super().__init__(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        super().__init__(self.credentials)
 
     def __call__(self):
         self.groupby = ClusterGroupby(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
             alias=self.alias,
             vector_fields=self.vector_fields,
         )
         self.agg = ClusterAgg(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
@@ -113,8 +101,7 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     @track
     def groupby(self):
         return ClusterGroupby(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
             alias=self.alias,
             vector_fields=self.vector_fields,
@@ -123,18 +110,14 @@ class ClusterOps(PartialClusterOps, SubClusterOps):
     @track
     def agg(self):
         self.groupby = ClusterGroupby(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
             alias=self.alias,
             vector_fields=self.vector_fields,
         )
         return ClusterAgg(
-            project=self.project,
-            api_key=self.api_key,
+            credentials=self.credentials,
             dataset_id=self.dataset_id,
-            firebase_uid=self.firebase_uid,
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
