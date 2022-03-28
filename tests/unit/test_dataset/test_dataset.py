@@ -50,10 +50,6 @@ class TestDatasetImport:
     pass
 
 
-class TestDatasetIO(TestDatasetExport, TestDatasetImport):
-    pass
-
-
 class TestDatasetSeries:
     def test_list_aliases(self):
         assert False
@@ -137,7 +133,7 @@ class TestDatasetMetadata:
         assert False
 
 
-class TestDatasetRead(TestDatasetStats, TestDatasetMetadata):
+class TestDatasetRead:
     def test_shape(self):
         assert False
 
