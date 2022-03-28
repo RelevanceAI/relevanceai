@@ -100,7 +100,7 @@ class ReduceDimensionsOps(APIClient, DocUtils):
             dims=self.n_components,
         )
 
-        return self.update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
+        return self._update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
 
     def operate(
         self,
