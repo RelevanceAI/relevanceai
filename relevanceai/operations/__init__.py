@@ -1,2 +1,2 @@
 from relevanceai.operations.operations import Operations
-from relevanceai.operations.base_operations import BaseOps
+from relevanceai.operations.base import BaseOps

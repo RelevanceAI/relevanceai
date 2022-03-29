@@ -570,7 +570,7 @@ class Write(APIClient):
             ]
             return cat_vector_documents
 
-        self.pull_update_push(
+        self.pull_update_push_async(
             self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
         )
 

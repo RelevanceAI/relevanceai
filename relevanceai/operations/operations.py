@@ -1,10 +1,11 @@
-from typing import List, Dict, Optional, Any
+from typing import Optional, Any, List
 
 from relevanceai.client.helpers import Credentials
+
 from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.vector import VectorizeOps, Search
 from relevanceai.operations.dr import ReduceDimensionsOps
-from relevanceai.utils.decorators import deprecated
+
 from relevanceai._api import APIClient
 
 
@@ -35,20 +36,18 @@ class Operations(APIClient):
         )
         return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
 
-    @deprecated(version="2.0", message="auto_cluster does not work as intended")
     def auto_cluster(
         self,
-        alias: str,
         vector_fields: List[str],
+        alias: Optional[str] = None,
         **kwargs,
     ):
-        model = alias.split("-")[0]
         ops = ClusterOps(
             credentials=self.credentials,
-            model=model,
+            model="community_detection",
             alias=alias,
-            dataset_id=self.dataset_id,
             vector_fields=vector_fields,
+            dataset_id=self.dataset_id,
             **kwargs,
         )
         return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)

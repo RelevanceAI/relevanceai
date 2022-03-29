@@ -1,6 +1,7 @@
 Client
 ========================================
 
-.. automodule:: relevanceai.interfaces
-    :members:
-    :exclude-members: __init__
+.. automodule:: relevanceai.client.client
+   :members:
+   :undoc-members:
+   :show-inheritance:

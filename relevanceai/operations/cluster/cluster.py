@@ -102,7 +102,7 @@ class ClusterOps(APIClient):
         return alias.lower()
 
     def _get_package(self, model):
-        model_name = str(model.__class__)
+        model_name = str(model.__class__).lower()
         if "function" in model_name:
             model_name = str(model.__name__)
 
@@ -115,7 +115,7 @@ class ClusterOps(APIClient):
         elif "hdbscan" in model_name:
             package = "hdbscan"
 
-        elif "community_detection" in model_name:
+        elif "communitydetection" in model_name:
             package = "sentence-transformers"
 
         return package
@@ -195,11 +195,22 @@ class ClusterOps(APIClient):
 
                 model = HDBSCAN(**self.config)
 
-            elif model == "community_detection":
-                # TODO: this is a callable (?)
+            elif model == "communitydetection":
                 from sentence_transformers.util import community_detection
 
-                model = community_detection
+                class CommunityDetection:
+                    def __init__(self, config):
+                        self.config = config
+
+                    def __call__(self, vectors):
+                        communities = community_detection(vectors, **self.config)
+                        labels = [-1 for _ in range(vectors.shape[0])]
+                        for cluster_index, community in enumerate(communities):
+                            for index in community:
+                                labels[index] = cluster_index
+                        return labels
+
+                model = CommunityDetection(config=self.config)
 
             elif "faiss" in model:
                 from faiss import Kmeans
@@ -216,7 +227,7 @@ class ClusterOps(APIClient):
         labels = labels.flatten().tolist()
         cluster_labels = [
             f"cluster-{str(label)}"
-            if label == self.outlier_value
+            if label != self.outlier_value
             else self.outlier_label
             for label in labels
         ]
@@ -279,8 +290,7 @@ class ClusterOps(APIClient):
             self.model.train(vectors)
             labels = self.model.assign(vectors)[1]
 
-        elif self.package == "sentencetransformers":
-            # TODO: make teh config here better
+        elif self.package == "sentence-transformers":
             labels = self.model(vectors)
             labels = np.array(labels)
 
