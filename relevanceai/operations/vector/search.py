@@ -7,7 +7,7 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai._api import APIClient
 
 
-class Search(APIClient):
+class SearchOps(APIClient):
     def __init__(
         self,
         credentials: Credentials,

@@ -45,3 +45,7 @@ You can also easily access metadata using the following:
 .. autoclass:: relevanceai.dataset.read.statistics.Statistics
     :exclude-members: __init__
     :members:
+
+.. autoclass:: relevanceai.operations.operations.Operations
+    :exclude-members: __init__
+    :members:
