@@ -333,8 +333,9 @@ class ClusterOps(APIClient):
             vector_fields = self.vector_fields
 
         self.dataset_id = dataset_id
-        vector_field = vector_fields[0]
-        self.vector_field = vector_field
+        if vector_fields is not None:
+            vector_field = vector_fields[0]
+            self.vector_field = vector_field
 
         # get all documents
         documents = self._get_all_documents(
