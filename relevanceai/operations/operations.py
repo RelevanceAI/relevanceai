@@ -1,9 +1,6 @@
 from typing import List, Dict, Optional, Any, Union
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.operations.cluster import ClusterOps
-from relevanceai.operations.vector import VectorizeOps, SearchOps
-from relevanceai.operations.dr import ReduceDimensionsOps
 from relevanceai.utils.decorators import deprecated, beta
 from relevanceai._api import APIClient
 
@@ -55,6 +52,8 @@ class Operations(APIClient):
             The alias to be used to store your model
 
         """
+        from relevanceai.operations.cluster import ClusterOps
+
         ops = ClusterOps(
             credentials=self.credentials,
             model=model,
@@ -89,6 +88,8 @@ class Operations(APIClient):
             The list of vector fields to support
 
         """
+        from relevanceai.operations.dr import ReduceDimensionsOps
+
         ops = ReduceDimensionsOps(
             credentials=self.credentials,
             model=model,
@@ -155,6 +156,9 @@ class Operations(APIClient):
 
 
         """
+
+        from relevanceai.operations.vector import VectorizeOp
+
         ops = VectorizeOps(
             credentials=self.credentials,
             dataset_id=self.dataset_id,
@@ -270,6 +274,8 @@ class Operations(APIClient):
 
         """
 
+        from relevanceai.operations.vector import SearchOps
+
         ops = SearchOps(
             credentials=self.credentials,
             dataset_id=self.dataset_id,
@@ -349,6 +355,8 @@ class Operations(APIClient):
             results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
+        from relevanceai.operations.vector import SearchOps
+
         ops = SearchOps(
             credentials=self.credentials,
             dataset_id=self.dataset_id,
@@ -430,6 +438,7 @@ class Operations(APIClient):
             )
 
         """
+        from relevanceai.operations.vector import SearchOps
 
         ops = SearchOps(
             credentials=self.credentials,
@@ -509,6 +518,8 @@ class Operations(APIClient):
             )
 
         """
+        from relevanceai.operations.vector import SearchOps
+
         ops = SearchOps(
             credentials=self.credentials,
             dataset_id=self.dataset_id,
