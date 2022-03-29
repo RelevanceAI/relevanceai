@@ -124,6 +124,9 @@ class ClusterOps(APIClient):
         elif "community_detection" in model_name:
             package = "sentence-transformers"
 
+        else:
+            package = "custom"
+
         return package
 
     def _get_model(self, model):
@@ -222,7 +225,7 @@ class ClusterOps(APIClient):
         labels = labels.flatten().tolist()
         cluster_labels = [
             f"cluster-{str(label)}"
-            if label == self.outlier_value
+            if label != self.outlier_value
             else self.outlier_label
             for label in labels
         ]
@@ -668,14 +671,14 @@ class ClusterOps(APIClient):
             plt.show()
 
     @track
-    def plot_distributions(
+    def plot_distributions_by_measure(
         self,
         numeric_field: str,
         measure_function: Callable,
         top_indices: int = 10,
         dataset_id: str = None,
         asc: bool = True,
-        bins: int = None,
+        measurement_name: str = "measurement",
     ):
         """
         Plot the distributions across each cluster
@@ -712,7 +715,6 @@ class ClusterOps(APIClient):
         cluster_measurements = {}
         for community in tqdm(top_comms.index):
             sample_comm_df = df[df[cluster_field] == community]
-            # Get the average in the score too
             measure_output = measure_function(
                 sample_comm_df[numeric_field].dropna().to_list()
             )
@@ -733,9 +735,9 @@ class ClusterOps(APIClient):
                 sample_comm_df[numeric_field],
             )
             g.set(xlim=(facet_result["min"], facet_result["max"]))
-            plt.title(community + str(f" - measurement: {measurement}"))
+            plt.title(community + str(f" - {measurement_name}: {measurement}"))
 
-    def plot_skewness(
+    def plot_most_skewed(
         self,
         numeric_field: str,
         top_indices: int = 10,
@@ -747,11 +749,12 @@ class ClusterOps(APIClient):
         """
         from scipy.stats import skew
 
-        return self.plot_distributions_measure(
+        return self.plot_distributions_by_measure(
             numeric_field=numeric_field,
             measure_function=skew,
             top_indices=top_indices,
             dataset_id=dataset_id,
+            asc=asc,
         )
 
     def _check_for_dataset_id(self):
