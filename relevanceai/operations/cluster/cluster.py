@@ -319,7 +319,7 @@ class ClusterOps(APIClient):
         """
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
-                dataset_id = dataset_id.dataset_id # type: ignore
+                dataset_id = dataset_id.dataset_id  # type: ignore
 
         if vector_fields is None:
             vector_fields = self.vector_fields
