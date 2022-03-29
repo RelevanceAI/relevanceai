@@ -6,7 +6,7 @@ def test_reduce_dimensions(test_dataset: Dataset):
     alias = "pca"
     n_components = 3
     vector_field = "sample_1_vector_"
-    test_dataset.dr(
+    test_dataset.reduce_dims(
         model=model,
         n_components=n_components,
         vector_fields=[vector_field],
