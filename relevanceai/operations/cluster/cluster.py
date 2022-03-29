@@ -76,7 +76,7 @@ class ClusterOps(APIClient):
         super().__init__(credentials, **kwargs)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
-        self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
+        return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
 
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here
