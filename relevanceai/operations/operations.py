@@ -269,8 +269,8 @@ class Operations(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
+            ds = client.Dataset("sample")
+            results = ds.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
 
@@ -350,9 +350,9 @@ class Operations(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
+            ds = client.Dataset("sample")
             MULTIVECTOR_QUERY = [{"vector": [0, 1, 2], "fields": ["sample_vector_"]}]
-            results = df.vector_search(multivector_query=MULTIVECTOR_QUERY)
+            results = ds.vector_search(multivector_query=MULTIVECTOR_QUERY)
 
         """
         from relevanceai.operations.vector import SearchOps
@@ -431,8 +431,8 @@ class Operations(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            results = df.chunk_search(
+            ds = client.Dataset("sample")
+            results = ds.chunk_search(
                 chunk_field="_chunk_",
                 multivector_query=MULTIVECTOR_QUERY
             )
@@ -510,8 +510,8 @@ class Operations(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            results = df.search.multistep_chunk(
+            ds = client.Dataset("sample")
+            results = ds.search.multistep_chunk(
                 chunk_field="_chunk_",
                 multivector_query=MULTIVECTOR_QUERY,
                 first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
