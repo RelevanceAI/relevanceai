@@ -21,9 +21,9 @@ class Operations(APIClient):
 
     def cluster(
         self,
-        model: str,
         vector_fields: List[str],
         alias: Optional[str] = None,
+        model: Any = "community_detection",
         **kwargs,
     ):
         ops = ClusterOps(
@@ -36,28 +36,12 @@ class Operations(APIClient):
         )
         return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
 
-    def auto_cluster(
-        self,
-        vector_fields: List[str],
-        alias: Optional[str] = None,
-        **kwargs,
-    ):
-        ops = ClusterOps(
-            credentials=self.credentials,
-            model="community_detection",
-            alias=alias,
-            vector_fields=vector_fields,
-            dataset_id=self.dataset_id,
-            **kwargs,
-        )
-        return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
-
     def dr(
         self,
-        model: Any,
-        n_components: int,
         alias: str,
         vector_fields: List[str],
+        model: Any = "umap",
+        n_components: int = 3,
         **kwargs,
     ):
         """
