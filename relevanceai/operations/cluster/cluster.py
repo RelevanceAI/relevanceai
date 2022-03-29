@@ -1,6 +1,8 @@
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union, Set
+import pandas as pd
+from typing import Any, Dict, List, Optional, Tuple, Union, Set, Callable
 
+from tqdm.auto import tqdm
 from relevanceai.client.helpers import Credentials
 from relevanceai.constants import CLUSTER_APP_LINK, Warning
 from relevanceai._api import APIClient
@@ -12,9 +14,10 @@ class ClusterOps(APIClient):
     def __init__(
         self,
         credentials: Credentials,
-        model: Union[str, Any],
+        model: Union[str, Any] = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        dataset_id: Optional[str] = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -54,6 +57,7 @@ class ClusterOps(APIClient):
 
         """
         self.vector_field = None if vector_fields is None else vector_fields[0]
+        self.vector_fields = vector_fields
 
         self.config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
@@ -73,6 +77,7 @@ class ClusterOps(APIClient):
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
+        self.dataset_id = dataset_id
 
         super().__init__(credentials, **kwargs)
 
@@ -663,7 +668,7 @@ class ClusterOps(APIClient):
             plt.show()
 
     @track
-    def plot_distributions_measure(
+    def plot_distributions(
         self,
         numeric_field: str,
         measure_function: Callable,
@@ -673,8 +678,9 @@ class ClusterOps(APIClient):
         bins: int = None,
     ):
         """
-        Plot the sentence length distributions across each cluster
+        Plot the distributions across each cluster
         measure_function is run on each cluster and plots
+
         Example
         --------
         .. code-block::
@@ -689,9 +695,12 @@ class ClusterOps(APIClient):
         cluster_field = self._get_cluster_field_name()
 
         # use the max and min to make the x axis the same
+        if dataset_id is None:
+            dataset_id = self.dataset_id
         numeric_field_facet = self.datasets.facets(
             dataset_id=dataset_id, fields=[numeric_field]
         )
+
         facet_result = numeric_field_facet["results"][numeric_field]
 
         docs = self._get_all_documents(
@@ -733,6 +742,9 @@ class ClusterOps(APIClient):
         dataset_id: str = None,
         asc: bool = True,
     ):
+        """
+        Plot the skewness of your clusters.
+        """
         from scipy.stats import skew
 
         return self.plot_distributions_measure(
@@ -752,9 +764,7 @@ class ClusterOps(APIClient):
         if alias is None:
             alias = self.alias
         if isinstance(self.vector_fields, list):
-            set_cluster_field = (
-                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
-            )
+            set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
         elif isinstance(self.vector_fields, str):
             set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
         return set_cluster_field
