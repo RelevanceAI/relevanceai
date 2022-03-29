@@ -378,7 +378,7 @@ class Client(APIClient, DocUtils):
         .. code-block::
 
             client = Client()
-            client.send_dataset(
+            client.clone_dataset(
                 dataset_id="research",
                 source_project="...",
                 source_api_key="..."

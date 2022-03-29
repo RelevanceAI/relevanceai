@@ -21,6 +21,7 @@ class AdminClient(_Base):
         ----------
         read_username:
             Read-only project
+
         """
         return self.make_http_request(
             "/admin/request_read_api_key",
@@ -45,7 +46,7 @@ class AdminClient(_Base):
         .. code-block::
 
             client = Client()
-            client.admin.send_dataset(
+            client.copy_foreign_dataset(
                 dataset_id="research",
                 receiver_project="...",
                 receiver_api_key="..."
