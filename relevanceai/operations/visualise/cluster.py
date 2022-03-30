@@ -28,7 +28,7 @@ class ClusterVizOps(ClusterOps):
         **kwargs,
     ):
         self.vector_fields = vector_fields
-        self.alias = alias # type: ignore
+        self.alias = alias  # type: ignore
         self.dataset_id = dataset_id
         super().__init__(
             credentials,
