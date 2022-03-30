@@ -32,6 +32,7 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.client.helpers import *
 
 from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.visualise import ClusterVizOps
 from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
 from relevanceai.dataset import Dataset
@@ -199,7 +200,9 @@ class Client(APIClient, DocUtils):
         self.print_dashboard_message(
             "You can view all your datasets at https://cloud.relevance.ai/datasets/"
         )
-        return self.datasets.list()
+        datasets = self.datasets.list()
+        datasets["datasets"] = sorted(datasets["datasets"])
+        return datasets
 
     @track
     def delete_dataset(self, dataset_id):
@@ -253,12 +256,28 @@ class Client(APIClient, DocUtils):
     @track
     def ClusterOps(
         self,
-        model,
+        model=None,
         **kwargs,
     ):
         return ClusterOps(
             credentials=self.credentials,
             model=model,
+            **kwargs,
+        )
+
+    @track
+    def ClusterVizOps(
+        self,
+        vector_fields: Optional[List[str]] = None,
+        alias: Optional[str] = None,
+        dataset_id: Optional[str] = None,
+        **kwargs,
+    ):
+        return ClusterVizOps(
+            credentials=self.credentials,
+            vector_fields=vector_fields,
+            alias=alias,
+            dataset_id=dataset_id,
             **kwargs,
         )
 
@@ -378,7 +397,7 @@ class Client(APIClient, DocUtils):
         .. code-block::
 
             client = Client()
-            client.send_dataset(
+            client.clone_dataset(
                 dataset_id="research",
                 source_project="...",
                 source_api_key="..."

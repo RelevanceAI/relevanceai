@@ -226,9 +226,6 @@ class Centroids(APIClient):
         vector_fields: List[str]
             A lit of the vectors fields in your dataset that have cluster centroids you wish to update
 
-        centroid_vector_fields: List[str]
-            ???
-
         alias: str
             The alias that was used to cluster
 

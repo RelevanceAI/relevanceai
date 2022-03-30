@@ -113,7 +113,7 @@ class ClusterClient(_Base):
 
         return self.make_http_request(
             endpoint="/services/cluster/facets",
-            method="GET",
+            method="POST",
             parameters={
                 "dataset_id": dataset_id,
                 "facets_fields": facets_fields,
