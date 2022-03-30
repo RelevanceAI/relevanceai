@@ -1,6 +1,6 @@
-from relevanceai.recipes.sentiment.sentiments import SentimentOps
-from relevanceai.recipes.base import Workflow
-
+from tkinter import W
+from relevanceai.operations.text.sentiment.sentiments import SentimentOps
+from relevanceai.workflow.base import Workflow
 
 class SentimentWorkflow(Workflow, SentimentOps):
     def fit_dataset(
