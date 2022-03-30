@@ -32,6 +32,7 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.client.helpers import *
 
 from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.visualise import ClusterVizOps
 from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
 from relevanceai.dataset import Dataset
@@ -259,6 +260,20 @@ class Client(APIClient, DocUtils):
         **kwargs,
     ):
         return ClusterOps(
+            credentials=self.credentials,
+            model=model,
+            **kwargs,
+        )
+
+    @track
+    def ClusterVizOps(
+        self,
+        model=None,
+        vector_fields: Optional[List[str]] = None,
+        alias: Optional[str] = None,
+        dataset_id: Optional[str] = None,
+    ):
+        return ClusterVizOps(
             credentials=self.credentials,
             model=model,
             **kwargs,

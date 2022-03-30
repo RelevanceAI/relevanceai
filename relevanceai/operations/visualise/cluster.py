@@ -10,16 +10,24 @@ from relevanceai.constants.errors import (
 from tqdm.auto import tqdm
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations.cluster.cluster import ClusterOps
-from typing import Optional, Set, Callable
+from typing import Any, Dict, List, Optional, Tuple, Union, Set, Callable
 
 
 class ClusterVizOps(ClusterOps):
     """
-    Cluster Visualisations
+    Cluster Visualisations. May contain additional visualisation
+    dependencies.
     """
 
-    def __init__(self, cluster_ops: ClusterOps = None):
-        self.cluster_ops = cluster_ops
+    def __init__(
+        self,
+        vector_fields: Optional[List[str]] = None,
+        alias: Optional[str] = None,
+        dataset_id: Optional[str] = None,
+    ):
+        self.vector_fields = (vector_fields,)
+        self.alias = alias
+        self.dataset_id = dataset_id
 
     @track
     def plot_basic_distributions(
@@ -30,6 +38,31 @@ class ClusterVizOps(ClusterOps):
     ):
         """
         Plot the sentence length distributions across each cluster
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            cluster_ops = client.ClusterVizOps(
+                dataset_id="sample_dataset",
+                vector_fields=["sample_vector_"],
+                alias="kmeans-5"
+            )
+            cluster_ops.plot_basic_distributions()
+
+        Parameters
+        ------------
+        numeric_field: str
+            The numeric field to plot
+        top_indices: int
+            The top indices in the plotting
+        dataset_id: Optional[str]
+            The dataset ID
+
         """
         try:
             import seaborn as sns
