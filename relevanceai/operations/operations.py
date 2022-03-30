@@ -34,7 +34,10 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
+        return ops(
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+        )
 
     def dr(
         self,
@@ -86,7 +89,7 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops.vectorize(
+        return ops(
             text_fields=text_fields,
             image_fields=image_fields,
         )

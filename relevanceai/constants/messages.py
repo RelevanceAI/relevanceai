@@ -29,3 +29,7 @@ class Messages:
     WELCOME_MESSAGE = """Welcome to RelevanceAI. Logged in as {}."""
 
     TOKEN_MESSAGE = "Activation token (you can find it here: {} )\n"
+
+    INSERT_GOOD = "✅ All documents inserted/edited successfully."
+
+    INSERT_BAD = "❗Few errors with vectorizing documents. Please check logs."
