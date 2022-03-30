@@ -21,13 +21,22 @@ class ClusterVizOps(ClusterOps):
 
     def __init__(
         self,
+        credentials,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         dataset_id: Optional[str] = None,
+        **kwargs,
     ):
-        self.vector_fields = (vector_fields,)
+        self.vector_fields = vector_fields
         self.alias = alias
         self.dataset_id = dataset_id
+        super().__init__(
+            credentials,
+            vector_fields=vector_fields,
+            alias=alias,
+            dataset_id=dataset_id,
+            **kwargs,
+        )
 
     @track
     def plot_basic_distributions(
@@ -72,7 +81,7 @@ class ClusterVizOps(ClusterOps):
 
         cluster_field = self._get_cluster_field_name()
         docs = self._get_all_documents(
-            dataset_id=dataset_id if dataset_id is None else dataset_id,
+            dataset_id=self.dataset_id if dataset_id is None else dataset_id,
             select_fields=[numeric_field, cluster_field],
         )
         df = pd.json_normalize(docs)
@@ -92,7 +101,7 @@ class ClusterVizOps(ClusterOps):
     def plot_distributions(
         self,
         numeric_field: str,
-        measure_function: Callable,
+        measure_function: Callable = None,
         top_indices: int = 10,
         dataset_id: str = None,
         asc: bool = True,
@@ -125,6 +134,12 @@ class ClusterVizOps(ClusterOps):
             The name of what should be plotted for the graphs
 
         """
+        if measure_function is None:
+            return self.plot_basic_distributions(
+                numeric_field=numeric_field,
+                top_indices=top_indices,
+                dataset_id=dataset_id,
+            )
         try:
             import seaborn as sns
             import matplotlib.pyplot as plt
@@ -204,6 +219,10 @@ class ClusterVizOps(ClusterOps):
             set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
         elif isinstance(self.vector_fields, str):
             set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
+        elif self.vector_fields == None:
+            raise ValueError("Vector field is not set.")
+        else:
+            raise ValueError("Can't detect cluster field.")
         return set_cluster_field
 
     def list_cluster_ids(

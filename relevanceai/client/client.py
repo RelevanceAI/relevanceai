@@ -268,14 +268,16 @@ class Client(APIClient, DocUtils):
     @track
     def ClusterVizOps(
         self,
-        model=None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         dataset_id: Optional[str] = None,
+        **kwargs,
     ):
         return ClusterVizOps(
             credentials=self.credentials,
-            model=model,
+            vector_fields=vector_fields,
+            alias=alias,
+            dataset_id=dataset_id,
             **kwargs,
         )
 
