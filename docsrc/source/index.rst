@@ -30,6 +30,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    cluster_base
    reloading_clusterops
    relevanceai.cluster_report
+   relevanceai.operations.visualise.cluster
 
 .. 
    toctree:: :maxdepth: 4

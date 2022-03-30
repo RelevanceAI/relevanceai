@@ -2,6 +2,7 @@ from tkinter import W
 from relevanceai.operations.text.sentiment.sentiments import SentimentOps
 from relevanceai.workflow.base import Workflow
 
+
 class SentimentWorkflow(Workflow, SentimentOps):
     def fit_dataset(
         self,
