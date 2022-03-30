@@ -73,18 +73,26 @@ class SequentialWorkflow(DocUtils):
 
     .. code-block::
 
+        import random
         from relevanceai import Client
+        from relevanceai.workflow.sequential import SequentialWorkflow
+
         client = Client()
+
+        def vectorize(docs, *args, **kw):
+            return [[random.randint(0, 100) for _ in range(3)] for _ in range(len(docs))]
+
         workflow = SequentialWorkflow(
             [
-                # first operation must always be the input cell
-                Input(["image_url"]), # Returns a list of objects
-                ImageVectorize(), # Vectorizes
-                Output("image_vector_"), # Stores vectors here
-                Update(), # Updates documents
-            ]
+                Input(["sample_1_label"], chunksize=50),
+                vectorize,
+                Output("simple")
+            ], 
+            log_filename="logs"
         )
-        workflow.run()
+
+        ds = client.Dataset("_mock_dataset_")
+        workflow.run(ds, verbose=True)
 
     """
 
