@@ -105,6 +105,7 @@ class Statistics(APIClient):
         alias: str,
         groupby: Optional[str] = None,
         fontsize: int = 16,
+        show_plot: bool = True,
     ):
         """
         Returns the Pearson correlation between two fields.
@@ -213,8 +214,11 @@ class Statistics(APIClient):
                     fontsize=fontsize,
                 )
 
-        fig.tight_layout()
-        plt.show()
+        if show_plot:
+            fig.tight_layout()
+            plt.show()
+        else:
+            return None
 
     def health(self, output_format="dataframe") -> Union[pd.DataFrame, dict]:
         """
