@@ -1,1 +1,1 @@
-from relevanceai.operations.visualise.cluster import ClusterVizOps
+from relevanceai.operations.viz.cluster import ClusterVizOps
