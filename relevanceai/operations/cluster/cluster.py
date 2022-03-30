@@ -1,6 +1,8 @@
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+import pandas as pd
+from typing import Any, Dict, List, Optional, Tuple, Union, Set, Callable
 
+from tqdm.auto import tqdm
 from relevanceai.client.helpers import Credentials
 from relevanceai.constants import CLUSTER_APP_LINK, Warning
 from relevanceai._api import APIClient
@@ -12,9 +14,10 @@ class ClusterOps(APIClient):
     def __init__(
         self,
         credentials: Credentials,
-        model: Union[str, Any],
+        model: Union[str, Any] = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        dataset_id: Optional[str] = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -54,6 +57,7 @@ class ClusterOps(APIClient):
 
         """
         self.vector_field = None if vector_fields is None else vector_fields[0]
+        self.vector_fields = vector_fields
 
         self.config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
@@ -73,6 +77,7 @@ class ClusterOps(APIClient):
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
+        self.dataset_id = dataset_id
 
         super().__init__(credentials, **kwargs)
 
@@ -118,6 +123,9 @@ class ClusterOps(APIClient):
 
         elif "community_detection" in model_name:
             package = "sentence-transformers"
+
+        else:
+            package = "custom"
 
         return package
 
@@ -217,7 +225,7 @@ class ClusterOps(APIClient):
         labels = labels.flatten().tolist()
         cluster_labels = [
             f"cluster-{str(label)}"
-            if label == self.outlier_value
+            if label != self.outlier_value
             else self.outlier_label
             for label in labels
         ]
@@ -325,8 +333,9 @@ class ClusterOps(APIClient):
             vector_fields = self.vector_fields
 
         self.dataset_id = dataset_id
-        vector_field = vector_fields[0]
-        self.vector_field = vector_field
+        if vector_fields is not None:
+            vector_field = vector_fields[0]
+            self.vector_field = vector_field
 
         # get all documents
         documents = self._get_all_documents(
