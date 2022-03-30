@@ -87,7 +87,7 @@ class SequentialWorkflow(DocUtils):
                 Input(["sample_1_label"], chunksize=50),
                 vectorize,
                 Output("simple")
-            ], 
+            ],
             log_filename="logs"
         )
 
