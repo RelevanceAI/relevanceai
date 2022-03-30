@@ -16,7 +16,7 @@ RUN_EXCLUDE = [
     "relevanceai/operations/vector/*",
     "relevanceai/operations/visualise/*",
     "relevanceai/reports/*",
-    "relevanceai/worflow/*",
+    "relevanceai/workflow/*",
 ]
 REPORT_EXCLUDE = RUN_EXCLUDE
 
