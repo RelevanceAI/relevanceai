@@ -2,7 +2,11 @@
 Visualisations for your clustering.
 """
 import pandas as pd
-from relevanceai.constants.errors import MissingClusterError, MissingPackageError
+from relevanceai.constants.errors import (
+    MissingClusterError,
+    MissingPackageError,
+    SetArgumentError,
+)
 from tqdm.auto import tqdm
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations.cluster.cluster import ClusterOps
@@ -158,9 +162,7 @@ class ClusterVizOps(ClusterOps):
 
     def _check_for_dataset_id(self):
         if not hasattr(self, "dataset_id"):
-            raise ValueError(
-                "You are missing a dataset ID. Please set using the argument dataset_id='...'."
-            )
+            raise SetArgumentError("dataset_id")
 
     def _get_cluster_field_name(self, alias: str = None):
         if alias is None:

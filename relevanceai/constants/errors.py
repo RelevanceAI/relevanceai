@@ -104,7 +104,7 @@ class RegionNotFoundError(RelevanceAIError):
 
 class SetArgumentError(RelevanceAIError):
     def __init__(self, argument, *args, **kwargs):
-        message = f"You are missing an argument {argument}"
+        message = f"You are missing a {argument}. Please set using the argument {argument}='...'."
         super.__init__(message)
 
 
