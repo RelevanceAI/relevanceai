@@ -31,7 +31,7 @@ class ClusterVizOps(ClusterOps):
         self.alias = alias  # type: ignore
         self.dataset_id = dataset_id
         super().__init__(
-            credentials,
+            credentials=credentials,
             vector_fields=vector_fields,
             alias=alias,
             dataset_id=dataset_id,
