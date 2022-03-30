@@ -1,3 +1,5 @@
+from typing import Optional
+
 MISSING_FIELD = "Missing field in dataset"
 
 API_ERROR = "Unfortunately you have encountered an API Error! If this is urgent, please submit a ticket to support@relevance.ai"
@@ -105,7 +107,7 @@ class RegionNotFoundError(RelevanceAIError):
 class SetArgumentError(RelevanceAIError):
     def __init__(self, argument, *args, **kwargs):
         message = f"You are missing a {argument}. Please set using the argument {argument}='...'."
-        super.__init__(message)
+        super().__init__(message)
 
 
 class MissingClusterError(RelevanceAIError):
@@ -113,15 +115,15 @@ class MissingClusterError(RelevanceAIError):
 
     def __init__(self, alias, *args, **kwargs):
         message = f"No clusters with alias `{alias}`. Please check the schema."
-        super.__init__(message)
+        super().__init__(message)
 
 
 class MissingPackageError(RelevanceAIError):
-    def __init__(self, package, version: str, *args, **kwargs):
+    def __init__(self, package, version: Optional[str] = None, *args, **kwargs):
         if version is not None:
             message = f"You need to install seaborn! `pip install {package}`."
         else:
             message = (
                 f"You need to install seaborn! `pip install {package}=={version}`."
             )
-        super.__init__(message)
+        super().__init__(message)
