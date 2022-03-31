@@ -480,7 +480,7 @@ class ClusterOps(APIClient):
     list_closest = closest
     list_furthest = furthest
 
-    def _retrieve_dataset_id(self, dataset: Optional[Union[str]]) -> str:
+    def _retrieve_dataset_id(self, dataset: Optional[Union[str, Any]]) -> str:
         """Helper method to get multiple dataset values"""
         if isinstance(dataset, Dataset):
             dataset_id: str = dataset.dataset_id
@@ -509,7 +509,7 @@ class ClusterOps(APIClient):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        dataset: Optional[Union[str]] = None,
+        dataset: Optional[Union[str, Any]] = None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
