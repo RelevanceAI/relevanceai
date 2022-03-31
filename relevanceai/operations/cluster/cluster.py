@@ -268,12 +268,9 @@ class ClusterOps(APIClient):
     def _fit_predict(
         self, documents: List[Dict[str, Any]], vector_field: str
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        doc_subset = [doc for doc in documents if self.is_field(vector_field, doc)]
         vectors = np.array(
-            [
-                self.get_field(vector_field, document)
-                for document in documents
-                if self.is_field(vector_field, document)
-            ]
+            [self.get_field(vector_field, document) for document in doc_subset]
         )
 
         if self.package == "sklearn":
@@ -305,7 +302,7 @@ class ClusterOps(APIClient):
 
         cluster_field = f"_cluster_.{vector_field}.{self.alias}"
         self.set_field_across_documents(
-            field=cluster_field, values=labels, docs=documents
+            field=cluster_field, values=labels, docs=doc_subset
         )
 
         centroid_documents = self._get_centroid_documents(vectors, labels)
