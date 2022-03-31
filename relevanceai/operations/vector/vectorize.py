@@ -121,9 +121,9 @@ class VectorizeOps(APIClient):
                 ],
                 number_of_documents=1,
             )
-            if values:
+            try:
                 value = values[0][column]
-            else:
+            except:
                 continue
 
             dtype = self._get_dtype(value)
@@ -159,22 +159,46 @@ class VectorizeOps(APIClient):
     ) -> List[Dict[str, Any]]:
 
         filters = []
+        if len(fields) > 1:
+            iters = len(fields) ** 2
 
-        for i in range(len(fields) ** 2):
-            binary_array = [character for character in str(bin(i))][2:]
-            mixed_mask = ["0"] * (len(fields) - len(binary_array)) + binary_array
-            mask = [int(value) for value in mixed_mask]
+            for i in range(iters):
+                binary_array = [character for character in str(bin(i))][2:]
+                mixed_mask = ["0"] * (len(fields) - len(binary_array)) + binary_array
+                mask = [int(value) for value in mixed_mask]
 
+                condition_value = [
+                    {
+                        "field": field if mask[index] else vector_field,
+                        "filter_type": "exists",
+                        "condition": "==" if mask[index] else "!=",
+                        "condition_value": "",
+                    }
+                    for index, (field, vector_field) in enumerate(
+                        zip(fields, vector_fields)
+                    )
+                ]
+                filters.append(
+                    {
+                        "filter_type": "or",
+                        "condition_value": condition_value,
+                    }
+                )
+
+        else:
             condition_value = [
                 {
-                    "field": field if mask[index] else vector_field,
+                    "field": fields[0],
                     "filter_type": "exists",
-                    "condition": "==" if mask[index] else "!=",
+                    "condition": "==",
                     "condition_value": "",
-                }
-                for index, (field, vector_field) in enumerate(
-                    zip(fields, vector_fields)
-                )
+                },
+                {
+                    "field": vector_fields[0],
+                    "filter_type": "exists",
+                    "condition": "!=",
+                    "condition_value": "",
+                },
             ]
             filters.append(
                 {
@@ -189,12 +213,12 @@ class VectorizeOps(APIClient):
     def _encode_documents(
         documents,
         encoders,
-        fields,
+        field_types,
     ):
         for dtype, encoder in encoders.items():
             dtype_fields = [
                 field
-                for field, field_type in fields.items()
+                for field, field_type in field_types.items()
                 if f"_{dtype}_" == field_type
             ]
             updated_documents = encoder.encode_documents(
@@ -240,6 +264,49 @@ class VectorizeOps(APIClient):
         else:
             raise ValueError
 
+    def _get_remaining(self, filters: List[Dict[str, Any]]) -> int:
+        return self.get_number_of_documents(
+            dataset_id=self.dataset_id,
+            filters=filters,
+        )
+
+    def _insert_document_vectors(
+        self, vector_fields: List[str], show_progress_bar: bool
+    ):
+        documents = self._get_all_documents(
+            dataset_id=self.dataset_id,
+            select_fields=vector_fields,
+            show_progress_bar=show_progress_bar,
+        )
+        vectors = np.hstack(
+            [
+                np.array(
+                    [
+                        self.get_field(vector_field, document)
+                        if self.is_field(vector_field, document)
+                        else [1e-7 for _ in range(self.schema[vector_field]["vector"])]
+                        for document in documents
+                    ]
+                )
+                for vector_field in vector_fields
+            ]
+        )
+        if vectors.shape[1] > 512:
+            vectors = self._reduce(vectors)
+
+        for index, (document, vector) in enumerate(zip(documents, vectors.tolist())):
+            documents[index] = {
+                "_id": document["_id"],
+                "unstructured_document_vector_": vector,
+            }
+
+        self._update_documents(
+            dataset_id=self.dataset_id,
+            documents=documents,
+            show_progress_bar=show_progress_bar,
+        )
+
+    @log(fn=log_file)
     def _init_encoders(self, fields: List[str]):
         dtypes = [self.detailed_schema[field] for field in fields]
 
@@ -252,7 +319,7 @@ class VectorizeOps(APIClient):
         self,
         dataset_id: str,
         fields: List[str],
-        show_progress_bar: bool = True,
+        show_progress_bar: bool = False,
     ) -> dict:
 
         self.dataset_id = dataset_id
@@ -264,6 +331,7 @@ class VectorizeOps(APIClient):
 
         field_types = self._get_fields(fields)
         self._validate_fields(list(field_types))
+
         self._init_encoders(list(field_types))
 
         vector_fields = self._get_vector_fields(list(field_types))
@@ -277,12 +345,11 @@ class VectorizeOps(APIClient):
 
         updating_args = dict(
             encoders=self.encoders,
-            fields=fields,
+            field_types=field_types,
         )
 
         results = self.pull_update_push(
             dataset_id=self.dataset_id,
-            retrieve_chunk_size=4,
             update_function=self._encode_documents,
             select_fields=list(fields),
             filters=filters,
@@ -291,58 +358,26 @@ class VectorizeOps(APIClient):
             log_to_file=False,
         )
 
-        schema = self._get_schema()
-
-        if "unstructured_document_vector_" not in schema:
-            documents = self._get_all_documents(
-                dataset_id=self.dataset_id,
-                select_fields=vector_fields,
-                show_progress_bar=True,
-            )
-            vectors = np.hstack(
-                [
-                    np.array(
-                        [
-                            self.get_field(vector_field, document)
-                            if self.is_field(vector_field, document)
-                            else [1e-7 for _ in range(schema[vector_field]["vector"])]
-                            for document in documents
-                        ]
-                    )
-                    for vector_field in vector_fields
-                ]
-            )
-            if vectors.shape[1] > 512:
-                vectors = self._reduce(vectors)
-
-            for index, (document, vector) in enumerate(
-                zip(documents, vectors.tolist())
-            ):
-                documents[index] = {
-                    "_id": document["_id"],
-                    "unstructured_document_vector_": vector,
-                }
-
-            self._update_documents(
-                dataset_id=self.dataset_id,
-                documents=documents,
-                show_progress_bar=True,
-            )
+        self._insert_document_vectors(
+            vector_fields=vector_fields,
+            show_progress_bar=show_progress_bar,
+        )
 
         new_schema = self._get_schema().keys()
+        return new_schema
 
-        added_vectors = list(new_schema - old_schema)
+        # added_vectors = list(new_schema - old_schema)
 
-        if not results["failed_documents"]:
-            if added_vectors:
-                print(Messages.INSERT_GOOD)
+        # if not results["failed_documents"]:
+        #     if added_vectors:
+        #         print(Messages.INSERT_GOOD)
 
-            text = "The following vector fields were added: "
-            print(text + ", ".join(added_vectors))
+        #     text = "The following vector fields were added: "
+        #     print(text + ", ".join(added_vectors))
 
-            return {
-                "added_vectors": added_vectors,
-            }
-        else:
-            print(Messages.INSERT_BAD)
-            return results
+        #     return {
+        #         "added_vectors": added_vectors,
+        #     }
+        # else:
+        #     print(Messages.INSERT_BAD)
+        #     return results

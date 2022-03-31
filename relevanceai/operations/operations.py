@@ -17,7 +17,7 @@ class Operations(APIClient):
 
     def cluster(
         self,
-        vector_fields: List[str],
+        vector_fields: List[str] = ["unstructured_document_vector_"],
         alias: Optional[str] = None,
         model: Union[str, Any] = "community_detection",
         **kwargs,

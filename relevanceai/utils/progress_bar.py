@@ -38,7 +38,7 @@ class ProgressBar:
         return is_in_notebook
 
     def get_bar(self):
-        from tqdm.auto import tqdm
+        from tqdm import tqdm
 
         return tqdm
 
@@ -74,7 +74,12 @@ def progress_bar(iterable, show_progress_bar: bool = False):
 
     try:
         if show_progress_bar:
-            return ProgressBar()(iterable)
+            from tqdm import tqdm
+
+            return tqdm(iterable)
+        else:
+            return iterable
     except Exception as e:
         pass
+
     return NullProgressBar(iterable)

@@ -324,7 +324,7 @@ class ClusterOps(APIClient):
     def operate(
         self,
         dataset_id: str,
-        vector_fields: List[str] = ["unstructured_document_vector_"],
+        vector_fields: List[str],
         show_progress_bar: bool = True,
     ) -> None:
         """
