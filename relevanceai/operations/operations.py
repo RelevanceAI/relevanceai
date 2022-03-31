@@ -105,8 +105,7 @@ class Operations(APIClient):
 
     def vectorize(
         self,
-        text_fields=None,
-        image_fields=None,
+        fields=None,
         **kwargs,
     ):
         """
@@ -162,12 +161,11 @@ class Operations(APIClient):
 
         ops = VectorizeOps(
             credentials=self.credentials,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
         return ops(
-            text_fields=text_fields,
-            image_fields=image_fields,
+            dataset_id=self.dataset_id,
+            fields=fields,
         )
 
     def vector_search(self, **kwargs):

@@ -14,10 +14,8 @@ class ClusterOps(APIClient):
     def __init__(
         self,
         credentials: Credentials,
-        model: Union[str, Any] = None,
-        vector_fields: Optional[List[str]] = None,
-        alias: Optional[str] = None,
-        dataset_id: Optional[str] = None,
+        model: Union[str, Any],
+        alias: str = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -56,8 +54,6 @@ class ClusterOps(APIClient):
             When viewing the cluster app dashboard, outliers will be prefixed with outlier_label
 
         """
-        self.vector_field = None if vector_fields is None else vector_fields[0]
-        self.vector_fields = vector_fields
 
         self.config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
@@ -77,12 +73,14 @@ class ClusterOps(APIClient):
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
-        self.dataset_id = dataset_id
 
         super().__init__(credentials, **kwargs)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
+
+    def _get_schema(self) -> Dict:
+        return self.datasets.schema(dataset_id=self.dataset_id)
 
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here
@@ -266,19 +264,20 @@ class ClusterOps(APIClient):
     def _insert_centroids(
         self,
         dataset_id: str,
-        vector_field: str,
+        vector_fields: List[str],
         centroid_documents: List[Dict[str, Any]],
     ) -> None:
         self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centroid_documents,
-            vector_fields=[vector_field],
+            vector_fields=vector_fields,
             alias=self.alias,
         )
 
     def _fit_predict(
         self, documents: List[Dict[str, Any]], vector_field: str
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+
         vectors = np.array(
             [
                 self.get_field(vector_field, document)
@@ -313,9 +312,10 @@ class ClusterOps(APIClient):
 
         labels = self._format_labels(labels)
 
-        cluster_field = f"_cluster_.{vector_field}.{self.alias}"
         self.set_field_across_documents(
-            field=cluster_field, values=labels, docs=documents
+            field=self.cluster_field,
+            values=labels,
+            docs=documents,
         )
 
         centroid_documents = self._get_centroid_documents(vectors, labels)
@@ -328,8 +328,8 @@ class ClusterOps(APIClient):
 
     def operate(
         self,
-        dataset_id: Optional[Union[str, Any]] = None,
-        vector_fields: Optional[List[str]] = None,
+        dataset_id: str,
+        vector_fields: List[str] = ["unstructured_document_vector_"],
         show_progress_bar: bool = True,
     ) -> None:
         """
@@ -338,14 +338,11 @@ class ClusterOps(APIClient):
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
-
-        if vector_fields is None:
-            vector_fields = self.vector_fields
-
         self.dataset_id = dataset_id
-        if vector_fields is not None:
-            vector_field = vector_fields[0]
-            self.vector_field = vector_field
+
+        vector_field = vector_fields[0]
+
+        self.cluster_field = f"_cluster_.{vector_fields[0]}.{self.alias}"
 
         # get all documents
         documents = self._get_all_documents(
@@ -370,7 +367,7 @@ class ClusterOps(APIClient):
 
         self._insert_centroids(
             dataset_id=dataset_id,
-            vector_field=vector_field,
+            vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
 
@@ -630,9 +627,9 @@ class ClusterOps(APIClient):
             )
         """
         metrics = [] if metrics is None else metrics
-        sort = [] if sort is None else sort
         groupby = [] if groupby is None else groupby
         filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
 
         return self.services.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),
