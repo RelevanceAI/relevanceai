@@ -139,7 +139,7 @@ class TestDatasetStats:
         describe = test_dataset.describe()
         assert isinstance(describe, pd.DataFrame)
 
-    @pytest.mark.skip(msg="requires matplotlib not sure hot handle")
+    @pytest.mark.skip(msg="requires matplotlib not sure how to handle")
     def test_corr(self, test_dataset: Dataset):
         test_dataset.cluster(model="kmeans", vector_fields=["sample_1_vector_"])
         corr = test_dataset.corr(
