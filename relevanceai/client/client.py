@@ -23,7 +23,7 @@ import pandas as pd
 import analytics
 
 from base64 import b64decode as decode
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from relevanceai._api import APIClient
 
@@ -32,6 +32,7 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.client.helpers import *
 
 from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.cluster.sub import SubClusterOps
 from relevanceai.operations.viz import ClusterVizOps
 from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
@@ -279,6 +280,25 @@ class Client(APIClient, DocUtils):
             alias=alias,
             dataset_id=dataset_id,
             **kwargs,
+        )
+
+    @track
+    def SubClusterOps(
+        self,
+        alias: str,
+        dataset: Union[Dataset, str],
+        vector_fields: List[float],
+        parent_cluster_field_name: str,
+    ):
+        """
+        Sub Cluster Ops.
+        """
+        return SubClusterOps(
+            credentials=self.credentials,
+            alias=alias,
+            dataset=dataset,
+            vector_fields=vector_fields,
+            parent_cluster_field_name=parent_cluster_field_name,
         )
 
     def _set_logger_to_verbose(self):

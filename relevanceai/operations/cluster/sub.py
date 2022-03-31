@@ -6,10 +6,24 @@ from relevanceai.operations.cluster.utils import _ClusterOps
 
 
 class SubClusterOps(_ClusterOps):
+    def __init__(
+        self,
+        credentials,
+        alias,
+        dataset,
+        vector_fields: list,
+        parent_cluster_field_name: str,
+    ):
+        self.alias = alias
+        self.dataset = dataset
+        self.vector_fields = vector_fields
+        self.parent_cluster_field_name = parent_cluster_field_name
+
     def subcluster_predict_update(
         self,
         dataset,
         vector_fields: List[Any],
+        parent_cluster_field_name: str,
         filters: Optional[List] = None,
         verbose: bool = False,
     ):
@@ -59,7 +73,9 @@ class SubClusterOps(_ClusterOps):
             "Retrieving documents... This can take a while if the dataset is large."
         )
 
-        self._init_dataset(dataset)
+        self.parent_cluster_field_name = parent_cluster_field_name
+
+        # self._init_dataset(dataset)
         self.vector_fields = vector_fields  # type: ignore
 
         # make sure to only get fields where vector fields exist
@@ -144,7 +160,7 @@ class SubClusterOps(_ClusterOps):
         """
         # Get data
 
-        self._init_dataset(dataset)
+        # self._init_dataset(dataset)
 
         filters = [] if filters is None else filters
         cluster_ids = [] if cluster_ids is None else cluster_ids
