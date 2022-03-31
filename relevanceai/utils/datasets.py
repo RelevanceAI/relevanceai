@@ -278,7 +278,7 @@ def get_online_retail_dataset(
     select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 1000
-    return ExampleDatasets._get_dummy_dataset(
+    return ExampleDatasets._get_online_dataset(
         "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx",
         number_of_documents,
         select_fields,
