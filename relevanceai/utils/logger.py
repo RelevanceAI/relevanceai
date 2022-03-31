@@ -95,7 +95,7 @@ class FileLogger:
         if self.log_to_file:
             if self._existed and self._lines_added():
                 if self.verbose:
-                    print("Log {self.fn} has been updated")
+                    print(f"Log {self.fn} has been updated")
             elif not self._existed and self._lines_added():
                 if self.verbose:
                     print(
