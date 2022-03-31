@@ -165,7 +165,7 @@ class SubClusterOps(_ClusterOps):
         filters = [] if filters is None else filters
         cluster_ids = [] if cluster_ids is None else cluster_ids
         # Loop through each unique cluster ID and run clustering
-        parent_field = self._get_cluster_field_name(self.parent_alias)
+        parent_field = self.parent_cluster_field_name
 
         print("Getting unique cluster IDs...")
         unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
