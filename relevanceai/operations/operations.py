@@ -525,3 +525,40 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
         )
         return ops.multistep_chunk_search(**kwargs)
+
+    def launch_cluster_app(self, configuration: dict = None):
+        """
+        Launch an app with a given configuration
+
+
+        Example
+        --------
+
+        .. code-block::
+
+            ds.launch_cluster_app()
+
+        Parameters
+        -----------
+
+        configuration: dict
+            The configuration can be found in the deployable once created.
+
+        """
+        if configuration is None:
+            url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            print(
+                "Build your clustering app here: "
+                f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            )
+            return
+        if "configuration" in configuration:
+            configuration = configuration["configuration"]
+        results = self.deployables.create(
+            dataset_id=self.dataset_id, configuration=configuration
+        )
+
+        # After you have created an app
+        url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
+        print(f"You can now access your deployable at {url}.")
+        return url
