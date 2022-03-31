@@ -157,7 +157,7 @@ class Operations(APIClient):
 
         """
 
-        from relevanceai.operations.vector import VectorizeOp
+        from relevanceai.operations.vector import VectorizeOps
 
         ops = VectorizeOps(
             credentials=self.credentials,

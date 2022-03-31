@@ -75,8 +75,6 @@ class TestInsert:
 
 class TestInsertImages:
     def setup(self):
-        import os
-
         from pathlib import Path
         from uuid import uuid4
 
