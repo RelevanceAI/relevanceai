@@ -1,11 +1,12 @@
+"""
+SubClustering Ops
+"""
 from typing import Optional, List, Any
-
 from tqdm import tqdm
+from relevanceai.operations.cluster.partial import PartialClusterOps
 
-from relevanceai.operations.cluster.utils import _ClusterOps
 
-
-class SubClusterOps(_ClusterOps):
+class SubClusterOps(PartialClusterOps):
     def __init__(
         self,
         credentials,
