@@ -149,8 +149,10 @@ def get_games_dataset(
     if number_of_documents is None:
         number_of_documents = 365
 
-    return ExampleDatasets._get_api_dataset(
-        "https://www.freetogame.com/api/games", number_of_documents, select_fields
+    return ExampleDatasets._get_dummy_dataset(
+        "dummy-games-dataset",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
     )
 
 
@@ -420,8 +422,8 @@ def get_flipkart_dataset(
     select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 19920
-    return ExampleDatasets._get_online_dataset(
-        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv",
+    return ExampleDatasets._get_dummy_dataset(
+        "dummy-flipkart",
         number_of_documents,
         select_fields,
     )
