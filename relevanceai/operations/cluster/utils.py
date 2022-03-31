@@ -5,7 +5,7 @@ import getpass
 
 import numpy as np
 
-from typing import Union, Callable, Optional, List, Dict, Any
+from typing import Union, Callable, Optional, List, Dict, Any, Set
 
 from doc_utils import DocUtils
 from relevanceai._api import APIClient
@@ -24,7 +24,7 @@ from relevanceai.utils.integration_checks import (
 )
 
 from relevanceai.reports.cluster.evaluate import ClusterEvaluate
-
+from relevanceai.constants.errors import MissingClusterError
 
 class _ClusterOps(APIClient, DocUtils):
 
@@ -414,3 +414,72 @@ class _ClusterOps(APIClient, DocUtils):
 #             image_fields=self.image_fields,
 #             **kw,
 #         )
+
+    def list_cluster_ids(
+        self,
+        alias: str = None,
+        minimum_cluster_size: int = 3,
+        dataset_id: str = None,
+        num_clusters: int = 1000,
+    ):
+        """
+        List unique cluster IDS
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="kmeans_8", vector_fields=["sample_vector_]
+            )
+            cluster_ops.list_cluster_ids()
+
+        Parameters
+        -------------
+        alias: str
+            The alias to use for clustering
+        minimum_cluster_size: int
+            The minimum size of the clusters
+        dataset_id: str
+            The dataset ID
+        num_clusters: int
+            The number of clusters
+
+        """
+        # Mainly to be used for subclustering
+        # Get the cluster alias
+        if dataset_id is None:
+            self._check_for_dataset_id()
+            dataset_id = self.dataset_id
+
+        cluster_field = self._get_cluster_field_name(alias=alias)
+
+        # currently the logic for facets is that when it runs out of pages
+        # it just loops - therefore we need to store it in a simple hash
+        # and then add them to a list
+        all_cluster_ids: Set = set()
+
+        while len(all_cluster_ids) < num_clusters:
+            facet_results = self.datasets.facets(
+                dataset_id=dataset_id,
+                fields=[cluster_field],
+                page_size=int(self.config["data.max_clusters"]),
+                page=1,
+                asc=True,
+            )
+            if "results" in facet_results:
+                facet_results = facet_results["results"]
+            if cluster_field not in facet_results:
+                raise MissingClusterError(alias=alias)
+            for facet in facet_results[cluster_field]:
+                if facet["frequency"] > minimum_cluster_size:
+                    curr_len = len(all_cluster_ids)
+                    all_cluster_ids.add(facet[cluster_field])
+                    new_len = len(all_cluster_ids)
+                    if new_len == curr_len:
+                        return list(all_cluster_ids)
+
+        return list(all_cluster_ids)

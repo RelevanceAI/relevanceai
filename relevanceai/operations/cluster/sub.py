@@ -1,5 +1,8 @@
 """
-SubClustering Ops
+SubClustering Operations
+
+Sub Clustering allows users to define subclusters.
+
 """
 from typing import Optional, List, Any
 from tqdm import tqdm
@@ -15,6 +18,9 @@ class SubClusterOps(PartialClusterOps):
         vector_fields: list,
         parent_cluster_field_name: str,
     ):
+        """
+        Sub Cluster Ops
+        """
         self.alias = alias
         self.dataset = dataset
         self.vector_fields = vector_fields
@@ -169,7 +175,7 @@ class SubClusterOps(PartialClusterOps):
         parent_field = self.parent_cluster_field_name
 
         print("Getting unique cluster IDs...")
-        unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+        unique_clusters = self.list_cluster_ids(alias=self.parent_alias)
 
         for i, unique_cluster in enumerate(tqdm(unique_clusters)):
             cluster_filters = filters.copy()
