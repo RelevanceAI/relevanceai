@@ -139,6 +139,7 @@ class TestDatasetStats:
         describe = test_dataset.describe()
         assert isinstance(describe, pd.DataFrame)
 
+    @pytest.mark.skip(reason="requires matplotlib not sure how to handle")
     def test_corr(self, test_dataset: Dataset):
         test_dataset.cluster(model="kmeans", vector_fields=["sample_1_vector_"])
         corr = test_dataset.corr(
@@ -157,12 +158,12 @@ class TestDatasetStats:
         json_output = test_dataset.health(output_format="json")
         assert isinstance(json_output, dict)
 
-    @pytest.mark.skip(msg="Not sure why its failing")
+    @pytest.mark.skip(reason="Not sure why its failing")
     def test_aggregate(self, test_dataset: Dataset):
         agg = test_dataset.aggregate(groupby=["sample_1_label"])
         assert True
 
-    @pytest.mark.skip(msg="Not sure why its failing")
+    @pytest.mark.skip(reason="Not sure why its failing")
     def test_facets(self, test_dataset: Dataset):
         facets = test_dataset.facets()
         assert facets
