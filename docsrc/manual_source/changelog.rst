@@ -7,6 +7,13 @@ Python library.
 v2.0.0
 -----------
 
+
+BREAKING CHANGES:
+
+- `auto_cluster` -> `cluster`
+- `clusterer.list_closest_to_center()` -> `clusterer.list_closest()`
+
+
 Features/Updates:
 
 - Provide a way to turn off logger 
