@@ -29,3 +29,5 @@ class Messages:
     WELCOME_MESSAGE = """Welcome to RelevanceAI. Logged in as {}."""
 
     TOKEN_MESSAGE = "Activation token (you can find it here: {} )\n"
+
+    BUILD_HERE = "Build your clustering app here: "
