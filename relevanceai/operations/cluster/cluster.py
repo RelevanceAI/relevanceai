@@ -21,6 +21,29 @@ from relevanceai.constants import (
 
 
 class ClusterOps(APIClient):
+    """
+    You can load ClusterOps instances in 2 ways.
+
+    .. code-block::
+
+        # State the vector fields and alias in the ClusterOps object
+        cluster_ops = client.ClusterOps(
+            alias="kmeans-16",
+            dataset_id="sample_dataset_id",
+            vector_fields=['sample_vector_']
+        )
+
+        cluster_ops.list_closest()
+
+        # State the vector fields and alias in the operational call
+        cluster_ops = client.ClusterOps(alias="kmeans-16")
+        cluster_ops.list_closest(
+            dataset="sample_dataset_id",
+            vector_fields=["documentation_vector_]
+        )
+
+    """
+
     def __init__(
         self,
         credentials: Credentials,
@@ -331,6 +354,17 @@ class ClusterOps(APIClient):
     ) -> None:
         """
         Run clustering on a dataset
+
+        Parameters
+        --------------
+
+        dataset_id: Optional[Union[str, Any]]
+            The dataset ID
+        vector_fields: Optional[List[str]]
+            List of vector fields
+        show_progress_bar: bool
+            If True, the progress bar can be shown
+
         """
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
