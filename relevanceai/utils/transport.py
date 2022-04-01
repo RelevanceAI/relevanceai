@@ -297,9 +297,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
 
-        base_url = (
-            self.config.get_option("api.base_url") if base_url is None else base_url
-        )
+        base_url = self.base_url if base_url is None else base_url # type: ignore
         output_format = (
             self.config.get_option("api.output_format")
             if output_format is None
