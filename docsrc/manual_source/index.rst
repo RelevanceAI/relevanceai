@@ -38,6 +38,11 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    sentiment
    search
 
+.. toctree::
+   :maxdepth: 4
+   :caption: Workflows
+
+   sequential_workflow
    
 .. toctree::
    :maxdepth: 4
