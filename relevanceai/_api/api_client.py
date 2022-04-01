@@ -16,7 +16,3 @@ class APIClient(BatchInsertClient, BatchInsertAsyncClient):
     def batch_get_and_edit(self, dataset_id: str, chunk_size: int, bulk_edit: Callable):
         """Batch get the documents and return the documents"""
         raise NotImplemented
-
-    @property
-    def base_url(self):
-        return self.config.get_field("api.base_url", self.config.config)
