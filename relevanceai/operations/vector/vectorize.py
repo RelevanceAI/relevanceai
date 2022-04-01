@@ -407,7 +407,6 @@ class VectorizeOps(APIClient):
                 filters=filters,
                 show_progress_bar=show_progress_bar,
                 updating_args=updating_args,
-                log_to_file=False,
             )
             if results["failed_documents"]:
                 print(Messages.INSERT_BAD)
