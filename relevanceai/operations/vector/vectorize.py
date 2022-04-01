@@ -5,8 +5,8 @@ import numpy as np
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
 
-from relevanceai.constants import IMG_EXTS
 from relevanceai.constants import Messages
+from relevanceai.constants import IMG_EXTS
 
 from relevanceai.utils.decorators import log
 
@@ -154,6 +154,12 @@ class VectorizeOps(APIClient):
 
         return vector_fields
 
+    def _get_numeric_fields(self) -> List[str]:
+        numeric_fields = [
+            field for field, dtype in self.schema.items() if dtype == "numeric"
+        ]
+        return numeric_fields
+
     def _get_filters(
         self, fields: List[str], vector_fields: List[str]
     ) -> List[Dict[str, Any]]:
@@ -271,33 +277,67 @@ class VectorizeOps(APIClient):
         )
 
     def _insert_document_vectors(
-        self, vector_fields: List[str], show_progress_bar: bool
+        self,
+        vector_fields: List[str],
+        numeric_fields: List[str],
+        show_progress_bar: bool,
     ):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,
-            select_fields=vector_fields,
+            select_fields=vector_fields + numeric_fields,
             show_progress_bar=show_progress_bar,
         )
-        vectors = np.hstack(
-            [
-                np.array(
+        if vector_fields:
+            vectors = np.hstack(
+                [
+                    np.array(
+                        [
+                            self.get_field(vector_field, document)
+                            if self.is_field(vector_field, document)
+                            else [
+                                1e-7 for _ in range(self.schema[vector_field]["vector"])
+                            ]
+                            for document in documents
+                        ]
+                    )
+                    for vector_field in vector_fields
+                ]
+            )
+        else:
+            vectors = np.array([])
+
+        if numeric_fields:
+            numbers = np.array(
+                [
                     [
-                        self.get_field(vector_field, document)
-                        if self.is_field(vector_field, document)
-                        else [1e-7 for _ in range(self.schema[vector_field]["vector"])]
-                        for document in documents
+                        document[field] if field in document else 0
+                        for field in numeric_fields
                     ]
-                )
-                for vector_field in vector_fields
-            ]
-        )
+                    for document in documents
+                ]
+            )
+        else:
+            numbers = np.array([])
+
+        if numbers.size > 0 and vectors.size == 0:
+            vectors = numbers
+
+        elif numbers.size > 0 and vectors.size > 0:
+            vectors = np.hstack([vectors, numbers])
+
+        from sklearn.preprocessing import StandardScaler
+
+        scaler = StandardScaler()
+        vectors = scaler.fit_transform(vectors)
+        vectors = np.nan_to_num(vectors)
+
         if vectors.shape[1] > 512:
             vectors = self._reduce(vectors)
 
         for index, (document, vector) in enumerate(zip(documents, vectors.tolist())):
             documents[index] = {
                 "_id": document["_id"],
-                "unstructured_document_vector_": vector,
+                "_vector_": vector,
             }
 
         self._update_documents(
@@ -330,54 +370,57 @@ class VectorizeOps(APIClient):
             fields = self.detailed_schema
 
         field_types = self._get_fields(fields)
-        self._validate_fields(list(field_types))
 
-        self._init_encoders(list(field_types))
+        if field_types:
+            self._validate_fields(list(field_types))
 
-        vector_fields = self._get_vector_fields(list(field_types))
+            self._init_encoders(list(field_types))
 
-        old_schema = self.schema.keys()
+            vector_fields = self._get_vector_fields(list(field_types))
 
-        filters = self._get_filters(
-            fields=list(field_types),
-            vector_fields=vector_fields,
-        )
+            filters = self._get_filters(
+                fields=list(field_types),
+                vector_fields=vector_fields,
+            )
 
-        updating_args = dict(
-            encoders=self.encoders,
-            field_types=field_types,
-        )
+            updating_args = dict(
+                encoders=self.encoders,
+                field_types=field_types,
+            )
 
-        results = self.pull_update_push(
-            dataset_id=self.dataset_id,
-            update_function=self._encode_documents,
-            select_fields=list(fields),
-            filters=filters,
-            show_progress_bar=show_progress_bar,
-            updating_args=updating_args,
-            log_to_file=False,
-        )
+            results = self.pull_update_push(
+                dataset_id=self.dataset_id,
+                update_function=self._encode_documents,
+                select_fields=list(fields),
+                filters=filters,
+                show_progress_bar=show_progress_bar,
+                updating_args=updating_args,
+                log_to_file=False,
+            )
+        else:
+            vector_fields = []
 
+        numeric_fields = self._get_numeric_fields()
         self._insert_document_vectors(
             vector_fields=vector_fields,
+            numeric_fields=numeric_fields,
             show_progress_bar=show_progress_bar,
         )
 
         new_schema = self._get_schema().keys()
-        return new_schema
 
-        # added_vectors = list(new_schema - old_schema)
+        added_vectors = list(new_schema - self.schema)
 
-        # if not results["failed_documents"]:
-        #     if added_vectors:
-        #         print(Messages.INSERT_GOOD)
+        if not results["failed_documents"]:
+            if added_vectors:
+                print(Messages.INSERT_GOOD)
 
-        #     text = "The following vector fields were added: "
-        #     print(text + ", ".join(added_vectors))
+            text = "The following vector fields were added: "
+            print(text + ", ".join(added_vectors))
 
-        #     return {
-        #         "added_vectors": added_vectors,
-        #     }
-        # else:
-        #     print(Messages.INSERT_BAD)
-        #     return results
+            return {
+                "added_vectors": added_vectors,
+            }
+        else:
+            print(Messages.INSERT_BAD)
+            return results

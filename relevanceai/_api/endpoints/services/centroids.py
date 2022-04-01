@@ -15,7 +15,6 @@ class CentroidsClient(_Base):
         vector_fields: List,
         alias: str = "default",
         page_size: int = 5,
-        cursor: str = None,
         include_vector: bool = False,
     ):
         """
@@ -40,11 +39,9 @@ class CentroidsClient(_Base):
             f"/dataset/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                # "dataset_id": dataset_id,
                 "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
-                "cursor": cursor,
                 "include_vector": include_vector,
             },
         )
@@ -110,7 +107,7 @@ class CentroidsClient(_Base):
             Alias is used to name a cluster
         """
         return self.make_http_request(
-            "/services/cluster/centroids/insert",
+            f"/datasets/{dataset_id}/cluster/centroids/insert",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -293,11 +290,11 @@ class CentroidsClient(_Base):
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         parameters = {
-            "dataset_id": dataset_id,
             "vector_fields": vector_fields,
-            "alias": alias,
-            "cluster_ids": cluster_ids,
             "centroid_vector_fields": centroid_vector_fields,
+            "alias": alias,
+            "dataset_id": dataset_id,
+            "cluster_ids": cluster_ids,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
@@ -311,7 +308,7 @@ class CentroidsClient(_Base):
             "include_count": include_count,
             "include_facets": include_facets,
         }
-        endpoint = "/services/cluster/centroids/list_closest_to_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
         self._log_to_dashboard(
             method=method,
