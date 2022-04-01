@@ -28,7 +28,7 @@ class _Base(Transport, LoguruLogger, CredentialsMixin):
 
     @property
     def base_url(self):
-        return self.config.get_field("api.base_url", self.config.config)
+        return self.config.get_option("api.base_url")
 
     @base_url.setter
     def base_url(self, value: str):
