@@ -23,11 +23,22 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
 
 .. toctree::
    :maxdepth: 4
-   :caption: Operations
+   :caption: Core Operations
 
    cluster
-   dimensionality_reduction
+   dim_reduction
+   vectorize
 
+.. toctree::
+   :maxdepth: 4
+   :caption: Other Operations
+
+   cluster_viz
+   label
+   sentiment
+   search
+
+   
 .. toctree::
    :maxdepth: 4
    :caption: Available Datasets
