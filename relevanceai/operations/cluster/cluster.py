@@ -10,7 +10,7 @@ from typing import (
 import numpy as np
 
 from relevanceai._api import APIClient
-from relevanceai.client import Credentials
+from relevanceai.client.helpers import Credentials
 from relevanceai.dataset import Dataset
 from relevanceai.utils.decorators import track
 from relevanceai.constants import (
