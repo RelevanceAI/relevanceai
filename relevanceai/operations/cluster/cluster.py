@@ -59,9 +59,9 @@ class ClusterOps(APIClient):
         self.vector_field = None if vector_fields is None else vector_fields[0]
         self.vector_fields = vector_fields
 
-        self.config = {} if cluster_config is None else cluster_config  # type: ignore
+        self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
-            self.config["n_clusters"] = n_clusters  # type: ignore
+            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
 
         self.model_name = None
         self.model = self._get_model(model)
@@ -142,67 +142,67 @@ class ClusterOps(APIClient):
             if model == "affinitypropagation":
                 from sklearn.cluster import AffinityPropagation
 
-                model = AffinityPropagation(**self.config)
+                model = AffinityPropagation(**self.cluster_config)
 
             elif model == "agglomerativeclustering":
                 from sklearn.cluster import AgglomerativeClustering
 
-                model = AgglomerativeClustering(**self.config)
+                model = AgglomerativeClustering(**self.cluster_config)
 
             elif model == "birch":
                 from sklearn.cluster import Birch
 
-                model = Birch(**self.config)
+                model = Birch(**self.cluster_config)
 
             elif model == "dbscan":
                 from sklearn.cluster import DBSCAN
 
-                model = DBSCAN(**self.config)
+                model = DBSCAN(**self.cluster_config)
 
             elif model == "optics":
                 from sklearn.cluster import OPTICS
 
-                model = OPTICS(**self.config)
+                model = OPTICS(**self.cluster_config)
 
             elif model == "kmeans":
                 from sklearn.cluster import KMeans
 
-                model = KMeans(**self.config)
+                model = KMeans(**self.cluster_config)
 
             elif model == "featureagglomeration":
                 from sklearn.cluster import FeatureAgglomeration
 
-                model = FeatureAgglomeration(**self.config)
+                model = FeatureAgglomeration(**self.cluster_config)
 
             elif model == "meanshift":
                 from sklearn.cluster import MeanShift
 
-                model = MeanShift(**self.config)
+                model = MeanShift(**self.cluster_config)
 
             elif model == "minibatchkmeans":
                 from sklearn.cluster import MiniBatchKMeans
 
-                model = MiniBatchKMeans(**self.config)
+                model = MiniBatchKMeans(**self.cluster_config)
 
             elif model == "spectralclustering":
                 from sklearn.cluster import SpectralClustering
 
-                model = SpectralClustering(**self.config)
+                model = SpectralClustering(**self.cluster_config)
 
             elif model == "spectralbiclustering":
                 from sklearn.cluster import SpectralBiclustering
 
-                model = SpectralBiclustering(**self.config)
+                model = SpectralBiclustering(**self.cluster_config)
 
             elif model == "spectralcoclustering":
                 from sklearn.cluster import SpectralCoclustering
 
-                model = SpectralCoclustering(**self.config)
+                model = SpectralCoclustering(**self.cluster_config)
 
             elif model == "hdbscan":
                 from hdbscan import HDBSCAN
 
-                model = HDBSCAN(**self.config)
+                model = HDBSCAN(**self.cluster_config)
 
             elif model == "community_detection":
                 # TODO: this is a callable (?)
@@ -213,7 +213,7 @@ class ClusterOps(APIClient):
             elif "faiss" in model:
                 from faiss import Kmeans
 
-                model = Kmeans(**self.config)
+                model = Kmeans(**self.cluster_config)
 
         else:
             # TODO: this needs to be referenced from relevance.constants.errors

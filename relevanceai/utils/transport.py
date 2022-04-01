@@ -20,11 +20,12 @@ from relevanceai.utils.logger import AbstractLogger
 from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
+from relevanceai.utils.config_mixin import ConfigMixin
 
 DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
 
-class Transport(JSONEncoderUtils):
+class Transport(JSONEncoderUtils, ConfigMixin):
     """_Base class for all relevanceai objects"""
 
     project: str
@@ -72,9 +73,9 @@ class Transport(JSONEncoderUtils):
         if dashboard_type not in self.DASHBOARD_TYPES:
             return
         # Get the URL but not the version
-        url = "/".join(self.config.get_option("api.base_url").split("/")[:-1]) + "/"
+        url = "/".join(self.base_url.split("/")[:-1]) + "/"  # type: ignore
         # Split off the version separately
-        version = self.config.get_option("api.base_url").split("/")[-1]
+        version = self.base_url.split("/")[-1]  # type: ignore
         # Parse the endpoint so it becomes 'endpoint/schema' instead of '/endpoint/schema'
         if endpoint.startswith("/"):
             endpoint = endpoint[1:]
@@ -175,7 +176,10 @@ class Transport(JSONEncoderUtils):
             # if Transport.is_search_in_path(base_url) and not hasattr(self, "output_format"):
             #     base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
             # else:
-            base_url = self.config.get_option("api.base_url")
+            if hasattr(self, "base_url"):
+                base_url = self.base_url  # type: ignore
+            else:
+                base_url = "https://api.us-east-1.relevance.ai/latest"
 
         if output_format is None:
             output_format = self.config.get_option("api.output_format")
@@ -293,9 +297,7 @@ class Transport(JSONEncoderUtils):
         self._last_used_endpoint = endpoint
         start_time = time.perf_counter()
 
-        base_url = (
-            self.config.get_option("api.base_url") if base_url is None else base_url
-        )
+        base_url = self.base_url if base_url is None else base_url  # type: ignore
         output_format = (
             self.config.get_option("api.output_format")
             if output_format is None
