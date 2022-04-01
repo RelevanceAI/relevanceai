@@ -105,7 +105,7 @@ class Operations(APIClient):
 
     def vectorize(
         self,
-        fields: Union[str, None] = None,
+        fields: List[str] = None,
         **kwargs,
     ):
         """
@@ -165,7 +165,7 @@ class Operations(APIClient):
         )
         return ops(
             dataset_id=self.dataset_id,
-            fields=fields,
+            fields=[] if fields is None else fields,
         )
 
     def vector_search(self, **kwargs):

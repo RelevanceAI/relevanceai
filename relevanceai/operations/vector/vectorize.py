@@ -62,7 +62,6 @@ class VectorizeOps(APIClient):
                 from vectorhub.bi_encoders.text_image.torch.clip import Clip2Vec
 
                 model = Clip2Vec()
-                model.encode = model.encode_image
 
             elif model == "resnet":
                 from vectorhub.encoders.image.fastai import FastAIResnet2Vec
@@ -221,6 +220,8 @@ class VectorizeOps(APIClient):
         encoders,
         field_types,
     ):
+        updated_documents = documents
+
         for dtype, encoder in encoders.items():
             dtype_fields = [
                 field
@@ -229,7 +230,7 @@ class VectorizeOps(APIClient):
             ]
             updated_documents = encoder.encode_documents(
                 dtype_fields,
-                documents,
+                updated_documents,
             )
 
         return updated_documents
@@ -287,6 +288,7 @@ class VectorizeOps(APIClient):
             select_fields=vector_fields + numeric_fields,
             show_progress_bar=show_progress_bar,
         )
+        schema = self._get_schema()
         if vector_fields:
             vectors = np.hstack(
                 [
@@ -294,9 +296,7 @@ class VectorizeOps(APIClient):
                         [
                             self.get_field(vector_field, document)
                             if self.is_field(vector_field, document)
-                            else [
-                                1e-7 for _ in range(self.schema[vector_field]["vector"])
-                            ]
+                            else [1e-7 for _ in range(schema[vector_field]["vector"])]
                             for document in documents
                         ]
                     )
@@ -360,16 +360,28 @@ class VectorizeOps(APIClient):
         dataset_id: str,
         fields: List[str],
         show_progress_bar: bool = False,
-    ) -> dict:
+    ) -> None:
 
         self.dataset_id = dataset_id
         self.schema = self._get_schema()
         self.detailed_schema = self._get_detailed_schema()
+        numeric_fields = self._get_numeric_fields()
 
-        if fields is None:
+        if fields:
+            if "numeric" in fields:
+                if len(fields) == 1:
+                    field_types = {}
+
+                else:
+                    field_types = self._get_fields(fields)
+
+            else:
+                numeric_fields = [field for field in numeric_fields if field in fields]
+                field_types = self._get_fields(fields)
+
+        else:
             fields = self.detailed_schema
-
-        field_types = self._get_fields(fields)
+            field_types = self._get_fields(fields)
 
         if field_types:
             self._validate_fields(list(field_types))
@@ -397,10 +409,12 @@ class VectorizeOps(APIClient):
                 updating_args=updating_args,
                 log_to_file=False,
             )
+            if results["failed_documents"]:
+                print(Messages.INSERT_BAD)
+                print("There were some errors vectorizing your unstructured data")
         else:
             vector_fields = []
 
-        numeric_fields = self._get_numeric_fields()
         self._insert_document_vectors(
             vector_fields=vector_fields,
             numeric_fields=numeric_fields,
@@ -410,17 +424,5 @@ class VectorizeOps(APIClient):
         new_schema = self._get_schema().keys()
 
         added_vectors = list(new_schema - self.schema)
-
-        if not results["failed_documents"]:
-            if added_vectors:
-                print(Messages.INSERT_GOOD)
-
-            text = "The following vector fields were added: "
-            print(text + ", ".join(added_vectors))
-
-            return {
-                "added_vectors": added_vectors,
-            }
-        else:
-            print(Messages.INSERT_BAD)
-            return results
+        print(Messages.INSERT_GOOD)
+        print("The following vector fields were added: " + ", ".join(added_vectors))
