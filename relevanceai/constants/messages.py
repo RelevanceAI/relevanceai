@@ -33,3 +33,6 @@ class Messages:
     INSERT_GOOD = "✅ All documents inserted/edited successfully."
 
     INSERT_BAD = "❗Few errors with vectorizing documents. Please check logs."
+
+    BUILD_HERE = "Build your clustering app here: "
+
