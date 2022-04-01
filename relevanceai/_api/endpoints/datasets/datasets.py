@@ -654,12 +654,16 @@ class DatasetsClient(_Base):
         # "https://api-dev.ap-southeast-2.relevance.ai/latest/datasets/{DATASET_ID}/aggregate"
         filters = [] if filters is None else filters
         if aggregation_query is None:
-            aggregation_query = {"groupby": groupby, "metrics": metrics}
+            aggregation_query = {"metrics": metrics}
+
+            if groupby:
+                aggregation_query["groupby"] = groupby
+
             if sort:
                 aggregation_query["sort"] = sort
 
         return self.make_http_request(
-            endpoint=f"/datasets/{dataset_id}/details",
+            endpoint=f"/datasets/{dataset_id}/aggregate",
             method="POST",
             parameters={
                 "aggregation_query": aggregation_query,
