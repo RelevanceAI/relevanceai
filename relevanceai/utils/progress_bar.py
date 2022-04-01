@@ -74,7 +74,7 @@ def progress_bar(iterable, show_progress_bar: bool = False):
 
     try:
         if show_progress_bar:
-            from tqdm import tqdm
+            from tqdm.auto import tqdm
 
             return tqdm(iterable)
         else:
