@@ -445,7 +445,7 @@ class DatasetsClient(_Base):
             user_input = "y"
         # input validation
         if user_input.lower() in ("y", "yes"):
-            if "gateway-api-aueast" in self.config["api.base_url"]:
+            if "gateway-api-aueast" in self.base_url:
                 return self.make_http_request(
                     endpoint=f"/datasets/delete",
                     method="POST",
