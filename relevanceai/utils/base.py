@@ -30,16 +30,6 @@ class _Base(Transport, LoguruLogger, CredentialsMixin):
         return self.config.get_field("mixpanel.write_key", self.config.config)
 
     @property
-    def base_ingest_url(self):
-        return self.config.get_field("api.base_ingest_url", self.config.config)
-
-    @base_ingest_url.setter
-    def base_ingest_url(self, value: str):
-        if value.endswith("/"):
-            value = value[:-1]
-        self.config.set_option("api.base_ingest_url", value)
-
-    @property
     def region(self):
         if hasattr(self, "_region"):
             return self._region
