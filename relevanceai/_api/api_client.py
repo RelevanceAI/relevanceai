@@ -20,19 +20,3 @@ class APIClient(BatchInsertClient, BatchInsertAsyncClient):
     @property
     def base_url(self):
         return self.config.get_field("api.base_url", self.config.config)
-
-    @base_url.setter
-    def base_url(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        self.config.set_option("api.base_url", value)
-
-    @property
-    def base_ingest_url(self):
-        return self.config.get_field("api.base_ingest_url", self.config.config)
-
-    @base_ingest_url.setter
-    def base_ingest_url(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        self.config.set_option("api.base_ingest_url", value)
