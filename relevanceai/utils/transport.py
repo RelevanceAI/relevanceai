@@ -73,9 +73,9 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         if dashboard_type not in self.DASHBOARD_TYPES:
             return
         # Get the URL but not the version
-        url = "/".join(self.config.get_option("api.base_url").split("/")[:-1]) + "/"
+        url = "/".join(self.base_url.split("/")[:-1]) + "/"
         # Split off the version separately
-        version = self.config.get_option("api.base_url").split("/")[-1]
+        version = self.base_url.split("/")[-1]
         # Parse the endpoint so it becomes 'endpoint/schema' instead of '/endpoint/schema'
         if endpoint.startswith("/"):
             endpoint = endpoint[1:]
