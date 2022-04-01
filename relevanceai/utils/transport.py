@@ -20,11 +20,12 @@ from relevanceai.utils.logger import AbstractLogger
 from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
+from relevanceai.utils.config_mixin import ConfigMixin
 
 DO_NOT_REPEAT_STATUS_CODES = {404, 422}
 
 
-class Transport(JSONEncoderUtils):
+class Transport(JSONEncoderUtils, ConfigMixin):
     """_Base class for all relevanceai objects"""
 
     project: str
