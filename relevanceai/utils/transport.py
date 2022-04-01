@@ -176,7 +176,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
             # if Transport.is_search_in_path(base_url) and not hasattr(self, "output_format"):
             #     base_url = self.config.get_option("dashboard.base_dashboard_url")[1:-1]
             # else:
-            base_url = self.base_url
+            if hasattr(self, "base_url"):
+                base_url = self.base_url  # type: ignore
+            else:
+                base_url = "https://api.us-east-1.relevance.ai/latest"
 
         if output_format is None:
             output_format = self.config.get_option("api.output_format")
