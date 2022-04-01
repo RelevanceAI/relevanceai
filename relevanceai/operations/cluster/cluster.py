@@ -1,13 +1,23 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 
-from tqdm.auto import tqdm
-from relevanceai.client.helpers import Credentials
-from relevanceai.constants import CLUSTER_APP_LINK, Warning
 from relevanceai._api import APIClient
-from relevanceai.utils.decorators.analytics import track
-from relevanceai.dataset.dataset import Dataset
+from relevanceai.client import Credentials
+from relevanceai.dataset import Dataset
+from relevanceai.utils.decorators import track
+from relevanceai.constants import (
+    Warning,
+    Messages,
+    CLUSTER_APP_LINK,
+)
 
 
 class ClusterOps(APIClient):
@@ -311,7 +321,7 @@ class ClusterOps(APIClient):
 
     def _print_app_link(self):
         link = CLUSTER_APP_LINK.format(self.dataset_id)
-        print(link)
+        print(Messages.BUILD_HERE + link)
 
     def operate(
         self,
