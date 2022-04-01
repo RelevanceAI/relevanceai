@@ -25,17 +25,6 @@ class _Base(Transport, LoguruLogger, CredentialsMixin):
         super().__init__(**kwargs)
 
     ### Configurations
-
-    @property
-    def base_url(self):
-        return self.config.get_option("api.base_url")
-
-    @base_url.setter
-    def base_url(self, value: str):
-        if value.endswith("/"):
-            value = value[:-1]
-        self.config.set_option("api.base_url", value)
-
     @property
     def mixpanel_write_key(self):
         return self.config.get_field("mixpanel.write_key", self.config.config)
