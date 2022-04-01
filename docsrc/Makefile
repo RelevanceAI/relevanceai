@@ -20,5 +20,6 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 build_docs:
+	rm -rf source
 	cp -rf manual_source source
 	sphinx-apidoc -o source/ ../relevanceai && make clean && make html

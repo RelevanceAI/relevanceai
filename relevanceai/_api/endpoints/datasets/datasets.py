@@ -340,7 +340,7 @@ class DatasetsClient(_Base):
         """
         field_transformers = [] if field_transformers is None else field_transformers
 
-        base_url = self.config.get_option("api.base_ingest_url")
+        base_url = self.base_url
 
         if return_documents is False:
             return self.make_http_request(
@@ -415,7 +415,7 @@ class DatasetsClient(_Base):
         field_transformers = [] if field_transformers is None else field_transformers
 
         return await self.make_async_http_request(
-            base_url=self.config.get_option("api.base_ingest_url"),
+            base_url=self.base_url,
             endpoint=f"/datasets/{dataset_id}/documents/bulk_insert",
             method="POST",
             parameters={
@@ -445,7 +445,7 @@ class DatasetsClient(_Base):
             user_input = "y"
         # input validation
         if user_input.lower() in ("y", "yes"):
-            if "gateway-api-aueast" in self.config["api.base_url"]:
+            if "gateway-api-aueast" in self.base_url:
                 return self.make_http_request(
                     endpoint=f"/datasets/delete",
                     method="POST",
