@@ -589,6 +589,10 @@ class DatasetsClient(_Base):
         include_active_jobs: bool = False,
         include_settings: bool = False,
     ):
+        """
+        Get details about your dataset.
+
+        """
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/details",
             method="POST",
@@ -600,5 +604,68 @@ class DatasetsClient(_Base):
                 "include_vector_health": include_vector_health,
                 "include_active_jobs": include_active_jobs,
                 "include_settings": include_settings,
+            },
+        )
+
+    def aggregate(
+        self,
+        dataset_id: str,
+        groupby: List[str] = None,
+        metrics: List[str] = None,
+        sort: List[str] = None,
+        asc: bool = False,
+        filters: List = None,
+        page_size: int = 20,
+        page: int = 1,
+        aggregation_query: dict = None,
+    ):
+        """
+        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": <alias>, "field": <field in the collection>, "agg": "category"},
+                    {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
+                ],
+                "metrics" : [
+                    {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
+                    {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
+                ]
+            }
+            For example, one can use the following aggregations to group score based on region and player name.
+            {
+                "groupby" : [
+                    {"name": "region", "field": "player_region", "agg": "category"},
+                    {"name": "player_name", "field": "name", "agg": "category"}
+                ],
+                "metrics" : [
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                    {"name": "max_score", "field": "final_score", "agg": "max"},
+                    {'name':'total_score','field':"final_score", 'agg':'sum'},
+                    {'name':'average_deaths','field':"final_deaths", 'agg':'avg'},
+                    {'name':'highest_deaths','field':"final_deaths", 'agg':'max'},
+                ]
+            }
+
+
+        """
+        # "https://api-dev.ap-southeast-2.relevance.ai/latest/datasets/{DATASET_ID}/aggregate"
+        filters = [] if filters is None else filters
+        if aggregation_query is None:
+            aggregation_query = {"groupby": groupby, "metrics": metrics}
+            if sort:
+                aggregation_query["sort"] = sort
+
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/details",
+            method="POST",
+            parameters={
+                "aggregation_query": aggregation_query,
+                "filters": filters,
+                "page_size": page_size,
+                "page": page,
+                "asc": asc,
             },
         )
