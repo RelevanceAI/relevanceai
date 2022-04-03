@@ -11,3 +11,4 @@ Operations
     search
     sentiment
     label
+    cluster_viz

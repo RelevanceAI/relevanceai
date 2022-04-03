@@ -1,5 +1,11 @@
+Core
+=======
 
-.. toctree::
+All the core functionalities related to Relevance AI.
 
-    client
-    dataset
+.. toctree:: generated/
+    :maxdepth: 4
+
+    Client <client/index>
+    insert_data
+    Dataset <dataset/index>

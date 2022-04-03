@@ -16,16 +16,9 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    :maxdepth: 4
    :caption: Core
 
-   client
-   dataset
-
-.. toctree::
-   :maxdepth: 4
-   :caption: Operations
-
+   Core <core/index>
    Operations <operations/index>
    sequential_workflow
-   available_datasets
    changelog
 
 Indices and tables
