@@ -17,23 +17,22 @@ def main():
     for root, subdirs, files in os.walk(WALK_DIR):
         print("--\nroot = " + root)
         list_file_path = os.path.join(root, "my-directory-list.txt")
+
         print("list_file_path = " + list_file_path)
+        for subdir in subdirs:
+            print("\t- subdirectory " + subdir)
 
-        with open(list_file_path, "wb") as list_file:
-            for subdir in subdirs:
-                print("\t- subdirectory " + subdir)
+        for filename in files:
+            if filename.endswith(".py"):
+                file_path = os.path.join(root, filename)
 
-            for filename in files:
-                if filename.endswith(".py"):
-                    file_path = os.path.join(root, filename)
+                print("\t- file %s (full path: %s)" % (filename, file_path))
 
-                    print("\t- file %s (full path: %s)" % (filename, file_path))
+                with open(file_path, "r") as f:
+                    f_content = f.read()
 
-                    with open(file_path, "r") as f:
-                        f_content = f.read()
-
-                        rg = ReferenceGenerator()
-                        content = rg.gen(f_content)
+                    rg = ReferenceGenerator()
+                    content = rg.gen(f_content)
 
 
 if __name__ == "__main__":
