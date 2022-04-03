@@ -1,16 +1,10 @@
 Numeric Summaries
 -------------------
 
-.. autoclass:: relevanceai.dataset.read.statistics.statistics.Statistics
-   :members:
-   :undoc-members:
-   :special-members: describe
-
 Describe
 ------------
 
-.. automethod:: relevanceai.dataset.read.statistics.statistics.Statistics.facets
-.. facets = Statistics.facets
+.. automethod:: relevanceai.dataset.read.statistics.statistics.Statistics.describe
 
 Value Counts
 --------------
@@ -26,3 +20,13 @@ Aggregate
 --------------
 
 .. automethod:: relevanceai.dataset.read.statistics.statistics.Statistics.aggregate
+
+Facets
+------------
+
+.. automethod:: relevanceai.dataset.read.statistics.statistics.Statistics.facets
+
+Health
+------------
+
+.. automethod:: relevanceai.dataset.read.statistics.statistics.Statistics.health

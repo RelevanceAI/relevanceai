@@ -1,6 +1,8 @@
 Vectorize
-============
+-----------
 
-.. automodule:: relevanceai.operations.vector.vectorize
-   :members:
-   :exclude-members: __init__
+Basic
+--------
+
+.. automethod:: relevanceai.operations.operations.Operations.vectorize
+

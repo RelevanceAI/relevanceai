@@ -8,7 +8,6 @@ Operations
     cluster
     dim_reduction
     vectorize
-    search
-    sentiment
-    label
     cluster_viz
+    search
+    label
