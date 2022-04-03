@@ -22,6 +22,7 @@ It is instantiated like this:
     metadata
     statistics
     export
+    useful_utilities
     launch_applications
 
 .. automodule:: relevanceai.dataset.read.read
