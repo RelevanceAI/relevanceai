@@ -15,10 +15,6 @@ It is instantiated like this:
     ds = client.Dataset("sample_dataset_id")
     ds.head()
 
-<<<<<<< HEAD:docsrc/manual_source/dataset.rst
-You can also easily access metadata using the following:
-=======
->>>>>>> development:docsrc/manual_source/core/dataset/index.rst
 
 .. toctree::
 
