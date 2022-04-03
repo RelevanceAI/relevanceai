@@ -1,16 +1,49 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 
-from tqdm.auto import tqdm
-from relevanceai.client.helpers import Credentials
-from relevanceai.constants import CLUSTER_APP_LINK, Warning
 from relevanceai._api import APIClient
-from relevanceai.utils.decorators.analytics import track
-from relevanceai.dataset.dataset import Dataset
+from relevanceai.client.helpers import Credentials
+from relevanceai.dataset import Dataset
+from relevanceai.utils.decorators import track
+from relevanceai.constants import (
+    Warning,
+    Messages,
+    CLUSTER_APP_LINK,
+)
 
 
 class ClusterOps(APIClient):
+    """
+    You can load ClusterOps instances in 2 ways.
+
+    .. code-block::
+
+        # State the vector fields and alias in the ClusterOps object
+        cluster_ops = client.ClusterOps(
+            alias="kmeans-16",
+            dataset_id="sample_dataset_id",
+            vector_fields=['sample_vector_']
+        )
+
+        cluster_ops.list_closest()
+
+        # State the vector fields and alias in the operational call
+        cluster_ops = client.ClusterOps(alias="kmeans-16")
+        cluster_ops.list_closest(
+            dataset="sample_dataset_id",
+            vector_fields=["documentation_vector_]
+        )
+
+    """
+
     def __init__(
         self,
         credentials: Credentials,
@@ -311,7 +344,7 @@ class ClusterOps(APIClient):
 
     def _print_app_link(self):
         link = CLUSTER_APP_LINK.format(self.dataset_id)
-        print(link)
+        print(Messages.BUILD_HERE + link)
 
     def operate(
         self,
@@ -321,6 +354,17 @@ class ClusterOps(APIClient):
     ) -> None:
         """
         Run clustering on a dataset
+
+        Parameters
+        --------------
+
+        dataset_id: Optional[Union[str, Any]]
+            The dataset ID
+        vector_fields: Optional[List[str]]
+            List of vector fields
+        show_progress_bar: bool
+            If True, the progress bar can be shown
+
         """
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
@@ -515,7 +559,9 @@ class ClusterOps(APIClient):
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
         Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
         .. code-block::
+
             {
                 "groupby" : [
                     {"name": <alias>, "field": <field in the collection>, "agg": "category"},
@@ -526,8 +572,11 @@ class ClusterOps(APIClient):
                     {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
                 ]
             }
+
         For example, one can use the following aggregations to group score based on region and player name.
+
         .. code-block::
+
             {
                 "groupby" : [
                     {"name": "region", "field": "player_region", "agg": "category"},
@@ -561,6 +610,7 @@ class ClusterOps(APIClient):
                 # ouptut example:
                 {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
         For array-aggregations, you can add "agg": "array" into the aggregation query.
+
         Parameters
         ----------
         dataset_id : string
@@ -581,8 +631,6 @@ class ClusterOps(APIClient):
             Whether to flatten
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
-        Parameters
-        ----------
         metrics: list
             Fields and metrics you want to calculate
         groupby: list
@@ -597,6 +645,7 @@ class ClusterOps(APIClient):
             Whether to sort results by ascending or descending order
         flatten: bool
             Whether to flatten
+
         Example
         ---------
         .. code-block::

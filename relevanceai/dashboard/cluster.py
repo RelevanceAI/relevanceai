@@ -1,5 +1,4 @@
 from typing import Optional
-
 from relevanceai.client.helpers import Credentials
 from relevanceai.dashboard.dashboard import Dashboard
 

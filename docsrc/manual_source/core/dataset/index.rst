@@ -15,16 +15,19 @@ It is instantiated like this:
     ds = client.Dataset("sample_dataset_id")
     ds.head()
 
+<<<<<<< HEAD:docsrc/manual_source/dataset.rst
 You can also easily access metadata using the following:
+=======
+>>>>>>> development:docsrc/manual_source/core/dataset/index.rst
 
-.. code-block::
+.. toctree::
 
-    import time
-    ds = client.Dataset("_mock_dataset_")
-    ds.metadata['value'] = 3
-    ds.metadata['strong_values'] = 10
-    time.sleep(1)
-    ds.metadata
+    get_documents
+    metadata
+    statistics
+    export
+    useful_utilities
+    launch_applications
 
 .. automodule:: relevanceai.dataset.read.read
     :members:
