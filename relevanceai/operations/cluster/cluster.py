@@ -559,7 +559,9 @@ class ClusterOps(APIClient):
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
         Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
         .. code-block::
+
             {
                 "groupby" : [
                     {"name": <alias>, "field": <field in the collection>, "agg": "category"},
@@ -570,8 +572,11 @@ class ClusterOps(APIClient):
                     {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
                 ]
             }
+
         For example, one can use the following aggregations to group score based on region and player name.
+
         .. code-block::
+
             {
                 "groupby" : [
                     {"name": "region", "field": "player_region", "agg": "category"},
@@ -605,6 +610,7 @@ class ClusterOps(APIClient):
                 # ouptut example:
                 {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
         For array-aggregations, you can add "agg": "array" into the aggregation query.
+
         Parameters
         ----------
         dataset_id : string
@@ -625,8 +631,6 @@ class ClusterOps(APIClient):
             Whether to flatten
         alias: string
             Alias used to name a vector field. Belongs in field_{alias} vector
-        Parameters
-        ----------
         metrics: list
             Fields and metrics you want to calculate
         groupby: list
@@ -641,6 +645,7 @@ class ClusterOps(APIClient):
             Whether to sort results by ascending or descending order
         flatten: bool
             Whether to flatten
+
         Example
         ---------
         .. code-block::

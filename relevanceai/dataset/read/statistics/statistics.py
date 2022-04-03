@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Pandas like dataset API
+Statistics API
 """
 import pandas as pd
 
@@ -317,6 +317,7 @@ class Statistics(APIClient):
         asc: bool = False,
     ):
         """
+
         Get a summary of fields - such as most common, their min/max, etc.
 
         Example
@@ -343,5 +344,7 @@ class Statistics(APIClient):
 
     @track
     def health_check(self, **kwargs):
-        details = self.datasets.monitor.health(self.dataset_id, **kwargs)
-        return details
+        # This is supposed to provide utilities
+        raise NotImplementedError()
+        # details = self.datasets.monitor.health(self.dataset_id, **kwargs)
+        # return details
