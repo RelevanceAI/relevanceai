@@ -17,7 +17,7 @@ class Operations(APIClient):
 
     def cluster(
         self,
-        vector_fields: List[str] = ["_vector_"],
+        vector_fields: List[str] = None,
         alias: Optional[str] = None,
         model: Union[str, Any] = "community_detection",
         **kwargs,
@@ -53,6 +53,9 @@ class Operations(APIClient):
 
         """
         from relevanceai.operations.cluster import ClusterOps
+
+        if vector_fields is None:
+            vector_fields = ["_vector_"]
 
         ops = ClusterOps(
             credentials=self.credentials,
@@ -454,8 +457,22 @@ class Operations(APIClient):
 
         For more information about vector search check out services.search.vector
 
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            results = ds.search.multistep_chunk(
+                chunk_field="_chunk_",
+                multivector_query=MULTIVECTOR_QUERY,
+                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
+            )
+
         Parameters
-        ----------
+        ------------
 
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
@@ -501,20 +518,6 @@ class Operations(APIClient):
             Size of each page of results
         query: string
             What to store as the query name in the dashboard
-
-        Example
-        -----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            results = ds.search.multistep_chunk(
-                chunk_field="_chunk_",
-                multivector_query=MULTIVECTOR_QUERY,
-                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
-            )
 
         """
         from relevanceai.operations.vector import SearchOps
