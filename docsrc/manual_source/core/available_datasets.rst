@@ -1,4 +1,4 @@
-Available Datasets
+Datasets
 =============================
 
 .. automodule:: relevanceai.utils.datasets
