@@ -580,3 +580,53 @@ class Operations(APIClient):
             **kwargs,
         )
         return ops.fit_predict(dataset=self.dataset_id, vector_fields=vector_fields)
+
+    def add_sentiment(
+        self,
+        field: str,
+        output_field: str = "_sentiment_",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
+        log_to_file: bool = True,
+        chunksize: int = 20,
+        workflow_alias: str = "sentiment",
+        notes=None,
+    ):
+        """
+        Easily add sentiment to your dataset
+
+        Example
+        ----------
+
+        .. code-block::
+
+            ds.add_sentiment(field="sample_1_label")
+
+        Parameters
+        --------------
+
+        field: str
+            The field to add sentiment to
+        output_field: str
+            Where to store the sentiment values
+        model_name: str
+            The HuggingFace Model name.
+        log_to_file: bool
+            If True, puts the logs in a file. Otherwise, it will
+
+        """
+        from relevanceai.operations.text.sentiment.sentiment_workflow import (
+            SentimentWorkflow,
+        )
+
+        workflow = SentimentWorkflow(
+            model_name=model_name, workflow_alias=workflow_alias
+        )
+        return workflow.fit_dataset(
+            dataset=self,
+            input_field=field,
+            output_field=output_field,
+            log_to_file=log_to_file,
+            chunksize=chunksize,
+            workflow_alias=workflow_alias,
+            notes=notes,
+        )
