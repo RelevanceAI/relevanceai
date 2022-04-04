@@ -584,7 +584,7 @@ class Operations(APIClient):
     def add_sentiment(
         self,
         field: str,
-        output_field: str = "_sentiment_",
+        output_field: str = None,
         model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         log_to_file: bool = True,
         chunksize: int = 20,
@@ -618,6 +618,8 @@ class Operations(APIClient):
             SentimentWorkflow,
         )
 
+        if output_field is None:
+            output_field = "_sentiment_." + field
         workflow = SentimentWorkflow(
             model_name=model_name, workflow_alias=workflow_alias
         )
