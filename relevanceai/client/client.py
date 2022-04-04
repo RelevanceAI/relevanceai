@@ -40,9 +40,10 @@ from relevanceai.dataset import Dataset
 
 from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
+from relevanceai.utils.config_mixin import ConfigMixin
 
 
-class Client(APIClient, DocUtils):
+class Client(APIClient, ConfigMixin):
     def __init__(
         self,
         token: Optional[str] = None,
@@ -66,6 +67,8 @@ class Client(APIClient, DocUtils):
 
         self.token = token
         self.credentials = process_token(token)
+        super().__init__(self.credentials)
+
         # Eventually the following should be accessed directly from
         # self.credentials, but keep for now.
         (
@@ -84,8 +87,6 @@ class Client(APIClient, DocUtils):
             pass
 
         self._identify()
-
-        super().__init__(self.credentials)
 
         # used to debug
         if authenticate:
