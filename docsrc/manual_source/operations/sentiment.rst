@@ -1,7 +1,6 @@
 Sentiment
 =============
 
-
 Basic
 ---------
 
@@ -23,15 +22,21 @@ Prior to adding sentiment, we will need to make sure to install HuggingFace's Tr
       field="sample_1_label"
    )
 
+   # Easily change to a different HuggingFace model
+   ds.add_sentiment(
+      field="sample_1_label",
+      model_name="cardiffnlp/twitter-roberta-base-sentiment",
+   )
+
 For every document, you will get functions and formulas similar to the ones below:
 
 .. code-block::
 
    {
       "_sentiment_": {
-            "sentiment": sentiment,
-            "score": np.round(float(scores[ranking[0]]), 4),
-            "overall_sentiment_score": score if sentiment == "positive" else -score,
+            "sentiment": sentiment, # positive / neutral / negative
+            "score": np.round(float(scores[ranking[0]]), 4), # confidence of the interval
+            "overall_sentiment_score": score if sentiment == "positive" else -score, # an overall sentiment score where -1 is negative and +1 is positive
       }
    }
 
