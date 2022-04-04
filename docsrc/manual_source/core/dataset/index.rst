@@ -15,7 +15,6 @@ It is instantiated like this:
     ds = client.Dataset("sample_dataset_id")
     ds.head()
 
-
 .. toctree::
 
     get_documents

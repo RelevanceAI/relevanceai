@@ -5,7 +5,7 @@ Operations
 .. toctree::
     :maxdepth: 4
 
-    cluster
+    Cluster <cluster/index>
     dim_reduction
     vectorize
     cluster_viz
