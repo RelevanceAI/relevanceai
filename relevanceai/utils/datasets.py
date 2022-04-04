@@ -531,7 +531,7 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
 
     .. code-block::
 
-        from relevanceai.package_utils.datasets import mock_documents
+        from relevanceai.utils.datasets import mock_documents
         documents = mock_documents(10)
 
     """

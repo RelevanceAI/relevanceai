@@ -214,7 +214,7 @@ class AutoClusterOps(CommunityDetection):
 
             client = Client()
 
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
 
             ds = client.Dataset('sample')
             ds.upsert_documents(mock_documents(100))
@@ -379,7 +379,7 @@ class AutoClusterOps(CommunityDetection):
 
             client = Client()
 
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
 
             ds = client.Dataset('sample')
             ds.upsert_documents(mock_documents(100))

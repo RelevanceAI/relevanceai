@@ -37,7 +37,7 @@ class SubClusterOps(_ClusterOps):
             from relevanceai import Client
             client = Client()
 
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
             ds = client.Dataset("sample")
 
             # Creates 100 sample documents
@@ -46,7 +46,7 @@ class SubClusterOps(_ClusterOps):
 
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=10)
-            clusterer = ClusterOps(alias="minibatchkmeans-10", model=model)
+            clusterer = client.SubClusterOps(alias="minibatchkmeans-10", model=model)
             clusterer.subcluster_predict_update(
                 dataset=ds,
             )
@@ -128,7 +128,7 @@ class SubClusterOps(_ClusterOps):
             from relevanceai import Client
             client = Client()
 
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
             ds = client.Dataset("sample")
             # Creates 100 sample documents
             documents = mock_documents(100)
@@ -198,7 +198,7 @@ class SubClusterOps(_ClusterOps):
             ds = client.Dataset("sample")
 
             # Creating 100 sample documents
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
             documents = mock_documents(100)
             ds.upsert_documents(documents)
 

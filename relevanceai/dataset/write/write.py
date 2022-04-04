@@ -409,7 +409,7 @@ class Write(APIClient):
         .. code-block::
 
             from relevanceai import Client
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
 
             client = Client()
 

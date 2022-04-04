@@ -754,7 +754,7 @@ class Labels(Write):
 
             # Create an e-commerce dataset
 
-            from relevanceai.package_utils.datasets import get_dummy_ecommerce_dataset
+            from relevanceai.utils.datasets import get_dummy_ecommerce_dataset
             docs = get_dummy_ecommerce_dataset()
             ds = client.Dataset("ecommerce-example")
             ds.upsert_documents(docs)
@@ -973,7 +973,7 @@ class Labels(Write):
 
             import random
             from relevanceai import Client
-            from relevanceai.package_utils.datasets import mock_documents
+            from relevanceai.utils.datasets import mock_documents
             from relevanceai.package_utils.logger import FileLogger
 
             client = Client()
