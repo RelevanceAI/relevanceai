@@ -15,72 +15,63 @@ from relevanceai.constants import IMG_EXTS
 from relevanceai.utils.decorators import log
 
 
-class VectorizeOps(APIClient):
-    log_file: str = "vectorize.logs"
-
-    def __init__(
-        self,
-        credentials: Credentials,
-        encoders: Optional[Dict[str, Any]] = None,
-        log_file: str = "vectorize.logs",
-    ):
-        super().__init__(credentials=credentials)
-
+class VectorizeHelpers(APIClient):
+    def __init__(self, log_file, credentials: Credentials):
         self.log_file = log_file
-        self.encoders = encoders if encoders is not None else {}
+        super().__init__(credentials)
 
-    def __call__(self, *args, **kwargs):
-        return self.operate(*args, **kwargs)
-
-    @log(fn=log_file)
     def _get_encoder(self, model: Any) -> Any:
-        if isinstance(model, str):
-            model = model.lower().replace(" ", "").replace("_", "")
-            self.model_name = model
-        else:
-            self.model_name = str(model.__class__).split(".")[-1].split("'>")[0]
-            return model
+        @log(fn=self.log_file)
+        def get_encoder():
+            if isinstance(model, str):
+                model = model.lower().replace(" ", "").replace("_", "")
+                model_name = model
+            else:
+                model_name = str(model.__class__).split(".")[-1].split("'>")[0]
+                return model, model_name
 
-        if isinstance(model, str):
-            if model == "use":
-                from vectorhub.encoders.text.tfhub import USE2Vec
+            if isinstance(model, str):
+                if model == "use":
+                    from vectorhub.encoders.text.tfhub import USE2Vec
 
-                model = USE2Vec()
+                    model = USE2Vec()
 
-            elif model == "bert":
-                from vectorhub.encoders.text.tfhub import Bert2Vec
+                elif model == "bert":
+                    from vectorhub.encoders.text.tfhub import Bert2Vec
 
-                model = Bert2Vec()
+                    model = Bert2Vec()
 
-            elif model == "labse":
-                from vectorhub.encoders.text.tfhub import LaBSE2Vec
+                elif model == "labse":
+                    from vectorhub.encoders.text.tfhub import LaBSE2Vec
 
-                model = LaBSE2Vec()
+                    model = LaBSE2Vec()
 
-            elif model == "elmo":
-                from vectorhub.encoders.text.tfhub import Elmo2Vec
+                elif model == "elmo":
+                    from vectorhub.encoders.text.tfhub import Elmo2Vec
 
-                model = Elmo2Vec()
+                    model = Elmo2Vec()
 
-            elif model == "clip":
-                from vectorhub.bi_encoders.text_image.torch.clip import Clip2Vec
+                elif model == "clip":
+                    from vectorhub.bi_encoders.text_image.torch.clip import Clip2Vec
 
-                model = Clip2Vec()
+                    model = Clip2Vec()
 
-            elif model == "resnet":
-                from vectorhub.encoders.image.fastai import FastAIResnet2Vec
+                elif model == "resnet":
+                    from vectorhub.encoders.image.fastai import FastAIResnet2Vec
 
-                model = FastAIResnet2Vec()
+                    model = FastAIResnet2Vec()
 
-            elif model == "mobilenet":
-                from vectorhub.encoders.image.tfhub import MobileNetV12Vec
+                elif model == "mobilenet":
+                    from vectorhub.encoders.image.tfhub import MobileNetV12Vec
 
-                model = MobileNetV12Vec()
+                    model = MobileNetV12Vec()
 
-        else:
-            # TODO: this needs to be referenced from relevance.constants.errors
-            raise ValueError("ModelNotSupported")
+            else:
+                # TODO: this needs to be referenced from relevance.constants.errors
+                raise ValueError("ModelNotSupported")
 
+        model, model_name = get_encoder()
+        self.model_name = model_name
         return model
 
     def _get_dtype(self, value: Any) -> Union[str, None]:
@@ -101,6 +92,54 @@ class VectorizeOps(APIClient):
                 return "_text_"
 
         return None
+
+    def _reduce(self, vectors: np.ndarray, n_components: int = 512) -> np.ndarray:
+        from sklearn.decomposition import PCA
+
+        reducer = PCA(
+            n_components=min(vectors.shape[0], vectors.shape[1], n_components)
+        )
+        reduced = reducer.fit_transform(vectors)
+        return reduced
+
+    def _get_model_name(self, dtype: str) -> str:
+        if dtype == "_text_":
+            if "text" in self.encoders:
+                return self.encoders["text"]
+
+            else:
+                return "use"
+
+        elif dtype == "_image_":
+            if "image" in self.encoders:
+                return self.encoders["image"]
+
+            else:
+                return "clip"
+
+        else:
+            raise ValueError
+
+    def _get_remaining(self, filters: List[Dict[str, Any]]) -> int:
+        return self.get_number_of_documents(
+            dataset_id=self.dataset_id,
+            filters=filters,
+        )
+
+
+class VectorizeOps(VectorizeHelpers):
+    def __init__(
+        self,
+        credentials: Credentials,
+        encoders: Optional[Dict[str, Any]] = None,
+        log_file: str = "vectorize.logs",
+    ):
+        super().__init__(log_file=log_file, credentials=credentials)
+
+        self.encoders = encoders if encoders is not None else {}
+
+    def __call__(self, *args, **kwargs):
+        return self.operate(*args, **kwargs)
 
     def _get_schema(self):
         return self.datasets.schema(self.dataset_id)
@@ -135,6 +174,21 @@ class VectorizeOps(APIClient):
 
         return schema
 
+    def _get_numeric_fields(self) -> List[str]:
+        numeric_fields = [
+            field for field, dtype in self.schema.items() if dtype == "numeric"
+        ]
+        return numeric_fields
+
+    def _get_fields(self, fields: List[str]) -> Dict[str, str]:
+        return {
+            field: self.detailed_schema[field]
+            for field in fields
+            if any(
+                dtype in self.detailed_schema[field] for dtype in ["_image_", "_text_"]
+            )
+        }
+
     def _validate_fields(self, fields: List[str]):
         foreign_fields = []
         for field in fields:
@@ -146,6 +200,18 @@ class VectorizeOps(APIClient):
                     f"The following fields are invalid: {', '.join(foreign_fields)}"
                 )
 
+    def _init_encoders(self, fields: List[str]):
+        @log(fn=self.log_file)
+        def initialize():
+            dtypes = [self.detailed_schema[field] for field in fields]
+
+            for dtype in ["image", "text"]:
+                if f"_{dtype}_" in dtypes:
+                    model = self._get_model_name(dtype=f"_{dtype}_")
+                    self.encoders[dtype] = self._get_encoder(model=model)
+
+        initialize()
+
     def _get_vector_fields(self, fields: List[str]) -> List[str]:
         vector_fields = []
 
@@ -156,12 +222,6 @@ class VectorizeOps(APIClient):
             vector_fields.append(vector_field)
 
         return vector_fields
-
-    def _get_numeric_fields(self) -> List[str]:
-        numeric_fields = [
-            field for field, dtype in self.schema.items() if dtype == "numeric"
-        ]
-        return numeric_fields
 
     def _get_filters(
         self, fields: List[str], vector_fields: List[str]
@@ -276,48 +336,6 @@ class VectorizeOps(APIClient):
 
         return updated_documents
 
-    def _reduce(self, vectors: np.ndarray, n_components: int = 512) -> np.ndarray:
-        from sklearn.decomposition import PCA
-
-        reducer = PCA(
-            n_components=min(vectors.shape[0], vectors.shape[1], n_components)
-        )
-        reduced = reducer.fit_transform(vectors)
-        return reduced
-
-    def _get_fields(self, fields: List[str]) -> Dict[str, str]:
-        return {
-            field: self.detailed_schema[field]
-            for field in fields
-            if any(
-                dtype in self.detailed_schema[field] for dtype in ["_image_", "_text_"]
-            )
-        }
-
-    def _get_model_name(self, dtype: str) -> str:
-        if dtype == "_text_":
-            if "text" in self.encoders:
-                return self.encoders["text"]
-
-            else:
-                return "use"
-
-        elif dtype == "_image_":
-            if "image" in self.encoders:
-                return self.encoders["image"]
-
-            else:
-                return "clip"
-
-        else:
-            raise ValueError
-
-    def _get_remaining(self, filters: List[Dict[str, Any]]) -> int:
-        return self.get_number_of_documents(
-            dataset_id=self.dataset_id,
-            filters=filters,
-        )
-
     def _update_vector_metadata(self, metadata: List[str]) -> None:
         updated_metadata = self.datasets.metadata(self.dataset_id)["results"]
 
@@ -409,15 +427,6 @@ class VectorizeOps(APIClient):
         metadata = [document_vector_]
 
         self._update_vector_metadata(metadata)
-
-    @log(fn=log_file)
-    def _init_encoders(self, fields: List[str]):
-        dtypes = [self.detailed_schema[field] for field in fields]
-
-        for dtype in ["image", "text"]:
-            if f"_{dtype}_" in dtypes:
-                model = self._get_model_name(dtype=f"_{dtype}_")
-                self.encoders[dtype] = self._get_encoder(model=model)
 
     def operate(
         self,
