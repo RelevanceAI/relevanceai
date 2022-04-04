@@ -76,6 +76,7 @@ test_requirements = (
 
 doc_requirements = [
     "sphinx-rtd-theme>=0.5.0",
+    "pydata-sphinx-theme==0.8.1",
     "sphinx-autoapi==1.8.4",
     "sphinx-autodoc-typehints==1.12.0",
 ]

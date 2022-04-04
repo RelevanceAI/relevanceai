@@ -69,7 +69,9 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -77,6 +79,18 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 html_favicon = "favicon.png"
+# html_logo = "favicon.png"
+html_logo = "logo.svg"
+
+html_theme_options = {
+    # "logo_link": "https://relevance.ai/wp-content/uploads/2021/11/logo.79f303e-1.svg",
+    "github_url": "https://github.com/relevanceai/relevanceai",
+    "twitter_url": "https://mobile.twitter.com/relevanceai_",
+    "collapse_navigation": True,
+    "external_links": [{"name": "Dashboard", "url": "https://cloud.relevance.ai"}],
+    "display_version": False,
+}
+
 apidoc_module_first = True
 autosummary_imported_members = True
 autoapi_dirs = ["../../relevanceai"]

@@ -36,7 +36,7 @@ class Operations(APIClient):
             from relevanceai import Client
             client = Client()
             ds = client.Dataset("sample")
-            ds.cluster(
+            cluster_ops = ds.cluster(
                 model=model, vector_fields=["sample_vector_"],
                 alias="kmeans-8"
             )

@@ -248,13 +248,10 @@ class SubClusterOps(PartialClusterOps):
         Subclustering using fit predict update. This will loop through all of the
         different clusters and then run subclustering on them. For this, you need to
 
-        Parameters
-        ------------
-
         Example
         ---------
 
-        ..code-block::
+        .. code-block::
 
             from relevanceai import Client
             client = Client()
