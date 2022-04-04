@@ -107,6 +107,11 @@ class Dataset(IO, Read, Write, Operations):
     def launch_search_app(self):
         """
         Launches the link to the search application to start building
+
+        .. code-block::
+
+            ds.launch_search_app()
+
         """
         return SEARCH_APP_LINK.format(self.dataset_id)
 
@@ -114,5 +119,10 @@ class Dataset(IO, Read, Write, Operations):
     def launch_projector_app(self):
         """
         Launches the link to the projector application to start building
+
+        .. code-block::
+
+            ds.launch_projector_app()
+
         """
         return PROJECTOR_APP_LINK.format(self.dataset_id)

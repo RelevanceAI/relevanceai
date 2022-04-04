@@ -79,6 +79,18 @@ html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 html_favicon = "favicon.png"
+# html_logo = "favicon.png"
+html_logo = "logo.svg"
+
+html_theme_options = {
+    # "logo_link": "https://relevance.ai/wp-content/uploads/2021/11/logo.79f303e-1.svg",
+    "github_url": "https://github.com/relevanceai/relevanceai",
+    "twitter_url": "https://mobile.twitter.com/relevanceai_",
+    "collapse_navigation": True,
+    "external_links": [{"name": "Dashboard", "url": "https://cloud.relevance.ai"}],
+    "display_version": False,
+}
+
 apidoc_module_first = True
 autosummary_imported_members = True
 autoapi_dirs = ["../../relevanceai"]

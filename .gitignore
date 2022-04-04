@@ -133,6 +133,7 @@ dmypy.json
 
 test_projection/*
 *.ipynb
+!guides/*.ipynb
 .creds.json
 
 # Excel

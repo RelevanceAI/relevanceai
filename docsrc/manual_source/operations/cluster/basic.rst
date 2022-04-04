@@ -4,34 +4,34 @@ Cluster
 Basic
 ---------
 
-The easiest way to cluster is to run the following. 
+The easiest way to cluster is to run the following.
 
 .. automethod:: relevanceai.operations.operations.Operations.cluster
 
 Custom Cluster Models
 -------------------------
 
-The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms 
+The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms
 and models. A cluster base has the following abstractmethods (methods to be overwritten):
 
 - :code:`fit_transform`
 - :code:`metadata` (optional if you want to store cluster metadata)
 - :code:`get_centers` (optional if you want to store cluster centroid documents)
 
-:code:`CentroidBase` is the most basic class to inherit. Use this class if you have an 
+:code:`CentroidBase` is the most basic class to inherit. Use this class if you have an
 in-memory fitting algorithm.
 
 If your clusters return centroids, you will want to inherit
 :code:`CentroidClusterBase`.
 
-If your clusters can fit on batches, you will want to inherit 
+If your clusters can fit on batches, you will want to inherit
 :code:`BatchClusterBase`.
 
 If you have both Batches and Centroids, you will want to inherit both.
 
 .. code-block::
 
-    import numpy as np 
+    import numpy as np
     from faiss import Kmeans
     from relevanceai import Client, CentroidClusterBase
 
@@ -66,25 +66,11 @@ If you have both Batches and Centroids, you will want to inherit both.
 .. automodule:: relevanceai.workflows.cluster_ops.clusterbase
    :members:
 
-Partial Clustering
-----------------------
-
-.. automodule:: relevanceai.operations.cluster.partial
-   :members:
-   :exclude-members: __init__
-
-.. automodule:: relevanceai.operations.cluster.sub
-   :members:
-   :exclude-members: __init__
-
-.. automodule:: relevanceai.workflows.cluster_ops.clusterbase
-   :members:
-
 Reloading ClusterOps
 ------------------------
 
 Often you may have clustered but want to just re-load
-your clusterops object without having to re-fit the model. 
+your clusterops object without having to re-fit the model.
 You can do that in 2 ways.
 
 .. code-block::
