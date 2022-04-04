@@ -36,7 +36,8 @@ For every document, you will get functions and formulas similar to the ones belo
       "_sentiment_": {
             "sentiment": sentiment, # positive / neutral / negative
             "score": np.round(float(scores[ranking[0]]), 4), # confidence of the interval
-            "overall_sentiment_score": score if sentiment == "positive" else -score, # an overall sentiment score where -1 is negative and +1 is positive
+            "overall_sentiment_score": score if sentiment == "positive" else -score, 
+            # an overall sentiment score where -1 is negative and +1 is positive
       }
    }
 
