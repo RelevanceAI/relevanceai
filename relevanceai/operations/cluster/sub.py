@@ -1,25 +1,238 @@
-"""
-SubClustering Operations
-
-Sub Clustering allows users to define subclusters.
-
-"""
-from typing import Optional, List, Any
+import numpy as np
+from typing import Optional, List, Any, Union, Dict, Tuple
 from tqdm.auto import tqdm
 from relevanceai.operations.cluster.partial import PartialClusterOps
 from relevanceai.operations.cluster.cluster import ClusterOps
 from relevanceai._api import APIClient
 
 
-class SubClusterOps(PartialClusterOps):
+class _SubClusterOps(ClusterOps):
+    """This class is an intermediate layer between cluster ops and subclusterops.
+    It it used to over-write parts of clusterops.
+    """
+
     def __init__(
         self,
         credentials,
         alias,
-        dataset,
         model,
+        dataset: Any,
         vector_fields: list,
         parent_field: str,
+        outlier_value=-1,
+        outlier_label="outlier",
+        **kwargs,
+    ):
+        """
+        Sub Cluster Ops
+        """
+
+        # self.dataset = dataset
+        self.vector_fields = vector_fields
+        self.parent_field = parent_field
+        self.credentials = credentials
+        self.model = model
+        self.outlier_value = outlier_value
+        self.outlier_label = outlier_label
+        if isinstance(dataset, str):
+            self.dataset_id = dataset
+        else:
+            if hasattr(dataset, "dataset_id"):
+                self.dataset_id = dataset.dataset_id
+            # needs to have the dataset_id attribute
+
+        if "package" not in self.__dict__:
+            self.package = self._get_package(self.model)
+
+        self.model_name = None
+        self.model = self._get_model(model)
+        self.alias = self._get_alias(alias)
+        super().__init__(
+            credentials=credentials,
+            model=self.model,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            dataset_id=self.dataset_id,
+            outlier_value=self.outlier_value,
+            outlier_label=self.outlier_label,
+        )
+
+    def operate(
+        self,
+        dataset_id: Optional[Union[str, Any]] = None,
+        parent_field: str = None,
+        vector_fields: Optional[List[str]] = None,
+        filters: list = None,
+        show_progress_bar: bool = True,
+        verbose: bool = True,
+    ) -> None:
+        """
+        Run clustering on a dataset
+
+        Parameters
+        --------------
+
+        dataset_id: Optional[Union[str, Any]]
+            The dataset ID
+        vector_fields: Optional[List[str]]
+            List of vector fields
+        show_progress_bar: bool
+            If True, the progress bar can be shown
+
+        """
+
+        if parent_field is None:
+            parent_field = self.parent_field
+
+        filters = [] if filters is None else filters
+
+        if not isinstance(dataset_id, str):
+            if hasattr(dataset_id, "dataset_id"):
+                dataset_id = dataset_id.dataset_id  # type: ignore
+
+        if vector_fields is None:
+            vector_fields = self.vector_fields
+
+        self.dataset_id = dataset_id
+        if vector_fields is not None:
+            vector_field = vector_fields[0]
+            self.vector_field = vector_field
+
+        # get all documents
+        documents = self._get_all_documents(
+            dataset_id=dataset_id,
+            select_fields=vector_fields + [parent_field],
+            show_progress_bar=show_progress_bar,
+            include_vector=True,
+            filters=filters,
+        )
+
+        # fit model, predict and label all documents
+        centroid_documents, labelled_documents = self._fit_predict(
+            documents=documents,
+            vector_field=vector_field,
+        )
+
+        results = self._update_documents(
+            dataset_id=dataset_id,
+            documents=labelled_documents,
+            show_progress_bar=show_progress_bar,
+        )
+
+        self._insert_centroids(
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            centroid_documents=centroid_documents,
+        )
+
+        # link back to dashboard
+        if verbose:
+            self._print_app_link()
+
+    def _format_sub_labels(self, parent_values: list, labels: np.ndarray) -> List[str]:
+        if len(parent_values) != len(labels):
+            raise ValueError("Improper logic for parent values")
+
+        labels = labels.flatten().tolist()
+        cluster_labels = [
+            label + "-" + str(labels[i])
+            if label != self.outlier_value
+            else self.outlier_label
+            for i, label in enumerate(parent_values)
+        ]
+        return cluster_labels
+
+    def _get_centroid_documents(
+        self, vectors: np.ndarray, labels: List[str]
+    ) -> List[Dict[str, Any]]:
+        centroid_documents = []
+
+        centroids: Dict[str, Any] = {}
+        for label, vector in zip(labels, vectors.tolist()):
+            if label not in centroids:
+                centroids[label] = []
+            centroids[label].append(vector)
+
+        for centroid, vectors in centroids.items():
+            centroid_vector = np.array(vectors).mean(0).tolist()
+            centroid_document = dict(
+                _id=centroid,
+                centroid_vector=centroid_vector,
+            )
+            centroid_documents.append(centroid_document)
+
+        return centroid_documents
+
+    def _insert_centroids(
+        self,
+        dataset_id: str,
+        vector_field: str,
+        centroid_documents: List[Dict[str, Any]],
+    ) -> None:
+        self.services.cluster.centroids.insert(
+            dataset_id=dataset_id,
+            cluster_centers=centroid_documents,
+            vector_fields=[vector_field],
+            alias=self.alias,
+        )
+
+    def _fit_predict(
+        self, documents: List[Dict[str, Any]], vector_field: str
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        doc_subset = [doc for doc in documents if self.is_field(vector_field, doc)]
+        vectors = np.array(
+            [self.get_field(vector_field, document) for document in doc_subset]
+        )
+
+        if self.package == "sklearn":
+            labels = self.model.fit_predict(vectors)
+
+        elif self.package == "hdbscan":
+            self.model.fit(vectors)
+            labels = self.model.labels_.reshape(-1, 1)
+
+        elif self.package == "faiss":
+            vectors = vectors.astype("float32")
+            self.model.train(vectors)
+            labels = self.model.assign(vectors)[1]
+
+        elif self.package == "sentencetransformers":
+            # TODO: make teh config here better
+            labels = self.model(vectors)
+            labels = np.array(labels)
+
+        elif self.package == "custom":
+            labels = self.model.fit_predict(vectors)
+            if not isinstance(labels, np.ndarray):
+                raise ValueError("Custom model must output np.ndarray for labels")
+
+            if labels.shape[0] != vectors.shape[0]:
+                raise ValueError("incorrect shape")
+
+        parent_values = self.get_field_across_documents(self.parent_field, doc_subset)
+        labels = self._format_sub_labels(parent_values, labels)
+
+        cluster_field = f"_cluster_.{vector_field}.{self.alias}"
+        self.set_field_across_documents(
+            field=cluster_field, values=labels, docs=doc_subset
+        )
+
+        centroid_documents = self._get_centroid_documents(vectors, labels)
+
+        return centroid_documents, documents
+
+
+class SubClusterOps(_SubClusterOps):
+    def __init__(
+        self,
+        credentials,
+        alias: str,
+        dataset,
+        model,
+        vector_fields: List[str],
+        parent_field: str,
+        outlier_value=-1,
+        outlier_label="outlier",
         **kwargs,
     ):
         """
@@ -31,14 +244,23 @@ class SubClusterOps(PartialClusterOps):
         self.parent_field = parent_field
         self.credentials = credentials
         self.model = model
+        self.outlier_value = outlier_value
+        self.outlier_label = outlier_label
         if isinstance(dataset, str):
-            self.dataset_id = dataset
+            self.dataset_id: str = dataset
         else:
             if hasattr(dataset, "dataset_id"):
                 self.dataset_id = dataset.dataset_id
             # needs to have the dataset_id attribute
 
-        super().__init__(credentials=credentials)
+        super().__init__(
+            credentials=credentials,
+            alias=alias,
+            model=model,
+            dataset=dataset,
+            vector_fields=vector_fields,
+            parent_field=parent_field,
+        )
 
     def __call__(self, *args, **kw):
         return self.fit_predict(*args, **kw)
@@ -90,6 +312,8 @@ class SubClusterOps(PartialClusterOps):
             )
 
         """
+        if self.model is None:
+            raise ValueError("No model is detected.")
         filters = [] if filters is None else filters
 
         # load the documents
@@ -121,18 +345,6 @@ class SubClusterOps(PartialClusterOps):
             vector_fields=vector_fields, filters=filters, verbose=False
         )
 
-        # Updating the db
-        # print("Updating the database...")
-        # results = self._update_documents(
-        #     self.dataset_id, clustered_docs, chunksize=10000
-        # )
-        # self.logger.info(results)
-
-        # # Update the centroid collection
-        # self.model.vector_fields = vector_fields
-
-        # self._insert_centroid_documents()
-
         if verbose:
             print(
                 "Build your clustering app here: "
@@ -142,6 +354,7 @@ class SubClusterOps(PartialClusterOps):
         # Store subcluster in the metadata
         if parent_field is None:
             parent_field = self.parent_field
+
         self.store_subcluster_metadata(
             parent_field=parent_field, cluster_field=self._get_cluster_field_name()
         )
@@ -301,16 +514,19 @@ class SubClusterOps(PartialClusterOps):
                 }
             ]
             # Create a ClusterOps object with the filter
-            ops = ClusterOps(
+            if vector_fields is None:
+                vector_fields = self.vector_fields
+            ops = _SubClusterOps(
                 credentials=self.credentials,
                 model=self.model,
                 vector_fields=vector_fields,
-                alias=None,
-                dataset_id=None,
+                alias=self.alias,
+                dataset=self.dataset_id,
+                parent_field=self.parent_field,
                 n_clusters=None,
                 cluster_config=None,
-                outlier_value=-1,
-                outlier_label="outlier",
+                outlier_value=self.outlier_value,
+                outlier_label=self.outlier_label,
             )
             ops.operate(
                 dataset_id=self.dataset_id,

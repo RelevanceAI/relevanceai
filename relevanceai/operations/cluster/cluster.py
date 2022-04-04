@@ -398,7 +398,11 @@ class ClusterOps(APIClient):
         )
 
         # TODO: need to change this to an update_where
-        self._update_documents(
+        # self.datasets.documents.update_where(
+        #     dataset_id,
+        #     update={}
+        # )
+        results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
