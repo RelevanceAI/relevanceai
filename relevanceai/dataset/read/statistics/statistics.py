@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Pandas like dataset API
+Statistics API
 """
 import pandas as pd
 
@@ -105,6 +105,7 @@ class Statistics(APIClient):
         alias: str,
         groupby: Optional[str] = None,
         fontsize: int = 16,
+        show_plot: bool = True,
     ):
         """
         Returns the Pearson correlation between two fields.
@@ -213,8 +214,11 @@ class Statistics(APIClient):
                     fontsize=fontsize,
                 )
 
-        fig.tight_layout()
-        plt.show()
+        if show_plot:
+            fig.tight_layout()
+            plt.show()
+        else:
+            return None
 
     def health(self, output_format="dataframe") -> Union[pd.DataFrame, dict]:
         """
@@ -251,26 +255,59 @@ class Statistics(APIClient):
         groupby: Optional[list] = None,
         metrics: Optional[list] = None,
         filters: Optional[list] = None,
-        # sort: list = [],
         page_size: int = 20,
         page: int = 1,
         asc: bool = False,
-        flatten: bool = True,
-        alias: str = "default",
+        aggregation_query: Optional[dict] = None,
+        sort: list = None,
     ):
-        return self.services.aggregate.aggregate(
+        """
+        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
+        Example
+        ---------
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": <alias>, "field": <field in the collection>, "agg": "category"},
+                    {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
+                ],
+                "metrics" : [
+                    {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
+                    {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
+                ]
+            }
+            For example, one can use the following aggregations to group score based on region and player name.
+            {
+                "groupby" : [
+                    {"name": "region", "field": "player_region", "agg": "category"},
+                    {"name": "player_name", "field": "name", "agg": "category"}
+                ],
+                "metrics" : [
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                    {"name": "max_score", "field": "final_score", "agg": "max"},
+                    {'name':'total_score','field':"final_score", 'agg':'sum'},
+                    {'name':'average_deaths','field':"final_deaths", 'agg':'avg'},
+                    {'name':'highest_deaths','field':"final_deaths", 'agg':'max'},
+                ]
+            }
+
+        """
+        return self.datasets.aggregate(
             dataset_id=self.dataset_id,
-            groupby=[] if groupby is None else groupby,
-            metrics=[] if metrics is None else metrics,
-            filters=[] if filters is None else filters,
+            groupby=groupby,
+            metrics=metrics,
+            sort=sort,
+            asc=asc,
+            filters=filters,
             page_size=page_size,
             page=page,
-            asc=asc,
-            flatten=flatten,
-            alias=alias,
-            # sort=sort
+            aggregation_query=aggregation_query,
         )
 
+    @track
     def facets(
         self,
         fields: Optional[list] = [],
@@ -280,6 +317,7 @@ class Statistics(APIClient):
         asc: bool = False,
     ):
         """
+
         Get a summary of fields - such as most common, their min/max, etc.
 
         Example
@@ -304,6 +342,9 @@ class Statistics(APIClient):
             asc=asc,
         )
 
+    @track
     def health_check(self, **kwargs):
-        details = self.datasets.monitor.health(self.dataset_id, **kwargs)
-        return details
+        # This is supposed to provide utilities
+        raise NotImplementedError()
+        # details = self.datasets.monitor.health(self.dataset_id, **kwargs)
+        # return details

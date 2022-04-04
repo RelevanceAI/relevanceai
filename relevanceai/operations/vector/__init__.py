@@ -1,2 +1,2 @@
-from relevanceai.operations.vector.vectorize import Vectorize
-from relevanceai.operations.vector.search import Search
+from relevanceai.operations.vector.vectorize import VectorizeOps
+from relevanceai.operations.vector.search import SearchOps

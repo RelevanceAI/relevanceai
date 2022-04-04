@@ -28,7 +28,7 @@ requirements = [
     "numpy>=1.19.0",
     "joblib>=1.0.0",
     "scikit-learn>=0.20.0",  # last version of support to Python3.4
-    "typing-extensions~=4.0.1",
+    "typing-extensions>=3.0",
     "analytics-python~=1.4.0",
     "aiohttp>=3.8.1",
     "appdirs>=1.4.4",
@@ -38,14 +38,14 @@ requirements = [
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 vis_requirements = requirements + [
-    "matplotlib>=3.5.1",
-    "plotly>=5.5.0",
-    "typeguard",
-    "dash",
-    "pillow",
-    "opencv-python",
-    "scikit-image",
-    "dash_bootstrap_components",
+    # "matplotlib>=3.5.1",
+    # "plotly>=5.5.0",
+    # "typeguard",
+    # "dash",
+    # "pillow",
+    # "opencv-python",
+    # "scikit-image",
+    # "dash_bootstrap_components",
 ]
 
 umap = ["umap-learn>=0.5.2"]
@@ -76,6 +76,7 @@ test_requirements = (
 
 doc_requirements = [
     "sphinx-rtd-theme>=0.5.0",
+    "pydata-sphinx-theme==0.8.1",
     "sphinx-autoapi==1.8.4",
     "sphinx-autodoc-typehints==1.12.0",
 ]

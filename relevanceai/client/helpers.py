@@ -1,6 +1,7 @@
 import getpass
 
 from dataclasses import dataclass
+from typing import List
 
 from relevanceai.constants.messages import Messages
 from relevanceai.constants import (
@@ -19,17 +20,25 @@ from relevanceai.constants.errors import (
 )
 
 
-def region_to_url(region: str):
-    """
-    Convert region to URL
+def region_to_url(region: str) -> str:
+    """A function to convert a users region to base url for API calls
+
+    Args:
+        region (str): user region, element of ["us-east-1", "ap-southeast-2", "old-australia-east"]
+
+    Returns:
+        url: the appropriate base url for API calls
     """
     if "dev" in region:
         actual_region = region.replace("dev-", "")
         url = DEV_URL.format(actual_region)
+
     elif region == OLD_AUSTRALIA_EAST:
         url = AUSTRALIA_URL
+
     else:
         url = WIDER_URL.format(region)
+
     return url
 
 
@@ -52,11 +61,32 @@ class Credentials:
     region: str
     firebase_uid: str
 
-    def split_token(self):
+    def split_token(self) -> List[str]:
+        """
+        Splits the token in its four main components given in order by above
+
+        Returns:
+            List[str]: a list of strings containing all user identification for interaction with dashboard and api calls
+        """
         return self.token.split(":")
 
 
 def process_token(token: str):
+    """Given a user token, checks to see if all necessary credentials are present in token.
+
+    Args:
+        token (str): a ":" delimited string of identifying information
+
+    Raises:
+        TokenNotFoundError: error if idenitifier is not found
+        ProjectNotFoundError: error if idenitifier is not found
+        APIKeyNotFoundError: error if idenitifier is not found
+        RegionNotFoundError: error if idenitifier is not found
+        FireBaseUIDNotFoundError: error if idenitifier is not found
+
+    Returns:
+        Credentials: a dataclass of all user identification
+    """
     if not token:
         raise TokenNotFoundError
 
@@ -82,7 +112,12 @@ def process_token(token: str):
     return Credentials(token, project, api_key, region, firebase_uid)
 
 
-def auth():
+def auth() -> str:
+    """_summary_
+
+    Returns:
+        token: a ":" delimited string of identifying information
+    """
     print(Messages.TOKEN_MESSAGE.format(SIGNUP_URL))
     token = getpass.getpass(f"Activation Token: ")
     return token

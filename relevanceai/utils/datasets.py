@@ -149,8 +149,10 @@ def get_games_dataset(
     if number_of_documents is None:
         number_of_documents = 365
 
-    return ExampleDatasets._get_api_dataset(
-        "https://www.freetogame.com/api/games", number_of_documents, select_fields
+    return ExampleDatasets._get_dummy_dataset(
+        "dummy-games-dataset",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
     )
 
 
@@ -420,8 +422,8 @@ def get_flipkart_dataset(
     select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 19920
-    return ExampleDatasets._get_online_dataset(
-        "https://raw.githubusercontent.com/arditoibryan/Projects/master/20211108_flipkart_df/flipkart.csv",
+    return ExampleDatasets._get_dummy_dataset(
+        "dummy-flipkart",
         number_of_documents,
         select_fields,
     )
@@ -639,6 +641,47 @@ def get_coco_dataset(
             del doc["_clusters_"]
 
     return documents
+
+
+def get_palmer_penguins_dataset(
+    number_of_documents: int = None,
+    select_fields: Optional[List] = None,
+    shuffle: bool = True,
+) -> List[Dict]:
+    adelie_data = ExampleDatasets._get_online_dataset(
+        url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.219.3&entityid=002f3893385f710df69eeebe893144ff",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    gentoo_data = ExampleDatasets._get_online_dataset(
+        url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.220.3&entityid=e03b43c924f226486f2f0ab6709d2381",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    chinstrap_data = ExampleDatasets._get_online_dataset(
+        url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.221.2&entityid=fe853aa8f7a59aa84cdd3197619ef462",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    data = adelie_data + gentoo_data + chinstrap_data
+    if shuffle:
+        random.shuffle(data)
+    return data
+
+
+def get_iris_dataset(
+    number_of_documents: int = None,
+    select_fields: Optional[List] = None,
+    shuffle: bool = True,
+) -> List[Dict]:
+    iris_data = ExampleDatasets._get_online_dataset(
+        url="https://raw.githubusercontent.com/venky14/Machine-Learning-with-Iris-Dataset/master/Iris.csv",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    if shuffle:
+        random.shuffle(iris_data)
+    return iris_data
 
 
 ### For backwards compatability

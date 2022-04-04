@@ -35,7 +35,7 @@ try:
     else:
         latest_version = None
 
-    if __version__ != latest_version and latest_version is not None:
+    if __version__ < latest_version and latest_version is not None:
         changelog_url: str = (
             f"https://relevanceai.readthedocs.io/en/{__version__}/changelog.html"
         )

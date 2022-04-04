@@ -1,4 +1,7 @@
 from typing import Dict, List, Optional
+
+import numpy as np
+
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
 
@@ -226,9 +229,6 @@ class Centroids(APIClient):
         vector_fields: List[str]
             A lit of the vectors fields in your dataset that have cluster centroids you wish to update
 
-        centroid_vector_fields: List[str]
-            ???
-
         alias: str
             The alias that was used to cluster
 
@@ -280,3 +280,63 @@ class Centroids(APIClient):
                 "alias": alias,
             },
         )
+
+    def merge_clusters(
+        self,
+        vector_field: str,
+        alias: str,
+        cluster_labels: List[str],
+        show_progress_bar: bool = True,
+    ):
+        centroid_documents = self.centroids.list(vector_field=vector_field, alias=alias)
+
+        relevant_centroids = [
+            centroid[vector_field]
+            for centroid in centroid_documents
+            if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
+        ]
+        new_centroid = np.array(relevant_centroids).mean(0).tolist()
+        new_centroid_doc = {
+            "_id": f"cluster-{cluster_labels[0]}",
+            vector_field: new_centroid,
+        }
+
+        class Merge:
+            def __init__(self, clusters, vector_field, alias):
+                self.clusters = [f"cluster-{cluster}" for cluster in sorted(clusters)]
+                self.vector_field = vector_field
+                self.alias = alias
+
+                self.min_cluster = f"cluster-{min(clusters)}"
+
+            def __call__(self, document):
+                for cluster in self.clusters[1:]:
+                    if document["_cluster_"][self.vector_field][self.alias] == cluster:
+                        document["_cluster_"][self.vector_field][
+                            self.alias
+                        ] = self.min_cluster
+                return document
+
+        merge = Merge(cluster_labels, vector_field, alias)
+        self.apply(merge, show_progress_bar=show_progress_bar)
+
+        self.centroids.update(
+            dataset_id=self.dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
+            cluster_centers=[new_centroid_doc],
+        )
+
+        from requests import post
+
+        for cluster in cluster_labels[1:]:
+            centroid_id = f"cluster-{cluster}"
+            post(
+                url=f"https://api.us-east-1.relevance.ai/latest/services/cluster/centroids/{centroid_id}/delete",
+                params={
+                    "dataset_id": self.dataset_id,
+                    "vector_field": vector_field,
+                    "alias": alias,
+                },
+                headers={"Authorization": self.project + ":" + self.api_key},
+            ).json()

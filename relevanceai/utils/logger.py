@@ -4,7 +4,9 @@ import sys
 from typing import Callable
 from loguru import logger as loguru_logger
 from abc import abstractmethod
-from relevanceai.constants import CONFIG
+
+# from relevanceai.constants import CONFIG
+from relevanceai.utils.config_mixin import ConfigMixin
 
 
 def str2bool(v):
@@ -27,7 +29,7 @@ class AbstractLogger:
     #     raise NotImplementedError
 
 
-class LoguruLogger(AbstractLogger):
+class LoguruLogger(AbstractLogger, ConfigMixin):
     """Using verbose loguru as base logger for now"""
 
     # Add Logging
@@ -41,7 +43,6 @@ class LoguruLogger(AbstractLogger):
         return self._logger
 
     def _init_logger(self):
-        self.config = CONFIG
         logging_level = self.config.get_option("logging.logging_level")
         log_to_file = str2bool(self.config.get_option("logging.log_to_file"))
         log_file_name = self.config.get_option("logging.log_file_name") + ".log"
@@ -95,7 +96,7 @@ class FileLogger:
         if self.log_to_file:
             if self._existed and self._lines_added():
                 if self.verbose:
-                    print("Log {self.fn} has been updated")
+                    print(f"Log {self.fn} has been updated")
             elif not self._existed and self._lines_added():
                 if self.verbose:
                     print(

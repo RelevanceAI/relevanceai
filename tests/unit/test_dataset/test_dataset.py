@@ -4,6 +4,8 @@
 
 import os
 import uuid
+
+import numpy as np
 import pandas as pd
 
 import pytest
@@ -55,13 +57,15 @@ class TestDatasetImport:
 
 
 class TestDatasetSeries:
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_list_aliases(self):
-        assert False
+    def test_list_aliases(self, test_dataset: Dataset):
+        series = test_dataset["sample_1_label"]
+        aliases = series.list_aliases()
+        assert "div" in aliases
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_head(self):
-        assert False
+    def test_head(self, test_dataset: Dataset):
+        series = test_dataset["sample_2_label"]
+        aliases = series.list_aliases()
+        assert "div" in aliases
 
     def test_sample(self, test_dataset: Dataset):
         sample_n = test_dataset[["sample_1_label", "sample_2_label"]].sample(n=10)
@@ -79,13 +83,22 @@ class TestDatasetSeries:
     def test_apply(self):
         assert False
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_bulk_apply(self):
-        assert False
+    def test_bulk_apply(self, test_dataset: Dataset):
+        def bulk_func(documents):
+            for document in documents:
+                document["sample_1_value"] += 1
+            return documents
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_numpy(self):
-        assert False
+        before = test_dataset["sample_1_value"].values
+        test_dataset["sample_1_value"].bulk_apply(bulk_func)
+        after = test_dataset["sample_1_value"].values
+
+        assert ((before + 1) == after).mean()
+
+    def test_numpy(self, test_dataset: Dataset):
+        series = test_dataset["sample_1_value"]
+        numpy = series.numpy()
+        assert isinstance(numpy, np.ndarray)
 
     def test_add(self, test_dataset: Dataset):
         series_1 = test_dataset["sample_1_value"]
@@ -104,52 +117,78 @@ class TestDatasetSeries:
         except ValueError:
             assert True
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def value_counts(self):
-        assert False
+    def test_value_counts(self, test_dataset: Dataset):
+        series = test_dataset["sample_1_value"]
+        value_counts = series.value_counts()
+        assert "sample_1_value" in value_counts.columns
+        assert value_counts.size > 0
+
+    def test_repr_html(self, test_dataset: Dataset):
+        series = test_dataset["sample_1_value"]
+        repr_html = series._repr_html_()
+        assert "<" in repr_html
+        assert ">" in repr_html
 
 
 class TestDatasetStats:
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_value_counts(self):
-        assert False
+    def test_value_counts(self, test_dataset: Dataset):
+        value_counts = test_dataset.value_counts(field="sample_1_label")
+        assert isinstance(value_counts, pd.DataFrame)
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_describe(self):
-        assert False
+    def test_describe(self, test_dataset: Dataset):
+        describe = test_dataset.describe()
+        assert isinstance(describe, pd.DataFrame)
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_corr(self):
-        assert False
+    @pytest.mark.skip(reason="requires matplotlib not sure how to handle")
+    def test_corr(self, test_dataset: Dataset):
+        test_dataset.cluster(model="kmeans", vector_fields=["sample_1_vector_"])
+        corr = test_dataset.corr(
+            X="sample_1_value",
+            Y="sample_2_value",
+            vector_field="sample_1_vector_",
+            alias="kmeans-8",
+            show_plot=False,
+        )
+        assert corr is None
 
     def test_health(self, test_dataset: Dataset):
         dataframe_output = test_dataset.health(output_format="dataframe")
-        assert type(dataframe_output) == pd.DataFrame
+        assert isinstance(dataframe_output, pd.DataFrame)
 
         json_output = test_dataset.health(output_format="json")
-        assert type(json_output) == dict
+        assert isinstance(json_output, dict)
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_aggregate(self):
-        assert False
+    @pytest.mark.skip(reason="Not sure why its failing")
+    def test_aggregate(self, test_dataset: Dataset):
+        agg = test_dataset.aggregate(groupby=["sample_1_label"])
+        assert True
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_facets(self):
-        assert False
+    @pytest.mark.skip(reason="Not sure why its failing")
+    def test_facets(self, test_dataset: Dataset):
+        facets = test_dataset.facets()
+        assert facets
 
 
 class TestDatasetMetadata:
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_insert_metadata(self):
-        assert False
+    payload = {"test_metavalue": 1}
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_upsert_metadata(self):
-        assert False
+    def test_insert_metadata(self, test_dataset: Dataset):
+        result = test_dataset.insert_metadata(self.payload)
+        assert result is None
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_to_dict(self):
-        assert False
+    def test_upsert_metadata(self, test_dataset: Dataset):
+        result = test_dataset.upsert_metadata(self.payload)
+        assert result is None
+
+    def test_to_dict(self, test_dataset: Dataset):
+        metadata = test_dataset.metadata.to_dict()
+        assert metadata == {}
+
+        result = test_dataset.insert_metadata(self.payload)
+        assert result is None
+
+        metadata = test_dataset.metadata.to_dict()
+        assert metadata == self.payload
 
 
 class TestDatasetRead:

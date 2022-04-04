@@ -110,7 +110,7 @@ class CentroidsClient(_Base):
             Alias is used to name a cluster
         """
         return self.make_http_request(
-            "/services/cluster/centroids/insert",
+            f"/datasets/{dataset_id}/cluster/centroids/insert",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
@@ -311,7 +311,7 @@ class CentroidsClient(_Base):
             "include_count": include_count,
             "include_facets": include_facets,
         }
-        endpoint = "/services/cluster/centroids/list_closest_to_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
         self._log_to_dashboard(
             method=method,
@@ -391,7 +391,7 @@ class CentroidsClient(_Base):
 
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
-        endpoint = "/services/cluster/centroids/list_furthest_from_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_furthest_from_center"
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,

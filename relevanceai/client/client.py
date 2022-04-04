@@ -32,15 +32,17 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.client.helpers import *
 
 from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.viz import ClusterVizOps
 from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
 from relevanceai.dataset import Dataset
 
 from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
+from relevanceai.utils.config_mixin import ConfigMixin
 
 
-class Client(APIClient, DocUtils):
+class Client(APIClient, ConfigMixin):
     def __init__(
         self,
         token: Optional[str] = None,
@@ -64,6 +66,8 @@ class Client(APIClient, DocUtils):
 
         self.token = token
         self.credentials = process_token(token)
+        super().__init__(self.credentials)
+
         # Eventually the following should be accessed directly from
         # self.credentials, but keep for now.
         (
@@ -82,8 +86,6 @@ class Client(APIClient, DocUtils):
             pass
 
         self._identify()
-
-        super().__init__(self.credentials)
 
         # used to debug
         if authenticate:
@@ -199,7 +201,9 @@ class Client(APIClient, DocUtils):
         self.print_dashboard_message(
             "You can view all your datasets at https://cloud.relevance.ai/datasets/"
         )
-        return self.datasets.list()
+        datasets = self.datasets.list()
+        datasets["datasets"] = sorted(datasets["datasets"])
+        return datasets
 
     @track
     def delete_dataset(self, dataset_id):
@@ -253,12 +257,28 @@ class Client(APIClient, DocUtils):
     @track
     def ClusterOps(
         self,
-        model,
+        model=None,
         **kwargs,
     ):
         return ClusterOps(
             credentials=self.credentials,
             model=model,
+            **kwargs,
+        )
+
+    @track
+    def ClusterVizOps(
+        self,
+        vector_fields: Optional[List[str]] = None,
+        alias: Optional[str] = None,
+        dataset_id: Optional[str] = None,
+        **kwargs,
+    ):
+        return ClusterVizOps(
+            credentials=self.credentials,
+            vector_fields=vector_fields,
+            alias=alias,
+            dataset_id=dataset_id,
             **kwargs,
         )
 
@@ -378,7 +398,7 @@ class Client(APIClient, DocUtils):
         .. code-block::
 
             client = Client()
-            client.send_dataset(
+            client.clone_dataset(
                 dataset_id="research",
                 source_project="...",
                 source_api_key="..."
