@@ -1,7 +1,6 @@
 Cluster
 ---------
 
-Relevance AI Supports a few key steps
 
 Basic
 ---------
