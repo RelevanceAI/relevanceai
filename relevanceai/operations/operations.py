@@ -562,3 +562,21 @@ class Operations(APIClient):
         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
         print(f"You can now access your deployable at {url}.")
         return url
+
+    def subcluster(self, model, alias: str, vector_fields, parent_field, **kwargs):
+        """
+        Subcluster
+        """
+        from relevanceai.operations.cluster import SubClusterOps
+
+        ops = SubClusterOps(
+            model=model,
+            credentials=self.credentials,
+            alias=alias,
+            vector_fields=vector_fields,
+            dataset_id=self.dataset_id,
+            parent_field=parent_field,
+            dataset=self.dataset_id,
+            **kwargs,
+        )
+        return ops.fit_predict(dataset=self.dataset_id, vector_fields=vector_fields)
