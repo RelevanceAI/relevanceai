@@ -53,7 +53,15 @@ The easiest to cluster is to run this:
 
    # You can also view your subcluster results using
    ds['_cluster_.sample_2_vector_.subcluster-kmeans-2']
-   
+
+
+.. image:: subclustering-example.png
+   :width: 400
+   :alt: Subclustering Output
+
+API Reference
+------------------
+
 You can read more about it from the API reference here:
 
 .. automodule:: relevanceai.operations.cluster.sub
