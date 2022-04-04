@@ -1,4 +1,8 @@
+import uuid
+
 from typing import Dict, Union, Optional, List, Any
+
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -314,6 +318,22 @@ class VectorizeOps(APIClient):
             filters=filters,
         )
 
+    def _update_vector_metadata(self, metadata: List[str]) -> None:
+        updated_metadata = self.datasets.metadata(self.dataset_id)["results"]
+
+        if "_vector_" not in updated_metadata:
+            updated_metadata["_vector_"] = {}
+
+        now = (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
+
+        for vector_name in metadata:
+            updated_metadata["_vector_"][vector_name] = now
+
+        self.datasets.post_metadata(
+            dataset_id=self.dataset_id,
+            metadata=updated_metadata,
+        )
+
     def _insert_document_vectors(
         self,
         vector_fields: List[str],
@@ -371,10 +391,13 @@ class VectorizeOps(APIClient):
         if vectors.shape[1] > 512:
             vectors = self._reduce(vectors)
 
+        id = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(vectors.shape[1])))
+        document_vector_ = f"_{id}_vector_"
+
         for index, (document, vector) in enumerate(zip(documents, vectors.tolist())):
             documents[index] = {
                 "_id": document["_id"],
-                "_vector_": vector,
+                document_vector_: vector,
             }
 
         self._update_documents(
@@ -382,6 +405,10 @@ class VectorizeOps(APIClient):
             documents=documents,
             show_progress_bar=show_progress_bar,
         )
+
+        metadata = [document_vector_]
+
+        self._update_vector_metadata(metadata)
 
     @log(fn=log_file)
     def _init_encoders(self, fields: List[str]):
@@ -448,8 +475,16 @@ class VectorizeOps(APIClient):
             if results["failed_documents"]:
                 print(Messages.INSERT_BAD)
                 print("There were some errors vectorizing your unstructured data")
+                return results
         else:
             vector_fields = []
+
+        new_schema = self._get_schema().keys()
+        added_vectors = list(new_schema - self.schema)
+
+        self._update_vector_metadata(
+            metadata=added_vectors,
+        )
 
         self._insert_document_vectors(
             vector_fields=vector_fields,
@@ -457,8 +492,5 @@ class VectorizeOps(APIClient):
             show_progress_bar=show_progress_bar,
         )
 
-        new_schema = self._get_schema().keys()
-
-        added_vectors = list(new_schema - self.schema)
         print(Messages.INSERT_GOOD)
         print("The following vector fields were added: " + ", ".join(added_vectors))
