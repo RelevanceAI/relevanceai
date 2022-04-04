@@ -241,23 +241,17 @@ about the semantic groups in our data.
 
 Most clustering algorithms require you choose the number clusters you
 wish to find. This can be tricky if you don’t know what the expect.
-Usually a 20 or 30 clusters is a good starting point. If this does not
-feel appropriate, Relevance AI has other methods to help you determine
-the number of clusters that is right for you. To discover more about
-these methods, `read
+Luckily, RelevanceAI uses a clustering algorithm called community
+detection that does not require the number of clusters to be set.
+Instead, the algorithm will decide how many is right for you. To
+discover more about other clustering methods, `read
 here <https://relevanceai.readthedocs.io/en/latest/relevanceai.cluster_report.html>`__
 
 .. code:: ipython3
 
-    from sklearn.cluster import KMeans
+    model = "community_detection"
+    alias = "my_clustering"
 
-    n_clusters = 20
-    n_init = 100
-    max_iter = 3000
-
-    model = KMeans(n_clusters=n_clusters, n_init=n_init, max_iter=max_iter)
-
-    alias = f"kmeans-{n_clusters}"
     dataset.cluster(model=model, alias=alias, vector_fields=vector_fields)
 
 
