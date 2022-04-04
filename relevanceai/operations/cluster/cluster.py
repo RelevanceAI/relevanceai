@@ -18,6 +18,7 @@ from relevanceai.constants import (
     Warning,
     Messages,
     CLUSTER_APP_LINK,
+    ModelNotSupportedError,
 )
 
 
@@ -266,8 +267,7 @@ class ClusterOps(APIClient, BaseOps):
                 model = Kmeans(**self.cluster_config)
 
         else:
-            # TODO: this needs to be referenced from relevance.constants.errors
-            raise ValueError("ModelNotSupported")
+            raise ModelNotSupportedError
 
         return model
 
