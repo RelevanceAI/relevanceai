@@ -163,6 +163,41 @@ class VectorizeOps(APIClient):
         self, fields: List[str], vector_fields: List[str]
     ) -> List[Dict[str, Any]]:
 
+        """
+        Creates the filters necessary to search all documents
+        within a dataset that contain fields specified in "fields"
+        but do not contain their resepctive vector_fields defined in "vector_fields"
+
+        e.g.
+        fields = ["text", "title"]
+        vector_fields = ["text_use_vector_", "title_use_vector_"]
+
+        we want to search the dataset where:
+        ("text" * ! "text_use_vector_") + ("title" * ! "title_use_vector_")
+
+        Since the current implementation of filtering only accounts for CNF and not DNF boolean logic,
+        We must use boolean algebra here to obtain the CNF from a DNF expression.
+
+        CNF = Conjunctive Normal Form (Sum of Products)
+        DNF = Disjunctive Normal Form (Product of Sums)
+
+        This means converting the above to:
+        ("text" + "title") * ("text" + ! "title_use_vector_") *
+        (! "text_use_vector_" + "title") * (! "text_use_vector_" + ! "title_use_vector_")
+
+        Arguments:
+            fields: List[str]
+                A list of fields within the dataset
+
+            vector_fields: List[str]
+                A list of vector_fields, created from the fields given the current encoders.
+                These would be present if the fields in "fields" were vectorized
+
+        Returns:
+            filters: List[Dict[str, Any]]
+                A list of filters.
+        """
+
         filters = []
         if len(fields) > 1:
             iters = len(fields) ** 2
