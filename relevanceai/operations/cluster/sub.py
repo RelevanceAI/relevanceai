@@ -4,8 +4,21 @@ from tqdm import tqdm
 
 from relevanceai.operations.cluster.utils import _ClusterOps
 
-
 class SubClusterOps(_ClusterOps):
+    def __init__(self, credentials, model, 
+        parent_field: str, **kwargs):
+        """
+        Sub clustering to run clustering
+        """
+        self.parent_cluster_field = parent_cluster_field
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+        
+        super().__init__(credentials)
+    
+    def _init_dataset(self, dataset):
+        self.dataset = dataset
+
     def subcluster_predict_update(
         self,
         dataset,
@@ -59,7 +72,7 @@ class SubClusterOps(_ClusterOps):
             "Retrieving documents... This can take a while if the dataset is large."
         )
 
-        self._init_dataset(dataset)
+        # self._init_dataset(dataset)
         self.vector_fields = vector_fields  # type: ignore
 
         # make sure to only get fields where vector fields exist
@@ -81,11 +94,11 @@ class SubClusterOps(_ClusterOps):
         )
 
         # Updating the db
-        # print("Updating the database...")
-        # results = self._update_documents(
-        #     self.dataset_id, clustered_docs, chunksize=10000
-        # )
-        # self.logger.info(results)
+        print("Updating the database...")
+        results = self._update_documents(
+            self.dataset_id, clustered_docs, chunksize=10000
+        )
+        self.logger.info(results)
 
         # # Update the centroid collection
         # self.model.vector_fields = vector_fields
