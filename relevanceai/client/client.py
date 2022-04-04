@@ -32,6 +32,7 @@ from doc_utils.doc_utils import DocUtils
 from relevanceai.client.helpers import *
 
 from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.cluster import SubClusterOps
 from relevanceai.operations.viz import ClusterVizOps
 from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
@@ -512,3 +513,11 @@ class Client(APIClient, ConfigMixin):
         product features and improve user experience.
         """
         self.config["mixpanel.is_tracking_enabled"] = False
+
+    def SubClusterOps(self, model, **kwargs):
+        """Sub Cluster Operations"""
+        return SubClusterOps(
+            credentials=self.credentials,
+            model=model,
+            **kwargs,
+        )

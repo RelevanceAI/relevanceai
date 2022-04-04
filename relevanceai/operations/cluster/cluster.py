@@ -375,8 +375,11 @@ class ClusterOps(APIClient):
 
         self.dataset_id = dataset_id
         if vector_fields is not None:
-            vector_field = vector_fields[0]
-            self.vector_field = vector_field
+            if len(vector_fields) > 1:
+                raise NotImplementedError("We only support 1 vector field for now.")
+            self.vector_field = vector_fields[0]
+        else:
+            raise ValueError("Please supply vector fields using vector_fields=['']...")
 
         # get all documents
         documents = self._get_all_documents(
@@ -389,7 +392,7 @@ class ClusterOps(APIClient):
         # fit model, predict and label all documents
         centroid_documents, labelled_documents = self._fit_predict(
             documents=documents,
-            vector_field=vector_field,
+            vector_field=self.vector_field,
         )
 
         # TODO: need to change this to an update_where
@@ -401,7 +404,7 @@ class ClusterOps(APIClient):
 
         self._insert_centroids(
             dataset_id=dataset_id,
-            vector_field=vector_field,
+            vector_field=self.vector_field,
             centroid_documents=centroid_documents,
         )
 
