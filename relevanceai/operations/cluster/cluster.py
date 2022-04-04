@@ -13,6 +13,7 @@ from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset import Dataset
 from relevanceai.utils.decorators import track
+from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
     Messages,
@@ -20,7 +21,7 @@ from relevanceai.constants import (
 )
 
 
-class ClusterOps(APIClient):
+class ClusterOps(BaseOps, APIClient):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -47,10 +48,8 @@ class ClusterOps(APIClient):
     def __init__(
         self,
         credentials: Credentials,
-        model: Union[str, Any] = None,
-        vector_fields: Optional[List[str]] = None,
-        alias: Optional[str] = None,
-        dataset_id: Optional[str] = None,
+        model: Any = None,
+        alias: str = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -89,8 +88,6 @@ class ClusterOps(APIClient):
             When viewing the cluster app dashboard, outliers will be prefixed with outlier_label
 
         """
-        self.vector_field = None if vector_fields is None else vector_fields[0]
-        self.vector_fields = vector_fields
 
         self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
@@ -110,12 +107,14 @@ class ClusterOps(APIClient):
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
-        self.dataset_id = dataset_id
 
         super().__init__(credentials, **kwargs)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
+
+    def _get_schema(self) -> Dict:
+        return self.datasets.schema(dataset_id=self.dataset_id)
 
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here
@@ -141,7 +140,7 @@ class ClusterOps(APIClient):
         return alias.lower()
 
     def _get_package(self, model):
-        model_name = str(model.__class__)
+        model_name = str(model.__class__).lower()
         if "function" in model_name:
             model_name = str(model.__name__)
 
@@ -154,7 +153,7 @@ class ClusterOps(APIClient):
         elif "hdbscan" in model_name:
             package = "hdbscan"
 
-        elif "community_detection" in model_name:
+        elif "communitydetection" in model_name:
             package = "sentence-transformers"
 
         else:
@@ -237,11 +236,22 @@ class ClusterOps(APIClient):
 
                 model = HDBSCAN(**self.cluster_config)
 
-            elif model == "community_detection":
-                # TODO: this is a callable (?)
+            elif model == "communitydetection":
                 from sentence_transformers.util import community_detection
 
-                model = community_detection
+                class CommunityDetection:
+                    def __init__(self, config):
+                        self.config = config
+
+                    def __call__(self, vectors):
+                        communities = community_detection(vectors, **self.config)
+                        labels = [-1 for _ in range(vectors.shape[0])]
+                        for cluster_index, community in enumerate(communities):
+                            for index in community:
+                                labels[index] = cluster_index
+                        return labels
+
+                model = CommunityDetection(config=self.config)
 
             elif "faiss" in model:
                 from faiss import Kmeans
@@ -683,3 +693,73 @@ class ClusterOps(APIClient):
             asc=asc,
             flatten=flatten,
         )
+
+    @track
+    def merge(
+        self,
+        alias: str,
+        cluster_labels: List[str],
+        show_progress_bar: bool = True,
+    ):
+        centroid_documents = self.services.cluster.centroids.list(
+            vector_field=self.vector_field, alias=alias
+        )
+
+        relevant_centroids = [
+            centroid[self.vector_field]
+            for centroid in centroid_documents
+            if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
+        ]
+        new_centroid = np.array(relevant_centroids).mean(0).tolist()
+        new_centroid_doc = {
+            "_id": f"cluster-{cluster_labels[0]}",
+            self.vector_field: new_centroid,
+        }
+
+        class Merge:
+            def __init__(self, clusters, vector_field, alias):
+                self.clusters = [f"cluster-{cluster}" for cluster in sorted(clusters)]
+                self.vector_field = vector_field
+                self.alias = alias
+
+                self.min_cluster = f"cluster-{min(clusters)}"
+
+            def __call__(self, documents):
+                for document in documents:
+                    for cluster in self.clusters[1:]:
+                        if (
+                            document["_cluster_"][self.vector_field][self.alias]
+                            == cluster
+                        ):
+                            document["_cluster_"][self.vector_field][
+                                self.alias
+                            ] = self.min_cluster
+                return documents
+
+        merge = Merge(cluster_labels, self.vector_field, alias)
+        self.pull_update_push(
+            dataset_id=self.dataset_id,
+            update_function=merge,
+            show_progress_bar=show_progress_bar,
+        )
+
+        self.services.cluster.centroids.update(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_field],
+            alias=alias,
+            cluster_centers=[new_centroid_doc],
+        )
+
+        from requests import post
+
+        for cluster in cluster_labels[1:]:
+            centroid_id = f"cluster-{cluster}"
+            post(
+                url=f"https://api.us-east-1.relevance.ai/latest/services/cluster/centroids/{centroid_id}/delete",
+                params={
+                    "dataset_id": self.dataset_id,
+                    "vector_field": self.vector_field,
+                    "alias": alias,
+                },
+                headers={"Authorization": self.project + ":" + self.api_key},
+            ).json()

@@ -1,6 +1,8 @@
 """
-Base class for operations
+Base class for operations.
 """
+from typing import Any, List
+from relevanceai.client.helpers import Credentials
 
 
 class BaseOps:
@@ -8,4 +10,6 @@ class BaseOps:
     Base class for operations
     """
 
-    pass
+    @classmethod
+    def init(self, **kwargs):
+        return self(**kwargs)
