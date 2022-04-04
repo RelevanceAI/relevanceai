@@ -1,7 +1,6 @@
 Cluster
 ---------
 
-
 Basic
 ---------
 
@@ -63,20 +62,6 @@ If you have both Batches and Centroids, you will want to inherit both.
     model = FaissKMeans(model=Kmeans(d=d, k=n_clusters))
     clusterer = client.ClusterOps(model=model, alias=alias)
     clusterer.fit_predict_update(dataset=df, vector_fields=vector_fields)
-
-.. automodule:: relevanceai.workflows.cluster_ops.clusterbase
-   :members:
-
-Partial Clustering
-----------------------
-
-.. automodule:: relevanceai.operations.cluster.partial
-   :members:
-   :exclude-members: __init__
-
-.. automodule:: relevanceai.operations.cluster.sub
-   :members:
-   :exclude-members: __init__
 
 .. automodule:: relevanceai.workflows.cluster_ops.clusterbase
    :members:
