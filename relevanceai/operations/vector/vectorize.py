@@ -206,6 +206,8 @@ class VectorizeOps(APIClient):
                 binary_array = [character for character in str(bin(i))][2:]
                 mixed_mask = ["0"] * (len(fields) - len(binary_array)) + binary_array
                 mask = [int(value) for value in mixed_mask]
+                # Creates a binary mask the length of fields provided
+                # for two fields, we need 4 iters, going over [(0, 0), (1, 0), (0, 1), (1, 1)]
 
                 condition_value = [
                     {
@@ -225,7 +227,7 @@ class VectorizeOps(APIClient):
                     }
                 )
 
-        else:
+        else:  # Special Case when only 1 field is provided
             condition_value = [
                 {
                     "field": fields[0],
