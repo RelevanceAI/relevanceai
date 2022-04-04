@@ -317,11 +317,15 @@ class ClusterOps(APIClient):
         self,
         dataset_id: Optional[Union[str, Any]] = None,
         vector_fields: Optional[List[str]] = None,
+        filters: list = None,
         show_progress_bar: bool = True,
+        verbose: bool = True,
     ) -> None:
         """
         Run clustering on a dataset
         """
+        filters = [] if filters is None else filters
+
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
@@ -340,6 +344,7 @@ class ClusterOps(APIClient):
             select_fields=vector_fields,
             show_progress_bar=show_progress_bar,
             include_vector=True,
+            filters=filters,
         )
 
         # fit model, predict and label all documents
@@ -362,7 +367,8 @@ class ClusterOps(APIClient):
         )
 
         # link back to dashboard
-        self._print_app_link()
+        if verbose:
+            self._print_app_link()
 
     def closest(
         self,

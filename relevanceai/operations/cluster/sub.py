@@ -5,8 +5,10 @@ Sub Clustering allows users to define subclusters.
 
 """
 from typing import Optional, List, Any
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from relevanceai.operations.cluster.partial import PartialClusterOps
+from relevanceai.operations.cluster.cluster import ClusterOps
+from relevanceai._api import APIClient
 
 
 class SubClusterOps(PartialClusterOps):
@@ -15,22 +17,37 @@ class SubClusterOps(PartialClusterOps):
         credentials,
         alias,
         dataset,
+        model,
         vector_fields: list,
-        parent_cluster_field_name: str,
+        parent_field: str,
+        **kwargs,
     ):
         """
         Sub Cluster Ops
         """
         self.alias = alias
-        self.dataset = dataset
+        # self.dataset = dataset
         self.vector_fields = vector_fields
-        self.parent_cluster_field_name = parent_cluster_field_name
+        self.parent_field = parent_field
+        self.credentials = credentials
+        self.model = model
+        if isinstance(dataset, str):
+            self.dataset_id = dataset
+        else:
+            if hasattr(dataset, "dataset_id"):
+                self.dataset_id = dataset.dataset_id
+            # needs to have the dataset_id attribute
 
-    def subcluster_predict_update(
+        super().__init__(credentials=credentials)
+
+    def __call__(self, *args, **kw):
+        return self.fit_predict(*args, **kw)
+
+    def fit_predict(
         self,
         dataset,
         vector_fields: List[Any],
-        parent_cluster_field_name: str,
+        parent_field: str = None,
         filters: Optional[List] = None,
         verbose: bool = False,
     ):
@@ -80,7 +97,7 @@ class SubClusterOps(PartialClusterOps):
             "Retrieving documents... This can take a while if the dataset is large."
         )
 
-        self.parent_cluster_field_name = parent_cluster_field_name
+        # self.parent_field = parent_field
 
         # self._init_dataset(dataset)
         self.vector_fields = vector_fields  # type: ignore
@@ -99,8 +116,9 @@ class SubClusterOps(PartialClusterOps):
         if verbose:
             print("Fitting and predicting on all documents")
         # Here we run subfitting on these documents
+
         clustered_docs = self.subcluster_predict_documents(
-            vector_fields=vector_fields, filters=filters, verbose=verbose
+            vector_fields=vector_fields, filters=filters, verbose=False
         )
 
         # Updating the db
@@ -120,6 +138,25 @@ class SubClusterOps(PartialClusterOps):
                 "Build your clustering app here: "
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
+
+        # Store subcluster in the metadata
+        if parent_field is None:
+            parent_field = self.parent_field
+        self.store_subcluster_metadata(
+            parent_field=parent_field, cluster_field=self._get_cluster_field_name()
+        )
+
+    def store_subcluster_metadata(self, parent_field: str, cluster_field: str):
+        """
+        Store subcluster metadata
+        """
+        return self.append_metadata_list(
+            field="_subcluster_",
+            value_to_append={
+                "parent_field": parent_field,
+                "cluster_field": cluster_field,
+            },
+        )
 
     def subpartialfit_predict_update(
         self,
@@ -172,10 +209,10 @@ class SubClusterOps(PartialClusterOps):
         filters = [] if filters is None else filters
         cluster_ids = [] if cluster_ids is None else cluster_ids
         # Loop through each unique cluster ID and run clustering
-        parent_field = self.parent_cluster_field_name
+        parent_field = self.parent_field
 
         print("Getting unique cluster IDs...")
-        unique_clusters = self.list_cluster_ids(alias=self.parent_alias)
+        unique_clusters = self.list_unique(parent_field)
 
         for i, unique_cluster in enumerate(tqdm(unique_clusters)):
             cluster_filters = filters.copy()
@@ -246,32 +283,45 @@ class SubClusterOps(PartialClusterOps):
         filters = [] if filters is None else filters
         cluster_ids = [] if cluster_ids is None else cluster_ids
         # Loop through each unique cluster ID and run clustering
-        parent_field = self._get_cluster_field_name(self.parent_alias)
 
         if verbose:
             print("Getting unique cluster IDs...")
         if not cluster_ids:
-            unique_clusters = self.unique_cluster_ids(alias=self.parent_alias)
+            unique_clusters = self.list_unique(self.parent_field)
         else:
             unique_clusters = cluster_ids
+
+        self._list_of_cluster_ops = []
 
         for i, unique_cluster in enumerate(tqdm(unique_clusters)):
             cluster_filters = filters.copy()
             cluster_filters += [
                 {
-                    "field": parent_field,
+                    "field": self.parent_field,
                     "filter_type": "category",
                     "condition": "==",
                     "condition_value": unique_cluster,
                 }
             ]
-            self.fit_predict_update(
-                dataset=self.dataset_id,
+            # Create a ClusterOps object with the filter
+            ops = ClusterOps(
+                credentials=self.credentials,
+                model=self.model,
+                vector_fields=vector_fields,
+                alias=None,
+                dataset_id=None,
+                n_clusters=None,
+                cluster_config=None,
+                outlier_value=-1,
+                outlier_label="outlier",
+            )
+            ops.operate(
+                dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
                 filters=cluster_filters,
-                include_report=False,
                 verbose=False,
             )
+            self._list_of_cluster_ops.append(ops)
 
         if verbose:
             print(

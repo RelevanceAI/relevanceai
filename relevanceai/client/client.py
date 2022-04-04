@@ -285,10 +285,12 @@ class Client(APIClient, DocUtils):
     @track
     def SubClusterOps(
         self,
-        alias: str,
-        dataset: Union[Dataset, str],
-        vector_fields: List[float],
-        parent_cluster_field_name: str,
+        credentials,
+        alias,
+        dataset,
+        model,
+        vector_fields: list,
+        parent_field: str,
     ):
         """
         Sub Cluster Ops.
@@ -297,8 +299,9 @@ class Client(APIClient, DocUtils):
             credentials=self.credentials,
             alias=alias,
             dataset=dataset,
+            model=model,
             vector_fields=vector_fields,
-            parent_cluster_field_name=parent_cluster_field_name,
+            parent_field=parent_field,
         )
 
     def _set_logger_to_verbose(self):
