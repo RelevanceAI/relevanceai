@@ -88,7 +88,7 @@ html_theme_options = {
     "twitter_url": "https://mobile.twitter.com/relevanceai_",
     "collapse_navigation": True,
     "external_links": [{"name": "Dashboard", "url": "https://cloud.relevance.ai"}],
-    'display_version': False,
+    "display_version": False,
 }
 
 apidoc_module_first = True

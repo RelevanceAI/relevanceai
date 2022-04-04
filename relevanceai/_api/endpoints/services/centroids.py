@@ -391,7 +391,7 @@ class CentroidsClient(_Base):
 
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
-        endpoint = "/services/cluster/centroids/list_furthest_from_center"
+        endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_furthest_to_center"
         method = "POST"
         parameters = {
             "dataset_id": dataset_id,
