@@ -5,7 +5,7 @@
 import numpy as np
 import csv
 from urllib.request import urlopen
-from relevanceai.operations.base_operations import BaseOps
+from relevanceai.operations.base import BaseOps
 
 
 class SentimentOps(BaseOps):
