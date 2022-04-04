@@ -146,9 +146,9 @@ class Operations(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
-            df.vectorize(
+            ds.vectorize(
                 image_fields=["image_field_1", "image_field_2"],
                 text_fields=["text_field"],
                 text_model=text_model
