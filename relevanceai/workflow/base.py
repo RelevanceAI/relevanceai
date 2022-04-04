@@ -24,7 +24,7 @@ class Workflow(DocUtils):
 
     def fit_dataset(
         self,
-        dataset: Union[Dataset, str],
+        dataset: Dataset,
         input_field: str,
         output_field: str,
         filters: Optional[list] = None,
@@ -37,11 +37,6 @@ class Workflow(DocUtils):
         Fit on dataset
         """
         filters = [] if filters is None else filters
-
-        if isinstance(dataset, str):
-            from relevanceai.dataset import Dataset
-
-            self.dataset = Dataset(self.credentials, dataset)
 
         self.dataset = dataset
         exist_filters = [
@@ -88,7 +83,7 @@ class Workflow(DocUtils):
             return doc
 
         # Store this workflow inside the dataset's metadata
-        results = dataset.apply(
+        results = self.dataset.apply(
             update_func,
             select_fields=[input_field],
             filters=filters,
