@@ -16,12 +16,12 @@ BREAKING CHANGES:
 
 Features/Updates:
 
-- Provide a way to turn off logger 
+- Provide a way to turn off logger
 - `auto_cluster` now supports models
 - Change metadata experience into more intuitive object
 - Add base workflow
 - Add sentiment analysis workflow
-- Add chunking dataset 
+- Add chunking dataset
 - Add smaller dataset export
 - Fix unique cluster IDs
 - Add feature for workflows
@@ -37,7 +37,7 @@ Backend:
 - Major folder refactor -> official renaming of ops to workflows in certain areas
 - Backend separation into `interfaces`
 
-Automated Changes: 
+Automated Changes:
 
 ## What's Changed
 * V1.4.3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/538
