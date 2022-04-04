@@ -643,6 +643,47 @@ def get_coco_dataset(
     return documents
 
 
+def get_palmer_penguins_dataset(
+    number_of_documents: int = None,
+    select_fields: Optional[List] = None,
+    shuffle: bool = True,
+) -> List[Dict]:
+    adelie_data = ExampleDatasets._get_online_dataset(
+        url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.219.3&entityid=002f3893385f710df69eeebe893144ff",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    gentoo_data = ExampleDatasets._get_online_dataset(
+        url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.220.3&entityid=e03b43c924f226486f2f0ab6709d2381",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    chinstrap_data = ExampleDatasets._get_online_dataset(
+        url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.221.2&entityid=fe853aa8f7a59aa84cdd3197619ef462",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    data = adelie_data + gentoo_data + chinstrap_data
+    if shuffle:
+        random.shuffle(data)
+    return data
+
+
+def get_iris_dataset(
+    number_of_documents: int = None,
+    select_fields: Optional[List] = None,
+    shuffle: bool = True,
+) -> List[Dict]:
+    iris_data = ExampleDatasets._get_online_dataset(
+        url="https://raw.githubusercontent.com/venky14/Machine-Learning-with-Iris-Dataset/master/Iris.csv",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+    if shuffle:
+        random.shuffle(iris_data)
+    return iris_data
+
+
 ### For backwards compatability
 
 get_ecommerce_1_dataset = get_dummy_ecommerce_dataset = get_ecommerce_dataset_encoded
