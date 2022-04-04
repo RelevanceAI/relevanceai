@@ -12,6 +12,7 @@ import numpy as np
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset import Dataset
+from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import track
 from relevanceai.constants import (
     Warning,
@@ -20,7 +21,7 @@ from relevanceai.constants import (
 )
 
 
-class ClusterOps(APIClient):
+class ClusterOps(APIClient, BaseOps):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -43,6 +44,9 @@ class ClusterOps(APIClient):
         )
 
     """
+
+    dataset_id: str
+    cluster_field: str
 
     def __init__(
         self,
@@ -107,7 +111,11 @@ class ClusterOps(APIClient):
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
 
-        super().__init__(credentials, **kwargs)
+        for key, value in kwargs.items():
+            if not hasattr(self, key):
+                setattr(self, key, value)
+
+        super().__init__(credentials)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
@@ -359,6 +367,7 @@ class ClusterOps(APIClient):
         dataset_id: str,
         vector_fields: List[str],
         show_progress_bar: bool = True,
+        verbose: bool = True,
     ) -> None:
         """
         Run clustering on a dataset
@@ -374,6 +383,7 @@ class ClusterOps(APIClient):
             If True, the progress bar can be shown
 
         """
+
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
@@ -398,7 +408,11 @@ class ClusterOps(APIClient):
         )
 
         # TODO: need to change this to an update_where
-        self._update_documents(
+        # self.datasets.documents.update_where(
+        #     dataset_id,
+        #     update={}
+        # )
+        results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
@@ -411,7 +425,8 @@ class ClusterOps(APIClient):
         )
 
         # link back to dashboard
-        self._print_app_link()
+        if verbose:
+            self._print_app_link()
 
     def closest(
         self,

@@ -380,6 +380,7 @@ class Write(APIClient):
         use_json_encoder: bool = True,
         axis: int = 0,
         log_to_file: bool = True,
+        log_file: Optional[str] = None,
         **apply_args,
     ):
         """
@@ -452,6 +453,7 @@ class Write(APIClient):
             show_progress_bar=show_progress_bar,
             use_json_encoder=use_json_encoder,
             log_to_file=log_to_file,
+            log_file=log_file,
         )
         if results is None:
             print("✅ Successfully ran!")
