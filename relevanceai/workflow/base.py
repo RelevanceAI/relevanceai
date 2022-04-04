@@ -1,10 +1,11 @@
 """Base Workflow
 """
-from re import I
 import traceback
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 from doc_utils import DocUtils
 from uuid import uuid4
+
+from relevanceai.dataset import Dataset
 
 
 class Workflow(DocUtils):
@@ -23,18 +24,25 @@ class Workflow(DocUtils):
 
     def fit_dataset(
         self,
-        dataset,
+        dataset: Union[Dataset, str],
         input_field: str,
         output_field: str,
         filters: Optional[list] = None,
         log_to_file: bool = True,
         chunksize: int = 20,
         chunk_field: Optional[str] = None,
+        log_file: Optional[str] = None,
     ):
         """
         Fit on dataset
         """
         filters = [] if filters is None else filters
+
+        if isinstance(dataset, str):
+            from relevanceai.dataset import Dataset
+
+            self.dataset = Dataset(self.credentials, dataset)
+
         self.dataset = dataset
         exist_filters = [
             {
@@ -86,6 +94,7 @@ class Workflow(DocUtils):
             filters=filters,
             log_to_file=log_to_file,
             retrieve_chunksize=chunksize,
+            log_file=log_file,
         )
         self._store_workflow_to_metadata(input_field, output_field)
         return results

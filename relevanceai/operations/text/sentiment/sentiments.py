@@ -5,9 +5,10 @@
 import numpy as np
 import csv
 from urllib.request import urlopen
+from relevanceai.operations.base_operations import BaseOps
 
 
-class SentimentOps:
+class SentimentOps(BaseOps):
     def __init__(self, model_name: str = "cardiffnlp/twitter-roberta-base-sentiment"):
         """
         Sentiment Ops.
