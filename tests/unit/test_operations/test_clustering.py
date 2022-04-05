@@ -78,11 +78,12 @@ class TestClusterOps:
         ops = ClusterOps.from_dataset(
             dataset=test_dataset,
             alias="kmeans-3",
-            vector_fields=["feature_vector_"],
+            vector_fields=["sample_1_vector_"],
         )
 
         ops.merge(cluster_labels=[0, 1], alias="kmeans-3")
         centroids = ops.services.cluster.centroids.list(
-            test_dataset.dataset_id, ["feature_vector_"]
+            test_dataset.dataset_id,
+            ["sample_1_vector_"],
         )["results"]
         assert len(centroids) == 2
