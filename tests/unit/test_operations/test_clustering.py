@@ -72,7 +72,9 @@ class TestClusterOps:
 
     def test_merge(self, test_client: Client, test_dataset: Dataset):
         test_dataset.cluster(
-            model="kmeans", n_clusters=3, vector_fields=["feature_vector_"]
+            model="kmeans",
+            n_clusters=3,
+            vector_fields=["sample_1_vector_"],
         )
 
         ops = ClusterOps.from_dataset(
