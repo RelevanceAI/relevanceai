@@ -11,6 +11,7 @@ import numpy as np
 
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
+from relevanceai.constants.errors import MissingPackageError
 from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import track
@@ -237,9 +238,12 @@ class ClusterOps(APIClient, BaseOps):
 
                 model = HDBSCAN(**self.cluster_config)
 
-            elif model == "community_detection":
+            elif model in ["community_detection", "communitydetection"]:
                 # TODO: this is a callable (?)
-                from sentence_transformers.util import community_detection
+                try:
+                    from sentence_transformers.util import community_detection
+                except ModuleNotFoundError:
+                    raise MissingPackageError("sentence-transformers")
 
                 model = community_detection
 
