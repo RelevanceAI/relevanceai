@@ -333,7 +333,7 @@ class ClusterOps(APIClient, BaseOps):
             self.model.train(vectors)
             labels = self.model.assign(vectors)[1]
 
-        elif self.package == "sentencetransformers":
+        elif self.package == "sentence-transformers":
             # TODO: make teh config here better
             labels = self.model(vectors)
             labels = np.array(labels)
@@ -717,24 +717,24 @@ class ClusterOps(APIClient, BaseOps):
         show_progress_bar: bool = True,
     ):
         if alias is None:
-            alias = "community_detection"
+            alias = "communitydetection"
             print("No alias given, assuming `communitydetection`")
 
         centroid_documents = self.services.cluster.centroids.list(
             dataset_id=self.dataset_id,
             vector_fields=[self.vector_field],
             alias=alias,
-        )
+        )["results"]
 
         relevant_centroids = [
-            centroid[self.vector_field]
+            centroid["centroid_vector"]
             for centroid in centroid_documents
             if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
         ]
         new_centroid = np.array(relevant_centroids).mean(0).tolist()
         new_centroid_doc = {
             "_id": f"cluster-{cluster_labels[0]}",
-            self.vector_field: new_centroid,
+            "centroid_vector": new_centroid,
         }
 
         class Merge:
@@ -771,16 +771,11 @@ class ClusterOps(APIClient, BaseOps):
             cluster_centers=[new_centroid_doc],
         )
 
-        from requests import post
-
         for cluster in cluster_labels[1:]:
             centroid_id = f"cluster-{cluster}"
-            post(
-                url=f"https://api.us-east-1.relevance.ai/latest/services/cluster/centroids/{centroid_id}/delete",
-                params={
-                    "dataset_id": self.dataset_id,
-                    "vector_field": self.vector_field,
-                    "alias": alias,
-                },
-                headers={"Authorization": self.project + ":" + self.api_key},
-            ).json()
+            self.services.cluster.centroids.delete(
+                dataset_id=self.dataset_id,
+                centroid_id=centroid_id,
+                alias=self.alias,
+                vector_fields=[self.vector_field],
+            )
