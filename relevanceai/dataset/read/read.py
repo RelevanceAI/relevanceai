@@ -646,7 +646,30 @@ class Read(Statistics):
     def chunk_dataset(
         self, select_fields: List = None, chunksize: int = 100, filters: list = None
     ):
-        """Function for chunking a dataset"""
+        """
+
+        Function for chunking a dataset
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            for c in ds.chunk_dataset(
+                select_fields=["sample_label"],
+                chunksize=100
+            ):
+                # Returns a dictionary with 'cursor' and 'documents' keys
+                docs = c['documents']
+                cursor = c['cursor']
+                for d in docs:
+                    d.update({"value": 3})
+                ds.upsert_documents(docs)
+
+        """
         docs = self.get_documents(
             number_of_documents=chunksize,
             include_cursor=True,
