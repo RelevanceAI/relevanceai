@@ -1,9 +1,10 @@
 import numpy as np
-from typing import Optional, List, Any, Union, Dict, Tuple
+from typing import Optional, List, Any, Union, Dict, Tuple, Set
 from tqdm.auto import tqdm
 from relevanceai.operations.cluster.partial import PartialClusterOps
 from relevanceai.operations.cluster.cluster import ClusterOps
 from relevanceai._api import APIClient
+from relevanceai.operations.cluster.utils import _ClusterOps
 
 
 class _SubClusterOps(ClusterOps):
@@ -14,7 +15,7 @@ class _SubClusterOps(ClusterOps):
     def __init__(
         self,
         credentials,
-        alias,
+        alias: str,
         model,
         dataset: Any,
         vector_fields: list,
@@ -222,7 +223,7 @@ class _SubClusterOps(ClusterOps):
         return centroid_documents, documents
 
 
-class SubClusterOps(_SubClusterOps):
+class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
     def __init__(
         self,
         credentials,
@@ -449,6 +450,73 @@ class SubClusterOps(_SubClusterOps):
                 "Build your clustering app here: "
                 + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
+
+    def list_unique(
+        self,
+        field: str = None,
+        minimum_amount: int = 3,
+        dataset_id: str = None,
+        num_clusters: int = 1000,
+    ):
+        """
+        List unique cluster IDS
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="kmeans_8", vector_fields=["sample_vector_]
+            )
+            cluster_ops.list_unique()
+
+        Parameters
+        -------------
+        alias: str
+            The alias to use for clustering
+        minimum_cluster_size: int
+            The minimum size of the clusters
+        dataset_id: str
+            The dataset ID
+        num_clusters: int
+            The number of clusters
+
+        """
+        # Mainly to be used for subclustering
+        # Get the cluster alias
+        if dataset_id is None:
+            self._check_for_dataset_id()
+            dataset_id = self.dataset_id
+
+        # currently the logic for facets is that when it runs out of pages
+        # it just loops - therefore we need to store it in a simple hash
+        # and then add them to a list
+        all_cluster_ids: Set = set()
+
+        while len(all_cluster_ids) < num_clusters:
+            facet_results = self.datasets.facets(
+                dataset_id=dataset_id,
+                fields=[field],
+                page_size=100,
+                page=1,
+                asc=True,
+            )
+            if "results" in facet_results:
+                facet_results = facet_results["results"]
+            if field not in facet_results:
+                raise ValueError("Not valid field. Check schema.")
+            for facet in facet_results[field]:
+                if facet["frequency"] > minimum_amount:
+                    curr_len = len(all_cluster_ids)
+                    all_cluster_ids.add(facet[field])
+                    new_len = len(all_cluster_ids)
+                    if new_len == curr_len:
+                        return list(all_cluster_ids)
+
+        return list(all_cluster_ids)
 
     def subcluster_predict_documents(
         self,
