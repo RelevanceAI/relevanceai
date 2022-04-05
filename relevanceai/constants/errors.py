@@ -120,7 +120,7 @@ class MissingClusterError(RelevanceAIError):
 
 class MissingPackageError(RelevanceAIError):
     def __init__(self, package, version: Optional[str] = None, *args, **kwargs):
-        if version is not None:
+        if version is None:
             message = f"You need to install {package}! `pip install {package}`."
         else:
             message = (
