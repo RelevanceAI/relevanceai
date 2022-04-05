@@ -37,7 +37,7 @@ Filters at Relevance AI are defined as Python dictionaries with four main keys:
     ]
 
 Filtering operators
-######################
+======================
 
 Relevance AI covers all common operators:
 * "==" (a == b, a equals b)
@@ -48,7 +48,6 @@ Relevance AI covers all common operators:
 * "<=" (a <= b, a smaller than or equals b)
 
 Filter types
-###############
 
 Supported filter types at Relevance AI are listed below.
 
@@ -69,7 +68,7 @@ We will explain each filter type followed by a sample code snippet in the next p
   :alt: Alternative text
 
 Exists
---------
+==========
 
 This filter returns entries in a database if a certain field (as opposed to the field values in previously mentioned filter types) exists or doesn't exist in them. For instance, filtering out documents in which there is no field 'purchase-info'. *Note that this filter is case-sensitive.*
 
@@ -107,7 +106,7 @@ Once you have signed up, click on the value under `Activation token` and paste i
 .. <figure>
 
 Exact Match
---------------
+==============
 
 This filter works with string values and only returns documents with a field value that exactly matches the filtered criteria. For instance under filtering by 'Samsung galaxy s21', the result will only contain products explicitly having 'Samsung galaxy s21' in their specified field. *Note that this filter is case-sensitive.*
 
@@ -136,7 +135,7 @@ This filter works with string values and only returns documents with a field val
 .. <figure>
 
 Categories 
--------------
+==============
 
 This filter checks the entries in a database and returns ones in which a field value exists in a given filter list. For instance, if the product name is any of Sony, Samsung, or LG. *Note that this filter is case-sensitive.*
 
@@ -160,7 +159,7 @@ This filter checks the entries in a database and returns ones in which a field v
 
 
 Contains
------------
+============
 
 This filter returns a document only if it contains a string value. Note that substrings are covered in this category. For instance, if a product name is composed of a name and a number (e.g. ABC-123), one might remember the name but not the number. This filter can easily return all products including the ABC string.
 *Note that this filter is case-sensitive.*
@@ -194,7 +193,7 @@ Once you have signed up, click on the value under `Activation token` and paste i
 .. <figure>
 
 Date
-------
+============
 
 This filter performs date analysis and filters documents based on their date information. For instance, it is possible to filter out any documents with a production date before January 2021.
 
@@ -237,7 +236,7 @@ Note that the default format is "yyyy-mm-dd" but can be changed to "yyyy-dd-mm" 
 .. <figure>
 
 Word Match
-------------
+============
 
 This filter has similarities to both `exact_match` and `contains`. It returns a document only if it contains a **word** value matching the filter; meaning substrings are covered in this category but as long as they can be extracted with common word separators like the white-space (blank). For instance, the filter value "Home Gallery",  can lead to extraction of a document with "Buy Home Fashion Gallery Polyester ..." in the description field as both words are explicitly seen in the text. *Note that this filter is case-sensitive.*
 
@@ -267,7 +266,7 @@ This filter has similarities to both `exact_match` and `contains`. It returns a 
 .. <figure>
 
 IDs
------
+============
 
 This filter returns documents whose unique id exists in a given list. It may look similar to 'categories'. The main difference is the search speed.
 
@@ -291,7 +290,7 @@ This filter returns documents whose unique id exists in a given list. It may loo
     filtered_data = ds.get_documents(filter)
 
 Numeric
----------
+============
 
 .. <figure>
 .. <img src="https://github.com/RelevanceAI/RelevanceAI-readme-docs/blob/v1.4.3/docs_template/GENERAL_FEATURES/_assets/numeric.png?raw=true" width="446" alt="Numeric.png" />
@@ -322,8 +321,8 @@ Once you have signed up, click on the value under `Activation token` and paste i
 
     filtered_data = ds.get_documents(filter)
 
-or
-----
+Or
+===========
 
 The `or` filter helps you filter for multiple conditions. Unlike other filters, the only values used here are `filter_type` and `condition_value`.
 
@@ -353,7 +352,7 @@ The `or` filter helps you filter for multiple conditions. Unlike other filters, 
     filtered_data = df.get_documents(filter)
 
 (A or B) and (C or D)
-#######################
+------------------------
 
 Below, we show an example of how to use 2 lists of filters with `or` logic.
 
@@ -398,7 +397,7 @@ Below, we show an example of how to use 2 lists of filters with `or` logic.
     filtered_data = ds.get_where(filter)
 
 (A or B or C) and D
-######################
+-------------------------
 
 Below, we show an example of how to use 2 lists of filters with `or` logic.
 
@@ -440,7 +439,7 @@ Below, we show an example of how to use 2 lists of filters with `or` logic.
     filtered_data = ds.get_documents(filter)
 
 Regex
---------
+=========
 
 .. <figure>
 .. <img src="https://github.com/RelevanceAI/RelevanceAI-readme-docs/blob/v1.4.3/docs_template/GENERAL_FEATURES/_assets/regex.png?raw=true" width="2048" alt="7cbd106-contains.png" />
@@ -478,7 +477,7 @@ Relevance AI has the same regular expression schema as Apache Lucene's ElasticSe
 .. <figure>
 
 Combining filters
---------------------
+=====================
 
 It is possible to combine multiple filters. For instance, the sample code below shows a filter that searches for
 * a Lenovo flip cover
@@ -528,7 +527,7 @@ Once you have signed up, click on the value under `Activation token` and paste i
 .. <figure>
 
 Including filters in vector search
-------------------------------------
+======================================
 
 Filtering provides you with a subset of a database containing data entities that match the certain criteria set as filters. What if we need to search through this subset? The difficult way is to ingest (save) the subset as a new dataset, then make the search on the new dataset. However, RelevanceAI has provided the filtering option in almost all search endpoints. This makes the whole process much faster and more straightforward.
 In the code snippet below we show a hybrid search sample which is done on a subset of a huge database via filtering. In this scenario, the user is looking for white sneakers but only the ones produced after mid-2020 and from two brands Nike and Adidas.
@@ -565,7 +564,10 @@ Please refer to a full guide on how to [create and upload a database](doc:creati
     ]
 
     multivector_query=[
-        { "vector": "query_vec_txt", "fields": "descriptiontextmulti_vector_"}
+        {
+            "vector": "query_vec_txt",
+            "fields": "descriptiontextmulti_vector_"
+        }
     ]
 
     results = ds.vector_search(
