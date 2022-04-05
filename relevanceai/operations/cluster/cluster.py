@@ -256,7 +256,7 @@ class ClusterOps(APIClient, BaseOps):
                                 labels[index] = cluster_index
                         return labels
 
-                model = CommunityDetection(config=self.config)
+                model = CommunityDetection(config=self.cluster_config)
 
             elif "faiss" in model:
                 from faiss import Kmeans
@@ -712,10 +712,14 @@ class ClusterOps(APIClient, BaseOps):
     @track
     def merge(
         self,
-        alias: str,
         cluster_labels: List[str],
+        alias: Optional[str] = None,
         show_progress_bar: bool = True,
     ):
+        if alias is None:
+            alias = "community_detection"
+            print("No alias given, assuming `communitydetection`")
+
         centroid_documents = self.services.cluster.centroids.list(
             vector_field=self.vector_field, alias=alias
         )
