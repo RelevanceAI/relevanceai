@@ -5,7 +5,7 @@ import getpass
 
 import numpy as np
 
-from typing import Union, Callable, Optional, List, Dict, Any
+from typing import Union, Callable, Optional, List, Dict, Any, Set
 
 from doc_utils import DocUtils
 from relevanceai._api import APIClient
@@ -24,6 +24,7 @@ from relevanceai.utils.integration_checks import (
 )
 
 from relevanceai.reports.cluster.evaluate import ClusterEvaluate
+from relevanceai.constants.errors import MissingClusterError
 
 
 class _ClusterOps(APIClient, DocUtils):
@@ -290,7 +291,12 @@ class _ClusterOps(APIClient, DocUtils):
     def _get_parent_cluster_values(
         self, vector_fields: list, alias: str, documents
     ) -> list:
-        field = ".".join([self.cluster_field, ".".join(sorted(vector_fields)), alias])
+        if hasattr(self, "cluster_field"):
+            field = ".".join(
+                [self.cluster_field, ".".join(sorted(vector_fields)), alias]
+            )
+        else:
+            field = ".".join(["_cluster_", ".".join(sorted(vector_fields)), alias])
         return self.get_field_across_documents(
             field, documents, missing_treatment="skip"
         )
@@ -314,9 +320,12 @@ class _ClusterOps(APIClient, DocUtils):
         if alias is None:
             alias = self.alias
         if isinstance(self.vector_fields, list):
-            set_cluster_field = (
-                f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
-            )
+            if hasattr(self, "cluster_field"):
+                set_cluster_field = (
+                    f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
+                )
+            else:
+                set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
         elif isinstance(self.vector_fields, str):
             set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
         return set_cluster_field
@@ -383,34 +392,169 @@ class _ClusterOps(APIClient, DocUtils):
         ]
         return filters
 
+    # class _ClusterOpsShow(Read):
+    #     def __init__(self, df, is_image_field: bool):
+    #         self.df = df
+    #         if is_image_field:
+    #             self.text_fields = []
+    #             self.image_fields = df.columns.tolist()
+    #         else:
+    #             self.text_fields = df.columns.tolist()
+    #             self.image_fields = []
 
-# class _ClusterOpsShow(Read):
-#     def __init__(self, df, is_image_field: bool):
-#         self.df = df
-#         if is_image_field:
-#             self.text_fields = []
-#             self.image_fields = df.columns.tolist()
-#         else:
-#             self.text_fields = df.columns.tolist()
-#             self.image_fields = []
+    #     def _repr_html_(self):
+    #         try:
+    #             documents = self.df.to_dict(orient="records")
+    #             return self._show_json(documents, return_html=True)
+    #         except Exception as e:
+    #             warnings.warn(
+    #                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
+    #                 + str(e)
+    #             )
+    #             return self.df._repr_html_()
 
-#     def _repr_html_(self):
-#         try:
-#             documents = self.df.to_dict(orient="records")
-#             return self._show_json(documents, return_html=True)
-#         except Exception as e:
-#             warnings.warn(
-#                 "Displaying using pandas. To get image functionality please install RelevanceAI[notebook]. "
-#                 + str(e)
-#             )
-#             return self.df._repr_html_()
+    #     def _show_json(self, documents, **kw):
+    #         from jsonshower import show_json
 
-#     def _show_json(self, documents, **kw):
-#         from jsonshower import show_json
+    #         return show_json(
+    #             documents,
+    #             text_fields=self.text_fields,
+    #             image_fields=self.image_fields,
+    #             **kw,
+    #         )
 
-#         return show_json(
-#             documents,
-#             text_fields=self.text_fields,
-#             image_fields=self.image_fields,
-#             **kw,
-#         )
+    def list_cluster_ids(
+        self,
+        alias: str = None,
+        minimum_cluster_size: int = 3,
+        dataset_id: str = None,
+        num_clusters: int = 1000,
+    ):
+        """
+        List unique cluster IDS
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="kmeans_8", vector_fields=["sample_vector_]
+            )
+            cluster_ops.list_cluster_ids()
+
+        Parameters
+        -------------
+        alias: str
+            The alias to use for clustering
+        minimum_cluster_size: int
+            The minimum size of the clusters
+        dataset_id: str
+            The dataset ID
+        num_clusters: int
+            The number of clusters
+
+        """
+        # Mainly to be used for subclustering
+        # Get the cluster alias
+        if dataset_id is None:
+            self._check_for_dataset_id()
+            dataset_id = self.dataset_id
+
+        cluster_field = self._get_cluster_field_name(alias=alias)
+
+        # currently the logic for facets is that when it runs out of pages
+        # it just loops - therefore we need to store it in a simple hash
+        # and then add them to a list
+        all_cluster_ids: Set = set()
+
+        while len(all_cluster_ids) < num_clusters:
+            facet_results = self.datasets.facets(
+                dataset_id=dataset_id,
+                fields=[cluster_field],
+                page_size=int(self.config["data.max_clusters"]),
+                page=1,
+                asc=True,
+            )
+            if "results" in facet_results:
+                facet_results = facet_results["results"]
+            if cluster_field not in facet_results:
+                raise MissingClusterError(alias=alias)
+            for facet in facet_results[cluster_field]:
+                if facet["frequency"] > minimum_cluster_size:
+                    curr_len = len(all_cluster_ids)
+                    all_cluster_ids.add(facet[cluster_field])
+                    new_len = len(all_cluster_ids)
+                    if new_len == curr_len:
+                        return list(all_cluster_ids)
+
+        return list(all_cluster_ids)
+
+    def list_unique(
+        self,
+        field: str = None,
+        minimum_amount: int = 3,
+        dataset_id: str = None,
+        num_clusters: int = 1000,
+    ):
+        """
+        List unique cluster IDS
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="kmeans_8", vector_fields=["sample_vector_]
+            )
+            cluster_ops.list_unique()
+
+        Parameters
+        -------------
+        alias: str
+            The alias to use for clustering
+        minimum_cluster_size: int
+            The minimum size of the clusters
+        dataset_id: str
+            The dataset ID
+        num_clusters: int
+            The number of clusters
+
+        """
+        # Mainly to be used for subclustering
+        # Get the cluster alias
+        if dataset_id is None:
+            self._check_for_dataset_id()
+            dataset_id = self.dataset_id
+
+        # currently the logic for facets is that when it runs out of pages
+        # it just loops - therefore we need to store it in a simple hash
+        # and then add them to a list
+        all_cluster_ids: Set = set()
+
+        while len(all_cluster_ids) < num_clusters:
+            facet_results = self.datasets.facets(
+                dataset_id=dataset_id,
+                fields=[field],
+                page_size=100,
+                page=1,
+                asc=True,
+            )
+            if "results" in facet_results:
+                facet_results = facet_results["results"]
+            if field not in facet_results:
+                raise ValueError("Not valid field. Check schema.")
+            for facet in facet_results[field]:
+                if facet["frequency"] > minimum_amount:
+                    curr_len = len(all_cluster_ids)
+                    all_cluster_ids.add(facet[field])
+                    new_len = len(all_cluster_ids)
+                    if new_len == curr_len:
+                        return list(all_cluster_ids)
+
+        return list(all_cluster_ids)

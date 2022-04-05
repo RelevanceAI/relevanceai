@@ -12,6 +12,7 @@ import numpy as np
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset import Dataset
+from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import track
 from relevanceai.operations import BaseOps
 from relevanceai.constants import (
@@ -21,7 +22,7 @@ from relevanceai.constants import (
 )
 
 
-class ClusterOps(BaseOps, APIClient):
+class ClusterOps(APIClient, BaseOps):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -49,7 +50,7 @@ class ClusterOps(BaseOps, APIClient):
         self,
         credentials: Credentials,
         model: Any = None,
-        alias: str = None,
+        alias: Optional[str] = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -108,7 +109,11 @@ class ClusterOps(BaseOps, APIClient):
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
 
-        super().__init__(credentials, **kwargs)
+        for key, value in kwargs.items():
+            if not hasattr(self, key):
+                setattr(self, key, value)
+
+        super().__init__(credentials)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
@@ -360,7 +365,9 @@ class ClusterOps(BaseOps, APIClient):
         self,
         dataset_id: Optional[Union[str, Any]] = None,
         vector_fields: Optional[List[str]] = None,
+        filters: list = None,
         show_progress_bar: bool = True,
+        verbose: bool = True,
     ) -> None:
         """
         Run clustering on a dataset
@@ -376,6 +383,8 @@ class ClusterOps(BaseOps, APIClient):
             If True, the progress bar can be shown
 
         """
+        filters = [] if filters is None else filters
+
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
@@ -394,6 +403,7 @@ class ClusterOps(BaseOps, APIClient):
             select_fields=vector_fields,
             show_progress_bar=show_progress_bar,
             include_vector=True,
+            filters=filters,
         )
 
         # fit model, predict and label all documents
@@ -403,7 +413,11 @@ class ClusterOps(BaseOps, APIClient):
         )
 
         # TODO: need to change this to an update_where
-        self._update_documents(
+        # self.datasets.documents.update_where(
+        #     dataset_id,
+        #     update={}
+        # )
+        results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
@@ -416,7 +430,8 @@ class ClusterOps(BaseOps, APIClient):
         )
 
         # link back to dashboard
-        self._print_app_link()
+        if verbose:
+            self._print_app_link()
 
     def closest(
         self,

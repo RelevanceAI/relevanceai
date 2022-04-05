@@ -146,9 +146,9 @@ class Operations(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
-            df.vectorize(
+            ds.vectorize(
                 image_fields=["image_field_1", "image_field_2"],
                 text_fields=["text_field"],
                 text_model=text_model
@@ -562,3 +562,73 @@ class Operations(APIClient):
         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
         print(f"You can now access your deployable at {url}.")
         return url
+
+    def subcluster(self, model, alias: str, vector_fields, parent_field, **kwargs):
+        """
+        Subcluster
+        """
+        from relevanceai.operations.cluster import SubClusterOps
+
+        ops = SubClusterOps(
+            model=model,
+            credentials=self.credentials,
+            alias=alias,
+            vector_fields=vector_fields,
+            dataset_id=self.dataset_id,
+            parent_field=parent_field,
+            dataset=self.dataset_id,
+            **kwargs,
+        )
+        return ops.fit_predict(dataset=self.dataset_id, vector_fields=vector_fields)
+
+    def add_sentiment(
+        self,
+        field: str,
+        output_field: str = None,
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
+        log_to_file: bool = True,
+        chunksize: int = 20,
+        workflow_alias: str = "sentiment",
+        notes=None,
+    ):
+        """
+        Easily add sentiment to your dataset
+
+        Example
+        ----------
+
+        .. code-block::
+
+            ds.add_sentiment(field="sample_1_label")
+
+        Parameters
+        --------------
+
+        field: str
+            The field to add sentiment to
+        output_field: str
+            Where to store the sentiment values
+        model_name: str
+            The HuggingFace Model name.
+        log_to_file: bool
+            If True, puts the logs in a file. Otherwise, it will
+
+        """
+        from relevanceai.operations.text.sentiment.sentiment_workflow import (
+            SentimentWorkflow,
+        )
+
+        if output_field is None:
+            output_field = "_sentiment_." + field
+        workflow = SentimentWorkflow(
+            model_name=model_name, workflow_alias=workflow_alias
+        )
+        return workflow.fit_dataset(
+            dataset=self,
+            input_field=field,
+            output_field=output_field,
+            log_to_file=log_to_file,
+            chunksize=chunksize,
+            workflow_alias=workflow_alias,
+            notes=notes,
+        )
