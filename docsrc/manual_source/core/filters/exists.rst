@@ -73,9 +73,6 @@ Exists
 
 This filter returns entries in a database if a certain field (as opposed to the field values in previously mentioned filter types) exists or doesn't exist in them. For instance, filtering out documents in which there is no field 'purchase-info'. *Note that this filter is case-sensitive.*
 
-.. code-block:: python
-
-
 You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
 Once you have signed up, click on the value under `Activation token` and paste it here
 
@@ -83,9 +80,6 @@ Once you have signed up, click on the value under `Activation token` and paste i
 
     from relevanceai import Client
     client = Client()
-
-
-.. code-block:: python
 
     DATASET_ID = "ecommerce-sample-dataset"
     ds = client.Dataset(DATASET_ID)
