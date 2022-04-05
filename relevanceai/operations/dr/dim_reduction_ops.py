@@ -7,10 +7,11 @@ from relevanceai.operations.dr.dim_reduction import PCA
 from relevanceai.operations.dr.dim_reduction import TSNE
 from relevanceai.operations.dr.dim_reduction import Ivis
 from relevanceai.operations.dr.dim_reduction import UMAP
+from relevanceai.operations import BaseOps
 from relevanceai._api import APIClient
 
 
-class ReduceDimensionsOps(APIClient, DocUtils):
+class ReduceDimensionsOps(APIClient, BaseOps):
     def __init__(
         self,
         credentials: Credentials,

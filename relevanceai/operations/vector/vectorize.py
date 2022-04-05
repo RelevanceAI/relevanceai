@@ -153,7 +153,7 @@ class VectorizeOps(_VectorizeHelper):
         # users know immediately
         foreign_fields = []
         for field in fields:
-            if field not in self.schema:
+            if field not in schema:
                 foreign_fields.append(field)
         else:
             if foreign_fields:

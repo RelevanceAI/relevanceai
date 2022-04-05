@@ -12,6 +12,7 @@ import numpy as np
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset import Dataset
+from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import track
 from relevanceai.constants import (
     Warning,
@@ -20,7 +21,7 @@ from relevanceai.constants import (
 )
 
 
-class ClusterOps(APIClient):
+class ClusterOps(APIClient, BaseOps):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -47,10 +48,8 @@ class ClusterOps(APIClient):
     def __init__(
         self,
         credentials: Credentials,
-        model: Union[str, Any] = None,
-        vector_fields: Optional[List[str]] = None,
+        model: Any = None,
         alias: Optional[str] = None,
-        dataset_id: Optional[str] = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -89,8 +88,6 @@ class ClusterOps(APIClient):
             When viewing the cluster app dashboard, outliers will be prefixed with outlier_label
 
         """
-        self.vector_field = None if vector_fields is None else vector_fields[0]
-        self.vector_fields = vector_fields
 
         self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
         if n_clusters is not None:
@@ -110,9 +107,12 @@ class ClusterOps(APIClient):
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
-        self.dataset_id = dataset_id
 
-        super().__init__(credentials, **kwargs)
+        for key, value in kwargs.items():
+            if not hasattr(self, key):
+                setattr(self, key, value)
+
+        super().__init__(credentials)
 
     def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
@@ -350,7 +350,9 @@ class ClusterOps(APIClient):
         self,
         dataset_id: Optional[Union[str, Any]] = None,
         vector_fields: Optional[List[str]] = None,
+        filters: list = None,
         show_progress_bar: bool = True,
+        verbose: bool = True,
     ) -> None:
         """
         Run clustering on a dataset
@@ -366,6 +368,8 @@ class ClusterOps(APIClient):
             If True, the progress bar can be shown
 
         """
+        filters = [] if filters is None else filters
+
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
@@ -384,6 +388,7 @@ class ClusterOps(APIClient):
             select_fields=vector_fields,
             show_progress_bar=show_progress_bar,
             include_vector=True,
+            filters=filters,
         )
 
         # fit model, predict and label all documents
@@ -393,7 +398,11 @@ class ClusterOps(APIClient):
         )
 
         # TODO: need to change this to an update_where
-        self._update_documents(
+        # self.datasets.documents.update_where(
+        #     dataset_id,
+        #     update={}
+        # )
+        results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
@@ -406,7 +415,8 @@ class ClusterOps(APIClient):
         )
 
         # link back to dashboard
-        self._print_app_link()
+        if verbose:
+            self._print_app_link()
 
     def closest(
         self,

@@ -1,9 +1,22 @@
-from tkinter import W
 from relevanceai.operations.text.sentiment.sentiments import SentimentOps
 from relevanceai.workflow.base import Workflow
 
 
 class SentimentWorkflow(Workflow, SentimentOps):
+    """
+    Sentiment workflow
+    """
+
+    def __init__(
+        self, model_name, workflow_alias: str = "sentiment", **workflow_kwargs
+    ):
+        self.model_name = model_name
+        super().__init__(
+            func=self.analyze_sentiment,
+            workflow_alias=workflow_alias,
+            **workflow_kwargs
+        )
+
     def fit_dataset(
         self,
         dataset,
@@ -17,7 +30,7 @@ class SentimentWorkflow(Workflow, SentimentOps):
         workflow = Workflow(
             self.analyze_sentiment, workflow_alias=workflow_alias, notes=notes
         )
-        workflow.fit_dataset(
+        return workflow.fit_dataset(
             dataset=dataset,
             input_field=input_field,
             output_field=output_field,

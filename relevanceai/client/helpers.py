@@ -42,7 +42,7 @@ def region_to_url(region: str) -> str:
     return url
 
 
-@dataclass(frozen=True)
+@dataclass
 class Credentials:
     """
     A convenience store of relevant credentials.
@@ -69,6 +69,15 @@ class Credentials:
             List[str]: a list of strings containing all user identification for interaction with dashboard and api calls
         """
         return self.token.split(":")
+
+    def dict(self) -> dict:
+        return {
+            "project": self.project,
+            "api_key": self.api_key,
+            "region": self.region,
+            "firebase_uid": self.firebase_uid,
+            "token": self.token,
+        }
 
 
 def process_token(token: str):
