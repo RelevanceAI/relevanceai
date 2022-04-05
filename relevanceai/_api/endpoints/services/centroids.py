@@ -12,8 +12,10 @@ class CentroidsClient(_Base):
     def list(
         self,
         dataset_id: str,
-        vector_fields: List,
+        vector_fields: List[str] = None,
+        centroid_vector_fields: List[str] = None,
         alias: str = "default",
+        page: int = 1,
         page_size: int = 5,
         cursor: str = None,
         include_vector: bool = False,
@@ -40,9 +42,13 @@ class CentroidsClient(_Base):
             f"/dataset/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                # "dataset_id": dataset_id,
+                "dataset_id": dataset_id,
                 "vector_fields": vector_fields,
+                "centroid_vector_fields": []
+                if centroid_vector_fields is None
+                else centroid_vector_fields,
                 "alias": alias,
+                "page": page,
                 "page_size": page_size,
                 "cursor": cursor,
                 "include_vector": include_vector,

@@ -721,7 +721,9 @@ class ClusterOps(APIClient, BaseOps):
             print("No alias given, assuming `communitydetection`")
 
         centroid_documents = self.services.cluster.centroids.list(
-            vector_field=self.vector_field, alias=alias
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_field],
+            alias=alias,
         )
 
         relevant_centroids = [
