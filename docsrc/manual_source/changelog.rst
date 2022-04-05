@@ -31,6 +31,11 @@ Features/Updates:
 - Fix community detection to return clusterops object
 - Move backend of apply and bulk_apply to asynchronous function
 - Add way to list vector fields
+- Add Subclustering
+- Add Sentiment Analysis
+- Complete SDK reference restructure
+- SDK aesthetic overhaul
+- And much more! 
 
 Backend:
 
@@ -40,6 +45,10 @@ Backend:
 Automated Changes:
 
 ## What's Changed
+## What's Changed
+* V1.4.1 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/529
+* V1.4.2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/531
+* V1.4.3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/537
 * V1.4.3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/538
 * Added Missing Centroid Endpoints by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/540
 * Feature/refactor folders by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/542
@@ -59,7 +68,7 @@ Automated Changes:
 * Feature/scaling by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/556
 * Feature/pull update push args by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/559
 * feature/pro-1507-add-2-series-together-in-pandas by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/539
-* Feature/add comm detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/558
+* [WIP] Feature/add comm detection by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/558
 * Feature/add centroid insertion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/561
 * fix common mistake of inputting token as project by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/564
 * add a way to run the function for operating by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/565
@@ -74,8 +83,57 @@ Automated Changes:
 * Feature/add references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/574
 * fix the metadata insertion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/541
 * Feature/pro 1698 fix references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/575
+* Feature/cor 722 error shouldnt happen on dev server by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/580
+* Feature/move ops to workflows init by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/581
+* feature/pro-1647-fix-progress-bar-for-pull_update_push by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/577
+* [WIP] Better Code Base for ClusterOps by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/579
+* fix community detection UX by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/587
+* feature/pro-1723-store-vectorize-metadata-in-sdk by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/588
+* feature/pro-1726-fix-centroid-insertion-for-community by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/589
+* Hotfix/cloudfront by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/591
+* feature/pro-1724-fix-vectorhub-tests by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/593
+* feature/pro-1686-clusterops-show by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/583
+* add coco by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/596
+* SDK Style Guide and Refactor by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/586
+* Feature/fix refs by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/597
+* Fixing fit predict by @charyeezy in https://github.com/RelevanceAI/RelevanceAI/pull/600
+* feature/pro-1742-change-it-so-we-pass-token-instead-of by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/598
+* Feature/pro 1750 by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/602
+* forward -> operate by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/601
+* Fix Tests after SDK refactor by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/603
+* Better Clusters | Internal metric evaluation by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/584
+* Feature/fix reports by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/604
+* add reports init file by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/599
+* feature/pro-1751-fixing-the-sync-progress-bar by @ofrighil in https://github.com/RelevanceAI/RelevanceAI/pull/607
+* Feature/fix max chunksize by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/605
+* update refs by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/609
+* Feature/pro 1782 simple plotting distribution skews by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/610
+* remoe unstruc by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/611
+* rename vis to viz by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/612
+* update makefile by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/613
+* add sequential workflows by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/614
+* ensure that you are setting labels on doc subset by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/615
+* Fix datasets by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/616
+* add cluster ops by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/617
+* Increase Coverage by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/606
+* Fix/config by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/618
+* fix aggregates by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/621
+* fixed display after clustering by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/619
+* Feature/update refs by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/622
+* Fix centroid insertion by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/623
+* Feature/update the references amazing wow by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/624
+* [WIP] Docstrings by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/620
+* added iris and palmers penguins by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/626
+* Feature/fix cluster references by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/628
+* update client ref by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/629
+* Guides /docsrc by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/627
+* update the subclusterops by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/625
+* Feature/pro 1709 fix sentiment analysis workflow by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/632
+* BaseOps methods by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/633
+* update sentiment by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/634
+* fix vectorize by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/635
+* fix subclustering by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/636
 
-**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v1.4.3...v2.0.0
 
 v1.4.3
 -----------

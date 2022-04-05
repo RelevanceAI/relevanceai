@@ -146,9 +146,9 @@ class Operations(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
-            df.vectorize(
+            ds.vectorize(
                 image_fields=["image_field_1", "image_field_2"],
                 text_fields=["text_field"],
                 text_model=text_model
@@ -583,7 +583,7 @@ class Operations(APIClient):
     def add_sentiment(
         self,
         field: str,
-        output_field: str = "_sentiment_",
+        output_field: str = None,
         model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         log_to_file: bool = True,
         chunksize: int = 20,
@@ -617,6 +617,8 @@ class Operations(APIClient):
             SentimentWorkflow,
         )
 
+        if output_field is None:
+            output_field = "_sentiment_." + field
         workflow = SentimentWorkflow(
             model_name=model_name, workflow_alias=workflow_alias
         )
