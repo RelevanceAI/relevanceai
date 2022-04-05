@@ -2,7 +2,8 @@ import pytest
 
 from sklearn.cluster import MiniBatchKMeans
 
-from relevanceai.client import Client
+from relevanceai import Client
+from relevanceai import ClusterOps
 from relevanceai.dataset import Dataset
 
 from tests.globals.constants import NOT_IMPLEMENTED
@@ -68,3 +69,20 @@ class TestClusterOps:
     @pytest.mark.skip(NOT_IMPLEMENTED)
     def test_list_furthest(self, test_client: Client, test_dataset: Dataset):
         assert False
+
+    def test_merge(self, test_client: Client, test_dataset: Dataset):
+        test_dataset.cluster(
+            model="kmeans", n_clusters=3, vector_fields=["feature_vector_"]
+        )
+
+        ops = ClusterOps.from_dataset(
+            dataset=test_dataset,
+            alias="kmeans-3",
+            vector_fields=["feature_vector_"],
+        )
+
+        ops.merge(cluster_labels=[0, 1], alias="kmeans-3")
+        centroids = ops.services.cluster.centroids.list(
+            test_dataset.dataset_id, ["feature_vector_"]
+        )["results"]
+        assert len(centroids) == 2
