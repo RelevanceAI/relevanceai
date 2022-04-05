@@ -52,7 +52,7 @@ class ClusterOps(APIClient, BaseOps):
     def __init__(
         self,
         credentials: Credentials,
-        model: Any,
+        model: Any = None,
         alias: str = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
