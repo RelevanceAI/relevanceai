@@ -66,14 +66,11 @@ class ClusterOps(APIClient, BaseOps):
         Parameters
         -------------
 
-        model: Union[str, Any]
+        model: Any
             The string of clustering algorithm, class of clustering algorithm or custom clustering class.
             If custom, the model must contain the method for fit_predict and must output a numpy array for labels
 
-        vector_fields: Optional[List[str]] = None
-            A list of vector_fields to cluster over
-
-        alias: Optional[str] = None
+        alias: str = None
             An alias to be given for clustering.
             If no alias is provided, alias becomes the cluster model name hypen n_clusters e.g. (kmeans-5, birch-8)
 
@@ -94,19 +91,30 @@ class ClusterOps(APIClient, BaseOps):
         """
 
         self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
-        if n_clusters is not None:
-            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
 
         self.model_name = None
+
+        if model is None:
+            model = "community_detection"
+            print("No clustering model selected: defaulting to `community_detection`")
+
         self.model = self._get_model(model)
 
         if "package" not in self.__dict__:
             self.package = self._get_package(self.model)
 
-        if hasattr(self.model, "n_clusters"):
-            self.n_clusters = self.model.n_clusters
+        if n_clusters is None:
+            if hasattr(self.model, "n_clusters"):
+                n_clusters = self.model.n_clusters
+                self.n_clusters = n_clusters
+                print(f"Number of clusters not given, defaulting to {n_clusters}")
+
+            else:
+                self.n_clusters = n_clusters
+
         else:
             self.n_clusters = n_clusters
+            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
 
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
@@ -259,7 +267,7 @@ class ClusterOps(APIClient, BaseOps):
                                 labels[index] = cluster_index
                         return labels
 
-                model = CommunityDetection(config=self.config)
+                model = CommunityDetection(config=self.cluster_config)
 
             elif "faiss" in model:
                 from faiss import Kmeans
@@ -301,6 +309,15 @@ class ClusterOps(APIClient, BaseOps):
             centroid_documents.append(centroid_document)
 
         return centroid_documents
+
+    def _get_document_vector_field(self):
+        vector_fields = []
+        metadata = self.datasets.metadata(self.dataset_id)
+        most_recent_updated_vector = max(
+            metadata["results"]["_vector_"].items(), key=lambda x: x[1]
+        )[0]
+        vector_fields.append(most_recent_updated_vector)
+        return vector_fields
 
     def _insert_centroids(
         self,
@@ -389,11 +406,15 @@ class ClusterOps(APIClient, BaseOps):
                 dataset_id = dataset_id.dataset_id  # type: ignore
         self.dataset_id = dataset_id
 
-        vector_field = vector_fields[0]
+        if vector_fields is None:
+            vector_fields = self._get_document_vector_field()
+            print(f"No vector_field given: defaulting to {vector_fields}")
 
+        vector_field = vector_fields[0]
         self.cluster_field = f"_cluster_.{vector_fields[0]}.{self.alias}"
 
         # get all documents
+        print("Retrieving all documents")
         documents = self._get_all_documents(
             dataset_id=dataset_id,
             select_fields=vector_fields,
@@ -402,6 +423,7 @@ class ClusterOps(APIClient, BaseOps):
         )
 
         # fit model, predict and label all documents
+        print("Predicting on all documents")
         centroid_documents, labelled_documents = self._fit_predict(
             documents=documents,
             vector_field=vector_field,
@@ -412,12 +434,14 @@ class ClusterOps(APIClient, BaseOps):
         #     dataset_id,
         #     update={}
         # )
+        print("Updating cluster labels")
         results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
         )
 
+        print("Inserting Centroids")
         self._insert_centroids(
             dataset_id=dataset_id,
             vector_fields=vector_fields,

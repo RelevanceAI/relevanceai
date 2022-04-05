@@ -17,9 +17,9 @@ class Operations(APIClient):
 
     def cluster(
         self,
-        vector_fields: List[str] = None,
+        model: Any = None,
+        vector_fields: List[str] = [],
         alias: Optional[str] = None,
-        model: Union[str, Any] = "community_detection",
         **kwargs,
     ):
         """
@@ -53,9 +53,6 @@ class Operations(APIClient):
 
         """
         from relevanceai.operations.cluster import ClusterOps
-
-        if vector_fields is None:
-            vector_fields = ["_vector_"]
 
         ops = ClusterOps(
             credentials=self.credentials,

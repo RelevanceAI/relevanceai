@@ -1,8 +1,6 @@
-import uuid
-
 from typing import Dict, Union, Optional, List, Any
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import numpy as np
 
@@ -22,7 +20,7 @@ class VectorizeHelpers(APIClient):
 
     def _get_encoder(self, model: Any) -> Any:
         @log(fn=self.log_file)
-        def get_encoder():
+        def get_encoder(model):
             if isinstance(model, str):
                 model = model.lower().replace(" ", "").replace("_", "")
                 model_name = model
@@ -70,7 +68,9 @@ class VectorizeHelpers(APIClient):
                 # TODO: this needs to be referenced from relevance.constants.errors
                 raise ValueError("ModelNotSupported")
 
-        model, model_name = get_encoder()
+            return model, model_name
+
+        model, model_name = get_encoder(model)
         self.model_name = model_name
         return model
 
@@ -96,9 +96,7 @@ class VectorizeHelpers(APIClient):
     def _reduce(self, vectors: np.ndarray, n_components: int = 512) -> np.ndarray:
         from sklearn.decomposition import PCA
 
-        reducer = PCA(
-            n_components=min(vectors.shape[0], vectors.shape[1], n_components)
-        )
+        reducer = PCA(n_components=min(vectors.shape[1], n_components))
         reduced = reducer.fit_transform(vectors)
         return reduced
 
@@ -133,9 +131,11 @@ class VectorizeOps(VectorizeHelpers):
         credentials: Credentials,
         encoders: Optional[Dict[str, Any]] = None,
         log_file: str = "vectorize.logs",
+        feature_vector: bool = False,
     ):
         super().__init__(log_file=log_file, credentials=credentials)
 
+        self.feature_vector = feature_vector
         self.encoders = encoders if encoders is not None else {}
 
     def __call__(self, *args, **kwargs):
@@ -178,6 +178,12 @@ class VectorizeOps(VectorizeHelpers):
         numeric_fields = [
             field for field, dtype in self.schema.items() if dtype == "numeric"
         ]
+        # facets = self.datasets.facets(self.dataset_id)["results"]
+        # stats = {
+        #     field: (facets[field]["avg"] - facets[field]["min"])
+        #     / (facets[field]["max"] - facets[field]["min"])
+        #     for field in [field.replace(" ", "%20") for field in numeric_fields]
+        # }
         return numeric_fields
 
     def _get_fields(self, fields: List[str]) -> Dict[str, str]:
@@ -201,16 +207,12 @@ class VectorizeOps(VectorizeHelpers):
                 )
 
     def _init_encoders(self, fields: List[str]):
-        @log(fn=self.log_file)
-        def initialize():
-            dtypes = [self.detailed_schema[field] for field in fields]
+        dtypes = [self.detailed_schema[field] for field in fields]
 
-            for dtype in ["image", "text"]:
-                if f"_{dtype}_" in dtypes:
-                    model = self._get_model_name(dtype=f"_{dtype}_")
-                    self.encoders[dtype] = self._get_encoder(model=model)
-
-        initialize()
+        for dtype in ["image", "text"]:
+            if f"_{dtype}_" in dtypes:
+                model = self._get_model_name(dtype=f"_{dtype}_")
+                self.encoders[dtype] = self._get_encoder(model=model)
 
     def _get_vector_fields(self, fields: List[str]) -> List[str]:
         vector_fields = []
@@ -409,8 +411,11 @@ class VectorizeOps(VectorizeHelpers):
         if vectors.shape[1] > 512:
             vectors = self._reduce(vectors)
 
-        id = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(vectors.shape[1])))
-        document_vector_ = f"_{id}_vector_"
+        vectors = scaler.fit_transform(vectors)
+        vectors = np.nan_to_num(vectors)
+
+        document_vector_ = f"_dim{vectors.shape[1]}_feature_vector_"
+        print(f"Concatenated field is called {document_vector_}")
 
         for index, (document, vector) in enumerate(zip(documents, vectors.tolist())):
             documents[index] = {
@@ -424,15 +429,13 @@ class VectorizeOps(VectorizeHelpers):
             show_progress_bar=show_progress_bar,
         )
 
-        metadata = [document_vector_]
-
-        self._update_vector_metadata(metadata)
+        self._update_vector_metadata(metadata=[document_vector_])
 
     def operate(
         self,
         dataset_id: str,
         fields: List[str],
-        show_progress_bar: bool = False,
+        show_progress_bar: bool = True,
     ) -> None:
 
         self.dataset_id = dataset_id
@@ -455,6 +458,11 @@ class VectorizeOps(VectorizeHelpers):
         else:
             fields = self.detailed_schema
             field_types = self._get_fields(fields)
+            print(
+                "No fields were given, vectorizing the following field(s): {}".format(
+                    ", ".join(list(field_types))
+                )
+            )
 
         if field_types:
             self._validate_fields(list(field_types))
@@ -462,6 +470,11 @@ class VectorizeOps(VectorizeHelpers):
             self._init_encoders(list(field_types))
 
             vector_fields = self._get_vector_fields(list(field_types))
+            print(
+                "This operation will create the following vector_fields: {}".format(
+                    str(vector_fields)
+                )
+            )
 
             filters = self._get_filters(
                 fields=list(field_types),
@@ -483,7 +496,9 @@ class VectorizeOps(VectorizeHelpers):
             )
             if results["failed_documents"]:
                 print(Messages.INSERT_BAD)
-                print("There were some errors vectorizing your unstructured data")
+                print(
+                    "There were some errors vectorizing your unstructured data"
+                )  # TODO: move messages in Messages class
                 return results
         else:
             vector_fields = []
@@ -495,11 +510,23 @@ class VectorizeOps(VectorizeHelpers):
             metadata=added_vectors,
         )
 
-        self._insert_document_vectors(
-            vector_fields=vector_fields,
-            numeric_fields=numeric_fields,
-            show_progress_bar=show_progress_bar,
-        )
+        if self.feature_vector:
+            print(
+                "Concatenating the following fields to form a feature vector: {}".format(
+                    ", ".join(vector_fields + numeric_fields)
+                )
+            )
+            self._insert_document_vectors(
+                vector_fields=vector_fields,
+                numeric_fields=numeric_fields,
+                show_progress_bar=show_progress_bar,
+            )
 
-        print(Messages.INSERT_GOOD)
-        print("The following vector fields were added: " + ", ".join(added_vectors))
+            new_schema = self._get_schema().keys()
+            added_vectors = list(new_schema - self.schema)
+
+        if added_vectors:
+            print(Messages.INSERT_GOOD)
+            print(
+                "The following vector fields were added: " + ", ".join(added_vectors)
+            )  # TODO: move messages in Messages class
