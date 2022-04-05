@@ -20,4 +20,12 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 build_docs:
+	rm -rf source
+	cp -rf manual_source source
+	make build_guides
 	sphinx-apidoc -o source/ ../relevanceai && make clean && make html
+
+build_guides:
+	find manual_source/guides/ -type f -name *guide*.rst -delete
+	jupyter nbconvert --to rst ../guides/*guide*.ipynb
+	mv ../guides/*guide*.rst manual_source/guides/

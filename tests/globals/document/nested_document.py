@@ -5,10 +5,11 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+from relevanceai.utils import make_id
 
-def complex_nested_document(_id: str):
-    return {
-        "_id": _id,
+
+def complex_nested_document():
+    document = {
         "sample_1": {
             "panda": pd.DataFrame(
                 np.random.randint(0, 20, size=(20, 4)), columns=list("ABCD")
@@ -36,13 +37,16 @@ def complex_nested_document(_id: str):
             },
         },
     }
+    document["_id"] = make_id(document)
+    return document
 
 
-def simple_nested_document(_id: str):
-    return {
-        "_id": _id,
+def simple_nested_document():
+    document = {
         "col1": {"subcol1": random.random(), "subcol2": random.random()},
         "col2": {"subcol3": random.random(), "subcol4": random.random()},
         "col3": {"subcol5": random.random(), "subcol6": random.random()},
         "col4": {"subcol7": random.random(), "subcol8": random.random()},
     }
+    document["_id"] = make_id(document)
+    return document

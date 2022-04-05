@@ -1,18 +1,20 @@
 import random
 
-import uuid
-
 from typing import NamedTuple
 
 from dataclasses import dataclass
 
+from relevanceai.utils import make_id
+
 
 @dataclass
 class DataclassDocument:
-    _id: str = uuid.uuid4().__str__()
+    _id: str = None
     value1: float = random.random()
     value2: float = random.random()
 
 
-def dataclass_document(_id: str) -> NamedTuple:
-    return DataclassDocument(_id=_id)
+def dataclass_document() -> NamedTuple:
+    document = DataclassDocument()
+    document._id = make_id(document)
+    return document

@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
 import warnings
-from relevanceai import vector_tools
-from relevanceai.http_client import Client
+from relevanceai.client import Client
 
 # Cluster _Base Utilities
-from relevanceai.clusterer.cluster_base import ClusterBase, CentroidClusterBase
-from relevanceai.clusterer.clusterer import ClusterOps
-from relevanceai.dim_reduction_ops.dim_reduction_ops import ReduceDimensionsOps
-from relevanceai.datasets import mock_documents
+from relevanceai.operations.cluster.base import (
+    ClusterBase,
+    CentroidClusterBase,
+)
+from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations.dr.dim_reduction_ops import (
+    ReduceDimensionsOps,
+)
+
+# Fix the name
+from relevanceai.utils import datasets
+from relevanceai.utils.datasets import mock_documents
 import requests
+
+from relevanceai.constants.warning import Warning
 
 # Import useful utility if possible as well
 try:
@@ -16,7 +25,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "1.4.5"
+__version__ = "2.0.0"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()
@@ -26,18 +35,16 @@ try:
     else:
         latest_version = None
 
-    if __version__ != latest_version and latest_version is not None:
+    if __version__ < latest_version and latest_version is not None:
         changelog_url: str = (
             f"https://relevanceai.readthedocs.io/en/{__version__}/changelog.html"
         )
-        MESSAGE = """We noticed you don't have the latest version!
-We recommend updating to the latest version ({latest_version}) to get all bug fixes and newest features!
-You can do this by running pip install -U relevanceai.
-Changelog: {changelog_url}.""".format(  # type: ignore
-            version=__version__,
-            latest_version=latest_version,
-            changelog_url=changelog_url,
+        warnings.warn(
+            Warning.LATEST_VERSION.format(
+                version=__version__,
+                latest_version=latest_version,
+                changelog_url=changelog_url,
+            )
         )
-        warnings.warn(MESSAGE)
 except:
     pass

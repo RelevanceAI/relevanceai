@@ -1,15 +1,16 @@
+from typing import Optional
+from relevanceai.client.helpers import Credentials
 from relevanceai.dashboard.dashboard import Dashboard
 
 
 class Clusters(Dashboard):
-    def __init__(self, project: str, api_key: str, deployable_id: str):
-        super().__init__(project, api_key, deployable_id, "cluster")
+    def __init__(self, credentials: Credentials, project: str):
+        super().__init__(credentials, project, "cluster")
 
     @classmethod
     def create_dashboard(
         cls,
-        project: str,
-        api_key: str,
+        credentials: Credentials,
         dataset_id: str,
         vector_field: str,
         alias: str,
@@ -22,7 +23,7 @@ class Clusters(Dashboard):
             "collection_name": dataset_id,
             "type": application,
             "deployable_name": dataset_id,
-            "project_id": project,
+            "project_id": credentials.project,
             application: {
                 "alias": alias,
                 "vector_field": vector_field,
@@ -35,8 +36,7 @@ class Clusters(Dashboard):
         }
 
         return Dashboard.create_dashboard(
-            project,
-            api_key,
+            credentials,
             dataset_id,
             vector_field,
             application,
