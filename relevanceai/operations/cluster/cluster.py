@@ -247,6 +247,15 @@ class ClusterOps(APIClient, BaseOps):
                 from faiss import Kmeans
 
                 model = Kmeans(**self.cluster_config)
+            else:
+                raise ValueError(
+                    """Invalid model. This should be one of ['affinitypropagation',
+                    'agglomerativeclustering', 'birch', dbscan', 'optics', 'kmeans',
+                    'featureagglomeration', 'meanshift', 'minibatchkmeans',
+                    'spectralclustering', 'spectralbiclustering', 'spectralcoclustering',
+                    'hdbscan', 'community_detection']
+                    ]"""
+                )
 
         else:
             # TODO: this needs to be referenced from relevance.constants.errors
