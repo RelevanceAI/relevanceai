@@ -11,9 +11,11 @@ import numpy as np
 
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
+from relevanceai.constants.errors import MissingPackageError
 from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import track
+from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
     Messages,
@@ -252,8 +254,11 @@ class ClusterOps(APIClient, BaseOps):
 
                 model = HDBSCAN(**self.cluster_config)
 
-            elif model == "communitydetection":
-                from sentence_transformers.util import community_detection
+            elif model in "communitydetection":
+                try:
+                    from sentence_transformers.util import community_detection
+                except ModuleNotFoundError:
+                    raise MissingPackageError("sentence-transformers")
 
                 class CommunityDetection:
                     def __init__(self, config):
@@ -273,6 +278,15 @@ class ClusterOps(APIClient, BaseOps):
                 from faiss import Kmeans
 
                 model = Kmeans(**self.cluster_config)
+            else:
+                raise ValueError(
+                    """Invalid model. This should be one of ['affinitypropagation',
+                    'agglomerativeclustering', 'birch', dbscan', 'optics', 'kmeans',
+                    'featureagglomeration', 'meanshift', 'minibatchkmeans',
+                    'spectralclustering', 'spectralbiclustering', 'spectralcoclustering',
+                    'hdbscan', 'community_detection']
+                    ]"""
+                )
 
         else:
             raise ModelNotSupportedError
@@ -352,6 +366,7 @@ class ClusterOps(APIClient, BaseOps):
             labels = self.model.assign(vectors)[1]
 
         elif self.package == "sentence-transformers":
+            # TODO: make teh config here better
             labels = self.model(vectors)
             labels = np.array(labels)
 
@@ -727,3 +742,74 @@ class ClusterOps(APIClient, BaseOps):
             asc=asc,
             flatten=flatten,
         )
+
+    @track
+    def merge(
+        self,
+        cluster_labels: List[str],
+        alias: Optional[str] = None,
+        show_progress_bar: bool = True,
+    ):
+        if alias is None:
+            alias = "communitydetection"
+            print("No alias given, assuming `communitydetection`")
+
+        centroid_documents = self.services.cluster.centroids.list(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_field],
+            alias=alias,
+        )["results"]
+
+        relevant_centroids = [
+            centroid["centroid_vector"]
+            for centroid in centroid_documents
+            if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
+        ]
+        new_centroid = np.array(relevant_centroids).mean(0).tolist()
+        new_centroid_doc = {
+            "_id": f"cluster-{cluster_labels[0]}",
+            "centroid_vector": new_centroid,
+        }
+
+        class Merge:
+            def __init__(self, clusters, vector_field, alias):
+                self.clusters = [f"cluster-{cluster}" for cluster in sorted(clusters)]
+                self.vector_field = vector_field
+                self.alias = alias
+
+                self.min_cluster = f"cluster-{min(clusters)}"
+
+            def __call__(self, documents):
+                for document in documents:
+                    for cluster in self.clusters[1:]:
+                        if (
+                            document["_cluster_"][self.vector_field][self.alias]
+                            == cluster
+                        ):
+                            document["_cluster_"][self.vector_field][
+                                self.alias
+                            ] = self.min_cluster
+                return documents
+
+        merge = Merge(cluster_labels, self.vector_field, alias)
+        self.pull_update_push(
+            dataset_id=self.dataset_id,
+            update_function=merge,
+            show_progress_bar=show_progress_bar,
+        )
+
+        self.services.cluster.centroids.update(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_field],
+            alias=alias,
+            cluster_centers=[new_centroid_doc],
+        )
+
+        for cluster in cluster_labels[1:]:
+            centroid_id = f"cluster-{cluster}"
+            self.services.cluster.centroids.delete(
+                dataset_id=self.dataset_id,
+                centroid_id=centroid_id,
+                alias=self.alias,
+                vector_fields=[self.vector_field],
+            )

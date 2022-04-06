@@ -46,6 +46,7 @@ clean:
 	find . -type d -name "*.eggs" -exec rm -rf {} +
 	find . -type d -name "*.pytest_cache" -exec rm -rf {} +
 	find . -type d -name "*.mypy_cache" -exec rm -rf {} +
+	find . -type d -empty -delete
 
 
 ## Lint using flake8
