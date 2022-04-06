@@ -3,6 +3,8 @@
 Pandas like dataset API
 """
 import warnings
+import numpy as np
+
 from typing import List, Optional
 from tqdm.auto import tqdm
 
