@@ -1,5 +1,6 @@
 from typing import (
     Any,
+    Set,
     Dict,
     List,
     Optional,
@@ -726,7 +727,7 @@ class ClusterOps(APIClient, BaseOps):
     @track
     def merge(
         self,
-        cluster_labels: Tuple[int],
+        cluster_labels: List,
         alias: Optional[str] = None,
         show_progress_bar: bool = True,
     ):
