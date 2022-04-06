@@ -11,6 +11,7 @@ import numpy as np
 
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
+from relevanceai.constants.errors import MissingPackageError
 from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import track
@@ -241,8 +242,12 @@ class ClusterOps(APIClient, BaseOps):
 
                 model = HDBSCAN(**self.cluster_config)
 
-            elif model == "communitydetection":
-                from sentence_transformers.util import community_detection
+            elif model in "communitydetection":
+                # TODO: this is a callable (?)
+                try:
+                    from sentence_transformers.util import community_detection
+                except ModuleNotFoundError:
+                    raise MissingPackageError("sentence-transformers")
 
                 class CommunityDetection:
                     def __init__(self, config):
@@ -262,6 +267,15 @@ class ClusterOps(APIClient, BaseOps):
                 from faiss import Kmeans
 
                 model = Kmeans(**self.cluster_config)
+            else:
+                raise ValueError(
+                    """Invalid model. This should be one of ['affinitypropagation',
+                    'agglomerativeclustering', 'birch', dbscan', 'optics', 'kmeans',
+                    'featureagglomeration', 'meanshift', 'minibatchkmeans',
+                    'spectralclustering', 'spectralbiclustering', 'spectralcoclustering',
+                    'hdbscan', 'community_detection']
+                    ]"""
+                )
 
         else:
             # TODO: this needs to be referenced from relevance.constants.errors

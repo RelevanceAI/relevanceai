@@ -6,3 +6,4 @@ Clustering
     basic
     partial_clustering
     subclustering
+    report

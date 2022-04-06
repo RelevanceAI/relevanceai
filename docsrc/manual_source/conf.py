@@ -86,9 +86,13 @@ html_theme_options = {
     # "logo_link": "https://relevance.ai/wp-content/uploads/2021/11/logo.79f303e-1.svg",
     "github_url": "https://github.com/relevanceai/relevanceai",
     "twitter_url": "https://mobile.twitter.com/relevanceai_",
-    "collapse_navigation": True,
+    "collapse_navigation": False,
     "external_links": [{"name": "Dashboard", "url": "https://cloud.relevance.ai"}],
-    "display_version": False,
+    "display_version": True,
+    "switcher": {
+        "json_url": "switcher.json",
+        "version_match": "v2.0.0",
+    },
 }
 
 apidoc_module_first = True
