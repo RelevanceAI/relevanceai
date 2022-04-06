@@ -689,8 +689,8 @@ class Operations(APIClient):
 
         model = QAOps(model_name=model_name)
 
-        def question_answer(answer):
-            return model.question_answer(question=question, answer=answer)
+        def question_answer(context):
+            return model.question_answer(question=question, context=context)
 
         if output_field is None:
             output_field = "_question_." + "-".join(question.lower().strip().split())
