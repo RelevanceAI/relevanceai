@@ -25,7 +25,7 @@ Prior to adding sentiment, we will need to make sure to install HuggingFace's Tr
         question="What brand shoes",
         output_field="_question_test",
         # Easily switch to a different HuggingFace model
-        model_name: str = "mrm8488/deberta-v3-base-finetuned-squadv2",
+        model_name="mrm8488/deberta-v3-base-finetuned-squadv2",
     )
 
 For every document, you will get functions and formulas similar to the ones below:
