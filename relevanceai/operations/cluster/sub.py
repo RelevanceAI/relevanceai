@@ -315,6 +315,7 @@ class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
         """
         if self.model is None:
             raise ValueError("No model is detected.")
+
         filters = [] if filters is None else filters
 
         # load the documents
@@ -370,6 +371,7 @@ class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
                 "parent_field": parent_field,
                 "cluster_field": cluster_field,
             },
+            only_unique=True,
         )
 
     def subpartialfit_predict_update(
