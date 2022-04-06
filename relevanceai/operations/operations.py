@@ -643,7 +643,7 @@ class Operations(APIClient):
         log_to_file: bool = True,
     ):
         """
-        Questio your dataset and retrieve answers from it.
+        Question your dataset and retrieve answers from it.
 
         Example
         ----------
