@@ -121,7 +121,7 @@ class SequentialWorkflow(DocUtils):
             "Data type not supported. Please ensure it is a list of dicts of a Dataset object."
         )
 
-    def run(self, dataset: Dataset, verbose: bool = True, log_to_file: bool = True):
+    def run(self, dataset: Dataset, verbose: bool = False, log_to_file: bool = False):
         """
         Run the sequential workflow
         """
