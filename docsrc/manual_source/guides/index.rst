@@ -6,3 +6,4 @@ Guides
     :maxdepth: 4
 
     quickstart_guide
+    text_to_image_guide
