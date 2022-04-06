@@ -9,46 +9,6 @@ class CentroidsClient(_Base):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
 
-    def list(
-        self,
-        dataset_id: str,
-        vector_fields: List,
-        alias: str = "default",
-        page_size: int = 5,
-        cursor: str = None,
-        include_vector: bool = False,
-    ):
-        """
-        Retrieve the cluster centroid
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        vector_fields: list
-            The vector field where a clustering task was run.
-        alias: string
-            Alias is used to name a cluster
-        page_size: int
-            Size of each page of results
-        cursor: string
-            Cursor to paginate the document retrieval
-        include_vector: bool
-            Include vectors in the search results
-        """
-        return self.make_http_request(
-            f"/dataset/{dataset_id}/cluster/centroids/documents",
-            method="POST",
-            parameters={
-                # "dataset_id": dataset_id,
-                "vector_fields": vector_fields,
-                "alias": alias,
-                "page_size": page_size,
-                "cursor": cursor,
-                "include_vector": include_vector,
-            },
-        )
-
     def get(
         self,
         dataset_id: str,
@@ -120,7 +80,7 @@ class CentroidsClient(_Base):
             },
         )
 
-    def documents(
+    def list(
         self,
         dataset_id: str,
         vector_fields: List,
@@ -438,8 +398,11 @@ class CentroidsClient(_Base):
     def delete(
         self,
         dataset_id: str,
-        vector_fields: List,
-        alias: str = "default",
+        centroid_id: str,
+        alias: str,
+        vector_fields: List[str],
+        centroid_vector_fields: Optional[List[str]] = None,
+        centroid_dataset_id: Optional[str] = None,
     ):
         """
         Delete centroids by dataset ID, vector field and alias
@@ -454,23 +417,30 @@ class CentroidsClient(_Base):
             Alias is used to name a cluster
 
         """
+        parameters = {
+            "dataset_id": dataset_id,
+            "vector_fields": vector_fields,
+            "alias": alias,
+        }
+
+        if centroid_vector_fields is not None:
+            parameters.update({"centroid_vector_fields": centroid_vector_fields})
+
+        if centroid_dataset_id is not None:
+            parameters.update({"centroid_dataset_id": centroid_dataset_id})
+
         return self.make_http_request(
-            "/services/cluster/centroids/delete",
+            f"/datasets/{dataset_id}/cluster/centroids/{centroid_id}/delete",
             method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "vector_field": vector_fields,
-                "alias": alias,
-            },
+            parameters=parameters,
         )
 
     def update(
         self,
         dataset_id: str,
         vector_fields: List,
-        id: str,
-        update: Optional[dict] = None,
-        alias: str = "default",
+        alias: str,
+        cluster_centers: List[Dict[str, Any]],
     ):
         """
         Delete centroids by dataset ID, vector field and alias
@@ -488,16 +458,14 @@ class CentroidsClient(_Base):
         update: dict
             The update to be applied to the document
         """
-        update = {} if update is None else update
 
         return self.make_http_request(
-            "/services/cluster/centroids/update",
+            f"/datasets/{dataset_id}/cluster/centroids/update",
             method="POST",
             parameters={
                 "dataset_id": dataset_id,
                 "vector_fields": vector_fields,
                 "alias": alias,
-                "id": id,
-                "update": update,
+                "cluster_centers": cluster_centers,
             },
         )

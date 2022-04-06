@@ -4,6 +4,17 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v2.0.2
+-----------
+
+- Add question answering operation
+- Fix bug in subclustering where filters do not work
+
+v2.0.1
+-----------
+
+- Fix for `hybrid_search` endpoint to include `sum_fields`
+
 v2.0.0
 -----------
 

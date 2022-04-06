@@ -12,6 +12,7 @@ Example
 from doc_utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.dataset.dataset import Dataset
+from typing import Union
 from abc import abstractmethod, ABC
 
 
@@ -54,11 +55,17 @@ class Output(Ops):
 
     _update_: bool = True
 
-    def __init__(self, output_field: list):
+    def __init__(self, output_field: Union[str, list]):
         self.output_field = output_field
 
     def __call__(self, values, documents, dataset: Dataset):
-        self.set_field_across_documents(self.output_field, values, documents)
+        if isinstance(self.output_field, str):
+            self.set_field_across_documents(self.output_field, values, documents)
+        elif isinstance(self.output_field, list):
+            for f in self.output_field:
+                self.set_field_across_documents(f, values, documents)
+        else:
+            raise ValueError("Incorrect number of fields.")
         upsert_results = dataset.upsert_documents(documents)
         return upsert_results, documents
 
@@ -114,7 +121,7 @@ class SequentialWorkflow(DocUtils):
             "Data type not supported. Please ensure it is a list of dicts of a Dataset object."
         )
 
-    def run(self, dataset: Dataset, verbose: bool = True, log_to_file: bool = True):
+    def run(self, dataset: Dataset, verbose: bool = False, log_to_file: bool = False):
         """
         Run the sequential workflow
         """
