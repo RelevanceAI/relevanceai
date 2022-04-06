@@ -7,7 +7,7 @@ Basic
 The easiest way to ask a question to a text field and extract the relevant answer
 is using the `ds.question_answer` function.
 
-Prior to adding sentiment, we will need to make sure to install HuggingFace's Transformers.
+Prior to adding question answering, we will need to make sure to install HuggingFace's Transformers.
 
 .. code-block::
 
