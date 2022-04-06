@@ -21,7 +21,7 @@ class SentimentWorkflow(Workflow, SentimentOps):
         self,
         dataset,
         input_field: str,
-        output_field: str,
+        output_field: str = "_sentiment_",
         log_to_file: bool = True,
         chunksize: int = 20,
         workflow_alias: str = "sentiment",

@@ -632,3 +632,68 @@ class Operations(APIClient):
             workflow_alias=workflow_alias,
             notes=notes,
         )
+
+    def question_answer(
+        self,
+        input_field: str,
+        question: str,
+        output_field: Optional[str] = None,
+        model_name: str = "mrm8488/deberta-v3-base-finetuned-squadv2",
+        verbose: bool = True,
+        log_to_file: bool = True,
+    ):
+        """
+        Question your dataset and retrieve answers from it.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("ecommerce")
+            ds.question_answer(
+                input_field="product_title",
+                question="What brand shoes",
+                output_field="_question_test"
+            )
+
+        Parameters
+        --------------
+
+        field: str
+            The field to add sentiment to
+        output_field: str
+            Where to store the sentiment values
+        model_name: str
+            The HuggingFace Model name.
+        verbose: bool
+            If True, prints progress bar workflow
+        log_to_file: bool
+            If True, puts the logs in a file.
+
+        """
+        from relevanceai.workflow.sequential import SequentialWorkflow, Input, Output
+        from relevanceai.operations.text.qa.qa import QAOps
+
+        model = QAOps(model_name=model_name)
+
+        def question_answer(question, answer):
+            return model.question_answer(question=question, answer=answer)
+
+        if output_field is None:
+            output_field = "_question_." + "-".join(question.lower().strip().split())
+            print(f"No output field is detected. Setting to {output_field}")
+
+        workflow = SequentialWorkflow(
+            list_of_operations=[
+                Input([input_field]),
+                question_answer,
+                Output([output_field]),
+            ]
+        )
+        return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+
+    def translate(self, translation_model_name: str):
+        raise NotImplementedError
