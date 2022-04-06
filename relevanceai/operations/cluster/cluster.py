@@ -284,7 +284,7 @@ class ClusterOps(APIClient, BaseOps):
                     'agglomerativeclustering', 'birch', dbscan', 'optics', 'kmeans',
                     'featureagglomeration', 'meanshift', 'minibatchkmeans',
                     'spectralclustering', 'spectralbiclustering', 'spectralcoclustering',
-                    'hdbscan', 'community_detection']
+                    'hdbscan', 'communitydetection']
                     ]"""
                 )
 
@@ -421,7 +421,7 @@ class ClusterOps(APIClient, BaseOps):
                 dataset_id = dataset_id.dataset_id  # type: ignore
         self.dataset_id = dataset_id
 
-        if vector_fields is None:
+        if not vector_fields:
             vector_fields = self._get_document_vector_field()
             print(f"No vector_field given: defaulting to {vector_fields}")
 
