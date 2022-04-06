@@ -9,7 +9,7 @@ class CommunityDetection:
 
     def fit_predict(self, vectors):
         if self.gpu:
-            communities = self.community_detection(vectors)
+            communities = self.community_detection_gpu(vectors)
         else:
             communities = self.community_detection_cpu(vectors)
         labels = [-1 for _ in range(vectors.shape[0])]
