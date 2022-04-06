@@ -701,7 +701,7 @@ class Operations(APIClient):
             list_of_operations=[
                 Input([input_field]),
                 bulk_question_answer,
-                Output([output_field]),
+                Output(output_field),
             ]
         )
         return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
