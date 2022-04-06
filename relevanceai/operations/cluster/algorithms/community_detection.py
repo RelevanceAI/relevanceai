@@ -1,12 +1,17 @@
 import numpy as np
 
+from relevanceai.constants import MissingPackageError
+
 
 class CommunityDetection:
-    def __init__(self):
-        pass
+    def __init__(self, gpu=False):
+        self.gpu = gpu
 
     def fit_predict(self, vectors):
-        communities = self.community_detection(vectors)
+        if self.gpu:
+            communities = self.community_detection(vectors)
+        else:
+            communities = self.community_detection_cpu(vectors)
         labels = [-1 for _ in range(vectors.shape[0])]
         for cluster_index, community in enumerate(communities):
             for index in community:
@@ -14,11 +19,11 @@ class CommunityDetection:
         return np.array(labels)
 
     @staticmethod
-    def cosine(a):
+    def cosine(embeddings):
         """
         effecient cosine sim
         """
-        similarity = np.dot(a, a.T)
+        similarity = np.dot(embeddings, embeddings.T)
         square_mag = np.diag(similarity)
         inv_square_mag = 1 / square_mag
         inv_square_mag[np.isinf(inv_square_mag)] = 0
@@ -27,27 +32,33 @@ class CommunityDetection:
         cosine = cosine.T * inv_mag
         return cosine
 
-    def topk(self, a, k):
+    def topk(self, embeddings, k):
         """
         numpy topk
         """
-        if len(a.shape) == 1:
-            a = a.reshape(1, -1)
-        indices = a.argpartition(-k, axis=1)[:, -k:]
+        if len(embeddings.shape) == 1:
+            embeddings = embeddings.reshape(1, -1)
+        indices = embeddings.argpartition(-k, axis=1)[:, -k:]
         indices = np.flip(indices, 1)
 
-        values = np.flip(np.sort(a[np.indices(indices.shape)[0], indices], 1), 1)
+        values = np.flip(
+            np.sort(embeddings[np.indices(indices.shape)[0], indices], 1), 1
+        )
         # TODO: optimise this somehow
         indices = np.array(
             [
-                [a[col_index].tolist().index(v) for v in row]
+                [embeddings[col_index].tolist().index(v) for v in row]
                 for col_index, row in enumerate(values.tolist())
             ]
         )
         return values, indices
 
-    def community_detection(
-        self, embeddings, threshold=0.75, min_community_size=10, init_max_size=1000
+    def community_detection_cpu(
+        self,
+        embeddings,
+        threshold=0.75,
+        min_community_size=10,
+        init_max_size=1000,
     ):
         init_max_size = min(init_max_size, len(embeddings))
         cos_scores = self.cosine(embeddings)
@@ -95,3 +106,22 @@ class CommunityDetection:
                     extracted_ids.add(idx)
 
         return unique_communities
+
+    def community_detection_gpu(
+        self,
+        embeddings,
+        threshold=0.75,
+        min_community_size=10,
+        init_max_size=1000,
+    ):
+        try:
+            from sentence_transformers.util import community_detection
+        except ModuleNotFoundError:
+            raise MissingPackageError("sentence-transformers")
+        return community_detection(
+            embeddings,
+            threshold,
+            threshold,
+            min_community_size,
+            init_max_size,
+        )
