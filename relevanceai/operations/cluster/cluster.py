@@ -100,23 +100,22 @@ class ClusterOps(APIClient, BaseOps):
             model = "community_detection"
             print("No clustering model selected: defaulting to `community_detection`")
 
+        self.n_clusters = n_clusters
+
+        if n_clusters is not None:
+            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
+
         self.model = self._get_model(model)
+
+        if self.n_clusters is None:
+            if hasattr(self.model, "n_clusters"):
+                self.n_clusters = self.model.n_clusters
+
+            elif hasattr(self.model, "k"):
+                self.n_clusters = self.model.k
 
         if "package" not in self.__dict__:
             self.package = self._get_package(self.model)
-
-        if n_clusters is None:
-            if hasattr(self.model, "n_clusters"):
-                n_clusters = self.model.n_clusters
-                self.n_clusters = n_clusters
-                print(f"Number of clusters not given, defaulting to {n_clusters}")
-
-            else:
-                self.n_clusters = n_clusters
-
-        else:
-            self.n_clusters = n_clusters
-            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
 
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value

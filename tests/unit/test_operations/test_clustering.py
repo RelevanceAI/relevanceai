@@ -74,19 +74,28 @@ class TestClusterOps:
         test_dataset.cluster(
             model="kmeans",
             n_clusters=3,
+            alias="new_clustering",
             vector_fields=["sample_1_vector_"],
         )
+
+        centroids = test_client.services.cluster.centroids.list(
+            dataset_id=test_dataset.dataset_id,
+            alias="new_clustering",
+            vector_fields=["sample_1_vector_"],
+        )["results"]
+        assert len(centroids) == 3
 
         ops = ClusterOps.from_dataset(
             dataset=test_dataset,
-            alias="kmeans-3",
+            alias="new_clustering",
             vector_fields=["sample_1_vector_"],
         )
 
-        ops.merge(cluster_labels=[0, 1], alias="kmeans-3")
-        centroids = ops.services.cluster.centroids.list(
+        ops.merge(cluster_labels=[0, 1], alias="new_clustering")
+
+        centroids = test_client.services.cluster.centroids.list(
             dataset_id=test_dataset.dataset_id,
-            alias="kmeans-3",
+            alias="new_clustering",
             vector_fields=["sample_1_vector_"],
         )["results"]
         assert len(centroids) == 2
