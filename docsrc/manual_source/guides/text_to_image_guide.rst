@@ -1,5 +1,5 @@
-Text To Image Search QuickStart
-===============================
+🌇 Text To Image Search QuickStart
+==================================
 
 |Open In Colab|
 
@@ -64,7 +64,7 @@ Alternatively, you can use your own dataset for the different steps.
 
     import pandas as pd
     from relevanceai.utils.datasets import get_ecommerce_dataset_clean
-    
+
     # Retrieve our sample dataset. - This comes in the form of a list of documents.
     documents = get_ecommerce_dataset_clean()
     pd.DataFrame.from_dict(documents).head()
@@ -81,10 +81,10 @@ between text and image pairs. In the code below we set up CLIP.
     import clip
     import requests
     from PIL import Image
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load("ViT-B/32", device=device)
-    
+
     # First - let's encode the image based on CLIP
     def encode_image(image):
         # Let us download the image and then preprocess it
@@ -94,7 +94,7 @@ between text and image pairs. In the code below we set up CLIP.
           image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
-    
+
     # Next - let's encode text based on CLIP
     def encode_text(text):
         # let us get text and then tokenize it
@@ -125,7 +125,7 @@ mins
         d['product_image_clip_vector_'] = encode_image(d['product_image'])
       except:
         pass
-    
+
     # Let's import TQDM for a nice progress bar!
     from tqdm.auto import tqdm
     [encode_image_document(d) for d in tqdm(documents)]
@@ -168,7 +168,7 @@ encoder to be able to search among the similarly generated vectors.
 
 .. code:: ipython3
 
-    
+
     query = 'for my baby daughter'
     query_vector = encode_text(query)
     multivector_query=[
@@ -185,15 +185,15 @@ notebook as shown below:
 
 .. code:: ipython3
 
-    
+
     from relevanceai import show_json
-    
+
     print('=== QUERY === ')
     print(query)
-    
+
     print('=== RESULTS ===')
     show_json(results, image_fields=["product_image"], text_fields=["product_title"])
-    
+
 
 
 
