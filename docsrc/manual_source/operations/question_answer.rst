@@ -4,8 +4,8 @@ Question Answer
 Basic
 ---------
 
-The easiest way to add sentiment to a text field is using the 
-`ds.question_answer` function.
+The easiest way to ask a question to a text field and extract the relevant answer
+is using the `ds.question_answer` function.
 
 Prior to adding sentiment, we will need to make sure to install HuggingFace's Transformers.
 
@@ -14,6 +14,7 @@ Prior to adding sentiment, we will need to make sure to install HuggingFace's Tr
    pip install -q transformers[sentencepiece]
 
 
+You can then run this:
 
 .. code-block::
 
@@ -23,7 +24,7 @@ Prior to adding sentiment, we will need to make sure to install HuggingFace's Tr
     ds.question_answer(
         input_field="product_title",
         question="What brand shoes",
-        output_field="_question_test",
+        output_field="_question_",
         # Easily switch to a different HuggingFace model
         model_name="mrm8488/deberta-v3-base-finetuned-squadv2",
     )
@@ -36,7 +37,7 @@ For every document, you will get functions and formulas similar to the ones belo
       "_question_": {
          "what-brand-shoes": {
             "answer": "nike", # returns a string response
-            "score": 0.48, # confidence of the answer
+            "score": 0.98, # confidence of the answer
          }
       }
    }
