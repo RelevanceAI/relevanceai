@@ -679,7 +679,7 @@ class Operations(APIClient):
 
         model = QAOps(model_name=model_name)
 
-        def question_answer(question, answer):
+        def question_answer(answer):
             return model.question_answer(question=question, answer=answer)
 
         if output_field is None:
