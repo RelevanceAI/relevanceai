@@ -591,7 +591,7 @@ class ClusterOps(APIClient, BaseOps):
         include_vector: bool = False,
         include_count: bool = True,
         cluster_properties_filter: Optional[Dict] = {},
-        model: str = "sshleifer/distilbart-cnn-6-6",
+        model_name: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: Optional[str] = None,
         **kwargs,
     ):
@@ -636,8 +636,10 @@ class ClusterOps(APIClient, BaseOps):
             Include facets in the search results
         cluster_properties_filter: dict
             Filter if clusters with certain characteristics should be hidden in results
-        model: str
-            Model to use for summarization
+        model_name: str
+            Huggingface Model to use for summarization.
+            Pick from
+            https://huggingface.co/models?pipeline_tag=summarization&sort=downloadshttps://huggingface.co/models?pipeline_tag=summarization
         tokenizer: str
             Tokenizer to use for summarization, allows you to bring your own tokenizer,
             else will instantiate pre-trained from selected model
@@ -648,8 +650,8 @@ class ClusterOps(APIClient, BaseOps):
         alias = self.alias if alias is None else alias
 
         if not tokenizer:
-            tokenizer = model
-        summarizer = TransformersLMSummarizer(model, tokenizer)
+            tokenizer = model_name
+        summarizer = TransformersLMSummarizer(model_name, tokenizer)
 
         center_docs = self.list_closest(
             select_fields=summarize_fields,
@@ -735,9 +737,9 @@ class ClusterOps(APIClient, BaseOps):
         include_facets: bool
             Include facets in the search results
         """
-        dataset_id_ = self.dataset_id if dataset_id is None else dataset_id
-        vector_field_ = self.vector_field if vector_field is None else vector_field
-        alias_ = self.alias if alias is None else alias
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
 
         return self.services.cluster.centroids.list_furthest_from_center(
             dataset_id=dataset_id,
@@ -779,7 +781,7 @@ class ClusterOps(APIClient, BaseOps):
         include_vector: bool = False,
         include_count: bool = True,
         cluster_properties_filter: Optional[Dict] = {},
-        model: str = "sshleifer/distilbart-cnn-6-6",
+        model_name: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: Optional[str] = None,
         **kwargs,
     ):
@@ -824,8 +826,10 @@ class ClusterOps(APIClient, BaseOps):
             Include facets in the search results
         cluster_properties_filter: dict
             Filter if clusters with certain characteristics should be hidden in results
-        model: str
-            Model to use for summarization
+        model_name: str
+            Huggingface Model to use for summarization.
+            Pick from
+            https://huggingface.co/models?pipeline_tag=summarization&sort=downloadshttps://huggingface.co/models?pipeline_tag=summarization
         tokenizer: str
             Tokenizer to use for summarization, allows you to bring your own tokenizer,
             else will instantiate pre-trained from selected model
@@ -836,8 +840,8 @@ class ClusterOps(APIClient, BaseOps):
         alias = self.alias if alias is None else alias
 
         if not tokenizer:
-            tokenizer = model
-        summarizer = TransformersLMSummarizer(model, tokenizer)
+            tokenizer = model_name
+        summarizer = TransformersLMSummarizer(model_name, tokenizer)
 
         center_docs = self.list_furthest(
             select_fields=summarize_fields,
