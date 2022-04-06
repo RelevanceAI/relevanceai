@@ -677,7 +677,9 @@ class Read(Statistics):
             filters=filters,
             select_fields=select_fields,
         )
-        number_of_documents = self.get_number_of_documents(self.dataset_id)
+        number_of_documents = self.get_number_of_documents(
+            self.dataset_id, filters=filters
+        )
         with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:
             while len(docs["documents"]) > 0:
                 yield docs["documents"]
@@ -687,7 +689,7 @@ class Read(Statistics):
                     cursor=docs["cursor"],
                     filters=filters,
                 )
-            pbar.update(1)
+                pbar.update(1)
         return
 
     def list_vector_fields(self):
