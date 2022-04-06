@@ -241,9 +241,10 @@ class CentroidsClient(_Base):
         include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False,
+        cluster_properties_filter: Optional[Dict] = {}
     ):
         """
-        List of documents closest from the centre.
+        List of documents closest from the center.
 
         Parameters
         ----------
@@ -281,6 +282,9 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
+
         """
         cluster_ids = [] if cluster_ids is None else cluster_ids
         centroid_vector_fields = (
@@ -310,6 +314,7 @@ class CentroidsClient(_Base):
             "include_vector": include_vector,
             "include_count": include_count,
             "include_facets": include_facets,
+            "cluster_properties_filter": cluster_properties_filter
         }
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
@@ -342,9 +347,10 @@ class CentroidsClient(_Base):
         include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False,
+        cluster_properties_filter: Optional[Dict] = {}
     ):
         """
-        List of documents furthest from the centre.
+        List of documents furthest from the center.
 
         Parameters
         ----------
@@ -380,6 +386,9 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
+
         """
         centroid_vector_fields = (
             [] if centroid_vector_fields is None else centroid_vector_fields
@@ -411,6 +420,7 @@ class CentroidsClient(_Base):
             "include_vector": include_vector,
             "include_count": include_count,
             "include_facets": include_facets,
+            "cluster_properties_filter": cluster_properties_filter
         }
         self._log_to_dashboard(
             method=method,
