@@ -1,0 +1,1 @@
+from community_detection import CommunityDetection

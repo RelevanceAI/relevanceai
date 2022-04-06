@@ -255,22 +255,7 @@ class ClusterOps(APIClient, BaseOps):
                 model = HDBSCAN(**self.cluster_config)
 
             elif model in "communitydetection":
-                try:
-                    from sentence_transformers.util import community_detection
-                except ModuleNotFoundError:
-                    raise MissingPackageError("sentence-transformers")
-
-                class CommunityDetection:
-                    def __init__(self, config):
-                        self.config = config
-
-                    def __call__(self, vectors):
-                        communities = community_detection(vectors, **self.config)
-                        labels = [-1 for _ in range(vectors.shape[0])]
-                        for cluster_index, community in enumerate(communities):
-                            for index in community:
-                                labels[index] = cluster_index
-                        return labels
+                from relevanceai.operations.cluster.algorithms import CommunityDetection
 
                 model = CommunityDetection(config=self.cluster_config)
 
