@@ -186,6 +186,7 @@ class SearchClient(_Base):
         keep_search_history=False,
         hundred_scale=False,
         search_history_id=None,
+        sum_fields: bool = True,
     ):
         """
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -276,6 +277,7 @@ class SearchClient(_Base):
                 "ignore_spaces": ignore_spaces,
                 "traditional_weight": traditional_weight,
                 "query": text,
+                "sum_fields": sum_fields,
             },
         )
 

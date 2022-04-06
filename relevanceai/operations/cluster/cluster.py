@@ -746,10 +746,41 @@ class ClusterOps(APIClient, BaseOps):
     @track
     def merge(
         self,
-        cluster_labels: List[str],
+        cluster_labels: Tuple[int],
         alias: Optional[str] = None,
         show_progress_bar: bool = True,
     ):
+        """
+        Parameters
+        ----------
+        cluster_labels : Tuple[int]
+            a tuple of integers representing the cluster ids you would like to merge
+
+        alias: str
+            the alias of the clustering you like to merge labels within
+
+        show_progress_bar: bool
+            whether or not to show the progress bar
+
+        Example
+        -------
+
+        dataset.cluster(
+            model="kmeans",
+            n_clusters=3,
+            vector_fields=["sample_1_vector_"],
+        )
+
+        ops = ClusterOps.from_dataset(
+            dataset=dataset,
+            alias="kmeans-3",
+            vector_fields=["sample_1_vector_"],
+        )
+
+        ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
+
+        """
+
         if alias is None:
             alias = "communitydetection"
             print("No alias given, assuming `communitydetection`")
@@ -804,6 +835,8 @@ class ClusterOps(APIClient, BaseOps):
             alias=alias,
             cluster_centers=[new_centroid_doc],
         )
+
+        cluster: int
 
         for cluster in cluster_labels[1:]:
             centroid_id = f"cluster-{cluster}"
