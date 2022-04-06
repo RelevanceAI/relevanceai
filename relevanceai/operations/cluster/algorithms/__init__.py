@@ -1,1 +1,3 @@
-from community_detection import CommunityDetection
+from relevanceai.operations.cluster.algorithms.community_detection import (
+    CommunityDetection,
+)
