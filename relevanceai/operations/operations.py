@@ -563,7 +563,15 @@ class Operations(APIClient):
         print(f"You can now access your deployable at {url}.")
         return url
 
-    def subcluster(self, model, alias: str, vector_fields, parent_field, **kwargs):
+    def subcluster(
+        self,
+        model,
+        alias: str,
+        vector_fields,
+        parent_field,
+        filters: Optional[list] = None,
+        **kwargs,
+    ):
         """
         Subcluster
         """
@@ -579,7 +587,9 @@ class Operations(APIClient):
             dataset=self.dataset_id,
             **kwargs,
         )
-        return ops.fit_predict(dataset=self.dataset_id, vector_fields=vector_fields)
+        return ops.fit_predict(
+            dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
+        )
 
     def add_sentiment(
         self,
