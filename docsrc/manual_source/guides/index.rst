@@ -7,3 +7,4 @@ Guides
 
     quickstart_guide
     text_to_image_guide
+    aggregation_guide
