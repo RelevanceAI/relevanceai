@@ -1,5 +1,5 @@
-Text To Image Search QuickStart
-===============================
+🌇 Text To Image Search QuickStart
+==================================
 
 |Open In Colab|
 

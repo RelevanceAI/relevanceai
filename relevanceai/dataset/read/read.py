@@ -6,6 +6,7 @@ import math
 import warnings
 import pandas as pd
 
+from tqdm.auto import tqdm
 from typing import Optional, Union, Dict, List
 from relevanceai.client.helpers import Credentials
 
@@ -676,14 +677,19 @@ class Read(Statistics):
             filters=filters,
             select_fields=select_fields,
         )
-        while len(docs["documents"]) > 0:
-            yield docs["documents"]
-            docs = self.get_documents(
-                number_of_documents=chunksize,
-                include_cursor=True,
-                cursor=docs["cursor"],
-                filters=filters,
-            )
+        number_of_documents = self.get_number_of_documents(
+            self.dataset_id, filters=filters
+        )
+        with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:
+            while len(docs["documents"]) > 0:
+                yield docs["documents"]
+                docs = self.get_documents(
+                    number_of_documents=chunksize,
+                    include_cursor=True,
+                    cursor=docs["cursor"],
+                    filters=filters,
+                )
+                pbar.update(1)
         return
 
     def list_vector_fields(self):

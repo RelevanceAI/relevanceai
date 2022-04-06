@@ -69,6 +69,7 @@ class Dataset(IO, Read, Write, Operations):
         Example
         ---------------
         .. code-block::
+
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"

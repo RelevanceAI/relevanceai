@@ -12,3 +12,4 @@ Operations
     cluster_viz
     search
     label
+    question_answer
