@@ -257,7 +257,7 @@ class ClusterOps(APIClient, BaseOps):
             elif model in "communitydetection":
                 from relevanceai.operations.cluster.algorithms import CommunityDetection
 
-                model = CommunityDetection(config=self.cluster_config)
+                model = CommunityDetection(**self.cluster_config)
 
             elif "faiss" in model:
                 from faiss import Kmeans

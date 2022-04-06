@@ -4,26 +4,31 @@ from relevanceai.constants import MissingPackageError
 
 
 class CommunityDetection:
-    def __init__(self, config, gpu=False):
+    def __init__(
+        self,
+        threshold=0.75,
+        min_community_size=10,
+        init_max_size=1000,
+        gpu=False,
+    ):
 
         self.gpu = gpu
-        self.threshold = 0.75
-        self.min_community_size = 10
-        self.init_max_size = 1000
-
-        for key, value in config.items():
-            if key in self.__dict__:
-                setattr(self, key, value)
+        self.threshold = threshold
+        self.min_community_size = min_community_size
+        self.init_max_size = init_max_size
 
     def fit_predict(self, vectors):
         if self.gpu:
             communities = self.community_detection_gpu(vectors)
+
         else:
             communities = self.community_detection_cpu(vectors)
+
         labels = [-1 for _ in range(vectors.shape[0])]
         for cluster_index, community in enumerate(communities):
             for index in community:
                 labels[index] = cluster_index
+
         return np.array(labels)
 
     def cosine(self, embeddings):
