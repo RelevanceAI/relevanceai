@@ -3,10 +3,9 @@ from doc_utils import DocUtils
 from typing import Dict, List
 
 
-
 class TransformersLMSummarizer(LoguruLogger, DocUtils):
-    """Seq2seq models using Summarizer class
-    """
+    """Seq2seq models using Summarizer class"""
+
     def __init__(self, model: str, tokenizer: str, *args, **kwargs):
         try:
             from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -17,6 +16,7 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
             )
         try:
             import torch
+
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(

@@ -201,7 +201,7 @@ class CentroidsClient(_Base):
         include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False,
-        cluster_properties_filter: Optional[Dict] = {}
+        cluster_properties_filter: Optional[Dict] = {},
     ):
         """
         List of documents closest from the center.
@@ -274,7 +274,7 @@ class CentroidsClient(_Base):
             "include_vector": include_vector,
             "include_count": include_count,
             "include_facets": include_facets,
-            "cluster_properties_filter": cluster_properties_filter
+            "cluster_properties_filter": cluster_properties_filter,
         }
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
@@ -307,7 +307,7 @@ class CentroidsClient(_Base):
         include_vector: bool = False,
         include_count: bool = True,
         include_facets: bool = False,
-        cluster_properties_filter: Optional[Dict] = {}
+        cluster_properties_filter: Optional[Dict] = {},
     ):
         """
         List of documents furthest from the center.
@@ -380,7 +380,7 @@ class CentroidsClient(_Base):
             "include_vector": include_vector,
             "include_count": include_count,
             "include_facets": include_facets,
-            "cluster_properties_filter": cluster_properties_filter
+            "cluster_properties_filter": cluster_properties_filter,
         }
         self._log_to_dashboard(
             method=method,
