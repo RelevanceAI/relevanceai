@@ -652,8 +652,12 @@ class Operations(APIClient):
 
             from relevanceai import Client
             client = Client()
-            ds = client.Dataset("sample")
-            ds.question_answer(field="sample_1_label")
+            ds = client.Dataset("ecommerce")
+            ds.question_answer(
+                input_field="product_title",
+                question="What brand shoes",
+                output_field="_question_test"
+            )
 
         Parameters
         --------------
