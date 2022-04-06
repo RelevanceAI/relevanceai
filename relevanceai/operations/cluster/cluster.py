@@ -520,9 +520,9 @@ class ClusterOps(APIClient, BaseOps):
         alias = self.alias if alias is None else alias
 
         return self.services.cluster.centroids.list_closest_to_center(
-            dataset_id=dataset_id, 
-            vector_fields=[vector_field], 
-            alias=alias, 
+            dataset_id=dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
             cluster_ids=cluster_ids,
             centroid_vector_fields=centroid_vector_fields,
             select_fields=select_fields,
@@ -535,12 +535,11 @@ class ClusterOps(APIClient, BaseOps):
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter
+            cluster_properties_filter=cluster_properties_filter,
         )
 
-
     @staticmethod
-    def get_cluster_summary(summarizer, docs: Dict, select_fields: List[str]):
+    def get_cluster_summary(summarizer, docs: Dict, summarize_fields: List[str]):
         def _clean_sentence(s):
             s = (
                 s.replace(". .", ".")
@@ -556,7 +555,7 @@ class ClusterOps(APIClient, BaseOps):
         cluster_summary = {}
         for cluster, results in docs["results"].items():
             summary = []
-            for f in select_fields:
+            for f in summarize_fields:
                 summary_fields = [
                     _clean_sentence(d[f])
                     for d in results["results"]
@@ -572,17 +571,16 @@ class ClusterOps(APIClient, BaseOps):
             cluster_summary[cluster] = summary
         return cluster_summary
 
-    
     @beta
     @track
     def summarize_closest(
-            self,
+        self,
+        summarize_fields: List[str],
         dataset_id: Optional[str] = None,
         vector_field: Optional[str] = None,
         alias: Optional[str] = None,
         cluster_ids: Optional[List] = None,
         centroid_vector_fields: Optional[List] = None,
-        select_fields: Optional[List] = None,
         approx: int = 0,
         sum_fields: bool = True,
         page_size: int = 3,
@@ -597,12 +595,14 @@ class ClusterOps(APIClient, BaseOps):
         model: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: Optional[str] = None,
         **kwargs,
-        ):
+    ):
         """
         List of documents closest from the center.
 
         Parameters
         ----------
+        summarize_fields: list
+            Fields to perform summarization, empty array/list means all fields
         dataset_id: string
             Unique name of dataset
         vector_field: list
@@ -613,8 +613,6 @@ class ClusterOps(APIClient, BaseOps):
             Alias is used to name a cluster
         centroid_vector_fields: list
             Vector fields stored
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
         approx: int
             Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
         sum_fields: bool
@@ -642,20 +640,25 @@ class ClusterOps(APIClient, BaseOps):
         model: str
             Model to use for summarization
         tokenizer: str
-            Tokenizer to use for summarization, allows you to bring your own tokenizer, 
+            Tokenizer to use for summarization, allows you to bring your own tokenizer,
             else will instantiate pre-trained from selected model
+
         """
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
         if not tokenizer:
             tokenizer = model
         summarizer = TransformersLMSummarizer(model, tokenizer)
 
         center_docs = self.list_closest(
-            dataset_id=dataset_id, 
-            vector_field=vector_field, 
-            alias=alias, 
+            select_fields=summarize_fields,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            alias=alias,
             cluster_ids=cluster_ids,
             centroid_vector_fields=centroid_vector_fields,
-            select_fields=select_fields,
             approx=approx,
             sum_fields=sum_fields,
             page_size=page_size,
@@ -665,11 +668,11 @@ class ClusterOps(APIClient, BaseOps):
             min_score=min_score,
             include_vector=include_vector,
             include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter
+            cluster_properties_filter=cluster_properties_filter,
         )
 
         cluster_summary = self.get_cluster_summary(
-            summarizer, docs=center_docs, select_fields=select_fields
+            summarizer, docs=center_docs, summarize_fields=summarize_fields
         )
 
         return {"results": cluster_summary}
@@ -866,7 +869,7 @@ class ClusterOps(APIClient, BaseOps):
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
-            cluster_ops.fit_predict_update(df, vector_fields=["sample_vector_"])
+            cluster_ops.operate(df, vector_fields=["sample_vector_"])
             clusterer.aggregate(
                 "sample_dataset_id",
                 groupby=[{
