@@ -689,8 +689,8 @@ class Operations(APIClient):
 
         model = QAOps(model_name=model_name)
 
-        def question_answer(context):
-            return model.question_answer(question=question, context=context)
+        def bulk_question_answer(contexts: list):
+            return model.bulk_question_answer(question=question, contexts=contexts)
 
         if output_field is None:
             output_field = "_question_." + "-".join(question.lower().strip().split())
@@ -699,7 +699,7 @@ class Operations(APIClient):
         workflow = SequentialWorkflow(
             list_of_operations=[
                 Input([input_field]),
-                question_answer,
+                bulk_question_answer,
                 Output([output_field]),
             ]
         )

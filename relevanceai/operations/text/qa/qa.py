@@ -23,3 +23,8 @@ class QAOps(BaseOps):
     def question_answer(self, question: str, context: str):
         output = self.qa_model(question=question, context=context)
         return {"answer": output["answer"], "score": output["score"]}
+
+    def bulk_question_answer(self, question, contexts):
+        return [
+            self.qa_model(question=question, context=context) for context in contexts
+        ]
