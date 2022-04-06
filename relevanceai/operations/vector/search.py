@@ -201,6 +201,7 @@ class SearchOps(APIClient):
         keep_search_history=False,
         hundred_scale=False,
         search_history_id=None,
+        sum_fields: bool = False,
     ):
         """
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -298,6 +299,7 @@ class SearchOps(APIClient):
             keep_search_history=keep_search_history,
             hundred_scale=hundred_scale,
             search_history_id=search_history_id,
+            sum_fields=sum_fields,
         )
 
     @track
