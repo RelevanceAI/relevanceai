@@ -62,7 +62,8 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
+        ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
+        return ops
 
     def reduce_dims(
         self,
