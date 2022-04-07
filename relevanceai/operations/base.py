@@ -44,14 +44,13 @@ class BaseOps:
     @classmethod
     def from_dataset(
         self,
-        dataset: Any,
+        credentials: Credentials,
+        dataset_id: str,
         alias: Optional[str],
         vector_fields: Optional[List[str]],
         *args,
         **kwargs,
     ):
-        dataset_id = dataset.dataset_id
-        credentials = dataset.credentials
         return self(
             credentials=credentials,
             dataset_id=dataset_id,

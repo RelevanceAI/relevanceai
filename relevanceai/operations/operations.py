@@ -1,9 +1,7 @@
-from typing import List, Dict, Optional, Any, Union
+from typing import List, Optional, Any
 
 from relevanceai.client.helpers import Credentials
 from relevanceai._api import APIClient
-
-from relevanceai import Dataset
 
 
 class Operations(APIClient):
@@ -27,8 +25,8 @@ class Operations(APIClient):
     def cluster(
         self,
         model: Any,
-        alias: Optional[str],
-        vector_fields: Optional[List[str]],
+        alias: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         **kwargs,
     ):
         """
@@ -87,32 +85,23 @@ class Operations(APIClient):
     def merge_clusters(
         self,
         cluster_labels: List[int],
-        dataset: Optional[Dataset],
-        alias: Optional[str],
-        vector_fields: Optional[List[str]],
+        alias: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         show_progress_bar: bool = False,
     ):
         from relevanceai import ClusterOps
 
-        dataset = (
-            Dataset(
-                credentials=self.credentials,
-                dataset_id=self.dataset_id,
-            )
-            if dataset is None
-            else dataset
-        )
         alias = self.alias if alias is None else alias
         vector_fields = self.vector_fields if vector_fields is None else vector_fields
 
         self.store(
-            dataset=dataset,
             alias=alias,
             vector_fields=vector_fields,
         )
 
         ops = ClusterOps.from_dataset(
-            dataset=dataset,
+            dataset_id=self.dataset_id,
+            credentials=self.credentials,
             alias=alias,
             vector_fields=vector_fields,
         )
@@ -127,8 +116,8 @@ class Operations(APIClient):
         self,
         model: Any,
         n_components: int,
-        alias: Optional[str],
-        vector_fields: Optional[List[str]],
+        alias: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
         **kwargs,
     ):
         """
