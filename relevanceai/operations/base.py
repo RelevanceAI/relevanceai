@@ -1,7 +1,7 @@
 """
 Base class for operations.
 """
-from typing import Any, List
+from typing import Any, List, Optional
 from relevanceai.client.helpers import (
     Credentials,
     process_token,
@@ -43,7 +43,12 @@ class BaseOps:
 
     @classmethod
     def from_dataset(
-        self, dataset: Any, alias: str, vector_fields: List[str], *args, **kwargs
+        self,
+        dataset: Any,
+        alias: Optional[str],
+        vector_fields: Optional[List[str]],
+        *args,
+        **kwargs,
     ):
         dataset_id = dataset.dataset_id
         credentials = dataset.credentials
@@ -52,7 +57,6 @@ class BaseOps:
             dataset_id=dataset_id,
             alias=alias,
             vector_fields=vector_fields,
-            vector_field=vector_fields[0],
             *args,
             **kwargs,
         )

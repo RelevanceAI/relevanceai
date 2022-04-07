@@ -2,6 +2,8 @@
 import warnings
 from relevanceai.client import Client
 
+from relevanceai.dataset import Dataset
+
 # Cluster _Base Utilities
 from relevanceai.operations.cluster.base import (
     ClusterBase,

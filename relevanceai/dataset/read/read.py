@@ -619,7 +619,7 @@ class Read(Statistics):
         """
         return self.datasets.metadata(self.dataset_id)["results"]
 
-    @property
+    @property  # type: ignore
     @track
     def metadata(self):
         """Get the metadata"""

@@ -1,8 +1,9 @@
 from typing import List, Dict, Optional, Any, Union
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.utils.decorators import deprecated, beta
 from relevanceai._api import APIClient
+
+from relevanceai import Dataset
 
 
 class Operations(APIClient):
@@ -12,14 +13,22 @@ class Operations(APIClient):
         dataset_id: str,
     ):
         self.credentials = credentials
-        self.dataset_id = dataset_id
+
+        self.dataset_id: str = dataset_id
+        self.alias: Optional[str] = None
+        self.vector_fields: Optional[List[str]] = None
+
         super().__init__(self.credentials)
+
+    def store(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def cluster(
         self,
-        model: Union[str, Any],
-        vector_fields: List[str],
-        alias: Optional[str] = None,
+        model: Any,
+        alias: Optional[str],
+        vector_fields: Optional[List[str]],
         **kwargs,
     ):
         """
@@ -52,25 +61,74 @@ class Operations(APIClient):
             The alias to be used to store your model
 
         """
-        from relevanceai.operations.cluster import ClusterOps
+        from relevanceai import ClusterOps
+
+        alias = self.alias if alias is None else alias
+        vector_fields = self.vector_fields if vector_fields is None else vector_fields
+
+        self.store(
+            alias=alias,
+            vector_fields=vector_fields,
+        )
 
         ops = ClusterOps(
             credentials=self.credentials,
+            dataset_id=self.dataset_id,
             model=model,
             alias=alias,
-            vector_fields=vector_fields,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
-        ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
+        ops(
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+        )
+        return ops
+
+    def merge_clusters(
+        self,
+        cluster_labels: List[int],
+        dataset: Optional[Dataset],
+        alias: Optional[str],
+        vector_fields: Optional[List[str]],
+        show_progress_bar: bool = False,
+    ):
+        from relevanceai import ClusterOps
+
+        dataset = (
+            Dataset(
+                credentials=self.credentials,
+                dataset_id=self.dataset_id,
+            )
+            if dataset is None
+            else dataset
+        )
+        alias = self.alias if alias is None else alias
+        vector_fields = self.vector_fields if vector_fields is None else vector_fields
+
+        self.store(
+            dataset=dataset,
+            alias=alias,
+            vector_fields=vector_fields,
+        )
+
+        ops = ClusterOps.from_dataset(
+            dataset=dataset,
+            alias=alias,
+            vector_fields=vector_fields,
+        )
+        ops.merge(
+            cluster_labels=cluster_labels,
+            alias=alias,
+            show_progress_bar=show_progress_bar,
+        )
         return ops
 
     def reduce_dims(
         self,
         model: Any,
         n_components: int,
-        alias: str,
-        vector_fields: List[str],
+        alias: Optional[str],
+        vector_fields: Optional[List[str]],
         **kwargs,
     ):
         """
@@ -90,6 +148,14 @@ class Operations(APIClient):
 
         """
         from relevanceai.operations.dr import ReduceDimensionsOps
+
+        alias = self.alias if alias is None else alias
+        vector_fields = self.vector_fields if vector_fields is None else vector_fields
+
+        self.store(
+            alias=alias,
+            vector_fields=vector_fields,
+        )
 
         ops = ReduceDimensionsOps(
             credentials=self.credentials,

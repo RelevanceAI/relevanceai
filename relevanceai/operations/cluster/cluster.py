@@ -117,9 +117,12 @@ class ClusterOps(APIClient, BaseOps):
             if not hasattr(self, key):
                 setattr(self, key, value)
 
+        if hasattr(self, "vector_fields"):
+            self.vector_field = self.vector_fields[0]
+
         super().__init__(credentials)
 
-    def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
+    def __call__(self, dataset_id: str, vector_fields: Optional[List[str]]) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
 
     def _get_schema(self) -> Dict:
