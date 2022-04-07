@@ -78,11 +78,11 @@ You can do that in 2 ways.
     # State the vector fields and alias in the ClusterOps object
     cluster_ops = client.ClusterOps(alias="kmeans-16", dataset_id="sample_dataset_id",
         vector_fields=['sample_vector_'])
-    cluster_ops.list_closest_to_center()
+    cluster_ops.list_closest()
 
     # State the vector fields and alias in the operational call
     cluster_ops = client.ClusterOps(alias="kmeans-16")
-    cluster_ops.list_closest_to_center(dataset="sample_dataset_id",
+    cluster_ops.list_closest(dataset="sample_dataset_id",
         vector_fields=["documentation_vector_])
 
 API Reference

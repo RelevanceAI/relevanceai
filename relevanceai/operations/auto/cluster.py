@@ -197,7 +197,7 @@ class AutoClusterOps(CommunityDetection):
 
             # run kmeans with default 10 clusters
             clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
-            clusterer.list_closest_to_center()
+            clusterer.list_closest()
 
             # Run k means clustering with 8 clusters
             clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
@@ -362,7 +362,7 @@ class AutoClusterOps(CommunityDetection):
 
             # run kmeans with default 10 clusters
             clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
-            clusterer.list_closest_to_center()
+            clusterer.list_closest()
 
             # Run k means clustering with 8 clusters
             clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
