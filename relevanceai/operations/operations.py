@@ -768,3 +768,30 @@ class Operations(APIClient):
     #         ]
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+    def advanced_search(
+        self,
+        query: str = None,
+        vector_search_query: Optional[dict] = None,
+        fields_to_search: Optional[List] = None,
+        select_fields: Optional[List] = None,
+        **kwargs,
+    ):
+        """
+        Advanced Search
+
+        Parameters
+        -----------
+        query: str
+            The query to use
+        vector_search_query: dict
+
+
+        """
+        return self.datasets.fast_search(
+            dataset_id=self.dataset_id,
+            query=query,
+            vectorSearchQuery=vector_search_query,
+            fieldsToSearch=fields_to_search,
+            includeFields=select_fields,
+            **kwargs,
+        )
