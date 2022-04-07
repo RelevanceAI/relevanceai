@@ -84,20 +84,21 @@ Start by installing the library and logging in to your account.
 
 .. code:: ipython3
 
-    dataset_id = "retail_reviews" # The dataset name that we have decided, this can be whatever you want for your own data
-    dataset = client.Dataset(dataset_id=dataset_id) # Instantiate the dataset
+    dataset_id = "retail_reviews"  # The dataset name that we have decided, this can be whatever you want for your own data
+    dataset = client.Dataset(dataset_id=dataset_id)  # Instantiate the dataset
 
 .. code:: ipython3
 
-    import gdown # Since the example data is located in google drive, we use gdown to retrieve
+    import gdown  # Since the example data is located in google drive, we use gdown to retrieve
+    
     # In a real workload, this step can be substituted for loading your own .csv
     # dataset link: https://data.world/datafiniti/grammar-and-online-product-reviews
     
-    dataset_small = "1SZ1EqBZQG132yaAaV0doxuGDZo7PdT2B" # 5K files
+    dataset_small = "1SZ1EqBZQG132yaAaV0doxuGDZo7PdT2B"  # 5K files
     output = "data_small.zip"
     gdown.download(id=dataset_small, output=output, quiet=False)
     
-    dataset_large = "1eQwJy4nbIontA7qEe344lgBl3Una5Vlg" # 71K files
+    dataset_large = "1eQwJy4nbIontA7qEe344lgBl3Una5Vlg"  # 71K files
     output = "data_large.zip"
     gdown.download(id=dataset_large, output=output, quiet=False)
 
@@ -138,7 +139,7 @@ Start by installing the library and logging in to your account.
 
 .. code:: ipython3
 
-    dataset.insert_csv("data_small.csv") # RelevanceAI uses one line of code to insert .csv
+    dataset.insert_csv("data_small.csv")  # RelevanceAI uses one line of code to insert .csv
 
 
 .. parsed-literal::

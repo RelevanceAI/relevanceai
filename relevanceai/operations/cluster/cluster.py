@@ -745,19 +745,21 @@ class ClusterOps(APIClient, BaseOps):
         Example
         -------
 
-        dataset.cluster(
-            model="kmeans",
-            n_clusters=3,
-            vector_fields=["sample_1_vector_"],
-        )
+        .. code-block::
 
-        ops = ClusterOps.from_dataset(
-            dataset=dataset,
-            alias="kmeans-3",
-            vector_fields=["sample_1_vector_"],
-        )
+            dataset.cluster(
+                model="kmeans",
+                n_clusters=3,
+                vector_fields=["sample_1_vector_"],
+            )
 
-        ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
+            ops = ClusterOps.from_dataset(
+                dataset=dataset,
+                alias="kmeans-3",
+                vector_fields=["sample_1_vector_"],
+            )
+
+            ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
 
         """
 
