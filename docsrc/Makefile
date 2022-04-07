@@ -27,5 +27,7 @@ build_docs:
 
 build_guides:
 	find manual_source/guides/ -type f -name *guide*.rst -delete
-	jupyter nbconvert --to rst ../guides/*guide*.ipynb
-	mv ../guides/*guide*.rst manual_source/guides/
+	jupyter nbconvert --to rst ../guides/*guide*.ipynb --output-dir=manual_source/guides/
+
+# mv ../guides/*guide*.rst manual_source/guides/
+# ls -d -- ../guides/*/ | xargs -I '{}' mv -f {} manual_source/guides/
