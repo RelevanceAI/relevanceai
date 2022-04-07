@@ -8,13 +8,17 @@ import numpy as np
 from typing import List, Optional
 from tqdm.auto import tqdm
 
+from relevanceai._api import APIClient
+from relevanceai.client.helpers import Credentials
+
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.decorators.version import beta
-from relevanceai.operations.cluster.models.community_detection import CommunityDetection
 from relevanceai.constants.warning import Warning
 
 
-class AutoClusterOps(CommunityDetection):
+class AutoClusterOps(APIClient):
+    def __init__(self, credentials: Credentials):
+        super().__init__(credentials)
+
     @track
     def cluster(self, model, alias, vector_fields, **kwargs):
         """
