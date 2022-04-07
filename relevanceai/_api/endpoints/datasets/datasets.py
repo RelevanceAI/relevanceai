@@ -673,3 +673,86 @@ class DatasetsClient(_Base):
                 "asc": asc,
             },
         )
+
+    def fast_search(
+        self,
+        dataset_id: str,
+        query: str = None,
+        queryConfig: dict = None,
+        vectorSearchQuery: dict = None,
+        instantAnswerQuery: dict = None,
+        fieldsToSearch: List = None,
+        page: int = 1,
+        pageSize: int = 10,
+        minimumRelevance: int = 0,
+        includeRelevance: bool = True,
+        includeDataset: bool = False,
+        cleanPayloadUsingSchema: bool = True,
+        sort: dict = None,
+        includeFields: Optional[List] = None,
+        excludeFields: Optional[List] = None,
+        includeVectors: bool = True,
+        textSort: Optional[dict] = None,
+        fieldsToAggregate: Optional[List] = None,
+        fieldsToAggregateStats: Optional[List] = None,
+        filters: Optional[List] = None,
+        relevanceBoosters: Optional[List] = None,
+        afterId: Optional[List] = None,
+    ):
+        """
+        Parameters
+        ------------
+
+        query: str
+            Search for documents that contain this query string in your dataset.
+            Use fieldsToSearch parameter to restrict which fields are searched.
+        queryConfig: dict
+            Configuration for traditional search query.
+            Increases or decreases the impact of traditional search when calculating a documents _relevance. new_traditional_relevance = traditional_relevance*queryConfig.weight
+        vectorSearchQuery: dict
+
+
+        """
+        # fast search
+        parameters = {
+            "page": page,
+            "pageSize": pageSize,
+            "minimumRelevance": minimumRelevance,
+            "includeRelevance": includeRelevance,
+            "includeDataset": includeDataset,
+            "cleanPayloadUsingSchema": cleanPayloadUsingSchema,
+            "includeVectors": includeVectors,
+        }
+        if query is not None:
+            parameters["query"] = query
+        if queryConfig is not None:
+            parameters["queryConfig"] = queryConfig
+        if vectorSearchQuery is not None:
+            parameters["vectorSearchQuery"] = vectorSearchQuery
+        if instantAnswerQuery is not None:
+            parameters["instantAnswerQuery"] = instantAnswerQuery
+        if fieldsToSearch is not None:
+            parameters["fieldsToSearch"] = fieldsToSearch
+        if sort is not None:
+            parameters["sort"] = sort
+        if includeFields is not None:
+            parameters["includeFields"] = includeFields
+        if excludeFields is not None:
+            parameters["excludeFields"] = excludeFields
+        if textSort is not None:
+            parameters["textSort"] = textSort
+        if fieldsToAggregate is not None:
+            parameters["fieldsToAggregate"] = fieldsToAggregate
+        if fieldsToAggregateStats is not None:
+            parameters["fieldsToAggregateStats"] = fieldsToAggregateStats
+        if filters is not None:
+            parameters["filters"] = filters
+        if relevanceBoosters is not None:
+            parameters["relevanceBoosters"] = relevanceBoosters
+        if afterId is not None:
+            parameters["afterId"] = afterId
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/simple_search",
+            method="POST",
+            parameters=parameters,
+        )

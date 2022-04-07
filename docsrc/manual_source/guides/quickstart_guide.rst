@@ -91,14 +91,14 @@ Start by installing the library and logging in to your account.
 .. code:: ipython3
 
     import gdown  # Since the example data is located in google drive, we use gdown to retrieve
-
+    
     # In a real workload, this step can be substituted for loading your own .csv
     # dataset link: https://data.world/datafiniti/grammar-and-online-product-reviews
-
+    
     dataset_small = "1SZ1EqBZQG132yaAaV0doxuGDZo7PdT2B"  # 5K files
     output = "data_small.zip"
     gdown.download(id=dataset_small, output=output, quiet=False)
-
+    
     dataset_large = "1eQwJy4nbIontA7qEe344lgBl3Una5Vlg"  # 71K files
     output = "data_large.zip"
     gdown.download(id=dataset_large, output=output, quiet=False)
