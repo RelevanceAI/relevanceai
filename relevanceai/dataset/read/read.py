@@ -612,6 +612,7 @@ class Read(Statistics):
             include_cursor=include_cursor,
         )
 
+    @track
     def get_metadata(self):
         """
         Store Metadata
@@ -619,12 +620,14 @@ class Read(Statistics):
         return self.datasets.metadata(self.dataset_id)["results"]
 
     @property
+    @track
     def metadata(self):
         """Get the metadata"""
         _metadata = self.get_metadata()
         self._metadata = Metadata(_metadata, self.credentials, self.dataset_id)
         return self._metadata
 
+    @track
     def insert_metadata(self, metadata: dict):
         """Insert metadata"""
         results = self.datasets.post_metadata(self.dataset_id, metadata)
@@ -633,6 +636,7 @@ class Read(Statistics):
         else:
             return results
 
+    @track
     def upsert_metadata(self, metadata: dict):
         """Upsert metadata."""
         original_metadata: dict = self.get_metadata()
@@ -644,6 +648,7 @@ class Read(Statistics):
             return results
         return self.insert_metadata(metadata)
 
+    @track
     def chunk_dataset(
         self, select_fields: List = None, chunksize: int = 100, filters: list = None
     ):
@@ -692,6 +697,7 @@ class Read(Statistics):
                 pbar.update(1)
         return
 
+    @track
     def list_vector_fields(self):
         """
         Returns list of valid vector fields in dataset
@@ -716,5 +722,6 @@ class Read(Statistics):
             k for k in schema.keys() if k.endswith("_vector_") and "_cluster_" not in k
         ]
 
+    @track
     def list_cluster_aliases(self):
         raise NotImplementedError()
