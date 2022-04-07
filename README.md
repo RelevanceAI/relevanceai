@@ -7,9 +7,12 @@
 
 **Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://hubs.ly/Q014Qbs10)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://hubs.ly/Q014Qbs10).
+
 
 For guides and tutorials on how to use this package, visit https://docs.relevance.ai/docs.
+
+This SDK is used in conjunction with RelevanceAI's [dashboard](https://hubs.ly/Q017CkXK0). Sign up and getting started [here](https://hubs.ly/Q017CkXK0)!
 
 ## 🔥 Features
 
