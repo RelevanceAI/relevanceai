@@ -1,5 +1,5 @@
-How To Use Custom Vectorizers
-=============================
+⚡ How To Use Custom Vectorizers
+===============================
 
 |Open In Colab|
 

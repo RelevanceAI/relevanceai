@@ -75,15 +75,15 @@ Plot Basic Distributions
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_9_0.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_10_0.png
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_9_1.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_10_1.png
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_9_2.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_10_2.png
 
 
 Plotting Custom Distributions - Variation
@@ -107,15 +107,15 @@ Plotting Custom Distributions - Variation
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_11_1.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_12_1.png
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_11_2.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_12_2.png
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_11_3.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_12_3.png
 
 
 .. code:: ipython3
@@ -134,11 +134,11 @@ Plotting Custom Distributions - Variation
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_12_1.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_13_1.png
 
 
 
-.. image:: cluster_distribution_guide_files/cluster_distribution_guide_12_2.png
+.. image:: cluster_distribution_guide_files/cluster_distribution_guide_13_2.png
 
 
 
