@@ -710,7 +710,7 @@ class DatasetsClient(_Base):
             Configuration for traditional search query.
             Increases or decreases the impact of traditional search when calculating a documents _relevance. new_traditional_relevance = traditional_relevance*queryConfig.weight
         vectorSearchQuery: dict
-
+            Vector search queries.
 
         """
         # fast search
@@ -723,34 +723,36 @@ class DatasetsClient(_Base):
             "cleanPayloadUsingSchema": cleanPayloadUsingSchema,
             "includeVectors": includeVectors,
         }
+        # mypy triggered a lot of really annoying errors that didn't make sense here
+        # hmph
         if query is not None:
-            parameters["query"] = query
+            parameters["query"] = query  # type: ignore
         if queryConfig is not None:
-            parameters["queryConfig"] = queryConfig
+            parameters["queryConfig"] = queryConfig  # type: ignore
         if vectorSearchQuery is not None:
-            parameters["vectorSearchQuery"] = vectorSearchQuery
+            parameters["vectorSearchQuery"] = vectorSearchQuery  # type: ignore
         if instantAnswerQuery is not None:
-            parameters["instantAnswerQuery"] = instantAnswerQuery
+            parameters["instantAnswerQuery"] = instantAnswerQuery  # type: ignore
         if fieldsToSearch is not None:
-            parameters["fieldsToSearch"] = fieldsToSearch
+            parameters["fieldsToSearch"] = fieldsToSearch  # type: ignore
         if sort is not None:
-            parameters["sort"] = sort
+            parameters["sort"] = sort  # type: ignore
         if includeFields is not None:
-            parameters["includeFields"] = includeFields
+            parameters["includeFields"] = includeFields  # type: ignore
         if excludeFields is not None:
-            parameters["excludeFields"] = excludeFields
+            parameters["excludeFields"] = excludeFields  # type: ignore
         if textSort is not None:
-            parameters["textSort"] = textSort
+            parameters["textSort"] = textSort  # type: ignore
         if fieldsToAggregate is not None:
-            parameters["fieldsToAggregate"] = fieldsToAggregate
+            parameters["fieldsToAggregate"] = fieldsToAggregate  # type: ignore
         if fieldsToAggregateStats is not None:
-            parameters["fieldsToAggregateStats"] = fieldsToAggregateStats
+            parameters["fieldsToAggregateStats"] = fieldsToAggregateStats  # type: ignore
         if filters is not None:
-            parameters["filters"] = filters
+            parameters["filters"] = filters  # type: ignore
         if relevanceBoosters is not None:
-            parameters["relevanceBoosters"] = relevanceBoosters
+            parameters["relevanceBoosters"] = relevanceBoosters  # type: ignore
         if afterId is not None:
-            parameters["afterId"] = afterId
+            parameters["afterId"] = afterId  # type: ignore
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/simple_search",
             method="POST",
