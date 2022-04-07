@@ -4,6 +4,13 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v2.1.0
+-----------
+
+- Add `summarize_closest_to_center`
+- Add guides
+- Add `advanced_search` tutorial and dataset functionality
+
 v2.0.2
 -----------
 
