@@ -1,0 +1,12 @@
+[
+    {
+      "name": "dev",
+      "version": "development",
+      "url": "https://pydata-sphinx-theme.readthedocs.io/en/development/"
+    },
+    {
+      "name": "v2.0.0",
+      "version": "v2.0.0",
+      "url": "https://relevanceai.readthedocs.io/en/v2.0.0/"
+    }
+]

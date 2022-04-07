@@ -14,7 +14,6 @@ Installation
     # remove `!` if running the line in a terminal
     !pip install -U RelevanceAI[notebook]==2.0.0
 
-
 Setup
 =====
 
