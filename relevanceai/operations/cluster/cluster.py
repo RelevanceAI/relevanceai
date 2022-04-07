@@ -1,5 +1,6 @@
 from typing import (
     Any,
+    Set,
     Dict,
     List,
     Optional,
@@ -726,7 +727,7 @@ class ClusterOps(APIClient, BaseOps):
     @track
     def merge(
         self,
-        cluster_labels: Tuple[int],
+        cluster_labels: List,
         alias: Optional[str] = None,
         show_progress_bar: bool = True,
     ):
@@ -745,19 +746,21 @@ class ClusterOps(APIClient, BaseOps):
         Example
         -------
 
-        dataset.cluster(
-            model="kmeans",
-            n_clusters=3,
-            vector_fields=["sample_1_vector_"],
-        )
+        .. code-block::
 
-        ops = ClusterOps.from_dataset(
-            dataset=dataset,
-            alias="kmeans-3",
-            vector_fields=["sample_1_vector_"],
-        )
+            dataset.cluster(
+                model="kmeans",
+                n_clusters=3,
+                vector_fields=["sample_1_vector_"],
+            )
 
-        ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
+            ops = ClusterOps.from_dataset(
+                dataset=dataset,
+                alias="kmeans-3",
+                vector_fields=["sample_1_vector_"],
+            )
+
+            ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
 
         """
 
