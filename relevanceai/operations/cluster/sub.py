@@ -108,6 +108,10 @@ class _SubClusterOps(ClusterOps):
             filters=filters,
         )
 
+        # If no documents then return
+        if len(documents) == 0:
+            return
+
         # fit model, predict and label all documents
         centroid_documents, labelled_documents = self._fit_predict(
             documents=documents,
