@@ -10,7 +10,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Get started using our RelevanceAI SDK and use of
-`Vectorhub <https://hub.getvectorai.com/>`__\ ’s `CLIP
+`Vectorhub <https://hub.getvectorai.com/>`__'s `CLIP
 model <https://hub.getvectorai.com/model/text_image%2Fclip>`__ for
 encoding.
 
@@ -26,27 +26,25 @@ Follow the signup flow and get your credentials below otherwise, you can
 sign up/login and find your credentials in the settings
 `here <https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api>`__
 
-|image0|
-
-.. |image0| image:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
+.. figure:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
+   :alt:
 
 .. code:: python
 
-    
+
     from relevanceai import Client
-    
+
     """
     You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
     Once you have signed up, click on the value under `Activation token` and paste it here
     """
     client = Client()
-    
 
 
 
-|image0|
 
-.. |image0| image:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
+.. figure:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
+   :alt:
 
 2. Create a dataset and insert data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,31 +55,30 @@ Use one of our sample datasets to upload into your own project!
 
     import pandas as pd
     from relevanceai.utils.datasets import get_ecommerce_dataset_clean
-    
+
     # Retrieve our sample dataset. - This comes in the form of a list of documents.
     documents = get_ecommerce_dataset_clean()
-    
+
     pd.DataFrame.from_dict(documents).head()
 
 
 .. code:: python
 
-    
+
     ds = client.Dataset("quickstart")
     ds.insert_documents(documents)
 
 
 See your dataset in the dashboard
 
-|image0|
-
-.. |image0| image:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
+.. figure:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
+   :alt:
 
 3. Encode data and upload vectors into your new dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Encode a new product image vector using
-`Vectorhub’s <https://hub.getvectorai.com/>`__ ``Clip2Vec`` models and
+`Vectorhub's <https://hub.getvectorai.com/>`__ ``Clip2Vec`` models and
 update your dataset with the resulting vectors. Please refer to
 `Vectorhub <https://github.com/RelevanceAI/vectorhub>`__ for more
 details.
@@ -89,13 +86,13 @@ details.
 .. code:: python
 
     from vectorhub.bi_encoders.text_image.torch import Clip2Vec
-    
+
     model = Clip2Vec()
-    
+
     # Set the default encode to encoding an image
     model.encode = model.encode_image
     documents = model.encode_documents(fields=['product_image'], documents=documents)
-    
+
 
 
 .. code:: python
@@ -110,9 +107,8 @@ details.
 
 Monitor your vectors in the dashboard
 
-|image0|
-
-.. |image0| image:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
+.. figure:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
+   :alt:
 
 4. Run clustering on your vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,7 +121,7 @@ link which is provided after the clustering is finished!
 .. code:: python
 
     from sklearn.cluster import KMeans
-    
+
     cluster_model = KMeans(n_clusters=10)
     ds.cluster(cluster_model, ["product_image_clip_vector_"])
 
@@ -142,9 +138,8 @@ additional field. The default ``alias`` of the cluster will be the
 
 See your cluster centers in the dashboard
 
-|image0|
-
-.. |image0| image:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
+.. figure:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
+   :alt:
 
 4. Run a vector search
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -163,7 +158,7 @@ https://cloud.relevance.ai/sdk/search.
 
 .. code:: python
 
-    
+
     query = "gifts for the holidays"
     query_vector = model.encode(query)
     multivector_query=[
@@ -177,12 +172,11 @@ https://cloud.relevance.ai/sdk/search.
 
 See your multi-vector search results in the dashboard
 
-|image0|
-
-.. |image0| image:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
+.. figure:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
+   :alt:
 
 Want to quickly create some example applications with Relevance AI?
-Check out some other guides below! - `Text-to-image search with OpenAI’s
+Check out some other guides below! - `Text-to-image search with OpenAI's
 CLIP <https://docs.relevance.ai/docs/quickstart-text-to-image-search>`__
 - `Hybrid Text search with Universal Sentence Encoder using
 Vectorhub <https://docs.relevance.ai/docs/quickstart-text-search>`__ -
