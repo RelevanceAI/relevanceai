@@ -26,7 +26,7 @@ your search!
     ds = client.Dataset("clothes")
 
 Simple Text Search
-------------------
+==================
 
 .. code:: ipython3
 
@@ -129,7 +129,7 @@ Simple Text Search
 
 
 Simple Vector Search
---------------------
+====================
 
 .. code:: ipython3
 
@@ -236,7 +236,7 @@ Simple Vector Search
 
 
 Combining Text And Vector Search (Hybrid)
------------------------------------------
+=========================================
 
 Combining text and vector search allows users get the best of both exact
 text search and contextual vector search. This can be done as shown
@@ -350,7 +350,7 @@ below.
 
 
 Adjust the weighting of your vector search results
---------------------------------------------------
+==================================================
 
 Adjust the weighting of your vector search results to make it easier for
 you! Simply add a ``weight`` parameter your dictionary inside
@@ -464,7 +464,7 @@ you! Simply add a ``weight`` parameter your dictionary inside
 
 
 Multi-Vector Search Across Multiple Fields
-------------------------------------------
+==========================================
 
 You can easily add more to your search by extending your vector search
 query as belows.

@@ -1,5 +1,5 @@
-Cluster Analysis
-================
+👓 Cluster Analysis
+==================
 
 Plotting Cluster Distributions
 ------------------------------

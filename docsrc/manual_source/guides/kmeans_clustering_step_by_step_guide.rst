@@ -1,5 +1,5 @@
-K Means Clustering Step By Step
-===============================
+🍔 K Means Clustering Step By Step
+=================================
 
 Installation
 ============
@@ -19,10 +19,6 @@ First, you need to set up a client object to interact with RelevanceAI.
 
     from relevanceai import Client
     
-    """
-    You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
-    Once you have signed up, click on the value under `Activation token` and paste it here
-    """
     client = Client()
     
 
