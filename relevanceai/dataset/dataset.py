@@ -57,10 +57,7 @@ class Dataset(IO, Read, Write, Operations):
 
     def is_empty(self):
         """Check if a dataset is empty."""
-        try:
-            # If dataset doesn't exist, throws an API error :)
-            self.shape
-        except Exception as e:
+        if self.dataset_id not in self.datasets.list()["datasets"]:
             print("⚠️ Your dataset has no documents. Make sure to insert some!")
 
     @track
