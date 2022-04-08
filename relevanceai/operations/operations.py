@@ -716,6 +716,8 @@ class Operations(APIClient):
                 output_field = "_question_." + "-".join(
                     question.lower().strip().split()
                 )
+                # Remove things that are datasets
+                output_field = output_field.replace("?", "")
                 print(f"No output field is detected. Setting to {output_field}")
 
             workflow = SequentialWorkflow(
