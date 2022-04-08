@@ -663,6 +663,7 @@ class Operations(APIClient):
         model_name: str = "mrm8488/deberta-v3-base-finetuned-squadv2",
         verbose: bool = True,
         log_to_file: bool = True,
+        filters: Optional[list] = None,
     ):
         """
         Question your dataset and retrieve answers from it.
