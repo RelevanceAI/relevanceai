@@ -85,9 +85,9 @@ class Labels(Write):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
-            result = df.label_vector(
+            result = ds.label_vector(
                 [...],
                 label_vector_field="sample_1_vector_",
                 alias="alias_sample",
@@ -206,9 +206,9 @@ class Labels(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
 
-            results = df.label_document(
+            results = ds.label_document(
                 document={...},
                 vector_field="sample_1_vector_",
                 alias="example",
@@ -292,9 +292,9 @@ class Labels(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
 
-            results = df.label(
+            results = ds.label(
                 vector_field="sample_1_vector_",
                 alias="example",
                 label_dataset_id=label_dataset_id,
@@ -403,7 +403,7 @@ class Labels(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
+            ds = client.Dataset("sample")
 
             # Get a model to help us encode
             from vectorhub.encoders.text.tfhub import USE2Vec
@@ -412,9 +412,9 @@ class Labels(Write):
             # Use that model to help with encoding
             label_list = ["dog", "cat"]
 
-            df = client.Dataset("_github_repo_vectorai")
+            ds = client.Dataset("_github_repo_vectorai")
 
-            df.label_from_list("documentation_vector_", enc.bulk_encode, label_list, alias="pets")
+            ds.label_from_list("documentation_vector_", enc.bulk_encode, label_list, alias="pets")
 
         """
         if alias is None:
@@ -540,8 +540,8 @@ class Labels(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            df.get_word_count()
+            ds = client.Dataset("sample")
+            ds.get_word_count()
 
         """
         import nltk

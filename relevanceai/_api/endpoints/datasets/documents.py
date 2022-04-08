@@ -73,9 +73,9 @@ class DocumentsClient(_Base):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
 
-            df.get(["sample_id"], include_vector=False)
+            ds.get(["sample_id"], include_vector=False)
         """
 
         return self.make_http_request(

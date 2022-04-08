@@ -50,9 +50,9 @@ class Statistics(APIClient):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
             field = "sample_field"
-            value_counts_df = df.value_counts(field)
+            value_counts_df = ds.value_counts(field)
 
         """
         return Series(
@@ -75,10 +75,10 @@ class Statistics(APIClient):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
             field = "sample_field"
-            df.describe() # returns pandas dataframe of stats
-            df.describe(return_type='dict') # return raw json stats
+            ds.describe() # returns pandas dataframe of stats
+            ds.describe(return_type='dict') # return raw json stats
 
         """
         facets = self.datasets.facets(self.dataset_id)
@@ -237,8 +237,8 @@ class Statistics(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset_id")
-            df.health
+            ds = client.Dataset("sample_dataset_id")
+            ds.health
 
         """
         results = self.datasets.monitor.health(self.dataset_id)

@@ -26,10 +26,10 @@ class CSVExport(Read):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             csv_fname = "path/to/csv/file.csv"
-            df.to_csv(csv_fname)
+            ds.to_csv(csv_fname)
         """
         documents = self.get_all_documents(**kwargs)
         df = pd.DataFrame(documents)

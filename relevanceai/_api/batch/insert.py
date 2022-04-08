@@ -87,9 +87,9 @@ class BatchInsertClient(BatchRetrieveClient):
 
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset_id")
+        >>> ds = client.Dataset("sample_dataset_id")
         >>> documents = [{"_id": "10", "value": 5}, {"_id": "332", "value": 10}]
-        >>> df.insert_documents(documents)
+        >>> ds.insert_documents(documents)
 
         """
 
@@ -173,9 +173,9 @@ class BatchInsertClient(BatchRetrieveClient):
         ---------
         >>> from relevanceai import Client
         >>> client = Client()
-        >>> df = client.Dataset("sample_dataset_id")
+        >>> ds = client.Dataset("sample_dataset_id")
         >>> csv_filename = "temp.csv"
-        >>> df.insert_csv(csv_filename)
+        >>> ds.insert_csv(csv_filename)
 
         """
         csv_args = {} if csv_args is None else csv_args

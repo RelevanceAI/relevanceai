@@ -85,8 +85,8 @@ class DimensionalityReduction(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            df.auto_reduce_dimensions(
+            ds = client.Dataset("sample")
+            ds.auto_reduce_dimensions(
                 "pca-3",
                 ["sample_vector_"],
             )
@@ -178,8 +178,8 @@ class DimensionalityReduction(Write):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample")
-            df.auto_reduce_dimensions(
+            ds = client.Dataset("sample")
+            ds.auto_reduce_dimensions(
                 alias="pca-3",
                 ["sample_vector_"],
                 number_of_documents=1000

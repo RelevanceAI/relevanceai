@@ -25,9 +25,9 @@ class DictExport(Read):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
-            dict = df.to_dict(orient="records")
+            dict = ds.to_dict(orient="records")
         """
         if orient == "records":
             return self.get_all_documents()

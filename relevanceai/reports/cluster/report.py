@@ -21,7 +21,7 @@ to store it in Relevance AI.
 
     import pandas as pd
     import numpy as np
-    df = pd.DataFrame(docs)
+    ds = pd.DataFrame(docs)
     X = np.array(df['base_vector_'].tolist())
 
 

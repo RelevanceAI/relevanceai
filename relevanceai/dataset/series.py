@@ -48,9 +48,9 @@ class Series(APIClient):
         documents = get_dummy_ecommerce_dataset()
         client = Client()
 
-        df = client.Dataset('ecommerce')
-        df.create()
-        df.insert_documents(documents)
+        ds = client.Dataset('ecommerce')
+        ds.create()
+        ds.insert_documents(documents)
 
     Retrieve a Series from your dataset
 
@@ -162,7 +162,7 @@ class Series(APIClient):
 
             client = Client()
 
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
             df.sample(n=3)
 
         """
@@ -263,7 +263,7 @@ class Series(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
 
             df["sample_1_label"].apply(lambda x: x + 3, output_field="output_field")
 
@@ -323,7 +323,7 @@ class Series(APIClient):
             from relevanceai import Client
             client = Client()
 
-            df = client.Dataset("sample_dataset_id")
+            ds =  client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
@@ -368,7 +368,7 @@ class Series(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
 
             field = "sample_field"
             arr = df[field].numpy()
@@ -411,7 +411,7 @@ class Series(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
 
             field = "sample_field"
             value_counts_df = df[field].value_counts()
@@ -486,7 +486,7 @@ class Series(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
 
             field = "sample_field"
             id = "sample_id"
@@ -514,7 +514,7 @@ class Series(APIClient):
         )
 
         try:
-            df = pd.DataFrame(documents)
+            ds = pd.DataFrame(documents)
             df.set_index("_id", inplace=True)
             return df.squeeze()
         except KeyError:

@@ -69,7 +69,7 @@ class Write(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             documents = [
                 {
@@ -82,7 +82,7 @@ class Write(APIClient):
                 }
             ]
 
-            df.insert_documents(documents)
+            ds.insert_documents(documents)
 
         """
         results = self._insert_documents(
@@ -140,10 +140,10 @@ class Write(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
 
             csv_filename = "temp.csv"
-            df.insert_csv(csv_filename)
+            ds.insert_csv(csv_filename)
 
         """
         csv_args = {} if csv_args is None else csv_args
@@ -175,9 +175,9 @@ class Write(APIClient):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
             pandas_df = pd.DataFrame({"value": [3, 2, 1], "_id": ["10", "11", "12"]})
-            df.insert_pandas_dataframe(pandas_df)
+            ds.insert_pandas_dataframe(pandas_df)
 
         """
         if col_for_id is not None:
@@ -422,14 +422,14 @@ class Write(APIClient):
                 doc["value"] = 2
                 return doc
 
-            df.apply(update_doc)
+            ds.apply(update_doc)
 
             def update_doc_wargs(doc, value1, value2):
                 doc["value"] += value1
                 doc["value"] *= value2
                 return doc
 
-            df.apply(func=update_doc, value1=3, value2=2)
+            ds.apply(func=update_doc, value1=3, value2=2)
 
         """
         filters = [] if filters is None else filters
@@ -504,14 +504,14 @@ class Write(APIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
 
             def update_documents(documents):
                 for d in documents:
                     d["value"] = 10
                 return documents
 
-            df.apply(update_documents)
+            ds.apply(update_documents)
         """
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
@@ -548,7 +548,7 @@ class Write(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             fields = [
                 "numeric_field1",
@@ -556,10 +556,10 @@ class Write(APIClient):
                 "numeric_field3"
             ]
 
-            df.concat(fields)
+            ds.concat(fields)
 
             concat_vector_field_name = "concat_vector_"
-            df.concat(vector_name=concat_vector_field_name, fields=fields)
+            ds.concat(vector_name=concat_vector_field_name, fields=fields)
         """
         fields = [] if fields is None else fields
 
@@ -665,10 +665,10 @@ class Write(APIClient):
             ]
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.create()
+            ds = client.Dataset(dataset_id)
+            ds.create()
 
-            df.insert_documents(documents)
+            ds.insert_documents(documents)
         """
         schema = {} if schema is None else schema
 
@@ -687,8 +687,8 @@ class Write(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.delete()
+            ds = client.Dataset(dataset_id)
+            ds.delete()
 
         """
         return self.datasets.delete(self.dataset_id)

@@ -21,7 +21,7 @@ class AutoClusterOps(CommunityDetection):
         Performs KMeans Clustering on over a vector field within the dataset.
 
         .. warning::
-            Deprecated in v0.33 in favour of df.auto_cluster.
+            Deprecated in v0.33 in favour of ds.auto_cluster.
 
         Parameters
         ------------
@@ -41,14 +41,14 @@ class AutoClusterOps(CommunityDetection):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"
             n_clusters = 10
 
             model = KMeansModel(k=n_clusters)
 
-            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
+            ds.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
         """
         from relevanceai.operations.cluster import ClusterOps
 
@@ -193,20 +193,20 @@ class AutoClusterOps(CommunityDetection):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             # run kmeans with default 10 clusters
-            clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("kmeans", vector_fields=[vector_field])
             clusterer.list_closest()
 
             # Run k means clustering with 8 clusters
-            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("kmeans-8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 8 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 20 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
         You can alternatively run this using kmeans.
 
@@ -358,20 +358,20 @@ class AutoClusterOps(CommunityDetection):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             # run kmeans with default 10 clusters
-            clusterer = df.auto_cluster("kmeans", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("kmeans", vector_fields=[vector_field])
             clusterer.list_closest()
 
             # Run k means clustering with 8 clusters
-            clusterer = df.auto_cluster("kmeans-8", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("kmeans-8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 8 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("minibatchkmeans-8", vector_fields=[vector_field])
 
             # Run minibatch k means clustering with 20 clusters
-            clusterer = df.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
+            clusterer = ds.auto_cluster("minibatchkmeans-20", vector_fields=[vector_field])
 
         You can alternatively run this using kmeans.
 

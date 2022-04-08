@@ -73,9 +73,9 @@ class Dataset(IO, Read, Write, Operations):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
             field = "sample_field"
-            series = df[field]
+            series = ds[field]
         """
         if isinstance(field, str):
             return Series(

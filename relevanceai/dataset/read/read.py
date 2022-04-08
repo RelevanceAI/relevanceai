@@ -82,9 +82,9 @@ class Read(Statistics):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds =  client.Dataset(dataset_id)
 
-            length, width = df.shape
+            length, width = ds.shape
         """
         schema = self.datasets.schema(self.dataset_id)
         n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
@@ -140,8 +140,8 @@ class Read(Statistics):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.info()
+            ds =  client.Dataset(dataset_id)
+            ds.info()
         """
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
@@ -197,9 +197,9 @@ class Read(Statistics):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset_id", image_fields=["image_url])
+            ds =  client.Dataset("sample_dataset_id", image_fields=["image_url])
 
-            df.head()
+            ds.head()
         """
         print(
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
@@ -282,8 +282,8 @@ class Read(Statistics):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset_id", image_fields=["image_url])
-            df.sample()
+            ds =  client.Dataset("sample_dataset_id", image_fields=["image_url])
+            ds.sample()
         """
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
@@ -350,8 +350,8 @@ class Read(Statistics):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            documents = df.get_all_documents()
+            ds =  client.Dataset(dataset_id)
+            documents = ds.get_all_documents()
 
         """
         filters = [] if filters is None else filters
@@ -390,8 +390,8 @@ class Read(Statistics):
             from relevanceai import Client, Dataset
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.get_documents_by_ids(["sample_id"], include_vector=False)
+            ds =  client.Dataset(dataset_id)
+            ds.get_documents_by_ids(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
             return self.datasets.documents.get(
@@ -424,8 +424,8 @@ class Read(Statistics):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.get(["sample_id"], include_vector=False)
+            ds =  client.Dataset(dataset_id)
+            ds.get(["sample_id"], include_vector=False)
         """
         if isinstance(document_ids, str):
             return self.datasets.documents.get(
@@ -451,8 +451,8 @@ class Read(Statistics):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.schema
+            ds =  client.Dataset(dataset_id)
+            ds.schema
         """
         return self.datasets.schema(self.dataset_id)
 
@@ -470,8 +470,8 @@ class Read(Statistics):
             from relevanceai import Client
             client = Client()
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
-            df.columns
+            ds =  client.Dataset(dataset_id)
+            ds.columns
 
         """
         return list(self.schema)
@@ -512,10 +512,10 @@ class Read(Statistics):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("ecommerce-example-encoded")
-            filtered = df.filter(items=["product_title", "query", "product_price"])
-            filtered = df.filter(index="query", like="routers")
-            filtered = df.filter(index="product_title", regex=".*Hard.*Drive.*")
+            ds =  client.Dataset("ecommerce-example-encoded")
+            filtered = ds.filter(items=["product_title", "query", "product_price"])
+            filtered = ds.filter(index="query", like="routers")
+            filtered = ds.filter(index="product_title", regex=".*Hard.*Drive.*")
 
         """
         fields = []
@@ -619,7 +619,7 @@ class Read(Statistics):
         """
         return self.datasets.metadata(self.dataset_id)["results"]
 
-    @property
+    @property  # type: ignore
     @track
     def metadata(self):
         """Get the metadata"""

@@ -30,9 +30,9 @@ class Centroids(APIClient):
 
             client = Client()
 
-            df = client.Dataset("sample_dataset_id")
+            ds = client.Dataset("sample_dataset_id")
 
-            df.get(["sample_id"], include_vector=False)
+            ds.get(["sample_id"], include_vector=False)
 
         """
 
@@ -100,14 +100,14 @@ class Centroids(APIClient):
             client = Client()
 
             dataset_id = "sample_dataset_id"
-            df = client.Dataset(dataset_id)
+            ds = client.Dataset(dataset_id)
 
             vector_field = "vector_field_"
             n_clusters = 10
 
             model = KMeansModel(k=n_clusters)
 
-            df.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
+            ds.cluster(model=model, alias=f"kmeans-{n_clusters}", vector_fields=[vector_field])
 
         """
         cluster_ids = [] if cluster_ids is None else cluster_ids

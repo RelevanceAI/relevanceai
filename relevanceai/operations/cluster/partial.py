@@ -40,7 +40,7 @@ class PartialClusterOps(_ClusterOps):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            ds = client.Dataset("sample_dataset")
 
             from sklearn.cluster import MiniBatchKMeans
             model = MiniBatchKMeans(n_clusters=2)
@@ -75,7 +75,7 @@ class PartialClusterOps(_ClusterOps):
 
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("sample_dataset")
+            ds = client.Dataset("sample_dataset")
 
             from sklearn.cluster import MiniBatchKMeans
             model = MiniBatchKMeans(n_clusters=2)
@@ -141,14 +141,14 @@ class PartialClusterOps(_ClusterOps):
             # Real-life example from Research Dashboard
             from relevanceai import Client
             client = Client()
-            df = client.Dataset("research2vec")
+            ds = client.Dataset("research2vec")
 
             from sklearn.cluster import MiniBatchKMeans
             model = MiniBatchKMeans(n_clusters=50)
             cluster_ops = client.ClusterOps(alias="minibatchkmeans_50", model=model)
 
             cluster_ops.partial_fit_predict_update(
-                df,
+                ds,
                 vector_fields=['title_trainedresearchqgen_vector_'],
                 chunksize=1000
             )

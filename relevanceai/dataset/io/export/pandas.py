@@ -27,7 +27,7 @@ class PandasExport(Read):
             client = Client()
 
             relevanceai_dataset = client.Dataset("dataset_id")
-            df = relevance_ai.to_pandas_dataframe()
+            ds = relevance_ai.to_pandas_dataframe()
         """
         documents = self.get_all_documents(**kwargs)
 
