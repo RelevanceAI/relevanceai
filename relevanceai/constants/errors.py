@@ -120,11 +120,23 @@ class MissingClusterError(RelevanceAIError):
 
 class MissingPackageError(RelevanceAIError):
     def __init__(self, package, version: Optional[str] = None, *args, **kwargs):
+        message = f"You need to install {package}! `pip install {package}`."
         if version is None:
-            message = f"You need to install {package}! `pip install {package}`."
+            message = message
         else:
-            message = (
-                f"You need to install {package}! `pip install {package}=={version}`."
+            message = message.replace("{package}", f"{package}=={version}")
+        super().__init__(message)
+
+
+class MissingPackageExtraError(RelevanceAIError):
+    def __init__(self, extra, version: Optional[str] = None, *args, **kwargs):
+        message = f"You need to install the package extra [{extra}]! `pip install RelevanceAI[{extra}]`."
+
+        if version is None:
+            message = message
+        else:
+            message = message.replace(
+                f"RelevanceAI[{extra}]", f"RelevanceAI[{extra}=={version}]"
             )
         super().__init__(message)
 
