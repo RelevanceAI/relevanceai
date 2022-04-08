@@ -45,7 +45,7 @@ class _VectorizeHelper(APIClient):
                     existing_vectors.append(vector)
                     print(
                         f"Since '{vector}' already exists, its construction "
-                        + "will be skipped."
+                        + "will be skipped. You can set `refresh=True` to continue."
                     )
 
         return new_fields, metadata_additions, existing_vectors
@@ -94,6 +94,7 @@ class VectorizeOps(_VectorizeHelper):
         image_encoder=None,
         text_encoder=None,
         log_file: str = "vectorize.logs",
+        refresh: bool = True,
     ) -> dict:
         """
         Parameters
@@ -202,11 +203,12 @@ class VectorizeOps(_VectorizeHelper):
                 f"{text_encoder} is missing attribute 'encode_documents'"
             )
 
-        (
-            new_text_fields,
-            text_metadata,
-            existing_text_vectors,
-        ) = self._check_vector_existence(schema, text_fields, text_encoder)
+        if not refresh:
+            (
+                new_text_fields,
+                text_metadata,
+                existing_text_vectors,
+            ) = self._check_vector_existence(schema, text_fields, text_encoder)
 
         if new_image_fields or new_text_fields:
 
