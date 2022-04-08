@@ -514,7 +514,7 @@ class Series(APIClient):
         )
 
         try:
-            ds = pd.DataFrame(documents)
+            df = pd.DataFrame(documents)
             df.set_index("_id", inplace=True)
             return df.squeeze()
         except KeyError:
