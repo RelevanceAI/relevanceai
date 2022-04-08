@@ -14,6 +14,7 @@ import pandas as pd
 import requests
 
 from relevanceai.constants import DATASETS
+from relevanceai.constants.errors import MissingPackageExtraError
 
 THIS_MODULE = sys.modules[__name__]
 
@@ -93,7 +94,11 @@ class ExampleDatasets:
                 orient="records"
             )
         else:
-            data = pd.read_excel(url, index_col=0).to_dict(orient="records")
+            try:
+                data = pd.read_excel(url, index_col=0).to_dict(orient="records")
+            except ModuleNotFoundError:
+                raise MissingPackageExtraError("excel")
+
         if number_of_documents:
             data = data[:number_of_documents]
         if len(select_fields) > 0:

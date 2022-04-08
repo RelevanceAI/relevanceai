@@ -44,7 +44,17 @@ class Input(Ops):
 
     def __iter__(self, dataset: Dataset):
         for c in dataset.chunk_dataset(
-            chunksize=self.chunksize, select_fields=self.input_fields
+            chunksize=self.chunksize,
+            select_fields=self.input_fields,
+            filters=[
+                {
+                    "field": input_field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                }
+                for input_field in self.input_fields
+            ],
         ):
             yield c
         return None

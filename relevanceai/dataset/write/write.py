@@ -205,6 +205,7 @@ class Write(APIClient):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
+    @track
     def insert_media_folder(
         self,
         path: Union[Path, str],
@@ -706,6 +707,7 @@ class Write(APIClient):
             if verbose:
                 print("media successfully uploaded.")
 
+    @track
     def insert_media_url(self, media_url: str, verbose: bool = True):
         """
         Insert a single media URL
@@ -723,6 +725,7 @@ class Write(APIClient):
             print(f"media is hosted at {url}")
         return url
 
+    @track
     def insert_media_urls(
         self,
         media_urls: List[str],
@@ -762,6 +765,7 @@ class Write(APIClient):
             b = bytes(f)
         return b
 
+    @track
     def insert_local_media(self, media_fn: str, verbose: bool = True):
         """
         Insert local media
@@ -785,6 +789,7 @@ class Write(APIClient):
             print(f"media is hosted at {url}.")
         return url
 
+    @track
     def insert_local_medias(
         self,
         media_fns: List[str],
@@ -848,6 +853,7 @@ class Write(APIClient):
                 media_fns, verbose=verbose, file_log=file_log
             )
 
+    @track
     def upsert_media(
         self,
         media_fns: List[str],

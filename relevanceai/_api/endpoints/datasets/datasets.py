@@ -673,3 +673,88 @@ class DatasetsClient(_Base):
                 "asc": asc,
             },
         )
+
+    def fast_search(
+        self,
+        dataset_id: str,
+        query: str = None,
+        queryConfig: dict = None,
+        vectorSearchQuery: dict = None,
+        instantAnswerQuery: dict = None,
+        fieldsToSearch: List = None,
+        page: int = 1,
+        pageSize: int = 10,
+        minimumRelevance: int = 0,
+        includeRelevance: bool = True,
+        includeDataset: bool = False,
+        cleanPayloadUsingSchema: bool = True,
+        sort: dict = None,
+        includeFields: Optional[List] = None,
+        excludeFields: Optional[List] = None,
+        includeVectors: bool = True,
+        textSort: Optional[dict] = None,
+        fieldsToAggregate: Optional[List] = None,
+        fieldsToAggregateStats: Optional[List] = None,
+        filters: Optional[List] = None,
+        relevanceBoosters: Optional[List] = None,
+        afterId: Optional[List] = None,
+    ):
+        """
+        Parameters
+        ------------
+
+        query: str
+            Search for documents that contain this query string in your dataset.
+            Use fieldsToSearch parameter to restrict which fields are searched.
+        queryConfig: dict
+            Configuration for traditional search query.
+            Increases or decreases the impact of traditional search when calculating a documents _relevance. new_traditional_relevance = traditional_relevance*queryConfig.weight
+        vectorSearchQuery: dict
+            Vector search queries.
+
+        """
+        # fast search
+        parameters = {
+            "page": page,
+            "pageSize": pageSize,
+            "minimumRelevance": minimumRelevance,
+            "includeRelevance": includeRelevance,
+            "includeDataset": includeDataset,
+            "cleanPayloadUsingSchema": cleanPayloadUsingSchema,
+            "includeVectors": includeVectors,
+        }
+        # mypy triggered a lot of really annoying errors that didn't make sense here
+        # hmph
+        if query is not None:
+            parameters["query"] = query  # type: ignore
+        if queryConfig is not None:
+            parameters["queryConfig"] = queryConfig  # type: ignore
+        if vectorSearchQuery is not None:
+            parameters["vectorSearchQuery"] = vectorSearchQuery  # type: ignore
+        if instantAnswerQuery is not None:
+            parameters["instantAnswerQuery"] = instantAnswerQuery  # type: ignore
+        if fieldsToSearch is not None:
+            parameters["fieldsToSearch"] = fieldsToSearch  # type: ignore
+        if sort is not None:
+            parameters["sort"] = sort  # type: ignore
+        if includeFields is not None:
+            parameters["includeFields"] = includeFields  # type: ignore
+        if excludeFields is not None:
+            parameters["excludeFields"] = excludeFields  # type: ignore
+        if textSort is not None:
+            parameters["textSort"] = textSort  # type: ignore
+        if fieldsToAggregate is not None:
+            parameters["fieldsToAggregate"] = fieldsToAggregate  # type: ignore
+        if fieldsToAggregateStats is not None:
+            parameters["fieldsToAggregateStats"] = fieldsToAggregateStats  # type: ignore
+        if filters is not None:
+            parameters["filters"] = filters  # type: ignore
+        if relevanceBoosters is not None:
+            parameters["relevanceBoosters"] = relevanceBoosters  # type: ignore
+        if afterId is not None:
+            parameters["afterId"] = afterId  # type: ignore
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/simple_search",
+            method="POST",
+            parameters=parameters,
+        )

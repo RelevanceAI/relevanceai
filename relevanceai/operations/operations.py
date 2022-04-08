@@ -1,8 +1,10 @@
 from typing import List, Dict, Optional, Any, Union
+from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.decorators import deprecated, beta
 from relevanceai._api import APIClient
+from relevanceai.utils.decorators.analytics import track
 
 
 class Operations(APIClient):
@@ -15,6 +17,7 @@ class Operations(APIClient):
         self.dataset_id = dataset_id
         super().__init__(self.credentials)
 
+    @track
     def cluster(
         self,
         model: Union[str, Any],
@@ -65,6 +68,7 @@ class Operations(APIClient):
         ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
         return ops
 
+    @track
     def reduce_dims(
         self,
         model: Any,
@@ -103,6 +107,7 @@ class Operations(APIClient):
             alias=alias,
         )
 
+    @track
     def vectorize(
         self,
         text_fields=None,
@@ -170,6 +175,7 @@ class Operations(APIClient):
             image_fields=image_fields,
         )
 
+    @track
     def vector_search(self, **kwargs):
         """
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
@@ -284,6 +290,7 @@ class Operations(APIClient):
 
         return ops.vector_search(**kwargs)
 
+    @track
     def hybrid_search(self, **kwargs):
         """
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -448,6 +455,7 @@ class Operations(APIClient):
 
         return ops.chunk_search(**kwargs)
 
+    @track
     def multistep_chunk_search(self, **kwargs):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
@@ -564,6 +572,7 @@ class Operations(APIClient):
         print(f"You can now access your deployable at {url}.")
         return url
 
+    @track
     def subcluster(
         self,
         model,
@@ -592,6 +601,7 @@ class Operations(APIClient):
             dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
         )
 
+    @track
     def add_sentiment(
         self,
         field: str,
@@ -644,10 +654,11 @@ class Operations(APIClient):
             notes=notes,
         )
 
+    @track
     def question_answer(
         self,
         input_field: str,
-        question: str,
+        questions: Union[List[str], str],
         output_field: Optional[str] = None,
         model_name: str = "mrm8488/deberta-v3-base-finetuned-squadv2",
         verbose: bool = True,
@@ -688,23 +699,119 @@ class Operations(APIClient):
         from relevanceai.workflow.sequential import SequentialWorkflow, Input, Output
         from relevanceai.operations.text.qa.qa import QAOps
 
+        if isinstance(questions, str):
+            # Force listing so it loops through multiple question
+            questions = [questions]
+
         model = QAOps(model_name=model_name)
 
-        def bulk_question_answer(contexts: list):
-            return model.bulk_question_answer(question=question, contexts=contexts)
+        for question in tqdm(questions):
+            print(f"Processing `{question}`...")
 
-        if output_field is None:
-            output_field = "_question_." + "-".join(question.lower().strip().split())
-            print(f"No output field is detected. Setting to {output_field}")
+            def bulk_question_answer(contexts: list):
+                return model.bulk_question_answer(question=question, contexts=contexts)
 
-        workflow = SequentialWorkflow(
-            list_of_operations=[
-                Input([input_field]),
-                bulk_question_answer,
-                Output(output_field),
-            ]
-        )
-        return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+            if output_field is None:
+                output_field = "_question_." + "-".join(
+                    question.lower().strip().split()
+                )
+                print(f"No output field is detected. Setting to {output_field}")
+
+            workflow = SequentialWorkflow(
+                list_of_operations=[
+                    Input([input_field]),
+                    bulk_question_answer,
+                    Output(output_field),
+                ]
+            )
+            workflow.run(self, verbose=verbose, log_to_file=log_to_file)
 
     def translate(self, translation_model_name: str):
         raise NotImplementedError
+
+    # def summarize(
+    #     self,
+    #     summarize_fields: List[str],
+    #     model_name: str = "sshleifer/distilbart-cnn-6-6",
+    #     verbose: bool = True,
+    #     log_to_file: bool = True,
+    # ):
+    #     """
+    #     Question your dataset and retrieve answers from it.
+
+    #     Example
+    #     ----------
+
+    #     .. code-block::
+
+    #         from relevanceai import Client
+    #         client = Client()
+    #         ds = client.Dataset("ecommerce")
+    #         ds.question_answer(
+    #             input_field="product_title",
+    #             question="What brand shoes",
+    #             output_field="_question_test"
+    #         )
+
+    #     Parameters
+    #     --------------
+
+    #     field: str
+    #         The field to add sentiment to
+    #     output_field: str
+    #         Where to store the sentiment values
+    #     model_name: str
+    #         The HuggingFace Model name.
+    #     verbose: bool
+    #         If True, prints progress bar workflow
+    #     log_to_file: bool
+    #         If True, puts the logs in a file.
+
+    #     """
+    #     from relevanceai.workflow.sequential import SequentialWorkflow, Input, Output
+    #     from relevanceai.operations.text.qa.qa import QAOps
+
+    #     model = QAOps(model_name=model_name)
+
+    #     def bulk_question_answer(contexts: list):
+    #         return model.bulk_question_answer(question=question, contexts=contexts)
+
+    #     if output_field is None:
+    #         output_field = "_question_." + "-".join(question.lower().strip().split())
+    #         print(f"No output field is detected. Setting to {output_field}")
+
+    #     workflow = SequentialWorkflow(
+    #         list_of_operations=[
+    #             Input([input_field]),
+    #             bulk_question_answer,
+    #             Output(output_field),
+    #         ]
+    #     )
+    #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+    def advanced_search(
+        self,
+        query: str = None,
+        vector_search_query: Optional[dict] = None,
+        fields_to_search: Optional[List] = None,
+        select_fields: Optional[List] = None,
+        **kwargs,
+    ):
+        """
+        Advanced Search
+
+        Parameters
+        -----------
+        query: str
+            The query to use
+        vector_search_query: dict
+
+
+        """
+        return self.datasets.fast_search(
+            dataset_id=self.dataset_id,
+            query=query,
+            vectorSearchQuery=vector_search_query,
+            fieldsToSearch=fields_to_search,
+            includeFields=select_fields,
+            **kwargs,
+        )
