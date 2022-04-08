@@ -682,7 +682,7 @@ class DatasetsClient(_Base):
         vectorSearchQuery: dict = None,
         instantAnswerQuery: dict = None,
         fieldsToSearch: List = None,
-        page: int = 1,
+        page: int = 0,
         pageSize: int = 10,
         minimumRelevance: int = 0,
         includeRelevance: bool = True,
