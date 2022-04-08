@@ -7,7 +7,7 @@
 
 **Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://hubs.ly/Q014Qbs10).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RelevanceAI/workflows/blob/main/workflows/quickstart_workflow/%E2%98%98%EF%B8%8F_Relevance_AI_Quickstart.ipynb)
 
 
 For guides and tutorials on how to use this package, visit https://docs.relevance.ai/docs.
