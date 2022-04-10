@@ -856,7 +856,15 @@ class LabelOps(Write, BaseOps):
 
         .. code-block::
 
-            label_ops.cluster_keyphrases(vector_fields=[], text_fields=[], cluster_alias="minibatchkmeans-7")
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+
+            from relevanceai.operations.labels import LabelOps
+            label_ops = LabelOps.from_dataset(ds)
+            label_ops.cluster_keyphrases(
+                text_fields=["sample_text"]
+            )
 
 
         Parameters
