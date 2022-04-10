@@ -716,13 +716,11 @@ class Operations(APIClient):
                 output_field = "_question_." + "-".join(
                     question.lower().strip().split()
                 )
-                # Remove things that are datasets
-                output_field = output_field.replace("?", "")
                 print(f"No output field is detected. Setting to {output_field}")
 
             workflow = SequentialWorkflow(
                 list_of_operations=[
-                    Input([input_field]),
+                    Input([input_field], filters=filters),
                     bulk_question_answer,
                     Output(output_field),
                 ]
@@ -818,3 +816,9 @@ class Operations(APIClient):
             includeFields=select_fields,
             **kwargs,
         )
+
+    def list_deployables(self):
+        """
+        Use this function to list available deployables
+        """
+        return self.deployables.list()
