@@ -844,6 +844,8 @@ class Labels(Write):
         preprocess_hooks: Optional[List[callable]] = None,
         algorithm: str = "rake",
         n: int = 2,
+        deployable_id: Optional[str] = None,
+        dataset_id: Optional[str] = None,
     ):
         """
         Simple implementation of the cluster word cloud.
@@ -895,7 +897,32 @@ class Labels(Write):
                 algorithm=algorithm,
             )
             cluster_counters[cluster_value] = top_words
+        if deployable_id is not None:
+            if dataset_id is None:
+                if not hasattr(self, "dataset_id"):
+                    raise ValueError("You need a dataset ID to update.")
+                else:
+                    dataset_id = self.dataset_id
+            self._update_deployable_with_strings(
+                dataset_id=dataset_id,
+                deployable_id=deployable_id,
+                cluster_counters=cluster_counters,
+            )
         return cluster_counters
+
+    def _update_deployable_with_strings(
+        self, dataset_id, deployable_id, cluster_counters
+    ):
+        configuration = self.deployables.get(deployable_id=deployable_id)
+        cluster_update = {}
+        for k, values in cluster_counters.items():
+            cluster_update[k] = ", ".join([v[0] for v in values])
+        configuration["cluster-labels"] = cluster_update
+        self.deployables.update(
+            deployable_id=deployable_id,
+            dataset_id=dataset_id,
+            configuration=configuration,
+        )
 
     # TODO: Add keyphrases to auto cluster
     # def auto_cluster_keyphrases(
