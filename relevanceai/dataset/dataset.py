@@ -57,6 +57,12 @@ class Dataset(IO, Read, Write, Operations):
                     self.upsert_documents(mock_documents(100))
 
                 add_mock_dataset()
+        self.is_empty()
+
+    def is_empty(self):
+        """Check if a dataset is empty."""
+        if self.dataset_id not in self.datasets.list()["datasets"]:
+            print("⚠️ Your dataset has no documents. Make sure to insert some!")
 
     @track
     def __getitem__(self, field: Union[List[str], str]):
