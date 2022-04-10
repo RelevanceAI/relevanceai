@@ -22,11 +22,12 @@ from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.version import beta
+from relevanceai.operations.base import BaseOps
 
 # TODO: Separate out operations into different files - cluster/search/dr
 
 
-class Labels(Write):
+class LabelOps(Write, BaseOps):
     @track
     def label_vector(
         self,
@@ -835,9 +836,9 @@ class Labels(Write):
 
     def cluster_keyphrases(
         self,
-        vector_fields: List[str],
         text_fields: List[str],
-        cluster_alias: str,
+        vector_fields: Optional[List[str]] = None,
+        cluster_alias: Optional[str] = None,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
         most_common: int = 10,
@@ -848,7 +849,15 @@ class Labels(Write):
         dataset_id: Optional[str] = None,
     ):
         """
-        Simple implementation of the cluster word cloud.
+        Simple implementation of the cluster keyphrases.
+
+        Example
+        -----------
+
+        .. code-block::
+
+            label_ops.cluster_keyphrases(vector_fields=[], text_fields=[], cluster_alias="minibatchkmeans-7")
+
 
         Parameters
         ------------
@@ -870,6 +879,10 @@ class Labels(Write):
             The number of words
 
         """
+        if cluster_alias is None:
+            cluster_alias = self.alias
+        if vector_fields is None:
+            vector_fields = self.vector_fields
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
 
         vector_fields_str = ".".join(sorted(vector_fields))
