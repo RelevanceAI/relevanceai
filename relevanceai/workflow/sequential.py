@@ -12,7 +12,7 @@ Example
 from doc_utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.dataset.dataset import Dataset
-from typing import Union
+from typing import Union, Optional
 from abc import abstractmethod, ABC
 
 
@@ -35,16 +35,30 @@ class UpdateOp(DocUtils):
 
 class Input(Ops):
     # How do I link the original inputs to the outputs
-    def __init__(self, input_fields: list, chunksize: int = 20):
+    def __init__(
+        self, input_fields: list, chunksize: int = 20, filters: Optional[list] = None
+    ):
         self.input_fields = input_fields
         self.chunksize = chunksize
+        self.filters = [] if filters is None else filters
 
     def __call__(self, dataset):
         return self.__iter__(dataset)
 
     def __iter__(self, dataset: Dataset):
         for c in dataset.chunk_dataset(
-            chunksize=self.chunksize, select_fields=self.input_fields
+            chunksize=self.chunksize,
+            select_fields=self.input_fields,
+            filters=[
+                {
+                    "field": input_field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                }
+                for input_field in self.input_fields
+            ]
+            + self.filters,
         ):
             yield c
         return None
