@@ -11,7 +11,10 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.logger import FileLogger
 
 
-# class CommunityDetection(Write):
+class CommunityDetection(Write):
+    pass
+
+
 #     @track
 #     def community_detection(
 #         self,
