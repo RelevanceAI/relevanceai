@@ -1,7 +1,7 @@
 🔍 Advanced Search
-=================
+==================
 
-Fast Search is Relevance AI's most complex search endpoint. It combines
+Fast Search is Relevance AI’s most complex search endpoint. It combines
 functionality to search using vectors, exact text search with ability to
 boost your search results depending on your needs. The following
 demonstrates a few dummy examples on how to quickly add complexity to
@@ -43,11 +43,11 @@ Simple Text Search
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -150,11 +150,11 @@ Simple Vector Search
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -264,11 +264,11 @@ below.
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -378,11 +378,11 @@ you! Simply add a ``weight`` parameter your dictionary inside
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -492,11 +492,11 @@ query as belows.
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -574,3 +574,5 @@ query as belows.
       </tbody>
     </table>
     </div>
+
+
