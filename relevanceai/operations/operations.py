@@ -201,7 +201,6 @@ class Operations(APIClient):
         # TODO: Write test for advanced vectorize
         all_fields = [v.field for v in vectorizers]
         for vectorizer in tqdm(vectorizers):
-            vectorizer: Vectorizer
 
             def encode(docs):
                 docs = vectorizer.encode_documents(

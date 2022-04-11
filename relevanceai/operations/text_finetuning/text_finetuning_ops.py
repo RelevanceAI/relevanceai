@@ -40,7 +40,8 @@ class GPLOps(APIClient, BaseOps):
         self.cross_encoder = cross_encoder
         self.batch_size_gpl = batch_size_gpl
         self.output_path = output_path
-        super().__init__(credentials)
+        if credentials is not None:
+            super().__init__(credentials)
 
     def prepare_data_for_finetuning(
         self,
@@ -188,10 +189,9 @@ class GPLOps(APIClient, BaseOps):
         )
 
     @classmethod
-    def from_dataset(self, dataset: Any, *args, **kwargs):
+    def from_dataset(self, dataset: Any, **kwargs):
         cls = self(
             credentials=dataset.credentials,
-            *args,
             **kwargs,
         )
         cls.dataset_id = dataset.dataset_id
