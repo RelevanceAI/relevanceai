@@ -188,7 +188,7 @@ class Operations(APIClient):
             from relevanceai.operations import Vectorizer
             vectorizer = Vectorizer(field="field_1", model=model, alias="value")
             ds.advanced_vectorize(
-                vectorizer,
+                [vectorizer],
             )
 
         Parameters
@@ -198,6 +198,7 @@ class Operations(APIClient):
             Vectorize mapping
 
         """
+        # TODO: Write test for advanced vectorize
         all_fields = [v.field for v in vectorizers]
         for vectorizer in tqdm(vectorizers):
 
