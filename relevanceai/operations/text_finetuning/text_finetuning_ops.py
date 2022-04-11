@@ -25,18 +25,19 @@ from relevanceai._api.api_client import APIClient
 class GPLOps(BaseOps, APIClient):
     def __init__(
         self,
-        base_model: str,
+        base_model: str = "distilbert-base-uncased",
         t5_generator: str = "BeIR/query-gen-msmarco-t5-base-v1",
         retrievers: List[str] = ["msmarco-distilbert-base-v3", "msmarco-MiniLM-L-6-v3"],
         cross_encoder: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
         batch_size_gpl: int = 16,
+        output_path: str = "trained_model",
     ):
         self.base_model = base_model
         self.t5_generator = t5_generator
         self.retrievers = retrievers
         self.cross_encoder = cross_encoder
         self.batch_size_gpl = batch_size_gpl
-        self.output_path = None
+        self.output_path = output_path
 
     def prepare_data_for_finetuning(
         self,
