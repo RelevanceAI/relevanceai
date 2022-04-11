@@ -98,7 +98,9 @@ class VectorizeHelpers(APIClient):
     def _reduce(self, vectors: np.ndarray, n_components: int = 512) -> np.ndarray:
         from sklearn.decomposition import PCA
 
-        reducer = PCA(n_components=min(vectors.shape[1], n_components))
+        reducer = PCA(
+            n_components=min(vectors.shape[0], vectors.shape[1], n_components)
+        )
         reduced = reducer.fit_transform(vectors)
         return reduced
 

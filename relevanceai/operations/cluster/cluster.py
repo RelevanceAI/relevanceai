@@ -101,7 +101,7 @@ class ClusterOps(APIClient, BaseOps):
 
         if model is None:
             model = "community_detection"
-            print("No clustering model selected: defaulting to `community_detection`")
+            print(f"No clustering model selected: defaulting to `{model}`")
 
         self.n_clusters = n_clusters
 
@@ -368,6 +368,10 @@ class ClusterOps(APIClient, BaseOps):
                 raise ValueError("incorrect shape")
 
         labels = self._format_labels(labels)
+
+        if self.n_clusters is None:
+            n_clusters = len(set(labels)) - 1
+            print(f"Found {n_clusters} clusters using {self.model_name}")
 
         self.set_field_across_documents(
             field=self.cluster_field,
