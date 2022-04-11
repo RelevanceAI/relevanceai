@@ -471,6 +471,7 @@ class ClusterOps(APIClient, BaseOps):
         include_vector: bool = False,
         include_count: bool = True,
         cluster_properties_filter: Optional[Dict] = {},
+        verbose: bool = True,
     ):
         """
         List of documents closest from the center.
@@ -536,6 +537,7 @@ class ClusterOps(APIClient, BaseOps):
             include_vector=include_vector,
             include_count=include_count,
             cluster_properties_filter=cluster_properties_filter,
+            verbose=verbose,
         )
 
     @staticmethod
