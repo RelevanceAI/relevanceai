@@ -3,7 +3,7 @@ import warnings
 
 import numpy as np
 
-from typing import List, Dict, Union
+from typing import List
 
 from doc_utils import DocUtils
 
