@@ -116,6 +116,7 @@ class CommunityDetection:
                 for idx in community:
                     extracted_ids.add(idx)
 
+        print(f"There were {len(unique_communities)} communities found.")
         return unique_communities
 
     def community_detection_gpu(self, embeddings):
