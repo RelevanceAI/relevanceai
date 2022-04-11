@@ -258,11 +258,11 @@ class CentroidsClient(_Base):
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         parameters = {
-            "dataset_id": dataset_id,
             "vector_fields": vector_fields,
-            "alias": alias,
-            "cluster_ids": cluster_ids,
             "centroid_vector_fields": centroid_vector_fields,
+            "alias": alias,
+            "dataset_id": dataset_id,
+            "cluster_ids": cluster_ids,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,

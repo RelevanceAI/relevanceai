@@ -26,9 +26,9 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
     def __init__(
         self,
         credentials,
-        vector_fields: Optional[List[str]] = None,
+        dataset_id: str,
+        vector_fields: List[str],
         alias: Optional[str] = None,
-        dataset_id: Optional[str] = None,
         **kwargs,
     ):
         self.vector_fields = vector_fields  # type: ignore

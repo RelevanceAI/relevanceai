@@ -12,7 +12,7 @@ def test_dataset_vectorize(
     ds = test_client.Dataset(test_dataset_id)
     ds.upsert_documents(test_documents)
 
-    results = ds.vectorize(image_fields=["image_url"], text_fields=["data"])
+    results = ds.vectorize(fields=["image_url", "data"])
     # This means the results are good yay!
     assert "image_url_clip_vector_" in ds.schema
     assert "data_use_vector_" in ds.schema
@@ -21,7 +21,7 @@ def test_dataset_vectorize(
     assert "image_url" in ds.metadata["_vector_"]
     assert "data" in ds.metadata["_vector_"]
 
-    results = ds.vectorize(image_fields=["image_url"])
+    results = ds.vectorize(fields=["image_url"])
     assert "image_url_clip_vector_" in results["skipped_vectors"]
 
 
