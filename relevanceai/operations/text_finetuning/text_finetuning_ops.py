@@ -1,11 +1,11 @@
 """
-GPL
+Generative Pseudo Labelling Operation
 """
 
 import os
 import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Any
 
 try:
     import gpl
@@ -20,9 +20,10 @@ except ModuleNotFoundError:
     )
 from relevanceai.operations.base import BaseOps
 from relevanceai._api.api_client import APIClient
+from relevanceai.client.helpers import Credentials
 
 
-class GPLOps(BaseOps, APIClient):
+class GPLOps(APIClient, BaseOps):
     def __init__(
         self,
         base_model: str = "distilbert-base-uncased",
@@ -31,6 +32,7 @@ class GPLOps(BaseOps, APIClient):
         cross_encoder: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
         batch_size_gpl: int = 16,
         output_path: str = "trained_model",
+        credentials: Optional[Credentials] = None,
     ):
         self.base_model = base_model
         self.t5_generator = t5_generator
@@ -38,6 +40,7 @@ class GPLOps(BaseOps, APIClient):
         self.cross_encoder = cross_encoder
         self.batch_size_gpl = batch_size_gpl
         self.output_path = output_path
+        super().__init__(credentials)
 
     def prepare_data_for_finetuning(
         self,
@@ -45,19 +48,17 @@ class GPLOps(BaseOps, APIClient):
         text_field: str,
         dir_to_save_corpus: str,
         title_field: str = None,
+        corpus_filename: str = "corpus.jsonl",
     ):
         # Writes a corpus in the format compatible to the GPL library to later make Pos/Neg pairs
         corpus = []
         i = 0
-        with open(f"{dir_to_save_corpus}/corpus.jsonl", "w") as jsonl:
+        with open(f"{dir_to_save_corpus}/{corpus_filename}", "w") as jsonl:
             for doc in documents:
                 if text_field not in doc:
                     continue
                 line = {
                     "_id": str(i),
-                    "title": doc[title_field].replace("\n", " ")
-                    if title_field in doc
-                    else "",
                     "text": doc[text_field].replace("\n", " "),
                     "metadata": {
                         f: doc[f] for f in doc if f not in [text_field, title_field]
@@ -73,10 +74,11 @@ class GPLOps(BaseOps, APIClient):
 
     def fine_tune(
         self,
-        path_to_generated_data: str,
+        path_to_generated_data: str = ".",
         output_dir: str = "trained_model",
         gpl_steps: int = 500,
         do_evaluation: bool = False,
+        qgen_prefix: str = "qgen",
     ):
         if os.path.exists(output_dir):
             print(
@@ -85,7 +87,8 @@ class GPLOps(BaseOps, APIClient):
         # Generates pairs for fine-tuning a model following the GPL algorithm. The final model is saved at  output_dir
         self.path_to_finetuned_model = output_dir
         self.output_path = output_dir
-        gpl.train(  # type: ignore
+        # TODO: Add the rest of the parameters :(
+        gpl.train(
             path_to_generated_data=path_to_generated_data,
             base_ckpt=self.base_model,
             batch_size_gpl=self.batch_size_gpl,
@@ -94,7 +97,7 @@ class GPLOps(BaseOps, APIClient):
             generator=self.t5_generator,
             retrievers=self.retrievers,
             cross_encoder=self.cross_encoder,
-            qgen_prefix="qgen",
+            qgen_prefix=qgen_prefix,
             do_evaluation=do_evaluation,
         )
 
@@ -111,18 +114,27 @@ class GPLOps(BaseOps, APIClient):
         dataset: str,
         text_field: str,
         gpl_steps: int = 500,
-        path_to_generated_data: str = "temp_data",
+        path_to_generated_data: str = ".",
         output_dir: str = "trained_model",
         dir_to_save_corpus: str = ".",
         do_evaluation: bool = False,
     ):
         """
-        Finetune a model
+        Finetune a model using Generative Pseudo-Labelling
 
         Example
         -----------
 
-        # TODO
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+            ds = client.Dataset("quickstart")
+            # !pip install -q gpl
+            from relevanceai.operations.text_finetuning.text_finetuning_ops import GPLOps
+            ops = GPLOps.from_dataset(ds)
+            ops.operate(dataset=ds, text_field="product_title")
 
         Parameters
         -------------
@@ -143,7 +155,9 @@ class GPLOps(BaseOps, APIClient):
 
         """
         print("Fetching documents...")
-        docs = self._get_all_documents(dataset_id=dataset)
+        docs = self._get_all_documents(
+            dataset_id=self._get_dataset_id(dataset), select_fields=[text_field]
+        )
 
         print("Preparing training data...")
         self.prepare_data_for_finetuning(
@@ -161,3 +175,22 @@ class GPLOps(BaseOps, APIClient):
         )
 
         print(f"Trained model saved at {self.output_path}")
+
+    @classmethod
+    def from_client(self, client, *args, **kwargs):
+        credentials = client.credentials
+        return self(
+            credentials=credentials,
+            *args,
+            **kwargs,
+        )
+
+    @classmethod
+    def from_dataset(self, dataset: Any, *args, **kwargs):
+        cls = self(
+            credentials=dataset.credentials,
+            *args,
+            **kwargs,
+        )
+        cls.dataset_id = dataset.dataset_id
+        return cls
