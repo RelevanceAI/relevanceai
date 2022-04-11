@@ -12,6 +12,8 @@ from relevanceai.constants import IMG_EXTS
 
 from relevanceai.utils.decorators import log
 
+from vectorhub import Base2Vec
+
 
 class VectorizeHelpers(APIClient):
     def __init__(self, log_file, credentials: Credentials):
@@ -71,7 +73,7 @@ class VectorizeHelpers(APIClient):
             return model, model_name
 
         model, model_name = get_encoder(model)
-        self.model_name = model_name
+        self.model_names.append(model_name.lower())
         return model
 
     def _get_dtype(self, value: Any) -> Union[str, None]:
@@ -100,7 +102,7 @@ class VectorizeHelpers(APIClient):
         reduced = reducer.fit_transform(vectors)
         return reduced
 
-    def _get_model_name(self, dtype: str) -> str:
+    def _get_model_names(self, dtype: str) -> str:
         if dtype == "_text_":
             if "text" in self.encoders:
                 return self.encoders["text"]
@@ -129,7 +131,7 @@ class VectorizeOps(VectorizeHelpers):
     def __init__(
         self,
         credentials: Credentials,
-        encoders: Optional[Dict[str, Any]] = None,
+        encoders: Optional[Dict[str, List[Any]]] = None,
         log_file: str = "vectorize.logs",
         feature_vector: bool = False,
     ):
@@ -137,6 +139,7 @@ class VectorizeOps(VectorizeHelpers):
 
         self.feature_vector = feature_vector
         self.encoders = encoders if encoders is not None else {}
+        self.model_names: List[str] = []
 
     def __call__(self, *args, **kwargs):
         return self.operate(*args, **kwargs)
@@ -211,17 +214,19 @@ class VectorizeOps(VectorizeHelpers):
 
         for dtype in ["image", "text"]:
             if f"_{dtype}_" in dtypes:
-                model = self._get_model_name(dtype=f"_{dtype}_")
-                self.encoders[dtype] = self._get_encoder(model=model)
+                models = self._get_model_names(dtype=f"_{dtype}_")
+                for index, model in enumerate(models):
+                    self.encoders[dtype][index] = self._get_encoder(model=model)
 
     def _get_vector_fields(self, fields: List[str]) -> List[str]:
         vector_fields = []
 
         for field in fields:
             dtype = self.detailed_schema[field].replace("_", "")
-            encoder = self.encoders[dtype]
-            vector_field = encoder.get_default_vector_field_name(field)
-            vector_fields.append(vector_field)
+            encoders: List[Base2Vec] = self.encoders[dtype]
+            for encoder in encoders:
+                vector_field = encoder.get_default_vector_field_name(field)
+                vector_fields.append(vector_field)
 
         return vector_fields
 
@@ -320,21 +325,22 @@ class VectorizeOps(VectorizeHelpers):
     @staticmethod
     def _encode_documents(
         documents,
-        encoders,
-        field_types,
+        encoders: Dict[str, List[Base2Vec]],
+        field_types: Dict[str, str],
     ):
         updated_documents = documents
 
-        for dtype, encoder in encoders.items():
-            dtype_fields = [
-                field
-                for field, field_type in field_types.items()
-                if f"_{dtype}_" == field_type
-            ]
-            updated_documents = encoder.encode_documents(
-                dtype_fields,
-                updated_documents,
-            )
+        for dtype, vectorizers in encoders.items():
+            for vectorizer in vectorizers:
+                fields = [
+                    field
+                    for field, field_type in field_types.items()
+                    if f"_{dtype}_" == field_type
+                ]
+                updated_documents = vectorizer.encode_documents(
+                    documents=updated_documents,
+                    fields=fields,
+                )
 
         return updated_documents
 

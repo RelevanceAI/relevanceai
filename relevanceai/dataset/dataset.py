@@ -62,7 +62,10 @@ class Dataset(IO, Read, Write, Operations):
     def is_empty(self):
         """Check if a dataset is empty."""
         if self.dataset_id not in self.datasets.list()["datasets"]:
-            print("⚠️ Your dataset has no documents. Make sure to insert some!")
+            try:
+                print("⚠️ Your dataset has no documents. Make sure to insert some!")
+            except:
+                pass
 
     @track
     def __getitem__(self, field: Union[List[str], str]):

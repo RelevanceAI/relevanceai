@@ -17,6 +17,9 @@ class CommunityDetection:
         self.min_community_size = min_community_size
         self.init_max_size = init_max_size
 
+    def __call__(self, *args, **kwargs):
+        return self.fit_predict(*args, **kwargs)
+
     def fit_predict(self, vectors):
         if self.gpu:
             communities = self.community_detection_gpu(vectors)
