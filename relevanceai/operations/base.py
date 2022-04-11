@@ -2,7 +2,6 @@
 Base class for operations.
 """
 from typing import Any, List, Union
-from relevanceai.dataset import Dataset
 from relevanceai.client.helpers import (
     Credentials,
     process_token,
@@ -22,16 +21,16 @@ class BaseOps:
         return self(*args, **kwargs)
 
     @classmethod
-    def from_credentials(self, credentials: Credentials):
+    def from_credentials(self, credentials: Credentials, *args, **kw):
         return self(credentials=credentials)
 
     @classmethod
-    def from_token(self, token: str):
+    def from_token(self, token: str, *args, **kw):
         """
         If this is from a token, then we use this
         """
         credentials = process_token(token)
-        return self(credentials=credentials)
+        return self(credentials=credentials, *args, **kw)
 
     @classmethod
     def from_client(self, client, *args, **kwargs):
@@ -59,6 +58,8 @@ class BaseOps:
         )
 
     def _get_dataset_id(self, dataset: Union[str, Any]):
+        from relevanceai.dataset import Dataset
+
         if isinstance(dataset, str):
             return dataset
         elif isinstance(dataset, Dataset):
