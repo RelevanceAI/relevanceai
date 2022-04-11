@@ -15,6 +15,7 @@ from relevanceai.operations.cluster.cluster import ClusterOps
 from typing import Any, Dict, List, Optional, Tuple, Union, Set, Callable
 from relevanceai.operations.cluster.utils import _ClusterOps
 
+
 class ClusterVizOps(ClusterOps, _ClusterOps):
     """
     Cluster Visualisations. May contain additional visualisation
@@ -233,7 +234,7 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
         vmin: float = 0,
         vmax: float = 1,
         print_n: int = 8,
-        round_print_float: int = 2
+        round_print_float: int = 2,
     ):
         """
         Heatmap visualisation of the closest clusters.
@@ -259,7 +260,6 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
             all_vectors.append(values["results"][0][vector_field])
         dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
 
-
         dist_df = pd.DataFrame(dist_out)
         heatmap_values = list(closest_clusters["results"].keys())
         dist_df.columns = heatmap_values
@@ -274,18 +274,20 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
 
         print("Your closest centroids are:")
         for l, t in zip(left, top):
-            print(f"{round(dist_out[l][t], round_print_float)} {heatmap_values[l]}, {heatmap_values[t]}")
+            print(
+                f"{round(dist_out[l][t], round_print_float)} {heatmap_values[l]}, {heatmap_values[t]}"
+            )
 
         return sns.heatmap(
             data=dist_df,
             vmin=vmin,
             vmax=vmax,
         ).set(title=f"{metric} plot")
-    
+
     def show(self, fields, image_fields, audio_fields):
         for c in self.list_unique():
             pass
-        # return 
+        # return
         #     dataset_id=
         # )
 
@@ -319,7 +321,6 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
     #     for c, values in closest_clusters["results"].items():
     #         all_vectors.append(values["results"][0][vector_field])
     #     dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
-
 
     #     dist_df = pd.DataFrame(dist_out)
     #     heatmap_values = list(closest_clusters["results"].keys())
