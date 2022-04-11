@@ -16,3 +16,4 @@ from relevanceai.utils.progress_bar import *
 from relevanceai.utils.transport import *
 from relevanceai.utils.helpers import *
 from relevanceai.utils.filter_helper import *
+from relevanceai.utils.cosine_similarity import *

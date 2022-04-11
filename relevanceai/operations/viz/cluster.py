@@ -2,6 +2,7 @@
 Visualisations for your clustering.
 """
 import pandas as pd
+import numpy as np
 from relevanceai.constants.errors import (
     MissingClusterError,
     MissingPackageError,
@@ -9,11 +10,12 @@ from relevanceai.constants.errors import (
 )
 from tqdm.auto import tqdm
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils import largest_indices
 from relevanceai.operations.cluster.cluster import ClusterOps
 from typing import Any, Dict, List, Optional, Tuple, Union, Set, Callable
+from relevanceai.operations.cluster.utils import _ClusterOps
 
-
-class ClusterVizOps(ClusterOps):
+class ClusterVizOps(ClusterOps, _ClusterOps):
     """
     Cluster Visualisations. May contain additional visualisation
     dependencies.
@@ -230,13 +232,14 @@ class ClusterVizOps(ClusterOps):
         metric: str = "cosine",
         vmin: float = 0,
         vmax: float = 1,
-        vector_fields: Optional[List[str]] = None,
+        print_n: int = 8,
+        round_print_float: int = 2
     ):
         """
-        heatmap visualisation of the closest clusters
+        Heatmap visualisation of the closest clusters.
+        Prints the ones ranked from top to bottom in terms of largest cosine similarity.
         """
         closest_clusters = self.closest(include_vector=True, verbose=False)
-        import pandas as pd
         import seaborn as sns
         from doc_utils import DocUtils
         from relevanceai.utils.cosine_similarity import cosine_similarity
@@ -249,17 +252,94 @@ class ClusterVizOps(ClusterOps):
                 vector_field = self.vector_fields[0]
             else:
                 raise NotImplementedError
+        else:
+            raise ValueError("Please set vector fields in the initialization.")
 
         for c, values in closest_clusters["results"].items():
             all_vectors.append(values["results"][0][vector_field])
         dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
+
+
         dist_df = pd.DataFrame(dist_out)
         heatmap_values = list(closest_clusters["results"].keys())
         dist_df.columns = heatmap_values
         dist_df.index = heatmap_values
-        g = sns.heatmap(
+
+        # ignore the initial set as they are the same indices
+        ignore_initial = dist_out.shape[0]
+        left, top = largest_indices(np.tril(dist_out), ignore_initial + print_n)
+
+        left = left[ignore_initial:]
+        top = top[ignore_initial:]
+
+        print("Your closest centroids are:")
+        for l, t in zip(left, top):
+            print(f"{round(dist_out[l][t], round_print_float)} {heatmap_values[l]}, {heatmap_values[t]}")
+
+        return sns.heatmap(
             data=dist_df,
             vmin=vmin,
             vmax=vmax,
         ).set(title=f"{metric} plot")
-        return g
+    
+    def show(self, fields, image_fields, audio_fields):
+        for c in self.list_unique():
+            pass
+        # return 
+        #     dataset_id=
+        # )
+
+    # def heatmap(
+    #     self,
+    #     metric: str = "cosine",
+    #     vmin: float = 0,
+    #     vmax: float = 1,
+    #     print_n: int = 8
+    # ):
+    #     """
+    #     Heatmap visualisation of the closest clusters.
+    #     Prints the ones ranked from top to bottom in terms of largest cosine similarity.
+    #     """
+    #     closest_clusters = self.closest(include_vector=True, verbose=False)
+    #     import seaborn as sns
+    #     from doc_utils import DocUtils
+    #     from relevanceai.utils.cosine_similarity import cosine_similarity
+    #     from sklearn.metrics import pairwise_distances
+
+    #     shape = (len(closest_clusters["results"]), len(closest_clusters["results"]))
+    #     all_vectors = []
+    #     if self.vector_fields is not None:
+    #         if len(self.vector_fields) == 1:  # type: ignore
+    #             vector_field = self.vector_fields[0]
+    #         else:
+    #             raise NotImplementedError
+    #     else:
+    #         raise ValueError("Please set vector fields in the initialization.")
+
+    #     for c, values in closest_clusters["results"].items():
+    #         all_vectors.append(values["results"][0][vector_field])
+    #     dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
+
+
+    #     dist_df = pd.DataFrame(dist_out)
+    #     heatmap_values = list(closest_clusters["results"].keys())
+    #     dist_df.columns = heatmap_values
+    #     dist_df.index = heatmap_values
+
+    #     # ignore the initial set as they are the same indices
+    #     ignore_initial = dist_out.shape[0]
+    #     left, top = largest_indices(np.tril(dist_out), ignore_initial + print_n)
+
+    #     left = left[ignore_initial:]
+    #     top = top[ignore_initial:]
+
+    #     print("Your closest centroids are:")
+    #     for l, t in zip(left, top):
+    #         print(heatmap_values[l], heatmap_values[t])
+
+    #     g = sns.heatmap(
+    #         data=dist_df,
+    #         vmin=vmin,
+    #         vmax=vmax,
+    #     ).set(title=f"{metric} plot")
+    #     return g
