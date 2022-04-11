@@ -17,3 +17,4 @@ and machine learning engineers how best to unlock Relevance AI.
     kmeans_clustering_step_by_step_guide
     aggregation_guide
     cluster_centroid_heatmap_guide
+    subclustering_guide
