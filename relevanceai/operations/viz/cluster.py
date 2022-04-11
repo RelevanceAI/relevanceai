@@ -31,7 +31,7 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
         dataset_id: Optional[str] = None,
         **kwargs,
     ):
-        self.vector_fields = vector_fields
+        self.vector_fields = vector_fields  # type: ignore
         self.alias = alias  # type: ignore
         self.dataset_id = dataset_id
         super().__init__(

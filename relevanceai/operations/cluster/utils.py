@@ -352,7 +352,7 @@ class _ClusterOps(APIClient, DocUtils):
         ]
 
     def _operate_across_clusters(self, field: str, func: Callable):
-        output = dict()
+        output: Dict[str, Any] = dict()
         for cluster_id in self.list_cluster_ids():
             self._operate(cluster_id=cluster_id, field=field, output=output, func=func)
         return output
