@@ -1,7 +1,48 @@
+"""
+
+.. code-block::
+
+    dataset_id = '???'
+    ds = client.Dataset(dataset_id)
+
+    select_fields = [???]
+    docs = ds.get_all_documents(select_fields=selected_fields)
+
+    documents = docs[:???] # All of it or the portion that you want to use for fir-tuning
+
+    base_model = 'distilbert-base-uncased' # or other models
+    gpl_obj = GPL(base_model = base_model)
+
+    text_field = '???'          # the field you want to use for fine-tuning
+    dir_to_save_corpus = "???"  # path to save the corpus that is going to be used by the GPL alg.
+    title_field = '???'         # If there is a secondary but related field to be used for fine-tuning, can be none
+
+    gpl_obj.prepare_data_for_finetuning(
+        documents= documents,
+        text_field=text_field,
+        dir_to_save_corpus=dir_to_save_corpus,
+        title_field=title_field
+    )
+
+    path_to_generated_data = '???'  # some temporary data is saved there
+    output_dir = '???'              # where the final model is saved
+
+    gpl_obj.fine_tune(
+        path_to_generated_data = path_to_generated_data,
+        output_dir=output_dir
+    )
+
+    model = gpl_obj.get_finetuned_model()
+
+"""
+
 import json
 import logging
 from typing import List
-
+try:
+    import gpl
+except ModuleNotFoundError:
+    print("Need to install gpl by running `pip install gpl`.")
 
 class GPL:
     def __init__(
@@ -77,7 +118,7 @@ class GPL:
     ):
         # Generates pairs for fine-tuning a model following the GPL algorithm. The final model is saved at  output_dir
         self.path_to_finetuned_model = output_dir
-        gpl.train(
+        gpl.train( # type: ignore
             path_to_generated_data=path_to_generated_data,
             base_ckpt=self.base_model,
             batch_size_gpl=self.batch_size_gpl,
@@ -96,3 +137,16 @@ class GPL:
             logging.warning("No Fine-Tuned Model Was Found")
         else:
             return SentenceTransformer(self.output_path)
+
+class GPLOps:
+    """
+    Prepare the models.
+
+    """
+    def prepare_data(self):
+        raise NotImplementedError
+    
+    def finetune(self, dataset, field, filters):
+        """Finetune on a dataset
+        """
+        raise NotImplementedError
