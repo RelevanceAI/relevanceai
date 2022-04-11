@@ -68,7 +68,7 @@ class TestVectorizeOps:
         from relevanceai.operations.vector import Base2Vec
 
         class CustomTextEncoder(Base2Vec):
-            __name__ = "CustomTextEncoder1".lower()
+            __name__ = "CustomTextEncoder".lower()
 
             def __init__(self, *args, **kwargs):
                 super().__init__()
