@@ -5,6 +5,7 @@ from relevanceai.client.helpers import Credentials
 
 from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations.vector.vectorizer import Vectorizer
 
 
 class Operations(APIClient):
@@ -172,6 +173,47 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
         )
+
+    def advanced_vectorize(self, vectorizers: List[Vectorizer]):
+        """
+        Advanced vectorization.
+        By setting an
+
+        Example
+        ----------
+
+        .. code-block::
+
+            # When first vectorizing
+            from relevanceai.operations import Vectorizer
+            vectorizer = Vectorizer(field="field_1", model=model, alias="value")
+            ds.advanced_vectorize(
+                vectorizer,
+            )
+
+        Parameters
+        -------------
+
+        vectorize_mapping: dict
+            Vectorize mapping
+
+        """
+        all_fields = [v.field for v in vectorizers]
+        for vectorizer in tqdm(vectorizers):
+
+            def encode(docs):
+                for i, d in enumerate(docs):
+                    if self.is_field(vectorizer.field, d):
+                        docs[i][
+                            vectorizer.field + f"_{vectorizer.alias}_vector_"
+                        ] = vectorizer.model(self.get_field(vectorizer.field))
+                return docs
+
+            self.pull_update_push_async(
+                dataset_id=self.dataset_id,
+                update_function=encode,
+                updating_args=None,
+            )
 
     @track
     def vector_search(self, **kwargs):

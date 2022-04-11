@@ -57,7 +57,7 @@ class BaseOps:
             *args,
             **kwargs,
         )
-    
+
     def _get_dataset_id(self, dataset: Union[str, Any]):
         if isinstance(dataset, str):
             return dataset

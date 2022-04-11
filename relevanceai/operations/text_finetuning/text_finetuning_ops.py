@@ -21,6 +21,7 @@ except ModuleNotFoundError:
 from relevanceai.operations.base import BaseOps
 from relevanceai._api.api_client import APIClient
 
+
 class GPLOps(BaseOps, APIClient):
     def __init__(
         self,
@@ -72,12 +73,14 @@ class GPLOps(BaseOps, APIClient):
     def fine_tune(
         self,
         path_to_generated_data: str,
-        output_dir: str="trained_model",
+        output_dir: str = "trained_model",
         gpl_steps: int = 500,
         do_evaluation: bool = False,
     ):
         if os.path.exists(output_dir):
-            print("Output directory is detected. Assuming model was trained. Change output directory if you want to train a new model.")
+            print(
+                "Output directory is detected. Assuming model was trained. Change output directory if you want to train a new model."
+            )
         # Generates pairs for fine-tuning a model following the GPL algorithm. The final model is saved at  output_dir
         self.path_to_finetuned_model = output_dir
         self.output_path = output_dir
@@ -101,15 +104,24 @@ class GPLOps(BaseOps, APIClient):
             return SentenceTransformer(self.output_path)
         elif output_path:
             return SentenceTransformer(self.output_path)
-        
+
     def operate(
         self,
         dataset: str,
         text_field: str,
-        dir_to_save_corpus: str = "."
+        gpl_steps: int = 500,
+        path_to_generated_data: str = "temp_data",
+        output_dir: str = "trained_model",
+        dir_to_save_corpus: str = ".",
+        do_evaluation: bool = False,
     ):
         """
         Finetune a model
+
+        Example
+        -----------
+
+        # TODO
 
         Parameters
         -------------
@@ -117,12 +129,20 @@ class GPLOps(BaseOps, APIClient):
             The field you want to use for fine-tuning
         dir_to_save_corpus: str
             path to save the corpus that is going to be used by the GPL alg.
+        gpl_steps: int
+            The number of steps in Generative Pseudo Labelling
+        path_to_generated_data: str
+            The path to generated data
+        output_dir: str
+            The path of the output directory
+        dir_to_save_corpus: str
+            The directory to save corpus
+        do_evaluation: bool
+            If True, it performs the evaluation
 
         """
         print("Fetching documents...")
-        docs = self._get_all_documents(
-            dataset_id=self.dataset_id
-        )
+        docs = self._get_all_documents(dataset_id=dataset)
 
         print("Preparing training data...")
         self.prepare_data_for_finetuning(
@@ -132,8 +152,11 @@ class GPLOps(BaseOps, APIClient):
         )
 
         print("Training Model...")
-        
-        
+        self.fine_tune(
+            path_to_generated_data=path_to_generated_data,
+            output_dir=output_dir,
+            gpl_steps=gpl_steps,
+            do_evaluation=do_evaluation,
+        )
 
         print(f"Trained model saved at {self.output_path}")
-        
