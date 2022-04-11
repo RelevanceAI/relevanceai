@@ -12,7 +12,7 @@ from relevanceai.constants import IMG_EXTS
 
 from relevanceai.utils.decorators import log
 
-from vectorhub import Base2Vec
+from relevanceai.operations.vector import Base2Vec
 
 
 class VectorizeHelpers(APIClient):
@@ -444,11 +444,16 @@ class VectorizeOps(VectorizeHelpers):
         dataset_id: str,
         fields: List[str],
         show_progress_bar: bool = True,
+        detailed_schema: Optional[Dict[str, Any]] = None,
     ) -> None:
 
         self.dataset_id = dataset_id
         self.schema = self._get_schema()
-        self.detailed_schema = self._get_detailed_schema()
+        if detailed_schema is not None:
+            self.detailed_schema = detailed_schema
+        else:
+            self.detailed_schema = self._get_detailed_schema()
+
         numeric_fields = self._get_numeric_fields()
 
         if fields:
@@ -464,8 +469,8 @@ class VectorizeOps(VectorizeHelpers):
                 field_types = self._get_fields(fields)
 
         else:
-            fields = self.detailed_schema
-            field_types = self._get_fields(fields)
+            fields_list = list(self.detailed_schema)
+            field_types = self._get_fields(fields_list)
             print(
                 "No fields were given, vectorizing the following field(s): {}".format(
                     ", ".join(list(field_types))
