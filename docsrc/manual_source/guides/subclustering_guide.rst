@@ -13,8 +13,8 @@ Developer-first vector platform for ML teams
 .. |Open In Colab| image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/main/guides/subclustering_guide.ipynb
 
-🤖: Basic Sub-clustering
-========================
+🤖 Basic Sub-clustering
+=======================
 
 This notebook is a quick guide on how to use Relevance AI for
 subclustering. Subclustering allows users to infinitely drill down into
@@ -208,8 +208,8 @@ break down these clusters using subclustering.
 
    Screen Shot 2022-04-07 at 2.41.57 pm.png
 
-🫐 Running sub-clustering is then as simple as running **ds.subcluster** to the function.
-=========================================================================================
+🫐 Running sub-clustering
+-------------------------
 
 .. code:: ipython3
 
