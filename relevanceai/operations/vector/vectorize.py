@@ -12,7 +12,7 @@ from relevanceai.constants import IMG_EXTS
 
 from relevanceai.utils.decorators import log
 
-from relevanceai.operations.vector import Base2Vec
+from relevanceai.operations.vector.base import Base2Vec
 
 
 class VectorizeHelpers(APIClient):
