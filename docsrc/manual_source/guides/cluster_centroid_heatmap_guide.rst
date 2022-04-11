@@ -76,12 +76,12 @@ and inspect those clusters:
 Below, we can now see if 2 separate clusters. One for boots and one for
 shoes and if we need that granularity.
 
-.. figure:: attachment:image.png
+.. figure:: docsrc/manual_source/guides/cluster_centroid_heatmap_guide_files/cluster-centroid-dashboard-cluster-1.png
    :alt: image.png
 
    image.png
 
-.. figure:: attachment:image.png
+.. figure:: docsrc/manual_source/guides/cluster_centroid_heatmap_guide_files/cluster-centroid-dashboard-cluster-5.png
    :alt: image.png
 
    image.png
