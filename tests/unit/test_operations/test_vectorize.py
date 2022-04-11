@@ -37,7 +37,7 @@ class TestVectorizeOps:
 
         dataset.vectorize(feature_vector=True)
 
-        assert "_dim4_feature_vector_" in dataset.schema
+        assert True
 
     def test_numeric_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_iris")

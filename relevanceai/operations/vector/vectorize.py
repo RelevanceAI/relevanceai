@@ -104,20 +104,20 @@ class VectorizeHelpers(APIClient):
         reduced = reducer.fit_transform(vectors)
         return reduced
 
-    def _get_model_names(self, dtype: str) -> str:
+    def _get_model_names(self, dtype: str) -> List[Any]:
         if dtype == "_text_":
             if "text" in self.encoders:
                 return self.encoders["text"]
 
             else:
-                return "use"
+                return ["use"]
 
         elif dtype == "_image_":
             if "image" in self.encoders:
                 return self.encoders["image"]
 
             else:
-                return "clip"
+                return ["clip"]
 
         else:
             raise ValueError
