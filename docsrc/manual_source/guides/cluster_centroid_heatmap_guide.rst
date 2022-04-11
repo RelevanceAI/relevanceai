@@ -10,6 +10,13 @@ are the closest.
     In [1]: %load_ext autoreload
     In [2]: %autoreload 2
 
+Installation
+------------
+
+.. code:: ipython3
+
+    !pip install -q jsonshower
+
 .. code:: ipython3
 
     from relevanceai import Client
@@ -24,6 +31,9 @@ https://relevanceai.readthedocs.io/en/development/core/available_datasets.html#r
 .. code:: ipython3
 
     ds = client.Dataset("ecommerce")
+
+Centroid Heatmap
+----------------
 
 .. code:: ipython3
 
@@ -57,7 +67,7 @@ https://relevanceai.readthedocs.io/en/development/core/available_datasets.html#r
 
 
 
-.. image:: cluster_centroid_heatmap_guide_files/cluster_centroid_heatmap_guide_8_2.png
+.. image:: cluster_centroid_heatmap_guide_files/cluster_centroid_heatmap_guide_11_2.png
 
 
 Now we can see if our clusters are useful when we check the dashboard
@@ -75,10 +85,6 @@ and inspect those clusters:
 
 Below, we can now see if 2 separate clusters. One for boots and one for
 shoes and if we need that granularity.
-
-.. code:: ipython3
-
-    !pip install -q jsonshower
 
 .. code:: ipython3
 
