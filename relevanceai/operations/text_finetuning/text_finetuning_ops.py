@@ -22,6 +22,8 @@ class GPL:
         self.batch_size_gpl = batch_size_gpl
         self.output_path = None
 
+        self.get_gpl()
+
     def get_gpl(self):
         try:
             import gpl
