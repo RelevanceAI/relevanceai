@@ -851,7 +851,7 @@ break down these clusters using subclustering.
 
 
     """
-    We can see from searching the cluster itself, we can see a mixtures of items in our cluster
+    We can see from sampling the cluster itself, we can see a mixtures of items in our cluster
     """
 
     cluster_id = 'cluster-0'
@@ -964,7 +964,7 @@ break down these clusters using subclustering.
     cluster_id = 'cluster-0'
     subcluster_id = 'cluster-0-0'
 
-    print(f'Searching {subcluster_alias} in {vector_field} ...')
+    print(f'Sampling {subcluster_alias} in {vector_field} ...')
 
     sample_subclusters(subclusters_3, cluster_id, subcluster_id)
 
@@ -1236,7 +1236,7 @@ constantly referring back to the parent alias.
     cluster_id = 'cluster-0'
     subcluster_id = 'cluster-0-0'
 
-    print(f'Searching {subcluster_alias} in {vector_field} ...')
+    print(f'Sampling {subcluster_alias} in {vector_field} ...')
     sample_subclusters(subclusters_5, cluster_id , subcluster_id)
 
 
