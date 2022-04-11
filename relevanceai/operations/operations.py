@@ -21,7 +21,7 @@ class Operations(APIClient):
     def cluster(
         self,
         model: Any = None,
-        vector_fields: List[str] = [],
+        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         **kwargs,
     ):

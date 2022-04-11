@@ -130,7 +130,9 @@ class ClusterOps(APIClient, BaseOps):
 
         super().__init__(credentials)
 
-    def __call__(self, dataset_id: str, vector_fields: List[str]) -> None:
+    def __call__(
+        self, dataset_id: str, vector_fields: Optional[List[str]] = None
+    ) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
 
     def _get_schema(self) -> Dict:
@@ -385,7 +387,7 @@ class ClusterOps(APIClient, BaseOps):
     def operate(
         self,
         dataset_id: str,
-        vector_fields: List[str],
+        vector_fields: Optional[List[str]] = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
     ) -> None:
@@ -409,7 +411,7 @@ class ClusterOps(APIClient, BaseOps):
                 dataset_id = dataset_id.dataset_id  # type: ignore
         self.dataset_id = dataset_id
 
-        if not vector_fields:
+        if vector_fields is None:
             vector_fields = self._get_document_vector_field()
             print(f"No vector_field given: defaulting to {vector_fields}")
 
