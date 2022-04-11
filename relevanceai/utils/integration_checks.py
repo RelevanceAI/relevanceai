@@ -33,3 +33,7 @@ def is_plotly_available():
 
 def is_transformers_available():
     return importlib.util.find_spec("transformers") is not None
+
+
+def is_scipy_available():
+    return importlib.util.find_spec("scipy") is not None
