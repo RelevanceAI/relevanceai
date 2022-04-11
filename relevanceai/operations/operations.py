@@ -201,19 +201,19 @@ class Operations(APIClient):
         # TODO: Write test for advanced vectorize
         all_fields = [v.field for v in vectorizers]
         for vectorizer in tqdm(vectorizers):
+            vectorizer: Vectorizer
 
             def encode(docs):
-                for i, d in enumerate(docs):
-                    if self.is_field(vectorizer.field, d):
-                        docs[i][
-                            vectorizer.field + f"_{vectorizer.alias}_vector_"
-                        ] = vectorizer.model(self.get_field(vectorizer.field))
+                docs = vectorizer.encode_documents(
+                    fields=[vectorizer.field], documents=docs
+                )
                 return docs
 
             self.pull_update_push_async(
                 dataset_id=self.dataset_id,
                 update_function=encode,
                 updating_args=None,
+                select_fields=all_fields,
             )
 
     @track

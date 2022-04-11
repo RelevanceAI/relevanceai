@@ -79,6 +79,7 @@ class GPLOps(APIClient, BaseOps):
         gpl_steps: int = 500,
         do_evaluation: bool = False,
         qgen_prefix: str = "qgen",
+        **gpl_kwargs,
     ):
         if os.path.exists(output_dir):
             print(
@@ -99,9 +100,10 @@ class GPLOps(APIClient, BaseOps):
             cross_encoder=self.cross_encoder,
             qgen_prefix=qgen_prefix,
             do_evaluation=do_evaluation,
+            **gpl_kwargs,
         )
 
-    def get_finetuned_model(self, output_path: Optional[str] = None):
+    def get_model(self, output_path: Optional[str] = None):
         if not self.output_path and not output_path:
             logging.warning("No Fine-Tuned Model Was Found")
         elif self.output_path:
