@@ -4,22 +4,37 @@ from relevanceai.constants import MissingPackageError
 
 
 class CommunityDetection:
-    def __init__(self, gpu=False):
+    def __init__(
+        self,
+        threshold=0.75,
+        min_community_size=10,
+        init_max_size=1000,
+        gpu=False,
+    ):
+
         self.gpu = gpu
+        self.threshold = threshold
+        self.min_community_size = min_community_size
+        self.init_max_size = init_max_size
+
+    def __call__(self, *args, **kwargs):
+        return self.fit_predict(*args, **kwargs)
 
     def fit_predict(self, vectors):
         if self.gpu:
             communities = self.community_detection_gpu(vectors)
+
         else:
             communities = self.community_detection_cpu(vectors)
+
         labels = [-1 for _ in range(vectors.shape[0])]
         for cluster_index, community in enumerate(communities):
             for index in community:
                 labels[index] = cluster_index
+
         return np.array(labels)
 
-    @staticmethod
-    def cosine(embeddings):
+    def cosine(self, embeddings):
         """
         effecient cosine sim
         """
@@ -53,35 +68,31 @@ class CommunityDetection:
         )
         return values, indices
 
-    def community_detection_cpu(
-        self,
-        embeddings,
-        threshold=0.75,
-        min_community_size=10,
-        init_max_size=1000,
-    ):
-        init_max_size = min(init_max_size, len(embeddings))
+    def community_detection_cpu(self, embeddings):
+        self.init_max_size = min(self.init_max_size, len(embeddings))
         cos_scores = self.cosine(embeddings)
-        top_k_values, _ = self.topk(cos_scores, k=min_community_size)
+        top_k_values, _ = self.topk(cos_scores, k=self.min_community_size)
 
         extracted_communities = []
         for i in range(len(top_k_values)):
-            if top_k_values[i][-1] >= threshold:
+            if top_k_values[i][-1] >= self.threshold:
                 new_cluster = []
 
-                top_val_large, top_idx_large = self.topk(cos_scores[i], k=init_max_size)
+                top_val_large, top_idx_large = self.topk(
+                    cos_scores[i], k=self.init_max_size
+                )
                 top_idx_large = top_idx_large.flatten().tolist()
                 top_val_large = top_val_large.flatten().tolist()
 
-                if top_val_large[-1] < threshold:
+                if top_val_large[-1] < self.threshold:
                     for idx, val in zip(top_idx_large, top_val_large):
-                        if val < threshold:
+                        if val < self.threshold:
                             break
 
                         new_cluster.append(idx)
                 else:
                     for idx, val in enumerate(cos_scores[i].tolist()):
-                        if val >= threshold:
+                        if val >= self.threshold:
                             new_cluster.append(idx)
 
                 extracted_communities.append(new_cluster)
@@ -108,21 +119,14 @@ class CommunityDetection:
         print(f"There were {len(unique_communities)} communities found.")
         return unique_communities
 
-    def community_detection_gpu(
-        self,
-        embeddings,
-        threshold=0.75,
-        min_community_size=10,
-        init_max_size=1000,
-    ):
+    def community_detection_gpu(self, embeddings):
         try:
             from sentence_transformers.util import community_detection
         except ModuleNotFoundError:
             raise MissingPackageError("sentence-transformers")
         return community_detection(
             embeddings,
-            threshold,
-            threshold,
-            min_community_size,
-            init_max_size,
+            self.threshold,
+            self.min_community_size,
+            self.init_max_size,
         )

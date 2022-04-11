@@ -2,7 +2,7 @@ from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.utils.decorators import deprecated, beta
+
 from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
 
@@ -20,8 +20,8 @@ class Operations(APIClient):
     @track
     def cluster(
         self,
-        model: Union[str, Any],
-        vector_fields: List[str],
+        model: Any = None,
+        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         **kwargs,
     ):
@@ -61,20 +61,20 @@ class Operations(APIClient):
             credentials=self.credentials,
             model=model,
             alias=alias,
-            vector_fields=vector_fields,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
-        ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
-        return ops
+        return ops(
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+        )
 
     @track
     def reduce_dims(
         self,
-        model: Any,
-        n_components: int,
         alias: str,
         vector_fields: List[str],
+        model: Any = "umap",
+        n_components: int = 3,
         **kwargs,
     ):
         """
@@ -110,8 +110,7 @@ class Operations(APIClient):
     @track
     def vectorize(
         self,
-        text_fields=None,
-        image_fields=None,
+        fields: List[str] = None,
         **kwargs,
     ):
         """
@@ -167,12 +166,11 @@ class Operations(APIClient):
 
         ops = VectorizeOps(
             credentials=self.credentials,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops.vectorize(
-            text_fields=text_fields,
-            image_fields=image_fields,
+        return ops(
+            dataset_id=self.dataset_id,
+            fields=[] if fields is None else fields,
         )
 
     @track
@@ -464,8 +462,22 @@ class Operations(APIClient):
 
         For more information about vector search check out services.search.vector
 
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            results = ds.search.multistep_chunk(
+                chunk_field="_chunk_",
+                multivector_query=MULTIVECTOR_QUERY,
+                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
+            )
+
         Parameters
-        ----------
+        ------------
 
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
@@ -511,20 +523,6 @@ class Operations(APIClient):
             Size of each page of results
         query: string
             What to store as the query name in the dashboard
-
-        Example
-        -----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            results = ds.search.multistep_chunk(
-                chunk_field="_chunk_",
-                multivector_query=MULTIVECTOR_QUERY,
-                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
-            )
 
         """
         from relevanceai.operations.vector import SearchOps
