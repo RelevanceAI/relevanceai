@@ -225,28 +225,41 @@ class ClusterVizOps(ClusterOps):
             raise ValueError("Can't detect cluster field.")
         return set_cluster_field
 
-    def heatmap(self, metric: str = "cosine", vmin: float = 0, vmax: float = 1):
-        """heatmap visualisation of the closest clusters"""
+    def centroid_heatmap(
+        self,
+        metric: str = "cosine",
+        vmin: float = 0,
+        vmax: float = 1,
+        vector_fields: Optional[List[str]] = None,
+    ):
+        """
+        heatmap visualisation of the closest clusters
+        """
         closest_clusters = self.closest(include_vector=True, verbose=False)
         import pandas as pd
         import seaborn as sns
-        import numpy as np
-
         from doc_utils import DocUtils
         from relevanceai.utils.cosine_similarity import cosine_similarity
         from sklearn.metrics import pairwise_distances
 
         shape = (len(closest_clusters["results"]), len(closest_clusters["results"]))
         all_vectors = []
+        if self.vector_fields is not None:
+            if len(self.vector_fields) == 1:  # type: ignore
+                vector_field = self.vector_fields[0]
+            else:
+                raise NotImplementedError
+
         for c, values in closest_clusters["results"].items():
-            all_vectors.append(values["results"][0]["image_path_clip_vector_"])
+            all_vectors.append(values["results"][0][vector_field])
         dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
         dist_df = pd.DataFrame(dist_out)
         heatmap_values = list(closest_clusters["results"].keys())
         dist_df.columns = heatmap_values
         dist_df.index = heatmap_values
-        return sns.heatmap(
+        g = sns.heatmap(
             data=dist_df,
             vmin=vmin,
             vmax=vmax,
-        )
+        ).set(title=f"{metric} plot")
+        return g

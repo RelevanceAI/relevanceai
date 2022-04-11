@@ -3,10 +3,12 @@
 from operator import is_
 from typing import List, Dict, Any
 from relevanceai.utils.integration_checks import is_scipy_available
+from relevanceai.utils.decorators.analytics import track
 import numpy as np
 from doc_utils import DocUtils
 
 
+@track
 def cosine_similarity(a, b):
     """Cosine similarity utility"""
     if is_scipy_available():
@@ -21,12 +23,11 @@ def cosine_similarity(a, b):
         )
 
 
-def cosine_similarity_across_documents(vector_field, documents):
-    """Cosine similarity across documents"""
-    pass
-
-
+@track
 def cosine_similarity_matrix(all_vectors):
+    """
+    return a cosine similarity matrix
+    """
     from sklearn.metrics import pairwise_distances
 
     dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
@@ -62,3 +63,16 @@ def get_cosine_similarity_scores(
         )
         similarity_scores.append(similarity_score)
     return similarity_scores
+
+
+def largest_indices(ary, n):
+    """
+    Returns the n largest indices from a numpy array.
+
+    Code from: https://stackoverflow.com/questions/6910641/how-do-i-get-indices-of-n-maximum-values-in-a-numpy-array
+
+    """
+    flat = ary.flatten()
+    indices = np.argpartition(flat, -n)[-n:]
+    indices = indices[np.argsort(-flat[indices])]
+    return np.unravel_index(indices, ary.shape)
