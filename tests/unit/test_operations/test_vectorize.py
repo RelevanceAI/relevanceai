@@ -1,5 +1,7 @@
 import random
 
+import pytest
+
 from relevanceai import Client
 from relevanceai.dataset import Dataset
 from relevanceai.utils.datasets import (
@@ -7,6 +9,7 @@ from relevanceai.utils.datasets import (
     get_online_ecommerce_dataset,
     get_palmer_penguins_dataset,
 )
+from relevanceai.utils.decorators.vectors import catch_errors
 
 
 from tests.globals.constants import (
@@ -28,6 +31,7 @@ CHUNK_MULTIVECTOR_QUERY = [
 
 
 class TestVectorizeOps:
+    @pytest.mark.xfail(reason="vectorhub is not required")
     def test_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_ecom")
         dataset.insert_documents(
@@ -75,6 +79,7 @@ class TestVectorizeOps:
                     for _ in range(self.vector_length)
                 ]
 
+            @catch_errors
             def encode(self, value):
                 vector = self.model(value)
                 return vector
