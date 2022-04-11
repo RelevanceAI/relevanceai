@@ -828,7 +828,7 @@ break down these clusters using subclustering.
       return {k:v for k, v in subclusters[cluster_id].items() if k in subcluster_ids}
 
 
-    def search_subclusters(subclusters, cluster_id,  subcluster_id=None, n_docs=10):
+    def sample_subclusters(subclusters, cluster_id,  subcluster_id=None, n_docs=10):
       docs=[]
       subcluster_ids=list(subclusters[cluster_id].keys()) if not subcluster_id else [subcluster_id]
 
@@ -855,7 +855,7 @@ break down these clusters using subclustering.
     """
 
     cluster_id = 'cluster-0'
-    search_subclusters(subclusters_3, cluster_id )
+    sample_subclusters(subclusters_3, cluster_id )
 
 
 .. parsed-literal::
@@ -966,7 +966,7 @@ break down these clusters using subclustering.
 
     print(f'Searching {subcluster_alias} in {vector_field} ...')
 
-    search_subclusters(subclusters_3, cluster_id, subcluster_id)
+    sample_subclusters(subclusters_3, cluster_id, subcluster_id)
 
 
 .. parsed-literal::
@@ -1237,7 +1237,7 @@ constantly referring back to the parent alias.
     subcluster_id = 'cluster-0-0'
 
     print(f'Searching {subcluster_alias} in {vector_field} ...')
-    search_subclusters(subclusters_5, cluster_id , subcluster_id)
+    sample_subclusters(subclusters_5, cluster_id , subcluster_id)
 
 
 
