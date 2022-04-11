@@ -1,7 +1,8 @@
 """
 Base class for operations.
 """
-from typing import Any, List
+from typing import Any, List, Union
+from relevanceai.dataset import Dataset
 from relevanceai.client.helpers import (
     Credentials,
     process_token,
@@ -56,3 +57,9 @@ class BaseOps:
             *args,
             **kwargs,
         )
+    
+    def _get_dataset_id(self, dataset: Union[str, Any]):
+        if isinstance(dataset, str):
+            return dataset
+        elif isinstance(dataset, Dataset):
+            return dataset.dataset_id

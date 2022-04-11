@@ -1,50 +1,27 @@
 """
-
-.. code-block::
-
-    dataset_id = '???'
-    ds = client.Dataset(dataset_id)
-
-    select_fields = [???]
-    docs = ds.get_all_documents(select_fields=selected_fields)
-
-    documents = docs[:???] # All of it or the portion that you want to use for fir-tuning
-
-    base_model = 'distilbert-base-uncased' # or other models
-    gpl_obj = GPL(base_model = base_model)
-
-    text_field = '???'          # the field you want to use for fine-tuning
-    dir_to_save_corpus = "???"  # path to save the corpus that is going to be used by the GPL alg.
-    title_field = '???'         # If there is a secondary but related field to be used for fine-tuning, can be none
-
-    gpl_obj.prepare_data_for_finetuning(
-        documents= documents,
-        text_field=text_field,
-        dir_to_save_corpus=dir_to_save_corpus,
-        title_field=title_field
-    )
-
-    path_to_generated_data = '???'  # some temporary data is saved there
-    output_dir = '???'              # where the final model is saved
-
-    gpl_obj.fine_tune(
-        path_to_generated_data = path_to_generated_data,
-        output_dir=output_dir
-    )
-
-    model = gpl_obj.get_finetuned_model()
-
+GPL
 """
 
+import os
 import json
 import logging
-from typing import List
+from typing import List, Optional
+
 try:
     import gpl
 except ModuleNotFoundError:
     print("Need to install gpl by running `pip install gpl`.")
 
-class GPL:
+try:
+    from sentence_transformers import SentenceTransformer
+except ModuleNotFoundError:
+    print(
+        "Need to install SentenceTransformer by running `pip install sentence_transformers`."
+    )
+from relevanceai.operations.base import BaseOps
+from relevanceai._api.api_client import APIClient
+
+class GPLOps(BaseOps, APIClient):
     def __init__(
         self,
         base_model: str,
@@ -59,22 +36,6 @@ class GPL:
         self.cross_encoder = cross_encoder
         self.batch_size_gpl = batch_size_gpl
         self.output_path = None
-
-        self.get_gpl()
-
-    def get_gpl(self):
-        try:
-            import gpl
-        except ModuleNotFoundError:
-            print("Need to install gpl by running `pip install gpl`.")
-
-    def _get_model(self):
-        try:
-            from sentence_transformers import SentenceTransformer
-        except ModuleNotFoundError:
-            print(
-                "Need to install SentenceTransformer by running `pip install sentence_transformers`."
-            )
 
     def prepare_data_for_finetuning(
         self,
@@ -104,7 +65,6 @@ class GPL:
                 jsonl.write(json.dumps(line) + "\n")
                 i += 1
                 corpus.append(line)
-
         logging.info(
             f"A corpus of {len(corpus)} documents is saved at {dir_to_save_corpus}/corpus.jsonl"
         )
@@ -112,13 +72,16 @@ class GPL:
     def fine_tune(
         self,
         path_to_generated_data: str,
-        output_dir: str,
+        output_dir: str="trained_model",
         gpl_steps: int = 500,
         do_evaluation: bool = False,
     ):
+        if os.path.exists(output_dir):
+            print("Output directory is detected. Assuming model was trained. Change output directory if you want to train a new model.")
         # Generates pairs for fine-tuning a model following the GPL algorithm. The final model is saved at  output_dir
         self.path_to_finetuned_model = output_dir
-        gpl.train( # type: ignore
+        self.output_path = output_dir
+        gpl.train(  # type: ignore
             path_to_generated_data=path_to_generated_data,
             base_ckpt=self.base_model,
             batch_size_gpl=self.batch_size_gpl,
@@ -131,22 +94,46 @@ class GPL:
             do_evaluation=do_evaluation,
         )
 
-    def get_finetuned_model(self):
-        self._get_model()
-        if not self.output_path:
+    def get_finetuned_model(self, output_path: Optional[str] = None):
+        if not self.output_path and not output_path:
             logging.warning("No Fine-Tuned Model Was Found")
-        else:
+        elif self.output_path:
             return SentenceTransformer(self.output_path)
-
-class GPLOps:
-    """
-    Prepare the models.
-
-    """
-    def prepare_data(self):
-        raise NotImplementedError
-    
-    def finetune(self, dataset, field, filters):
-        """Finetune on a dataset
+        elif output_path:
+            return SentenceTransformer(self.output_path)
+        
+    def operate(
+        self,
+        dataset: str,
+        text_field: str,
+        dir_to_save_corpus: str = "."
+    ):
         """
-        raise NotImplementedError
+        Finetune a model
+
+        Parameters
+        -------------
+        text_field: str
+            The field you want to use for fine-tuning
+        dir_to_save_corpus: str
+            path to save the corpus that is going to be used by the GPL alg.
+
+        """
+        print("Fetching documents...")
+        docs = self._get_all_documents(
+            dataset_id=self.dataset_id
+        )
+
+        print("Preparing training data...")
+        self.prepare_data_for_finetuning(
+            documents=docs,
+            text_field=text_field,
+            dir_to_save_corpus=dir_to_save_corpus,
+        )
+
+        print("Training Model...")
+        
+        
+
+        print(f"Trained model saved at {self.output_path}")
+        
