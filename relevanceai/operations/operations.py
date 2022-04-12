@@ -1,3 +1,4 @@
+from re import I
 from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
@@ -856,8 +857,40 @@ class Operations(APIClient):
             **kwargs,
         )
 
+    @track
     def list_deployables(self):
         """
         Use this function to list available deployables
         """
         return self.deployables.list()
+
+    @track
+    def train_text_model_with_gpl(
+        self, text_field: str, title_field: Optional[str] = None
+    ):
+        """
+        Train a text model using GPL (Generative Pseudo-Labelling)
+        This can be helpful for `domain adaptation`.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.train_text_model(method="gpl")
+
+        Parameters
+        ------------
+
+        text_field: str
+            Text field
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import GPLOps
+
+        ops = GPLOps.from_dataset(dataset=self)
+        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)

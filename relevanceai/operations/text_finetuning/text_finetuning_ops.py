@@ -1,13 +1,16 @@
 """
 Generative Pseudo Labelling Operation
 
+Train a text model using GPL (Generative Pseudo-Labelling)
+This can be helpful for `domain adaptation`.
+
 .. code-block::
 
     from relevanceai import Client
     client = Client()
-    ds = client.Dataset("sample")
-    
-
+    ds = client.Dataset("ecommerce")
+    ops = GPLOps.from_dataset(dataset=ds)
+    ops.operate(dataset=ds, text_field="detail_desc")
 
 """
 
