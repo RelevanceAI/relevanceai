@@ -351,6 +351,12 @@ class _ClusterOps(APIClient, DocUtils):
             for label, prev_cluster_label in zip(labels, prev_cluster_labels)
         ]
 
+    def _operate_across_clusters(self, field: str, func: Callable):
+        output: Dict[str, Any] = dict()
+        for cluster_id in self.list_cluster_ids():
+            self._operate(cluster_id=cluster_id, field=field, output=output, func=func)
+        return output
+
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
         """
         Internal function for operations

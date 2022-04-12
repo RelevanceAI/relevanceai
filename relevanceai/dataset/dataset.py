@@ -1,13 +1,17 @@
 from typing import Dict, List, Optional, Union
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECTOR_APP_LINK
 from relevanceai.dataset.read import Read
 from relevanceai.dataset.write import Write
 from relevanceai.dataset.io import IO
 from relevanceai.dataset.series import Series
 from relevanceai.operations import Operations
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.constants import (
+    GLOBAL_DATASETS,
+    SEARCH_APP_LINK,
+    PROJECTOR_APP_LINK,
+)
 
 
 class Dataset(IO, Read, Write, Operations):
@@ -58,7 +62,10 @@ class Dataset(IO, Read, Write, Operations):
     def is_empty(self):
         """Check if a dataset is empty."""
         if self.dataset_id not in self.datasets.list()["datasets"]:
-            print("⚠️ Your dataset has no documents. Make sure to insert some!")
+            try:
+                print("⚠️ Your dataset has no documents. Make sure to insert some!")
+            except:
+                pass
 
     @track
     def __getitem__(self, field: Union[List[str], str]):
