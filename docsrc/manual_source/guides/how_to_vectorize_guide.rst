@@ -18,13 +18,13 @@ Installation
 .. code:: ipython3
 
     from relevanceai import Client
-    
+
     """
     You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
     Once you have signed up, click on the value under `Activation token` and paste it here
     """
     client = Client()
-    
+
 
 
 Vectorizing using Vectorhub
@@ -58,7 +58,7 @@ Setup
 
     ## Let's use a sample Sentence Transformer model for encoding
     from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-    
+
     model = SentenceTransformer2Vec("all-mpnet-base-v2")
 
 
@@ -69,10 +69,10 @@ Encoding
 
     # Encode a single input
     model.encode("I love working with vectors.")
-    
+
     # documents are saved as a list of dictionaries
     documents = [{'sentence': '"This is the first sentence."', '_id': 1}, {'sentence': '"This is the second sentence."', '_id': 2}]
-    
+
     # Encode the `"sentence"` field in a list of documents
     encoded_documents = model.encode_documents(["sentence"], documents)
 
@@ -82,7 +82,7 @@ Encoding an entire dataset
 
 The easiest way to update an existing dataset with encoding results is
 to run ``encode_documents``. This function fetches all the data-points
-in a dataset, runs the specified function (i.e. encoding in this case)
+in a dataset, runs the specified function (i.e. encoding in this case)
 and writes the result back to the dataset.
 
 For instance, in the sample code below, we use a dataset called
@@ -96,13 +96,12 @@ bring your own model(s).
 
     import pandas as pd
     from relevanceai.utils.datasets import get_ecommerce_dataset_clean
-    
+
     # Retrieve our sample dataset. - This comes in the form of a list of documents.
     documents = get_ecommerce_dataset_clean()
-    
+
     pd.DataFrame.from_dict(documents).head()
     ds = client.Dataset('quickstart_example_encoding')
     ds.insert_documents(documents)
-    
-    ds["product_title"].apply(lambda x: model.encode(x), output_field="product_title_vector_")
 
+    ds["product_title"].apply(lambda x: model.encode(x), output_field="product_title_vector_")
