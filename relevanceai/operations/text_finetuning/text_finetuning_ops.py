@@ -16,7 +16,14 @@ You can find out more about GPL from: https://github.com/UKPLab/gpl
     from relevanceai import Client
     client = Client()
     ds = client.Dataset("ecommerce")
-    ops = GPLOps.from_dataset(dataset=ds)
+    ops = GPLOps.from_dataset(dataset=ds,
+        base_model="distilbert-base-uncased",
+        t5_generator="BeIR/query-gen-msmarco-t5-base-v1",
+        retrievers=["msmarco-distilbert-base-v3", "msmarco-MiniLM-L-6-v3"],
+        cross_encoder="cross-encoder/ms-marco-MiniLM-L-6-v2",
+        batch_size_gpl=16,
+        output_path="trained_model",
+    )
     ops.operate(dataset=ds, text_field="detail_desc")
 
 """
