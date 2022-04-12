@@ -7,3 +7,4 @@ Clustering
     partial_clustering
     subclustering
     report
+    cluster_viz
