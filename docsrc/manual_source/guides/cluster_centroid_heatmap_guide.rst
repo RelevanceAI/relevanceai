@@ -26,7 +26,7 @@ Installation
     client = Client()
 
 You can retrieve the ecommerce dataset from
-https://relevanceai.readthedocs.io/en/development/core/available_datasets.html#relevanceai.utils.datasets.get_ecommerce_1_dataset.
+https://relevanceai.readthedocs.io/en/development/core/available\_datasets.html#relevanceai.utils.datasets.get\_ecommerce\_1\_dataset.
 
 .. code:: ipython3
 
@@ -148,5 +148,3 @@ shoes and if we need that granularity.
         </tr>
       </tbody>
     </table>
-
-
