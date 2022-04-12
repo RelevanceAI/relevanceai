@@ -1,8 +1,15 @@
 """
-Generative Pseudo Labelling Operation
+.. warning::
+
+    This is a beta feature and will be changing in the future. Do not use this in production systems.
+
+Example
+---------------------------------------
 
 Train a text model using GPL (Generative Pseudo-Labelling)
 This can be helpful for `domain adaptation`.
+
+You can find out more about GPL from: https://github.com/UKPLab/gpl
 
 .. code-block::
 

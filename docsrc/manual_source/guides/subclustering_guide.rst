@@ -14,7 +14,7 @@ Developer-first vector platform for ML teams
    :target: https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/main/guides/subclustering_guide.ipynb
 
 🤖 Basic Sub-clustering
-=======================
+======================
 
 This notebook is a quick guide on how to use Relevance AI for
 subclustering. Subclustering allows users to infinitely drill down into
@@ -40,7 +40,7 @@ value under ``Authorization token`` and paste it here
     client = Client()
 
 🚣 Inserting data
------------------
+----------------
 
 We use a sample ecommerce dataset - with vectors
 ``product_image_clip_vector_`` and ``product_title_clip_vector_``
@@ -111,7 +111,7 @@ already encoded for us.
 
 
 🍒 Running the initial clustering approach:
--------------------------------------------
+------------------------------------------
 
 Let’s instantiate a clustering model and set an appropriate parent alias
 for n_clusters Let’s vectorize over all available vector fields
@@ -209,7 +209,7 @@ break down these clusters using subclustering.
    Screen Shot 2022-04-07 at 2.41.57 pm.png
 
 🫐 Running sub-clustering
--------------------------
+------------------------
 
 .. code:: ipython3
 
@@ -749,7 +749,7 @@ You can also view your subcluster results using
 
 
 🧐 Looking into our subclusters
--------------------------------
+------------------------------
 
 Let’s build a subcluster lookup to help us further analyze our clusters
 
@@ -1038,7 +1038,7 @@ more well-defined groups
 
 
 🍇 You can then run sub-clustering again on a separate parent alias!
---------------------------------------------------------------------
+-------------------------------------------------------------------
 
 If we find our initial subclusters are insufficient, we can run
 subclustering again even more clusters to drill down down even furher.
