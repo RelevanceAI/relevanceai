@@ -1,5 +1,5 @@
 🌇 Text To Image Search QuickStart
-=================================
+==================================
 
 |Open In Colab|
 
@@ -7,7 +7,7 @@
 Dashboard <https://cloud.relevance.ai/demo/search/image-to-text>`__.
 
 In this notebook we will show you how to create and experiment with a
-powerful text to image search engine using OpenAI's CLIP and Relevance
+powerful text to image search engine using OpenAI’s CLIP and Relevance
 AI.
 
 .. |Open In Colab| image:: https://colab.research.google.com/assets/colab-badge.svg
@@ -51,7 +51,7 @@ Text-to-image search
 ====================
 
 To enable text-to-image search we will be using Relevance AI as the
-vector database and OpenAI's CLIP as the vectorizer, to vectorize text
+vector database and OpenAI’s CLIP as the vectorizer, to vectorize text
 and images into CLIP vector embeddings.
 
 1) Data
@@ -137,12 +137,12 @@ mins
 Uploading our documents into the dataset ``quickstart_clip``.
 
 In case you are uploading your own dataset, keep in mind that each
-document should have a field called '\_id'. Such an id can be easily
+document should have a field called ’_id’. Such an id can be easily
 allocated using the uuid package:
 
 ::
 
-    ds.insert_documents(documents, create_id=True)
+   ds.insert_documents(documents, create_id=True)
 
 .. code:: ipython3
 
