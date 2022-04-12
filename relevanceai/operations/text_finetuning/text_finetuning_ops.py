@@ -57,6 +57,7 @@ class GPLOps(APIClient, BaseOps):
         documents: List[dict],
         text_field: str,
         dir_to_save_corpus: str,
+        title_field: Optional[str] = None,
         corpus_filename: str = "corpus.jsonl",
     ):
         # Writes a corpus in the format compatible to the GPL library to later make Pos/Neg pairs
@@ -68,9 +69,15 @@ class GPLOps(APIClient, BaseOps):
                     continue
                 line = {
                     "_id": str(i),
-                    "text": doc[text_field].replace("\n", " "),
-                    "metadata": {f: doc[f] for f in doc if f not in [text_field]},
+                    "text": doc.get(text_field, "").replace("\n", " "),
+                    "metadata": {
+                        f: doc[f] for f in doc if f not in [text_field, title_field]
+                    },
                 }
+                if title_field is not None:
+                    line["title"] = doc.get(title_field, "")
+                else:
+                    line["title"] = ""
                 # iteratively write lines to the JSON lines corpus.jsonl file
                 jsonl.write(json.dumps(line) + "\n")
                 i += 1
