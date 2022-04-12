@@ -160,7 +160,6 @@ class Operations(APIClient):
                 text_model=text_model
             )
 
-
         """
 
         from relevanceai.operations.vector import VectorizeOps

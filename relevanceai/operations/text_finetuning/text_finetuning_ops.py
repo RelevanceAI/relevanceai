@@ -1,5 +1,14 @@
 """
 Generative Pseudo Labelling Operation
+
+.. code-block::
+
+    from relevanceai import Client
+    client = Client()
+    ds = client.Dataset("sample")
+    
+
+
 """
 
 import os
@@ -48,7 +57,6 @@ class GPLOps(APIClient, BaseOps):
         documents: List[dict],
         text_field: str,
         dir_to_save_corpus: str,
-        title_field: str = None,
         corpus_filename: str = "corpus.jsonl",
     ):
         # Writes a corpus in the format compatible to the GPL library to later make Pos/Neg pairs
@@ -61,9 +69,7 @@ class GPLOps(APIClient, BaseOps):
                 line = {
                     "_id": str(i),
                     "text": doc[text_field].replace("\n", " "),
-                    "metadata": {
-                        f: doc[f] for f in doc if f not in [text_field, title_field]
-                    },
+                    "metadata": {f: doc[f] for f in doc if f not in [text_field]},
                 }
                 # iteratively write lines to the JSON lines corpus.jsonl file
                 jsonl.write(json.dumps(line) + "\n")
@@ -141,6 +147,7 @@ class GPLOps(APIClient, BaseOps):
 
         Parameters
         -------------
+
         text_field: str
             The field you want to use for fine-tuning
         dir_to_save_corpus: str
@@ -189,9 +196,25 @@ class GPLOps(APIClient, BaseOps):
         )
 
     @classmethod
-    def from_dataset(self, dataset: Any, **kwargs):
+    def from_dataset(
+        self,
+        dataset: Any,
+        base_model: str = "distilbert-base-uncased",
+        t5_generator: str = "BeIR/query-gen-msmarco-t5-base-v1",
+        retrievers: List[str] = ["msmarco-distilbert-base-v3", "msmarco-MiniLM-L-6-v3"],
+        cross_encoder: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        batch_size_gpl: int = 16,
+        output_path: str = "trained_model",
+        **kwargs,
+    ):
         cls = self(
             credentials=dataset.credentials,
+            base_model=base_model,
+            t5_generator=t5_generator,
+            retrievers=retrievers,
+            cross_encoder=cross_encoder,
+            batch_size_gpl=batch_size_gpl,
+            output_path=output_path,
             **kwargs,
         )
         cls.dataset_id = dataset.dataset_id
