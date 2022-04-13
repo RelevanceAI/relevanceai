@@ -1,7 +1,7 @@
 🔍 Advanced Search
-=================
+==================
 
-Fast Search is Relevance AI's most complex search endpoint. It combines
+Fast Search is Relevance AI’s most complex search endpoint. It combines
 functionality to search using vectors, exact text search with ability to
 boost your search results depending on your needs. The following
 demonstrates a few dummy examples on how to quickly add complexity to

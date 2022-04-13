@@ -1,5 +1,5 @@
 ⚡ How To Use Custom Vectorizers
-===============================
+================================
 
 |Open In Colab|
 
@@ -82,7 +82,7 @@ Encoding an entire dataset
 
 The easiest way to update an existing dataset with encoding results is
 to run ``encode_documents``. This function fetches all the data-points
-in a dataset, runs the specified function (i.e. encoding in this case)
+in a dataset, runs the specified function (i.e. encoding in this case)
 and writes the result back to the dataset.
 
 For instance, in the sample code below, we use a dataset called

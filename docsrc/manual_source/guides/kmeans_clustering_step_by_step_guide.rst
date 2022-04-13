@@ -1,5 +1,5 @@
 🍔 K Means Clustering Step By Step
-=================================
+==================================
 
 Installation
 ============
@@ -106,7 +106,7 @@ We apply the Kmeams clustering algorithm to the vector field,
 
 
 We download a small sample and show the clustering results using our
-json\_shower.
+json_shower.
 
 .. code:: python
 

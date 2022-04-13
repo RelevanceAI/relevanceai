@@ -333,9 +333,9 @@ In general, the group-by field is structured as
 
 ::
 
-    {"name": ALIAS,
-    "field": FIELD,
-    "agg": TYPE-OF-GROUP}
+   {"name": ALIAS,
+   "field": FIELD,
+   "agg": TYPE-OF-GROUP}
 
 Categorical Data
 ----------------
@@ -368,9 +368,9 @@ In general, the aggregation field is structured as
 
 ::
 
-    {"name": ALIAS,
-    "field": FIELD,
-    "agg": TYPE-OF-AGG}
+   {"name": ALIAS,
+   "field": FIELD,
+   "agg": TYPE-OF-AGG}
 
 Average, Minimum and Maximum
 ----------------------------

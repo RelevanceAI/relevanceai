@@ -1,5 +1,5 @@
 🌋 Quick Feature Tour
-====================
+=====================
 
 |Open In Colab|
 
@@ -10,7 +10,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Get started using our RelevanceAI SDK and use of
-`Vectorhub <https://hub.getvectorai.com/>`__'s `CLIP
+`Vectorhub <https://hub.getvectorai.com/>`__\ ’s `CLIP
 model <https://hub.getvectorai.com/model/text_image%2Fclip>`__ for
 encoding.
 
@@ -26,8 +26,7 @@ Follow the signup flow and get your credentials below otherwise, you can
 sign up/login and find your credentials in the settings
 `here <https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api>`__
 
-.. figure:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
-   :alt:
+.. image:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
 
 .. code:: python
 
@@ -43,8 +42,7 @@ sign up/login and find your credentials in the settings
 
 
 
-.. figure:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
-   :alt:
+.. image:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
 
 2. Create a dataset and insert data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,14 +69,13 @@ Use one of our sample datasets to upload into your own project!
 
 See your dataset in the dashboard
 
-.. figure:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
-   :alt:
+.. image:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
 
 3. Encode data and upload vectors into your new dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Encode a new product image vector using
-`Vectorhub's <https://hub.getvectorai.com/>`__ ``Clip2Vec`` models and
+`Vectorhub’s <https://hub.getvectorai.com/>`__ ``Clip2Vec`` models and
 update your dataset with the resulting vectors. Please refer to
 `Vectorhub <https://github.com/RelevanceAI/vectorhub>`__ for more
 details.
@@ -107,8 +104,7 @@ details.
 
 Monitor your vectors in the dashboard
 
-.. figure:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
-   :alt:
+.. image:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
 
 4. Run clustering on your vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,8 +134,7 @@ additional field. The default ``alias`` of the cluster will be the
 
 See your cluster centers in the dashboard
 
-.. figure:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
-   :alt:
+.. image:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
 
 4. Run a vector search
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -172,11 +167,10 @@ https://cloud.relevance.ai/sdk/search.
 
 See your multi-vector search results in the dashboard
 
-.. figure:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
-   :alt:
+.. image:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
 
 Want to quickly create some example applications with Relevance AI?
-Check out some other guides below! - `Text-to-image search with OpenAI's
+Check out some other guides below! - `Text-to-image search with OpenAI’s
 CLIP <https://docs.relevance.ai/docs/quickstart-text-to-image-search>`__
 - `Hybrid Text search with Universal Sentence Encoder using
 Vectorhub <https://docs.relevance.ai/docs/quickstart-text-search>`__ -
