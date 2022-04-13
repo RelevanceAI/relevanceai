@@ -394,6 +394,8 @@ class ClusterOps(APIClient, BaseOps):
         vector_fields: Optional[List[str]] = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
+        include_cluster_report: bool = True,
+        report_name: str = "cluster-report",
     ) -> None:
         """
         Run clustering on a dataset
@@ -456,6 +458,26 @@ class ClusterOps(APIClient, BaseOps):
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
+        if include_cluster_report:
+            from relevanceai.reports.cluster.report import ClusterReport
+
+            centroids = self.get_field_across_documents(
+                vector_field, centroid_documents
+            )
+            X = self.get_field_across_documents(vector_field, documents)
+            cluster_labels = self.get_field_across_documents("_id", centroid_documents)
+            report = ClusterReport(
+                X=X,
+                cluster_labels=cluster_labels,
+                model=self.model,
+                outlier_label=-1,
+                centroids=centroids,
+                verbose=True,
+            )
+
+            response = self.reports.clusters.create(
+                name=report_name, report=self.json_encoder(report)
+            )
 
         # link back to dashboard
         if verbose:
