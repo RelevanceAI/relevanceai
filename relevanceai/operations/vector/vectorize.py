@@ -110,14 +110,16 @@ class VectorizeHelpers(APIClient):
                 return self.encoders["text"]
 
             else:
-                return ["use"]
+                self.encoders["text"] = ["use"]
+                return self.encoders["text"]
 
         elif dtype == "_image_":
             if "image" in self.encoders:
                 return self.encoders["image"]
 
             else:
-                return ["clip"]
+                self.encoders["image"] = ["clip"]
+                return self.encoders["image"]
 
         else:
             raise ValueError
