@@ -897,7 +897,7 @@ class Operations(APIClient):
 
     @track
     def train_text_model_with_tripleloss(
-        self, text_field:str, label_field:str, output_dir:str
+        self, text_field: str, label_field: str, output_dir: str
     ):
         """
         Supervised training a text model using tripleloss
@@ -931,7 +931,11 @@ class Operations(APIClient):
 
         """
         # The model can also be trained using this method
-        from relevanceai.operations.text_finetuning import SupervisedTripleLossFinetuneOps
+        from relevanceai.operations.text_finetuning import (
+            SupervisedTripleLossFinetuneOps,
+        )
 
         ops = SupervisedTripleLossFinetuneOps.from_dataset(dataset=self)
-        return ops.operate(text_field=text_field, label_field=label_field, output_dir = output_dir)
+        return ops.operate(
+            text_field=text_field, label_field=label_field, output_dir=output_dir
+        )

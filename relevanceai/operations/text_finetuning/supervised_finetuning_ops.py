@@ -33,7 +33,12 @@ import logging
 from typing import List, Optional, Any
 
 try:
-    from sentence_transformers import SentenceTransformer, SentencesDataset, losses, evaluation
+    from sentence_transformers import (
+        SentenceTransformer,
+        SentencesDataset,
+        losses,
+        evaluation,
+    )
     from sentence_transformers.readers import InputExample
 except ModuleNotFoundError:
     print(
@@ -43,9 +48,7 @@ except ModuleNotFoundError:
 try:
     from torch.utils.data import DataLoader
 except ModuleNotFoundError:
-    print(
-        "Need to install SentenceTransformer by running `pip install torch-utils`."
-    )
+    print("Need to install SentenceTransformer by running `pip install torch-utils`.")
 
 from relevanceai.operations.base import BaseOps
 from relevanceai._api.api_client import APIClient
@@ -57,11 +60,11 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
         self,
         dataset,
         base_model: str = "sentence-transformers/all-mpnet-base-v2",
-        triple_loss_type: str='BatchHardSoftMarginTripletLoss', 
-        batch_size: int = 32, 
-        save_best_model: bool=True,
+        triple_loss_type: str = "BatchHardSoftMarginTripletLoss",
+        batch_size: int = 32,
+        save_best_model: bool = True,
         credentials: Optional[Credentials] = None,
-        ):
+    ):
         self.dataset = dataset
         self.base_model = base_model
         self.model = SentenceTransformer(base_model)
@@ -74,37 +77,42 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
             super().__init__(credentials)
 
     def define_loss(self):
-        if self.loss_type == 'BatchAllTripletLoss': 
-          self.loss = losses.BatchAllTripletLoss(model=self.model)
-        elif self.loss_type == 'BatchHardSoftMarginTripletLoss':
-          self.loss = losses.BatchHardSoftMarginTripletLoss(model=self.model)
-        elif self.loss_type == 'BatchHardTripletLoss':
-          self.loss = losses.BatchHardTripletLoss(model=self.model)
-        else :
-          self.loss = losses.BatchSemiHardTripletLoss(model=self.model)
+        if self.loss_type == "BatchAllTripletLoss":
+            self.loss = losses.BatchAllTripletLoss(model=self.model)
+        elif self.loss_type == "BatchHardSoftMarginTripletLoss":
+            self.loss = losses.BatchHardSoftMarginTripletLoss(model=self.model)
+        elif self.loss_type == "BatchHardTripletLoss":
+            self.loss = losses.BatchHardTripletLoss(model=self.model)
+        else:
+            self.loss = losses.BatchSemiHardTripletLoss(model=self.model)
 
-    def define_evaluator(self, text_data:List[str], labels:List[int], name='supervised_finetune_dev_eval'):
+    def define_evaluator(
+        self,
+        text_data: List[str],
+        labels: List[int],
+        name="supervised_finetune_dev_eval",
+    ):
         anchors, positives, negatives = self.build_triple_data(text_data, labels)
-        self.evaluator = evaluation.TripletEvaluator(anchors = anchors,
-                                                  positives = positives,
-                                                  negatives =  negatives,
-                                                  name = name)
+        self.evaluator = evaluation.TripletEvaluator(
+            anchors=anchors, positives=positives, negatives=negatives, name=name
+        )
+
     @staticmethod
     def build_triple_data(text_data, labels):
         # Only used for evaluation
         # anchors: Sentences to check similarity to
         # positives: List of positive sentences
         # negatives:  List of negative sentences
-        
-        n=2 # ToDo: add checks, so that n can be an argument
-        label_data_dict = {l:set() for l in set(labels)}
-        for d,l in zip(text_data, labels):
+
+        n = 2  # ToDo: add checks, so that n can be an argument
+        label_data_dict = {l: set() for l in set(labels)}
+        for d, l in zip(text_data, labels):
             label_data_dict[l].add(d)
-        label_data_dict = {l:list(label_data_dict[l]) for l in label_data_dict}
+        label_data_dict = {l: list(label_data_dict[l]) for l in label_data_dict}
         all_cls = copy.deepcopy(label_data_dict)
         all_cls = list(all_cls.keys())
         for l in all_cls:
-            if len(label_data_dict[l]) < 2*n + 1:
+            if len(label_data_dict[l]) < 2 * n + 1:
                 del label_data_dict[l]
 
         anchors = []
@@ -114,19 +122,28 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
             neg_list = list(label_data_dict.keys())
             neg_list.remove(l)
             anchors.extend(label_data_dict[l][:n])
-            for idx in random.sample([j for j in range(n,len(label_data_dict[l]))], n):
+            for idx in random.sample([j for j in range(n, len(label_data_dict[l]))], n):
                 positives.append(label_data_dict[l][idx])
             for nl in random.sample(neg_list, n):
-                idx = random.choice([j for j in range(n,len(label_data_dict[nl]))])
+                idx = random.choice([j for j in range(n, len(label_data_dict[nl]))])
                 negatives.append(label_data_dict[nl][idx])
         return anchors, positives, negatives
 
-    def prepare_data_for_finetuning(self, text_data: List[str], labels:List[int]):
-        data = [InputExample(texts=[text], label=label) for text, label in zip(text_data, labels)]
+    def prepare_data_for_finetuning(self, text_data: List[str], labels: List[int]):
+        data = [
+            InputExample(texts=[text], label=label)
+            for text, label in zip(text_data, labels)
+        ]
         dataset = SentencesDataset(data, self.model)
         return DataLoader(dataset, shuffle=True, batch_size=self.batch_size)
 
-    def fine_tune(self, train_data:List, dev_data:List=None, epochs:int = 3, output_path: str ="trained_model",):
+    def fine_tune(
+        self,
+        train_data: List,
+        dev_data: List = None,
+        epochs: int = 3,
+        output_path: str = "trained_model",
+    ):
         if os.path.exists(output_path):
             print(
                 "Output directory is detected. Assuming model was trained. Change output directory if you want to train a new model."
@@ -143,11 +160,12 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
             dev_set, dev_labels = dev_data
             self.define_evaluator(dev_set, dev_labels)
         self.model.fit(
-            train_objectives=objectives, 
-            epochs=epochs,  
-            evaluator=self.evaluator, 
-            save_best_model = self.save_best_model, 
-            output_path = self.output_path)
+            train_objectives=objectives,
+            epochs=epochs,
+            evaluator=self.evaluator,
+            save_best_model=self.save_best_model,
+            output_path=self.output_path,
+        )
         print(f"Finished finetuning. Trained model is saved at {self.output_path}")
 
     def get_model(self, output_path: Optional[str] = None):
@@ -164,19 +182,19 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
         text_data = [doc[text_field] for doc in docs]
         labels = [self.client.get_field(label_field, doc) for doc in docs]
         labels_cls = set(labels)
-        label_maps = {cl:i for i,cl in enumerate(labels_cls)}
+        label_maps = {cl: i for i, cl in enumerate(labels_cls)}
         labels = [label_maps[l] for l in labels]
         return text_data, labels
-    
+
     def operate(
-          self,
-          text_field: str,
-          label_field:str,
-          epochs: int = 3,
-          output_dir: str = "trained_model",
-          percentage_for_dev: float = None
-      ):
-      """
+        self,
+        text_field: str,
+        label_field: str,
+        epochs: int = 3,
+        output_dir: str = "trained_model",
+        percentage_for_dev: float = None,
+    ):
+        """
         Supervised finetuning a model using TripleLoss
 
         Example
@@ -206,18 +224,19 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
 
         """
 
-      text_data, labels = self.fetch_text_and_labels_from_dataset(text_field, label_field)
+        text_data, labels = self.fetch_text_and_labels_from_dataset(
+            text_field, label_field
+        )
 
-      if percentage_for_dev:
-        trin_size = int(len(labels)*(1-percentage_for_dev))
-        train_data = [text_data[:trin_size], labels[:trin_size]]
-        dev_data = [text_data[trin_size:], labels[trin_size:]]
-        self.do_evaluation = True
-      else:
-        train_data = [text_data, labels]
-        dev_data = None
-      self.fine_tune(train_data, dev_data, epochs, output_dir)
-
+        if percentage_for_dev:
+            trin_size = int(len(labels) * (1 - percentage_for_dev))
+            train_data = [text_data[:trin_size], labels[:trin_size]]
+            dev_data = [text_data[trin_size:], labels[trin_size:]]
+            self.do_evaluation = True
+        else:
+            train_data = [text_data, labels]
+            dev_data = None
+        self.fine_tune(train_data, dev_data, epochs, output_dir)
 
     @classmethod
     def from_client(self, client, *args, **kwargs):
