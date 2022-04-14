@@ -63,7 +63,7 @@ Setup
 
 
 Encoding
-~~~~~~~~
+--------
 
 .. code:: ipython3
 
@@ -78,7 +78,7 @@ Encoding
 
 
 Encoding an entire dataset
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 The easiest way to update an existing dataset with encoding results is
 to run ``encode_documents``. This function fetches all the data-points
