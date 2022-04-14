@@ -165,7 +165,7 @@ class GPLOps(APIClient, BaseOps):
 
             ds = client.Dataset("quickstart")
             # !pip install -q gpl
-            from relevanceai.operations.text_finetuning.text_finetuning_ops import GPLOps
+            from relevanceai.operations.text_finetuning.unsupervised_finetuning_ops import GPLOps
             ops = GPLOps.from_dataset(ds)
             ops.operate(dataset=ds, text_field="product_title")
 
