@@ -101,7 +101,7 @@ class VectorizeHelpers(APIClient):
             assert hasattr(model, "vector_length")
             assert model.vector_length is not None
 
-            model.__name__  = model_name
+            model.__name__ = model_name
 
             return model, model_name
 
