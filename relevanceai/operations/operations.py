@@ -894,3 +894,44 @@ class Operations(APIClient):
 
         ops = GPLOps.from_dataset(dataset=self)
         return ops.operate(dataset=self, text_field=text_field, title_field=title_field)
+
+    @track
+    def train_text_model_with_tripleloss(
+        self, text_field:str, label_field:str, output_dir:str
+    ):
+        """
+        Supervised training a text model using tripleloss
+
+        Example
+        ---------
+
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("ecommerce")
+            ops = SupervisedTripleLossFinetuneOps.from_dataset(
+                dataset=ds,
+                base_model="distilbert-base-uncased",
+                batch_size=16,
+                triple_loss_type:str='BatchHardSoftMarginTripletLoss'
+            )
+            ops.operate(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
+
+        Parameters
+        ------------
+
+        text_field: str
+            The field you want to use as input text for fine-tuning
+        label_field: str
+            The field indicating the classes of the input
+        output_dir: str
+            The path of the output directory
+        percentage_for_dev: float
+            a number between 0 and 1 showing how much of the data should be used for evaluation. No evaluation if None
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import SupervisedTripleLossFinetuneOps
+
+        ops = SupervisedTripleLossFinetuneOps.from_dataset(dataset=self)
+        return ops.operate(text_field=text_field, label_field=label_field, output_dir = output_dir)
