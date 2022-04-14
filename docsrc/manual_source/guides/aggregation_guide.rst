@@ -52,13 +52,10 @@ Data
     # ToDo: Remove this cell when the dataset is updated
 
     for d in documents:
-      if '_clusters_' in d:
-        del d['_clusters_']
+        if "_clusters_" in d:
+            del d["_clusters_"]
 
     pd.DataFrame.from_dict(documents).head()
-
-
-
 
 
 
@@ -319,7 +316,6 @@ Data
     ds.insert_documents(documents)
 
 
-
 .. parsed-literal::
 
     while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/quickstart_aggregation/dashboard/monitor/
@@ -333,25 +329,31 @@ In general, the group-by field is structured as
 
 ::
 
-    {"name": ALIAS,
-    "field": FIELD,
-    "agg": TYPE-OF-GROUP}
+   {"name": ALIAS,
+   "field": FIELD,
+   "agg": TYPE-OF-GROUP}
 
 Categorical Data
 ----------------
 
 .. code:: python
 
-    location_group = {"name": "location", "field": "propertyDetails.area", "agg": "category"}
-
+    location_group = {
+        "name": "location",
+        "field": "propertyDetails.area",
+        "agg": "category",
+    }
 
 Numerical Data
 --------------
 
 .. code:: python
 
-    bedrooms_group = {"name": "bedrooms", "field": "propertyDetails.bedrooms", "agg": "numeric"}
-
+    bedrooms_group = {
+        "name": "bedrooms",
+        "field": "propertyDetails.bedrooms",
+        "agg": "numeric",
+    }
 
 Putting it Together
 -------------------
@@ -360,7 +362,6 @@ Putting it Together
 
     groupby = [location_group, bedrooms_group]
 
-
 2. Creating Aggregation Metrics
 ===============================
 
@@ -368,9 +369,9 @@ In general, the aggregation field is structured as
 
 ::
 
-    {"name": ALIAS,
-    "field": FIELD,
-    "agg": TYPE-OF-AGG}
+   {"name": ALIAS,
+   "field": FIELD,
+   "agg": TYPE-OF-AGG}
 
 Average, Minimum and Maximum
 ----------------------------
@@ -381,22 +382,23 @@ Average, Minimum and Maximum
     max_price_metric = {"name": "max_price", "field": "priceDetails.price", "agg": "max"}
     min_price_metric = {"name": "min_price", "field": "priceDetails.price", "agg": "min"}
 
-
 Sum
 ---
 
 .. code:: python
 
-    sum_bathroom_metric = {"name": "bathroom_sum", "field": "propertyDetails.bathrooms", "agg": "sum"}
-
+    sum_bathroom_metric = {
+        "name": "bathroom_sum",
+        "field": "propertyDetails.bathrooms",
+        "agg": "sum",
+    }
 
 Putting it Together
 -------------------
 
 .. code:: python
 
-    metrics = [ avg_price_metric, max_price_metric, min_price_metric, sum_bathroom_metric ]
-
+    metrics = [avg_price_metric, max_price_metric, min_price_metric, sum_bathroom_metric]
 
 3. Combining Grouping and Aggregating
 =====================================
@@ -405,12 +407,11 @@ Putting it Together
 
     results = ds.aggregate(metrics=metrics, groupby=groupby)
 
-
 .. code:: python
 
     from jsonshower import show_json
-    show_json(results, text_fields=list(results['results'][0].keys()))
 
+    show_json(results, text_fields=list(results["results"][0].keys()))
 
 
 

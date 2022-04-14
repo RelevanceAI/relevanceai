@@ -8,7 +8,7 @@ gaining meaning from your unstructured data.
 ---------
 
 An example cluster app that showcases meaning amongst each group of
-unstructured data With just a few lines of code, you'll get rich,
+unstructured data With just a few lines of code, you’ll get rich,
 interactive, shareable dashboards `which you can see yourself
 here <https://i.gyazo.com/55a026bfe8e3becf06e7fceed4e146f2.png>`__.
 |image0|
@@ -171,7 +171,7 @@ of this tutorial, we will be vectorizing ``reviews.text`` only.
 
 An important part of vectorizing text is around choosing which
 vectorizer to use. Relevance AI allows for a custom vectorizer from
-vectorhub, but if you can't decide, the default models for each type of
+vectorhub, but if you can’t decide, the default models for each type of
 unstructured data are listed below.
 
 -  Text: ``USE2Vec``
@@ -242,7 +242,7 @@ about the semantic groups in our data.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Most clustering algorithms require you choose the number clusters you
-wish to find. This can be tricky if you don't know what the expect.
+wish to find. This can be tricky if you don’t know what the expect.
 Luckily, RelevanceAI uses a clustering algorithm called community
 detection that does not require the number of clusters to be set.
 Instead, the algorithm will decide how many is right for you. To
@@ -295,7 +295,7 @@ app <https://cloud.relevance.ai/dataset/retail_reviews/deploy/cluster/59066979f4
 .. |image0| image:: https://i.gyazo.com/55a026bfe8e3becf06e7fceed4e146f2.png
 
 Want to quickly create some example applications with Relevance AI?
-Check out some other guides below! - `Text-to-image search with OpenAI's
+Check out some other guides below! - `Text-to-image search with OpenAI’s
 CLIP <https://docs.relevance.ai/docs/quickstart-text-to-image-search>`__
 - `Hybrid Text search with Universal Sentence Encoder using
 Vectorhub <https://docs.relevance.ai/docs/quickstart-text-search>`__ -
