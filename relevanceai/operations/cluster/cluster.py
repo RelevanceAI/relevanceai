@@ -392,6 +392,7 @@ class ClusterOps(APIClient, BaseOps):
         self,
         dataset_id: str,
         vector_fields: Optional[List[str]] = None,
+        filters: Optional[list] = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
         include_cluster_report: bool = True,
@@ -411,7 +412,7 @@ class ClusterOps(APIClient, BaseOps):
             If True, the progress bar can be shown
 
         """
-
+        filters = [] if filters is None else filters
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
@@ -426,11 +427,15 @@ class ClusterOps(APIClient, BaseOps):
 
         # get all documents
         print("Retrieving all documents")
+        from relevanceai.utils.filter_helper import create_filter
+
+        filters = create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(
             dataset_id=dataset_id,
             select_fields=vector_fields,
             show_progress_bar=show_progress_bar,
             include_vector=True,
+            filters=filters,
         )
 
         # fit model, predict and label all documents
@@ -459,6 +464,7 @@ class ClusterOps(APIClient, BaseOps):
             centroid_documents=centroid_documents,
         )
         if include_cluster_report:
+            print("Getting Cluster Report")
             from relevanceai.reports.cluster.report import ClusterReport
 
             centroids = self.get_field_across_documents(
