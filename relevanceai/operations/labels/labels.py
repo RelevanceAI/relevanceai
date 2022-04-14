@@ -22,11 +22,12 @@ from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.version import beta
+from relevanceai.operations.base import BaseOps
 
 # TODO: Separate out operations into different files - cluster/search/dr
 
 
-class Labels(Write):
+class LabelOps(Write, BaseOps):
     @track
     def label_vector(
         self,
@@ -835,18 +836,36 @@ class Labels(Write):
 
     def cluster_keyphrases(
         self,
-        vector_fields: List[str],
         text_fields: List[str],
-        cluster_alias: str,
+        vector_fields: Optional[List[str]] = None,
+        cluster_alias: Optional[str] = None,
         cluster_field: str = "_cluster_",
         num_clusters: int = 100,
         most_common: int = 10,
         preprocess_hooks: Optional[List[callable]] = None,
         algorithm: str = "rake",
         n: int = 2,
+        deployable_id: Optional[str] = None,
+        dataset_id: Optional[str] = None,
     ):
         """
-        Simple implementation of the cluster word cloud.
+        Simple implementation of the cluster keyphrases.
+
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+
+            from relevanceai.operations.labels import LabelOps
+            label_ops = LabelOps.from_dataset(ds)
+            label_ops.cluster_keyphrases(
+                text_fields=["sample_text"]
+            )
+
 
         Parameters
         ------------
@@ -868,6 +887,10 @@ class Labels(Write):
             The number of words
 
         """
+        if cluster_alias is None:
+            cluster_alias = self.alias
+        if vector_fields is None:
+            vector_fields = self.vector_fields
         preprocess_hooks = [] if preprocess_hooks is None else preprocess_hooks
 
         vector_fields_str = ".".join(sorted(vector_fields))
@@ -895,7 +918,32 @@ class Labels(Write):
                 algorithm=algorithm,
             )
             cluster_counters[cluster_value] = top_words
+        if deployable_id is not None:
+            if dataset_id is None:
+                if not hasattr(self, "dataset_id"):
+                    raise ValueError("You need a dataset ID to update.")
+                else:
+                    dataset_id = self.dataset_id
+            self._update_deployable_with_strings(
+                dataset_id=dataset_id,
+                deployable_id=deployable_id,
+                cluster_counters=cluster_counters,
+            )
         return cluster_counters
+
+    def _update_deployable_with_strings(
+        self, dataset_id, deployable_id, cluster_counters
+    ):
+        configuration = self.deployables.get(deployable_id=deployable_id)
+        cluster_update = {}
+        for k, values in cluster_counters.items():
+            cluster_update[k] = ", ".join([v[0] for v in values])
+        configuration["cluster-labels"] = cluster_update
+        self.deployables.update(
+            deployable_id=deployable_id,
+            dataset_id=dataset_id,
+            configuration=configuration,
+        )
 
     # TODO: Add keyphrases to auto cluster
     # def auto_cluster_keyphrases(

@@ -96,14 +96,14 @@ class Client(APIClient, ConfigMixin):
                 raise APIError(Messages.FAIL_MESSAGE)
 
         # Add non breaking changes to support old ways of inserting documents and csv
-        self.insert_documents = Dataset(
-            credentials=self.credentials,
-            dataset_id="",
-        )._insert_documents
-        self.insert_csv = Dataset(
-            credentials=self.credentials,
-            dataset_id="",
-        )._insert_csv
+        # self.insert_documents = Dataset(
+        #     credentials=self.credentials,
+        #     dataset_id="",
+        # )._insert_documents
+        # self.insert_csv = Dataset(
+        #     credentials=self.credentials,
+        #     dataset_id="",
+        # )._insert_csv
 
     @identify
     def _identify(self):
@@ -270,9 +270,9 @@ class Client(APIClient, ConfigMixin):
     @track
     def ClusterVizOps(
         self,
-        vector_fields: Optional[List[str]] = None,
-        alias: Optional[str] = None,
-        dataset_id: Optional[str] = None,
+        vector_fields: List[str],
+        alias: str,
+        dataset_id: str,
         **kwargs,
     ):
         return ClusterVizOps(

@@ -1,168 +1,125 @@
-![Github Banner](assets/github_banner.png)
+---
+pipeline_tag: sentence-similarity
+tags:
+- sentence-transformers
+- feature-extraction
+- sentence-similarity
+- transformers
+---
 
-[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
-[![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
+# {MODEL_NAME}
 
-[Join our slack channel!](https://join.slack.com/t/relevance-ai/shared_invite/zt-11fo8oush-dHPd57wamhoQ7J5arNv1mg)
+This is a [sentence-transformers](https://www.SBERT.net) model: It maps sentences & paragraphs to a 768 dimensional dense vector space and can be used for tasks like clustering or semantic search.
 
-**Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
+<!--- Describe your model here -->
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RelevanceAI/workflows/blob/main/workflows/quickstart_workflow/%E2%98%98%EF%B8%8F_Relevance_AI_Quickstart.ipynb)
+## Usage (Sentence-Transformers)
 
-For guides and tutorials on how to use this package, visit https://docs.relevance.ai/docs.
+Using this model becomes easy when you have [sentence-transformers](https://www.SBERT.net) installed:
 
-## 🔥 Features
+```
+pip install -U sentence-transformers
+```
 
-- Fast vector search with free dashboard to preview and visualise results
-- Vector clustering with support for libraries like scikit-learn and easy built-in customisation
-- Store nested documents with support for multiple vectors and metadata in one object
-- Multi-vector search with filtering, facets, weighting
-- Hybrid search with support for weighting keyword matching and vector search
-... and more!
+Then you can use the model like this:
 
+```python
+from sentence_transformers import SentenceTransformer
+sentences = ["This is an example sentence", "Each sentence is converted"]
 
-## 🧠 Documentation
-
-| API type      | Link |
-| ------------- | ----------- |
-| Guides | [Documentation](https://docs.relevance.ai/) |
-| Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
-
-You can easily access our documentation while using the SDK using:
-
-```{python}
-from relevanceai import Client
-client = Client()
-
-# Easy one line of code to access our docs
-client.docs
-
+model = SentenceTransformer('{MODEL_NAME}')
+embeddings = model.encode(sentences)
+print(embeddings)
 ```
 
 
-## 🛠️ Installation
 
-Using pip:
+## Usage (HuggingFace Transformers)
+Without [sentence-transformers](https://www.SBERT.net), you can use the model like this: First, you pass your input through the transformer model, then you have to apply the right pooling-operation on-top of the contextualized word embeddings.
 
-```{bash}
-pip install -U relevanceai
-```
-Using conda:
+```python
+from transformers import AutoTokenizer, AutoModel
+import torch
 
-```{bash}
-conda install -c relevance relevanceai
-```
 
-## ⏩ Quickstart
+#Mean Pooling - Take attention mask into account for correct averaging
+def mean_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
-### Login into your project space
 
-```{python}
-from relevanceai import Client
+# Sentences we want sentence embeddings for
+sentences = ['This is an example sentence', 'Each sentence is converted']
 
-client = Client(<project_name>, <api_key>)
-```
+# Load model from HuggingFace Hub
+tokenizer = AutoTokenizer.from_pretrained('{MODEL_NAME}')
+model = AutoModel.from_pretrained('{MODEL_NAME}')
 
-Prepare your documents for insertion by following the below format:
-- Each document should be a dictionary
-- Include a field `_id` as a primary key, otherwise it's automatically generated
-- Suffix vector fields with `_vector_`
+# Tokenize sentences
+encoded_input = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
 
-```{python}
-docs = [
-    {"_id": "1", "example_vector_": [0.1, 0.1, 0.1], "data": "Documentation"},
-    {"_id": "2", "example_vector_": [0.2, 0.2, 0.2], "data": "Best document!"},
-    {"_id": "3", "example_vector_": [0.3, 0.3, 0.3], "data": "document example"},
-    {"_id": "4", "example_vector_": [0.4, 0.4, 0.4], "data": "this is another doc"},
-    {"_id": "5", "example_vector_": [0.5, 0.5, 0.5], "data": "this is a doc"},
-]
-```
+# Compute token embeddings
+with torch.no_grad():
+    model_output = model(**encoded_input)
 
-### Insert data into a dataset
+# Perform pooling. In this case, mean pooling.
+sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
 
-Create a dataset object with the name of the dataset you'd like to use. If it doesn't exist, it'll be created for you.
-> Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
-
-```{python}
-ds = client.Dataset("quickstart")
-ds.insert_documents(docs)
+print("Sentence embeddings:")
+print(sentence_embeddings)
 ```
 
-### Perform vector search
 
-```{python}
-results = ds.vector_search(
-    multivector_query=[{"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]}],
-    page_size=3,
-    query="sample search" # optional, name to display in dashboard
+
+## Evaluation Results
+
+<!--- Describe how your model was evaluated -->
+
+For an automated evaluation of this model, see the *Sentence Embeddings Benchmark*: [https://seb.sbert.net](https://seb.sbert.net?model_name={MODEL_NAME})
+
+
+## Training
+The model was trained with the parameters:
+
+**DataLoader**:
+
+`torch.utils.data.dataloader.DataLoader` of length 500 with parameters:
+```
+{'batch_size': 16, 'sampler': 'torch.utils.data.sampler.SequentialSampler', 'batch_sampler': 'torch.utils.data.sampler.BatchSampler'}
+```
+
+**Loss**:
+
+`gpl.toolkit.loss.MarginDistillationLoss`
+
+Parameters of the fit()-Method:
+```
+{
+    "epochs": 1,
+    "evaluation_steps": 0,
+    "evaluator": "NoneType",
+    "max_grad_norm": 1,
+    "optimizer_class": "<class 'transformers.optimization.AdamW'>",
+    "optimizer_params": {
+        "lr": 2e-05
+    },
+    "scheduler": "WarmupLinear",
+    "steps_per_epoch": 500,
+    "warmup_steps": 1000,
+    "weight_decay": 0.01
+}
+```
+
+
+## Full Model Architecture
+```
+SentenceTransformer(
+  (0): Transformer({'max_seq_length': 350, 'do_lower_case': False}) with Transformer model: DistilBertModel
+  (1): Pooling({'word_embedding_dimension': 768, 'pooling_mode_cls_token': False, 'pooling_mode_mean_tokens': True, 'pooling_mode_max_tokens': False, 'pooling_mode_mean_sqrt_len_tokens': False})
 )
 ```
 
-### Cluster dataset with Auto Cluster
+## Citing & Authors
 
-Generate 12 clusters using kmeans
-```{python}
-clusterop = ds.cluster("kmeans-12", vector_fields=["example_vector_"])
-clusterop.list_closest()
-```
-> Quick tip! After each of these steps, the output will provide a URL to the Relevance AI dashboard where you can see a visualisation of your results
-
-## 🚧 Development
-
-### Getting Started
-To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
-
-```{bash}
-python -m pip install pytest mypy
-```
-
-Then run testing using:
-
-> Don't forget to set your test credentials!
-
-```{bash}
-export TEST_PROJECT = xxx
-export TEST_API_KEY = xxx
-
-python -m pytest
-mypy relevanceai
-```
-
-Set up precommit
-
-```{bash}
-pip install precommit
-pre-commit install
-```
-
-## 🧰 Config
-
-The config object contains the adjustable global settings for the SDK. For a description of all the settings, see here.
-
-To view setting options, run the following:
-
-```{python}
-client.config.options
-```
-
-The syntax for selecting an option is section.key. For example, to disable logging, run the following to modify logging.enable_logging:
-
-```{python}
-client.config.set_option('logging.enable_logging', False)
-```
-
-To restore all options to their default, run the following:
-
-### Changing the base URL
-
-You can change the base URL as such:
-
-```{python}
-client.base_url = "https://.../latest"
-```
-
-You can also update the ingest base URL:
-
-```{python}
-client.ingest_base_url = "https://.../latest
-```
+<!--- Describe where people can find more information -->

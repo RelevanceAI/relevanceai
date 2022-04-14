@@ -12,7 +12,7 @@ class TestBaseOps:
     def test_from_credentials(self, test_client: Client):
         credentials = test_client.credentials
         ops = ClusterOps.init(credentials=credentials)
-        assert True
+        assert ops.credentials.token == credentials.token
 
     def test_from_token(self, test_token: str):
         ops = ClusterOps.from_token(token=test_token)
@@ -29,4 +29,4 @@ class TestBaseOps:
             vector_fields=["sample_1_vector_"],
         )
         closest = ops.list_closest()
-        assert True
+        assert closest

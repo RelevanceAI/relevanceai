@@ -30,7 +30,8 @@ def multithread(
         if show_progress_bar:
             with progress_tracker as pt:
                 for _ in as_completed(futures):
-                    pt.update(1)
+                    if hasattr(pt, "update"):
+                        pt.update(1)
         else:
             wait(futures)
 

@@ -144,3 +144,7 @@ test_projection/*
 docs/
 docsrc/source/autoapi/
 docsrc/source/
+
+
+*.log
+*.logs

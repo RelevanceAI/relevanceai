@@ -1,8 +1,12 @@
+from re import I
 from typing import List, Dict, Optional, Any, Union
+from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.utils.decorators import deprecated, beta
+
 from relevanceai._api import APIClient
+from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations.vector.vectorizer import Vectorizer
 
 
 class Operations(APIClient):
@@ -15,10 +19,11 @@ class Operations(APIClient):
         self.dataset_id = dataset_id
         super().__init__(self.credentials)
 
+    @track
     def cluster(
         self,
-        model: Union[str, Any],
-        vector_fields: List[str],
+        model: Any = None,
+        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         **kwargs,
     ):
@@ -58,19 +63,20 @@ class Operations(APIClient):
             credentials=self.credentials,
             model=model,
             alias=alias,
-            vector_fields=vector_fields,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
-        ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
-        return ops
+        return ops(
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+        )
 
+    @track
     def reduce_dims(
         self,
-        model: Any,
-        n_components: int,
         alias: str,
         vector_fields: List[str],
+        model: Any = "umap",
+        n_components: int = 3,
         **kwargs,
     ):
         """
@@ -103,10 +109,10 @@ class Operations(APIClient):
             alias=alias,
         )
 
+    @track
     def vectorize(
         self,
-        text_fields=None,
-        image_fields=None,
+        fields: List[str] = None,
         **kwargs,
     ):
         """
@@ -155,21 +161,61 @@ class Operations(APIClient):
                 text_model=text_model
             )
 
-
         """
 
         from relevanceai.operations.vector import VectorizeOps
 
         ops = VectorizeOps(
             credentials=self.credentials,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops.vectorize(
-            text_fields=text_fields,
-            image_fields=image_fields,
+        return ops(
+            dataset_id=self.dataset_id,
+            fields=[] if fields is None else fields,
         )
 
+    def advanced_vectorize(self, vectorizers: List[Vectorizer]):
+        """
+        Advanced vectorization.
+        By setting an
+
+        Example
+        ----------
+
+        .. code-block::
+
+            # When first vectorizing
+            from relevanceai.operations import Vectorizer
+            vectorizer = Vectorizer(field="field_1", model=model, alias="value")
+            ds.advanced_vectorize(
+                [vectorizer],
+            )
+
+        Parameters
+        -------------
+
+        vectorize_mapping: dict
+            Vectorize mapping
+
+        """
+        # TODO: Write test for advanced vectorize
+        all_fields = [v.field for v in vectorizers]
+        for vectorizer in tqdm(vectorizers):
+
+            def encode(docs):
+                docs = vectorizer.encode_documents(
+                    fields=[vectorizer.field], documents=docs
+                )
+                return docs
+
+            self.pull_update_push_async(
+                dataset_id=self.dataset_id,
+                update_function=encode,
+                updating_args=None,
+                select_fields=all_fields,
+            )
+
+    @track
     def vector_search(self, **kwargs):
         """
         Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
@@ -284,6 +330,7 @@ class Operations(APIClient):
 
         return ops.vector_search(**kwargs)
 
+    @track
     def hybrid_search(self, **kwargs):
         """
         Combine the best of both traditional keyword faceted search with semantic vector search to create the best search possible. \n
@@ -448,6 +495,7 @@ class Operations(APIClient):
 
         return ops.chunk_search(**kwargs)
 
+    @track
     def multistep_chunk_search(self, **kwargs):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
@@ -456,8 +504,22 @@ class Operations(APIClient):
 
         For more information about vector search check out services.search.vector
 
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            results = ds.search.multistep_chunk(
+                chunk_field="_chunk_",
+                multivector_query=MULTIVECTOR_QUERY,
+                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
+            )
+
         Parameters
-        ----------
+        ------------
 
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
@@ -503,20 +565,6 @@ class Operations(APIClient):
             Size of each page of results
         query: string
             What to store as the query name in the dashboard
-
-        Example
-        -----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            results = ds.search.multistep_chunk(
-                chunk_field="_chunk_",
-                multivector_query=MULTIVECTOR_QUERY,
-                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
-            )
 
         """
         from relevanceai.operations.vector import SearchOps
@@ -564,6 +612,7 @@ class Operations(APIClient):
         print(f"You can now access your deployable at {url}.")
         return url
 
+    @track
     def subcluster(
         self,
         model,
@@ -592,6 +641,7 @@ class Operations(APIClient):
             dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
         )
 
+    @track
     def add_sentiment(
         self,
         field: str,
@@ -644,14 +694,16 @@ class Operations(APIClient):
             notes=notes,
         )
 
+    @track
     def question_answer(
         self,
         input_field: str,
-        question: str,
+        questions: Union[List[str], str],
         output_field: Optional[str] = None,
         model_name: str = "mrm8488/deberta-v3-base-finetuned-squadv2",
         verbose: bool = True,
         log_to_file: bool = True,
+        filters: Optional[list] = None,
     ):
         """
         Question your dataset and retrieve answers from it.
@@ -688,23 +740,32 @@ class Operations(APIClient):
         from relevanceai.workflow.sequential import SequentialWorkflow, Input, Output
         from relevanceai.operations.text.qa.qa import QAOps
 
+        if isinstance(questions, str):
+            # Force listing so it loops through multiple question
+            questions = [questions]
+
         model = QAOps(model_name=model_name)
 
-        def bulk_question_answer(contexts: list):
-            return model.bulk_question_answer(question=question, contexts=contexts)
+        for question in tqdm(questions):
+            print(f"Processing `{question}`...")
 
-        if output_field is None:
-            output_field = "_question_." + "-".join(question.lower().strip().split())
-            print(f"No output field is detected. Setting to {output_field}")
+            def bulk_question_answer(contexts: list):
+                return model.bulk_question_answer(question=question, contexts=contexts)
 
-        workflow = SequentialWorkflow(
-            list_of_operations=[
-                Input([input_field]),
-                bulk_question_answer,
-                Output(output_field),
-            ]
-        )
-        return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+            if output_field is None:
+                output_field = "_question_." + "-".join(
+                    question.lower().strip().split()
+                )
+                print(f"No output field is detected. Setting to {output_field}")
+
+            workflow = SequentialWorkflow(
+                list_of_operations=[
+                    Input([input_field], filters=filters),
+                    bulk_question_answer,
+                    Output(output_field),
+                ]
+            )
+            workflow.run(self, verbose=verbose, log_to_file=log_to_file)
 
     def translate(self, translation_model_name: str):
         raise NotImplementedError
@@ -795,3 +856,41 @@ class Operations(APIClient):
             includeFields=select_fields,
             **kwargs,
         )
+
+    @track
+    def list_deployables(self):
+        """
+        Use this function to list available deployables
+        """
+        return self.deployables.list()
+
+    @track
+    def train_text_model_with_gpl(
+        self, text_field: str, title_field: Optional[str] = None
+    ):
+        """
+        Train a text model using GPL (Generative Pseudo-Labelling)
+        This can be helpful for `domain adaptation`.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.train_text_model(method="gpl")
+
+        Parameters
+        ------------
+
+        text_field: str
+            Text field
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import GPLOps
+
+        ops = GPLOps.from_dataset(dataset=self)
+        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)

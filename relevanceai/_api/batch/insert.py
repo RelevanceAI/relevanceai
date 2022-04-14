@@ -442,6 +442,9 @@ class BatchInsertClient(BatchRetrieveClient):
             failed_documents: List[Dict] = []
             failed_documents_detailed: List[Dict] = []
 
+            # Track successful documents
+            success_documents: List[str] = []
+
             # Get document lengths to calculate iterations
             original_length = self.get_number_of_documents(dataset_id, filters)
 
@@ -454,17 +457,17 @@ class BatchInsertClient(BatchRetrieveClient):
             iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
 
             # Get incomplete documents from raw collection
-            retrieve_filters = filters + [
-                # {
-                #     "field": "ids",
-                #     "filter_type": "ids",
-                #     "condition": "!=",
-                #     "condition_value": completed_documents_list,
-                # }
-            ]
             for _ in progress_bar(
                 range(iterations_required), show_progress_bar=show_progress_bar
             ):
+                retrieve_filters = filters + [
+                    {
+                        "field": "ids",
+                        "filter_type": "ids",
+                        "condition": "!=",
+                        "condition_value": success_documents,
+                    }
+                ]
 
                 orig_json = self.datasets.documents.get_where(
                     dataset_id,
@@ -506,7 +509,9 @@ class BatchInsertClient(BatchRetrieveClient):
                 chunk_documents_detailed = insert_json["failed_documents_detailed"]
                 failed_documents.extend(chunk_failed)
                 failed_documents_detailed.extend(chunk_documents_detailed)
-                success_documents = list(set(updated_documents) - set(failed_documents))
+                success_documents += list(
+                    set(updated_documents) - set(failed_documents)
+                )
                 PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
                 self.logger.success(
                     f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"

@@ -139,3 +139,9 @@ class MissingPackageExtraError(RelevanceAIError):
                 f"RelevanceAI[{extra}]", f"RelevanceAI[{extra}=={version}]"
             )
         super().__init__(message)
+
+
+class ModelNotSupportedError(RelevanceAIError):
+    def __init__(self, *args, **kwargs):
+        message = "We do not support this kind of model for vectorization"
+        super().__init__(message)
