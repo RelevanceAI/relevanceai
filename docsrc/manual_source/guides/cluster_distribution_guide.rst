@@ -9,7 +9,6 @@ Plotting Cluster Distributions
     # remove `!` if running the line in a terminal
     !pip install -U RelevanceAI[notebook]==2.0.0
 
-
 .. code:: ipython3
 
     from relevanceai import Client
@@ -20,23 +19,18 @@ Plotting Cluster Distributions
     """
     client = Client()
 
-
-
 .. code:: ipython3
 
     from relevanceai.utils.datasets import get_titanic_dataset
 
     documents = get_titanic_dataset()
-    for i,doc in enumerate(documents):
-      doc['_id']=i
-
-
+    for i, doc in enumerate(documents):
+        doc["_id"] = i
 
 .. code:: ipython3
 
     ds = client.Dataset("titanic")
     ds.insert_documents(documents)
-
 
 Clustering
 ----------
@@ -53,25 +47,18 @@ Clustering
     clusterer = client.ClusterOps(alias=ALIAS, model=model)
     clusterer.operate(dataset_id="titanic", vector_fields=["value_vector_"])
 
-
-
-
 Plot Basic Distributions
 ------------------------
 
 .. code:: ipython3
 
     viz_ops = client.ClusterVizOps(
-        dataset_id="titanic",
-        vector_fields=["value_vector_"],
-        alias="kmeans_5"
+        dataset_id="titanic", vector_fields=["value_vector_"], alias="kmeans_5"
     )
-
 
 .. code:: ipython3
 
     viz_ops.plot_distributions("Age", top_indices=3)
-
 
 
 
@@ -100,7 +87,6 @@ Plotting Custom Distributions - Variation
 
 
 
-
 .. parsed-literal::
 
       0%|          | 0/5 [00:00<?, ?it/s]
@@ -120,11 +106,9 @@ Plotting Custom Distributions - Variation
 
 .. code:: ipython3
 
-
     viz_ops.plot_distributions(
         numeric_field="Age", dataset_id="titanic", measure_function=skew, top_indices=2
     )
-
 
 
 

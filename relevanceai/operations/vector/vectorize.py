@@ -51,10 +51,11 @@ class VectorizeHelpers(APIClient):
 
                     model = Elmo2Vec()
 
-                elif model == "clip":
+                elif model == "clip-image":
                     from vectorhub.bi_encoders.text_image.torch.clip import Clip2Vec
 
                     model = Clip2Vec()
+                    model.encode = model.encode_image
 
                 elif model == "resnet":
                     from vectorhub.encoders.image.fastai import FastAIResnet2Vec
@@ -66,9 +67,41 @@ class VectorizeHelpers(APIClient):
 
                     model = MobileNetV12Vec()
 
+                elif model == "clip-text":
+                    from vectorhub.bi_encoders.text_image.torch import Clip2Vec
+
+                    model = Clip2Vec()
+                    model.encode = model.encode_text
+
+                elif model == "mpnet":
+                    from vectorhub.encoders.text.sentence_transformers import (
+                        SentenceTransformer2Vec,
+                    )
+
+                    model = SentenceTransformer2Vec("all-mpnet-base-v2")
+                    model.vector_length = 768
+
+                elif model == "multiqampnet":
+                    from vectorhub.encoders.text.sentence_transformers import (
+                        SentenceTransformer2Vec,
+                    )
+
+                    model = SentenceTransformer2Vec("multi-qa-mpnet-base-dot-v1")
+                    model.vector_length = 768
+
+                elif model == "bit":
+                    from vectorhub.encoders.image.tfhub import BitMedium2Vec
+
+                    model = BitMedium2Vec()
+
             else:
                 # TODO: this needs to be referenced from relevance.constants.errors
                 raise ValueError("ModelNotSupported")
+
+            assert hasattr(model, "vector_length")
+            assert model.vector_length is not None
+
+            model.__name__ = model_name
 
             return model, model_name
 
