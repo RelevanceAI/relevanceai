@@ -14,7 +14,6 @@ Installation
     # remove `!` if running the line in a terminal
     !pip install -U RelevanceAI[notebook]==2.0.0
 
-
 .. code:: ipython3
 
     from relevanceai import Client
@@ -25,8 +24,6 @@ Installation
     """
     client = Client()
 
-
-
 Vectorizing using Vectorhub
 ---------------------------
 
@@ -36,20 +33,17 @@ Vectorizing using Vectorhub
     # remove `!` if running the line in a terminal
     !pip install vectorhub[encoders-text-tfhub]
 
-
 .. code:: ipython3
 
     ## Installing Vectorhub with access to Sentence Transformer models
     # remove `!` if running the line in a terminal
     !pip install vectorhub[sentence-transformers]
 
-
 .. code:: ipython3
 
     ## Installing Vectorhub with access to Huggingface models
     # remove `!` if running the line in a terminal
     !pip install vectorhub[transformers]
-
 
 Setup
 =====
@@ -61,7 +55,6 @@ Setup
 
     model = SentenceTransformer2Vec("all-mpnet-base-v2")
 
-
 Encoding
 ~~~~~~~~
 
@@ -71,18 +64,20 @@ Encoding
     model.encode("I love working with vectors.")
 
     # documents are saved as a list of dictionaries
-    documents = [{'sentence': '"This is the first sentence."', '_id': 1}, {'sentence': '"This is the second sentence."', '_id': 2}]
+    documents = [
+        {"sentence": '"This is the first sentence."', "_id": 1},
+        {"sentence": '"This is the second sentence."', "_id": 2},
+    ]
 
     # Encode the `"sentence"` field in a list of documents
     encoded_documents = model.encode_documents(["sentence"], documents)
-
 
 Encoding an entire dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The easiest way to update an existing dataset with encoding results is
 to run ``encode_documents``. This function fetches all the data-points
-in a dataset, runs the specified function (i.e. encoding in this case)
+in a dataset, runs the specified function (i.e. encoding in this case)
 and writes the result back to the dataset.
 
 For instance, in the sample code below, we use a dataset called
@@ -101,7 +96,9 @@ bring your own model(s).
     documents = get_ecommerce_dataset_clean()
 
     pd.DataFrame.from_dict(documents).head()
-    ds = client.Dataset('quickstart_example_encoding')
+    ds = client.Dataset("quickstart_example_encoding")
     ds.insert_documents(documents)
 
-    ds["product_title"].apply(lambda x: model.encode(x), output_field="product_title_vector_")
+    ds["product_title"].apply(
+        lambda x: model.encode(x), output_field="product_title_vector_"
+    )
