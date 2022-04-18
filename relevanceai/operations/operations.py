@@ -65,10 +65,11 @@ class Operations(APIClient):
             alias=alias,
             **kwargs,
         )
-        return ops(
+        ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
         )
+        return ops
 
     @track
     def reduce_dims(

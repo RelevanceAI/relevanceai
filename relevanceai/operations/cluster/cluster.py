@@ -471,7 +471,9 @@ class ClusterOps(APIClient, BaseOps):
                 vector_field, centroid_documents
             )
             X = self.get_field_across_documents(vector_field, documents)
+
             cluster_labels = self.get_field_across_documents("_id", centroid_documents)
+
             report = ClusterReport(
                 X=X,
                 cluster_labels=cluster_labels,
