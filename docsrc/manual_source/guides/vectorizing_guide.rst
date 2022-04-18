@@ -1,47 +1,5 @@
 🔢 Vectorizing Guide
-====================
-
-.. code:: python
-
-    !pip install -U RelevanceAI-dev
-
-
-.. parsed-literal::
-
-    Requirement already satisfied: RelevanceAI-dev in /usr/local/lib/python3.7/dist-packages (2.1.0.2022.4.13.3.31.58.591895)
-    Requirement already satisfied: orjson>=3.6.7 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (3.6.7)
-    Requirement already satisfied: tqdm>=4.49.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (4.63.0)
-    Requirement already satisfied: numpy>=1.19.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.19.5)
-    Requirement already satisfied: scikit-learn>=0.20.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.0.2)
-    Requirement already satisfied: aiohttp>=3.8.1 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (3.8.1)
-    Requirement already satisfied: loguru>=0.5.3 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (0.6.0)
-    Requirement already satisfied: appdirs>=1.4.4 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.4.4)
-    Requirement already satisfied: typing-extensions>=3.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (3.7.4.3)
-    Requirement already satisfied: analytics-python~=1.4.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.4.0)
-    Requirement already satisfied: joblib>=1.0.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.1.0)
-    Requirement already satisfied: requests>=2.0.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (2.23.0)
-    Requirement already satisfied: pandas>=1.0.0 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.3.5)
-    Requirement already satisfied: document-utils>=1.7.1 in /usr/local/lib/python3.7/dist-packages (from RelevanceAI-dev) (1.7.1)
-    Requirement already satisfied: multidict<7.0,>=4.5 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (6.0.2)
-    Requirement already satisfied: attrs>=17.3.0 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (21.4.0)
-    Requirement already satisfied: charset-normalizer<3.0,>=2.0 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (2.0.12)
-    Requirement already satisfied: yarl<2.0,>=1.0 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (1.7.2)
-    Requirement already satisfied: aiosignal>=1.1.2 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (1.2.0)
-    Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (1.3.0)
-    Requirement already satisfied: asynctest==0.13.0 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (0.13.0)
-    Requirement already satisfied: async-timeout<5.0,>=4.0.0a3 in /usr/local/lib/python3.7/dist-packages (from aiohttp>=3.8.1->RelevanceAI-dev) (4.0.2)
-    Requirement already satisfied: monotonic>=1.5 in /usr/local/lib/python3.7/dist-packages (from analytics-python~=1.4.0->RelevanceAI-dev) (1.6)
-    Requirement already satisfied: backoff==1.10.0 in /usr/local/lib/python3.7/dist-packages (from analytics-python~=1.4.0->RelevanceAI-dev) (1.10.0)
-    Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.7/dist-packages (from analytics-python~=1.4.0->RelevanceAI-dev) (1.15.0)
-    Requirement already satisfied: python-dateutil>2.1 in /usr/local/lib/python3.7/dist-packages (from analytics-python~=1.4.0->RelevanceAI-dev) (2.8.2)
-    Requirement already satisfied: pytz>=2017.3 in /usr/local/lib/python3.7/dist-packages (from pandas>=1.0.0->RelevanceAI-dev) (2018.9)
-    Requirement already satisfied: idna<3,>=2.5 in /usr/local/lib/python3.7/dist-packages (from requests>=2.0.0->RelevanceAI-dev) (2.10)
-    Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /usr/local/lib/python3.7/dist-packages (from requests>=2.0.0->RelevanceAI-dev) (1.24.3)
-    Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.7/dist-packages (from requests>=2.0.0->RelevanceAI-dev) (2021.10.8)
-    Requirement already satisfied: chardet<4,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from requests>=2.0.0->RelevanceAI-dev) (3.0.4)
-    Requirement already satisfied: scipy>=1.1.0 in /usr/local/lib/python3.7/dist-packages (from scikit-learn>=0.20.0->RelevanceAI-dev) (1.4.1)
-    Requirement already satisfied: threadpoolctl>=2.0.0 in /usr/local/lib/python3.7/dist-packages (from scikit-learn>=0.20.0->RelevanceAI-dev) (3.1.0)
-
+===================
 
 Firstly, we must import what we need from Relevance AI
 
@@ -54,44 +12,9 @@ Firstly, we must import what we need from Relevance AI
         get_online_ecommerce_dataset,
     )
 
-Authenticate the client
-
 .. code:: python
 
     client = Client()
-
-
-.. parsed-literal::
-
-    Activation token (you can find it here: https://cloud.relevance.ai/sdk/api )
-
-    Activation Token: ··········
-    Connecting to us-east-1...
-    You can view all your datasets at https://cloud.relevance.ai/datasets/
-    Welcome to RelevanceAI. Logged in as 59066979f4876d91beea.
-
-
-.. code:: python
-
-    client.delete_dataset("iris")
-    client.delete_dataset("penguins")
-    client.delete_dataset("ecom")
-
-
-.. parsed-literal::
-
-    Response failed (https://api.us-east-1.relevance.ai/latest/datasets/penguins/delete) (Status: 404 Response: {"message":"Dataset could not be found in project."})
-    Response failed (https://api.us-east-1.relevance.ai/latest/datasets/penguins/delete) (Status: 404 Response: {"message":"Dataset could not be found in project."})
-    Response failed (https://api.us-east-1.relevance.ai/latest/datasets/penguins/delete) (Status: 404 Response: {"message":"Dataset could not be found in project."})
-
-
-
-
-.. parsed-literal::
-
-    <Response [404]>
-
-
 
 Example 1
 ---------
@@ -169,7 +92,7 @@ applied.
 
 .. parsed-literal::
 
-    No fields were given, vectorizing the following field(s):
+    No fields were given, vectorizing the following field(s): 
     Concatenating the following fields to form a feature vector: PetalLengthCm, PetalWidthCm, SepalLengthCm, SepalWidthCm
 
 
@@ -449,3 +372,4 @@ or
 
     ✅ All documents inserted/edited successfully.
     The following vector fields were added: _dim512_feature_vector_
+
