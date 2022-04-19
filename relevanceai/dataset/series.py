@@ -622,13 +622,13 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def exists(self, other):
+    def exists(self):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
             filter_type="exists",
             condition="==",
-            condition_value=other,
+            condition_value=" ",
             credentials=self.credentials,
         )
         return filter.get()
