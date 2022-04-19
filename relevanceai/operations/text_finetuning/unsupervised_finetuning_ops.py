@@ -142,7 +142,7 @@ class GPLOps(APIClient, BaseOps):
         elif output_path:
             return SentenceTransformer(self.output_path)
 
-    def operate(
+    def run(
         self,
         dataset: str,
         text_field: str,

@@ -58,7 +58,7 @@ class _SubClusterOps(ClusterOps):
             outlier_label=self.outlier_label,
         )
 
-    def operate(
+    def run(
         self,
         dataset_id: Optional[Union[str, Any]] = None,
         parent_field: str = None,

@@ -138,7 +138,7 @@ class ClusterOps(APIClient, BaseOps):
         include_cluster_report: bool = True,
         **kwargs,
     ) -> None:
-        return self.operate(
+        return self.run(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
@@ -406,7 +406,7 @@ class ClusterOps(APIClient, BaseOps):
         print(Messages.BUILD_HERE + link)
 
     @track
-    def operate(
+    def run(
         self,
         dataset_id: str,
         vector_fields: Optional[List[str]] = None,
