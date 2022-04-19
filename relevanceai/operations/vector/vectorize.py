@@ -170,11 +170,11 @@ class VectorizeOps(VectorizeHelpers):
         credentials: Credentials,
         encoders: Optional[Dict[str, List[Any]]] = None,
         log_file: str = "vectorize.logs",
-        feature_vector: bool = False,
+        create_feature_vector: bool = False,
     ):
         super().__init__(log_file=log_file, credentials=credentials)
 
-        self.feature_vector = feature_vector
+        self.feature_vector = create_feature_vector
         self.encoders = encoders if encoders is not None else {}
         self.model_names: List[str] = []
 

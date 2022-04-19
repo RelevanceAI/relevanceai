@@ -36,13 +36,13 @@ Start by installing the library and logging in to your account.
 
 .. parsed-literal::
 
-    [K     |████████████████████████████████| 249 kB 15.8 MB/s
-    [K     |████████████████████████████████| 255 kB 63.6 MB/s
-    [K     |████████████████████████████████| 1.1 MB 56.6 MB/s
-    [K     |████████████████████████████████| 58 kB 5.8 MB/s
-    [K     |████████████████████████████████| 144 kB 70.9 MB/s
-    [K     |████████████████████████████████| 271 kB 70.4 MB/s
-    [K     |████████████████████████████████| 94 kB 2.9 MB/s
+    [K     |████████████████████████████████| 249 kB 15.8 MB/s 
+    [K     |████████████████████████████████| 255 kB 63.6 MB/s 
+    [K     |████████████████████████████████| 1.1 MB 56.6 MB/s 
+    [K     |████████████████████████████████| 58 kB 5.8 MB/s 
+    [K     |████████████████████████████████| 144 kB 70.9 MB/s 
+    [K     |████████████████████████████████| 271 kB 70.4 MB/s 
+    [K     |████████████████████████████████| 94 kB 2.9 MB/s 
     [31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
     tensorflow 2.8.0 requires tf-estimator-nightly==2.8.0.dev2021122109, which is not installed.
     arviz 0.11.4 requires typing-extensions<4,>=3.7.4.3, but you have typing-extensions 4.0.1 which is incompatible.[0m
@@ -51,10 +51,10 @@ Start by installing the library and logging in to your account.
 .. code:: ipython3
 
     from relevanceai import Client
-
+    
     # Instantiate the client and authenticate
     client = Client()
-
+    
     # This will prompt a link to collect your API token which includes your project and API key
 
 
@@ -91,14 +91,14 @@ Start by installing the library and logging in to your account.
 .. code:: ipython3
 
     import gdown  # Since the example data is located in google drive, we use gdown to retrieve
-
+    
     # In a real workload, this step can be substituted for loading your own .csv
     # dataset link: https://data.world/datafiniti/grammar-and-online-product-reviews
-
+    
     dataset_small = "1SZ1EqBZQG132yaAaV0doxuGDZo7PdT2B"  # 5K files
     output = "data_small.zip"
     gdown.download(id=dataset_small, output=output, quiet=False)
-
+    
     dataset_large = "1eQwJy4nbIontA7qEe344lgBl3Una5Vlg"  # 71K files
     output = "data_large.zip"
     gdown.download(id=dataset_large, output=output, quiet=False)
@@ -133,9 +133,9 @@ Start by installing the library and logging in to your account.
 
     Archive:  data_small.zip
     replace data_small.csv? [y]es, [n]o, [A]ll, [N]one, [r]ename: y
-      inflating: data_small.csv
+      inflating: data_small.csv          
     Archive:  data_large.zip
-      inflating: data_large.csv
+      inflating: data_large.csv          
 
 
 .. code:: ipython3
@@ -222,11 +222,11 @@ vectorizing with ``SentenceTransformer2Vec``.
 
     # Other vectorizers will come from vectorhub should you wish to choose a different vectorizer
     from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-
+    
     # For this example we will use the mpnet base
     model_name = "all-mpnet-base-v2"
     model = SentenceTransformer2Vec(model_name=model_name)
-
+    
     # Same process of vectorizing as before, just add the `text_model` parameter
     text_fields = ["reviews.text"]
     dataset.vectorize(text_fields=text_fields, text_model=model)
@@ -253,7 +253,7 @@ here <https://relevanceai.readthedocs.io/en/latest/relevanceai.cluster_report.ht
 
     model = "community_detection"
     alias = "my_clustering"
-
+    
     dataset.cluster(model=model, alias=alias, vector_fields=vector_fields)
 
 
