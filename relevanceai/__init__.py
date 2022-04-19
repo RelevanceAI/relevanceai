@@ -11,6 +11,7 @@ from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.dr.dim_reduction_ops import (
     ReduceDimensionsOps,
 )
+from relevanceai.operations.vector import Base2Vec
 
 # Fix the name
 from relevanceai.utils import datasets

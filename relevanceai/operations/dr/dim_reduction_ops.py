@@ -103,7 +103,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
         return self._update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
 
-    def operate(
+    def run(
         self,
         dataset_id: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,

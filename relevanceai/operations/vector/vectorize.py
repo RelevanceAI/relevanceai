@@ -179,7 +179,7 @@ class VectorizeOps(VectorizeHelpers):
         self.model_names: List[str] = []
 
     def __call__(self, *args, **kwargs):
-        return self.operate(*args, **kwargs)
+        return self.run(*args, **kwargs)
 
     def _get_schema(self):
         return self.datasets.schema(self.dataset_id)
@@ -474,7 +474,7 @@ class VectorizeOps(VectorizeHelpers):
 
         self._update_vector_metadata(metadata=[document_vector_])
 
-    def operate(
+    def run(
         self,
         dataset_id: str,
         fields: List[str],

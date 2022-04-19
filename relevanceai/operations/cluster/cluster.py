@@ -16,8 +16,7 @@ from relevanceai.client.helpers import Credentials
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
-from relevanceai.utils.decorators.version import beta
-from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils.decorators import beta, track, deprecated
 from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
@@ -138,12 +137,16 @@ class ClusterOps(APIClient, BaseOps):
         include_cluster_report: bool = True,
         **kwargs,
     ) -> None:
-        return self.operate(
+        return self.run(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
             **kwargs,
         )
+
+    @deprecated(version="1.0.0")
+    def fit_predict_update(self, *args, **kwargs):
+        return self.run(*args, **kwargs)
 
     def _get_schema(self) -> Dict:
         return self.datasets.schema(dataset_id=self.dataset_id)
@@ -406,7 +409,7 @@ class ClusterOps(APIClient, BaseOps):
         print(Messages.BUILD_HERE + link)
 
     @track
-    def operate(
+    def run(
         self,
         dataset_id: str,
         vector_fields: Optional[List[str]] = None,
@@ -1073,7 +1076,7 @@ class ClusterOps(APIClient, BaseOps):
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
-            cluster_ops.operate(df, vector_fields=["sample_vector_"])
+            cluster_ops.run(df, vector_fields=["sample_vector_"])
             clusterer.aggregate(
                 "sample_dataset_id",
                 groupby=[{
