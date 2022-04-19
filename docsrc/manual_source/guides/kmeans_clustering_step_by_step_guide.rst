@@ -17,7 +17,7 @@ First, you need to set up a client object to interact with RelevanceAI.
 .. code:: python
 
     from relevanceai import Client
-    
+
     client = Client()
 
 Data
@@ -37,7 +37,7 @@ Load the data
 .. code:: python
 
     from relevanceai.utils.datasets import get_ecommerce_dataset_encoded
-    
+
     documents = get_ecommerce_dataset_encoded()
     {k: v for k, v in documents[0].items() if "_vector_" not in k}
 
@@ -72,11 +72,11 @@ We apply the Kmeams clustering algorithm to the vector field,
 .. code:: python
 
     from sklearn.cluster import KMeans
-    
+
     VECTOR_FIELD = "product_title_clip_vector_"
     KMEAN_NUMBER_OF_CLUSTERS = 5
     ALIAS = "kmeans_" + str(KMEAN_NUMBER_OF_CLUSTERS)
-    
+
     model = KMeans(n_clusters=KMEAN_NUMBER_OF_CLUSTERS)
     clusterer = client.ClusterOps(alias=ALIAS, model=model)
     clusterer.operate(
@@ -87,7 +87,7 @@ We apply the Kmeams clustering algorithm to the vector field,
 .. code:: python
 
     # List closest to center of the cluster
-    
+
     clusterer.list_closest(
         dataset_id="quickstart_kmeans_clustering", vector_field="product_title_clip_vector_"
     )
@@ -95,7 +95,7 @@ We apply the Kmeams clustering algorithm to the vector field,
 .. code:: python
 
     # List furthest from the center of the cluster
-    
+
     clusterer.list_furthest(
         dataset_id="quickstart_kmeans_clustering", vector_field="product_title_clip_vector_"
     )
@@ -106,7 +106,7 @@ json_shower.
 .. code:: python
 
     from relevanceai import show_json
-    
+
     sample_documents = ds.sample(n=5)
     samples = [
         {
@@ -115,6 +115,5 @@ json_shower.
         }
         for d in sample_documents
     ]
-    
-    show_json(samples, text_fields=["product_title", "cluster"])
 
+    show_json(samples, text_fields=["product_title", "cluster"])

@@ -24,14 +24,14 @@ value under ``Activation token`` and paste it here
 .. code:: python
 
     from relevanceai import Client
-    
+
     client = Client()
 
 
 .. parsed-literal::
 
     Activation token (you can find it here: https://cloud.relevance.ai/sdk/api )
-    
+
     Activation Token: ··········
     Connecting to us-east-1...
     You can view all your datasets at https://cloud.relevance.ai/datasets/
@@ -45,16 +45,16 @@ Data
 
     import pandas as pd
     from relevanceai.utils.datasets import get_realestate_dataset
-    
+
     # Retrieve our sample dataset. - This comes in the form of a list of documents.
     documents = get_realestate_dataset()
-    
+
     # ToDo: Remove this cell when the dataset is updated
-    
+
     for d in documents:
         if "_clusters_" in d:
             del d["_clusters_"]
-    
+
     pd.DataFrame.from_dict(documents).head()
 
 
@@ -62,7 +62,7 @@ Data
 
 .. raw:: html
 
-    
+
       <div id="df-c6baa545-5f21-4092-b3a6-110875a3a28f">
         <div class="colab-df-container">
           <div>
@@ -70,11 +70,11 @@ Data
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -234,21 +234,21 @@ Data
           <button class="colab-df-convert" onclick="convertToInteractive('df-c6baa545-5f21-4092-b3a6-110875a3a28f')"
                   title="Convert this dataframe to an interactive table."
                   style="display:none;">
-    
+
       <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
            width="24px">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
       </svg>
           </button>
-    
+
       <style>
         .colab-df-container {
           display:flex;
           flex-wrap:wrap;
           gap: 12px;
         }
-    
+
         .colab-df-convert {
           background-color: #E8F0FE;
           border: none;
@@ -260,18 +260,18 @@ Data
           padding: 0 0 0 0;
           width: 32px;
         }
-    
+
         .colab-df-convert:hover {
           background-color: #E2EBFA;
           box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
           fill: #174EA6;
         }
-    
+
         [theme=dark] .colab-df-convert {
           background-color: #3B4455;
           fill: #D2E3FC;
         }
-    
+
         [theme=dark] .colab-df-convert:hover {
           background-color: #434B5C;
           box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -279,20 +279,20 @@ Data
           fill: #FFFFFF;
         }
       </style>
-    
+
           <script>
             const buttonEl =
               document.querySelector('#df-c6baa545-5f21-4092-b3a6-110875a3a28f button.colab-df-convert');
             buttonEl.style.display =
               google.colab.kernel.accessAllowed ? 'block' : 'none';
-    
+
             async function convertToInteractive(key) {
               const element = document.querySelector('#df-c6baa545-5f21-4092-b3a6-110875a3a28f');
               const dataTable =
                 await google.colab.kernel.invokeFunction('convertToInteractive',
                                                          [key], {});
               if (!dataTable) return;
-    
+
               const docLinkHtml = 'Like what you see? Visit the ' +
                 '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
                 + ' to learn more about interactive tables.';
@@ -329,8 +329,8 @@ In general, the group-by field is structured as
 
 ::
 
-   {"name": ALIAS, 
-   "field": FIELD, 
+   {"name": ALIAS,
+   "field": FIELD,
    "agg": TYPE-OF-GROUP}
 
 Categorical Data
@@ -369,8 +369,8 @@ In general, the aggregation field is structured as
 
 ::
 
-   {"name": ALIAS, 
-   "field": FIELD, 
+   {"name": ALIAS,
+   "field": FIELD,
    "agg": TYPE-OF-AGG}
 
 Average, Minimum and Maximum
@@ -410,7 +410,7 @@ Putting it Together
 .. code:: python
 
     from jsonshower import show_json
-    
+
     show_json(results, text_fields=list(results["results"][0].keys()))
 
 
@@ -704,5 +704,3 @@ Putting it Together
         </tr>
       </tbody>
     </table>
-
-
