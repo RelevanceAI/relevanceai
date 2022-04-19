@@ -736,3 +736,11 @@ class Read(Statistics):
             ).exists()
             for field in schema
         ]
+        filters = [
+            {
+                "filter_type": "or",
+                "condition_value": filters,
+            },
+        ]
+
+        return
