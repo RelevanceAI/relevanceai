@@ -54,6 +54,7 @@ value under ``Authorization token`` and paste it here
 
 .. code:: ipython3
 
+
     %%capture
     import pandas as pd
     from relevanceai import Client
@@ -141,6 +142,7 @@ Simple Text Search
 
 
 .. raw:: html
+
 
       <div id="df-f7a948ff-9dcc-4c68-86e9-1f6327c360fd">
         <div class="colab-df-container">
@@ -359,18 +361,21 @@ Let’s prepare some functions to help us encode our data!
 
     # Encoding the query
     query_vector = encode_text("nike")
+
     results = ds.advanced_search(
         vector_search_query=[
             {"vector": query_vector, "field": "product_title_clip_vector_"}
         ],
         select_fields=["product_title"],
     )
+
     pd.DataFrame(results["results"])
 
 
 
 
 .. raw:: html
+
 
       <div id="df-a0b30b5c-759b-4c1d-ae74-2b09fd00d157">
         <div class="colab-df-container">
@@ -557,12 +562,14 @@ below.
         ],
         select_fields=["product_title"],  # results to return
     )
+
     pd.DataFrame(results["results"])
 
 
 
 
 .. raw:: html
+
 
       <div id="df-fe311847-546c-4851-93ce-1afe6fe066ad">
         <div class="colab-df-container">
@@ -749,12 +756,14 @@ you! Simply add a ``weight`` parameter your dictionary inside
         ],
         select_fields=["product_title"],  # results to return
     )
+
     pd.DataFrame(results["results"])
 
 
 
 
 .. raw:: html
+
 
       <div id="df-e1d61e8e-b73d-4071-a430-b511fce10a55">
         <div class="colab-df-container">
@@ -938,21 +947,9 @@ query as belows.
 
     image_url = "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png"
 
-    image_url = "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png"
-
 .. raw:: html
 
    <h5>
-
-Sample Query Image
-
-.. raw:: html
-
-   </h5>
-
-.. code:: ipython3
-
-    from relevanceai import show_json
 
 Sample Query Image
 

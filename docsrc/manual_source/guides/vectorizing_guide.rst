@@ -68,15 +68,15 @@ Here we can see the dataset schema, pre-vectorization
 
 
 
-Vectorizing is as simple specifying ``feature_vector=True``
+Vectorizing is as simple specifying ``create_feature_vector=True``
 
 While species is a text feature, we do not need to vectorize this.
 Besides, smart typechecking recognises this field as a text field we
 would not usually vectorize.
 
-``feature_vector=True`` is what creates our “document” vectors. This
-concatenates all numeric/vector fields in a single “document” vector.
-This new vector_field is always called
+``create_feature_vector=True`` is what creates our “document” vectors.
+This concatenates all numeric/vector fields in a single “document”
+vector. This new vector_field is always called
 ``f"_dim{n_dims}_feature_vector_"``, with n_dims being the size of the
 concatenated vector.
 
@@ -87,12 +87,12 @@ applied.
 
 .. code:: python
 
-    dataset.vectorize(feature_vector=True)
+    dataset.vectorize(create_feature_vector=True)
 
 
 .. parsed-literal::
 
-    No fields were given, vectorizing the following field(s): 
+    No fields were given, vectorizing the following field(s):
     Concatenating the following fields to form a feature vector: PetalLengthCm, PetalWidthCm, SepalLengthCm, SepalWidthCm
 
 
@@ -142,7 +142,7 @@ or
 
 .. code:: python
 
-    dataset.vectorize(fields=["numeric"], feature_vector=True)
+    dataset.vectorize(fields=["numeric"], create_feature_vector=True)
 
 You can see below that the dataset schema has been altered accordingly
 
@@ -232,7 +232,7 @@ or
 
 .. code:: python
 
-    dataset.vectorize(fields=["Comments"], feature_vector=True)
+    dataset.vectorize(fields=["Comments"], create_feature_vector=True)
 
 
 .. parsed-literal::
@@ -272,4 +272,3 @@ or
 
     ✅ All documents inserted/edited successfully.
     The following vector fields were added: _dim512_feature_vector_
-
