@@ -434,7 +434,7 @@ class ClusterOps(APIClient, BaseOps):
         self.cluster_field = f"_cluster_.{vector_fields[0]}.{self.alias}"
 
         # get all documents
-        print("Retrieving all documents")
+        print("Retrieving all documents...")
         from relevanceai.utils.filter_helper import create_filter
 
         filters = create_filter(vector_field, filter_type="exists")
@@ -447,27 +447,27 @@ class ClusterOps(APIClient, BaseOps):
         )
 
         # fit model, predict and label all documents
-        print("Predicting on all documents")
+        print("Predicting on all documents...")
         centroid_documents, labelled_documents = self._fit_predict(
             documents=documents,
             vector_field=vector_field,
         )
 
-        print("Updating cluster labels")
+        print("Updating cluster labels...")
         results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
         )
 
-        print("Inserting Centroids")
+        print("Inserting Centroids...")
         self._insert_centroids(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
         if include_cluster_report:
-            print("Getting Cluster Report")
+            print("Generating evaluation report for your clusters…")
             from relevanceai.reports.cluster.report import ClusterReport
 
             centroids = self.get_field_across_documents(
