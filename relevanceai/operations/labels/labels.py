@@ -329,7 +329,7 @@ class LabelOps(Write, BaseOps):
                 "filter_type": "exists",
                 "condition": ">=",
                 "condition_value": " ",
-            },
+            }
         ]
         label_documents: list = self._get_all_documents(
             label_dataset_id,
@@ -362,7 +362,7 @@ class LabelOps(Write, BaseOps):
                     "filter_type": "exists",
                     "condition": ">=",
                     "condition_value": " ",
-                },
+                }
             ],
         )
 
@@ -490,7 +490,7 @@ class LabelOps(Write, BaseOps):
                     "filter_type": "exists",
                     "condition": ">=",
                     "condition_value": " ",
-                },
+                }
             ],
             select_fields=[vector_field],
         )
@@ -795,8 +795,7 @@ class LabelOps(Write, BaseOps):
                 include_cursor=True,
             )
             string = self.generate_text_list_from_documents(
-                documents=documents["documents"],
-                text_fields=text_fields,
+                documents=documents["documents"], text_fields=text_fields
             )
 
             if algorithm == "nltk":
@@ -808,9 +807,7 @@ class LabelOps(Write, BaseOps):
                     preprocess_hooks=preprocess_hooks,
                 )
             elif algorithm == "rake":
-                ngram_counter = self._get_rake_keyphrases(
-                    string,
-                )
+                ngram_counter = self._get_rake_keyphrases(string)
             counter.update(ngram_counter)
         return counter.most_common(most_common)
 

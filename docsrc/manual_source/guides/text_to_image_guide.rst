@@ -44,7 +44,11 @@ value under ``Activation token`` and paste it here
 .. code:: ipython3
 
     from relevanceai import Client
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     client = Client()
 
 Text-to-image search
@@ -98,8 +102,13 @@ between text and image pairs. In the code below we set up CLIP.
             image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
+<<<<<<< HEAD
     
     
+=======
+
+
+>>>>>>> development
     # Next - let's encode text based on CLIP
     def encode_text(text):
         # let us get text and then tokenize it
@@ -129,6 +138,7 @@ mins
             d["product_image_clip_vector_"] = encode_image(d["product_image"])
         except:
             pass
+<<<<<<< HEAD
     
     
     # Let's import TQDM for a nice progress bar!
@@ -136,6 +146,15 @@ mins
     
     [encode_image_document(d) for d in tqdm(documents)]
 
+=======
+
+
+    # Let's import TQDM for a nice progress bar!
+    from tqdm.auto import tqdm
+
+    [encode_image_document(d) for d in tqdm(documents)]
+
+>>>>>>> development
 3) Insert
 ---------
 
@@ -184,10 +203,17 @@ notebook as shown below:
 .. code:: ipython3
 
     from relevanceai import show_json
+<<<<<<< HEAD
     
     print("=== QUERY === ")
     print(query)
     
+=======
+
+    print("=== QUERY === ")
+    print(query)
+
+>>>>>>> development
     print("=== RESULTS ===")
     show_json(results, image_fields=["product_image"], text_fields=["product_title"])
 

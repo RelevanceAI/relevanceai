@@ -1,12 +1,4 @@
-from typing import (
-    Any,
-    Set,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -95,7 +87,9 @@ class ClusterOps(APIClient, BaseOps):
 
         """
 
-        self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
+        self.cluster_config = (
+            {} if cluster_config is None else cluster_config
+        )  # type: ignore
 
         self.model_name = None
 
@@ -305,10 +299,7 @@ class ClusterOps(APIClient, BaseOps):
 
         for centroid, vectors in centroids.items():
             centroid_vector = np.array(vectors).mean(0).tolist()
-            centroid_document = dict(
-                _id=centroid,
-                centroid_vector=centroid_vector,
-            )
+            centroid_document = dict(_id=centroid, centroid_vector=centroid_vector)
             centroid_documents.append(centroid_document)
 
         return centroid_documents
@@ -374,9 +365,7 @@ class ClusterOps(APIClient, BaseOps):
             print(f"Found {n_clusters} clusters using {self.model_name}")
 
         self.set_field_across_documents(
-            field=self.cluster_field,
-            values=labels,
-            docs=documents,
+            field=self.cluster_field, values=labels, docs=documents
         )
 
         centroid_documents = self._get_centroid_documents(vectors, labels)
@@ -434,8 +423,7 @@ class ClusterOps(APIClient, BaseOps):
         # fit model, predict and label all documents
         print("Predicting on all documents")
         centroid_documents, labelled_documents = self._fit_predict(
-            documents=documents,
-            vector_field=vector_field,
+            documents=documents, vector_field=vector_field
         )
 
         # TODO: need to change this to an update_where
@@ -1090,9 +1078,7 @@ class ClusterOps(APIClient, BaseOps):
             print("No alias given, assuming `communitydetection`")
 
         centroid_documents = self.services.cluster.centroids.list(
-            dataset_id=self.dataset_id,
-            vector_fields=[self.vector_field],
-            alias=alias,
+            dataset_id=self.dataset_id, vector_fields=[self.vector_field], alias=alias
         )["results"]
 
         relevant_centroids = [

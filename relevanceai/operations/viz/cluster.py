@@ -186,9 +186,7 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
             if i == top_indices:
                 return
             sample_comm_df = df[df[cluster_field] == community]
-            g = sns.displot(
-                sample_comm_df[numeric_field],
-            )
+            g = sns.displot(sample_comm_df[numeric_field])
             g.set(xlim=(facet_result["min"], facet_result["max"]))
             plt.title(community + str(f" - {measurement_name}: {measurement}"))
 
@@ -279,11 +277,9 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
                 f"{round(dist_out[l][t], round_print_float)} {heatmap_values[l]}, {heatmap_values[t]}"
             )
 
-        return sns.heatmap(
-            data=dist_df,
-            vmin=vmin,
-            vmax=vmax,
-        ).set(title=f"{metric} plot")
+        return sns.heatmap(data=dist_df, vmin=vmin, vmax=vmax).set(
+            title=f"{metric} plot"
+        )
 
     def show_closest(
         self,
@@ -308,7 +304,5 @@ class ClusterVizOps(ClusterOps, _ClusterOps):
         if cluster_ids is not None:
             text_fields += ["cluster_id"]
         return show_json(
-            closest_reformat,
-            text_fields=text_fields,
-            image_fields=image_fields,
+            closest_reformat, text_fields=text_fields, image_fields=image_fields
         )

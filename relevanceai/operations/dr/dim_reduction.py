@@ -44,13 +44,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.fit(vectors)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
-        return ".".join(
-            [
-                "_dr_",
-                alias,
-                vector_field,
-            ]
-        )
+        return ".".join(["_dr_", alias, vector_field])
 
     def fit_transform_documents(
         self,

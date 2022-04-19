@@ -125,9 +125,7 @@ if is_sklearn_available():
         calinski_harabasz_score,
         silhouette_samples,
     )
-    from sklearn.metrics.pairwise import (
-        pairwise_distances,
-    )
+    from sklearn.metrics.pairwise import pairwise_distances
     from sklearn.cluster import MiniBatchKMeans, KMeans
     from sklearn.tree import _tree, DecisionTreeClassifier
     from sklearn.neighbors import NearestNeighbors
@@ -354,9 +352,7 @@ class ClusterReport(DocUtils):
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
         for i, cluster_label in enumerate(labels):
-            cluster_label_doc = {
-                "cluster_id": str(cluster_label),
-            }
+            cluster_label_doc = {"cluster_id": str(cluster_label)}
             cluster_bool = self.cluster_labels == cluster_label
 
             specific_cluster_data = self.X[cluster_bool]

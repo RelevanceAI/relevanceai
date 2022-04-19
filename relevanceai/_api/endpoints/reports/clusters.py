@@ -11,8 +11,7 @@ class ClusterReportClient(_Base):
 
     def get(self, report_id: str):
         return self.make_http_request(
-            f"/reports/clusters/{report_id}/get",
-            method="GET",
+            f"/reports/clusters/{report_id}/get", method="GET"
         )
 
     def update(self, report_id: str, report: dict, name: str):
@@ -24,8 +23,7 @@ class ClusterReportClient(_Base):
 
     def delete(self, report_id: str):
         return self.make_http_request(
-            f"/reports/clusters/{report_id}/delete",
-            method="POST",
+            f"/reports/clusters/{report_id}/delete", method="POST"
         )
 
     def share(self):

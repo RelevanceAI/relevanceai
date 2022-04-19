@@ -29,6 +29,7 @@ your search!
 
 .. parsed-literal::
 
+<<<<<<< HEAD
     [K     |████████████████████████████████| 254 kB 7.3 MB/s 
     [K     |████████████████████████████████| 58 kB 2.8 MB/s 
     [K     |████████████████████████████████| 1.1 MB 68.3 MB/s 
@@ -37,6 +38,16 @@ your search!
     [K     |████████████████████████████████| 144 kB 57.7 MB/s 
     [K     |████████████████████████████████| 94 kB 625 kB/s 
     [K     |████████████████████████████████| 112 kB 56.2 MB/s 
+=======
+    [K     |████████████████████████████████| 254 kB 7.3 MB/s
+    [K     |████████████████████████████████| 58 kB 2.8 MB/s
+    [K     |████████████████████████████████| 1.1 MB 68.3 MB/s
+    [K     |████████████████████████████████| 255 kB 51.6 MB/s
+    [K     |████████████████████████████████| 271 kB 67.4 MB/s
+    [K     |████████████████████████████████| 144 kB 57.7 MB/s
+    [K     |████████████████████████████████| 94 kB 625 kB/s
+    [K     |████████████████████████████████| 112 kB 56.2 MB/s
+>>>>>>> development
     [?25h  Building wheel for fuzzysearch (setup.py) ... [?25l[?25hdone
 
 
@@ -54,7 +65,11 @@ value under ``Authorization token`` and paste it here
 
 .. code:: ipython3
 
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     %%capture
     import pandas as pd
     from relevanceai import Client
@@ -143,7 +158,11 @@ Simple Text Search
 
 .. raw:: html
 
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
       <div id="df-f7a948ff-9dcc-4c68-86e9-1f6327c360fd">
         <div class="colab-df-container">
           <div>
@@ -340,8 +359,13 @@ Let’s prepare some functions to help us encode our data!
             image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
+<<<<<<< HEAD
     
     
+=======
+
+
+>>>>>>> development
     # Next - let's encode text based on CLIP
     def encode_text(text):
         # let us get text and then tokenize it
@@ -361,14 +385,22 @@ Let’s prepare some functions to help us encode our data!
 
     # Encoding the query
     query_vector = encode_text("nike")
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     results = ds.advanced_search(
         vector_search_query=[
             {"vector": query_vector, "field": "product_title_clip_vector_"}
         ],
         select_fields=["product_title"],
     )
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     pd.DataFrame(results["results"])
 
 
@@ -376,7 +408,11 @@ Let’s prepare some functions to help us encode our data!
 
 .. raw:: html
 
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
       <div id="df-a0b30b5c-759b-4c1d-ae74-2b09fd00d157">
         <div class="colab-df-container">
           <div>
@@ -562,7 +598,11 @@ below.
         ],
         select_fields=["product_title"],  # results to return
     )
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     pd.DataFrame(results["results"])
 
 
@@ -570,7 +610,11 @@ below.
 
 .. raw:: html
 
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
       <div id="df-fe311847-546c-4851-93ce-1afe6fe066ad">
         <div class="colab-df-container">
           <div>
@@ -756,7 +800,11 @@ you! Simply add a ``weight`` parameter your dictionary inside
         ],
         select_fields=["product_title"],  # results to return
     )
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     pd.DataFrame(results["results"])
 
 
@@ -764,7 +812,11 @@ you! Simply add a ``weight`` parameter your dictionary inside
 
 .. raw:: html
 
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
       <div id="df-e1d61e8e-b73d-4071-a430-b511fce10a55">
         <div class="colab-df-container">
           <div>
@@ -947,9 +999,27 @@ query as belows.
     
     image_url = "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png"
 
+<<<<<<< HEAD
 .. raw:: html
 
    <h5>
+=======
+    image_url = "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png"
+
+.. raw:: html
+
+   <h5>
+
+Sample Query Image
+
+.. raw:: html
+
+   </h5>
+
+.. code:: ipython3
+
+    from relevanceai import show_json
+>>>>>>> development
 
 Sample Query Image
 
@@ -981,8 +1051,13 @@ Sample Query Image
             "product_price",
         ],  # results to return
     )
+<<<<<<< HEAD
     
     
+=======
+
+
+>>>>>>> development
     display(
         show_json(
             results["results"],

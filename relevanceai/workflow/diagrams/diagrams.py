@@ -14,12 +14,8 @@ def create_diagram(workflows):
     dot = graphviz.Digraph(
         engine="dot",
         name="Experimentation Workflow",
-        graph_attr={
-            "splines": "ortho",
-        },
-        node_attr={
-            "shape": "rect",
-        },
+        graph_attr={"splines": "ortho"},
+        node_attr={"shape": "rect"},
         format="png",
     )
 

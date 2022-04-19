@@ -87,7 +87,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 "endpoint": endpoint,
                 "metadata": parameters,
                 "query": parameters.get("query"),
-            },
+            }
         }
         self.logger.debug(request_body)
 

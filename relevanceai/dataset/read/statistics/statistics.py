@@ -15,19 +15,10 @@ from relevanceai._api.endpoints.services.cluster import ClusterClient
 
 
 class Statistics(APIClient):
-    def __init__(
-        self,
-        credentials: Credentials,
-        dataset_id: str,
-        **kwargs,
-    ):
+    def __init__(self, credentials: Credentials, dataset_id: str, **kwargs):
         self.credentials = credentials
         self.dataset_id = dataset_id
-        super().__init__(
-            dataset_id=self.dataset_id,
-            credentials=credentials,
-            **kwargs,
-        )
+        super().__init__(dataset_id=self.dataset_id, credentials=credentials, **kwargs)
 
     @track
     def value_counts(self, field: str):
@@ -56,9 +47,7 @@ class Statistics(APIClient):
 
         """
         return Series(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-            field=field,
+            credentials=self.credentials, dataset_id=self.dataset_id, field=field
         ).value_counts()
 
     @track
@@ -154,9 +143,7 @@ class Statistics(APIClient):
             categories = ["cluster"]
         else:
             series = Series(
-                credentials=self.credentials,
-                dataset_id=self.dataset_id,
-                field=groupby,
+                credentials=self.credentials, dataset_id=self.dataset_id, field=groupby
             ).all(show_progress_bar=False)
 
             categories = sorted(

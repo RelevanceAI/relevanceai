@@ -87,7 +87,11 @@ We apply the Kmeams clustering algorithm to the vector field,
 .. code:: python
 
     # List closest to center of the cluster
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     clusterer.list_closest(
         dataset_id="quickstart_kmeans_clustering", vector_field="product_title_clip_vector_"
     )
@@ -95,7 +99,11 @@ We apply the Kmeams clustering algorithm to the vector field,
 .. code:: python
 
     # List furthest from the center of the cluster
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> development
     clusterer.list_furthest(
         dataset_id="quickstart_kmeans_clustering", vector_field="product_title_clip_vector_"
     )
@@ -115,6 +123,11 @@ json_shower.
         }
         for d in sample_documents
     ]
+<<<<<<< HEAD
     
     show_json(samples, text_fields=["product_title", "cluster"])
 
+=======
+
+    show_json(samples, text_fields=["product_title", "cluster"])
+>>>>>>> development

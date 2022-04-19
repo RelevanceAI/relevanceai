@@ -171,9 +171,7 @@ class DeployableClient(_Base):
         return self.make_http_request(
             endpoint=f"/deployables/delete",
             method="POST",
-            parameters={
-                "id": deployable_id,
-            },
+            parameters={"id": deployable_id},
         )
 
     def list(self):

@@ -7,11 +7,7 @@ from relevanceai.dataset.io import IO
 from relevanceai.dataset.series import Series
 from relevanceai.operations import Operations
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.constants import (
-    GLOBAL_DATASETS,
-    SEARCH_APP_LINK,
-    PROJECTOR_APP_LINK,
-)
+from relevanceai.constants import GLOBAL_DATASETS, SEARCH_APP_LINK, PROJECTOR_APP_LINK
 
 
 class Dataset(IO, Read, Write, Operations):

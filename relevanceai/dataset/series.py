@@ -225,11 +225,7 @@ class Series(APIClient):
 
     @track
     def apply(
-        self,
-        func: Callable,
-        output_field: str,
-        filters: list = [],
-        axis: int = 0,
+        self, func: Callable, output_field: str, filters: list = [], axis: int = 0
     ):
         """
         Apply a function along an axis of the DataFrame.
@@ -426,10 +422,7 @@ class Series(APIClient):
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
         aggregation = self.services.aggregate.aggregate(
-            self.dataset_id,
-            groupby=groupby_query,
-            page_size=10000,
-            asc=ascending,
+            self.dataset_id, groupby=groupby_query, page_size=10000, asc=ascending
         )
 
         total = self.get_number_of_documents(dataset_id=self.dataset_id)

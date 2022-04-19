@@ -114,8 +114,7 @@ class _SubClusterOps(ClusterOps):
 
         # fit model, predict and label all documents
         centroid_documents, labelled_documents = self._fit_predict(
-            documents=documents,
-            vector_field=vector_field,
+            documents=documents, vector_field=vector_field
         )
 
         results = self._update_documents(
@@ -160,10 +159,7 @@ class _SubClusterOps(ClusterOps):
 
         for centroid, vectors in centroids.items():
             centroid_vector = np.array(vectors).mean(0).tolist()
-            centroid_document = dict(
-                _id=centroid,
-                centroid_vector=centroid_vector,
-            )
+            centroid_document = dict(_id=centroid, centroid_vector=centroid_vector)
             centroid_documents.append(centroid_document)
 
         return centroid_documents
@@ -504,11 +500,7 @@ class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
 
         while len(all_cluster_ids) < num_clusters:
             facet_results = self.datasets.facets(
-                dataset_id=dataset_id,
-                fields=[field],
-                page_size=100,
-                page=1,
-                asc=True,
+                dataset_id=dataset_id, fields=[field], page_size=100, page=1, asc=True
             )
             if "results" in facet_results:
                 facet_results = facet_results["results"]

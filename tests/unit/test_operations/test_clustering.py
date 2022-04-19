@@ -35,9 +35,7 @@ class TestClusterOps:
     def test_dataset_cluster_3(self, test_dataset: Dataset):
         alias = "cluster_test_3"
         test_dataset.cluster(
-            model="optics",
-            alias=alias,
-            vector_fields=[self.vector_field],
+            model="optics", alias=alias, vector_fields=[self.vector_field]
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 

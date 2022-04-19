@@ -46,19 +46,12 @@ class Read(Statistics):
         self.credentials = credentials
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
-        self.centroids = Centroids(
-            credentials=credentials,
-            dataset_id=self.dataset_id,
-        )
+        self.centroids = Centroids(credentials=credentials, dataset_id=self.dataset_id)
         self.image_fields = [] if image_fields is None else image_fields
         self.audio_fields = [] if audio_fields is None else audio_fields
         self.text_fields = [] if text_fields is None else text_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
-        super().__init__(
-            credentials=credentials,
-            dataset_id=dataset_id,
-            **kwargs,
-        )
+        super().__init__(credentials=credentials, dataset_id=dataset_id, **kwargs)
 
     @property  # type: ignore
     @track
@@ -146,10 +139,7 @@ class Read(Statistics):
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
         info_json = [
-            {
-                "Column": column,
-                "Dtype": schema[column],
-            }
+            {"Column": column, "Dtype": schema[column]}
             if column not in health
             else {
                 "Column": column,
@@ -204,9 +194,7 @@ class Read(Statistics):
         print(
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
         )
-        head_documents = self.get_documents(
-            number_of_documents=n,
-        )
+        head_documents = self.get_documents(number_of_documents=n)
         if raw_json:
             return head_documents
         else:

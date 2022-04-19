@@ -44,11 +44,7 @@ from relevanceai.utils.config_mixin import ConfigMixin
 
 
 class Client(APIClient, ConfigMixin):
-    def __init__(
-        self,
-        token: Optional[str] = None,
-        authenticate: bool = True,
-    ):
+    def __init__(self, token: Optional[str] = None, authenticate: bool = True):
         """
         Initialize the client
 
@@ -256,24 +252,12 @@ class Client(APIClient, ConfigMixin):
     ### Clustering
 
     @track
-    def ClusterOps(
-        self,
-        model=None,
-        **kwargs,
-    ):
-        return ClusterOps(
-            credentials=self.credentials,
-            model=model,
-            **kwargs,
-        )
+    def ClusterOps(self, model=None, **kwargs):
+        return ClusterOps(credentials=self.credentials, model=model, **kwargs)
 
     @track
     def ClusterVizOps(
-        self,
-        vector_fields: List[str],
-        alias: str,
-        dataset_id: str,
-        **kwargs,
+        self, vector_fields: List[str], alias: str, dataset_id: str, **kwargs
     ):
         return ClusterVizOps(
             credentials=self.credentials,
@@ -285,13 +269,7 @@ class Client(APIClient, ConfigMixin):
 
     @track
     def SubClusterOps(
-        self,
-        credentials,
-        alias,
-        dataset,
-        model,
-        vector_fields: list,
-        parent_field: str,
+        self, credentials, alias, dataset, model, vector_fields: list, parent_field: str
     ):
         """
         Sub Cluster Ops.
@@ -311,10 +289,7 @@ class Client(APIClient, ConfigMixin):
 
     @track
     def send_dataset(
-        self,
-        dataset_id: str,
-        receiver_project: str,
-        receiver_api_key: str,
+        self, dataset_id: str, receiver_project: str, receiver_api_key: str
     ):
         """
         Send an individual a dataset. For this, you must know their API key.
@@ -352,10 +327,7 @@ class Client(APIClient, ConfigMixin):
 
     @track
     def receive_dataset(
-        self,
-        dataset_id: str,
-        sender_project: str,
-        sender_api_key: str,
+        self, dataset_id: str, sender_project: str, sender_api_key: str
     ):
         """
         Recieve an individual a dataset.

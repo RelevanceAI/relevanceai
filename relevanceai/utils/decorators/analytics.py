@@ -142,8 +142,7 @@ def track_event_usage(event_name: str):
                             # TODO: Loop through the properties and remove anything
                             # greater than 5kb
                             response = analytics.track(
-                                user_id=user_id,
-                                event=event_name,
+                                user_id=user_id, event=event_name
                             )
 
                     asyncio.ensure_future(send_analytics())
@@ -165,9 +164,7 @@ def identify(func: Callable):
             if is_tracking_enabled():
                 user_id = args[0].firebase_uid
                 region = args[0].region
-                traits = {
-                    "region": region,
-                }
+                traits = {"region": region}
                 if user_id is not None:
                     analytics.identify(user_id, traits)
         except Exception as e:

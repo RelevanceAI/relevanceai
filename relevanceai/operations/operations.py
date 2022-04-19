@@ -1,3 +1,4 @@
+from re import I
 from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
@@ -5,14 +6,11 @@ from relevanceai.client.helpers import Credentials
 
 from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations.vector.vectorizer import Vectorizer
 
 
 class Operations(APIClient):
-    def __init__(
-        self,
-        credentials: Credentials,
-        dataset_id: str,
-    ):
+    def __init__(self, credentials: Credentials, dataset_id: str):
         self.credentials = credentials
         self.dataset_id = dataset_id
         super().__init__(self.credentials)
@@ -58,15 +56,9 @@ class Operations(APIClient):
         from relevanceai.operations.cluster import ClusterOps
 
         ops = ClusterOps(
-            credentials=self.credentials,
-            model=model,
-            alias=alias,
-            **kwargs,
+            credentials=self.credentials, model=model, alias=alias, **kwargs
         )
-        return ops(
-            dataset_id=self.dataset_id,
-            vector_fields=vector_fields,
-        )
+        return ops(dataset_id=self.dataset_id, vector_fields=vector_fields)
 
     @track
     def reduce_dims(
@@ -102,17 +94,11 @@ class Operations(APIClient):
             **kwargs,
         )
         return ops.operate(
-            dataset_id=self.dataset_id,
-            vector_fields=vector_fields,
-            alias=alias,
+            dataset_id=self.dataset_id, vector_fields=vector_fields, alias=alias
         )
 
     @track
-    def vectorize(
-        self,
-        fields: List[str] = None,
-        **kwargs,
-    ):
+    def vectorize(self, fields: List[str] = None, **kwargs):
         """
         Vectorize the model
 
@@ -159,19 +145,53 @@ class Operations(APIClient):
                 text_model=text_model
             )
 
-
         """
 
         from relevanceai.operations.vector import VectorizeOps
 
-        ops = VectorizeOps(
-            credentials=self.credentials,
-            **kwargs,
-        )
-        return ops(
-            dataset_id=self.dataset_id,
-            fields=[] if fields is None else fields,
-        )
+        ops = VectorizeOps(credentials=self.credentials, **kwargs)
+        return ops(dataset_id=self.dataset_id, fields=[] if fields is None else fields)
+
+    def advanced_vectorize(self, vectorizers: List[Vectorizer]):
+        """
+        Advanced vectorization.
+        By setting an
+
+        Example
+        ----------
+
+        .. code-block::
+
+            # When first vectorizing
+            from relevanceai.operations import Vectorizer
+            vectorizer = Vectorizer(field="field_1", model=model, alias="value")
+            ds.advanced_vectorize(
+                [vectorizer],
+            )
+
+        Parameters
+        -------------
+
+        vectorize_mapping: dict
+            Vectorize mapping
+
+        """
+        # TODO: Write test for advanced vectorize
+        all_fields = [v.field for v in vectorizers]
+        for vectorizer in tqdm(vectorizers):
+
+            def encode(docs):
+                docs = vectorizer.encode_documents(
+                    fields=[vectorizer.field], documents=docs
+                )
+                return docs
+
+            self.pull_update_push_async(
+                dataset_id=self.dataset_id,
+                update_function=encode,
+                updating_args=None,
+                select_fields=all_fields,
+            )
 
     @track
     def vector_search(self, **kwargs):
@@ -281,10 +301,7 @@ class Operations(APIClient):
 
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
 
         return ops.vector_search(**kwargs)
 
@@ -363,10 +380,7 @@ class Operations(APIClient):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
 
         return ops.hybrid_search(**kwargs)
 
@@ -446,10 +460,7 @@ class Operations(APIClient):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
 
         return ops.chunk_search(**kwargs)
 
@@ -527,10 +538,7 @@ class Operations(APIClient):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
         return ops.multistep_chunk_search(**kwargs)
 
     def launch_cluster_app(self, configuration: dict = None):
@@ -815,8 +823,40 @@ class Operations(APIClient):
             **kwargs,
         )
 
+    @track
     def list_deployables(self):
         """
         Use this function to list available deployables
         """
         return self.deployables.list()
+
+    @track
+    def train_text_model_with_gpl(
+        self, text_field: str, title_field: Optional[str] = None
+    ):
+        """
+        Train a text model using GPL (Generative Pseudo-Labelling)
+        This can be helpful for `domain adaptation`.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.train_text_model(method="gpl")
+
+        Parameters
+        ------------
+
+        text_field: str
+            Text field
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import GPLOps
+
+        ops = GPLOps.from_dataset(dataset=self)
+        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)

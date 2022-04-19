@@ -513,12 +513,7 @@ class DatasetsClient(_Base):
             },
         )
 
-    def search(
-        self,
-        query,
-        sort_by_created_at_date: bool = False,
-        asc: bool = False,
-    ):
+    def search(self, query, sort_by_created_at_date: bool = False, asc: bool = False):
         """
         Search datasets by their names with a traditional keyword search.
 
@@ -746,7 +741,9 @@ class DatasetsClient(_Base):
         if fieldsToAggregate is not None:
             parameters["fieldsToAggregate"] = fieldsToAggregate  # type: ignore
         if fieldsToAggregateStats is not None:
-            parameters["fieldsToAggregateStats"] = fieldsToAggregateStats  # type: ignore
+            parameters[
+                "fieldsToAggregateStats"
+            ] = fieldsToAggregateStats  # type: ignore
         if filters is not None:
             parameters["filters"] = filters  # type: ignore
         if relevanceBoosters is not None:

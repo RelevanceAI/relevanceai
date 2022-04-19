@@ -48,13 +48,7 @@ class Credentials:
     A convenience store of relevant credentials.
     """
 
-    __slots__ = (
-        "token",
-        "project",
-        "api_key",
-        "region",
-        "firebase_uid",
-    )
+    __slots__ = ("token", "project", "api_key", "region", "firebase_uid")
     token: str
     project: str
     api_key: str

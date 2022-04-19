@@ -37,13 +37,4 @@ US_EAST_1 = "us-east-1"
 AP_SOUTEAST_1 = "ap-southeast-1"
 OLD_AUSTRALIA_EAST = "old-australia-east"
 
-IMG_EXTS = [
-    ".jpg",
-    ".jpeg",
-    ".tif",
-    ".tiff",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".eps",
-]
+IMG_EXTS = [".jpg", ".jpeg", ".tif", ".tiff", ".png", ".gif", ".bmp", ".eps"]

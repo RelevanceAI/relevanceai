@@ -29,10 +29,7 @@ def clustered_dataset_id(test_client: Client, vector_documents: List[NamedTuple]
 
     test_client._insert_documents(test_dataset_id, vector_documents)
     dataset = test_client.Dataset(test_dataset_id)
-    dataset.cluster(
-        model=KMeans(n_clusters=10),
-        vector_fields=["sample_1_vector_"],
-    )
+    dataset.cluster(model=KMeans(n_clusters=10), vector_fields=["sample_1_vector_"])
     yield test_dataset_id
 
     test_client.datasets.delete(test_dataset_id)

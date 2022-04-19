@@ -18,9 +18,7 @@ def test_quickstart(test_client: Client):
     time.sleep(2)
     results = test_client.services.search.vector(
         dataset_id=QUICKSTART_DATASET,
-        multivector_query=[
-            {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
-        ],
+        multivector_query=[{"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]}],
         page_size=3,
     )
     assert len(results["results"]) > 0, "Not inserting properly"

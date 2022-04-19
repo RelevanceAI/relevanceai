@@ -35,8 +35,7 @@ class TestVectorizeOps:
     def test_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_ecom")
         dataset.insert_documents(
-            documents=get_online_ecommerce_dataset(),
-            create_id=True,
+            documents=get_online_ecommerce_dataset(), create_id=True
         )
 
         dataset.vectorize(feature_vector=True)
@@ -45,10 +44,7 @@ class TestVectorizeOps:
 
     def test_numeric_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_iris")
-        dataset.insert_documents(
-            documents=get_iris_dataset(),
-            create_id=True,
-        )
+        dataset.insert_documents(documents=get_iris_dataset(), create_id=True)
 
         dataset.vectorize(feature_vector=True)
 
@@ -61,8 +57,7 @@ class TestVectorizeOps:
     def test_custom_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_penguins")
         dataset.insert_documents(
-            documents=get_palmer_penguins_dataset(),
-            create_id=True,
+            documents=get_palmer_penguins_dataset(), create_id=True
         )
 
         from relevanceai.operations.vector import Base2Vec
@@ -85,12 +80,7 @@ class TestVectorizeOps:
                 return vector
 
         dataset.vectorize(
-            encoders=dict(
-                text=[
-                    CustomTextEncoder(),
-                ],
-            ),
-            feature_vector=True,
+            encoders=dict(text=[CustomTextEncoder()]), feature_vector=True
         )
 
         vectors = [
@@ -101,23 +91,18 @@ class TestVectorizeOps:
         assert all(vector in dataset.schema for vector in vectors)
 
     def test_vector_search(self, test_dataset: Dataset):
-        test_dataset.vector_search(
-            multivector_query=MULTIVECTOR_QUERY,
-        )
+        test_dataset.vector_search(multivector_query=MULTIVECTOR_QUERY)
         assert True
 
     def test_hybrid_search(self, test_dataset: Dataset):
         test_dataset.hybrid_search(
-            multivector_query=MULTIVECTOR_QUERY,
-            text="hey",
-            fields=["sample_1_label"],
+            multivector_query=MULTIVECTOR_QUERY, text="hey", fields=["sample_1_label"]
         )
         assert True
 
     def test_chunk_search(self, test_dataset: Dataset):
         test_dataset.chunk_search(
-            multivector_query=CHUNK_MULTIVECTOR_QUERY,
-            chunk_field="_chunk_",
+            multivector_query=CHUNK_MULTIVECTOR_QUERY, chunk_field="_chunk_"
         )
         assert True
 
