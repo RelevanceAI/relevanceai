@@ -66,9 +66,7 @@ class ExampleDatasets:
         select_fields = [] if select_fields is None else select_fields
         with FileLogger(fn=".relevanceairetrievingdata.logs", verbose=False):
             project = "3a4b969f4d5fae6f850e"
-            api_key = (
-                "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"
-            )  # read access
+            api_key = "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
             region = "us-east-1"
             firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
             token = ":".join([project, api_key, region, firebase_uid])

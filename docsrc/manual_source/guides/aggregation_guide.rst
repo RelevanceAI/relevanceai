@@ -54,11 +54,7 @@ Data
     for d in documents:
         if "_clusters_" in d:
             del d["_clusters_"]
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     pd.DataFrame.from_dict(documents).head()
 
 
@@ -333,13 +329,8 @@ In general, the group-by field is structured as
 
 ::
 
-<<<<<<< HEAD
    {"name": ALIAS, 
    "field": FIELD, 
-=======
-   {"name": ALIAS,
-   "field": FIELD,
->>>>>>> development
    "agg": TYPE-OF-GROUP}
 
 Categorical Data
@@ -378,13 +369,8 @@ In general, the aggregation field is structured as
 
 ::
 
-<<<<<<< HEAD
-   {"name": ALIAS, 
-   "field": FIELD, 
-=======
    {"name": ALIAS,
    "field": FIELD,
->>>>>>> development
    "agg": TYPE-OF-AGG}
 
 Average, Minimum and Maximum
@@ -424,11 +410,6 @@ Putting it Together
 .. code:: python
 
     from jsonshower import show_json
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> development
     show_json(results, text_fields=list(results["results"][0].keys()))
 
 
