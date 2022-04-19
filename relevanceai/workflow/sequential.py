@@ -1,5 +1,5 @@
 """
-Sequential Workflows allow users to quickly swap in and out 
+Sequential Workflows allow users to quickly swap in and out
 new operations to test new things all while having different
 operations logged.
 
@@ -165,7 +165,7 @@ class SequentialWorkflow(DocUtils):
                 if verbose:
                     print(values)
                 for j, op in enumerate(self.list_of_operations[1:]):
-                    if hasattr(op, "operate"):
+                    if hasattr(op, "run"):
                         values = op.operate(values)
                         if verbose:
                             print(values)
