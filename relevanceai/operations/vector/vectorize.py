@@ -135,11 +135,11 @@ class VectorizeOps(VectorizeHelpers):
         credentials: Credentials,
         encoders: Optional[Dict[str, List[Any]]] = None,
         log_file: str = "vectorize.logs",
-        feature_vector: bool = False,
+        numeric_vector: bool = False,
     ):
         super().__init__(log_file=log_file, credentials=credentials)
 
-        self.feature_vector = feature_vector
+        self.numeric_vector = numeric_vector
         self.encoders = encoders if encoders is not None else {}
         self.model_names: List[str] = []
 
@@ -523,7 +523,7 @@ class VectorizeOps(VectorizeHelpers):
             metadata=added_vectors,
         )
 
-        if self.feature_vector:
+        if self.numeric_vector:
             print(
                 "Concatenating the following fields to form a feature vector: {}".format(
                     ", ".join(vector_fields + numeric_fields)
