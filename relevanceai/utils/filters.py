@@ -1,43 +1,43 @@
 from relevanceai._api import APIClient
 
-"""
-Filters have been designed to become more pythonic.
-
-.. code-block::
-
-    old filters = [
-        {
-            "field": "product_name",
-            "filter_type": "exact_match",
-            "condition": "==",
-            "condition_value": "Durian Leather 2 Seater Sofa"
-        }
-    ]
-
-    new_filters = dataset["product_name"] == "Durian Leather 2 Seater Sofa"
-    # Produces the same as above
-
-    older_filters = [
-        {
-            "field": "rank",
-            "filter_type": "numeric",
-            "condition": ">=",
-            "condition_value": 2
-        },
-        {
-            "field": "rank",
-            "filter_type": "numeric",
-            "condition": "<",
-            "condition_value": 3
-        }
-    ]
-
-    new_filters = (dataset["rank"] >= 2) + (dataset["rank"] < 3)
-
-"""
-
 
 class Filter(APIClient):
+    """
+    Filters have been designed to become more pythonic.
+
+    .. code-block::
+
+        old filters = [
+            {
+                "field": "product_name",
+                "filter_type": "exact_match",
+                "condition": "==",
+                "condition_value": "Durian Leather 2 Seater Sofa"
+            }
+        ]
+
+        new_filters = dataset["product_name"] == "Durian Leather 2 Seater Sofa"
+        # Produces the same as above
+
+        older_filters = [
+            {
+                "field": "rank",
+                "filter_type": "numeric",
+                "condition": ">=",
+                "condition_value": 2
+            },
+            {
+                "field": "rank",
+                "filter_type": "numeric",
+                "condition": "<",
+                "condition_value": 3
+            }
+        ]
+
+        new_filters = (dataset["rank"] >= 2) + (dataset["rank"] < 3)
+
+    """
+
     def __init__(self, field, dataset_id, condition, condition_value, **kwargs):
         super().__init__(kwargs["credentials"])
         kwargs.pop("credentials")
