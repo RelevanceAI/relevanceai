@@ -38,6 +38,7 @@ class TestClusterOps:
             model="optics",
             alias=alias,
             vector_fields=[self.vector_field],
+            include_cluster_report=False,
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 

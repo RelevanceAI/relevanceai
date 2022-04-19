@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+
 def create_filter(
     field: str, filter_type: str, condition: str = "==", condition_value: str = " "
 ):
@@ -9,3 +12,11 @@ def create_filter(
             "condition_value": condition_value,
         }
     ]
+
+
+@dataclass
+class Filter:
+    field: str
+    filter_type: str
+    condition: str = "=="
+    condition_value: str = " "
