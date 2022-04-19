@@ -501,7 +501,7 @@ class ClusterOps(APIClient, BaseOps):
 
             if verbose:
                 print(
-                    f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+                    f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
                 )
 
         # link back to dashboard
