@@ -32,7 +32,7 @@ sign up/login and find your credentials in the settings
 .. code:: python
 
     from relevanceai import Client
-
+    
     """
     You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
     Once you have signed up, click on the value under `Activation token` and paste it here
@@ -53,10 +53,10 @@ Use one of our sample datasets to upload into your own project!
 
     import pandas as pd
     from relevanceai.utils.datasets import get_ecommerce_dataset_clean
-
+    
     # Retrieve our sample dataset. - This comes in the form of a list of documents.
     documents = get_ecommerce_dataset_clean()
-
+    
     pd.DataFrame.from_dict(documents).head()
 
 .. code:: python
@@ -82,9 +82,9 @@ details.
 .. code:: python
 
     from vectorhub.bi_encoders.text_image.torch import Clip2Vec
-
+    
     model = Clip2Vec()
-
+    
     # Set the default encode to encoding an image
     model.encode = model.encode_image
     documents = model.encode_documents(fields=["product_image"], documents=documents)
@@ -114,7 +114,7 @@ link which is provided after the clustering is finished!
 .. code:: python
 
     from sklearn.cluster import KMeans
-
+    
     cluster_model = KMeans(n_clusters=10)
     ds.cluster(cluster_model, ["product_image_clip_vector_"])
 
