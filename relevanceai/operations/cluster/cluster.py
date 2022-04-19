@@ -1,3 +1,4 @@
+from re import I
 from typing import (
     Any,
     Set,
@@ -131,10 +132,17 @@ class ClusterOps(APIClient, BaseOps):
         super().__init__(credentials)
 
     def __call__(
-        self, dataset_id: str, vector_fields: Optional[List[str]] = None, **kwargs
+        self,
+        dataset_id: str,
+        vector_fields: Optional[List[str]] = None,
+        include_cluster_report: bool = True,
+        **kwargs,
     ) -> None:
         return self.operate(
-            dataset_id=dataset_id, vector_fields=vector_fields, **kwargs
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
+            **kwargs,
         )
 
     def _get_schema(self) -> Dict:
