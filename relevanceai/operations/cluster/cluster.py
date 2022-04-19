@@ -16,8 +16,7 @@ from relevanceai.client.helpers import Credentials
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
-from relevanceai.utils.decorators.version import beta
-from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils.decorators import beta, track, deprecated
 from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
@@ -144,6 +143,10 @@ class ClusterOps(APIClient, BaseOps):
             include_cluster_report=include_cluster_report,
             **kwargs,
         )
+
+    @deprecated(version="1.0.0")
+    def fit_predict_update(self, *args, **kwargs):
+        return self.run(*args, **kwargs)
 
     def _get_schema(self) -> Dict:
         return self.datasets.schema(dataset_id=self.dataset_id)
