@@ -1150,6 +1150,7 @@ class ClusterOps(APIClient, BaseOps):
             dataset_id=self.dataset_id,
             vector_fields=[self.vector_field],
             alias=alias,
+            include_vector=True,
         )["results"]
 
         relevant_centroids = [
