@@ -131,9 +131,11 @@ class ClusterOps(APIClient, BaseOps):
         super().__init__(credentials)
 
     def __call__(
-        self, dataset_id: str, vector_fields: Optional[List[str]] = None
+        self, dataset_id: str, vector_fields: Optional[List[str]] = None, **kwargs
     ) -> None:
-        return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
+        return self.operate(
+            dataset_id=dataset_id, vector_fields=vector_fields, **kwargs
+        )
 
     def _get_schema(self) -> Dict:
         return self.datasets.schema(dataset_id=self.dataset_id)
