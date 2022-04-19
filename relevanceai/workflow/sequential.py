@@ -166,7 +166,7 @@ class SequentialWorkflow(DocUtils):
                     print(values)
                 for j, op in enumerate(self.list_of_operations[1:]):
                     if hasattr(op, "run"):
-                        values = op.operate(values)
+                        values = op.run(values)
                         if verbose:
                             print(values)
                     elif hasattr(op, "_update_") and op._update_:
