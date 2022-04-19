@@ -726,21 +726,32 @@ class Read(Statistics):
     def list_cluster_aliases(self):
         raise NotImplementedError()
 
-    def isnull(self):
+    def isnull(
+        self,
+        show_progress_bar=False,
+    ):
         schema = self.schema
-        filters = [
-            Series(
-                credentials=self.credentials,
-                dataset_id=self.dataset_id,
-                field=field,
-            ).exists()
-            for field in schema
-        ]
         filters = [
             {
                 "filter_type": "or",
-                "condition_value": filters,
-            },
+                "condition_value": [
+                    Series(
+                        credentials=self.credentials,
+                        dataset_id=self.dataset_id,
+                        field=field,
+                    ).not_exists()
+                    for field in schema
+                ],
+            }
         ]
+        null_count = {field: 0 for field in schema}
 
-        return
+        null_docs = self.get_all_documents(
+            filters=filters,
+            show_progress_bar=show_progress_bar,
+        )
+
+        for doc in null_docs:
+            null_count[field] = len(n_docs)
+
+        return null_count

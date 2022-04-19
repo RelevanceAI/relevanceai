@@ -633,6 +633,17 @@ class Series(APIClient):
         )
         return filter.get()
 
+    def not_exists(self):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            filter_type="exists",
+            condition="!=",
+            condition_value=" ",
+            credentials=self.credentials,
+        )
+        return filter.get()
+
     def date(self, other):
         filter = Filter(
             field=self.field,
