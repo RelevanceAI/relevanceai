@@ -68,11 +68,7 @@ Encoding
         {"sentence": '"This is the first sentence."', "_id": 1},
         {"sentence": '"This is the second sentence."', "_id": 2},
     ]
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     # Encode the `"sentence"` field in a list of documents
     encoded_documents = model.encode_documents(["sentence"], documents)
 
@@ -102,11 +98,7 @@ bring your own model(s).
     pd.DataFrame.from_dict(documents).head()
     ds = client.Dataset("quickstart_example_encoding")
     ds.insert_documents(documents)
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     ds["product_title"].apply(
         lambda x: model.encode(x), output_field="product_title_vector_"
     )

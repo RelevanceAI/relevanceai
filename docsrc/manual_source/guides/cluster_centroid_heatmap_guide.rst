@@ -38,11 +38,7 @@ Centroid Heatmap
 .. code:: ipython3
 
     from relevanceai.operations.viz.cluster import ClusterVizOps
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     cluster_ops = ClusterVizOps.from_dataset(
         ds, alias="main-cluster", vector_fields=["product_image_clip_vector_"]
     )

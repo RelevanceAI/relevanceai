@@ -122,20 +122,12 @@ for ``n_clusters``. Let’s vectorize over all available vector fields.
     parent_alias = f"kmeans_{n_clusters}"
     
     from sklearn.cluster import KMeans
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     model = KMeans(n_clusters=n_clusters)
     
     for v in vector_fields:
         cluster_ops = ds.cluster(model, vector_fields=[v], alias=parent_alias)
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     ds.schema
 
 
@@ -227,11 +219,7 @@ could further break down these clusters using subclustering.
     subcluster_alias = f"{parent_alias}_{subcluster_n_clusters}"
     
     from sklearn.cluster import KMeans
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     model = KMeans(n_clusters=subcluster_n_clusters)
     
     ds.subcluster(
@@ -758,11 +746,7 @@ Let’s build a subcluster lookup to help us further analyze our clusters
 
 ::
 
-<<<<<<< HEAD
    # subclusters = 
-=======
-   # subclusters =
->>>>>>> development
    # {
    #  'parent_cluster_id': {
    #     'subcluster_id': [ subcluster_docs ]
@@ -773,13 +757,8 @@ Let’s build a subcluster lookup to help us further analyze our clusters
 
     from collections import defaultdict
     from pprint import pprint
-<<<<<<< HEAD
     
     
-=======
-
-
->>>>>>> development
     def build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias):
         ## Let's retrieve our docs again with the new subcluster field
         docs = ds.get_all_documents(include_vector=True)
@@ -790,26 +769,17 @@ Let’s build a subcluster lookup to help us further analyze our clusters
             if "." not in k
             if not any([f in k for f in ["_vector_", "insert_date_"]])
         ]
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
         for d in docs:
             parent_cluster = d["_cluster_"][vector_field][parent_alias]
             subcluster = d["_cluster_"][vector_field][subcluster_alias]
             doc = {k: v for k, v in d.items() if k in doc_fields}
             subclusters[parent_cluster].setdefault(subcluster, []).append(doc)
         return subclusters
-<<<<<<< HEAD
     
     
     subclusters_3 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
-=======
 
->>>>>>> development
-
-    subclusters_3 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
 
 
 .. parsed-literal::
@@ -960,15 +930,9 @@ more well-defined groups -
 
     cluster_id = "cluster-0"
     subcluster_id = "cluster-0-0"
-<<<<<<< HEAD
     
     print(f"Sampling {subcluster_alias} in {vector_field} ...")
     
-=======
-
-    print(f"Sampling {subcluster_alias} in {vector_field} ...")
-
->>>>>>> development
     sample_subclusters(subclusters_3, cluster_id, subcluster_id)
 
 
@@ -1091,11 +1055,7 @@ constantly referring back to the parent alias.
     subcluster_alias = f"{parent_alias}_{subcluster_n_clusters}"
     
     from sklearn.cluster import KMeans
-<<<<<<< HEAD
     
-=======
-
->>>>>>> development
     model = KMeans(n_clusters=subcluster_n_clusters)
     
     ds.subcluster(
@@ -1239,17 +1199,10 @@ subclusters
 .. code:: ipython3
 
     subclusters_5 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
-<<<<<<< HEAD
     
     cluster_id = "cluster-0"
     subcluster_id = "cluster-0-0"
     
-=======
-
-    cluster_id = "cluster-0"
-    subcluster_id = "cluster-0-0"
-
->>>>>>> development
     print(f"Sampling {subcluster_alias} in {vector_field} ...")
     sample_subclusters(subclusters_5, cluster_id, subcluster_id)
 
