@@ -174,9 +174,11 @@ class ClusterReport(DocUtils):
         outlier_label: Union[str, int] = -1,
         centroids: Union[list, np.ndarray] = None,
         verbose: bool = False,
+        include_typecheck: bool = True,
     ):
 
-        self._typecheck_model(model)
+        if include_typecheck:
+            self._typecheck_model(model)
 
         if isinstance(X, list):
             self.X = np.array(X)
@@ -191,7 +193,8 @@ class ClusterReport(DocUtils):
         )
         self.model = model
         self.outlier_label = outlier_label
-        self._typecheck_centroid_vectors(centroids)
+        if include_typecheck:
+            self._typecheck_centroid_vectors(centroids)
         self._centroids = centroids
         self.verbose = verbose
 

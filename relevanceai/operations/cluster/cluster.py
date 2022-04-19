@@ -492,6 +492,7 @@ class ClusterOps(APIClient, BaseOps):
                 outlier_label=-1,
                 centroids=centroids,
                 verbose=True,
+                include_typecheck=False,
             )
 
             response = self.reports.clusters.create(
