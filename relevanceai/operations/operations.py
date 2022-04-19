@@ -106,7 +106,7 @@ class Operations(APIClient):
             n_components=n_components,
             **kwargs,
         )
-        return ops.operate(
+        return ops.run(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
@@ -896,4 +896,4 @@ class Operations(APIClient):
         from relevanceai.operations.text_finetuning import GPLOps
 
         ops = GPLOps.from_dataset(dataset=self)
-        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)
+        return ops.run(dataset=self, text_field=text_field, title_field=title_field)
