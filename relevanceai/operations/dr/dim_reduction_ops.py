@@ -102,8 +102,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         )
 
         return self._update_documents(
-            dataset_id=dataset_id, documents=dr_documents
-        )  # type: ignore
+            dataset_id=dataset_id, documents=dr_documents # type: ignore
+        )
 
     def operate(
         self,
