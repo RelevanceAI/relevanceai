@@ -1143,14 +1143,14 @@ class ClusterOps(APIClient, BaseOps):
         )["results"]
 
         relevant_centroids = [
-            centroid["centroid_vector"]
+            centroid[self.vector_field]
             for centroid in centroid_documents
             if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
         ]
         new_centroid = np.array(relevant_centroids).mean(0).tolist()
         new_centroid_doc = {
             "_id": f"cluster-{cluster_labels[0]}",
-            "centroid_vector": new_centroid,
+            self.vector_field: new_centroid,
         }
 
         class Merge:

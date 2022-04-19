@@ -25,6 +25,7 @@ class Operations(APIClient):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        include_cluster_report: bool = True,
         **kwargs,
     ):
         """
@@ -68,6 +69,7 @@ class Operations(APIClient):
         ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
         )
         return ops
 
