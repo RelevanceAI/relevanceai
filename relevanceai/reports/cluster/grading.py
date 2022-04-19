@@ -6,8 +6,7 @@ def get_silhouette_grade(silhouette_score):
     # grades = ["F"] + [f"{grade}{sign}" for grade in ["E", "D", "C", "B", "A"] for sign in ["-", "", "+"]] + ["S"]
     grades = ["F", "E", "D", "C", "B", "A", "S"]
     scores = [(2 * i) / len(grades) for i in range(1, len(grades) + 1)]
-    grades = [(score, grade) for score, grade in zip(scores, grades)]
-    for score, grade in grades:
+    for score, grade in zip(scores, grades):
         if (silhouette_score + 1) < score:
             return grade
     return "N/A"
