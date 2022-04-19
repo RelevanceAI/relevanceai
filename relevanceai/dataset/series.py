@@ -643,3 +643,6 @@ class Series(APIClient):
             credentials=self.credentials,
         )
         return filter.get()
+
+    def filter(self, **kwargs):
+        return [kwargs]
