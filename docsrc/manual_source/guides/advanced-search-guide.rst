@@ -9,8 +9,8 @@ your search!
 
 .. code:: ipython3
 
-    In [1]: %load_ext autoreload
-    In [2]: %autoreload 2
+    %load_ext autoreload
+    %autoreload 2
 
 .. code:: ipython3
 
@@ -30,8 +30,10 @@ Simple Text Search
 
 .. code:: ipython3
 
-    results = ds.advanced_search(query="nike", fields_to_search=["prod_name"], select_fields=['prod_name'])
-    pd.DataFrame(results['results'])
+    results = ds.advanced_search(
+        query="nike", fields_to_search=["prod_name"], select_fields=["prod_name"]
+    )
+    pd.DataFrame(results["results"])
 
 
 
@@ -43,11 +45,11 @@ Simple Text Search
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -135,10 +137,11 @@ Simple Vector Search
 
     # Create a simple mock vector for now
     vector = [1e-7] * 512
-    results = ds.advanced_search(vector_search_query=[
-        {"vector":vector,"field":'prod_name_use_vector_'}
-    ], select_fields=['prod_name'])
-    pd.DataFrame(results['results'])
+    results = ds.advanced_search(
+        vector_search_query=[{"vector": vector, "field": "prod_name_use_vector_"}],
+        select_fields=["prod_name"],
+    )
+    pd.DataFrame(results["results"])
 
 
 
@@ -150,11 +153,11 @@ Simple Vector Search
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -247,12 +250,10 @@ below.
     results = ds.advanced_search(
         query="nike",
         fields_to_search=["prod_name"],
-        vector_search_query=[
-            {"vector":vector,"field":'prod_name_use_vector_'}
-        ],
-        select_fields=["prod_name"], # results to return
+        vector_search_query=[{"vector": vector, "field": "prod_name_use_vector_"}],
+        select_fields=["prod_name"],  # results to return
     )
-    pd.DataFrame(results['results'])
+    pd.DataFrame(results["results"])
 
 
 
@@ -264,11 +265,11 @@ below.
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -362,11 +363,11 @@ you! Simply add a ``weight`` parameter your dictionary inside
         query="nike",
         fields_to_search=["prod_name"],
         vector_search_query=[
-            {"vector":vector,"field":'prod_name_use_vector_', "weight": 0.5}
+            {"vector": vector, "field": "prod_name_use_vector_", "weight": 0.5}
         ],
-        select_fields=["prod_name"], # results to return
+        select_fields=["prod_name"],  # results to return
     )
-    pd.DataFrame(results['results'])
+    pd.DataFrame(results["results"])
 
 
 
@@ -378,11 +379,11 @@ you! Simply add a ``weight`` parameter your dictionary inside
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -475,12 +476,12 @@ query as belows.
         query="nike",
         fields_to_search=["prod_name"],
         vector_search_query=[
-            {"vector":vector,"field":'prod_name_use_vector_'},
-            {"vector":vector,"field":'image_path_clip_vector_'}
+            {"vector": vector, "field": "prod_name_use_vector_"},
+            {"vector": vector, "field": "image_path_clip_vector_"},
         ],
-        select_fields=["prod_name"], # results to return
+        select_fields=["prod_name"],  # results to return
     )
-    pd.DataFrame(results['results'])
+    pd.DataFrame(results["results"])
 
 
 
@@ -492,11 +493,11 @@ query as belows.
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -574,5 +575,3 @@ query as belows.
       </tbody>
     </table>
     </div>
-
-

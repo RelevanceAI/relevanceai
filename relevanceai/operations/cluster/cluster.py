@@ -22,6 +22,7 @@ from relevanceai.constants import (
     Warning,
     Messages,
     CLUSTER_APP_LINK,
+    ModelNotSupportedError,
 )
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
@@ -50,11 +51,14 @@ class ClusterOps(APIClient, BaseOps):
 
     """
 
+    dataset_id: str
+    cluster_field: str
+
     def __init__(
         self,
         credentials: Credentials,
         model: Any = None,
-        alias: Optional[str] = None,
+        alias: str = None,
         n_clusters: Optional[int] = None,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
@@ -67,14 +71,11 @@ class ClusterOps(APIClient, BaseOps):
         Parameters
         -------------
 
-        model: Union[str, Any]
+        model: Any
             The string of clustering algorithm, class of clustering algorithm or custom clustering class.
             If custom, the model must contain the method for fit_predict and must output a numpy array for labels
 
-        vector_fields: Optional[List[str]] = None
-            A list of vector_fields to cluster over
-
-        alias: Optional[str] = None
+        alias: str = None
             An alias to be given for clustering.
             If no alias is provided, alias becomes the cluster model name hypen n_clusters e.g. (kmeans-5, birch-8)
 
@@ -95,19 +96,29 @@ class ClusterOps(APIClient, BaseOps):
         """
 
         self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
+
+        self.model_name = None
+
+        if model is None:
+            model = "community_detection"
+            print(f"No clustering model selected: defaulting to `{model}`")
+
+        self.n_clusters = n_clusters
+
         if n_clusters is not None:
             self.cluster_config["n_clusters"] = n_clusters  # type: ignore
 
-        self.model_name = None
         self.model = self._get_model(model)
+
+        if self.n_clusters is None:
+            if hasattr(self.model, "n_clusters"):
+                self.n_clusters = self.model.n_clusters
+
+            elif hasattr(self.model, "k"):
+                self.n_clusters = self.model.k
 
         if "package" not in self.__dict__:
             self.package = self._get_package(self.model)
-
-        if hasattr(self.model, "n_clusters"):
-            self.n_clusters = self.model.n_clusters
-        else:
-            self.n_clusters = n_clusters
 
         self.alias = self._get_alias(alias)
         self.outlier_value = outlier_value
@@ -122,7 +133,11 @@ class ClusterOps(APIClient, BaseOps):
 
         super().__init__(credentials)
 
-    def __call__(self, dataset_id: str, vector_fields: Optional[List[str]]) -> None:
+    def __call__(
+        self,
+        dataset_id: str,
+        vector_fields: Optional[List[str]] = None,
+    ) -> None:
         return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
 
     def _get_schema(self) -> Dict:
@@ -249,25 +264,9 @@ class ClusterOps(APIClient, BaseOps):
                 model = HDBSCAN(**self.cluster_config)
 
             elif model in "communitydetection":
-                # TODO: this is a callable (?)
-                try:
-                    from sentence_transformers.util import community_detection
-                except ModuleNotFoundError:
-                    raise MissingPackageError("sentence-transformers")
+                from relevanceai.operations.cluster.algorithms import CommunityDetection
 
-                class CommunityDetection:
-                    def __init__(self, config):
-                        self.config = config
-
-                    def __call__(self, vectors):
-                        communities = community_detection(vectors, **self.config)
-                        labels = [-1 for _ in range(vectors.shape[0])]
-                        for cluster_index, community in enumerate(communities):
-                            for index in community:
-                                labels[index] = cluster_index
-                        return labels
-
-                model = CommunityDetection(config=self.cluster_config)
+                model = CommunityDetection(**self.cluster_config)
 
             elif "faiss" in model:
                 from faiss import Kmeans
@@ -279,13 +278,12 @@ class ClusterOps(APIClient, BaseOps):
                     'agglomerativeclustering', 'birch', dbscan', 'optics', 'kmeans',
                     'featureagglomeration', 'meanshift', 'minibatchkmeans',
                     'spectralclustering', 'spectralbiclustering', 'spectralcoclustering',
-                    'hdbscan', 'community_detection']
+                    'hdbscan', 'communitydetection']
                     ]"""
                 )
 
         else:
-            # TODO: this needs to be referenced from relevance.constants.errors
-            raise ValueError("ModelNotSupported")
+            raise ModelNotSupportedError
 
         return model
 
@@ -320,25 +318,33 @@ class ClusterOps(APIClient, BaseOps):
 
         return centroid_documents
 
+    def _get_document_vector_field(self):
+        vector_fields = []
+        metadata = self.datasets.metadata(self.dataset_id)
+        most_recent_updated_vector = max(
+            metadata["results"]["_vector_"].items(), key=lambda x: x[1]
+        )[0]
+        vector_fields.append(most_recent_updated_vector)
+        return vector_fields
+
     def _insert_centroids(
         self,
         dataset_id: str,
-        vector_field: str,
+        vector_fields: List[str],
         centroid_documents: List[Dict[str, Any]],
     ) -> None:
         self.services.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centroid_documents,
-            vector_fields=[vector_field],
+            vector_fields=vector_fields,
             alias=self.alias,
         )
 
     def _fit_predict(
         self, documents: List[Dict[str, Any]], vector_field: str
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-        doc_subset = [doc for doc in documents if self.is_field(vector_field, doc)]
         vectors = np.array(
-            [self.get_field(vector_field, document) for document in doc_subset]
+            [self.get_field(vector_field, document) for document in documents]
         )
 
         if self.package == "sklearn":
@@ -368,9 +374,14 @@ class ClusterOps(APIClient, BaseOps):
 
         labels = self._format_labels(labels)
 
-        cluster_field = f"_cluster_.{vector_field}.{self.alias}"
+        if self.n_clusters is None:
+            n_clusters = len(set(labels)) - 1
+            print(f"Found {n_clusters} clusters using {self.model_name}")
+
         self.set_field_across_documents(
-            field=cluster_field, values=labels, docs=doc_subset
+            field=self.cluster_field,
+            values=labels,
+            docs=documents,
         )
 
         centroid_documents = self._get_centroid_documents(vectors, labels)
@@ -384,9 +395,8 @@ class ClusterOps(APIClient, BaseOps):
     @track
     def operate(
         self,
-        dataset_id: Optional[Union[str, Any]] = None,
+        dataset_id: str,
         vector_fields: Optional[List[str]] = None,
-        filters: list = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
     ) -> None:
@@ -404,30 +414,30 @@ class ClusterOps(APIClient, BaseOps):
             If True, the progress bar can be shown
 
         """
-        filters = [] if filters is None else filters
 
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
+        self.dataset_id = dataset_id
 
         if vector_fields is None:
-            vector_fields = self.vector_fields
+            vector_fields = self._get_document_vector_field()
+            print(f"No vector_field given: defaulting to {vector_fields}")
 
-        self.dataset_id = dataset_id
-        if vector_fields is not None:
-            vector_field = vector_fields[0]
-            self.vector_field = vector_field
+        vector_field = vector_fields[0]
+        self.cluster_field = f"_cluster_.{vector_fields[0]}.{self.alias}"
 
         # get all documents
+        print("Retrieving all documents")
         documents = self._get_all_documents(
             dataset_id=dataset_id,
             select_fields=vector_fields,
             show_progress_bar=show_progress_bar,
             include_vector=True,
-            filters=filters,
         )
 
         # fit model, predict and label all documents
+        print("Predicting on all documents")
         centroid_documents, labelled_documents = self._fit_predict(
             documents=documents,
             vector_field=vector_field,
@@ -438,15 +448,17 @@ class ClusterOps(APIClient, BaseOps):
         #     dataset_id,
         #     update={}
         # )
+        print("Updating cluster labels")
         results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
         )
 
+        print("Inserting Centroids")
         self._insert_centroids(
             dataset_id=dataset_id,
-            vector_field=vector_field,
+            vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
 
@@ -474,6 +486,7 @@ class ClusterOps(APIClient, BaseOps):
         include_vector: bool = False,
         include_count: bool = True,
         cluster_properties_filter: Optional[Dict] = {},
+        verbose: bool = True,
     ):
         """
         List of documents closest from the center.
@@ -539,6 +552,7 @@ class ClusterOps(APIClient, BaseOps):
             include_vector=include_vector,
             include_count=include_count,
             cluster_properties_filter=cluster_properties_filter,
+            verbose=verbose,
         )
 
     @staticmethod
@@ -1018,9 +1032,9 @@ class ClusterOps(APIClient, BaseOps):
             )
         """
         metrics = [] if metrics is None else metrics
-        sort = [] if sort is None else sort
         groupby = [] if groupby is None else groupby
         filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
 
         return self.services.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),

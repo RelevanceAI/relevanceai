@@ -10,6 +10,11 @@ v2.1.0
 - Add `summarize_closest_to_center`
 - Add guides
 - Add `advanced_search` tutorial and dataset functionality
+- Add `cluster_heatmaps`
+- Add `advanced_search`
+- Re-write of `subcluster`
+- Refactor of `BaseOps`
+- Re-write of `vectorize` and `cluster`
 
 v2.0.2
 -----------

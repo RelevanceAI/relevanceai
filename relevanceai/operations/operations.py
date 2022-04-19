@@ -1,9 +1,12 @@
-from typing import List, Optional, Any, Union
+from re import I
+from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
+
 from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations.vector.vectorizer import Vectorizer
 
 
 class Operations(APIClient):
@@ -26,7 +29,7 @@ class Operations(APIClient):
 
     def cluster(
         self,
-        model: Any,
+        model: Any = None,
         alias: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
         **kwargs,
@@ -78,49 +81,18 @@ class Operations(APIClient):
             alias=alias,
             **kwargs,
         )
-        ops(
+        return ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
         )
-        return ops
-
-    def merge_clusters(
-        self,
-        cluster_labels: List[int],
-        alias: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
-        show_progress_bar: bool = False,
-    ):
-        from relevanceai import ClusterOps
-
-        alias = self.alias if alias is None else alias
-        vector_fields = self.vector_fields if vector_fields is None else vector_fields
-
-        self.store(
-            alias=alias,
-            vector_fields=vector_fields,
-        )
-
-        ops = ClusterOps.from_dataset(
-            dataset_id=self.dataset_id,
-            credentials=self.credentials,
-            alias=alias,
-            vector_fields=vector_fields,
-        )
-        ops.merge(
-            cluster_labels=cluster_labels,
-            alias=alias,
-            show_progress_bar=show_progress_bar,
-        )
-        return ops
 
     @track
     def reduce_dims(
         self,
-        model: Any,
-        n_components: int,
-        alias: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
+        alias: str,
+        vector_fields: List[str],
+        model: Any = "umap",
+        n_components: int = 3,
         **kwargs,
     ):
         """
@@ -164,8 +136,7 @@ class Operations(APIClient):
     @track
     def vectorize(
         self,
-        text_fields=None,
-        image_fields=None,
+        fields: List[str] = None,
         **kwargs,
     ):
         """
@@ -214,20 +185,59 @@ class Operations(APIClient):
                 text_model=text_model
             )
 
-
         """
 
         from relevanceai.operations.vector import VectorizeOps
 
         ops = VectorizeOps(
             credentials=self.credentials,
-            dataset_id=self.dataset_id,
             **kwargs,
         )
-        return ops.vectorize(
-            text_fields=text_fields,
-            image_fields=image_fields,
+        return ops(
+            dataset_id=self.dataset_id,
+            fields=[] if fields is None else fields,
         )
+
+    def advanced_vectorize(self, vectorizers: List[Vectorizer]):
+        """
+        Advanced vectorization.
+        By setting an
+
+        Example
+        ----------
+
+        .. code-block::
+
+            # When first vectorizing
+            from relevanceai.operations import Vectorizer
+            vectorizer = Vectorizer(field="field_1", model=model, alias="value")
+            ds.advanced_vectorize(
+                [vectorizer],
+            )
+
+        Parameters
+        -------------
+
+        vectorize_mapping: dict
+            Vectorize mapping
+
+        """
+        # TODO: Write test for advanced vectorize
+        all_fields = [v.field for v in vectorizers]
+        for vectorizer in tqdm(vectorizers):
+
+            def encode(docs):
+                docs = vectorizer.encode_documents(
+                    fields=[vectorizer.field], documents=docs
+                )
+                return docs
+
+            self.pull_update_push_async(
+                dataset_id=self.dataset_id,
+                update_function=encode,
+                updating_args=None,
+                select_fields=all_fields,
+            )
 
     @track
     def vector_search(self, **kwargs):
@@ -518,8 +528,22 @@ class Operations(APIClient):
 
         For more information about vector search check out services.search.vector
 
+        Example
+        -----------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            results = ds.search.multistep_chunk(
+                chunk_field="_chunk_",
+                multivector_query=MULTIVECTOR_QUERY,
+                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
+            )
+
         Parameters
-        ----------
+        ------------
 
         multivector_query : list
             Query for advance search that allows for multiple vector and field querying.
@@ -565,20 +589,6 @@ class Operations(APIClient):
             Size of each page of results
         query: string
             What to store as the query name in the dashboard
-
-        Example
-        -----------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            results = ds.search.multistep_chunk(
-                chunk_field="_chunk_",
-                multivector_query=MULTIVECTOR_QUERY,
-                first_step_multivector_query=FIRST_STEP_MULTIVECTOR_QUERY
-            )
 
         """
         from relevanceai.operations.vector import SearchOps
@@ -770,13 +780,11 @@ class Operations(APIClient):
                 output_field = "_question_." + "-".join(
                     question.lower().strip().split()
                 )
-                # Remove things that are datasets
-                output_field = output_field.replace("?", "")
                 print(f"No output field is detected. Setting to {output_field}")
 
             workflow = SequentialWorkflow(
                 list_of_operations=[
-                    Input([input_field]),
+                    Input([input_field], filters=filters),
                     bulk_question_answer,
                     Output(output_field),
                 ]
@@ -872,3 +880,41 @@ class Operations(APIClient):
             includeFields=select_fields,
             **kwargs,
         )
+
+    @track
+    def list_deployables(self):
+        """
+        Use this function to list available deployables
+        """
+        return self.deployables.list()
+
+    @track
+    def train_text_model_with_gpl(
+        self, text_field: str, title_field: Optional[str] = None
+    ):
+        """
+        Train a text model using GPL (Generative Pseudo-Labelling)
+        This can be helpful for `domain adaptation`.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.train_text_model(method="gpl")
+
+        Parameters
+        ------------
+
+        text_field: str
+            Text field
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import GPLOps
+
+        ops = GPLOps.from_dataset(dataset=self)
+        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)

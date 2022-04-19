@@ -75,6 +75,9 @@ def progress_bar(iterable, show_progress_bar: bool = False):
     try:
         if show_progress_bar:
             return ProgressBar()(iterable)
+        else:
+            return iterable
     except Exception as e:
         pass
+
     return NullProgressBar(iterable)

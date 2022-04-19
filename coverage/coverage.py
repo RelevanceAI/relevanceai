@@ -1,3 +1,7 @@
+"""
+Run this file if you want to generate coverage.cfg and you want to exclude many file/dir paths
+"""
+
 RUN_EXCLUDE = [
     "*__init__.py",
     "relevanceai/_api/*",

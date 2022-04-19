@@ -202,6 +202,7 @@ class CentroidsClient(_Base):
         include_count: bool = True,
         include_facets: bool = False,
         cluster_properties_filter: Optional[Dict] = {},
+        verbose: bool = False,
     ):
         """
         List of documents closest from the center.
@@ -257,11 +258,11 @@ class CentroidsClient(_Base):
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         parameters = {
-            "dataset_id": dataset_id,
             "vector_fields": vector_fields,
-            "alias": alias,
-            "cluster_ids": cluster_ids,
             "centroid_vector_fields": centroid_vector_fields,
+            "alias": alias,
+            "dataset_id": dataset_id,
+            "cluster_ids": cluster_ids,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
@@ -283,6 +284,7 @@ class CentroidsClient(_Base):
             parameters=parameters,
             endpoint=endpoint,
             dashboard_type="cluster_centroids_closest",
+            verbose=verbose,
         )
         return self.make_http_request(endpoint, method=method, parameters=parameters)
 

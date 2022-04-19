@@ -7,7 +7,7 @@
 Dashboard <https://cloud.relevance.ai/demo/search/image-to-text>`__.
 
 In this notebook we will show you how to create and experiment with a
-powerful text to image search engine using OpenAI's CLIP and Relevance
+powerful text to image search engine using OpenAI’s CLIP and Relevance
 AI.
 
 .. |Open In Colab| image:: https://colab.research.google.com/assets/colab-badge.svg
@@ -34,7 +34,6 @@ Installation Requirements
     !pip install ftfy regex tqdm
     !pip install git+https://github.com/openai/CLIP.git
 
-
 Client Setup
 ------------
 
@@ -45,13 +44,14 @@ value under ``Activation token`` and paste it here
 .. code:: ipython3
 
     from relevanceai import Client
+
     client = Client()
 
 Text-to-image search
 ====================
 
 To enable text-to-image search we will be using Relevance AI as the
-vector database and OpenAI's CLIP as the vectorizer, to vectorize text
+vector database and OpenAI’s CLIP as the vectorizer, to vectorize text
 and images into CLIP vector embeddings.
 
 1) Data
@@ -88,12 +88,17 @@ between text and image pairs. In the code below we set up CLIP.
     # First - let's encode the image based on CLIP
     def encode_image(image):
         # Let us download the image and then preprocess it
-        image = preprocess(Image.open(requests.get(image, stream=True).raw)).unsqueeze(0).to(device)
+        image = (
+            preprocess(Image.open(requests.get(image, stream=True).raw))
+            .unsqueeze(0)
+            .to(device)
+        )
         # We then feed our processed image through the neural net to get a vector
         with torch.no_grad():
-          image_features = model.encode_image(image)
+            image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
+
 
     # Next - let's encode text based on CLIP
     def encode_text(text):
@@ -103,7 +108,6 @@ between text and image pairs. In the code below we set up CLIP.
         with torch.no_grad():
             text_features = model.encode_text(text)
         return text_features.tolist()[0]
-
 
 
 .. parsed-literal::
@@ -116,20 +120,21 @@ mins
 
 .. code:: ipython3
 
-    documents = documents[:500] # only 500 docs to make the process faster
+    documents = documents[:500]  # only 500 docs to make the process faster
 
 .. code:: ipython3
 
     def encode_image_document(d):
-      try:
-        d['product_image_clip_vector_'] = encode_image(d['product_image'])
-      except:
-        pass
+        try:
+            d["product_image_clip_vector_"] = encode_image(d["product_image"])
+        except:
+            pass
+
 
     # Let's import TQDM for a nice progress bar!
     from tqdm.auto import tqdm
-    [encode_image_document(d) for d in tqdm(documents)]
 
+    [encode_image_document(d) for d in tqdm(documents)]
 
 3) Insert
 ---------
@@ -137,12 +142,12 @@ mins
 Uploading our documents into the dataset ``quickstart_clip``.
 
 In case you are uploading your own dataset, keep in mind that each
-document should have a field called '\_id'. Such an id can be easily
+document should have a field called ’_id’. Such an id can be easily
 allocated using the uuid package:
 
 ::
 
-    ds.insert_documents(documents, create_id=True)
+   ds.insert_documents(documents, create_id=True)
 
 .. code:: ipython3
 
@@ -168,33 +173,23 @@ encoder to be able to search among the similarly generated vectors.
 
 .. code:: ipython3
 
-
-    query = 'for my baby daughter'
+    query = "for my baby daughter"
     query_vector = encode_text(query)
-    multivector_query=[
-        { "vector": query_vector, "fields": ["product_image_clip_vector_"]}
-    ]
-    results = ds.vector_search(
-        multivector_query=multivector_query,
-        page_size=5
-    )
-
+    multivector_query = [{"vector": query_vector, "fields": ["product_image_clip_vector_"]}]
+    results = ds.vector_search(multivector_query=multivector_query, page_size=5)
 
 You can use our json shower library to observe the search result in a
 notebook as shown below:
 
 .. code:: ipython3
 
-
     from relevanceai import show_json
 
-    print('=== QUERY === ')
+    print("=== QUERY === ")
     print(query)
 
-    print('=== RESULTS ===')
+    print("=== RESULTS ===")
     show_json(results, image_fields=["product_image"], text_fields=["product_title"])
-
-
 
 
 .. parsed-literal::
