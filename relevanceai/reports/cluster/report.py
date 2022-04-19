@@ -348,9 +348,9 @@ class ClusterReport(DocUtils):
         self._store_basic_centroid_stats(self._internal_report["overall"])
 
         labels, counts = np.unique(self.cluster_labels, return_counts=True)
-        if self.verbose:
-            print("Detected the cluster labels:")
-            print(labels)
+        # if self.verbose:
+        #     print("Detected the cluster labels:")
+        #     print(labels)
 
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
