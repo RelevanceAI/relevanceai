@@ -1,3 +1,4 @@
+from re import I
 from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
@@ -5,6 +6,7 @@ from relevanceai.client.helpers import Credentials
 
 from relevanceai._api import APIClient
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations.vector.vectorizer import Vectorizer
 
 
 class Operations(APIClient):
@@ -23,6 +25,7 @@ class Operations(APIClient):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        include_cluster_report: bool = True,
         **kwargs,
     ):
         """
@@ -63,10 +66,12 @@ class Operations(APIClient):
             alias=alias,
             **kwargs,
         )
-        return ops(
+        ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
         )
+        return ops
 
     @track
     def reduce_dims(
@@ -159,7 +164,6 @@ class Operations(APIClient):
                 text_model=text_model
             )
 
-
         """
 
         from relevanceai.operations.vector import VectorizeOps
@@ -172,6 +176,47 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
         )
+
+    def advanced_vectorize(self, vectorizers: List[Vectorizer]):
+        """
+        Advanced vectorization.
+        By setting an
+
+        Example
+        ----------
+
+        .. code-block::
+
+            # When first vectorizing
+            from relevanceai.operations import Vectorizer
+            vectorizer = Vectorizer(field="field_1", model=model, alias="value")
+            ds.advanced_vectorize(
+                [vectorizer],
+            )
+
+        Parameters
+        -------------
+
+        vectorize_mapping: dict
+            Vectorize mapping
+
+        """
+        # TODO: Write test for advanced vectorize
+        all_fields = [v.field for v in vectorizers]
+        for vectorizer in tqdm(vectorizers):
+
+            def encode(docs):
+                docs = vectorizer.encode_documents(
+                    fields=[vectorizer.field], documents=docs
+                )
+                return docs
+
+            self.pull_update_push_async(
+                dataset_id=self.dataset_id,
+                update_function=encode,
+                updating_args=None,
+                select_fields=all_fields,
+            )
 
     @track
     def vector_search(self, **kwargs):
@@ -815,8 +860,40 @@ class Operations(APIClient):
             **kwargs,
         )
 
+    @track
     def list_deployables(self):
         """
         Use this function to list available deployables
         """
         return self.deployables.list()
+
+    @track
+    def train_text_model_with_gpl(
+        self, text_field: str, title_field: Optional[str] = None
+    ):
+        """
+        Train a text model using GPL (Generative Pseudo-Labelling)
+        This can be helpful for `domain adaptation`.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.train_text_model(method="gpl")
+
+        Parameters
+        ------------
+
+        text_field: str
+            Text field
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import GPLOps
+
+        ops = GPLOps.from_dataset(dataset=self)
+        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)

@@ -1,5 +1,5 @@
 🌋 Quick Feature Tour
-=====================
+====================
 
 |Open In Colab|
 
@@ -21,16 +21,16 @@ encoding.
     # remove `!` if running the line in a terminal
     !pip install -U vectorhub[clip]
 
-
 Follow the signup flow and get your credentials below otherwise, you can
 sign up/login and find your credentials in the settings
 `here <https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api>`__
 
-.. image:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
 
 .. code:: python
 
-    
     from relevanceai import Client
     
     """
@@ -38,11 +38,11 @@ sign up/login and find your credentials in the settings
     Once you have signed up, click on the value under `Activation token` and paste it here
     """
     client = Client()
-    
 
 
+|image0|
 
-.. image:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
+.. |image0| image:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
 
 2. Create a dataset and insert data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,17 +59,16 @@ Use one of our sample datasets to upload into your own project!
     
     pd.DataFrame.from_dict(documents).head()
 
-
 .. code:: python
 
-    
     ds = client.Dataset("quickstart")
     ds.insert_documents(documents)
 
-
 See your dataset in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
 
 3. Encode data and upload vectors into your new dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,23 +87,21 @@ details.
     
     # Set the default encode to encoding an image
     model.encode = model.encode_image
-    documents = model.encode_documents(fields=['product_image'], documents=documents)
-    
-
+    documents = model.encode_documents(fields=["product_image"], documents=documents)
 
 .. code:: python
 
     ds.upsert_documents(documents=documents)
 
-
 .. code:: python
 
     ds.schema
 
-
 Monitor your vectors in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
 
 4. Run clustering on your vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,7 +118,6 @@ link which is provided after the clustering is finished!
     cluster_model = KMeans(n_clusters=10)
     ds.cluster(cluster_model, ["product_image_clip_vector_"])
 
-
 You can see the new ``_cluster_`` field that is added to your document
 schema. Clustering results are uploaded back to the dataset as an
 additional field. The default ``alias`` of the cluster will be the
@@ -131,10 +127,11 @@ additional field. The default ``alias`` of the cluster will be the
 
     ds.schema
 
-
 See your cluster centers in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
 
 4. Run a vector search
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -153,21 +150,16 @@ https://cloud.relevance.ai/sdk/search.
 
 .. code:: python
 
-    
     query = "gifts for the holidays"
     query_vector = model.encode(query)
-    multivector_query=[
-        { "vector": query_vector, "fields": ["product_image_clip_vector_"]}
-    ]
-    results = ds.vector_search(
-        multivector_query=multivector_query,
-        page_size=10
-    )
-
+    multivector_query = [{"vector": query_vector, "fields": ["product_image_clip_vector_"]}]
+    results = ds.vector_search(multivector_query=multivector_query, page_size=10)
 
 See your multi-vector search results in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
 
 Want to quickly create some example applications with Relevance AI?
 Check out some other guides below! - `Text-to-image search with OpenAI’s

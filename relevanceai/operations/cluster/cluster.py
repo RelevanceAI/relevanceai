@@ -1,3 +1,4 @@
+from re import I
 from typing import (
     Any,
     Set,
@@ -131,9 +132,18 @@ class ClusterOps(APIClient, BaseOps):
         super().__init__(credentials)
 
     def __call__(
-        self, dataset_id: str, vector_fields: Optional[List[str]] = None
+        self,
+        dataset_id: str,
+        vector_fields: Optional[List[str]] = None,
+        include_cluster_report: bool = True,
+        **kwargs,
     ) -> None:
-        return self.operate(dataset_id=dataset_id, vector_fields=vector_fields)
+        return self.operate(
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
+            **kwargs,
+        )
 
     def _get_schema(self) -> Dict:
         return self.datasets.schema(dataset_id=self.dataset_id)
@@ -293,7 +303,7 @@ class ClusterOps(APIClient, BaseOps):
         return cluster_labels
 
     def _get_centroid_documents(
-        self, vectors: np.ndarray, labels: List[str]
+        self, vectors: np.ndarray, labels: List[str], vector_field: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         centroid_documents = []
 
@@ -305,10 +315,16 @@ class ClusterOps(APIClient, BaseOps):
 
         for centroid, vectors in centroids.items():
             centroid_vector = np.array(vectors).mean(0).tolist()
-            centroid_document = dict(
-                _id=centroid,
-                centroid_vector=centroid_vector,
-            )
+            if vector_field:
+                centroid_document = {
+                    "_id": centroid,
+                    vector_field: centroid_vector,
+                }
+            else:
+                centroid_document = dict(
+                    _id=centroid,
+                    centroid_vector=centroid_vector,
+                )
             centroid_documents.append(centroid_document)
 
         return centroid_documents
@@ -379,7 +395,9 @@ class ClusterOps(APIClient, BaseOps):
             docs=documents,
         )
 
-        centroid_documents = self._get_centroid_documents(vectors, labels)
+        centroid_documents = self._get_centroid_documents(
+            vectors, labels, vector_field=vector_field
+        )
 
         return centroid_documents, documents
 
@@ -392,8 +410,11 @@ class ClusterOps(APIClient, BaseOps):
         self,
         dataset_id: str,
         vector_fields: Optional[List[str]] = None,
+        filters: Optional[list] = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
+        include_cluster_report: bool = True,
+        report_name: str = "cluster-report",
     ) -> None:
         """
         Run clustering on a dataset
@@ -409,7 +430,7 @@ class ClusterOps(APIClient, BaseOps):
             If True, the progress bar can be shown
 
         """
-
+        filters = [] if filters is None else filters
         if not isinstance(dataset_id, str):
             if hasattr(dataset_id, "dataset_id"):
                 dataset_id = dataset_id.dataset_id  # type: ignore
@@ -423,39 +444,75 @@ class ClusterOps(APIClient, BaseOps):
         self.cluster_field = f"_cluster_.{vector_fields[0]}.{self.alias}"
 
         # get all documents
-        print("Retrieving all documents")
+        print("Retrieving all documents...")
+        from relevanceai.utils.filter_helper import create_filter
+
+        filters = create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(
             dataset_id=dataset_id,
             select_fields=vector_fields,
             show_progress_bar=show_progress_bar,
             include_vector=True,
+            filters=filters,
         )
 
         # fit model, predict and label all documents
-        print("Predicting on all documents")
+        print("Predicting on all documents...")
         centroid_documents, labelled_documents = self._fit_predict(
             documents=documents,
             vector_field=vector_field,
         )
 
-        # TODO: need to change this to an update_where
-        # self.datasets.documents.update_where(
-        #     dataset_id,
-        #     update={}
-        # )
-        print("Updating cluster labels")
+        print("Updating cluster labels...")
         results = self._update_documents(
             dataset_id=dataset_id,
             documents=labelled_documents,
             show_progress_bar=show_progress_bar,
         )
 
-        print("Inserting Centroids")
+        print("Inserting Centroids...")
         self._insert_centroids(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
+        if include_cluster_report:
+            print("Generating evaluation report for your clusters…")
+            from relevanceai.reports.cluster.report import ClusterReport
+
+            centroids = self.get_field_across_documents(
+                vector_field, centroid_documents, missing_treatment="raise_error"
+            )
+
+            X = self.get_field_across_documents(
+                vector_field, documents, missing_treatment=self.outlier_value
+            )
+
+            cluster_labels = self.get_field_across_documents(
+                self.cluster_field, documents, missing_treatment=-1
+            )
+
+            if len(cluster_labels) != len(X):
+                raise ValueError("Damn son. How you like them apples.")
+
+            report = ClusterReport(
+                X=X,
+                cluster_labels=cluster_labels,
+                model=self.model,
+                outlier_label=-1,
+                centroids=centroids,
+                verbose=True,
+                include_typecheck=False,
+            )
+
+            response = self.reports.clusters.create(
+                name=report_name, report=self.json_encoder(report.internal_report)
+            )
+
+            if verbose:
+                print(
+                    f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+                )
 
         # link back to dashboard
         if verbose:
@@ -1093,17 +1150,18 @@ class ClusterOps(APIClient, BaseOps):
             dataset_id=self.dataset_id,
             vector_fields=[self.vector_field],
             alias=alias,
+            include_vector=True,
         )["results"]
 
         relevant_centroids = [
-            centroid["centroid_vector"]
+            centroid[self.vector_field]
             for centroid in centroid_documents
             if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
         ]
         new_centroid = np.array(relevant_centroids).mean(0).tolist()
         new_centroid_doc = {
             "_id": f"cluster-{cluster_labels[0]}",
-            "centroid_vector": new_centroid,
+            self.vector_field: new_centroid,
         }
 
         class Merge:
