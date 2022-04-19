@@ -121,6 +121,7 @@ def json_encoder(obj: Any, force_string: bool = False):
 
     if force_string:
         return repr(obj)
+
     raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
 
 

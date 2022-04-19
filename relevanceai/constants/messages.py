@@ -34,4 +34,4 @@ class Messages:
 
     INSERT_BAD = "❗Few errors with vectorizing documents. Please check logs."
 
-    BUILD_HERE = "Build your clustering app here: "
+    BUILD_HERE = "🛠️ Build your clustering app here: "

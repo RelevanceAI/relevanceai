@@ -23,7 +23,6 @@ class CommunityDetection:
     def fit_predict(self, vectors):
         if self.gpu:
             communities = self.community_detection_gpu(vectors)
-
         else:
             communities = self.community_detection_cpu(vectors)
 
