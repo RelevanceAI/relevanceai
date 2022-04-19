@@ -5,7 +5,7 @@ from relevanceai.constants.warning import Warning
 import pandas as pd
 import numpy as np
 
-from typing import Dict, List, Union, Callable, Optional
+from typing import Any, Dict, List, Union, Callable, Optional
 
 from tqdm import tqdm
 
@@ -335,7 +335,7 @@ class Series(APIClient):
         filters = [] if filters is None else filters
         select_fields = [self.field] if select_fields is None else select_fields
 
-        return self.pull_update_push_async(
+        return self.pull_update_push(
             self.dataset_id,
             bulk_func,
             retrieve_chunk_size=retrieve_chunksize,
@@ -539,3 +539,20 @@ class Series(APIClient):
             raise ValueError(f"{other.field} must be an attribute of {self.dataset_id}")
 
         return self._get_pandas_series() + other._get_pandas_series()
+
+    def astype(self, type: Any):
+        type = str(type)
+
+        def typecast(documents):
+            for document in documents:
+                if "int" in type:
+                    document[self.field] = int(document[self.field])
+                elif "str" in type:
+                    document[self.field] = str(document[self.field])
+                elif "float" in type:
+                    document[self.field] = float(document[self.field])
+                elif "bool" in type:
+                    document[self.field] = bool(document[self.field])
+            return documents
+
+        self.bulk_apply(typecast)
