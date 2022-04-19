@@ -2,8 +2,8 @@ from relevanceai._api import APIClient
 
 
 class Filter(APIClient):
-    def __init__(self, field, dataset_id, condition, condition_value):
-        super().__init__()
+    def __init__(self, field, dataset_id, condition, condition_value, **kwargs):
+        super().__init__(**kwargs)
 
         self.field = field
         self.dataset_id = dataset_id
@@ -18,10 +18,8 @@ class Filter(APIClient):
     def get(self):
         return [
             {
-                "condition": self.condition,
-                "filter_type": "exact_match"
-                if self.dtype is "numeric"
-                else "word_match",
+                "field": self.field,
+                "filter_type": "numeric" if self.dtype == "numeric" else "exact_match",
                 "condition": self.condition,
                 "condition_value": self.condition_value,
             }

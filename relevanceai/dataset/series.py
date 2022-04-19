@@ -542,21 +542,61 @@ class Series(APIClient):
         return self._get_pandas_series() + other._get_pandas_series()
 
     def __eq__(self, other):
-        filter = Filter(self.field, self.dataset_id, "==", other)
+        filter = Filter(
+            self.field,
+            self.dataset_id,
+            "==",
+            other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def __ne__(self, other):
+        filter = Filter(
+            self.field,
+            self.dataset_id,
+            "!=",
+            other,
+            credentials=self.credentials,
+        )
         return filter.get()
 
     def __lt__(self, other):
-        filter = Filter(self.field, self.dataset_id, "<", other)
+        filter = Filter(
+            self.field,
+            self.dataset_id,
+            "<",
+            other,
+            credentials=self.credentials,
+        )
         return filter.get()
 
     def __gt__(self, other):
-        filter = Filter(self.field, self.dataset_id, ">", other)
+        filter = Filter(
+            self.field,
+            self.dataset_id,
+            ">",
+            other,
+            credentials=self.credentials,
+        )
         return filter.get()
 
     def __le__(self, other):
-        filter = Filter(self.field, self.dataset_id, "<=", other)
+        filter = Filter(
+            self.field,
+            self.dataset_id,
+            "<=",
+            other,
+            credentials=self.credentials,
+        )
         return filter.get()
 
     def __ge__(self, other):
-        filter = Filter(self.field, self.dataset_id, ">=", other)
+        filter = Filter(
+            self.field,
+            self.dataset_id,
+            ">=",
+            other,
+            credentials=self.credentials,
+        )
         return filter.get()
