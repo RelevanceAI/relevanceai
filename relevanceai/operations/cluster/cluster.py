@@ -293,7 +293,7 @@ class ClusterOps(APIClient, BaseOps):
         return cluster_labels
 
     def _get_centroid_documents(
-        self, vectors: np.ndarray, labels: List[str]
+        self, vectors: np.ndarray, labels: List[str], vector_field: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         centroid_documents = []
 
@@ -305,10 +305,16 @@ class ClusterOps(APIClient, BaseOps):
 
         for centroid, vectors in centroids.items():
             centroid_vector = np.array(vectors).mean(0).tolist()
-            centroid_document = dict(
-                _id=centroid,
-                centroid_vector=centroid_vector,
-            )
+            if vector_field:
+                centroid_document = {
+                    "_id": centroid,
+                    vector_field: centroid_vector,
+                }
+            else:
+                centroid_document = dict(
+                    _id=centroid,
+                    centroid_vector=centroid_vector,
+                )
             centroid_documents.append(centroid_document)
 
         return centroid_documents
@@ -379,7 +385,9 @@ class ClusterOps(APIClient, BaseOps):
             docs=documents,
         )
 
-        centroid_documents = self._get_centroid_documents(vectors, labels)
+        centroid_documents = self._get_centroid_documents(
+            vectors, labels, vector_field=vector_field
+        )
 
         return centroid_documents, documents
 
@@ -445,11 +453,6 @@ class ClusterOps(APIClient, BaseOps):
             vector_field=vector_field,
         )
 
-        # TODO: need to change this to an update_where
-        # self.datasets.documents.update_where(
-        #     dataset_id,
-        #     update={}
-        # )
         print("Updating cluster labels")
         results = self._update_documents(
             dataset_id=dataset_id,
@@ -468,11 +471,19 @@ class ClusterOps(APIClient, BaseOps):
             from relevanceai.reports.cluster.report import ClusterReport
 
             centroids = self.get_field_across_documents(
-                vector_field, centroid_documents
+                vector_field, centroid_documents, missing_treatment="raise_error"
             )
-            X = self.get_field_across_documents(vector_field, documents)
 
-            cluster_labels = self.get_field_across_documents("_id", centroid_documents)
+            X = self.get_field_across_documents(
+                vector_field, documents, missing_treatment=self.outlier_value
+            )
+
+            cluster_labels = self.get_field_across_documents(
+                self.cluster_field, documents, missing_treatment=-1
+            )
+
+            if len(cluster_labels) != len(X):
+                raise ValueError("Damn son. How you like them apples.")
 
             report = ClusterReport(
                 X=X,
@@ -484,8 +495,13 @@ class ClusterOps(APIClient, BaseOps):
             )
 
             response = self.reports.clusters.create(
-                name=report_name, report=self.json_encoder(report)
+                name=report_name, report=self.json_encoder(report.internal_report)
             )
+
+            if verbose:
+                print(
+                    f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+                )
 
         # link back to dashboard
         if verbose:

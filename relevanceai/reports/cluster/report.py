@@ -201,16 +201,17 @@ class ClusterReport(DocUtils):
         if isinstance(centroid_vectors, (list, np.ndarray)):
             warnings.warn(Warning.CENTROID_VECTORS)
 
-    # def _typecheck_model(self, model):
-    #     # Warns users that their model may not be supported
-    #     # this may not be necessary and is removable in future
-    #     if is_hdbscan_available():
-    #         if "hdbscan" in str(type(model)):
-    #             return
-    #     if is_sklearn_available():
-    #         if "sklearn" in str(type(model)):
-    #             return
-    #     warnings.warn(Warning.MODEL_NOT_SUPPORTED)
+    def _typecheck_model(self, model, verbose: bool = False):
+        # Warns users that their model may not be supported
+        # this may not be necessary and is removable in future
+        if is_hdbscan_available():
+            if "hdbscan" in str(type(model)):
+                return
+        if is_sklearn_available():
+            if "sklearn" in str(type(model)):
+                return
+        if verbose:
+            warnings.warn(Warning.MODEL_NOT_SUPPORTED)
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
