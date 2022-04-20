@@ -608,7 +608,7 @@ class Operations(APIClient):
 
         # After you have created an app
         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
-        print(f"You can now access your deployable at {url}.")
+        print(f"You can now access your deployable at {url}")
         return url
 
     @track
