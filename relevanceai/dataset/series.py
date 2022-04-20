@@ -5,7 +5,7 @@ from relevanceai.constants.warning import Warning
 import pandas as pd
 import numpy as np
 
-from typing import Dict, List, Union, Callable, Optional
+from typing import Any, Dict, List, Union, Callable, Optional
 
 from tqdm import tqdm
 
@@ -541,7 +541,7 @@ class Series(APIClient):
 
         return self._get_pandas_series() + other._get_pandas_series()
 
-    def __eq__(self, other):
+    def __eq__(self, other: Union[str, float, int, bool, None]):
         if self.field == "_id":
             filter = Filter(
                 field=self.field,
@@ -561,7 +561,7 @@ class Series(APIClient):
             )
         return filter.get()
 
-    def __ne__(self, other):
+    def __ne__(self, other: Union[str, float, int, bool, None]):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -571,7 +571,7 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def __lt__(self, other):
+    def __lt__(self, other: Union[str, float, int, bool, None]):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -581,7 +581,7 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def __gt__(self, other):
+    def __gt__(self, other: Union[str, float, int, bool, None]):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -591,7 +591,7 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def __le__(self, other):
+    def __le__(self, other: Union[str, float, int, bool, None]):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -601,7 +601,7 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def __ge__(self, other):
+    def __ge__(self, other: Union[str, float, int, bool, None]):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -611,7 +611,7 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def contains(self, other):
+    def contains(self, other: Any):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -644,7 +644,7 @@ class Series(APIClient):
         )
         return filter.get()
 
-    def date(self, other):
+    def date(self, other: Any):
         filter = Filter(
             field=self.field,
             dataset_id=self.dataset_id,
@@ -654,6 +654,16 @@ class Series(APIClient):
             credentials=self.credentials,
         )
         return filter.get()
+
+    def categories(self, other: List[Any]):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            filter_type="categories",
+            condition="==",
+            condition_value=other,
+            credentials=self.credentials,
+        )
 
     def filter(self, **kwargs):
         return [kwargs]
