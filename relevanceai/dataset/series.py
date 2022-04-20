@@ -670,7 +670,7 @@ class Series(APIClient):
 
     def set_dtype(self, dtype):
         metadata = self.datasets.metadata(self.dataset_id)["results"]
-        metadata["adv_schema"][self.field] = dtype
+        metadata[self.field] = dtype
         self.datasets.post_metadata(
             self.dataset_id,
             metadata=metadata,

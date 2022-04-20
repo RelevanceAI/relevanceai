@@ -136,3 +136,9 @@ class Dataset(IO, Read, Write, Operations):
 
         """
         return PROJECTOR_APP_LINK.format(self.dataset_id)
+
+    def set_dtypes(self, mapping):
+        self.datasets.post_metadata(
+            self.dataset_id,
+            metadata=mapping,
+        )

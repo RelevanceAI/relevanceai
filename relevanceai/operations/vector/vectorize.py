@@ -163,6 +163,11 @@ class VectorizeHelpers(APIClient):
             filters=filters,
         )
 
+    def _one_hot(self, array):
+        onehot = np.zeros((array.size, array.max() + 1))
+        onehot[np.arange(array.size), array] = 1
+        return onehot
+
 
 class VectorizeOps(VectorizeHelpers):
     def __init__(
@@ -212,10 +217,9 @@ class VectorizeOps(VectorizeHelpers):
             if dtype is not None:
                 schema[column] = dtype
 
-        adv_schema = self.datasets.metadata(self.dataset_id)["results"]["adv_schema"]
+        adv_schema = self.datasets.metadata(self.dataset_id)["results"]
         for col, dtype in adv_schema.items():
-            if dtype == "category":
-                schema[col] = dtype
+            schema[col] = dtype
 
         return schema
 
@@ -237,13 +241,30 @@ class VectorizeOps(VectorizeHelpers):
             for field, dtype in self.detailed_schema.items()
             if dtype == "category"
         ]
-        # facets = self.datasets.facets(self.dataset_id)["results"]
-        # stats = {
-        #     field: (facets[field]["avg"] - facets[field]["min"])
-        #     / (facets[field]["max"] - facets[field]["min"])
-        #     for field in [field.replace(" ", "%20") for field in numeric_fields]
-        # }
         return categorical_fields
+
+    def _get_tokens(self, categorical_fields) -> Dict[str, int]:
+        id2token = {
+            field: {
+                value: index for index, value in enumerate(self._get_u_values(field))
+            }
+            for field in categorical_fields
+        }
+        return id2token
+
+    def _get_u_values(self, field):
+        agg = self.datasets.aggregate(
+            self.dataset_id,
+            groupby=[
+                {
+                    "name": "field",
+                    "field": field,
+                }
+            ],
+            metrics=[],
+        )["results"]
+        u_values = [None] + [field["field"] for field in agg]
+        return u_values
 
     def _get_fields(self, fields: List[str]) -> Dict[str, str]:
         return {
@@ -425,7 +446,7 @@ class VectorizeOps(VectorizeHelpers):
     ):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,
-            select_fields=vector_fields + numeric_fields,
+            select_fields=vector_fields + numeric_fields + categorical_fields,
             show_progress_bar=show_progress_bar,
         )
         schema = self._get_schema()
@@ -459,11 +480,42 @@ class VectorizeOps(VectorizeHelpers):
         else:
             numbers = np.array([])
 
-        if numbers.size > 0 and vectors.size == 0:
-            vectors = numbers
+        if categorical_fields:
+            token_mapping = self._get_tokens(categorical_fields)
+            tokens = np.array(
+                [
+                    np.array(
+                        [
+                            token_mapping[cat_field][document[cat_field]]
+                            if cat_field in document
+                            else 0
+                            for cat_field in categorical_fields
+                        ]
+                    )
+                    for document in documents
+                ]
+            )
+            onehots = []
+            for column in range(tokens.shape[1]):
+                onehot = self._one_hot(tokens[:, column])
+                onehots.append(onehot)
+            onehots = np.concatenate(onehots, axis=-1)
 
-        elif numbers.size > 0 and vectors.size > 0:
-            vectors = np.hstack([vectors, numbers])
+        else:
+            onehots = np.array([])
+
+        data = []
+
+        if numbers.size > 0:
+            data.append(numbers)
+
+        if vectors.size > 0:
+            data.append(vectors)
+
+        if onehots.size > 0:
+            data.append(onehots)
+
+        vectors = np.concatenate(data, axis=-1)
 
         from sklearn.preprocessing import StandardScaler
 
