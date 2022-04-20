@@ -752,6 +752,8 @@ class Read(Statistics):
         )
 
         for doc in null_docs:
-            null_count[field] = len(n_docs)
+            for field in doc:
+                if doc[field] is None:
+                    null_count[field] += 1
 
         return null_count
