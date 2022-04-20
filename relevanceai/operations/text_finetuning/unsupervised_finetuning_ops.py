@@ -24,7 +24,7 @@ You can find out more about GPL from: https://github.com/UKPLab/gpl
         batch_size_gpl=16,
         output_path="trained_model",
     )
-    ops.operate(dataset=ds, text_field="detail_desc")
+    ops.run(dataset=ds, text_field="detail_desc")
 
 """
 
@@ -142,7 +142,7 @@ class GPLOps(APIClient, BaseOps):
         elif output_path:
             return SentenceTransformer(self.output_path)
 
-    def operate(
+    def run(
         self,
         dataset: str,
         text_field: str,
@@ -167,7 +167,7 @@ class GPLOps(APIClient, BaseOps):
             # !pip install -q gpl
             from relevanceai.operations.text_finetuning.unsupervised_finetuning_ops import GPLOps
             ops = GPLOps.from_dataset(ds)
-            ops.operate(dataset=ds, text_field="product_title")
+            ops.run(dataset=ds, text_field="product_title")
 
         Parameters
         -------------
