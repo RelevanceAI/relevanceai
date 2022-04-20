@@ -36,6 +36,71 @@ class Filter(APIClient):
 
         new_filters = (dataset["rank"] >= 2) + (dataset["rank"] < 3)
 
+    Exists
+    ==============
+
+    Exists filtering can be accessed in a simple way.
+
+    .. code-block::
+
+        old_filters = [
+            {
+                "field": "brand",
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " "
+            }
+        ]
+
+        new_filters = dataset["brand"].exists()
+
+        old_filters = [
+            {
+                "field": "brand",
+                "filter_type": "exists",
+                "condition": "!=",
+                "condition_value": " "
+            }
+        ]
+
+        new_filters = dataset["brand"].not_exists()
+
+    Contains
+    ==============
+
+    Same with contains.
+
+    .. code-block::
+
+        old_filters = [
+            {
+                "field": "description",
+                "filter_type": "contains",
+                "condition": "==",
+                "condition_value": "Durian BID"
+            }
+        ]
+
+        new_filters = dataset["description"].contains("Durian BID")
+
+    Dates
+    ==============
+
+    Date filtering
+
+    .. code-block::
+
+        old_filters = [
+            {
+                "field": ""insert_date_"",
+                "filter_type": "date",
+                "condition": "==",
+                "condition_value": "2020-07-01"
+            }
+        ]
+
+        new_filters = dataset["_insert_date"].date(2020-07-01")
+
     """
 
     def __init__(self, field, dataset_id, condition, condition_value, **kwargs):
