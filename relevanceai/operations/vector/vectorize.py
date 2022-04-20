@@ -481,6 +481,7 @@ class VectorizeOps(VectorizeHelpers):
         show_progress_bar: bool = True,
         detailed_schema: Optional[Dict[str, Any]] = None,
         filters: Optional[list] = None,
+        **kwargs,
     ) -> None:
         if filters is None:
             filters = []
