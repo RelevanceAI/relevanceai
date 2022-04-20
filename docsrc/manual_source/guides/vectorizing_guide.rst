@@ -1,5 +1,5 @@
 🔢 Vectorizing Guide
-===================
+====================
 
 Firstly, we must import what we need from Relevance AI
 
@@ -92,7 +92,7 @@ applied.
 
 .. parsed-literal::
 
-    No fields were given, vectorizing the following field(s):
+    No fields were given, vectorizing the following field(s): 
     Concatenating the following fields to form a feature vector: PetalLengthCm, PetalWidthCm, SepalLengthCm, SepalWidthCm
 
 
@@ -272,3 +272,4 @@ or
 
     ✅ All documents inserted/edited successfully.
     The following vector fields were added: _dim512_feature_vector_
+
