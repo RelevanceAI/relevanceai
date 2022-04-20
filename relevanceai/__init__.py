@@ -26,7 +26,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "2.1.1"
+__version__ = "2.1.2"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()
