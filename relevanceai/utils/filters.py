@@ -77,6 +77,21 @@ class Filter(APIClient):
 
         new_filters = dataset["description"].contains("Durian BID")
 
+    Date filtering
+
+    .. code-block::
+
+        old_filters = [
+            {
+                "field": ""insert_date_"",
+                "filter_type": "date",
+                "condition": "==",
+                "condition_value": "2020-07-01"
+            }
+        ]
+
+        new_filters = dataset["_insert_date"].date(2020-07-01")
+
     """
 
     def __init__(self, field, dataset_id, condition, condition_value, **kwargs):
