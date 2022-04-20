@@ -126,9 +126,9 @@ class Operations(APIClient):
         fields: List[str]
             A list of fields to vectorize
 
-        encoders : Dict[str, List[Any]]
-            A dictionary that creates a mapping between your unstructured fields
-            and a list of encoders to run over those unstructured fields
+        f"{_unstruc_field_}_encoder : List[Any]
+            For however many `things` you wish to vectorize, specify the unstructured field,
+            followed by encoder to denote the kind of encoder that will be used to vectorize this field
 
         Returns
         -------

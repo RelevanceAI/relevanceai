@@ -173,15 +173,17 @@ class VectorizeOps(VectorizeHelpers):
     def __init__(
         self,
         credentials: Credentials,
-        encoders: Optional[Dict[str, List[Any]]] = None,
         log_file: str = "vectorize.logs",
         create_feature_vector: bool = False,
+        **kwargs,
     ):
         super().__init__(log_file=log_file, credentials=credentials)
 
         self.feature_vector = create_feature_vector
-        self.encoders = encoders if encoders is not None else {}
         self.model_names: List[str] = []
+
+        for encoder_type, encoder in kwargs.items():
+            setattr(self, encoder_type, encoder)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
