@@ -36,6 +36,9 @@ class Filter(APIClient):
 
         new_filters = (dataset["rank"] >= 2) + (dataset["rank"] < 3)
 
+    Exists
+    ==============
+
     Exists filtering can be accessed in a simple way.
 
     .. code-block::
@@ -62,6 +65,9 @@ class Filter(APIClient):
 
         new_filters = dataset["brand"].not_exists()
 
+    Contains
+    ==============
+
     Same with contains.
 
     .. code-block::
@@ -76,6 +82,9 @@ class Filter(APIClient):
         ]
 
         new_filters = dataset["description"].contains("Durian BID")
+
+    Dates
+    ==============
 
     Date filtering
 
