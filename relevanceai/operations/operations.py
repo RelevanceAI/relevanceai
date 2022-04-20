@@ -116,6 +116,7 @@ class Operations(APIClient):
     def vectorize(
         self,
         fields: List[str] = None,
+        filters: Optional[List] = None,
         **kwargs,
     ):
         """
@@ -161,16 +162,19 @@ class Operations(APIClient):
             # text_field_1_use_vector_, text_field_1_use_vector_
 
         """
-
+        if filters is None:
+            filters = []
         from relevanceai.operations.vector import VectorizeOps
 
         ops = VectorizeOps(
             credentials=self.credentials,
             **kwargs,
         )
+
         return ops(
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
+            filter=filters,
         )
 
     def advanced_vectorize(self, vectorizers: List[Vectorizer]):

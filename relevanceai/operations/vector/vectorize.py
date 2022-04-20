@@ -480,8 +480,11 @@ class VectorizeOps(VectorizeHelpers):
         fields: List[str],
         show_progress_bar: bool = True,
         detailed_schema: Optional[Dict[str, Any]] = None,
+        filters: Optional[list] = None,
+        **kwargs,
     ) -> None:
-
+        if filters is None:
+            filters = []
         self.dataset_id = dataset_id
         self.schema = self._get_schema()
         if detailed_schema is not None:
@@ -524,7 +527,7 @@ class VectorizeOps(VectorizeHelpers):
                 )
             )
 
-            filters = self._get_filters(
+            filters += self._get_filters(
                 fields=list(field_types),
                 vector_fields=vector_fields,
             )
