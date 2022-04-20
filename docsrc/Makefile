@@ -22,7 +22,6 @@ help:
 build_docs:
 	rm -rf source
 	cp -rf manual_source source
-	make build_guides
 	sphinx-apidoc -o source/ ../relevanceai && make clean && make html
 
 build_guides:

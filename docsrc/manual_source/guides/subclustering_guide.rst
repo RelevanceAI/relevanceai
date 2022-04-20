@@ -14,7 +14,7 @@ Developer-first vector platform for ML teams
    :target: https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/main/guides/subclustering_guide.ipynb
 
 🤖 Basic Sub-clustering
-======================
+=======================
 
 This notebook is a quick guide on how to use Relevance AI for
 subclustering. Subclustering allows users to infinitely drill down into
@@ -36,11 +36,11 @@ value under ``Authorization token`` and paste it here
 .. code:: ipython3
 
     from relevanceai import Client
-
+    
     client = Client()
 
 🚣 Inserting data
-----------------
+-----------------
 
 We use a sample ecommerce dataset - with vectors
 ``product_image_clip_vector_`` and ``product_title_clip_vector_``
@@ -49,7 +49,7 @@ already encoded for us.
 .. code:: ipython3
 
     from relevanceai.utils.datasets import get_ecommerce_dataset_encoded
-
+    
     docs = get_ecommerce_dataset_encoded()
     docs[0].keys()
 
@@ -110,7 +110,7 @@ already encoded for us.
 
 
 🍒 Running the initial clustering approach:
-------------------------------------------
+-------------------------------------------
 
 Let’s instantiate a clustering model and set an appropriate parent alias
 for ``n_clusters``. Let’s vectorize over all available vector fields.
@@ -120,14 +120,14 @@ for ``n_clusters``. Let’s vectorize over all available vector fields.
     n_clusters = 10
     vector_field = "product_image_clip_vector_"
     parent_alias = f"kmeans_{n_clusters}"
-
+    
     from sklearn.cluster import KMeans
-
+    
     model = KMeans(n_clusters=n_clusters)
-
+    
     for v in vector_fields:
         cluster_ops = ds.cluster(model, vector_fields=[v], alias=parent_alias)
-
+    
     ds.schema
 
 
@@ -204,24 +204,24 @@ could further break down these clusters using subclustering.
    Screen Shot 2022-04-07 at 2.41.57 pm.png
 
 🫐 Running sub-clustering
-------------------------
+-------------------------
 
 .. code:: ipython3
 
     vector_field = "product_image_clip_vector_"
-
+    
     """
-    Given the parent field - we now run subclustering
-    Let's dive deeper to view 3 subclusters
+    Given the parent field - we now run subclustering 
+    Let's dive deeper to view 3 subclusters 
     """
-
+    
     subcluster_n_clusters = 3
     subcluster_alias = f"{parent_alias}_{subcluster_n_clusters}"
-
+    
     from sklearn.cluster import KMeans
-
+    
     model = KMeans(n_clusters=subcluster_n_clusters)
-
+    
     ds.subcluster(
         model=model,
         parent_field=parent_field,
@@ -361,7 +361,7 @@ could further break down these clusters using subclustering.
     """
     We can see the new subcluster in the schema
     """
-
+    
     ds.schema
 
 
@@ -407,7 +407,7 @@ You can also view your subcluster results using
 .. code:: ipython3
 
     subcluster_field = f"_cluster_.{vector_field}.{subcluster_alias}"
-
+    
     ds[subcluster_field]
 
 
@@ -432,11 +432,11 @@ You can also view your subcluster results using
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -556,7 +556,7 @@ You can also view your subcluster results using
 
 .. raw:: html
 
-
+    
       <div id="df-f8a769dd-bdb1-424b-b1c5-8e61b203602b">
         <div class="colab-df-container">
           <div>
@@ -564,11 +564,11 @@ You can also view your subcluster results using
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-
+    
         .dataframe tbody tr th {
             vertical-align: top;
         }
-
+    
         .dataframe thead th {
             text-align: right;
         }
@@ -663,21 +663,21 @@ You can also view your subcluster results using
           <button class="colab-df-convert" onclick="convertToInteractive('df-f8a769dd-bdb1-424b-b1c5-8e61b203602b')"
                   title="Convert this dataframe to an interactive table."
                   style="display:none;">
-
+    
       <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
            width="24px">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
       </svg>
           </button>
-
+    
       <style>
         .colab-df-container {
           display:flex;
           flex-wrap:wrap;
           gap: 12px;
         }
-
+    
         .colab-df-convert {
           background-color: #E8F0FE;
           border: none;
@@ -689,18 +689,18 @@ You can also view your subcluster results using
           padding: 0 0 0 0;
           width: 32px;
         }
-
+    
         .colab-df-convert:hover {
           background-color: #E2EBFA;
           box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
           fill: #174EA6;
         }
-
+    
         [theme=dark] .colab-df-convert {
           background-color: #3B4455;
           fill: #D2E3FC;
         }
-
+    
         [theme=dark] .colab-df-convert:hover {
           background-color: #434B5C;
           box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -708,20 +708,20 @@ You can also view your subcluster results using
           fill: #FFFFFF;
         }
       </style>
-
+    
           <script>
             const buttonEl =
               document.querySelector('#df-f8a769dd-bdb1-424b-b1c5-8e61b203602b button.colab-df-convert');
             buttonEl.style.display =
               google.colab.kernel.accessAllowed ? 'block' : 'none';
-
+    
             async function convertToInteractive(key) {
               const element = document.querySelector('#df-f8a769dd-bdb1-424b-b1c5-8e61b203602b');
               const dataTable =
                 await google.colab.kernel.invokeFunction('convertToInteractive',
                                                          [key], {});
               if (!dataTable) return;
-
+    
               const docLinkHtml = 'Like what you see? Visit the ' +
                 '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
                 + ' to learn more about interactive tables.';
@@ -740,13 +740,13 @@ You can also view your subcluster results using
 
 
 🧐 Looking into our subclusters
-------------------------------
+-------------------------------
 
 Let’s build a subcluster lookup to help us further analyze our clusters
 
 ::
 
-   # subclusters =
+   # subclusters = 
    # {
    #  'parent_cluster_id': {
    #     'subcluster_id': [ subcluster_docs ]
@@ -757,8 +757,8 @@ Let’s build a subcluster lookup to help us further analyze our clusters
 
     from collections import defaultdict
     from pprint import pprint
-
-
+    
+    
     def build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias):
         ## Let's retrieve our docs again with the new subcluster field
         docs = ds.get_all_documents(include_vector=True)
@@ -769,15 +769,15 @@ Let’s build a subcluster lookup to help us further analyze our clusters
             if "." not in k
             if not any([f in k for f in ["_vector_", "insert_date_"]])
         ]
-
+    
         for d in docs:
             parent_cluster = d["_cluster_"][vector_field][parent_alias]
             subcluster = d["_cluster_"][vector_field][subcluster_alias]
             doc = {k: v for k, v in d.items() if k in doc_fields}
             subclusters[parent_cluster].setdefault(subcluster, []).append(doc)
         return subclusters
-
-
+    
+    
     subclusters_3 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
 
 
@@ -791,27 +791,27 @@ Let’s build a subcluster lookup to help us further analyze our clusters
 
     from relevanceai import show_json
     from random import sample
-
-
+    
+    
     def get_subcluster(subclusters, cluster_id, subcluster_ids=[]):
         if not subcluster_ids:
             subcluster_ids=list(subclusters[cluster_id].keys())
         return {k:v for k, v in subclusters[cluster_id].items() if k in subcluster_ids}
-
-
+    
+    
     def sample_subclusters(subclusters, cluster_id,  subcluster_id=None, n_docs=10):
         docs=[]
         subcluster_ids=list(subclusters[cluster_id].keys()) if not subcluster_id else [subcluster_id]
-
+    
         for subcluster_id in subcluster_ids:
         docs += get_subcluster(subclusters, cluster_id, subcluster_id)[subcluster_id]
-
+    
         print(f'==========')
         print(f"Cluster: {cluster_id}")
         print(f"Subclusters: {' '.join(subcluster_ids)}")
         print(f'Displaying {n_docs} of {len(docs)} documents ... ')
         print(f'==========')
-
+    
         display(
           show_json(
               sample(docs, n_docs),
@@ -819,9 +819,9 @@ Let’s build a subcluster lookup to help us further analyze our clusters
               text_fields=['query', 'product_title', 'product_price'],
             )
         )
-
+    
     # We can see from sampling the cluster itself, we can see a mixtures of items in our cluster
-
+    
     cluster_id = 'cluster-0'
     sample_subclusters(subclusters_3, cluster_id )
 
@@ -831,7 +831,7 @@ Let’s build a subcluster lookup to help us further analyze our clusters
     ==========
     Cluster: cluster-0
     Subclusters: cluster-0-0 cluster-0-1 cluster-0-2
-    Displaying 10 of 89 documents ...
+    Displaying 10 of 89 documents ... 
     ==========
 
 
@@ -930,9 +930,9 @@ more well-defined groups -
 
     cluster_id = "cluster-0"
     subcluster_id = "cluster-0-0"
-
+    
     print(f"Sampling {subcluster_alias} in {vector_field} ...")
-
+    
     sample_subclusters(subclusters_3, cluster_id, subcluster_id)
 
 
@@ -942,7 +942,7 @@ more well-defined groups -
     ==========
     Cluster: cluster-0
     Subclusters: cluster-0-0
-    Displaying 10 of 45 documents ...
+    Displaying 10 of 45 documents ... 
     ==========
 
 
@@ -1035,7 +1035,7 @@ more well-defined groups -
 
 
 🍇 You can then run sub-clustering again on a separate parent alias!
--------------------------------------------------------------------
+--------------------------------------------------------------------
 
 If we find our initial subclusters are insufficient, we can run
 subclustering again even more clusters to drill down down even furher.
@@ -1046,18 +1046,18 @@ constantly referring back to the parent alias.
 .. code:: ipython3
 
     """
-    Given the parent field - we now run subclustering
+    Given the parent field - we now run subclustering 
     Before, we subclustered on 3 subclusters
-    Let's dive even deeper to view 5 subclusters
+    Let's dive even deeper to view 5 subclusters 
     """
-
+    
     subcluster_n_clusters = 5
     subcluster_alias = f"{parent_alias}_{subcluster_n_clusters}"
-
+    
     from sklearn.cluster import KMeans
-
+    
     model = KMeans(n_clusters=subcluster_n_clusters)
-
+    
     ds.subcluster(
         model=model,
         parent_field=parent_field,
@@ -1199,10 +1199,10 @@ subclusters
 .. code:: ipython3
 
     subclusters_5 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
-
+    
     cluster_id = "cluster-0"
     subcluster_id = "cluster-0-0"
-
+    
     print(f"Sampling {subcluster_alias} in {vector_field} ...")
     sample_subclusters(subclusters_5, cluster_id, subcluster_id)
 
@@ -1213,7 +1213,7 @@ subclusters
     ==========
     Cluster: cluster-0
     Subclusters: cluster-0-0
-    Displaying 10 of 13 documents ...
+    Displaying 10 of 13 documents ... 
     ==========
 
 
