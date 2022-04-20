@@ -212,6 +212,11 @@ class VectorizeOps(VectorizeHelpers):
             if dtype is not None:
                 schema[column] = dtype
 
+        adv_schema = self.datasets.metadata(self.dataset_id)["results"]["adv_schema"]
+        for col, dtype in adv_schema.items():
+            if dtype == "category":
+                schema[col] = dtype
+
         return schema
 
     def _get_numeric_fields(self) -> List[str]:
@@ -225,6 +230,20 @@ class VectorizeOps(VectorizeHelpers):
         #     for field in [field.replace(" ", "%20") for field in numeric_fields]
         # }
         return numeric_fields
+
+    def _get_categorical_fields(self) -> List[str]:
+        categorical_fields = [
+            field
+            for field, dtype in self.detailed_schema.items()
+            if dtype == "category"
+        ]
+        # facets = self.datasets.facets(self.dataset_id)["results"]
+        # stats = {
+        #     field: (facets[field]["avg"] - facets[field]["min"])
+        #     / (facets[field]["max"] - facets[field]["min"])
+        #     for field in [field.replace(" ", "%20") for field in numeric_fields]
+        # }
+        return categorical_fields
 
     def _get_fields(self, fields: List[str]) -> Dict[str, str]:
         return {
@@ -401,6 +420,7 @@ class VectorizeOps(VectorizeHelpers):
         self,
         vector_fields: List[str],
         numeric_fields: List[str],
+        categorical_fields: List[str],
         show_progress_bar: bool,
     ):
         documents = self._get_all_documents(
@@ -490,6 +510,7 @@ class VectorizeOps(VectorizeHelpers):
             self.detailed_schema = self._get_detailed_schema()
 
         numeric_fields = self._get_numeric_fields()
+        categorical_fields = self._get_categorical_fields()
 
         if fields:
             if "numeric" in fields:
@@ -567,6 +588,7 @@ class VectorizeOps(VectorizeHelpers):
             self._insert_document_vectors(
                 vector_fields=vector_fields,
                 numeric_fields=numeric_fields,
+                categorical_fields=categorical_fields,
                 show_progress_bar=show_progress_bar,
             )
 

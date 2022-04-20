@@ -667,3 +667,11 @@ class Series(APIClient):
 
     def filter(self, **kwargs):
         return [kwargs]
+
+    def set_dtype(self, dtype):
+        metadata = self.datasets.metadata(self.dataset_id)["results"]
+        metadata["adv_schema"][self.field] = dtype
+        self.datasets.post_metadata(
+            self.dataset_id,
+            metadata=metadata,
+        )
