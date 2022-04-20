@@ -14,6 +14,7 @@ from relevanceai.constants import MAX_CACHESIZE
 from relevanceai.utils.cache import lru_cache
 from relevanceai.utils.decorators.analytics import track
 from relevanceai._api import APIClient
+from relevanceai.utils.filters import Filter
 
 
 class Series(APIClient):
@@ -539,3 +540,109 @@ class Series(APIClient):
             raise ValueError(f"{other.field} must be an attribute of {self.dataset_id}")
 
         return self._get_pandas_series() + other._get_pandas_series()
+
+    def __eq__(self, other):
+        if self.field == "_id":
+            filter = Filter(
+                field=self.field,
+                dataset_id=self.dataset_id,
+                filter_type="ids",
+                condition="==",
+                condition_value=other,
+                credentials=self.credentials,
+            )
+        else:
+            filter = Filter(
+                field=self.field,
+                dataset_id=self.dataset_id,
+                condition="==",
+                condition_value=other,
+                credentials=self.credentials,
+            )
+        return filter.get()
+
+    def __ne__(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            condition="!=",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def __lt__(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            condition="<",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def __gt__(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            condition=">",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def __le__(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            condition="<=",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def __ge__(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            condition=">=",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def contains(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            filter_type="contains",
+            condition="==",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def exists(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            filter_type="exists",
+            condition="==",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def date(self, other):
+        filter = Filter(
+            field=self.field,
+            dataset_id=self.dataset_id,
+            filter_type="date",
+            condition="==",
+            condition_value=other,
+            credentials=self.credentials,
+        )
+        return filter.get()
+
+    def filter(self, **kwargs):
+        return [kwargs]

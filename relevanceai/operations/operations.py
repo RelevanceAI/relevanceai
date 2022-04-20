@@ -123,19 +123,12 @@ class Operations(APIClient):
 
         Parameters
         ----------
-        image_fields: List[str]
-            A list of image fields to vectorize
+        fields: List[str]
+            A list of fields to vectorize
 
-        text_fields: List[str]
-            A list of text fields to vectorize
-
-        image_encoder
-            A deep learning image encoder from the vectorhub library. If no
-            encoder is specified, a default encoder (Clip2Vec) is loaded.
-
-        text_encoder
-            A deep learning text encoder from the vectorhub library. If no
-            encoder is specified, a default encoder (USE2Vec) is loaded.
+        encoders : Dict[str, List[Any]]
+            A dictionary that creates a mapping between your unstructured fields
+            and a list of encoders to run over those unstructured fields
 
         Returns
         -------
@@ -149,9 +142,6 @@ class Operations(APIClient):
         .. code-block::
 
             from relevanceai import Client
-            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-
-            text_model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
 
             client = Client()
 
@@ -159,10 +149,16 @@ class Operations(APIClient):
             ds = client.Dataset(dataset_id)
 
             ds.vectorize(
-                image_fields=["image_field_1", "image_field_2"],
-                text_fields=["text_field"],
-                text_model=text_model
+                fields=["text_field_1", "text_field_2"],
+                encoders={
+                    "text": ["mpnet", "use"]
+                }
             )
+
+            # This operation with create 4 new vector fields
+            #
+            # text_field_1_mpnet_vector_, text_field_1_mpnet_vector_
+            # text_field_1_use_vector_, text_field_1_use_vector_
 
         """
 
