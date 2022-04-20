@@ -3,6 +3,7 @@
 On Unix/Linux systems, run:
 
 ```
+make build_guides
 make build_docs
 ```
 
