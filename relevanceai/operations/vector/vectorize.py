@@ -115,25 +115,6 @@ class VectorizeHelpers(APIClient):
         self.model_names.append(model_name.lower())
         return model
 
-    def _get_dtype(self, value: Any) -> Union[str, None]:
-        if isinstance(value, str):
-            if "https://" in value:
-                if any(img_ext in value for img_ext in IMG_EXTS):
-                    return "_image_"
-
-            elif "$" in value:
-                try:
-                    float(value.replace("$", ""))
-                    return "numeric"
-
-                except:
-                    return "_text_"
-
-            elif len(value.strip().split(" ")) > 1:
-                return "_text_"
-
-        return None
-
     def _reduce(self, vectors: np.ndarray, n_components: int = 512) -> np.ndarray:
         from sklearn.decomposition import PCA
 
@@ -142,26 +123,6 @@ class VectorizeHelpers(APIClient):
         )
         reduced = reducer.fit_transform(vectors)
         return reduced
-
-    def _get_model_names(self, dtype: str) -> List[Any]:
-        if dtype == "_text_":
-            if "text" in self.encoders:
-                return self.encoders["text"]
-
-            else:
-                self.encoders["text"] = ["use"]
-                return self.encoders["text"]
-
-        elif dtype == "_image_":
-            if "image" in self.encoders:
-                return self.encoders["image"]
-
-            else:
-                self.encoders["image"] = ["clip"]
-                return self.encoders["image"]
-
-        else:
-            raise ValueError
 
     def _get_models(self, dtype: str) -> List[Any]:
 
@@ -189,17 +150,6 @@ class VectorizeHelpers(APIClient):
             raise ValueError(
                 "We currently do not support a default model for this datatype"
             )
-
-    def _get_remaining(self, filters: List[Dict[str, Any]]) -> int:
-        return self.get_number_of_documents(
-            dataset_id=self.dataset_id,
-            filters=filters,
-        )
-
-    def _one_hot(self, array):
-        onehot = np.zeros((array.size, array.max() + 1))
-        onehot[np.arange(array.size), array] = 1
-        return onehot
 
 
 class VectorizeOps(VectorizeHelpers):
@@ -232,29 +182,6 @@ class VectorizeOps(VectorizeHelpers):
 
     def _get_metadata(self) -> Dict[str, List[str]]:
         return self.datasets.metadata(self.dataset_id)["results"]
-
-    def _get_tokens(self, categorical_fields) -> Dict[str, Dict[Any, int]]:
-        id2token = {
-            field: {
-                value: index for index, value in enumerate(self._get_u_values(field))
-            }
-            for field in categorical_fields
-        }
-        return id2token
-
-    def _get_u_values(self, field):
-        agg = self.datasets.aggregate(
-            self.dataset_id,
-            groupby=[
-                {
-                    "name": "field",
-                    "field": field,
-                }
-            ],
-            metrics=[],
-        )["results"]
-        u_values = [None] + [field["field"] for field in agg]
-        return u_values
 
     def _validate_fields(self, fields: List[str]):
         foreign_fields = []
