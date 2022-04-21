@@ -172,6 +172,8 @@ class ClusterOps(APIClient, BaseOps):
                 alias = self.model_name
 
             Warning.MISSING_ALIAS.format(alias=alias)
+
+        print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
 
     def _get_package(self, model):
