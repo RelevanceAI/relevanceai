@@ -653,6 +653,9 @@ class Operations(APIClient):
         chunksize: int = 20,
         workflow_alias: str = "sentiment",
         notes=None,
+        include_shap_values: bool = False,
+        positive_sentiment_name: str = "positive",
+        max_number_of_shap_documents: int = 5,
     ):
         """
         Easily add sentiment to your dataset
@@ -694,6 +697,9 @@ class Operations(APIClient):
             chunksize=chunksize,
             workflow_alias=workflow_alias,
             notes=notes,
+            include_shap_values=include_shap_values,
+            positive_sentiment_name=positive_sentiment_name,
+            max_number_of_shap_documents=max_number_of_shap_documents,
         )
 
     @track
