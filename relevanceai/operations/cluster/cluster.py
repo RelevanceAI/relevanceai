@@ -508,14 +508,17 @@ class ClusterOps(APIClient, BaseOps):
                 include_typecheck=False,
             )
 
-            response = self.reports.clusters.create(
-                name=report_name, report=self.json_encoder(report.internal_report)
-            )
-
-            if verbose:
-                print(
-                    f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+            try:
+                response = self.reports.clusters.create(
+                    name=report_name, report=self.json_encoder(report.internal_report)
                 )
+
+                if verbose:
+                    print(
+                        f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+                    )
+            except Exception as e:
+                print("Error creating cluster report! " + str(e))
 
         # link back to dashboard
         if verbose:
