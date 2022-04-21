@@ -895,7 +895,7 @@ class LabelOps(Write, BaseOps):
 
         vector_fields_str = ".".join(sorted(vector_fields))
         field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
-        all_clusters = self.facets([field], page_size=num_clusters)
+        all_clusters = self.datasets.facets([field], page_size=num_clusters)
         cluster_counters = {}
         if "results" in all_clusters:
             all_clusters = all_clusters["results"]

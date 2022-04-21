@@ -7,8 +7,8 @@ are the closest.
 
 .. code:: ipython3
 
-    In [1]: %load_ext autoreload
-    In [2]: %autoreload 2
+    %load_ext autoreload
+    %autoreload 2
 
 Installation
 ------------
@@ -26,7 +26,7 @@ Installation
     client = Client()
 
 You can retrieve the ecommerce dataset from
-https://relevanceai.readthedocs.io/en/development/core/available\_datasets.html#relevanceai.utils.datasets.get\_ecommerce\_1\_dataset.
+https://relevanceai.readthedocs.io/en/development/core/available_datasets.html#relevanceai.utils.datasets.get_ecommerce_1_dataset.
 
 .. code:: ipython3
 
@@ -38,7 +38,10 @@ Centroid Heatmap
 .. code:: ipython3
 
     from relevanceai.operations.viz.cluster import ClusterVizOps
-    cluster_ops = ClusterVizOps.from_dataset(ds, alias="main-cluster", vector_fields=["product_image_clip_vector_"])
+    
+    cluster_ops = ClusterVizOps.from_dataset(
+        ds, alias="main-cluster", vector_fields=["product_image_clip_vector_"]
+    )
 
 .. code:: ipython3
 
@@ -75,7 +78,7 @@ and inspect those clusters:
 
 .. code:: ipython3
 
-    closest = cluster_ops.closest()['results']
+    closest = cluster_ops.closest()["results"]
 
 
 .. parsed-literal::
@@ -88,7 +91,9 @@ shoes and if we need that granularity.
 
 .. code:: ipython3
 
-    cluster_ops.show_closest(cluster_ids=['cluster-1', 'cluster-5'], image_fields=['product_image'])
+    cluster_ops.show_closest(
+        cluster_ids=["cluster-1", "cluster-5"], image_fields=["product_image"]
+    )
 
 
 .. parsed-literal::
@@ -148,3 +153,5 @@ shoes and if we need that granularity.
         </tr>
       </tbody>
     </table>
+
+

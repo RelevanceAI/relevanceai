@@ -1,7 +1,7 @@
 Guides
 ------------
 
-Relevance AI guides are written to help users get a feel for how to use 
+Relevance AI guides are written to help users get a feel for how to use
 Relevance AI. It is designed to teach Python developers, data scientists
 and machine learning engineers how best to unlock Relevance AI.
 
@@ -14,8 +14,8 @@ and machine learning engineers how best to unlock Relevance AI.
 .. toctree::
     :caption: Vectorize
 
-    how_to_vectorize_guide
-    
+    vectorizing_guide
+
 .. toctree::
     :caption: Cluster
 
@@ -26,7 +26,7 @@ and machine learning engineers how best to unlock Relevance AI.
 
 .. toctree::
     :caption: Aggregation
-    
+
     aggregation_guide
 
 .. toctree::

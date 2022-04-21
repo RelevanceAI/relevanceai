@@ -13,4 +13,4 @@ You can find more about domain adaptation here.
 https://sbert.net/examples/domain_adaptation/README.html
 
 
-.. automodule:: relevanceai.operations.text_finetuning.text_finetuning_ops
+.. automodule:: relevanceai.operations.text_finetuning.unsupervised_finetuning_ops

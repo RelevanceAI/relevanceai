@@ -186,7 +186,7 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
         labels = [label_maps[l] for l in labels]
         return text_data, labels
 
-    def operate(
+    def run(
         self,
         text_field: str,
         label_field: str,

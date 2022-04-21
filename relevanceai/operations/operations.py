@@ -1,4 +1,3 @@
-from re import I
 from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
@@ -25,6 +24,7 @@ class Operations(APIClient):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        include_cluster_report: bool = True,
         **kwargs,
     ):
         """
@@ -65,10 +65,12 @@ class Operations(APIClient):
             alias=alias,
             **kwargs,
         )
-        return ops(
+        ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
         )
+        return ops
 
     @track
     def reduce_dims(
@@ -103,7 +105,7 @@ class Operations(APIClient):
             n_components=n_components,
             **kwargs,
         )
-        return ops.operate(
+        return ops.run(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
@@ -113,6 +115,7 @@ class Operations(APIClient):
     def vectorize(
         self,
         fields: List[str] = None,
+        filters: Optional[List] = None,
         **kwargs,
     ):
         """
@@ -120,19 +123,12 @@ class Operations(APIClient):
 
         Parameters
         ----------
-        image_fields: List[str]
-            A list of image fields to vectorize
+        fields: List[str]
+            A list of fields to vectorize
 
-        text_fields: List[str]
-            A list of text fields to vectorize
-
-        image_encoder
-            A deep learning image encoder from the vectorhub library. If no
-            encoder is specified, a default encoder (Clip2Vec) is loaded.
-
-        text_encoder
-            A deep learning text encoder from the vectorhub library. If no
-            encoder is specified, a default encoder (USE2Vec) is loaded.
+        encoders : Dict[str, List[Any]]
+            A dictionary that creates a mapping between your unstructured fields
+            and a list of encoders to run over those unstructured fields
 
         Returns
         -------
@@ -146,9 +142,6 @@ class Operations(APIClient):
         .. code-block::
 
             from relevanceai import Client
-            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-
-            text_model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
 
             client = Client()
 
@@ -156,22 +149,31 @@ class Operations(APIClient):
             ds = client.Dataset(dataset_id)
 
             ds.vectorize(
-                image_fields=["image_field_1", "image_field_2"],
-                text_fields=["text_field"],
-                text_model=text_model
+                fields=["text_field_1", "text_field_2"],
+                encoders={
+                    "text": ["mpnet", "use"]
+                }
             )
 
-        """
+            # This operation with create 4 new vector fields
+            #
+            # text_field_1_mpnet_vector_, text_field_1_mpnet_vector_
+            # text_field_1_use_vector_, text_field_1_use_vector_
 
+        """
+        if filters is None:
+            filters = []
         from relevanceai.operations.vector import VectorizeOps
 
         ops = VectorizeOps(
             credentials=self.credentials,
             **kwargs,
         )
+
         return ops(
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
+            filter=filters,
         )
 
     def advanced_vectorize(self, vectorizers: List[Vectorizer]):
@@ -609,7 +611,7 @@ class Operations(APIClient):
 
         # After you have created an app
         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
-        print(f"You can now access your deployable at {url}.")
+        print(f"You can now access your deployable at {url}")
         return url
 
     @track
@@ -893,11 +895,15 @@ class Operations(APIClient):
         from relevanceai.operations.text_finetuning import GPLOps
 
         ops = GPLOps.from_dataset(dataset=self)
-        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)
+        return ops.run(dataset=self, text_field=text_field, title_field=title_field)
 
     @track
     def train_text_model_with_tripleloss(
-        self, text_field: str, label_field: str, output_dir: str
+        self,
+        text_field: str,
+        label_field: str,
+        output_dir: str = "trained_model",
+        percentage_for_dev=None,
     ):
         """
         Supervised training a text model using tripleloss
@@ -936,6 +942,10 @@ class Operations(APIClient):
         )
 
         ops = SupervisedTripleLossFinetuneOps.from_dataset(dataset=self)
-        return ops.operate(
-            text_field=text_field, label_field=label_field, output_dir=output_dir
+        return ops.run(
+            dataset=self,
+            text_field=text_field,
+            label_field=label_field,
+            output_dir=output_dir,
+            percentage_for_dev=percentage_for_dev,
         )

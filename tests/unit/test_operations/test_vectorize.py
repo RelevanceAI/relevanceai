@@ -39,7 +39,7 @@ class TestVectorizeOps:
             create_id=True,
         )
 
-        dataset.vectorize(feature_vector=True)
+        dataset.vectorize(create_feature_vector=True)
 
         assert True
 
@@ -50,11 +50,11 @@ class TestVectorizeOps:
             create_id=True,
         )
 
-        dataset.vectorize(feature_vector=True)
+        dataset.vectorize(create_feature_vector=True)
 
         assert "_dim4_feature_vector_" in dataset.schema
 
-        dataset.vectorize(fields=["numeric"], feature_vector=True)
+        dataset.vectorize(fields=["numeric"], create_feature_vector=True)
 
         assert "_dim4_feature_vector_" in dataset.schema
 
@@ -90,7 +90,7 @@ class TestVectorizeOps:
                     CustomTextEncoder(),
                 ],
             ),
-            feature_vector=True,
+            create_feature_vector=True,
         )
 
         vectors = [

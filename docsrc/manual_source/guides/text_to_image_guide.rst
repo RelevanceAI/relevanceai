@@ -1,5 +1,5 @@
 🌇 Text To Image Search QuickStart
-=================================
+==================================
 
 |Open In Colab|
 
@@ -34,7 +34,6 @@ Installation Requirements
     !pip install ftfy regex tqdm
     !pip install git+https://github.com/openai/CLIP.git
 
-
 Client Setup
 ------------
 
@@ -45,6 +44,7 @@ value under ``Activation token`` and paste it here
 .. code:: ipython3
 
     from relevanceai import Client
+    
     client = Client()
 
 Text-to-image search
@@ -64,7 +64,7 @@ Alternatively, you can use your own dataset for the different steps.
 
     import pandas as pd
     from relevanceai.utils.datasets import get_ecommerce_dataset_clean
-
+    
     # Retrieve our sample dataset. - This comes in the form of a list of documents.
     documents = get_ecommerce_dataset_clean()
     pd.DataFrame.from_dict(documents).head()
@@ -81,20 +81,25 @@ between text and image pairs. In the code below we set up CLIP.
     import clip
     import requests
     from PIL import Image
-
+    
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load("ViT-B/32", device=device)
-
+    
     # First - let's encode the image based on CLIP
     def encode_image(image):
         # Let us download the image and then preprocess it
-        image = preprocess(Image.open(requests.get(image, stream=True).raw)).unsqueeze(0).to(device)
+        image = (
+            preprocess(Image.open(requests.get(image, stream=True).raw))
+            .unsqueeze(0)
+            .to(device)
+        )
         # We then feed our processed image through the neural net to get a vector
         with torch.no_grad():
-          image_features = model.encode_image(image)
+            image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
-
+    
+    
     # Next - let's encode text based on CLIP
     def encode_text(text):
         # let us get text and then tokenize it
@@ -103,7 +108,6 @@ between text and image pairs. In the code below we set up CLIP.
         with torch.no_grad():
             text_features = model.encode_text(text)
         return text_features.tolist()[0]
-
 
 
 .. parsed-literal::
@@ -116,20 +120,21 @@ mins
 
 .. code:: ipython3
 
-    documents = documents[:500] # only 500 docs to make the process faster
+    documents = documents[:500]  # only 500 docs to make the process faster
 
 .. code:: ipython3
 
     def encode_image_document(d):
-      try:
-        d['product_image_clip_vector_'] = encode_image(d['product_image'])
-      except:
-        pass
-
+        try:
+            d["product_image_clip_vector_"] = encode_image(d["product_image"])
+        except:
+            pass
+    
+    
     # Let's import TQDM for a nice progress bar!
     from tqdm.auto import tqdm
+    
     [encode_image_document(d) for d in tqdm(documents)]
-
 
 3) Insert
 ---------
@@ -168,33 +173,23 @@ encoder to be able to search among the similarly generated vectors.
 
 .. code:: ipython3
 
-
-    query = 'for my baby daughter'
+    query = "for my baby daughter"
     query_vector = encode_text(query)
-    multivector_query=[
-        { "vector": query_vector, "fields": ["product_image_clip_vector_"]}
-    ]
-    results = ds.vector_search(
-        multivector_query=multivector_query,
-        page_size=5
-    )
-
+    multivector_query = [{"vector": query_vector, "fields": ["product_image_clip_vector_"]}]
+    results = ds.vector_search(multivector_query=multivector_query, page_size=5)
 
 You can use our json shower library to observe the search result in a
 notebook as shown below:
 
 .. code:: ipython3
 
-
     from relevanceai import show_json
-
-    print('=== QUERY === ')
+    
+    print("=== QUERY === ")
     print(query)
-
-    print('=== RESULTS ===')
+    
+    print("=== RESULTS ===")
     show_json(results, image_fields=["product_image"], text_fields=["product_title"])
-
-
 
 
 .. parsed-literal::
