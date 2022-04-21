@@ -614,7 +614,9 @@ class ClusterOps(APIClient, BaseOps):
         )
 
     @staticmethod
-    def get_cluster_summary(summarizer, docs: Dict, summarize_fields: List[str]):
+    def get_cluster_summary(
+        summarizer, docs: Dict, summarize_fields: List[str], max_length: int = 100
+    ):
         def _clean_sentence(s):
             s = (
                 s.replace(". .", ".")
@@ -638,7 +640,9 @@ class ClusterOps(APIClient, BaseOps):
                 ]
                 summary.append(
                     {
-                        f: summarizer(" ".join(summary_fields))[0]["summary_text"]
+                        f: summarizer(" ".join(summary_fields), max_length=max_length)[
+                            0
+                        ]["summary_text"]
                         .replace(" .", ".")
                         .strip()
                     }
@@ -669,6 +673,7 @@ class ClusterOps(APIClient, BaseOps):
         cluster_properties_filter: Optional[Dict] = {},
         model_name: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: Optional[str] = None,
+        max_length: int = 100,
         **kwargs,
     ):
         """
@@ -727,7 +732,8 @@ class ClusterOps(APIClient, BaseOps):
 
         if not tokenizer:
             tokenizer = model_name
-        summarizer = TransformersLMSummarizer(model_name, tokenizer)
+
+        summarizer = TransformersLMSummarizer(model_name, tokenizer, **kwargs)
 
         center_docs = self.list_closest(
             select_fields=summarize_fields,
@@ -749,7 +755,10 @@ class ClusterOps(APIClient, BaseOps):
         )
 
         cluster_summary = self.get_cluster_summary(
-            summarizer, docs=center_docs, summarize_fields=summarize_fields
+            summarizer,
+            docs=center_docs,
+            summarize_fields=summarize_fields,
+            max_length=max_length,
         )
 
         return {"results": cluster_summary}
