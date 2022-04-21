@@ -252,13 +252,11 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
         self,
         dataset: Any,
         base_model: str = "distilbert-base-uncased",
-        output_path: str = "trained_model",
         **kwargs,
     ):
         cls = self(
             credentials=dataset.credentials,
             base_model=base_model,
-            output_path=output_path,
             **kwargs,
         )
         cls.dataset_id = dataset.dataset_id
