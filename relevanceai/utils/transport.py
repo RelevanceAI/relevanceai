@@ -22,7 +22,7 @@ from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
 from relevanceai.utils.config_mixin import ConfigMixin
 
-DO_NOT_REPEAT_STATUS_CODES = {400, 404, 422}
+DO_NOT_REPEAT_STATUS_CODES = {400, 401, 413, 404, 422}
 
 
 class Transport(JSONEncoderUtils, ConfigMixin):
