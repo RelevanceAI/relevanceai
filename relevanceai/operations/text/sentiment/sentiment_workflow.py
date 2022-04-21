@@ -26,6 +26,7 @@ class SentimentWorkflow(Workflow, SentimentOps):
         chunksize: int = 20,
         workflow_alias: str = "sentiment",
         notes=None,
+        refresh: bool = False,
         include_shap_values: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: int = 5,
@@ -47,4 +48,5 @@ class SentimentWorkflow(Workflow, SentimentOps):
             output_field=output_field,
             log_to_file=log_to_file,
             chunksize=chunksize,
+            refresh=refresh,
         )
