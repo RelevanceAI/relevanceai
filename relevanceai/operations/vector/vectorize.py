@@ -170,16 +170,16 @@ class VectorizeOps(VectorizeHelpers):
         credentials: Credentials,
         encoders: Optional[Dict[str, List[Any]]] = None,
         log_file: str = "vectorize.logs",
-        feature_vector: bool = False,
+        create_feature_vector: bool = False,
     ):
         super().__init__(log_file=log_file, credentials=credentials)
 
-        self.feature_vector = feature_vector
+        self.feature_vector = create_feature_vector
         self.encoders = encoders if encoders is not None else {}
         self.model_names: List[str] = []
 
     def __call__(self, *args, **kwargs):
-        return self.operate(*args, **kwargs)
+        return self.run(*args, **kwargs)
 
     def _get_schema(self):
         return self.datasets.schema(self.dataset_id)
@@ -474,14 +474,17 @@ class VectorizeOps(VectorizeHelpers):
 
         self._update_vector_metadata(metadata=[document_vector_])
 
-    def operate(
+    def run(
         self,
         dataset_id: str,
         fields: List[str],
         show_progress_bar: bool = True,
         detailed_schema: Optional[Dict[str, Any]] = None,
+        filters: Optional[list] = None,
+        **kwargs,
     ) -> None:
-
+        if filters is None:
+            filters = []
         self.dataset_id = dataset_id
         self.schema = self._get_schema()
         if detailed_schema is not None:
@@ -524,7 +527,7 @@ class VectorizeOps(VectorizeHelpers):
                 )
             )
 
-            filters = self._get_filters(
+            filters += self._get_filters(
                 fields=list(field_types),
                 vector_fields=vector_fields,
             )

@@ -3,27 +3,13 @@
 
 
 def get_silhouette_grade(silhouette_score):
-    if silhouette_score > 0.9:
-        return "S"
-    if silhouette_score > 0.7:
-        return "A"
-    if silhouette_score > 0.6:
-        return "B"
-    if silhouette_score > 0.4:
-        return "C"
-    if silhouette_score > 0.2:
-        return "D"
-    if silhouette_score > 0.0:
-        return "D"
-    if silhouette_score > -0.2:
-        return "E"
-    if silhouette_score > -0.4:
-        return "E"
-    if silhouette_score > -0.6:
-        return "F"
-    if silhouette_score > -0.8:
-        return "F"
-    return "F"
+    # grades = ["F"] + [f"{grade}{sign}" for grade in ["E", "D", "C", "B", "A"] for sign in ["-", "", "+"]] + ["S"]
+    grades = ["F", "E", "D", "C", "B", "A", "S"]
+    scores = [(2 * i) / len(grades) for i in range(1, len(grades) + 1)]
+    for score, grade in zip(scores, grades):
+        if (silhouette_score + 1) < score:
+            return grade
+    return "N/A"
 
 
 def dunn_index(X, y):

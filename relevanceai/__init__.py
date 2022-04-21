@@ -11,6 +11,7 @@ from relevanceai.operations.cluster import ClusterOps
 from relevanceai.operations.dr.dim_reduction_ops import (
     ReduceDimensionsOps,
 )
+from relevanceai.operations.vector import Base2Vec
 
 # Fix the name
 from relevanceai.utils import datasets
@@ -25,7 +26,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "2.1.0"
+__version__ = "2.1.3"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()

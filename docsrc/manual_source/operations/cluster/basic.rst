@@ -94,7 +94,7 @@ API Reference
 
 .. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.aggregate
 
-.. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.operate
+.. automethod:: relevanceai.operations.cluster.cluster.Clusterops.run
 
 .. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.list_closest
 
