@@ -90,9 +90,11 @@ class ExampleDatasets:
     ):
         select_fields = [] if select_fields is None else select_fields
         if csv:
-            data = pd.read_csv(url, index_col=0, encoding=encoding).to_dict(
-                orient="records"
-            )
+            data = pd.read_csv(
+                url,
+                index_col=0,
+                encoding=encoding,
+            ).to_dict(orient="records")
         else:
             try:
                 data = pd.read_excel(url, index_col=0).to_dict(orient="records")

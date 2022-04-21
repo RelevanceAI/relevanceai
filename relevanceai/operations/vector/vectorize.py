@@ -18,11 +18,12 @@ from relevanceai.operations.vector.base import Base2Vec
 class VectorizeHelpers(APIClient):
     def __init__(self, log_file, credentials: Credentials):
         self.log_file = log_file
+        self.credentials = credentials
         super().__init__(credentials)
 
     def _get_encoder(self, model: Any) -> Any:
         @log(fn=self.log_file)
-        def get_encoder(model):
+        def get_encoder(model, dataset_id, credentials):
             if isinstance(model, str):
                 model = model.lower().replace(" ", "").replace("_", "")
                 model_name = model
@@ -94,6 +95,11 @@ class VectorizeHelpers(APIClient):
 
                     model = BitMedium2Vec()
 
+                elif model == "onehot":
+                    from relevanceai.operations.vector.onehot import OneHot
+
+                    model = OneHot(dataset_id=dataset_id, credentials=credentials)
+
             else:
                 # TODO: this needs to be referenced from relevance.constants.errors
                 raise ValueError("ModelNotSupported")
@@ -105,7 +111,7 @@ class VectorizeHelpers(APIClient):
 
             return model, model_name
 
-        model, model_name = get_encoder(model)
+        model, model_name = get_encoder(model, self.dataset_id, self.credentials)
         self.model_names.append(model_name.lower())
         return model
 
@@ -157,6 +163,33 @@ class VectorizeHelpers(APIClient):
         else:
             raise ValueError
 
+    def _get_models(self, dtype: str) -> List[Any]:
+
+        if hasattr(self, dtype + "encoders"):
+            models = getattr(self, dtype + "encoders")
+
+        else:
+            models = self._get_default_model(dtype)
+
+        models = [self._get_encoder(model) for model in models]
+        return models
+
+    def _get_default_model(self, dtype):
+
+        if dtype == "_text_":
+            return ["use"]
+
+        elif dtype == "_image_":
+            return ["clip"]
+
+        elif dtype == "_category_":
+            return ["onehot"]
+
+        else:
+            raise ValueError(
+                "We currently do not support a default model for this datatype"
+            )
+
     def _get_remaining(self, filters: List[Dict[str, Any]]) -> int:
         return self.get_number_of_documents(
             dataset_id=self.dataset_id,
@@ -183,7 +216,13 @@ class VectorizeOps(VectorizeHelpers):
         self.model_names: List[str] = []
 
         for encoder_type, encoder in kwargs.items():
-            setattr(self, encoder_type, encoder)
+            if "_encoders" in encoder_type:
+                assert isinstance(encoder, list)
+                setattr(self, encoder_type, encoder)
+
+            elif "_encoder" in encoder_type:
+                assert not isinstance(encoder, list)
+                setattr(self, encoder_type + "s", [encoder])
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -191,61 +230,10 @@ class VectorizeOps(VectorizeHelpers):
     def _get_schema(self):
         return self.datasets.schema(self.dataset_id)
 
-    def _get_detailed_schema(self):
-        schema = self.datasets.schema(dataset_id=self.dataset_id)
+    def _get_metadata(self) -> Dict[str, List[str]]:
+        return self.datasets.metadata(self.dataset_id)["results"]
 
-        text_fields = [column for column, dtype in schema.items() if dtype == "text"]
-
-        for column in text_fields:
-            values = self._get_documents(
-                dataset_id=self.dataset_id,
-                select_fields=[column],
-                filters=[
-                    {
-                        "field": column,
-                        "filter_type": "exists",
-                        "condition": "==",
-                        "condition_value": "",
-                    }
-                ],
-                number_of_documents=1,
-            )
-            try:
-                value = values[0][column]
-            except:
-                continue
-
-            dtype = self._get_dtype(value)
-            if dtype is not None:
-                schema[column] = dtype
-
-        adv_schema = self.datasets.metadata(self.dataset_id)["results"]
-        for col, dtype in adv_schema.items():
-            schema[col] = dtype
-
-        return schema
-
-    def _get_numeric_fields(self) -> List[str]:
-        numeric_fields = [
-            field for field, dtype in self.schema.items() if dtype == "numeric"
-        ]
-        # facets = self.datasets.facets(self.dataset_id)["results"]
-        # stats = {
-        #     field: (facets[field]["avg"] - facets[field]["min"])
-        #     / (facets[field]["max"] - facets[field]["min"])
-        #     for field in [field.replace(" ", "%20") for field in numeric_fields]
-        # }
-        return numeric_fields
-
-    def _get_categorical_fields(self) -> List[str]:
-        categorical_fields = [
-            field
-            for field, dtype in self.detailed_schema.items()
-            if dtype == "category"
-        ]
-        return categorical_fields
-
-    def _get_tokens(self, categorical_fields) -> Dict[str, int]:
+    def _get_tokens(self, categorical_fields) -> Dict[str, Dict[Any, int]]:
         id2token = {
             field: {
                 value: index for index, value in enumerate(self._get_u_values(field))
@@ -268,15 +256,6 @@ class VectorizeOps(VectorizeHelpers):
         u_values = [None] + [field["field"] for field in agg]
         return u_values
 
-    def _get_fields(self, fields: List[str]) -> Dict[str, str]:
-        return {
-            field: self.detailed_schema[field]
-            for field in fields
-            if any(
-                dtype in self.detailed_schema[field] for dtype in ["_image_", "_text_"]
-            )
-        }
-
     def _validate_fields(self, fields: List[str]):
         foreign_fields = []
         for field in fields:
@@ -288,24 +267,25 @@ class VectorizeOps(VectorizeHelpers):
                     f"The following fields are invalid: {', '.join(foreign_fields)}"
                 )
 
-    def _init_encoders(self, fields: List[str]):
-        dtypes = [self.detailed_schema[field] for field in fields]
-
-        for dtype in ["image", "text"]:
-            if f"_{dtype}_" in dtypes:
-                models = self._get_model_names(dtype=f"_{dtype}_")
-                for index, model in enumerate(models):
-                    self.encoders[dtype][index] = self._get_encoder(model=model)
+    def _init_encoders(self):
+        for dtype, fields in self.metadata.items():
+            if dtype != "_numeric_" and fields:
+                models = self._get_models(dtype)
+                setattr(self, dtype + "encoders", models)
 
     def _get_vector_fields(self, fields: List[str]) -> List[str]:
         vector_fields = []
 
-        for field in fields:
-            dtype = self.detailed_schema[field].replace("_", "")
-            encoders: List[Base2Vec] = self.encoders[dtype]
-            for encoder in encoders:
-                vector_field = encoder.get_default_vector_field_name(field)
-                vector_fields.append(vector_field)
+        for dtype, fields in self.metadata.items():
+            if dtype != "_numeric_" and fields:
+                encoders: List[Base2Vec] = getattr(self, dtype + "encoders")
+
+                new_fields = [
+                    encoder.get_default_vector_field_name(field)
+                    for encoder in encoders
+                    for field in fields
+                ]
+                vector_fields += new_fields
 
         return vector_fields
 
@@ -405,17 +385,16 @@ class VectorizeOps(VectorizeHelpers):
     def _encode_documents(
         documents,
         encoders: Dict[str, List[Base2Vec]],
-        field_types: Dict[str, str],
+        field_types: Dict[str, List[str]],
     ):
         updated_documents = documents
 
         for dtype, vectorizers in encoders.items():
             for vectorizer in vectorizers:
-                fields = [
-                    field
-                    for field, field_type in field_types.items()
-                    if f"_{dtype}_" == field_type
-                ]
+                try:
+                    fields = field_types[dtype]
+                except:
+                    raise ValueError(f"No fields labeled as {dtype}")
                 updated_documents = vectorizer.encode_documents(
                     documents=updated_documents,
                     fields=fields,
@@ -441,83 +420,26 @@ class VectorizeOps(VectorizeHelpers):
 
     def _insert_document_vectors(
         self,
-        vector_fields: List[str],
-        numeric_fields: List[str],
-        categorical_fields: List[str],
+        fields: List[str],
         show_progress_bar: bool,
     ):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,
-            select_fields=vector_fields + numeric_fields + categorical_fields,
+            select_fields=fields,
             show_progress_bar=show_progress_bar,
+            include_vector=True,
         )
-        schema = self._get_schema()
-        if vector_fields:
-            vectors = np.hstack(
-                [
-                    np.array(
-                        [
-                            self.get_field(vector_field, document)
-                            if self.is_field(vector_field, document)
-                            else [1e-7 for _ in range(schema[vector_field]["vector"])]
-                            for document in documents
-                        ]
-                    )
-                    for vector_field in vector_fields
-                ]
-            )
-        else:
-            vectors = np.array([])
 
-        if numeric_fields:
-            numbers = np.array(
-                [
-                    [
-                        document[field] if field in document else 0
-                        for field in numeric_fields
-                    ]
-                    for document in documents
-                ]
-            )
-        else:
-            numbers = np.array([])
-
-        if categorical_fields:
-            token_mapping = self._get_tokens(categorical_fields)
-            tokens = np.array(
-                [
-                    np.array(
-                        [
-                            token_mapping[cat_field][document[cat_field]]
-                            if cat_field in document
-                            else 0
-                            for cat_field in categorical_fields
-                        ]
-                    )
-                    for document in documents
-                ]
-            )
-            onehots = []
-            for column in range(tokens.shape[1]):
-                onehot = self._one_hot(tokens[:, column])
-                onehots.append(onehot)
-            onehots = np.concatenate(onehots, axis=-1)
-
-        else:
-            onehots = np.array([])
-
-        data = []
-
-        if numbers.size > 0:
-            data.append(numbers)
-
-        if vectors.size > 0:
-            data.append(vectors)
-
-        if onehots.size > 0:
-            data.append(onehots)
-
-        vectors = np.concatenate(data, axis=-1)
+        vectors = np.concatenate(
+            [
+                np.concatenate(
+                    [np.array(doc[field]).reshape(1, -1) for field in fields],
+                    axis=-1,
+                )
+                for doc in documents
+            ],
+            axis=0,
+        )
 
         from sklearn.preprocessing import StandardScaler
 
@@ -553,46 +475,61 @@ class VectorizeOps(VectorizeHelpers):
         dataset_id: str,
         fields: List[str],
         show_progress_bar: bool = True,
-        detailed_schema: Optional[Dict[str, Any]] = None,
     ) -> None:
 
         self.dataset_id = dataset_id
-        self.schema = self._get_schema()
-        if detailed_schema is not None:
-            self.detailed_schema = detailed_schema
-        else:
-            self.detailed_schema = self._get_detailed_schema()
 
-        numeric_fields = self._get_numeric_fields()
-        categorical_fields = self._get_categorical_fields()
+        self.schema = self._get_schema()
+        self.metadata = self._get_metadata()
 
         if fields:
-            if "numeric" in fields:
-                if len(fields) == 1:
-                    field_types = {}
+            for dtype in self.metadata.keys():
+                if dtype == "_numeric_" and "_numeric_" in fields:
+                    fields += self.metadata[dtype]
+                    fields.remove("_numeric_")
+
+                elif dtype == "_category_" and "_category_" in fields:
+                    fields += self.metadata[dtype]
+                    fields.remove("_category_")
 
                 else:
-                    field_types = self._get_fields(fields)
-
-            else:
-                numeric_fields = [field for field in numeric_fields if field in fields]
-                field_types = self._get_fields(fields)
-
+                    select_fields = []
+                    for field in fields:
+                        if field in self.metadata[dtype]:
+                            select_fields.append(field)
+                    self.metadata[dtype] = select_fields
+            unstruc_fields = [
+                field
+                for type in [
+                    value for key, value in self.metadata.items() if key != "_numeric_"
+                ]
+                for field in type
+            ]
         else:
-            fields_list = list(self.detailed_schema)
-            field_types = self._get_fields(fields_list)
+            fields = [
+                field
+                for type in [value for value in self.metadata.values()]
+                for field in type
+            ]
+            unstruc_fields = [
+                field
+                for type in [
+                    value for key, value in self.metadata.items() if key != "_numeric_"
+                ]
+                for field in type
+            ]
             print(
                 "No fields were given, vectorizing the following field(s): {}".format(
-                    ", ".join(list(field_types))
+                    ", ".join(unstruc_fields)
                 )
             )
 
-        if field_types:
-            self._validate_fields(list(field_types))
+        if unstruc_fields:
+            self._validate_fields(fields)
 
-            self._init_encoders(list(field_types))
+            self._init_encoders()
 
-            vector_fields = self._get_vector_fields(list(field_types))
+            vector_fields = self._get_vector_fields(unstruc_fields)
             print(
                 "This operation will create the following vector_fields: {}".format(
                     str(vector_fields)
@@ -600,19 +537,34 @@ class VectorizeOps(VectorizeHelpers):
             )
 
             filters = self._get_filters(
-                fields=list(field_types),
+                fields=unstruc_fields,
                 vector_fields=vector_fields,
             )
 
+            encoders = {
+                encoders: getattr(self, encoders + "encoders")
+                for encoders in [
+                    var.replace("encoders", "")
+                    for var in self.__dict__
+                    if "_encoders" in var
+                ]
+            }
+
+            field_types = {
+                dtype: fields
+                for dtype, fields in self.metadata.items()
+                if dtype != "_numeric_" and fields
+            }
+
             updating_args = dict(
-                encoders=self.encoders,
+                encoders=encoders,
                 field_types=field_types,
             )
 
             results = self.pull_update_push(
                 dataset_id=self.dataset_id,
                 update_function=self._encode_documents,
-                select_fields=list(fields),
+                select_fields=fields,
                 filters=filters,
                 show_progress_bar=show_progress_bar,
                 updating_args=updating_args,
@@ -636,13 +588,11 @@ class VectorizeOps(VectorizeHelpers):
         if self.feature_vector:
             print(
                 "Concatenating the following fields to form a feature vector: {}".format(
-                    ", ".join(vector_fields + numeric_fields)
+                    ", ".join(vector_fields + self.metadata["_numeric_"])
                 )
             )
             self._insert_document_vectors(
-                vector_fields=vector_fields,
-                numeric_fields=numeric_fields,
-                categorical_fields=categorical_fields,
+                fields=vector_fields + self.metadata["_numeric_"],
                 show_progress_bar=show_progress_bar,
             )
 

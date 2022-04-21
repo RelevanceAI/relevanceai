@@ -142,7 +142,7 @@ class Dataset(IO, Read, Write, Operations):
         for unstruc_type in unstruc_types:
             if unstruc_type not in mapping:
                 mapping[unstruc_type] = []
-            
+
         self.datasets.post_metadata(
             self.dataset_id,
             metadata=mapping,
