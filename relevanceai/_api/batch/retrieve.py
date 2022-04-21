@@ -18,6 +18,9 @@ from relevanceai.constants.constants import MAX_CACHESIZE
 
 
 class BatchRetrieveClient(APIEndpointsClient, Chunker):
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+
     def _get_documents(
         self,
         dataset_id: str,

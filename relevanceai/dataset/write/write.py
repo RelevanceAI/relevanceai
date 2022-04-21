@@ -21,6 +21,9 @@ from relevanceai.constants.warning import Warning
 
 
 class Write(APIClient):
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+
     @track
     def insert_documents(
         self,
