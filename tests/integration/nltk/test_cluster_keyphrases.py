@@ -1,15 +1,16 @@
 """Testing the cluster keyphrases
 """
 import os
+import pytest
 from relevanceai.client import Client
 from relevanceai.operations.labels.labels import LabelOps
 
-
-def test_cluster_keyphrases(test_client: Client, test_dataset_id: str):
+# @pytest.mark.skip(reason="skipping integration tests for now.")
+def test_cluster_keyphrases(test_client: Client, sample_dataset_id: str):
     os.system("pip install nltk")
-    ds = test_client.Dataset(test_dataset_id)
-    VECTOR_FIELDS = ["sampel_1_vector_"]
-    TEXT_FIELDS = ["category_1"]
+    ds = test_client.Dataset(sample_dataset_id)
+    VECTOR_FIELDS = ["sample_1_vector_"]
+    TEXT_FIELDS = ["category"]
     ALIAS = "sample_label"
 
     label_ops = LabelOps.from_dataset(ds, alias=ALIAS, vector_fields=VECTOR_FIELDS)
