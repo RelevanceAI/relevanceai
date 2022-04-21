@@ -651,6 +651,7 @@ class Operations(APIClient):
         chunksize: int = 20,
         workflow_alias: str = "sentiment",
         notes=None,
+        refresh: bool = False,
     ):
         """
         Easily add sentiment to your dataset
@@ -692,6 +693,7 @@ class Operations(APIClient):
             chunksize=chunksize,
             workflow_alias=workflow_alias,
             notes=notes,
+            refresh=refresh,
         )
 
     @track

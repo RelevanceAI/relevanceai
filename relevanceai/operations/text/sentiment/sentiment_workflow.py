@@ -26,6 +26,7 @@ class SentimentWorkflow(Workflow, SentimentOps):
         chunksize: int = 20,
         workflow_alias: str = "sentiment",
         notes=None,
+        refresh: bool = False,
     ):
         workflow = Workflow(
             self.analyze_sentiment, workflow_alias=workflow_alias, notes=notes
@@ -36,4 +37,5 @@ class SentimentWorkflow(Workflow, SentimentOps):
             output_field=output_field,
             log_to_file=log_to_file,
             chunksize=chunksize,
+            refresh=refresh,
         )

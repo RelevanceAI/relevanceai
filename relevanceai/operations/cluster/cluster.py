@@ -461,6 +461,16 @@ class ClusterOps(APIClient, BaseOps):
         if verbose:
             self._print_app_link()
 
+    def cluster_report(self, X, cluster_labels, centroids):
+        from relevanceai.reports.cluster.report import ClusterReport
+
+        cluster_labels = self.fit_predict(X)
+        centroids = ClusterReport.calculate_centroids(X, cluster_labels)
+        report = ...
+        response = self.store_cluster_report(
+            report_name="kmeans", report=report.internal_report
+        )
+
     @track
     def closest(
         self,
