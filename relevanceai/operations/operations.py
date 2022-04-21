@@ -96,6 +96,17 @@ class Operations(APIClient):
         vector_fields: List[str]
             The list of vector fields to support
 
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.reduce_dims(
+                alias="sample",
+                vector_fields=["sample_1_vector_"],
+                model="umap"
+            )
+
         """
         from relevanceai.operations.dr import ReduceDimensionsOps
 

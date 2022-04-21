@@ -627,7 +627,10 @@ class ClusterOps(APIClient, BaseOps):
 
     @staticmethod
     def get_cluster_summary(
-        summarizer, docs: Dict, summarize_fields: List[str], max_length: int = 100
+        summarizer,
+        docs: Dict,
+        summarize_fields: List[str],
+        max_length: int = 100,
     ):
         def _clean_sentence(s):
             s = (
@@ -650,15 +653,10 @@ class ClusterOps(APIClient, BaseOps):
                     for d in results["results"]
                     if d.get(f) and d[f] not in [" ", "."]
                 ]
-                summary.append(
-                    {
-                        f: summarizer(" ".join(summary_fields), max_length=max_length)[
-                            0
-                        ]["summary_text"]
-                        .replace(" .", ".")
-                        .strip()
-                    }
-                )
+                summary_output = summarizer(
+                    " ".join(summary_fields), max_length=max_length
+                )[0]["summary_text"]
+                summary = summary_output.replace(" .", ".").strip()
             cluster_summary[cluster] = summary
         return cluster_summary
 
