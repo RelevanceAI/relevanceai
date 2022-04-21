@@ -402,8 +402,11 @@ class VectorizeOps(VectorizeHelpers):
         dataset_id: str,
         fields: List[str],
         show_progress_bar: bool = True,
+        filters: Optional[list] = None,
+        **kwargs,
     ) -> None:
-
+        if filters is None:
+            filters = []
         self.dataset_id = dataset_id
 
         self.schema = self._get_schema()
@@ -463,7 +466,7 @@ class VectorizeOps(VectorizeHelpers):
                 )
             )
 
-            filters = self._get_filters(
+            filters += self._get_filters(
                 fields=unstruc_fields,
                 vector_fields=vector_fields,
             )
