@@ -1,5 +1,5 @@
 
 .. toctree::
 
-    exists
     ez_filters
+    exists
