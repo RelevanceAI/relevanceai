@@ -674,6 +674,7 @@ class ClusterOps(APIClient, BaseOps):
         model_name: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: Optional[str] = None,
         max_length: int = 100,
+        deployable_id: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -761,6 +762,19 @@ class ClusterOps(APIClient, BaseOps):
             max_length=max_length,
         )
 
+        if deployable_id is not None:
+            if dataset_id is None:
+                if not hasattr(self, "dataset_id"):
+                    raise ValueError("You need a dataset ID to update.")
+                else:
+                    dataset_id = self.dataset_id
+            configuration = self.deployables.get(deployable_id=deployable_id)
+            configuration["cluster-labels"] = cluster_summary
+            self.deployables.update(
+                deployable_id=deployable_id,
+                dataset_id=dataset_id,
+                configuration=configuration,
+            )
         return {"results": cluster_summary}
 
     @track
