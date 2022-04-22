@@ -28,14 +28,12 @@ class SentimentWorkflow(Workflow, SentimentOps):
         notes=None,
         refresh: bool = False,
         highlight: bool = False,
-        positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: int = 5,
     ):
         def analyze_sentiment(text):
             return self.analyze_sentiment(
                 text,
                 highlight=highlight,
-                positive_sentiment_name=positive_sentiment_name,
                 max_number_of_shap_documents=max_number_of_shap_documents,
             )
 

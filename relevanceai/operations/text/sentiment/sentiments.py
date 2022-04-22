@@ -71,22 +71,20 @@ class SentimentOps(BaseOps):
         return {"LABEL_0": "negative", "LABEL_1": "neutral", "LABEL_2": "positive"}
 
     def analyze_sentiment(
-        self,
-        text,
-        highlight: bool = False,
-        positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: int = 5,
+        self, text, highlight: bool = False, max_number_of_shap_documents: int = 5
     ):
         labels = self.classifier([text])
         ind_max = np.argmax([l["score"] for l in labels[0]])
-        sentiment = labels[0][ind_max]["label"]
+        sentiment = labels[0][ind_max]["label"].strip()
         max_score = labels[0][ind_max]["score"]
-        if sentiment == "neutral":
+        if sentiment.strip() == "neutral":
             overall_sentiment = 0
+        elif sentiment == "positive":
+            overall_sentiment = max_score
+        elif sentiment == "negative":
+            overall_sentiment = -max_score
         else:
-            overall_sentiment = (
-                max_score if sentiment == positive_sentiment_name else -max_score
-            )
+            overall_sentiment = max_score
         if not highlight:
             return {
                 "sentiment": sentiment,

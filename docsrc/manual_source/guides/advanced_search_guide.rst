@@ -14,7 +14,7 @@ Developer-first vector platform for ML teams
    :target: https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/main/guides/advanced_search_guide.ipynb
 
 🔍 Advanced Search
-==================
+=================
 
 Fast Search is Relevance AI’s most complex search endpoint. It combines
 functionality to search using vectors, exact text search with ability to
@@ -68,7 +68,7 @@ value under ``Authorization token`` and paste it here
 
 
 🚣 Inserting data
------------------
+----------------
 
 We use a sample ecommerce dataset - with vectors
 ``product_image_clip_vector_`` and ``product_title_clip_vector_``

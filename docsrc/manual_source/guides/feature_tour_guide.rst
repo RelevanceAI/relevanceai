@@ -1,5 +1,5 @@
 🌋 Quick Feature Tour
-=====================
+====================
 
 |Open In Colab|
 
@@ -25,7 +25,9 @@ Follow the signup flow and get your credentials below otherwise, you can
 sign up/login and find your credentials in the settings
 `here <https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api>`__
 
-.. image:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=131M2Kpz5s9GmhNRnqz6b0l0Pw9DHVRWs
 
 .. code:: python
 
@@ -38,7 +40,9 @@ sign up/login and find your credentials in the settings
     client = Client()
 
 
-.. image:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
 
 2. Create a dataset and insert data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,7 +66,9 @@ Use one of our sample datasets to upload into your own project!
 
 See your dataset in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1nloY4S8R1B8GY2_QWkb0BGY3bLrG-8D-
 
 3. Encode data and upload vectors into your new dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +99,9 @@ details.
 
 Monitor your vectors in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1d2jhjhwvPucfebUphIiqGVmR1Td2uYzM
 
 4. Run clustering on your vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,7 +129,9 @@ additional field. The default ``alias`` of the cluster will be the
 
 See your cluster centers in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1P0ZJcTd-Kl7TUwzFHEe3JuJpf_cTTP6J
 
 4. Run a vector search
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -147,7 +157,9 @@ https://cloud.relevance.ai/sdk/search.
 
 See your multi-vector search results in the dashboard
 
-.. image:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
+|image0|
+
+.. |image0| image:: https://drive.google.com/uc?id=1qpc7oK0uxj2IRm4a9giO5DBey8sm8GP8
 
 Want to quickly create some example applications with Relevance AI?
 Check out some other guides below! - `Text-to-image search with OpenAI’s
