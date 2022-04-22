@@ -81,9 +81,12 @@ class SentimentOps(BaseOps):
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
-        overall_sentiment = (
-            max_score if sentiment == positive_sentiment_name else -max_score
-        )
+        if sentiment == "neutral":
+            overall_sentiment = 0
+        else:
+            overall_sentiment = (
+                max_score if sentiment == positive_sentiment_name else -max_score
+            )
         if not include_shap_values:
             return {
                 "sentiment": sentiment,
