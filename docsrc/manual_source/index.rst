@@ -16,6 +16,10 @@ the documents that are closest to the centers).
 
 📄 **Documents** refer to JSONs/Python dictionaries that contain metadata and vectors.
 
+.. image:: terminology.png
+  :width: 800
+  :alt: Overview of Relevance AI
+
 About Relevance AI
 --------------------
 

@@ -32,6 +32,7 @@ class Workflow(DocUtils):
         chunksize: int = 20,
         chunk_field: Optional[str] = None,
         log_file: Optional[str] = None,
+        refresh: bool = False,
     ):
         """
         Fit on dataset
@@ -39,20 +40,23 @@ class Workflow(DocUtils):
         filters = [] if filters is None else filters
 
         self.dataset = dataset
-        exist_filters = [
-            {
-                "field": input_field,
-                "filter_type": "exists",
-                "condition": "==",
-                "condition_value": " ",
-            },
-            {
-                "field": output_field,
-                "filter_type": "exists",
-                "condition": "!=",
-                "condition_value": " ",
-            },
-        ]
+        if refresh:
+            exist_filters = []
+        else:
+            exist_filters = [
+                {
+                    "field": input_field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": " ",
+                },
+                {
+                    "field": output_field,
+                    "filter_type": "exists",
+                    "condition": "!=",
+                    "condition_value": " ",
+                },
+            ]
         filters += exist_filters
 
         if chunk_field is not None:

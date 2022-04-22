@@ -3,6 +3,7 @@ from typing import Dict, Union, Optional, List, Any
 from datetime import datetime
 
 import numpy as np
+import warnings
 
 from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
@@ -94,6 +95,15 @@ class VectorizeHelpers(APIClient):
 
                     model = BitMedium2Vec()
 
+                else:
+
+                    from vectorhub.encoders.text.sentence_transformers import (
+                        SentenceTransformer2Vec,
+                    )
+
+                    warnings.warn("Assuming this is a Sentence Transformer model.")
+                    model = SentenceTransformer2Vec(model)
+
             else:
                 # TODO: this needs to be referenced from relevance.constants.errors
                 raise ValueError("ModelNotSupported")
@@ -158,10 +168,7 @@ class VectorizeHelpers(APIClient):
             raise ValueError
 
     def _get_remaining(self, filters: List[Dict[str, Any]]) -> int:
-        return self.get_number_of_documents(
-            dataset_id=self.dataset_id,
-            filters=filters,
-        )
+        return self.get_number_of_documents(dataset_id=self.dataset_id, filters=filters)
 
 
 class VectorizeOps(VectorizeHelpers):
@@ -329,10 +336,7 @@ class VectorizeOps(VectorizeHelpers):
                     )
                 ]
                 filters.append(
-                    {
-                        "filter_type": "or",
-                        "condition_value": condition_value,
-                    }
+                    {"filter_type": "or", "condition_value": condition_value}
                 )
 
         else:  # Special Case when only 1 field is provided
@@ -350,20 +354,13 @@ class VectorizeOps(VectorizeHelpers):
                     "condition_value": "",
                 },
             ]
-            filters.append(
-                {
-                    "filter_type": "or",
-                    "condition_value": condition_value,
-                }
-            )
+            filters.append({"filter_type": "or", "condition_value": condition_value})
 
         return filters
 
     @staticmethod
     def _encode_documents(
-        documents,
-        encoders: Dict[str, List[Base2Vec]],
-        field_types: Dict[str, str],
+        documents, encoders: Dict[str, List[Base2Vec]], field_types: Dict[str, str]
     ):
         updated_documents = documents
 
@@ -375,8 +372,7 @@ class VectorizeOps(VectorizeHelpers):
                     if f"_{dtype}_" == field_type
                 ]
                 updated_documents = vectorizer.encode_documents(
-                    documents=updated_documents,
-                    fields=fields,
+                    documents=updated_documents, fields=fields
                 )
 
         return updated_documents
@@ -393,8 +389,7 @@ class VectorizeOps(VectorizeHelpers):
             updated_metadata["_vector_"][vector_name] = now
 
         self.datasets.post_metadata(
-            dataset_id=self.dataset_id,
-            metadata=updated_metadata,
+            dataset_id=self.dataset_id, metadata=updated_metadata
         )
 
     def _insert_document_vectors(
@@ -461,10 +456,7 @@ class VectorizeOps(VectorizeHelpers):
         print(f"Concatenated field is called {document_vector_}")
 
         for index, (document, vector) in enumerate(zip(documents, vectors.tolist())):
-            documents[index] = {
-                "_id": document["_id"],
-                document_vector_: vector,
-            }
+            documents[index] = {"_id": document["_id"], document_vector_: vector}
 
         self._update_documents(
             dataset_id=self.dataset_id,
@@ -528,14 +520,10 @@ class VectorizeOps(VectorizeHelpers):
             )
 
             filters += self._get_filters(
-                fields=list(field_types),
-                vector_fields=vector_fields,
+                fields=list(field_types), vector_fields=vector_fields
             )
 
-            updating_args = dict(
-                encoders=self.encoders,
-                field_types=field_types,
-            )
+            updating_args = dict(encoders=self.encoders, field_types=field_types)
 
             results = self.pull_update_push(
                 dataset_id=self.dataset_id,
@@ -557,9 +545,7 @@ class VectorizeOps(VectorizeHelpers):
         new_schema = self._get_schema().keys()
         added_vectors = list(new_schema - self.schema)
 
-        self._update_vector_metadata(
-            metadata=added_vectors,
-        )
+        self._update_vector_metadata(metadata=added_vectors)
 
         if self.feature_vector:
             print(

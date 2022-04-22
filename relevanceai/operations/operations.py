@@ -96,6 +96,17 @@ class Operations(APIClient):
         vector_fields: List[str]
             The list of vector fields to support
 
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.reduce_dims(
+                alias="sample",
+                vector_fields=["sample_1_vector_"],
+                model="umap"
+            )
+
         """
         from relevanceai.operations.dr import ReduceDimensionsOps
 
@@ -653,6 +664,10 @@ class Operations(APIClient):
         chunksize: int = 20,
         workflow_alias: str = "sentiment",
         notes=None,
+        refresh: bool = False,
+        include_shap_values: bool = False,
+        positive_sentiment_name: str = "positive",
+        max_number_of_shap_documents: int = 5,
     ):
         """
         Easily add sentiment to your dataset
@@ -694,6 +709,10 @@ class Operations(APIClient):
             chunksize=chunksize,
             workflow_alias=workflow_alias,
             notes=notes,
+            refresh=refresh,
+            include_shap_values=include_shap_values,
+            positive_sentiment_name=positive_sentiment_name,
+            max_number_of_shap_documents=max_number_of_shap_documents,
         )
 
     @track
