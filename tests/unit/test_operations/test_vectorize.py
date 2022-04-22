@@ -60,8 +60,10 @@ class TestVectorizeOps:
 
     def test_custom_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_penguins")
+
+        documents = get_palmer_penguins_dataset()
         dataset.insert_documents(
-            documents=get_palmer_penguins_dataset(),
+            documents=documents,
             create_id=True,
         )
 
