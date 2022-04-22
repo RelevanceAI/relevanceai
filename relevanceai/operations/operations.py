@@ -9,11 +9,7 @@ from relevanceai.operations.vector.vectorizer import Vectorizer
 
 
 class Operations(APIClient):
-    def __init__(
-        self,
-        credentials: Credentials,
-        dataset_id: str,
-    ):
+    def __init__(self, credentials: Credentials, dataset_id: str):
         self.credentials = credentials
         self.dataset_id = dataset_id
         super().__init__(self.credentials)
@@ -60,10 +56,7 @@ class Operations(APIClient):
         from relevanceai.operations.cluster import ClusterOps
 
         ops = ClusterOps(
-            credentials=self.credentials,
-            model=model,
-            alias=alias,
-            **kwargs,
+            credentials=self.credentials, model=model, alias=alias, **kwargs
         )
         ops(
             dataset_id=self.dataset_id,
@@ -117,17 +110,12 @@ class Operations(APIClient):
             **kwargs,
         )
         return ops.run(
-            dataset_id=self.dataset_id,
-            vector_fields=vector_fields,
-            alias=alias,
+            dataset_id=self.dataset_id, vector_fields=vector_fields, alias=alias
         )
 
     @track
     def vectorize(
-        self,
-        fields: List[str] = None,
-        filters: Optional[List] = None,
-        **kwargs,
+        self, fields: List[str] = None, filters: Optional[List] = None, **kwargs
     ):
         """
         Vectorize the model
@@ -176,10 +164,7 @@ class Operations(APIClient):
             filters = []
         from relevanceai.operations.vector import VectorizeOps
 
-        ops = VectorizeOps(
-            credentials=self.credentials,
-            **kwargs,
-        )
+        ops = VectorizeOps(credentials=self.credentials, **kwargs)
 
         return ops(
             dataset_id=self.dataset_id,
@@ -336,10 +321,7 @@ class Operations(APIClient):
 
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
 
         return ops.vector_search(**kwargs)
 
@@ -418,10 +400,7 @@ class Operations(APIClient):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
 
         return ops.hybrid_search(**kwargs)
 
@@ -501,10 +480,7 @@ class Operations(APIClient):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
 
         return ops.chunk_search(**kwargs)
 
@@ -582,10 +558,7 @@ class Operations(APIClient):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id)
         return ops.multistep_chunk_search(**kwargs)
 
     def launch_cluster_app(self, configuration: dict = None):
@@ -666,7 +639,6 @@ class Operations(APIClient):
         notes=None,
         refresh: bool = False,
         highlight: bool = False,
-        positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: int = 5,
     ):
         """
@@ -690,6 +662,11 @@ class Operations(APIClient):
             The HuggingFace Model name.
         log_to_file: bool
             If True, puts the logs in a file. Otherwise, it will
+        highlight: bool
+            If True, returns the words that are most relevant
+            based on SHAP. This requires an additional SHAP package installation.
+        max_number_of_shap_documents: int
+            The maximum number of shap documents allowed
 
         """
         from relevanceai.operations.text.sentiment.sentiment_workflow import (
@@ -711,7 +688,6 @@ class Operations(APIClient):
             notes=notes,
             refresh=refresh,
             highlight=highlight,
-            positive_sentiment_name=positive_sentiment_name,
             max_number_of_shap_documents=max_number_of_shap_documents,
         )
 
