@@ -10,6 +10,9 @@ from relevanceai._api.batch.insert_async import BatchInsertAsyncClient
 class APIClient(BatchInsertClient, BatchInsertAsyncClient):
     """Batch API client"""
 
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+
     def batch_insert(self):
         raise NotImplemented
 

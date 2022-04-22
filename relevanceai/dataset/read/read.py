@@ -9,6 +9,7 @@ import pandas as pd
 from tqdm.auto import tqdm
 from typing import Optional, Union, Dict, List
 from relevanceai.client.helpers import Credentials
+from relevanceai.dataset.series import Series
 
 from relevanceai.operations.cluster.centroids import Centroids
 
@@ -725,3 +726,35 @@ class Read(Statistics):
     @track
     def list_cluster_aliases(self):
         raise NotImplementedError()
+
+    def isnull(
+        self,
+        show_progress_bar=False,
+    ):
+        schema = self.schema
+        filters = [
+            {
+                "filter_type": "or",
+                "condition_value": [
+                    Series(
+                        credentials=self.credentials,
+                        dataset_id=self.dataset_id,
+                        field=field,
+                    ).not_exists()
+                    for field in schema
+                ],
+            }
+        ]
+        null_count = {field: 0 for field in schema}
+
+        null_docs = self.get_all_documents(
+            filters=filters,
+            show_progress_bar=show_progress_bar,
+        )
+
+        for doc in null_docs:
+            for field in doc:
+                if doc[field] is None:
+                    null_count[field] += 1
+
+        return null_count

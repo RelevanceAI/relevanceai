@@ -27,7 +27,12 @@ from relevanceai.operations.base import BaseOps
 # TODO: Separate out operations into different files - cluster/search/dr
 
 
-class LabelOps(Write, BaseOps):
+class LabelOps(BaseOps, Write):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Adds the relevant
+        super(Write, self).__init__(*args, **kwargs)
+
     @track
     def label_vector(
         self,
@@ -596,7 +601,8 @@ class LabelOps(Write, BaseOps):
             }
             for tf in text_fields
         ]
-        documents = self.get_documents(
+        documents = self._get_documents(
+            dataset_id=self.dataset_id,
             batch_size=batch_size,
             select_fields=text_fields,
             filters=filters,
@@ -787,7 +793,8 @@ class LabelOps(Write, BaseOps):
             document_limit is None or sum(counter.values()) < document_limit
         ):
             # TODO: make this into a progress bar instead
-            documents = self.get_documents(
+            documents = self._get_documents(
+                dataset_id=self.dataset_id,
                 filters=filters,
                 cursor=documents["cursor"],
                 batch_size=batch_size,
@@ -895,7 +902,9 @@ class LabelOps(Write, BaseOps):
 
         vector_fields_str = ".".join(sorted(vector_fields))
         field = f"{cluster_field}.{vector_fields_str}.{cluster_alias}"
-        all_clusters = self.facets([field], page_size=num_clusters)
+        all_clusters = self.datasets.facets(
+            self.dataset_id, [field], page_size=num_clusters
+        )
         cluster_counters = {}
         if "results" in all_clusters:
             all_clusters = all_clusters["results"]

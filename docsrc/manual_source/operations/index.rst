@@ -13,4 +13,4 @@ Operations
     search
     label
     question_answer
-    gpl_ops
+    Finetuning <finetuning/index>

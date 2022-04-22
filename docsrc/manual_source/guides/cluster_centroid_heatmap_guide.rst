@@ -38,7 +38,7 @@ Centroid Heatmap
 .. code:: ipython3
 
     from relevanceai.operations.viz.cluster import ClusterVizOps
-
+    
     cluster_ops = ClusterVizOps.from_dataset(
         ds, alias="main-cluster", vector_fields=["product_image_clip_vector_"]
     )
@@ -153,3 +153,5 @@ shoes and if we need that granularity.
         </tr>
       </tbody>
     </table>
+
+

@@ -16,8 +16,7 @@ from relevanceai.client.helpers import Credentials
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
-from relevanceai.utils.decorators.version import beta
-from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils.decorators import beta, track, deprecated
 from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
@@ -141,12 +140,16 @@ class ClusterOps(APIClient, BaseOps):
         include_cluster_report: bool = True,
         **kwargs,
     ) -> None:
-        return self.operate(
+        return self.run(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
             **kwargs,
         )
+
+    @deprecated(version="1.0.0")
+    def fit_predict_update(self, *args, **kwargs):
+        return self.run(*args, **kwargs)
 
     def _get_schema(self) -> Dict:
         return self.datasets.schema(dataset_id=self.dataset_id)
@@ -172,6 +175,8 @@ class ClusterOps(APIClient, BaseOps):
                 alias = self.model_name
 
             Warning.MISSING_ALIAS.format(alias=alias)
+
+        print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
 
     def _get_package(self, model):
@@ -409,7 +414,7 @@ class ClusterOps(APIClient, BaseOps):
         print(Messages.BUILD_HERE + link)
 
     @track
-    def operate(
+    def run(
         self,
         dataset_id: str,
         vector_fields: Optional[List[str]] = None,
@@ -508,18 +513,31 @@ class ClusterOps(APIClient, BaseOps):
                 include_typecheck=False,
             )
 
-            response = self.reports.clusters.create(
-                name=report_name, report=self.json_encoder(report.internal_report)
-            )
-
-            if verbose:
-                print(
-                    f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+            try:
+                response = self.reports.clusters.create(
+                    name=report_name, report=self.json_encoder(report.internal_report)
                 )
+
+                if verbose:
+                    print(
+                        f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+                    )
+            except Exception as e:
+                print("Error creating cluster report! " + str(e))
 
         # link back to dashboard
         if verbose:
             self._print_app_link()
+
+    def cluster_report(self, X, cluster_labels, centroids):
+        from relevanceai.reports.cluster.report import ClusterReport
+
+        cluster_labels = self.fit_predict(X)
+        centroids = ClusterReport.calculate_centroids(X, cluster_labels)
+        report = ...
+        response = self.store_cluster_report(
+            report_name="kmeans", report=report.internal_report
+        )
 
     @track
     def closest(
@@ -611,7 +629,12 @@ class ClusterOps(APIClient, BaseOps):
         )
 
     @staticmethod
-    def get_cluster_summary(summarizer, docs: Dict, summarize_fields: List[str]):
+    def get_cluster_summary(
+        summarizer,
+        docs: Dict,
+        summarize_fields: List[str],
+        max_length: int = 100,
+    ):
         def _clean_sentence(s):
             s = (
                 s.replace(". .", ".")
@@ -633,13 +656,10 @@ class ClusterOps(APIClient, BaseOps):
                     for d in results["results"]
                     if d.get(f) and d[f] not in [" ", "."]
                 ]
-                summary.append(
-                    {
-                        f: summarizer(" ".join(summary_fields))[0]["summary_text"]
-                        .replace(" .", ".")
-                        .strip()
-                    }
-                )
+                summary_output = summarizer(
+                    " ".join(summary_fields), max_length=max_length
+                )[0]["summary_text"]
+                summary = summary_output.replace(" .", ".").strip()
             cluster_summary[cluster] = summary
         return cluster_summary
 
@@ -666,6 +686,8 @@ class ClusterOps(APIClient, BaseOps):
         cluster_properties_filter: Optional[Dict] = {},
         model_name: str = "sshleifer/distilbart-cnn-6-6",
         tokenizer: Optional[str] = None,
+        max_length: int = 100,
+        deployable_id: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -724,7 +746,8 @@ class ClusterOps(APIClient, BaseOps):
 
         if not tokenizer:
             tokenizer = model_name
-        summarizer = TransformersLMSummarizer(model_name, tokenizer)
+
+        summarizer = TransformersLMSummarizer(model_name, tokenizer, **kwargs)
 
         center_docs = self.list_closest(
             select_fields=summarize_fields,
@@ -746,9 +769,25 @@ class ClusterOps(APIClient, BaseOps):
         )
 
         cluster_summary = self.get_cluster_summary(
-            summarizer, docs=center_docs, summarize_fields=summarize_fields
+            summarizer,
+            docs=center_docs,
+            summarize_fields=summarize_fields,
+            max_length=max_length,
         )
 
+        if deployable_id is not None:
+            if dataset_id is None:
+                if not hasattr(self, "dataset_id"):
+                    raise ValueError("You need a dataset ID to update.")
+                else:
+                    dataset_id = self.dataset_id
+            configuration = self.deployables.get(deployable_id=deployable_id)
+            configuration["cluster-labels"] = cluster_summary
+            self.deployables.update(
+                deployable_id=deployable_id,
+                dataset_id=dataset_id,
+                configuration=configuration,
+            )
         return {"results": cluster_summary}
 
     @track
@@ -1076,7 +1115,7 @@ class ClusterOps(APIClient, BaseOps):
             from sklearn.cluster import KMeans
             model = KMeans(n_clusters=2)
             cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
-            cluster_ops.operate(df, vector_fields=["sample_vector_"])
+            cluster_ops.run(df, vector_fields=["sample_vector_"])
             clusterer.aggregate(
                 "sample_dataset_id",
                 groupby=[{

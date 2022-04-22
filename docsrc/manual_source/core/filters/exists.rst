@@ -1,5 +1,5 @@
-Filters
-==========
+Filters (Complex)
+===================
 
 .. <figure>
 .. <img src="https://github.com/RelevanceAI/RelevanceAI-readme-docs/blob/v1.4.3/docs_template/GENERAL_FEATURES/_assets/filters-1.png?raw=true" width="1009" alt="604547f-combined_filters.png" />
