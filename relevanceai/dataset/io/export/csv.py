@@ -32,5 +32,5 @@ class CSVExport(Read):
             df.to_csv(csv_fname)
         """
         documents = self.get_all_documents(**kwargs)
-        df = pd.DataFrame(documents)
+        df = pd.DataFrame(documents.json())
         df.to_csv(filename)

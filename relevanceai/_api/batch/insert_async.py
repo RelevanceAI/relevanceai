@@ -223,7 +223,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
             page_size=num_documents,
         )["documents"]
         return (
-            sum(map(lambda document: len(orjson.dumps(document)), documents))
+            sum(map(lambda document: len(orjson.dumps(document.json())), documents))
             // num_documents
         )
 

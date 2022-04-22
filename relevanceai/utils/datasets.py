@@ -16,6 +16,8 @@ import requests
 from relevanceai.constants import DATASETS
 from relevanceai.constants.errors import MissingPackageExtraError
 
+from doc_utils import DocumentList
+
 THIS_MODULE = sys.modules[__name__]
 
 
@@ -78,6 +80,8 @@ class ExampleDatasets:
                 include_vector=include_vector,
             )
             client.config.reset()
+
+            documents = DocumentList(documents)
             return documents
 
     @staticmethod
@@ -396,6 +400,7 @@ def get_online_ecommerce_dataset(
         {k: v for k, v in doc.items() if not pd.isna(v)}
         for doc in df.to_dict(orient="records")
     ]
+    documents = DocumentList(documents)
     return documents
 
 
@@ -427,11 +432,13 @@ def get_flipkart_dataset(
     select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
         number_of_documents = 19920
-    return ExampleDatasets._get_dummy_dataset(
+    documents = ExampleDatasets._get_dummy_dataset(
         "dummy-flipkart",
         number_of_documents,
         select_fields,
     )
+    documents = DocumentList(documents)
+    return documents
 
 
 def get_realestate_dataset(
@@ -498,6 +505,7 @@ def get_realestate_dataset(
         if "_clusters_" in doc:
             del doc["_clusters_"]
 
+    documents = DocumentList(documents)
     return documents
 
 
@@ -585,7 +593,9 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
         document["_id"] = make_id(document)
         return document
 
-    return [vector_document() for _ in range(number_of_documents)]
+    documents = [vector_document() for _ in range(number_of_documents)]
+    documents = DocumentList(documents)
+    return documents
 
 
 def get_titanic_dataset(
@@ -645,6 +655,7 @@ def get_coco_dataset(
         if "_clusters_" in doc:
             del doc["_clusters_"]
 
+    documents = DocumentList(documents)
     return documents
 
 
@@ -652,7 +663,7 @@ def get_palmer_penguins_dataset(
     number_of_documents: int = None,
     select_fields: Optional[List] = None,
     shuffle: bool = True,
-) -> List[Dict]:
+) -> DocumentList:
     adelie_data = ExampleDatasets._get_online_dataset(
         url="https://portal.edirepository.org/nis/dataviewer?packageid=knb-lter-pal.219.3&entityid=002f3893385f710df69eeebe893144ff",
         number_of_documents=number_of_documents,
@@ -671,6 +682,8 @@ def get_palmer_penguins_dataset(
     data = adelie_data + gentoo_data + chinstrap_data
     if shuffle:
         random.shuffle(data)
+
+    data = DocumentList(data)
     return data
 
 
@@ -678,7 +691,7 @@ def get_iris_dataset(
     number_of_documents: int = None,
     select_fields: Optional[List] = None,
     shuffle: bool = True,
-) -> List[Dict]:
+) -> DocumentList:
     iris_data = ExampleDatasets._get_online_dataset(
         url="https://raw.githubusercontent.com/venky14/Machine-Learning-with-Iris-Dataset/master/Iris.csv",
         number_of_documents=number_of_documents,
@@ -686,6 +699,8 @@ def get_iris_dataset(
     )
     if shuffle:
         random.shuffle(iris_data)
+
+    iris_data = DocumentList(iris_data)
     return iris_data
 
 
