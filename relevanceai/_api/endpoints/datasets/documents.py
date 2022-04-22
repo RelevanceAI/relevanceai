@@ -3,6 +3,8 @@ from typing import List, Optional
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 
+from doc_utils.doc_utils import DocumentList, Document
+
 
 class DocumentsClient(_Base):
     def __init__(self, credentials: Credentials):
@@ -78,13 +80,15 @@ class DocumentsClient(_Base):
             df.get(["sample_id"], include_vector=False)
         """
 
-        return self.make_http_request(
+        req = self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get",
             parameters={
                 "id": id,
                 "include_vector": include_vector,
             },
         )
+        req["document"] = Document(req["document"])
+        return req
 
     def bulk_get(
         self,
@@ -216,7 +220,7 @@ class DocumentsClient(_Base):
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
 
-        return self.make_http_request(
+        req = self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
             parameters={
@@ -230,6 +234,8 @@ class DocumentsClient(_Base):
                 "is_random": is_random,
             },
         )
+        req["documents"] = DocumentList(req["documents"])
+        return req
 
     async def get_where_async(
         self,

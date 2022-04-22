@@ -33,6 +33,8 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
+from doc_utils import DocumentList, Document
+
 # Taken from pydanitc.json
 ENCODERS_BY_TYPE = {
     bytes: lambda o: o.decode(),
@@ -121,6 +123,10 @@ def json_encoder(obj: Any, force_string: bool = False):
 
     if force_string:
         return repr(obj)
+
+    if isinstance(obj, DocumentList) or isinstance(obj, Document):
+        obj = obj.json()
+        return obj
 
     raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
 

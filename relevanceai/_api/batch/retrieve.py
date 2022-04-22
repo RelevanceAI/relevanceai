@@ -4,6 +4,8 @@
 import math
 import traceback
 
+from doc_utils import DocumentList
+
 from typing import List, Optional
 
 from relevanceai._api.batch.chunk import Chunker
@@ -103,6 +105,8 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
 
         if include_cursor:
             return {"documents": data, "cursor": resp["cursor"]}
+
+        data = DocumentList(data)
         return data
 
     @lru_cache(maxsize=MAX_CACHESIZE)
@@ -179,6 +183,8 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             except Exception as e:
                 traceback.print_exc()
                 pass
+
+        full_data = DocumentList(full_data)
         return full_data
 
     def get_number_of_documents(self, dataset_id, filters: Optional[List] = None):
