@@ -24,8 +24,7 @@ class TestBaseOps:
 
     def test_from_dataset(self, test_clustered_df: Dataset):
         ops = ClusterOps.from_dataset(
-            dataset_id=test_clustered_df.dataset_id,
-            credentials=test_clustered_df.credentials,
+            dataset=test_clustered_df,
             alias="kmeans-10",
             vector_fields=["sample_1_vector_"],
         )
