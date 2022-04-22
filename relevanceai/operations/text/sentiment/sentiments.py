@@ -99,7 +99,7 @@ class SentimentOps(BaseOps):
             "sentiment": sentiment,
             "score": max_score,
             "overall_sentiment": overall_sentiment,
-            "shap_chunk_": shap_documents,
+            "highlight_chunk_": shap_documents,
         }
 
     @property
