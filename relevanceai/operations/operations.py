@@ -665,7 +665,7 @@ class Operations(APIClient):
         workflow_alias: str = "sentiment",
         notes=None,
         refresh: bool = False,
-        include_shap_values: bool = False,
+        highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: int = 5,
     ):
@@ -710,7 +710,7 @@ class Operations(APIClient):
             workflow_alias=workflow_alias,
             notes=notes,
             refresh=refresh,
-            include_shap_values=include_shap_values,
+            highlight=highlight,
             positive_sentiment_name=positive_sentiment_name,
             max_number_of_shap_documents=max_number_of_shap_documents,
         )

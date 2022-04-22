@@ -40,9 +40,7 @@ class Workflow(DocUtils):
         filters = [] if filters is None else filters
 
         self.dataset = dataset
-        if refresh:
-            exist_filters = []
-        else:
+        if not refresh:
             exist_filters = [
                 {
                     "field": input_field,
@@ -57,7 +55,7 @@ class Workflow(DocUtils):
                     "condition_value": " ",
                 },
             ]
-        filters += exist_filters
+            filters += exist_filters
 
         if chunk_field is not None:
             if chunk_field not in output_field:
