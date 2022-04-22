@@ -73,7 +73,7 @@ class SentimentOps(BaseOps):
     def analyze_sentiment(
         self,
         text,
-        include_shap_values: bool = False,
+        highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: int = 5,
     ):
@@ -87,7 +87,7 @@ class SentimentOps(BaseOps):
             overall_sentiment = (
                 max_score if sentiment == positive_sentiment_name else -max_score
             )
-        if not include_shap_values:
+        if not highlight:
             return {
                 "sentiment": sentiment,
                 "score": max_score,
@@ -138,7 +138,7 @@ class SentimentOps(BaseOps):
             :max_number_of_shap_documents
         ]
 
-    # def analyze_sentiment(self, text, include_shap_values:bool= True):
+    # def analyze_sentiment(self, text, highlight:bool= True):
     #     try:
     #         from scipy.special import softmax
     #     except ModuleNotFoundError:
