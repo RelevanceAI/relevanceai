@@ -638,6 +638,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         docs: Dict,
         summarize_fields: List[str],
         max_length: int = 100,
+        first_sentence_only: bool = True,
     ):
         def _clean_sentence(s):
             s = (
@@ -664,7 +665,10 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
                     " ".join(summary_fields), max_length=max_length
                 )[0]["summary_text"]
                 summary = summary_output.replace(" .", ".").strip()
-            cluster_summary[cluster] = summary
+            if first_sentence_only:
+                cluster_summary[cluster] = summary.split(".")[0]
+            else:
+                cluster_summary[cluster] = summary
         return cluster_summary
 
     @beta
@@ -692,6 +696,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         tokenizer: Optional[str] = None,
         max_length: int = 100,
         deployable_id: Optional[str] = None,
+        first_sentence_only: bool = True,
         **kwargs,
     ):
         """
@@ -777,6 +782,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             docs=center_docs,
             summarize_fields=summarize_fields,
             max_length=max_length,
+            first_sentence_only=first_sentence_only,
         )
 
         if deployable_id is not None:
