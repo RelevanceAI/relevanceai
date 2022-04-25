@@ -692,7 +692,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         include_vector: bool = False,
         include_count: bool = True,
         cluster_properties_filter: Optional[Dict] = {},
-        model_name: str = "sshleifer/distilbart-cnn-6-6",
+        model_name: str = "philschmid/bart-large-cnn-samsum",
         tokenizer: Optional[str] = None,
         max_length: int = 100,
         deployable_id: Optional[str] = None,
