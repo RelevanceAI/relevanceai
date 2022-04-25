@@ -73,7 +73,7 @@ class SentimentOps(BaseOps):
     def analyze_sentiment(
         self,
         text,
-        include_shap_values: bool = False,
+        highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: int = 5,
     ):
@@ -81,10 +81,13 @@ class SentimentOps(BaseOps):
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
-        overall_sentiment = (
-            max_score if sentiment == positive_sentiment_name else -max_score
-        )
-        if not include_shap_values:
+        if sentiment == "neutral":
+            overall_sentiment = 0
+        else:
+            overall_sentiment = (
+                max_score if sentiment == positive_sentiment_name else -max_score
+            )
+        if not highlight:
             return {
                 "sentiment": sentiment,
                 "score": max_score,
@@ -99,7 +102,7 @@ class SentimentOps(BaseOps):
             "sentiment": sentiment,
             "score": max_score,
             "overall_sentiment": overall_sentiment,
-            "shap_chunk_": shap_documents,
+            "highlight_chunk_": shap_documents,
         }
 
     @property
@@ -135,7 +138,7 @@ class SentimentOps(BaseOps):
             :max_number_of_shap_documents
         ]
 
-    # def analyze_sentiment(self, text, include_shap_values:bool= True):
+    # def analyze_sentiment(self, text, highlight:bool= True):
     #     try:
     #         from scipy.special import softmax
     #     except ModuleNotFoundError:
