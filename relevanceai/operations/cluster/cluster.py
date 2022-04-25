@@ -66,6 +66,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         outlier_value: int = -1,
         outlier_label: str = "outlier",
         verbose: bool = True,
+        vector_fields: Optional[list] = None,
         **kwargs,
     ):
         """
@@ -130,6 +131,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         for key, value in kwargs.items():
             if not hasattr(self, key):
+                if key == "vector_fields":
+                    setattr(self, "vector_field", value[0])
                 setattr(self, key, value)
 
         super().__init__(credentials)
