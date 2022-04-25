@@ -668,7 +668,8 @@ class Operations(APIClient):
         refresh: bool = False,
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: int = 5,
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
     ):
         """
         Easily add sentiment to your dataset
@@ -691,6 +692,13 @@ class Operations(APIClient):
             The HuggingFace Model name.
         log_to_file: bool
             If True, puts the logs in a file. Otherwise, it will
+        highlight: bool
+            If True, this will include a SHAP explainer of what is causing positive
+            and negative sentiment
+        max_number_of_shap_documents: int
+            The maximum number of shap documents
+        min_abs_score: float
+            The minimum absolute score for it to be considered important based on SHAP algorithm.
 
         """
         from relevanceai.operations.text.sentiment.sentiment_workflow import (
@@ -714,6 +722,7 @@ class Operations(APIClient):
             highlight=highlight,
             positive_sentiment_name=positive_sentiment_name,
             max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
         )
 
     @track
