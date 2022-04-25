@@ -756,7 +756,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         if not tokenizer:
             tokenizer = model_name
 
-        summarizer = TransformersLMSummarizer(model_name, tokenizer, **kwargs)
+        if not hasattr(self, "summarizer"):
+            self.summarizer = TransformersLMSummarizer(model_name, tokenizer, **kwargs)
 
         center_docs = self.list_closest(
             select_fields=summarize_fields,
@@ -778,7 +779,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         )
 
         cluster_summary = self.get_cluster_summary(
-            summarizer,
+            self.summarizer,
             docs=center_docs,
             summarize_fields=summarize_fields,
             max_length=max_length,
