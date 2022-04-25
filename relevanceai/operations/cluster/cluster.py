@@ -26,9 +26,10 @@ from relevanceai.constants import (
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
 from relevanceai.operations.cluster.utils import ClusterUtils
+from doc_utils import DocUtils
 
 
-class ClusterOps(ClusterUtils, BaseOps):
+class ClusterOps(ClusterUtils, BaseOps, DocUtils):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -1201,29 +1202,46 @@ class ClusterOps(ClusterUtils, BaseOps):
             if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
         ]
         new_centroid = np.array(relevant_centroids).mean(0).tolist()
-        new_centroid_doc = {
-            "_id": f"cluster-{cluster_labels[0]}",
-            self.vector_field: new_centroid,
-        }
+        if isinstance(cluster_labels[0], int):
+            new_centroid_doc = {
+                "_id": f"cluster-{cluster_labels[0]}",
+                self.vector_field: new_centroid,
+            }
+        elif isinstance(cluster_labels[0], str):
+            if isinstance(cluster_labels[0], int):
+                new_centroid_doc = {
+                    "_id": cluster_labels,
+                    self.vector_field: new_centroid,
+                }
 
-        class Merge:
+        class Merge(DocUtils):
             def __init__(self, clusters, vector_field, alias):
-                self.clusters = [f"cluster-{cluster}" for cluster in sorted(clusters)]
+                if isinstance(clusters[0], str):
+                    self.clusters = [cluster for cluster in sorted(clusters)]
+                    self.min_cluster = clusters[0]
+                else:
+                    self.clusters = [
+                        f"cluster-{cluster}" for cluster in sorted(clusters)
+                    ]
+                    self.min_cluster = f"cluster-{min(clusters)}"
+
                 self.vector_field = vector_field
                 self.alias = alias
-
-                self.min_cluster = f"cluster-{min(clusters)}"
 
             def __call__(self, documents):
                 for document in documents:
                     for cluster in self.clusters[1:]:
                         if (
-                            document["_cluster_"][self.vector_field][self.alias]
+                            self.get_field(
+                                f"_cluster_.{self.vector_field}.{self.alias}", document
+                            )
                             == cluster
                         ):
-                            document["_cluster_"][self.vector_field][
-                                self.alias
-                            ] = self.min_cluster
+                            self.set_field(
+                                f"_cluster_.{self.vector_field}.{self.alias}",
+                                document,
+                                self.min_cluster,
+                            )
                 return documents
 
         merge = Merge(cluster_labels, self.vector_field, alias)
@@ -1243,7 +1261,10 @@ class ClusterOps(ClusterUtils, BaseOps):
         cluster: int
 
         for cluster in cluster_labels[1:]:
-            centroid_id = f"cluster-{cluster}"
+            if isinstance(cluster, str):
+                centroid_id = cluster
+            else:
+                centroid_id = f"cluster-{cluster}"
             self.services.cluster.centroids.delete(
                 dataset_id=self.dataset_id,
                 centroid_id=centroid_id,
