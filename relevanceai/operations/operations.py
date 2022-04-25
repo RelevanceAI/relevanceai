@@ -63,6 +63,7 @@ class Operations(APIClient):
             credentials=self.credentials,
             model=model,
             alias=alias,
+            vector_fields=vector_fields,
             **kwargs,
         )
         ops(
