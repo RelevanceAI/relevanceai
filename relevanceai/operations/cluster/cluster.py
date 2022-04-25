@@ -654,7 +654,6 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         cluster_summary = {}
         for cluster, results in docs["results"].items():
-            summary = []
             for f in summarize_fields:
                 summary_fields = [
                     _clean_sentence(d[f])
