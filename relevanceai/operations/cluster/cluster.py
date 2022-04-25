@@ -1,4 +1,3 @@
-from re import I
 from typing import (
     Any,
     Set,
@@ -26,8 +25,10 @@ from relevanceai.constants import (
 )
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
+from relevanceai.operations.cluster.utils import ClusterUtils
 
-class ClusterOps(APIClient, BaseOps):
+
+class ClusterOps(ClusterUtils, BaseOps):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -63,6 +64,7 @@ class ClusterOps(APIClient, BaseOps):
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
         outlier_label: str = "outlier",
+        verbose: bool = True,
         **kwargs,
     ):
         """
@@ -101,7 +103,8 @@ class ClusterOps(APIClient, BaseOps):
 
         if model is None:
             model = "community_detection"
-            print(f"No clustering model selected: defaulting to `{model}`")
+            if verbose:
+                print(f"No clustering model selected: defaulting to `{model}`")
 
         self.n_clusters = n_clusters
 
@@ -1247,3 +1250,44 @@ class ClusterOps(APIClient, BaseOps):
                 alias=self.alias,
                 vector_fields=[self.vector_field],
             )
+
+    def create_centroids(self):
+        """
+        Calculate centroids
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                alias="kmeans-40",
+                vector_fields=['text_roberta-large_vector_']
+            )
+            centroids = cluster_ops.create_centroids()
+
+        """
+        # Get an array of the different vectors
+        if len(self.vector_fields) > 1:
+            raise NotImplementedError(
+                "Do not currently support multiple vector fields for centroid creation."
+            )
+        centroid_vectors = {}
+
+        def calculate_centroid(vectors):
+            X = np.array(vectors)
+            return X.mean(axis=0)
+
+        centroid_vectors = self._operate_across_clusters(
+            field=self.vector_fields[0], func=calculate_centroid
+        )
+
+        self._insert_centroids(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_fields[0]],
+            centroid_documents=centroid_vectors,
+        )
+        return centroid_vectors

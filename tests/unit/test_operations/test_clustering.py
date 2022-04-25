@@ -51,7 +51,7 @@ class TestClusterOps:
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
-    def test_ClusterOps(self, test_client: Client, test_dataset: Dataset):
+    def testClusterUtils(self, test_client: Client, test_dataset: Dataset):
         vector_field = "sample_1_vector_"
         alias = "kmeans-10"
 

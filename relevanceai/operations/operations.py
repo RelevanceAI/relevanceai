@@ -968,3 +968,18 @@ class Operations(APIClient):
             output_dir=output_dir,
             percentage_for_dev=percentage_for_dev,
         )
+
+    def ClusterOps(self, alias, vector_fields: List, verbose: bool = False, **kwargs):
+        """
+        ClusterOps object
+        """
+        from relevanceai import ClusterOps
+
+        return ClusterOps(
+            credentials=self.credentials,
+            alias=alias,
+            vector_fields=vector_fields,
+            dataset_id=self.dataset_id,
+            verbose=verbose,
+            **kwargs,
+        )
