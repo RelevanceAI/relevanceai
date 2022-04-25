@@ -2,10 +2,10 @@ from typing import Union, Optional, List, Dict, Any
 
 from relevanceai.utils.decorators.analytics import track
 
-from relevanceai.operations.cluster.utils import _ClusterOps
+from relevanceai.operations.cluster.utils import ClusterUtils
 
 
-class PartialClusterOps(_ClusterOps):
+class PartialClusterOps(ClusterUtils):
     @track
     def partial_fit_documents(
         self,

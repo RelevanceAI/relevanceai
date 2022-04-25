@@ -1,4 +1,3 @@
-from re import I
 from typing import (
     Any,
     Set,
@@ -26,8 +25,11 @@ from relevanceai.constants import (
 )
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
+from relevanceai.operations.cluster.utils import ClusterUtils
+from doc_utils import DocUtils
 
-class ClusterOps(APIClient, BaseOps):
+
+class ClusterOps(ClusterUtils, BaseOps, DocUtils):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -63,6 +65,7 @@ class ClusterOps(APIClient, BaseOps):
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
         outlier_label: str = "outlier",
+        verbose: bool = True,
         **kwargs,
     ):
         """
@@ -101,7 +104,8 @@ class ClusterOps(APIClient, BaseOps):
 
         if model is None:
             model = "community_detection"
-            print(f"No clustering model selected: defaulting to `{model}`")
+            if verbose:
+                print(f"No clustering model selected: defaulting to `{model}`")
 
         self.n_clusters = n_clusters
 
@@ -1198,29 +1202,46 @@ class ClusterOps(APIClient, BaseOps):
             if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
         ]
         new_centroid = np.array(relevant_centroids).mean(0).tolist()
-        new_centroid_doc = {
-            "_id": f"cluster-{cluster_labels[0]}",
-            self.vector_field: new_centroid,
-        }
+        if isinstance(cluster_labels[0], int):
+            new_centroid_doc = {
+                "_id": f"cluster-{cluster_labels[0]}",
+                self.vector_field: new_centroid,
+            }
+        elif isinstance(cluster_labels[0], str):
+            if isinstance(cluster_labels[0], int):
+                new_centroid_doc = {
+                    "_id": cluster_labels,
+                    self.vector_field: new_centroid,
+                }
 
-        class Merge:
+        class Merge(DocUtils):
             def __init__(self, clusters, vector_field, alias):
-                self.clusters = [f"cluster-{cluster}" for cluster in sorted(clusters)]
+                if isinstance(clusters[0], str):
+                    self.clusters = [cluster for cluster in sorted(clusters)]
+                    self.min_cluster = clusters[0]
+                else:
+                    self.clusters = [
+                        f"cluster-{cluster}" for cluster in sorted(clusters)
+                    ]
+                    self.min_cluster = f"cluster-{min(clusters)}"
+
                 self.vector_field = vector_field
                 self.alias = alias
-
-                self.min_cluster = f"cluster-{min(clusters)}"
 
             def __call__(self, documents):
                 for document in documents:
                     for cluster in self.clusters[1:]:
                         if (
-                            document["_cluster_"][self.vector_field][self.alias]
+                            self.get_field(
+                                f"_cluster_.{self.vector_field}.{self.alias}", document
+                            )
                             == cluster
                         ):
-                            document["_cluster_"][self.vector_field][
-                                self.alias
-                            ] = self.min_cluster
+                            self.set_field(
+                                f"_cluster_.{self.vector_field}.{self.alias}",
+                                document,
+                                self.min_cluster,
+                            )
                 return documents
 
         merge = Merge(cluster_labels, self.vector_field, alias)
@@ -1240,10 +1261,54 @@ class ClusterOps(APIClient, BaseOps):
         cluster: int
 
         for cluster in cluster_labels[1:]:
-            centroid_id = f"cluster-{cluster}"
+            if isinstance(cluster, str):
+                centroid_id = cluster
+            else:
+                centroid_id = f"cluster-{cluster}"
             self.services.cluster.centroids.delete(
                 dataset_id=self.dataset_id,
                 centroid_id=centroid_id,
                 alias=self.alias,
                 vector_fields=[self.vector_field],
             )
+
+    def create_centroids(self):
+        """
+        Calculate centroids
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                alias="kmeans-40",
+                vector_fields=['text_roberta-large_vector_']
+            )
+            centroids = cluster_ops.create_centroids()
+
+        """
+        # Get an array of the different vectors
+        if len(self.vector_fields) > 1:
+            raise NotImplementedError(
+                "Do not currently support multiple vector fields for centroid creation."
+            )
+        centroid_vectors = {}
+
+        def calculate_centroid(vectors):
+            X = np.array(vectors)
+            return X.mean(axis=0)
+
+        centroid_vectors = self._operate_across_clusters(
+            field=self.vector_fields[0], func=calculate_centroid
+        )
+
+        self._insert_centroids(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_fields[0]],
+            centroid_documents=centroid_vectors,
+        )
+        return centroid_vectors
