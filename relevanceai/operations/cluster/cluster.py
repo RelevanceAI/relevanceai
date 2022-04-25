@@ -654,7 +654,6 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         cluster_summary = {}
         for cluster, results in docs["results"].items():
-            summary = []
             for f in summarize_fields:
                 summary_fields = [
                     _clean_sentence(d[f])
@@ -1316,9 +1315,37 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             field=self.vector_fields[0], func=calculate_centroid
         )
 
+        # Does this insert properly?
+        if isinstance(centroid_vectors, dict):
+            self._centroid_documents = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in centroid_vectors.items()
+            ]
         self._insert_centroids(
             dataset_id=self.dataset_id,
             vector_fields=[self.vector_fields[0]],
             centroid_documents=centroid_vectors,
         )
         return centroid_vectors
+
+    @property
+    def centroids(self):
+        """
+        Access the centroids of your dataset easily
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps()
+            cluster_ops.centroids
+
+        """
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.services.centroids.list(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )
+        return self._centroids
