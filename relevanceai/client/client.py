@@ -454,6 +454,13 @@ class Client(APIClient, ConfigMixin):
 
     docs = references
 
+    @property
+    def api_docs(self):
+        """
+        Quickly access the API documentation
+        """
+        return "https://api.us-east-1.relevance.ai/latest/core/documentation"
+
     def search_app(self, dataset_id: Optional[str] = None):
         if dataset_id is not None:
             self.print_search_dashboard_url(dataset_id)
