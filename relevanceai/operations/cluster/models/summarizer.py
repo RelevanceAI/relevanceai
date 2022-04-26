@@ -12,10 +12,7 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         try:
             from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
         except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall transformers\n \
-                pip install -U transformers"
-            )
+            raise MissingPackageError("transformers")
         try:
             import torch
 
