@@ -1341,11 +1341,86 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         """
         if not hasattr(self, "_centroids"):
-            self._centroids = self.services.centroids.list(
+            self._centroids = self.services.cluster.centroids.list(
                 dataset_id=self.dataset_id,
                 vector_fields=self.vector_fields,
                 alias=self.alias,
                 page_size=9999,
                 include_vector=True,
-            )
+            )["results"]
         return self._centroids
+
+    @beta
+    @track
+    def create_parent_cluster(
+        self, clusters_to_merge: dict, new_alias_suffix: str = "fixed"
+    ):
+        """
+        Merge multiple clusters into 1 parent cluster
+        and store in a new alias.
+
+        Parameters
+        ------------
+
+        clusters_to_merge: dict
+            The clusters to merge
+        new_alias_suffix: str
+            What to append to the current alias
+
+        Example
+        ---------
+
+        .. code-block::
+
+            clusters_to_merge = {
+                "cluster-a": ["cluster-1", "cluster-2"]
+            }
+            ds.create_parent_cluster(
+                clusters_to_merge=clusters_to_merge
+            )
+
+        """
+        # List centroids
+        from relevanceai.operations.cluster import SubClusterOps
+
+        new_alias = self.alias + new_alias_suffix
+        print(f"Subcluster alias is: `{new_alias}`")
+        subcluster_ops = SubClusterOps(
+            credentials=self.credentials,
+            alias=new_alias,
+            dataset=self._retrieve_dataset_id(),
+            vector_fields=self.vector_fields,
+            parent_field=self.alias,
+        )
+
+        for new_cluster_id, clusters_to_merge in clusters_to_merge.items():
+            # create the subclusters
+            for cluster in clusters_to_merge:
+                old_cluster_field = self._get_cluster_field_name()
+                new_cluster_field = subcluster_ops._get_cluster_field_name(
+                    alias=new_alias
+                )
+                update = {}
+                self.set_field(
+                    new_cluster_field, update, new_cluster_id + "-" + cluster
+                )
+                self.datasets.documents.update_where(
+                    dataset_id=self.dataset_id,
+                    update=update,
+                    filters=[
+                        {
+                            "field": old_cluster_field,
+                            "filter_type": "exact_match",
+                            "condition": "==",
+                            "condition_value": cluster,
+                        }
+                    ],
+                )
+
+        subcluster_ops.store_subcluster_metadata(
+            parent_field=self.alias,
+            cluster_field=subcluster_ops._get_cluster_field_name(),
+        )
+        # re-calculate the centroids
+        subcluster_ops.create_centroids()
+        return subcluster_ops
