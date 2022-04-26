@@ -56,7 +56,6 @@ already encoded for us.
 
 
 
-
 .. parsed-literal::
 
     dict_keys(['product_image', 'query', 'product_price', 'source', 'product_title', 'product_link', 'product_image_clip_vector_', 'product_title_clip_vector_', 'insert_date_', '_id'])
@@ -65,7 +64,7 @@ already encoded for us.
 
 .. code:: ipython3
 
-    ds = client.Dataset('basic_subclustering')
+    ds = client.Dataset("basic_subclustering")
     ds.delete()
     ds.upsert_documents(docs)
 
@@ -123,14 +122,11 @@ for ``n_clusters``. Let's vectorize over all available vector fields.
     parent_alias = f"kmeans_{n_clusters}"
 
     from sklearn.cluster import KMeans
+
     model = KMeans(n_clusters=n_clusters)
 
     for v in vector_fields:
-        cluster_ops = ds.cluster(
-            model,
-            vector_fields=[v],
-            alias=parent_alias
-        )
+        cluster_ops = ds.cluster(model, vector_fields=[v], alias=parent_alias)
 
     ds.schema
 
@@ -195,7 +191,6 @@ for ``n_clusters``. Let's vectorize over all available vector fields.
     # You can find the parent field in the schema or alternatively provide a field.
     parent_field = f"_cluster_.{vector_field}.{parent_alias}"
 
-
 If we have a look at the resulting clusters in the `clustering dashboard
 link
 above <https://cloud.relevance.ai/dataset/basic_subclustering/deploy/recent/cluster/>`__,
@@ -213,7 +208,6 @@ could further break down these clusters using subclustering.
 
 .. code:: ipython3
 
-
     vector_field = "product_image_clip_vector_"
 
     """
@@ -225,15 +219,15 @@ could further break down these clusters using subclustering.
     subcluster_alias = f"{parent_alias}_{subcluster_n_clusters}"
 
     from sklearn.cluster import KMeans
+
     model = KMeans(n_clusters=subcluster_n_clusters)
 
     ds.subcluster(
-       model=model,
-       parent_field=parent_field,
-       vector_fields=[vector_field],
-       alias=subcluster_alias
+        model=model,
+        parent_field=parent_field,
+        vector_fields=[vector_field],
+        alias=subcluster_alias,
     )
-
 
 
 
@@ -364,13 +358,11 @@ could further break down these clusters using subclustering.
 
 .. code:: ipython3
 
-
     """
     We can see the new subcluster in the schema
     """
 
     ds.schema
-
 
 
 
@@ -548,7 +540,6 @@ You can also view your subcluster results using
 
 
 .. code:: ipython3
-
 
     """
     View dataset health
@@ -767,21 +758,27 @@ Let's build a subcluster lookup to help us further analyze our clusters
     from collections import defaultdict
     from pprint import pprint
 
+
     def build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias):
         ## Let's retrieve our docs again with the new subcluster field
         docs = ds.get_all_documents(include_vector=True)
-        subclusters=defaultdict(dict)
-        doc_fields =[k for k in ds.schema.keys() if '.' not in k if not any([f in k for f in ["_vector_",  "insert_date_"]])]
+        subclusters = defaultdict(dict)
+        doc_fields = [
+            k
+            for k in ds.schema.keys()
+            if "." not in k
+            if not any([f in k for f in ["_vector_", "insert_date_"]])
+        ]
 
         for d in docs:
-            parent_cluster = d['_cluster_'][vector_field][parent_alias]
-            subcluster = d['_cluster_'][vector_field][subcluster_alias]
-            doc = { k:v for k, v in d.items() if k in doc_fields }
+            parent_cluster = d["_cluster_"][vector_field][parent_alias]
+            subcluster = d["_cluster_"][vector_field][subcluster_alias]
+            doc = {k: v for k, v in d.items() if k in doc_fields}
             subclusters[parent_cluster].setdefault(subcluster, []).append(doc)
         return subclusters
 
-    subclusters_3 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
 
+    subclusters_3 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
 
 
 
@@ -931,10 +928,10 @@ more well-defined groups -
 
 .. code:: ipython3
 
-    cluster_id = 'cluster-0'
-    subcluster_id = 'cluster-0-0'
+    cluster_id = "cluster-0"
+    subcluster_id = "cluster-0-0"
 
-    print(f'Sampling {subcluster_alias} in {vector_field} ...')
+    print(f"Sampling {subcluster_alias} in {vector_field} ...")
 
     sample_subclusters(subclusters_3, cluster_id, subcluster_id)
 
@@ -1058,13 +1055,14 @@ constantly referring back to the parent alias.
     subcluster_alias = f"{parent_alias}_{subcluster_n_clusters}"
 
     from sklearn.cluster import KMeans
+
     model = KMeans(n_clusters=subcluster_n_clusters)
 
     ds.subcluster(
-       model=model,
-       parent_field=parent_field,
-       vector_fields=[vector_field],
-       alias=subcluster_alias
+        model=model,
+        parent_field=parent_field,
+        vector_fields=[vector_field],
+        alias=subcluster_alias,
     )
 
 
@@ -1200,15 +1198,13 @@ subclusters
 
 .. code:: ipython3
 
-    subclusters_5  = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
+    subclusters_5 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
 
-    cluster_id = 'cluster-0'
-    subcluster_id = 'cluster-0-0'
+    cluster_id = "cluster-0"
+    subcluster_id = "cluster-0-0"
 
-    print(f'Sampling {subcluster_alias} in {vector_field} ...')
-    sample_subclusters(subclusters_5, cluster_id , subcluster_id)
-
-
+    print(f"Sampling {subcluster_alias} in {vector_field} ...")
+    sample_subclusters(subclusters_5, cluster_id, subcluster_id)
 
 
 .. parsed-literal::

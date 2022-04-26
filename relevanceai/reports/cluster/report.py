@@ -174,9 +174,11 @@ class ClusterReport(DocUtils):
         outlier_label: Union[str, int] = -1,
         centroids: Union[list, np.ndarray] = None,
         verbose: bool = False,
+        include_typecheck: bool = True,
     ):
 
-        self._typecheck_model(model)
+        if include_typecheck:
+            self._typecheck_model(model)
 
         if isinstance(X, list):
             self.X = np.array(X)
@@ -191,7 +193,8 @@ class ClusterReport(DocUtils):
         )
         self.model = model
         self.outlier_label = outlier_label
-        self._typecheck_centroid_vectors(centroids)
+        if include_typecheck:
+            self._typecheck_centroid_vectors(centroids)
         self._centroids = centroids
         self.verbose = verbose
 
@@ -201,7 +204,7 @@ class ClusterReport(DocUtils):
         if isinstance(centroid_vectors, (list, np.ndarray)):
             warnings.warn(Warning.CENTROID_VECTORS)
 
-    def _typecheck_model(self, model):
+    def _typecheck_model(self, model, verbose: bool = False):
         # Warns users that their model may not be supported
         # this may not be necessary and is removable in future
         if is_hdbscan_available():
@@ -210,7 +213,8 @@ class ClusterReport(DocUtils):
         if is_sklearn_available():
             if "sklearn" in str(type(model)):
                 return
-        warnings.warn(Warning.MODEL_NOT_SUPPORTED)
+        if verbose:
+            warnings.warn(Warning.MODEL_NOT_SUPPORTED)
 
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0):
@@ -347,9 +351,9 @@ class ClusterReport(DocUtils):
         self._store_basic_centroid_stats(self._internal_report["overall"])
 
         labels, counts = np.unique(self.cluster_labels, return_counts=True)
-        if self.verbose:
-            print("Detected the cluster labels:")
-            print(labels)
+        # if self.verbose:
+        #     print("Detected the cluster labels:")
+        #     print(labels)
 
         cluster_report = {"frequency": {"total": 0, "each": {}}}
 
@@ -690,3 +694,6 @@ class ClusterReport(DocUtils):
         return report_df.sort_values(by="class_name")[
             ["class_name", "instance_count", "rule_list"]
         ]
+
+    def __repr__(self):
+        return "ClusterReport"

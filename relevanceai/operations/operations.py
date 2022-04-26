@@ -1,4 +1,3 @@
-from re import I
 from typing import List, Dict, Optional, Any, Union
 from tqdm.auto import tqdm
 
@@ -25,6 +24,7 @@ class Operations(APIClient):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        include_cluster_report: bool = True,
         **kwargs,
     ):
         """
@@ -63,12 +63,15 @@ class Operations(APIClient):
             credentials=self.credentials,
             model=model,
             alias=alias,
+            vector_fields=vector_fields,
             **kwargs,
         )
-        return ops(
+        ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
         )
+        return ops
 
     @track
     def reduce_dims(
@@ -94,6 +97,17 @@ class Operations(APIClient):
         vector_fields: List[str]
             The list of vector fields to support
 
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.reduce_dims(
+                alias="sample",
+                vector_fields=["sample_1_vector_"],
+                model="umap"
+            )
+
         """
         from relevanceai.operations.dr import ReduceDimensionsOps
 
@@ -103,7 +117,7 @@ class Operations(APIClient):
             n_components=n_components,
             **kwargs,
         )
-        return ops.operate(
+        return ops.run(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
@@ -113,6 +127,7 @@ class Operations(APIClient):
     def vectorize(
         self,
         fields: List[str] = None,
+        filters: Optional[List] = None,
         **kwargs,
     ):
         """
@@ -120,19 +135,12 @@ class Operations(APIClient):
 
         Parameters
         ----------
-        image_fields: List[str]
-            A list of image fields to vectorize
+        fields: List[str]
+            A list of fields to vectorize
 
-        text_fields: List[str]
-            A list of text fields to vectorize
-
-        image_encoder
-            A deep learning image encoder from the vectorhub library. If no
-            encoder is specified, a default encoder (Clip2Vec) is loaded.
-
-        text_encoder
-            A deep learning text encoder from the vectorhub library. If no
-            encoder is specified, a default encoder (USE2Vec) is loaded.
+        encoders : Dict[str, List[Any]]
+            A dictionary that creates a mapping between your unstructured fields
+            and a list of encoders to run over those unstructured fields
 
         Returns
         -------
@@ -146,9 +154,6 @@ class Operations(APIClient):
         .. code-block::
 
             from relevanceai import Client
-            from vectorhub.encoders.text.sentence_transformers import SentenceTransformer2Vec
-
-            text_model = SentenceTransformer2Vec("all-mpnet-base-v2 ")
 
             client = Client()
 
@@ -156,22 +161,31 @@ class Operations(APIClient):
             ds = client.Dataset(dataset_id)
 
             ds.vectorize(
-                image_fields=["image_field_1", "image_field_2"],
-                text_fields=["text_field"],
-                text_model=text_model
+                fields=["text_field_1", "text_field_2"],
+                encoders={
+                    "text": ["mpnet", "use"]
+                }
             )
 
-        """
+            # This operation with create 4 new vector fields
+            #
+            # text_field_1_mpnet_vector_, text_field_1_mpnet_vector_
+            # text_field_1_use_vector_, text_field_1_use_vector_
 
+        """
+        if filters is None:
+            filters = []
         from relevanceai.operations.vector import VectorizeOps
 
         ops = VectorizeOps(
             credentials=self.credentials,
             **kwargs,
         )
+
         return ops(
             dataset_id=self.dataset_id,
             fields=[] if fields is None else fields,
+            filter=filters,
         )
 
     def advanced_vectorize(self, vectorizers: List[Vectorizer]):
@@ -609,7 +623,7 @@ class Operations(APIClient):
 
         # After you have created an app
         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
-        print(f"You can now access your deployable at {url}.")
+        print(f"You can now access your deployable at {url}")
         return url
 
     @track
@@ -651,6 +665,11 @@ class Operations(APIClient):
         chunksize: int = 20,
         workflow_alias: str = "sentiment",
         notes=None,
+        refresh: bool = False,
+        highlight: bool = False,
+        positive_sentiment_name: str = "positive",
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
     ):
         """
         Easily add sentiment to your dataset
@@ -673,6 +692,13 @@ class Operations(APIClient):
             The HuggingFace Model name.
         log_to_file: bool
             If True, puts the logs in a file. Otherwise, it will
+        highlight: bool
+            If True, this will include a SHAP explainer of what is causing positive
+            and negative sentiment
+        max_number_of_shap_documents: int
+            The maximum number of shap documents
+        min_abs_score: float
+            The minimum absolute score for it to be considered important based on SHAP algorithm.
 
         """
         from relevanceai.operations.text.sentiment.sentiment_workflow import (
@@ -692,6 +718,11 @@ class Operations(APIClient):
             chunksize=chunksize,
             workflow_alias=workflow_alias,
             notes=notes,
+            refresh=refresh,
+            highlight=highlight,
+            positive_sentiment_name=positive_sentiment_name,
+            max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
         )
 
     @track
@@ -893,4 +924,72 @@ class Operations(APIClient):
         from relevanceai.operations.text_finetuning import GPLOps
 
         ops = GPLOps.from_dataset(dataset=self)
-        return ops.operate(dataset=self, text_field=text_field, title_field=title_field)
+        return ops.run(dataset=self, text_field=text_field, title_field=title_field)
+
+    @track
+    def train_text_model_with_tripleloss(
+        self,
+        text_field: str,
+        label_field: str,
+        output_dir: str = "trained_model",
+        percentage_for_dev=None,
+    ):
+        """
+        Supervised training a text model using tripleloss
+
+        Example
+        ---------
+
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("ecommerce")
+            ops = SupervisedTripleLossFinetuneOps.from_dataset(
+                dataset=ds,
+                base_model="distilbert-base-uncased",
+                batch_size=16,
+                triple_loss_type:str='BatchHardSoftMarginTripletLoss'
+            )
+            ops.operate(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
+
+        Parameters
+        ------------
+
+        text_field: str
+            The field you want to use as input text for fine-tuning
+        label_field: str
+            The field indicating the classes of the input
+        output_dir: str
+            The path of the output directory
+        percentage_for_dev: float
+            a number between 0 and 1 showing how much of the data should be used for evaluation. No evaluation if None
+
+        """
+        # The model can also be trained using this method
+        from relevanceai.operations.text_finetuning import (
+            SupervisedTripleLossFinetuneOps,
+        )
+
+        ops = SupervisedTripleLossFinetuneOps.from_dataset(dataset=self)
+        return ops.run(
+            dataset=self,
+            text_field=text_field,
+            label_field=label_field,
+            output_dir=output_dir,
+            percentage_for_dev=percentage_for_dev,
+        )
+
+    def ClusterOps(self, alias, vector_fields: List, verbose: bool = False, **kwargs):
+        """
+        ClusterOps object
+        """
+        from relevanceai import ClusterOps
+
+        return ClusterOps(
+            credentials=self.credentials,
+            alias=alias,
+            vector_fields=vector_fields,
+            dataset_id=self.dataset_id,
+            verbose=verbose,
+            **kwargs,
+        )

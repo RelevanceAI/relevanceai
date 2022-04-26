@@ -76,14 +76,13 @@ already encoded for us.
 
 .. code:: ipython3
 
-
     from relevanceai.utils.datasets import get_ecommerce_dataset_encoded
-    docs = get_ecommerce_dataset_encoded()
 
+    docs = get_ecommerce_dataset_encoded()
 
 .. code:: ipython3
 
-    ds = client.Dataset('advanced_search_guide')
+    ds = client.Dataset("advanced_search_guide")
     # ds.delete()
     ds.upsert_documents(docs)
 
@@ -134,11 +133,10 @@ Simple Text Search
 
 .. code:: ipython3
 
-    results = ds.advanced_search(query="nike",
-                                fields_to_search=["product_title"],
-                                select_fields=['product_title']
-                                )
-    pd.DataFrame(results['results'])
+    results = ds.advanced_search(
+        query="nike", fields_to_search=["product_title"], select_fields=["product_title"]
+    )
+    pd.DataFrame(results["results"])
 
 
 
@@ -332,12 +330,17 @@ Let's prepare some functions to help us encode our data!
     # First - let's encode the image based on CLIP
     def encode_image(image):
         # Let us download the image and then preprocess it
-        image = preprocess(Image.open(requests.get(image, stream=True).raw)).unsqueeze(0).to(device)
+        image = (
+            preprocess(Image.open(requests.get(image, stream=True).raw))
+            .unsqueeze(0)
+            .to(device)
+        )
         # We then feed our processed image through the neural net to get a vector
         with torch.no_grad():
-          image_features = model.encode_image(image)
+            image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
+
 
     # Next - let's encode text based on CLIP
     def encode_text(text):
@@ -349,8 +352,6 @@ Let's prepare some functions to help us encode our data!
         return text_features.tolist()[0]
 
 
-
-
 .. parsed-literal::
 
     100%|███████████████████████████████████████| 338M/338M [00:06<00:00, 57.2MiB/s]
@@ -358,21 +359,17 @@ Let's prepare some functions to help us encode our data!
 
 .. code:: ipython3
 
-
     # Encoding the query
-    query_vector = encode_text('nike')
+    query_vector = encode_text("nike")
 
     results = ds.advanced_search(
         vector_search_query=[
-        {
-          "vector": query_vector,
-          "field":'product_title_clip_vector_'
-         }
-    ],
-    select_fields=['product_title'])
+            {"vector": query_vector, "field": "product_title_clip_vector_"}
+        ],
+        select_fields=["product_title"],
+    )
 
-    pd.DataFrame(results['results'])
-
+    pd.DataFrame(results["results"])
 
 
 
@@ -557,20 +554,16 @@ below.
 
 .. code:: ipython3
 
-
     results = ds.advanced_search(
         query="nike",
         fields_to_search=["product_title"],
         vector_search_query=[
-            {
-            "vector": query_vector,
-             "field":'product_title_clip_vector_'}
+            {"vector": query_vector, "field": "product_title_clip_vector_"}
         ],
-        select_fields = ["product_title"], # results to return
+        select_fields=["product_title"],  # results to return
     )
 
-    pd.DataFrame(results['results'])
-
+    pd.DataFrame(results["results"])
 
 
 
@@ -755,21 +748,16 @@ you! Simply add a ``weight`` parameter your dictionary inside
 
 .. code:: ipython3
 
-
     results = ds.advanced_search(
         query="nike",
         fields_to_search=["product_title"],
         vector_search_query=[
-            {
-              "vector": query_vector,
-              "field":'product_title_clip_vector_',
-              "weight": 0.5
-             }
+            {"vector": query_vector, "field": "product_title_clip_vector_", "weight": 0.5}
         ],
-        select_fields=["product_title"], # results to return
+        select_fields=["product_title"],  # results to return
     )
 
-    pd.DataFrame(results['results'])
+    pd.DataFrame(results["results"])
 
 
 
@@ -953,13 +941,11 @@ query as belows.
 
 .. code:: ipython3
 
-
     from PIL import Image
     import requests
     import numpy as np
 
-    image_url = 'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png'
-
+    image_url = "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png"
 
 .. raw:: html
 
@@ -973,7 +959,6 @@ Sample Query Image
 
 .. code:: ipython3
 
-
     from relevanceai import show_json
 
     image_vector = encode_image(image_url)
@@ -982,23 +967,31 @@ Sample Query Image
         query="nike",
         fields_to_search=["product_title"],
         vector_search_query=[
-            {"vector": query_vector, "field": 'product_title_clip_vector_', "weight": 0.2},
-            {"vector": image_vector, "field": 'product_image_clip_vector_', "weight": 0.8} ## weight the query more on the image vector
+            {"vector": query_vector, "field": "product_title_clip_vector_", "weight": 0.2},
+            {
+                "vector": image_vector,
+                "field": "product_image_clip_vector_",
+                "weight": 0.8,
+            },  ## weight the query more on the image vector
         ],
-        select_fields=["product_title", "product_image", "query", "product_price"], # results to return
+        select_fields=[
+            "product_title",
+            "product_image",
+            "query",
+            "product_price",
+        ],  # results to return
     )
 
 
     display(
         show_json(
-            results['results'],
-            text_fields=['product_title', 'query', 'product_price'],
-            image_fields=['product_image']
+            results["results"],
+            text_fields=["product_title", "query", "product_price"],
+            image_fields=["product_image"],
         )
     )
 
     # pd.DataFrame(results['results'])
-
 
 
 

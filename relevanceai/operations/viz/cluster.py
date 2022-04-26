@@ -14,10 +14,10 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import largest_indices
 from relevanceai.operations.cluster.cluster import ClusterOps
 from typing import Any, Dict, List, Optional, Tuple, Union, Set, Callable
-from relevanceai.operations.cluster.utils import _ClusterOps
+from relevanceai.operations.cluster.utils import ClusterUtils
 
 
-class ClusterVizOps(ClusterOps, _ClusterOps):
+class ClusterVizOps(ClusterOps, ClusterUtils):
     """
     Cluster Visualisations. May contain additional visualisation
     dependencies.

@@ -21,7 +21,6 @@ encoding.
     # remove `!` if running the line in a terminal
     !pip install -U vectorhub[clip]
 
-
 Follow the signup flow and get your credentials below otherwise, you can
 sign up/login and find your credentials in the settings
 `here <https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api>`__
@@ -31,7 +30,6 @@ sign up/login and find your credentials in the settings
 
 .. code:: python
 
-
     from relevanceai import Client
 
     """
@@ -39,8 +37,6 @@ sign up/login and find your credentials in the settings
     Once you have signed up, click on the value under `Activation token` and paste it here
     """
     client = Client()
-
-
 
 
 .. figure:: https://drive.google.com/uc?id=1owtvwZKTTcrOHBlgKTjqiMOvrN3DGrF6
@@ -61,13 +57,10 @@ Use one of our sample datasets to upload into your own project!
 
     pd.DataFrame.from_dict(documents).head()
 
-
 .. code:: python
-
 
     ds = client.Dataset("quickstart")
     ds.insert_documents(documents)
-
 
 See your dataset in the dashboard
 
@@ -91,19 +84,15 @@ details.
 
     # Set the default encode to encoding an image
     model.encode = model.encode_image
-    documents = model.encode_documents(fields=['product_image'], documents=documents)
-
-
+    documents = model.encode_documents(fields=["product_image"], documents=documents)
 
 .. code:: python
 
     ds.upsert_documents(documents=documents)
 
-
 .. code:: python
 
     ds.schema
-
 
 Monitor your vectors in the dashboard
 
@@ -125,7 +114,6 @@ link which is provided after the clustering is finished!
     cluster_model = KMeans(n_clusters=10)
     ds.cluster(cluster_model, ["product_image_clip_vector_"])
 
-
 You can see the new ``_cluster_`` field that is added to your document
 schema. Clustering results are uploaded back to the dataset as an
 additional field. The default ``alias`` of the cluster will be the
@@ -134,7 +122,6 @@ additional field. The default ``alias`` of the cluster will be the
 .. code:: python
 
     ds.schema
-
 
 See your cluster centers in the dashboard
 
@@ -158,17 +145,10 @@ https://cloud.relevance.ai/sdk/search.
 
 .. code:: python
 
-
     query = "gifts for the holidays"
     query_vector = model.encode(query)
-    multivector_query=[
-        { "vector": query_vector, "fields": ["product_image_clip_vector_"]}
-    ]
-    results = ds.vector_search(
-        multivector_query=multivector_query,
-        page_size=10
-    )
-
+    multivector_query = [{"vector": query_vector, "fields": ["product_image_clip_vector_"]}]
+    results = ds.vector_search(multivector_query=multivector_query, page_size=10)
 
 See your multi-vector search results in the dashboard
 

@@ -146,5 +146,5 @@ docsrc/source/autoapi/
 docsrc/source/
 
 
-*.log
 *.logs
+*.log

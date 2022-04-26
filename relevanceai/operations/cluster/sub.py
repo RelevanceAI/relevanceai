@@ -4,7 +4,7 @@ from tqdm.auto import tqdm
 from relevanceai.operations.cluster.partial import PartialClusterOps
 from relevanceai.operations.cluster.cluster import ClusterOps
 from relevanceai._api import APIClient
-from relevanceai.operations.cluster.utils import _ClusterOps
+from relevanceai.operations.cluster.utils import ClusterUtils
 
 
 class _SubClusterOps(ClusterOps):
@@ -58,7 +58,7 @@ class _SubClusterOps(ClusterOps):
             outlier_label=self.outlier_label,
         )
 
-    def operate(
+    def run(
         self,
         dataset_id: Optional[Union[str, Any]] = None,
         parent_field: str = None,
@@ -227,7 +227,7 @@ class _SubClusterOps(ClusterOps):
         return centroid_documents, documents
 
 
-class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
+class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
     def __init__(
         self,
         credentials,
@@ -602,7 +602,7 @@ class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
                 outlier_value=self.outlier_value,
                 outlier_label=self.outlier_label,
             )
-            ops.operate(
+            ops.run(
                 dataset_id=self.dataset_id,
                 vector_fields=vector_fields,
                 filters=cluster_filters,

@@ -9,7 +9,6 @@ Installation
     # remove `!` if running the line in a terminal
     !pip install -U RelevanceAI[notebook]==2.0.0
 
-
 Setup
 =====
 
@@ -20,8 +19,6 @@ First, you need to set up a client object to interact with RelevanceAI.
     from relevanceai import Client
 
     client = Client()
-
-
 
 Data
 ====
@@ -42,8 +39,7 @@ Load the data
     from relevanceai.utils.datasets import get_ecommerce_dataset_encoded
 
     documents = get_ecommerce_dataset_encoded()
-    {k:v for k, v in documents[0].items() if '_vector_' not in k}
-
+    {k: v for k, v in documents[0].items() if "_vector_" not in k}
 
 Upload the data to Relevance AI
 -------------------------------
@@ -56,7 +52,6 @@ Relevance AI account under the name ``quickstart_clustering_kmeans``
     ds = client.Dataset("quickstart_kmeans_clustering")
     ds.insert_documents(documents)
 
-
 Check the data
 --------------
 
@@ -64,11 +59,9 @@ Check the data
 
     ds.health()
 
-
 .. code:: python
 
     ds.schema
-
 
 Clustering
 ==========
@@ -86,24 +79,26 @@ We apply the Kmeams clustering algorithm to the vector field,
 
     model = KMeans(n_clusters=KMEAN_NUMBER_OF_CLUSTERS)
     clusterer = client.ClusterOps(alias=ALIAS, model=model)
-    clusterer.operate(dataset_id="quickstart_kmeans_clustering", vector_fields=["product_title_clip_vector_"])
-
-
-
-
-.. code:: python
-
-    #List closest to center of the cluster
-
-    clusterer.list_closest(dataset_id = "quickstart_kmeans_clustering", vector_field="product_title_clip_vector_")
-
+    clusterer.operate(
+        dataset_id="quickstart_kmeans_clustering",
+        vector_fields=["product_title_clip_vector_"],
+    )
 
 .. code:: python
 
-    #List furthest from the center of the cluster
+    # List closest to center of the cluster
 
-    clusterer.list_furthest(dataset_id = "quickstart_kmeans_clustering", vector_field="product_title_clip_vector_")
+    clusterer.list_closest(
+        dataset_id="quickstart_kmeans_clustering", vector_field="product_title_clip_vector_"
+    )
 
+.. code:: python
+
+    # List furthest from the center of the cluster
+
+    clusterer.list_furthest(
+        dataset_id="quickstart_kmeans_clustering", vector_field="product_title_clip_vector_"
+    )
 
 We download a small sample and show the clustering results using our
 json\_shower.
@@ -113,9 +108,12 @@ json\_shower.
     from relevanceai import show_json
 
     sample_documents = ds.sample(n=5)
-    samples = [{
-        'product_title':d['product_title'],
-        'cluster':d['_cluster_'][VECTOR_FIELD][ALIAS]
-    } for d in sample_documents]
+    samples = [
+        {
+            "product_title": d["product_title"],
+            "cluster": d["_cluster_"][VECTOR_FIELD][ALIAS],
+        }
+        for d in sample_documents
+    ]
 
-    show_json(samples, text_fields=['product_title', 'cluster'])
+    show_json(samples, text_fields=["product_title", "cluster"])
