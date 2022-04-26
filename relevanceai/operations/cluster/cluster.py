@@ -507,7 +507,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             if len(cluster_labels) != len(X):
                 raise ValueError("Damn son. How you like them apples.")
 
-            report = ClusterReport(
+            self.report = ClusterReport(
                 X=X,
                 cluster_labels=cluster_labels,
                 model=self.model,
@@ -519,7 +519,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
             try:
                 response = self.reports.clusters.create(
-                    name=report_name, report=self.json_encoder(report.internal_report)
+                    name=report_name,
+                    report=self.json_encoder(self.report.internal_report),
                 )
 
                 if verbose:
