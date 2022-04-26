@@ -448,7 +448,7 @@ class Client(APIClient, ConfigMixin):
     def references(self):
         from relevanceai.__init__ import __version__
 
-        REFERENCE_URL = f"https://relevanceai.readthedocs.io/en/{__version__}/"
+        REFERENCE_URL = f"https://relevanceai.readthedocs.io/en/v{__version__}/"
         MESSAGE = f"You can find your references here {REFERENCE_URL}."
         print(MESSAGE)
 
