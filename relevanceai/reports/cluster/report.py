@@ -25,7 +25,7 @@ to store it in Relevance AI.
     X = np.array(df['base_vector_'].tolist())
 
 
-    from relevanceai.workflows.cluster.reports.cluster_report import ClusterReport
+    from relevanceai.reports.cluster import ClusterReport
     from sklearn.cluster import KMeans
 
     N_CLUSTERS = 2
