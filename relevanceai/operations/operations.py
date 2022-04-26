@@ -63,6 +63,7 @@ class Operations(APIClient):
             credentials=self.credentials,
             model=model,
             alias=alias,
+            vector_fields=vector_fields,
             **kwargs,
         )
         ops(
@@ -665,9 +666,10 @@ class Operations(APIClient):
         workflow_alias: str = "sentiment",
         notes=None,
         refresh: bool = False,
-        include_shap_values: bool = False,
+        highlight: bool = False,
         positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: int = 5,
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
     ):
         """
         Easily add sentiment to your dataset
@@ -690,6 +692,13 @@ class Operations(APIClient):
             The HuggingFace Model name.
         log_to_file: bool
             If True, puts the logs in a file. Otherwise, it will
+        highlight: bool
+            If True, this will include a SHAP explainer of what is causing positive
+            and negative sentiment
+        max_number_of_shap_documents: int
+            The maximum number of shap documents
+        min_abs_score: float
+            The minimum absolute score for it to be considered important based on SHAP algorithm.
 
         """
         from relevanceai.operations.text.sentiment.sentiment_workflow import (
@@ -710,9 +719,10 @@ class Operations(APIClient):
             workflow_alias=workflow_alias,
             notes=notes,
             refresh=refresh,
-            include_shap_values=include_shap_values,
+            highlight=highlight,
             positive_sentiment_name=positive_sentiment_name,
             max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
         )
 
     @track
@@ -967,4 +977,19 @@ class Operations(APIClient):
             label_field=label_field,
             output_dir=output_dir,
             percentage_for_dev=percentage_for_dev,
+        )
+
+    def ClusterOps(self, alias, vector_fields: List, verbose: bool = False, **kwargs):
+        """
+        ClusterOps object
+        """
+        from relevanceai import ClusterOps
+
+        return ClusterOps(
+            credentials=self.credentials,
+            alias=alias,
+            vector_fields=vector_fields,
+            dataset_id=self.dataset_id,
+            verbose=verbose,
+            **kwargs,
         )

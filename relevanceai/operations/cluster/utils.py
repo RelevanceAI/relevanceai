@@ -27,7 +27,7 @@ from relevanceai.reports.cluster.evaluate import ClusterEvaluate
 from relevanceai.constants.errors import MissingClusterError
 
 
-class _ClusterOps(APIClient, DocUtils):
+class ClusterUtils(APIClient, DocUtils):
 
     alias: str
     dataset_id: str
@@ -398,7 +398,7 @@ class _ClusterOps(APIClient, DocUtils):
         ]
         return filters
 
-    # class _ClusterOpsShow(Read):
+    # class ClusterUtilsShow(Read):
     #     def __init__(self, df, is_image_field: bool):
     #         self.df = df
     #         if is_image_field:
@@ -532,6 +532,7 @@ class _ClusterOps(APIClient, DocUtils):
             The number of clusters
 
         """
+        # TODO - should this return a generator?
         # Mainly to be used for subclustering
         # Get the cluster alias
         if dataset_id is None:
