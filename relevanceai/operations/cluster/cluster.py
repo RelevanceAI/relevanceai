@@ -1353,7 +1353,10 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
     @beta
     @track
     def create_parent_cluster(
-        self, clusters_to_merge: dict, new_alias_suffix: str = "fixed"
+        self,
+        clusters_to_merge: dict,
+        new_alias_suffix: str = "fixed",
+        vector_fields: Optional[list] = None,
     ):
         """
         Merge multiple clusters into 1 parent cluster
@@ -1366,6 +1369,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             The clusters to merge
         new_alias_suffix: str
             What to append to the current alias
+        vector_fields: list
+            The vector fields to merge
 
         Example
         ---------
@@ -1384,11 +1389,15 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         from relevanceai.operations.cluster import SubClusterOps
 
         new_alias = self.alias + new_alias_suffix
+
         print(f"Subcluster alias is: `{new_alias}`")
+        if not hasattr(self, "vector_fields"):
+            raise ValueError("Please specify vector_fields=")
+
         subcluster_ops = SubClusterOps(
             credentials=self.credentials,
             alias=new_alias,
-            dataset=self._retrieve_dataset_id(),
+            dataset=self.dataset_id,
             vector_fields=self.vector_fields,
             parent_field=self.alias,
         )

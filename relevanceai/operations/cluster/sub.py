@@ -258,6 +258,9 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
                 self.dataset_id = dataset.dataset_id
             # needs to have the dataset_id attribute
 
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
         super().__init__(
             credentials=credentials,
             alias=alias,
