@@ -1400,6 +1400,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             dataset=self.dataset_id,
             vector_fields=self.vector_fields,
             parent_field=self.alias,
+            model=None,  # no model as we are manually creating the subclusters
         )
 
         for new_cluster_id, clusters_to_merge in clusters_to_merge.items():
@@ -1409,7 +1410,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
                 new_cluster_field = subcluster_ops._get_cluster_field_name(
                     alias=new_alias
                 )
-                update = {}
+                update: dict = {}
                 self.set_field(
                     new_cluster_field, update, new_cluster_id + "-" + cluster
                 )
