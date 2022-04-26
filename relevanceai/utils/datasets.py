@@ -614,6 +614,7 @@ def get_titanic_dataset(
     df = pd.read_csv(FN)
     if output_format == "pandas_dataframe":
         return df
+    df["_id"] = df.index
     docs = df.to_dict(orient="records")
     for d in docs:
         d["value_vector_"] = eval(d["value_vector_"])
