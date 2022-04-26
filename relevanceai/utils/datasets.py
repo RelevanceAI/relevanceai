@@ -98,7 +98,7 @@ class ExampleDatasets:
                 data = pd.read_excel(url, index_col=0).to_dict(orient="records")
             except ModuleNotFoundError:
                 raise MissingPackageExtraError("excel")
-
+        data["_id"] = data.index
         if number_of_documents:
             data = data[:number_of_documents]
         if len(select_fields) > 0:
