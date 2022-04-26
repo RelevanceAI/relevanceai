@@ -90,15 +90,16 @@ class ExampleDatasets:
     ):
         select_fields = [] if select_fields is None else select_fields
         if csv:
-            data = pd.read_csv(url, index_col=0, encoding=encoding).to_dict(
-                orient="records"
-            )
+            data = pd.read_csv(url, index_col=0, encoding=encoding)
         else:
             try:
-                data = pd.read_excel(url, index_col=0).to_dict(orient="records")
+                data = pd.read_excel(url, index_col=0)
             except ModuleNotFoundError:
                 raise MissingPackageExtraError("excel")
+
         data["_id"] = data.index
+        data = data.to_dict(orient="records")
+
         if number_of_documents:
             data = data[:number_of_documents]
         if len(select_fields) > 0:
