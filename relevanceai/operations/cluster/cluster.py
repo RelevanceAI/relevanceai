@@ -1241,7 +1241,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             self.min_cluster = f"cluster-{min(cluster_labels)}"
 
         print(f"Merging clusters to {cluster_labels[0]}")
-        update = {f"_cluster_.{self.vector_field}.{self.alias}", cluster_labels[0]}
+        update = {f"_cluster_.{self.vector_field}.{self.alias}": cluster_labels[0]}
 
         results = self.datasets.documents.update_where(
             dataset_id=self.dataset_id,
