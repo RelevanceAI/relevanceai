@@ -1337,7 +1337,10 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         .. code-block::
 
             ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps()
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
             cluster_ops.centroids
 
         """
@@ -1350,3 +1353,35 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
                 include_vector=True,
             )
         return self._centroids
+
+    def insert_centroids(self, centroid_documents):
+        """
+        Insert your centroids
+
+        Example
+        ----------
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.insert_centroids(
+                [
+                    {
+                        "_id": "cluster-1",
+                        "sample_vector_": [1, 1, 1]
+                    }
+                ]
+            )
+
+        """
+        results = self.services.cluster.centroids.insert(
+            dataset_id=self.dataset_id,
+            cluster_centers=centroid_documents,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+        return results

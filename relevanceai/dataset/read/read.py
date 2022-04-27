@@ -687,7 +687,7 @@ class Read(Statistics):
             number_of_documents=chunksize,
             filters=filters,
             select_fields=select_fields,
-            include_after_id=True
+            include_after_id=True,
         )
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
