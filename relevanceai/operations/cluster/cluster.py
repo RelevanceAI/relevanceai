@@ -126,7 +126,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             self.package = self._get_package(self.model)
 
         self.alias = self._get_alias(alias)
-        self.vector_fields = vector_fields
+        self.vector_fields = vector_fields # type: ignore
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
 
