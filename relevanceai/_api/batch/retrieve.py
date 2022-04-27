@@ -96,7 +96,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
                     after_id=after_id,
                 )
                 _data = resp["documents"]
-                after_id: list = resp["after_id"]
+                after_id = resp["after_id"]
                 if (_data == []) or (after_id == []):
                     break
                 data += _data
