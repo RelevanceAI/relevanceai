@@ -898,7 +898,8 @@ class Write(APIClient):
 
     def update_where(self, update: dict, filters):
         """
-        Updating where something is.
+        Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
+        For more information about filters refer to datasets.documents.get_where.
 
         Example
         ---------
