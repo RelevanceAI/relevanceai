@@ -1318,7 +1318,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         # Does this insert properly?
         if isinstance(centroid_vectors, dict):
-            self._centroid_documents = [
+            centroid_vectors = [
                 {"_id": k, self.vector_fields[0]: v}
                 for k, v in centroid_vectors.items()
             ]
