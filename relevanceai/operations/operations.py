@@ -7,20 +7,16 @@ from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations.vector.vectorizer import Vectorizer
-from relevanceai.operations.vector.local_nearest_neighbours import NearestNeighbours
-from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS
 from relevanceai.utils.logger import FileLogger
 
+from relevanceai.dataset.io import IO
 
-class Operations(Write):
-    def __init__(
-        self,
-        credentials: Credentials,
-        dataset_id: str,
-    ):
+
+class Operations(Write, IO):
+    def __init__(self, credentials: Credentials, dataset_id: str, **kwargs):
         self.credentials = credentials
         self.dataset_id = dataset_id
-        super().__init__(self.credentials)
+        super().__init__(credentials=self.credentials, dataset_id=dataset_id, **kwargs)
 
     @track
     def cluster(
@@ -1138,11 +1134,16 @@ class Operations(Write):
         label_documents: List[Dict],
         vector: List[float],
         label_vector_field: str,
-        similarity_metric: NEAREST_NEIGHBOURS,
+        similarity_metric,
         number_of_labels: int,
         label_fields: List[str],
         score_field="_label_score",
     ):
+
+        from relevanceai.operations.vector.local_nearest_neighbours import (
+            NearestNeighbours,
+        )
+
         nearest_neighbors: List[Dict] = NearestNeighbours.get_nearest_neighbours(
             label_documents,
             vector,

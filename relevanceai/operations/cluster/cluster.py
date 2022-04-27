@@ -10,13 +10,9 @@ from typing import (
 
 import numpy as np
 
-from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
-from relevanceai.constants.errors import MissingPackageError
-from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import beta, track, deprecated
-from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
     Messages,
@@ -37,7 +33,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         # State the vector fields and alias in the ClusterOps object
         cluster_ops = client.ClusterOps(
-            alias="kmeans-16",
+           alias="kmeans-16",
             dataset_id="sample_dataset_id",
             vector_fields=['sample_vector_']
         )
@@ -996,8 +992,11 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
     list_closest = closest
     list_furthest = furthest
 
-    def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
-        """Helper method to get multiple dataset values"""
+    def _retrieve_dataset_id(self, dataset) -> str:
+        """Helper method to get multiple dataset values.
+        Dataset can be either a Dataset or a string object."""
+        from relevanceai.dataset import Dataset
+
         if isinstance(dataset, Dataset):
             dataset_id: str = dataset.dataset_id
         elif isinstance(dataset, str):
@@ -1025,7 +1024,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        dataset: Optional[Union[str, Dataset]] = None,
+        dataset=None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.

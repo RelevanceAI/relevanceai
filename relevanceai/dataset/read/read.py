@@ -11,7 +11,6 @@ from typing import Optional, Union, Dict, List
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 
-from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.statistics import Statistics
@@ -44,9 +43,13 @@ class Read(Statistics):
         highlight_fields: Optional[Dict[str, list]] = None,
         **kwargs,
     ):
+
+        from relevanceai.operations.cluster.centroids import Centroids
+
         self.credentials = credentials
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
+
         self.centroids = Centroids(
             credentials=credentials,
             dataset_id=self.dataset_id,
