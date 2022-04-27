@@ -1,7 +1,6 @@
 """
 Visualisations for your clustering.
 """
-from re import I
 import pandas as pd
 import numpy as np
 from relevanceai.constants.errors import (

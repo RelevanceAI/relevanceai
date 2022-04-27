@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
-from relevanceai._api import APIClient
+from relevanceai.dataset.read import Read
 
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
@@ -20,7 +20,7 @@ from relevanceai.utils import make_id
 from relevanceai.constants.warning import Warning
 
 
-class Write(APIClient):
+class Write(Read):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
 
