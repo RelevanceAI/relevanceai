@@ -895,3 +895,25 @@ class Write(APIClient):
         return self.datasets.documents.bulk_delete(
             dataset_id=self.dataset_id, ids=document_ids
         )
+
+    def update_where(self, update: dict, filters):
+        """
+        Updating where something is.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset()
+            ds.update_where(
+                {"value": 3},
+                filters=ds['value'] != 10 # apply a simple filter
+            )
+
+        """
+        return self.datasets.documents.update_where(
+            dataset_id=self.dataset_id, update=update, filters=filters
+        )
