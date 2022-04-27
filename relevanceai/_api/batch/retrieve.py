@@ -31,7 +31,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
         sort: Optional[list] = None,
         select_fields: Optional[list] = None,
         include_vector: bool = True,
-        include_after_id: bool = True,
+        include_after_id: bool = False,
         include_cursor: bool = False,
         after_id: Optional[list] = None,
     ):
