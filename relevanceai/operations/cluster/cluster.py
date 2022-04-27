@@ -1317,15 +1317,14 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         )
 
         # Does this insert properly?
-        if isinstance(centroid_vectors, dict):
-            self._centroid_documents = [
-                {"_id": k, self.vector_fields[0]: v}
-                for k, v in centroid_vectors.items()
-            ]
+        # if isinstance(centroid_vectors, dict):
+        self._centroid_documents = [
+            {"_id": k, self.vector_fields[0]: v} for k, v in centroid_vectors.items()
+        ]
         self._insert_centroids(
             dataset_id=self.dataset_id,
             vector_fields=[self.vector_fields[0]],
-            centroid_documents=centroid_vectors,
+            centroid_documents=self._centroid_documents,
         )
         return centroid_vectors
 
