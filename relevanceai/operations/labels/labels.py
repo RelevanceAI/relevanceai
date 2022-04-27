@@ -786,7 +786,7 @@ class LabelOps(BaseOps, Write):
             self._set_up_nltk()
 
         # Mock a dummy documents so I can loop immediately without weird logic
-        documents: dict = {"documents": [[]], "cursor": None}
+        documents: dict = {"documents": [[]], "after_id": None}
         if verbose:
             print("Updating word count...")
         while len(documents["documents"]) > 0 and (
@@ -796,10 +796,10 @@ class LabelOps(BaseOps, Write):
             documents = self._get_documents(
                 dataset_id=self.dataset_id,
                 filters=filters,
-                cursor=documents["cursor"],
+                after_id=documents["after_id"],
                 batch_size=batch_size,
                 select_fields=text_fields,
-                include_cursor=True,
+                include_after_id=True,
             )
             string = self.generate_text_list_from_documents(
                 documents=documents["documents"],
