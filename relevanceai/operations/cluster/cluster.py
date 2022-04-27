@@ -1231,7 +1231,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             print(e)
             pass
 
-        update = {}
+        update: dict = {}
 
         if isinstance(cluster_labels[0], str):
             self.clusters = [cluster for cluster in sorted(cluster_labels)]
