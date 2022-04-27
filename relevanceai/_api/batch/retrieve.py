@@ -92,7 +92,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
                     is_random=False,
                     random_state=0,
                     filters=filters,
-                    cursor=_cursor,
+                    cursor=None,
                     after_id=after_id,
                 )
                 _data = resp["documents"]
