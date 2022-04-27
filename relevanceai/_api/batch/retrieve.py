@@ -31,7 +31,9 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
         sort: Optional[list] = None,
         select_fields: Optional[list] = None,
         include_vector: bool = True,
+        include_after_id: bool = True,
         include_cursor: bool = False,
+        after_id: Optional[list] = None,
     ):
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -72,11 +74,12 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             random_state=0,
             filters=filters,
             cursor=cursor,
+            after_id=after_id,
         )
         data = resp["documents"]
 
         if number_of_documents > batch_size:
-            _cursor = resp["cursor"]
+            after_id = resp["after_id"]
             _page = 0
             while resp:
                 self.logger.debug(f"Paginating {_page} batch size {batch_size} ...")
@@ -90,6 +93,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
                     random_state=0,
                     filters=filters,
                     cursor=_cursor,
+                    after_id=after_id,
                 )
                 _data = resp["documents"]
                 _cursor = resp["cursor"]
@@ -101,8 +105,8 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
                 _page += 1
             data = data[:number_of_documents]
 
-        if include_cursor:
-            return {"documents": data, "cursor": resp["cursor"]}
+        if include_after_id:
+            return {"documents": data, "after_id": resp["after_id"]}
         return data
 
     @lru_cache(maxsize=MAX_CACHESIZE)

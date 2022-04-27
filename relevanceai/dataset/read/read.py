@@ -574,6 +574,8 @@ class Read(Statistics):
         select_fields: Optional[list] = None,
         include_vector: bool = True,
         include_cursor: bool = False,
+        after_id: Optional[list] = None,
+        include_after_id: bool = True,
     ):
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -611,6 +613,8 @@ class Read(Statistics):
             select_fields=select_fields,
             include_vector=include_vector,
             include_cursor=include_cursor,
+            after_id=after_id,
+            include_after_id=include_after_id,
         )
 
     @track
@@ -691,7 +695,7 @@ class Read(Statistics):
                 docs = self.get_documents(
                     number_of_documents=chunksize,
                     include_cursor=True,
-                    cursor=docs["cursor"],
+                    after_id=docs["after_id"],
                     filters=filters,
                 )
                 pbar.update(1)
