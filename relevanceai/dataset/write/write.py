@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
-from relevanceai._api import APIClient
+from relevanceai.dataset.read import Read
 
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
@@ -20,7 +20,7 @@ from relevanceai.utils import make_id
 from relevanceai.constants.warning import Warning
 
 
-class Write(APIClient):
+class Write(Read):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
 
@@ -894,4 +894,27 @@ class Write(APIClient):
         """
         return self.datasets.documents.bulk_delete(
             dataset_id=self.dataset_id, ids=document_ids
+        )
+
+    def update_where(self, update: dict, filters):
+        """
+        Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
+        For more information about filters refer to datasets.documents.get_where.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset()
+            ds.update_where(
+                {"value": 3},
+                filters=ds['value'] != 10 # apply a simple filter
+            )
+
+        """
+        return self.datasets.documents.update_where(
+            dataset_id=self.dataset_id, update=update, filters=filters
         )

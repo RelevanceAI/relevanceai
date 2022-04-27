@@ -83,6 +83,7 @@ class SentimentOps(BaseOps):
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
+        sentiment = self.label_mapping.get(sentiment, sentiment)
         if sentiment == "neutral":
             overall_sentiment = 0
         else:

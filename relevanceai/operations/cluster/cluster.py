@@ -10,13 +10,9 @@ from typing import (
 
 import numpy as np
 
-from relevanceai._api import APIClient
 from relevanceai.client.helpers import Credentials
-from relevanceai.constants.errors import MissingPackageError
-from relevanceai.dataset import Dataset
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import beta, track, deprecated
-from relevanceai.operations import BaseOps
 from relevanceai.constants import (
     Warning,
     Messages,
@@ -37,7 +33,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         # State the vector fields and alias in the ClusterOps object
         cluster_ops = client.ClusterOps(
-            alias="kmeans-16",
+           alias="kmeans-16",
             dataset_id="sample_dataset_id",
             vector_fields=['sample_vector_']
         )
@@ -126,6 +122,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             self.package = self._get_package(self.model)
 
         self.alias = self._get_alias(alias)
+        self.vector_fields = vector_fields  # type: ignore
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
 
@@ -995,8 +992,11 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
     list_closest = closest
     list_furthest = furthest
 
-    def _retrieve_dataset_id(self, dataset: Optional[Union[str, Dataset]]) -> str:
-        """Helper method to get multiple dataset values"""
+    def _retrieve_dataset_id(self, dataset) -> str:
+        """Helper method to get multiple dataset values.
+        Dataset can be either a Dataset or a string object."""
+        from relevanceai.dataset import Dataset
+
         if isinstance(dataset, Dataset):
             dataset_id: str = dataset.dataset_id
         elif isinstance(dataset, str):
@@ -1024,7 +1024,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         page: int = 1,
         asc: bool = False,
         flatten: bool = True,
-        dataset: Optional[Union[str, Dataset]] = None,
+        dataset=None,
     ):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
@@ -1161,6 +1161,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         cluster_labels: List,
         alias: Optional[str] = None,
         show_progress_bar: bool = True,
+        **update_kwargs,
     ):
         """
         Parameters
@@ -1196,91 +1197,90 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         """
 
         if alias is None:
-            alias = "communitydetection"
-            print("No alias given, assuming `communitydetection`")
+            if hasattr(self, "alias"):
+                alias = self.alias
+            else:
+                raise ValueError("Please specify alias= as it was not detected")
 
-        centroid_documents = self.services.cluster.centroids.list(
-            dataset_id=self.dataset_id,
-            vector_fields=[self.vector_field],
-            alias=alias,
-            include_vector=True,
-        )["results"]
+        try:
+            centroid_documents = self.services.cluster.centroids.list(
+                dataset_id=self.dataset_id,
+                vector_fields=[self.vector_field],
+                alias=alias,
+                include_vector=True,
+            )["results"]
 
-        relevant_centroids = [
-            centroid[self.vector_field]
-            for centroid in centroid_documents
-            if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
-        ]
-        new_centroid = np.array(relevant_centroids).mean(0).tolist()
-        if isinstance(cluster_labels[0], int):
-            new_centroid_doc = {
-                "_id": f"cluster-{cluster_labels[0]}",
-                self.vector_field: new_centroid,
-            }
-        elif isinstance(cluster_labels[0], str):
+            relevant_centroids = [
+                centroid[self.vector_field]
+                for centroid in centroid_documents
+                if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
+            ]
+            new_centroid = np.array(relevant_centroids).mean(0).tolist()
             if isinstance(cluster_labels[0], int):
                 new_centroid_doc = {
-                    "_id": cluster_labels,
+                    "_id": f"cluster-{cluster_labels[0]}",
                     self.vector_field: new_centroid,
                 }
+            elif isinstance(cluster_labels[0], str):
+                if isinstance(cluster_labels[0], int):
+                    new_centroid_doc = {
+                        "_id": cluster_labels,
+                        self.vector_field: new_centroid,
+                    }
+        except Exception as e:
+            print(e)
+            pass
 
-        class Merge(DocUtils):
-            def __init__(self, clusters, vector_field, alias):
-                if isinstance(clusters[0], str):
-                    self.clusters = [cluster for cluster in sorted(clusters)]
-                    self.min_cluster = clusters[0]
-                else:
-                    self.clusters = [
-                        f"cluster-{cluster}" for cluster in sorted(clusters)
-                    ]
-                    self.min_cluster = f"cluster-{min(clusters)}"
+        update: dict = {}
 
-                self.vector_field = vector_field
-                self.alias = alias
+        if isinstance(cluster_labels[0], str):
+            self.clusters = [cluster for cluster in sorted(cluster_labels)]
+            self.min_cluster = cluster_labels[0]
+        else:
+            self.clusters = [f"cluster-{cluster}" for cluster in sorted(cluster_labels)]
+            self.min_cluster = f"cluster-{min(cluster_labels)}"
 
-            def __call__(self, documents):
-                for document in documents:
-                    for cluster in self.clusters[1:]:
-                        if (
-                            self.get_field(
-                                f"_cluster_.{self.vector_field}.{self.alias}", document
-                            )
-                            == cluster
-                        ):
-                            self.set_field(
-                                f"_cluster_.{self.vector_field}.{self.alias}",
-                                document,
-                                self.min_cluster,
-                            )
-                return documents
+        print(f"Merging clusters to {cluster_labels[0]}")
+        update = {f"_cluster_.{self.vector_field}.{self.alias}": cluster_labels[0]}
 
-        merge = Merge(cluster_labels, self.vector_field, alias)
-        self.pull_update_push(
+        results = self.datasets.documents.update_where(
             dataset_id=self.dataset_id,
-            update_function=merge,
-            show_progress_bar=show_progress_bar,
+            update=update,
+            filters=[
+                {
+                    "field": self._get_cluster_field_name(alias=alias),
+                    "filter_type": "categories",
+                    "condition": "==",
+                    "condition_value": cluster_labels[1:],
+                }
+            ],
         )
+        print(results)
 
-        self.services.cluster.centroids.update(
-            dataset_id=self.dataset_id,
-            vector_fields=[self.vector_field],
-            alias=alias,
-            cluster_centers=[new_centroid_doc],
-        )
-
-        cluster: int
-
-        for cluster in cluster_labels[1:]:
-            if isinstance(cluster, str):
-                centroid_id = cluster
-            else:
-                centroid_id = f"cluster-{cluster}"
-            self.services.cluster.centroids.delete(
+        try:
+            # If there are no centroids - move on
+            self.services.cluster.centroids.update(
                 dataset_id=self.dataset_id,
-                centroid_id=centroid_id,
-                alias=self.alias,
                 vector_fields=[self.vector_field],
+                alias=alias,
+                cluster_centers=[new_centroid_doc],
             )
+
+            cluster: int
+
+            for cluster in cluster_labels[1:]:
+                if isinstance(cluster, str):
+                    centroid_id = cluster
+                else:
+                    centroid_id = f"cluster-{cluster}"
+                self.services.cluster.centroids.delete(
+                    dataset_id=self.dataset_id,
+                    centroid_id=centroid_id,
+                    alias=self.alias,
+                    vector_fields=[self.vector_field],
+                )
+        except:
+            pass
 
     def create_centroids(self):
         """
@@ -1318,7 +1318,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         # Does this insert properly?
         if isinstance(centroid_vectors, dict):
-            self._centroid_documents = [
+            centroid_vectors = [
                 {"_id": k, self.vector_fields[0]: v}
                 for k, v in centroid_vectors.items()
             ]
