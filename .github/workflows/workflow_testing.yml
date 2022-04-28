@@ -78,7 +78,7 @@ jobs:
           TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
         run: |
           cd workflows
-          python scripts/test_notebooks.py -p workflows -v $RELEVANCEAI_VERSION --notebooks ${{ matrix.notebook }}
+          python scripts/test_notebooks.py -v $RELEVANCEAI_VERSION --notebooks ${{ matrix.notebook }}
 
 
   create-new-release-branch:
