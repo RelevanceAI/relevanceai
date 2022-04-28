@@ -123,6 +123,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         self.alias = self._get_alias(alias)
         self.vector_fields = vector_fields  # type: ignore
+        if self.vector_fields is not None and len(self.vector_fields) >= 1:
+            self.vector_field = self.vector_fields[0]
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
 
