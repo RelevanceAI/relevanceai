@@ -103,18 +103,6 @@ jobs:
           echo $RELEVANCEAI_VERSION
           echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-          cache: 'pip'
-
-
-      - name: Install requirements
-        run: |
-          pip install --upgrade pip
-          python -m pip install -r workflows/requirements.txt
-
       - name: Create new workflows branch
         env:
           GITHUB_EMAIL: 'action@github.com'
