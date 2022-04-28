@@ -68,8 +68,10 @@ jobs:
         run: |
           pip install --upgrade pip
           python -c "import sys; print(sys.version)"
+
+          cd workflows
+          pip install pyyaml
           python -m pip install -e .[tests]
-          python -m pip install -r workflows/requirements.txt
 
       - name: Run tests
         env:
