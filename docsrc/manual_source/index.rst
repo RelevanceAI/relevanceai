@@ -9,13 +9,16 @@ Welcome to Relevance AI's documentation!
 Relevance AI Concepts
 ---------------------------
 
+📄 **Documents** refer to JSONs/Python dictionaries that contain metadata and vectors.
+
+🎺 **Datasets** refer to documents that are stored online in Relevance AI.
+
 🧑‍🔬 **Workflows** allow users to add new features/perform useful operations (e.g. - vectorizing and clustering text data). They are made up of many operators.
+
+⚡ **Vectorizers** refer to machine learning models that can turn data into vectors (e.g. Word2vec turns words into vectors).
 
 🚡 **Operators** are the building blocks used to provide users the ability to add something new.
 
-📄 **Documents** refer to JSONs/Python dictionaries that contain metadata and vectors.
-
-⚡ **Vectorizers** refer to machine learning models that can turn data into vectors (e.g. Word2vec turns words into vectors).
 
 .. image:: terminology.png
   :width: 800
