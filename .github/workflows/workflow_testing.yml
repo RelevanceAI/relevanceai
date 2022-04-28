@@ -20,6 +20,7 @@ jobs:
       - id: set-notebook-fpaths
         name: Setting notebook fpath output
         run: |
+          cd workflows
           export WORKFLOW_IGNORE=workflows/ignore-workflows.txt
           export NOTEBOOK_FPATHS=$( grep '.ipynb' $WORKFLOW_IGNORE| grep -v '#' $WORKFLOW_IGNORE | jq -Rsc '. / "\n" - [""]' )
           echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
