@@ -1,0 +1,137 @@
+name: Testing workflow branch creation upon release
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  setup-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      notebook-fpaths: ${{ steps.set-notebook-fpaths.outputs.notebook-fpaths }}
+    steps:
+      - name: Checkout workflows repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/workflows
+          ref: refs/heads/main
+          path: workflows
+
+      - id: set-notebook-fpaths
+        name: Setting notebook fpath output
+        run: |
+          export WORKFLOW_IGNORE=workflows/ignore-workflows.txt
+          export NOTEBOOK_FPATHS=$( grep '.ipynb' $WORKFLOW_IGNORE| grep -v '#' $WORKFLOW_IGNORE | jq -Rsc '. / "\n" - [""]' )
+          echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
+
+  test-notebooks:
+    name: Test ${{ matrix.notebook }}
+    needs: setup-tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest]
+        python-version: [ '3.7' ]
+        # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        notebook: ${{fromJSON(needs.setup-tests.outputs.notebook-fpaths)}}
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+          # - os: macos-latest
+          #   path: ~/Library/Caches/pip
+          # - os: windows-latest
+          #   path: ~\AppData\Local\pip\Cache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout workflows repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/workflows
+          ref: refs/heads/main
+          path: workflows
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Set SDK version as Github env var
+        run: |
+          RELEVANCEAI_VERSION=$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          echo $RELEVANCEAI_VERSION
+          echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
+          python -c "import sys; print(sys.version)"
+          python -m pip install -e .[tests]
+          python -m pip install -r workflows/requirements.txt
+
+      - name: Run tests
+        env:
+          TEST_ACTIVATION_TOKEN: ${{ secrets.SECRET_US_TOKEN}}
+        run: |
+          python scripts/test_notebooks.py -p workflows -v $RELEVANCEAI_VERSION --notebooks ${{ matrix.notebook }}
+
+
+  create-new-release-branch:
+    name: Create new release branch in workflows
+    needs: test-notebooks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Checkout workflows repo
+        uses: actions/checkout@v2
+        with:
+          repository: RelevanceAI/workflows
+          ref: refs/heads/main
+          path: workflows
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Set SDK version as Github env var
+        run: |
+          RELEVANCEAI_VERSION=$( cat $PWD/relevanceai/__init__.py | grep __version__ | head -1 | cut -d'"' -f 2 )
+          echo $RELEVANCEAI_VERSION
+          echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          cache: 'pip'
+
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip
+          python -m pip install -r workflows/requirements.txt
+
+      - name: Create new workflows branch
+        env:
+          GITHUB_EMAIL: 'action@github.com'
+          GITHUB_USERNAME: 'github-actions[bot]'
+          GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          cd workflows
+
+          git config --local user.email "$GITHUB_EMAIL"
+          git config --local user.name "$GITHUB_USERNAME"
+
+          GIT_BRANCH_VERSION=v$RELEVANCEAI_VERSION
+
+          git checkout $GIT_BRANCH_VERSION 2>/dev/null && git pull || git checkout -b $GIT_BRANCH_VERSION
+
+          git add .
+          git status | grep -q "Changes to be committed"
+          git commit -m "New workflows version for RelevanceAI $GIT_BRANCH_VERSION"
+
+          GITHUB_URL=https://$GITHUB_USERNAME:$GITHUB_PAT@github.com/RelevanceAI/workflows.git
+          git push $GITHUB_URL || git push -u $GITHUB_URL origin HEAD:v$RELEVANCEAI_VERSION
+
+          gh pr create --base main --head $GIT_BRANCH_VERSION --title $GIT_BRANCH_VERSION --body $GIT_BRANCH_VERSION
