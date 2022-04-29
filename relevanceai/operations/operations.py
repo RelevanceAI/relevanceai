@@ -661,15 +661,11 @@ class Operations(Write, IO):
         field: str,
         output_field: str = None,
         model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
-        log_to_file: bool = True,
-        chunksize: int = 20,
-        workflow_alias: str = "sentiment",
-        notes=None,
-        refresh: bool = False,
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
+        **apply_args,
     ):
         """
         Easily add sentiment to your dataset
@@ -701,29 +697,47 @@ class Operations(Write, IO):
             The minimum absolute score for it to be considered important based on SHAP algorithm.
 
         """
-        from relevanceai.operations.text.sentiment.sentiment_workflow import (
-            SentimentWorkflow,
-        )
+        from relevanceai.operations.text.sentiment import SentimentOps
 
         if output_field is None:
             output_field = "_sentiment_." + field
-        workflow = SentimentWorkflow(
-            model_name=model_name, workflow_alias=workflow_alias
-        )
-        return workflow.fit_dataset(
-            dataset=self,
-            input_field=field,
+
+        ops = SentimentOps(model_naeme=model_name)
+
+        def analyze_sentiment(text):
+            return ops.analyze_sentiment(
+                text=text,
+                highlight=highlight,
+                positive_sentiment_name=positive_sentiment_name,
+                max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
+            )
+
+        def analyze_sentiment_document(doc):
+            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field)))
+            return doc
+
+        return self.bulk_apply(
+            analyze_sentiment_document,
             output_field=output_field,
-            log_to_file=log_to_file,
-            chunksize=chunksize,
-            workflow_alias=workflow_alias,
-            notes=notes,
-            refresh=refresh,
-            highlight=highlight,
-            positive_sentiment_name=positive_sentiment_name,
-            max_number_of_shap_documents=max_number_of_shap_documents,
-            min_abs_score=min_abs_score,
+            select_fields=[field],
+            **apply_args,
         )
+
+        # return .fit_dataset(
+        #     dataset=self,
+        #     input_field=field,
+        #     output_field=output_field,
+        #     log_to_file=log_to_file,
+        #     chunksize=chunksize,
+        #     workflow_alias=workflow_alias,
+        #     notes=notes,
+        #     refresh=refresh,
+        #     highlight=highlight,
+        #     positive_sentiment_name=positive_sentiment_name,
+        #     max_number_of_shap_documents=max_number_of_shap_documents,
+        #     min_abs_score=min_abs_score,
+        # )
 
     @track
     def question_answer(
