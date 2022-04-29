@@ -25,7 +25,7 @@ class TestBaseOps:
     def test_from_dataset(self, test_clustered_df: Dataset):
         ops = ClusterOps.from_dataset(
             dataset=test_clustered_df,
-            alias="kmeans-10",
+            alias="kmeans-25",
             vector_fields=["sample_1_vector_"],
         )
         closest = ops.list_closest()
