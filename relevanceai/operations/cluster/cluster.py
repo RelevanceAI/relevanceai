@@ -1,12 +1,4 @@
-from typing import (
-    Any,
-    Set,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -57,7 +49,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         credentials: Credentials,
         model: Any = None,
         alias: str = None,
-        n_clusters: Optional[int] = None,
+        n_clusters: Optional[int] = 25,
         cluster_config: Optional[Dict[str, Any]] = None,
         outlier_value: int = -1,
         outlier_label: str = "outlier",
@@ -95,12 +87,14 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         """
 
-        self.cluster_config = {} if cluster_config is None else cluster_config  # type: ignore
+        self.cluster_config = (
+            {} if cluster_config is None else cluster_config
+        )  # type: ignore
 
         self.model_name = None
 
         if model is None:
-            model = "community_detection"
+            model = "kmeans"
             if verbose:
                 print(f"No clustering model selected: defaulting to `{model}`")
 
@@ -327,15 +321,9 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         for centroid, vectors in centroids.items():
             centroid_vector = np.array(vectors).mean(0).tolist()
             if vector_field:
-                centroid_document = {
-                    "_id": centroid,
-                    vector_field: centroid_vector,
-                }
+                centroid_document = {"_id": centroid, vector_field: centroid_vector}
             else:
-                centroid_document = dict(
-                    _id=centroid,
-                    centroid_vector=centroid_vector,
-                )
+                centroid_document = dict(_id=centroid, centroid_vector=centroid_vector)
             centroid_documents.append(centroid_document)
 
         return centroid_documents
@@ -401,9 +389,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             print(f"Found {n_clusters} clusters using {self.model_name}")
 
         self.set_field_across_documents(
-            field=self.cluster_field,
-            values=labels,
-            docs=documents,
+            field=self.cluster_field, values=labels, docs=documents
         )
 
         centroid_documents = self._get_centroid_documents(
@@ -470,8 +456,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         # fit model, predict and label all documents
         print("Predicting on all documents...")
         centroid_documents, labelled_documents = self._fit_predict(
-            documents=documents,
-            vector_field=vector_field,
+            documents=documents, vector_field=vector_field
         )
 
         print("Updating cluster labels...")
