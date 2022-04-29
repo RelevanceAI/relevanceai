@@ -702,7 +702,7 @@ class Operations(Write, IO):
         if output_field is None:
             output_field = "_sentiment_." + field
 
-        ops = SentimentOps(model_naeme=model_name)
+        ops = SentimentOps(model_name=model_name)
 
         def analyze_sentiment(text):
             return ops.analyze_sentiment(
