@@ -212,26 +212,37 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             if model == "affinitypropagation":
                 from sklearn.cluster import AffinityPropagation
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = AffinityPropagation(**self.cluster_config)
 
             elif model == "agglomerativeclustering":
                 from sklearn.cluster import AgglomerativeClustering
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = AgglomerativeClustering(**self.cluster_config)
 
             elif model == "birch":
                 from sklearn.cluster import Birch
+
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
 
                 model = Birch(**self.cluster_config)
 
             elif model == "dbscan":
                 from sklearn.cluster import DBSCAN
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = DBSCAN(**self.cluster_config)
 
             elif model == "optics":
                 from sklearn.cluster import OPTICS
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = OPTICS(**self.cluster_config)
 
             elif model == "kmeans":
@@ -242,11 +253,15 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             elif model == "featureagglomeration":
                 from sklearn.cluster import FeatureAgglomeration
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = FeatureAgglomeration(**self.cluster_config)
 
             elif model == "meanshift":
                 from sklearn.cluster import MeanShift
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = MeanShift(**self.cluster_config)
 
             elif model == "minibatchkmeans":
@@ -257,6 +272,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             elif model == "spectralclustering":
                 from sklearn.cluster import SpectralClustering
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
                 model = SpectralClustering(**self.cluster_config)
 
             elif model == "spectralbiclustering":
@@ -277,10 +294,16 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             elif model in "communitydetection":
                 from relevanceai.operations.cluster.algorithms import CommunityDetection
 
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
+
                 model = CommunityDetection(**self.cluster_config)
 
             elif "faiss" in model:
                 from faiss import Kmeans
+
+                if "n_clusters" in self.cluster_config:
+                    self.cluster_config.pop("n_clusters")
 
                 model = Kmeans(**self.cluster_config)
             else:
