@@ -107,6 +107,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
                 _page += 1
             data = data[:number_of_documents]
 
+        data = DocumentList(data)
         if include_after_id:
             return {"documents": data, "after_id": resp["after_id"]}
         return data
