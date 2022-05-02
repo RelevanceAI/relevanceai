@@ -94,7 +94,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         self.model_name = None
 
         if model is None:
-            model = "community_detection"
+            model = "kmeans"
             if verbose:
                 print(f"No clustering model selected: defaulting to `{model}`")
 
@@ -107,7 +107,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         if self.n_clusters is None:
             if hasattr(self.model, "n_clusters"):
-                self.n_clusters = self.model.n_clusters
+                self.n_clusters = 25
 
             elif hasattr(self.model, "k"):
                 self.n_clusters = self.model.k
