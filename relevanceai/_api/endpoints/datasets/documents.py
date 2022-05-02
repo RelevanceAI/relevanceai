@@ -222,7 +222,7 @@ class DocumentsClient(_Base):
         select_fields = [] if select_fields is None else select_fields
 
         if after_id is None:
-            return self.make_http_request(
+            documents = self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/get_where",
                 method="POST",
                 parameters={
@@ -236,7 +236,9 @@ class DocumentsClient(_Base):
                     "is_random": is_random,
                 },
             )
-        return self.make_http_request(
+            documents["documents"] = DocumentList(documents["documents"])
+            return documents
+        documents = self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
             parameters={
@@ -251,6 +253,8 @@ class DocumentsClient(_Base):
                 "after_id": after_id,
             },
         )
+        documents["documents"] = DocumentList(documents["documents"])
+        return documents
 
     async def get_where_async(
         self,
@@ -309,7 +313,7 @@ class DocumentsClient(_Base):
                     "is_random": is_random,
                 },
             )
-            documents = DocumentList(documents)
+            documents["documents"] = DocumentList(documents["documents"])
             return documents
 
         documents = await self.make_async_http_request(
@@ -327,7 +331,7 @@ class DocumentsClient(_Base):
                 "after_id": after_id,
             },
         )
-        documents = DocumentList(documents)
+        documents["documents"] = DocumentList(documents["documents"])
         return documents
 
     def paginate(

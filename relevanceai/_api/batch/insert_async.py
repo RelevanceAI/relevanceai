@@ -5,6 +5,7 @@ import warnings
 
 import orjson
 
+from doc_utils import DocumentList
 from datetime import datetime
 from concurrent.futures import as_completed, wait
 from pathlib import Path
@@ -308,7 +309,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
             save_file = cache_path / f"pull-{num}.json"
             if save_file.exists() and use_cache:
                 with open(save_file, "rb") as infile:
-                    documents = orjson.loads(infile.read())
+                    documents = DocumentList(orjson.loads(infile.read()))
             else:
                 response = await self.datasets.documents.get_where_async(
                     dataset_id,
@@ -321,7 +322,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
                 documents = response["documents"]
 
                 with open(save_file, "wb") as outfile:
-                    outfile.write(orjson.dumps(documents))
+                    outfile.write(orjson.dumps(documents.json()))
 
             try:
                 updated_documents = update_function(documents, **updating_args)
