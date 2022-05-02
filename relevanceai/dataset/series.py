@@ -231,6 +231,7 @@ class Series(APIClient):
         output_field: str,
         filters: list = [],
         axis: int = 0,
+        **kwargs,
     ):
         """
         Apply a function along an axis of the DataFrame.
@@ -284,7 +285,11 @@ class Series(APIClient):
             return documents
 
         return self.pull_update_push_async(
-            self.dataset_id, bulk_fn, select_fields=[self.field], filters=filters
+            self.dataset_id,
+            bulk_fn,
+            select_fields=[self.field],
+            filters=filters,
+            **kwargs,
         )
 
     @track

@@ -12,6 +12,7 @@ from relevanceai._api.endpoints.services.recommend import RecommendClient
 from relevanceai._api.endpoints.services.tagger import TaggerClient
 from relevanceai._api.endpoints.services.prediction import PredictionClient
 from relevanceai._api.endpoints.services.wordclouds import WordcloudsClient
+from relevanceai._api.endpoints.services.centroids import CentroidsClient
 
 
 class ServicesClient(_Base):
@@ -24,6 +25,7 @@ class ServicesClient(_Base):
         self.tagger = TaggerClient(credentials)
         self.prediction = PredictionClient(credentials)
         self.wordclouds = WordcloudsClient(credentials)
+        self.centroids = CentroidsClient(credentials)
         super().__init__(credentials)
 
     def document_diff(

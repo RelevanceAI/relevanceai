@@ -2,6 +2,8 @@ from relevanceai.utils.logger import LoguruLogger
 from doc_utils import DocUtils
 from typing import Dict, List
 
+from relevanceai.constants.errors import MissingPackageError
+
 
 class TransformersLMSummarizer(LoguruLogger, DocUtils):
     """Seq2seq models using Summarizer class"""
@@ -10,19 +12,13 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         try:
             from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
         except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall transformers\n \
-                pip install -U transformers"
-            )
+            raise MissingPackageError("transformers")
         try:
             import torch
 
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall torch\n \
-                pip install -U torch"
-            )
+            raise MissingPackageError("torch")
 
         if not any([f in model for f in ["t5", "bart"]]):
             raise ValueError(
@@ -36,7 +32,7 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
 
-    def __call__(self, text: str):
+    def __call__(self, text: str, max_length: int = 100, num_beams: int = 4):
         self.model = self.model.to(self.device)
 
         # tokenize without truncation
@@ -62,7 +58,10 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         # generate a summary on each batch
         summary_ids_l = [
             self.model.generate(
-                inputs.to(self.device), num_beams=4, max_length=100, early_stopping=True
+                inputs.to(self.device),
+                num_beams=num_beams,
+                max_length=max_length,
+                early_stopping=True,
             ).to(self.device)
             for inputs in inputs_batch_l
         ]
