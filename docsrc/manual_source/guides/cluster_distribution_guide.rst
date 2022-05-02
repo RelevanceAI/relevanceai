@@ -45,7 +45,7 @@ Clustering
     
     model = KMeans(n_clusters=KMEAN_NUMBER_OF_CLUSTERS)
     clusterer = client.ClusterOps(alias=ALIAS, model=model)
-    clusterer.operate(dataset_id="titanic", vector_fields=["value_vector_"])
+    clusterer.run(dataset_id="titanic", vector_fields=["value_vector_"])
 
 Plot Basic Distributions
 ------------------------

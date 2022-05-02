@@ -10,16 +10,15 @@ can be found below.
 .. code-block::
 
     # Set up the encoder
-    !pip install -q vectorhub[encoders-text-tfhub]
-    from vectorhub.encoders.text.tfhub import USE2Vec
-    enc = USE2Vec()
+    !pip install -q sentence-transformers==2.2.0
+    from sentence_transformers import SentenceTransformer
+    model = SentenceTransformer("all-mpnet-base-v2")
 
-    from relevanceai.bias_detection import bias_indicator
-
+    from relevanceai.utils.bias_detection import bias_indicator
     bias_indicator(
-        ["boy", "girl"], # the categories of bias
-        ["basketball", "draft", "skirt", "dress", "grave digger"], # words to care about
-        enc.encode
+        anchors=["boy", "girl"],
+        values=["basketball", "draft", "skirt", "dress", "grave digger"],
+        encoder=model.encode
     )
 
 """
@@ -28,11 +27,7 @@ from typing import List, Dict, Any, Callable
 from doc_utils import DocUtils
 from relevanceai.utils.decorators.analytics import track_event_usage
 
-try:
-    import matplotlib.pyplot as plt
-except ModuleNotFoundError:
-    # Don't trigger if missing
-    pass
+from relevanceai.constants.errors import MissingPackageError
 
 
 class BiasIndicator(DocUtils):
@@ -56,6 +51,11 @@ class BiasIndicator(DocUtils):
         xlabel="L2 Distance From Neutrality Line",
         title: str = None,
     ):
+        try:
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+
+            raise MissingPackageError("matplotlib")
         fig, axes = plt.subplots(ncols=2, sharey=True)
         anchor_values = self.get_field_across_documents(
             metadata_field, anchor_documents
@@ -149,7 +149,7 @@ class BiasIndicator(DocUtils):
                 The field in the documents to compare
         Example:
             >>> documents = [{...}]
-            >>> ViClient.get_cosine_similarity_scores(documents[1:10], documents[0])
+            >>> client.get_cosine_similarity_scores(documents[1:10], documents[0])
         """
         similarity_scores = []
         for i, doc in enumerate(documents):
@@ -171,26 +171,27 @@ class BiasIndicator(DocUtils):
 
 
 @track_event_usage("bias_indicator")
-def bias_indicator(anchors: List, values: List, model: Callable):
+def bias_indicator(anchors: List, values: List, encoder: Callable):
     """
     Simple bias indicator based on vectors.
 
     .. code-block::
 
-        from relevanceai.bias_detection import bias_indicator
-        from vectorhub.encoders.text.tfhub import USE2Vec
-        enc = USE2Vec()
+        from relevanceai.utils.bias_detection import bias_indicator
+        from sentence_transformers import SentenceTransformer
+
+        model = SentenceTransformer("all-mpnet-base-v2")
 
         bias_indicator(
-            ["boy", "girl"],
-            ["basketball", "draft", "skirt", "dress", "grave digger"],
-            enc.encode
+            anchors=["boy", "girl"],
+            values=["basketball", "draft", "skirt", "dress", "grave digger"],
+            encoder=model.encode
         )
 
     """
     # create the relevant documents
-    anchor_docs = [{"value": a, "_vector_": model(a)} for a in anchors]
-    value_docs = [{"value": a, "_vector_": model(a)} for a in values]
+    anchor_docs = [{"value": a, "_vector_": encoder(a)} for a in anchors]
+    value_docs = [{"value": a, "_vector_": encoder(a)} for a in values]
     return BiasIndicator().bias_indicator_to_html(
         anchor_documents=anchor_docs,
         documents=value_docs,

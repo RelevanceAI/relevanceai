@@ -1,4 +1,4 @@
-Easy Filters
+Filters
 ================
 
 .. automodule:: relevanceai.utils.filters

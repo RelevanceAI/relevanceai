@@ -94,14 +94,15 @@ class ExampleDatasets:
     ):
         select_fields = [] if select_fields is None else select_fields
         if csv:
-            data = pd.read_csv(url, index_col=0, encoding=encoding).to_dict(
-                orient="records"
-            )
+            data = pd.read_csv(url, index_col=0, encoding=encoding)
         else:
             try:
-                data = pd.read_excel(url, index_col=0).to_dict(orient="records")
+                data = pd.read_excel(url, index_col=0)
             except ModuleNotFoundError:
                 raise MissingPackageExtraError("excel")
+
+        data["_id"] = data.index
+        data = data.to_dict(orient="records")
 
         if number_of_documents:
             data = data[:number_of_documents]
@@ -624,6 +625,7 @@ def get_titanic_dataset(
     df = pd.read_csv(FN)
     if output_format == "pandas_dataframe":
         return df
+    df["_id"] = df.index
     docs = df.to_dict(orient="records")
     for d in docs:
         d["value_vector_"] = eval(d["value_vector_"])
