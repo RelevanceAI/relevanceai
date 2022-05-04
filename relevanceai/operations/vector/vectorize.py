@@ -150,7 +150,7 @@ class VectorizeHelpers(APIClient):
             return ["use"]
 
         elif dtype == "_image_":
-            return ["clip"]
+            return ["clip-text"]
 
         elif dtype == "_category_":
             return ["onehot"]

@@ -128,6 +128,7 @@ class Operations(Write, IO):
         self,
         fields: List[str] = None,
         filters: Optional[List] = None,
+        create_feature_vector: bool = False,
         **kwargs,
     ):
         """
@@ -179,6 +180,7 @@ class Operations(Write, IO):
 
         ops = VectorizeOps(
             credentials=self.credentials,
+            create_feature_vector=create_feature_vector,
             **kwargs,
         )
 

@@ -94,7 +94,7 @@ class ExampleDatasets:
                 url,
                 index_col=0,
                 encoding=encoding,
-            ).to_dict(orient="records")
+            )
         else:
             try:
                 data = pd.read_excel(url, index_col=0)
