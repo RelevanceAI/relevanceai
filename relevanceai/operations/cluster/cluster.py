@@ -99,20 +99,36 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         self.model_name = None
 
         if model is None:
-            model = "community_detection"
+            model = "kmeans"
             if verbose:
                 print(f"No clustering model selected: defaulting to `{model}`")
 
-        self.n_clusters = n_clusters
+        if isinstance(model, str):
+            supervised = model.lower() not in [
+                "hdscan",
+                "optics",
+                "dbscan",
+                "communitydetection",
+            ]
+        else:
+            supervised = False
 
-        if n_clusters is not None:
-            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
+        self.n_clusters = n_clusters
+        if "n_clusters" in self.cluster_config and supervised:
+            self.n_clusters = self.cluster_config["n_clusters"]
+            n_clusters = self.cluster_config["n_clusters"]
+
+        if supervised:
+            if n_clusters is not None:
+                self.cluster_config["n_clusters"] = n_clusters  # type: ignore
+            else:
+                self.cluster_config["n_clusters"] = 25  # type: ignore
 
         self.model = self._get_model(model)
 
         if self.n_clusters is None:
             if hasattr(self.model, "n_clusters"):
-                self.n_clusters = self.model.n_clusters
+                self.n_clusters = self.n_clusters
 
             elif hasattr(self.model, "k"):
                 self.n_clusters = self.model.k
