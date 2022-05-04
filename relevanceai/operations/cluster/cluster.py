@@ -103,12 +103,15 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             if verbose:
                 print(f"No clustering model selected: defaulting to `{model}`")
 
-        supervised = model.lower() not in [
-            "hdscan",
-            "optics",
-            "dbscan",
-            "communitydetection",
-        ]
+        if isinstance(model, str):
+            supervised = model.lower() not in [
+                "hdscan",
+                "optics",
+                "dbscan",
+                "communitydetection",
+            ]
+        else:
+            supervised = True
 
         self.n_clusters = n_clusters
         if "n_clusters" in self.cluster_config and supervised:
