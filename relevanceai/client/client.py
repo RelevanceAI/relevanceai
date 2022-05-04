@@ -18,6 +18,7 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
+import re
 import getpass
 import pandas as pd
 import analytics
@@ -236,6 +237,16 @@ class Client(APIClient, ConfigMixin):
         audio_fields = [] if audio_fields is None else audio_fields
         highlight_fields = {} if highlight_fields is None else highlight_fields
         text_fields = [] if text_fields is None else text_fields
+
+        regex_check = re.search("^[a-z\d._-]+$", dataset_id)
+
+        if regex_check is not None:
+            self.create_dataset(dataset_id)
+        else:
+            raise ValueError(
+                "dataset_id must contain only a combination of lowercase and/or '_' and/or '-' and/or '.'"
+            )
+
         return Dataset(
             credentials=self.credentials,
             dataset_id=dataset_id,
