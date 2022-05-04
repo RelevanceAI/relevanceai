@@ -112,7 +112,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         if self.n_clusters is None:
             if hasattr(self.model, "n_clusters"):
-                self.n_clusters = 25
+                self.n_clusters = self.n_clusters
 
             elif hasattr(self.model, "k"):
                 self.n_clusters = self.model.k
