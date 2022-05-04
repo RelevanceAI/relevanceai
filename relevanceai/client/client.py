@@ -238,7 +238,7 @@ class Client(APIClient, ConfigMixin):
         highlight_fields = {} if highlight_fields is None else highlight_fields
         text_fields = [] if text_fields is None else text_fields
 
-        regex_check = re.search("^[a-zd._-]+$", dataset_id)
+        regex_check = re.search("^[0-9a-z._-]+$", dataset_id)
 
         if regex_check is not None:
             self.create_dataset(dataset_id)
