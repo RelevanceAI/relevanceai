@@ -104,7 +104,12 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
                 print(f"No clustering model selected: defaulting to `{model}`")
 
         self.n_clusters = n_clusters
-        if "n_clusters" in self.cluster_config:
+        if "n_clusters" in self.cluster_config and model.lower() not in [
+            "hdscan",
+            "optics",
+            "dbscan",
+            "communitydetection",
+        ]:
             self.n_clusters = self.cluster_config["n_clusters"]
             n_clusters = self.cluster_config["n_clusters"]
 
