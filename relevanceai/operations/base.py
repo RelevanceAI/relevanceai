@@ -14,7 +14,8 @@ class BaseOps:
     """
 
     def __init__(self, *args, **kwargs):
-        pass
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     @classmethod
     def init(self, *args, **kwargs):

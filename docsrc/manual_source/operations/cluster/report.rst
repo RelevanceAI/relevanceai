@@ -10,13 +10,12 @@ You can print an internal report as such:
     from relevanceai import Client
     client = Client()
 
-    ds = client.Dataset("clothes") 
+    ds = client.Dataset("clothes")
     vector_fields = ["image_path_clip_vector_"]
-    alias = "minibatchkmeans-10"
 
     # Run Clustering
     cluster_ops = ds.cluster(
-        model="communitydetection", 
+        model="communitydetection",
         vector_fields=["image_path_clip_vector_"]
     )
     cluster_ops.internal_report

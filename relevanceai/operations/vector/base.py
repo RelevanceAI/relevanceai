@@ -1,6 +1,6 @@
+import itertools
 import requests
 import warnings
-
 import numpy as np
 
 from typing import List
@@ -325,3 +325,100 @@ class Base2Vec(DocUtils):
                 field_type=field_type,
             )
         return documents
+
+    def get_combinations(self, lst, maximum_span=5):
+        for i, j in itertools.combinations(range(len(lst) + 1), 2):
+            if j - -i == len(lst):
+                continue
+            if j - i <= maximum_span:
+                yield lst[i:j]
+
+    def get_cosine_similarity(self, vector_1, vector_2):
+        from scipy import spatial
+
+        return 1 - spatial.distance.cosine(vector_1, vector_2)
+
+    def get_word_combinations(self, sentence, maximum_span=5):
+        for x in list(self.get_combinations(sentence.split(), maximum_span)):
+            yield " ".join(x)
+        yield ""
+
+    def get_result(self, result_text, query_vector):
+        return {
+            "_search_score": self.get_cosine_similarity(
+                query_vector, self.encode(result_text)
+            ),
+            "text": result_text,
+        }
+
+    def explain(
+        self,
+        query_text,
+        result_texts,
+        highlight_threshold=0.5,
+        max_highlights=None,
+        return_cos_similarity_docs: bool = True,
+        ignore_warnings: bool = True,
+    ):
+        import numpy as np
+        from IPython.display import display
+        from sklearn.preprocessing import MinMaxScaler
+        from jsonshower import show_json
+
+        query_vector = self.encode(query_text)
+        cos_similarity = list()
+        for result_text in result_texts:
+            doc = self.get_result(result_text, query_vector)
+            doc["explain_chunk"] = [
+                {"text": t} for t in self.get_word_combinations(result_text)
+            ]
+            self.encode_documents(["text"], doc["explain_chunk"])
+            for d in doc["explain_chunk"]:
+                d["_search_score"] = self.get_cosine_similarity(
+                    d[f"text_{self.__name__}_vector_"], query_vector
+                )
+            doc["explain_chunk"] = sorted(
+                doc["explain_chunk"], key=lambda x: x["_search_score"], reverse=True
+            )
+            cos_similarity.append(doc.copy())
+
+        if return_cos_similarity_docs:
+            return cos_similarity
+
+        for r in cos_similarity:
+            scaler = MinMaxScaler()
+            normed_scores = scaler.fit_transform(
+                np.array(
+                    [np.exp(_r["_search_score"]) for _r in r["explain_chunk"]]
+                ).reshape((-1, 1))
+            )
+            highlight_colors = [f"rgba(253, 253, 150, {x[0]})" for x in normed_scores]
+            text_fields = [
+                "explain_chunk." + str(i) + ".text"
+                for i in range(len(r["explain_chunk"]))
+                if normed_scores[i][0] > 0.5
+            ]
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                if max_highlights is None:
+                    display(
+                        show_json(
+                            [r],
+                            highlight_fields={"text": text_fields},
+                            highlight_colors=highlight_colors,
+                            return_html=False,
+                            show_highlight_headers=False,
+                            case_insensitive_highlighting=True,
+                        )
+                    )
+                else:
+                    display(
+                        show_json(
+                            [r],
+                            highlight_fields={"text": text_fields[:max_highlights]},
+                            highlight_colors=highlight_colors,
+                            return_html=False,
+                            show_highlight_headers=False,
+                            case_insensitive_highlighting=True,
+                        )
+                    )

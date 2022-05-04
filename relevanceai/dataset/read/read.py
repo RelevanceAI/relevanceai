@@ -9,8 +9,8 @@ import pandas as pd
 from tqdm.auto import tqdm
 from typing import Optional, Union, Dict, List
 from relevanceai.client.helpers import Credentials
+from relevanceai.dataset.series import Series
 
-from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.statistics import Statistics
@@ -43,9 +43,13 @@ class Read(Statistics):
         highlight_fields: Optional[Dict[str, list]] = None,
         **kwargs,
     ):
+
+        from relevanceai.operations.cluster.centroids import Centroids
+
         self.credentials = credentials
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
+
         self.centroids = Centroids(
             credentials=credentials,
             dataset_id=self.dataset_id,
@@ -573,6 +577,8 @@ class Read(Statistics):
         select_fields: Optional[list] = None,
         include_vector: bool = True,
         include_cursor: bool = False,
+        after_id: Optional[list] = None,
+        include_after_id: bool = True,
     ):
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -610,6 +616,8 @@ class Read(Statistics):
             select_fields=select_fields,
             include_vector=include_vector,
             include_cursor=include_cursor,
+            after_id=after_id,
+            include_after_id=include_after_id,
         )
 
     @track
@@ -677,9 +685,9 @@ class Read(Statistics):
         """
         docs = self.get_documents(
             number_of_documents=chunksize,
-            include_cursor=True,
             filters=filters,
             select_fields=select_fields,
+            include_after_id=True,
         )
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
@@ -690,7 +698,7 @@ class Read(Statistics):
                 docs = self.get_documents(
                     number_of_documents=chunksize,
                     include_cursor=True,
-                    cursor=docs["cursor"],
+                    after_id=docs["after_id"],
                     filters=filters,
                 )
                 pbar.update(1)
@@ -724,3 +732,35 @@ class Read(Statistics):
     @track
     def list_cluster_aliases(self):
         raise NotImplementedError()
+
+    def isnull(
+        self,
+        show_progress_bar=False,
+    ):
+        schema = self.schema
+        filters = [
+            {
+                "filter_type": "or",
+                "condition_value": [
+                    Series(
+                        credentials=self.credentials,
+                        dataset_id=self.dataset_id,
+                        field=field,
+                    ).not_exists()
+                    for field in schema
+                ],
+            }
+        ]
+        null_count = {field: 0 for field in schema}
+
+        null_docs = self.get_all_documents(
+            filters=filters,
+            show_progress_bar=show_progress_bar,
+        )
+
+        for doc in null_docs:
+            for field in doc:
+                if doc[field] is None:
+                    null_count[field] += 1
+
+        return null_count

@@ -303,7 +303,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
         cache_path = self._get_cache_path(dataset_id, select_fields)
 
         async def pull_update_push_subset(
-            num: int, page_size: int, cursor: Optional[str]
+            num: int, page_size: int, after_id: Optional[list]
         ):
             save_file = cache_path / f"pull-{num}.json"
             if save_file.exists() and use_cache:
@@ -313,7 +313,6 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
                 response = await self.datasets.documents.get_where_async(
                     dataset_id,
                     filters=filters,
-                    cursor=cursor,
                     page_size=page_size,
                     select_fields=select_fields,
                     include_vector=include_vector,
@@ -379,7 +378,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
             select_fields=select_fields,
             page_size=chunk_size,
             include_vector=False,  # Set to false to for speed
-        )["cursor"]
+        )["after_id"]
 
     def _get_task_parameters(
         self,
@@ -405,15 +404,15 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
             num_requests = len(
                 list(self._get_cache_path(dataset_id, select_fields).iterdir())
             )
-            cursor = None
+            after_id = None
         else:
             # If use_cache is False or num_cached is zero cache will not
             # be accessed.
             num_documents = self.get_number_of_documents(dataset_id, filters)
             num_requests = (num_documents // chunk_size) + 1
-            cursor = self._get_cursor(dataset_id, filters, select_fields, chunk_size)
+            after_id = self._get_cursor(dataset_id, filters, select_fields, chunk_size)
 
-        return num_requests, cursor
+        return num_requests, after_id
 
     def _get_tasks(
         self,

@@ -131,6 +131,7 @@ class DocumentsClient(_Base):
         include_vector: bool = True,
         random_state: int = 0,
         is_random: bool = False,
+        after_id: Optional[List] = None,
     ):
         """
         Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -216,6 +217,21 @@ class DocumentsClient(_Base):
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
 
+        if after_id is None:
+            return self.make_http_request(
+                endpoint=f"/datasets/{dataset_id}/documents/get_where",
+                method="POST",
+                parameters={
+                    "select_fields": select_fields,
+                    "cursor": cursor,
+                    "page_size": page_size,
+                    "sort": sort,
+                    "include_vector": include_vector,
+                    "filters": filters,
+                    "random_state": random_state,
+                    "is_random": is_random,
+                },
+            )
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
@@ -228,6 +244,7 @@ class DocumentsClient(_Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
+                "after_id": after_id,
             },
         )
 
@@ -242,6 +259,7 @@ class DocumentsClient(_Base):
         include_vector: bool = True,
         random_state: int = 0,
         is_random: bool = False,
+        after_id: Optional[list] = None,
     ):
         """
         Asynchronous version of get_where. See get_where for more detials.
@@ -272,6 +290,22 @@ class DocumentsClient(_Base):
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
 
+        if after_id is None:
+            return await self.make_async_http_request(
+                endpoint=f"/datasets/{dataset_id}/documents/get_where",
+                method="POST",
+                parameters={
+                    "select_fields": select_fields,
+                    "cursor": cursor,
+                    "page_size": page_size,
+                    "sort": sort,
+                    "include_vector": include_vector,
+                    "filters": filters,
+                    "random_state": random_state,
+                    "is_random": is_random,
+                },
+            )
+
         return await self.make_async_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get_where",
             method="POST",
@@ -284,6 +318,7 @@ class DocumentsClient(_Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
+                "after_id": after_id,
             },
         )
 
