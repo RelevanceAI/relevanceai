@@ -111,7 +111,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
                 "communitydetection",
             ]
         else:
-            supervised = True
+            supervised = False
 
         self.n_clusters = n_clusters
         if "n_clusters" in self.cluster_config and supervised:
