@@ -107,6 +107,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         if n_clusters is not None:
             self.cluster_config["n_clusters"] = n_clusters  # type: ignore
+        else:
+            self.cluster_config["n_clusters"] = 25  # type: ignore
 
         self.model = self._get_model(model)
 
