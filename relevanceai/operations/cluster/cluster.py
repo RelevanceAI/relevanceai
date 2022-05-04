@@ -106,6 +106,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         self.n_clusters = n_clusters
         if "n_clusters" in self.cluster_config:
             self.n_clusters = self.cluster_config["n_clusters"]
+            n_clusters = self.cluster_config["n_clusters"]
 
         if n_clusters is not None:
             self.cluster_config["n_clusters"] = n_clusters  # type: ignore
