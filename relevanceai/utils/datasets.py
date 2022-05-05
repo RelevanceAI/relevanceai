@@ -4,12 +4,14 @@ Relevance AI Platform offers free datasets for users.
 These datasets have been licensed under Apache 2.0.
 """
 
+import json
 from typing import Any, Dict, List, Optional, Union
 from typing_extensions import Literal
 
 import random
 import string
 import sys
+import uuid
 import pandas as pd
 import requests
 
@@ -97,7 +99,11 @@ class ExampleDatasets:
             except ModuleNotFoundError:
                 raise MissingPackageExtraError("excel")
 
-        data["_id"] = data.index
+        _ids = [
+            str(uuid.uuid3(uuid.NAMESPACE_DNS, json.dumps(doc.tolist())))
+            for doc in data.values
+        ]
+        data["_id"] = _ids
         data = data.to_dict(orient="records")
 
         if number_of_documents:

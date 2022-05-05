@@ -31,6 +31,10 @@ class VectorizeHelpers(APIClient):
                 model_name = str(model.__class__).split(".")[-1].split("'>")[0]
                 return model, model_name
 
+            from vectorhub.encoders.text.sentence_transformers import LIST_OF_URLS
+
+            sentence_transformers_model_names = list(LIST_OF_URLS)
+
             if isinstance(model, str):
                 if model == "use":
                     from vectorhub.encoders.text.tfhub import USE2Vec
@@ -95,14 +99,15 @@ class VectorizeHelpers(APIClient):
 
                     model = BitMedium2Vec()
 
-                else:
-
+                elif model in sentence_transformers_model_names:
                     from vectorhub.encoders.text.sentence_transformers import (
                         SentenceTransformer2Vec,
                     )
 
-                    warnings.warn("Assuming this is a Sentence Transformer model.")
                     model = SentenceTransformer2Vec(model)
+
+                else:
+                    raise ValueError("ModelNotSupported")
 
             else:
                 # TODO: this needs to be referenced from relevance.constants.errors
@@ -153,7 +158,7 @@ class VectorizeHelpers(APIClient):
                 return self.encoders["text"]
 
             else:
-                self.encoders["text"] = ["use"]
+                self.encoders["text"] = ["distilroberta-base-paraphrase-v1"]
                 return self.encoders["text"]
 
         elif dtype == "_image_":
