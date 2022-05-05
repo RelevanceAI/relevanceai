@@ -149,7 +149,7 @@ class Dataset(Operations):
         )
 
     def get_dtypes(self):
-        metadata = self.datasets.post_metadata(
+        metadata = self.datasets.metadata(
             self.dataset_id,
         )
         metadata = {
