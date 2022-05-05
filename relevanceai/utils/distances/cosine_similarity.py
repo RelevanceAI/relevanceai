@@ -9,6 +9,21 @@ from doc_utils import DocUtils
 
 
 @track
+def cosine_similarity_matrix(a, b):
+    A = np.array(a)
+    B = np.array(b)
+    similarity = np.dot(A, B.T)
+    square_mag = np.diag(similarity)
+    inv_square_mag = 1 / square_mag
+    inv_square_mag[np.isinf(inv_square_mag)] = 0
+    inv_mag = np.sqrt(inv_square_mag)
+    cosine = similarity * inv_mag
+    cosine = cosine.T * inv_mag
+    cosine[cosine > 0.9999] = 1
+    return cosine.tolist()
+
+
+@track
 def cosine_similarity(a, b):
     """Cosine similarity utility"""
     if is_scipy_available():
@@ -21,17 +36,6 @@ def cosine_similarity(a, b):
         return a_array.dot(b_array) / (
             np.linalg.norm(a_array, axis=1) * np.linalg.norm(b_array)
         )
-
-
-@track
-def cosine_similarity_matrix(all_vectors):
-    """
-    return a cosine similarity matrix
-    """
-    from sklearn.metrics import pairwise_distances
-
-    dist_out = 1 - pairwise_distances(all_vectors, metric="cosine")
-    return dist_out
 
 
 def get_cosine_similarity_scores(
