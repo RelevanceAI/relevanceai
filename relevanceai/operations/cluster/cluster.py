@@ -8,13 +8,18 @@ from relevanceai.utils.decorators import beta, track, deprecated
 from relevanceai.constants import (
     Warning,
     Messages,
-    CLUSTER_APP_LINK,
     ModelNotSupportedError,
+    CLUSTER_APP_LINK,
 )
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
 from relevanceai.operations.cluster.utils import ClusterUtils
 from doc_utils import DocUtils
+
+from relevanceai.utils.distances import (
+    euclidean_distance_matrix,
+    cosine_similarity_matrix,
+)
 
 
 class ClusterOps(ClusterUtils, BaseOps, DocUtils):
@@ -94,20 +99,36 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         self.model_name = None
 
         if model is None:
-            model = "community_detection"
+            model = "kmeans"
             if verbose:
                 print(f"No clustering model selected: defaulting to `{model}`")
 
-        self.n_clusters = n_clusters
+        if isinstance(model, str):
+            supervised = model.lower() not in [
+                "hdscan",
+                "optics",
+                "dbscan",
+                "communitydetection",
+            ]
+        else:
+            supervised = False
 
-        if n_clusters is not None:
-            self.cluster_config["n_clusters"] = n_clusters  # type: ignore
+        self.n_clusters = n_clusters
+        if "n_clusters" in self.cluster_config and supervised:
+            self.n_clusters = self.cluster_config["n_clusters"]
+            n_clusters = self.cluster_config["n_clusters"]
+
+        if supervised:
+            if n_clusters is not None:
+                self.cluster_config["n_clusters"] = n_clusters  # type: ignore
+            else:
+                self.cluster_config["n_clusters"] = 25  # type: ignore
 
         self.model = self._get_model(model)
 
         if self.n_clusters is None:
             if hasattr(self.model, "n_clusters"):
-                self.n_clusters = self.model.n_clusters
+                self.n_clusters = self.n_clusters
 
             elif hasattr(self.model, "k"):
                 self.n_clusters = self.model.k
@@ -355,6 +376,30 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             alias=self.alias,
         )
 
+    def _insert_centroid_similarity_matrix(
+        self,
+        dataset_id: str,
+        vector_fields: List[str],
+        centroid_documents: List[Dict[str, Any]],
+    ):
+        metadata = self.datasets.metadata(dataset_id=dataset_id)
+
+        vectors = [
+            centroid_document[vector_fields[0]]
+            for centroid_document in centroid_documents
+        ]
+        # euclidean dist matrix
+        d1 = euclidean_distance_matrix(vectors, vectors)
+
+        # cosine similarity matrix
+        d2 = cosine_similarity_matrix(vectors, vectors)
+
+        # store in metadata
+        metadata["euclidean_distance_matrix"] = d1
+        metadata["cosine_similarity_matrix"] = d2
+
+        self.datasets.post_metadata(dataset_id, metadata)
+
     def _fit_predict(
         self, documents: List[Dict[str, Any]], vector_field: str
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
@@ -473,6 +518,11 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         print("Inserting Centroids...")
         self._insert_centroids(
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            centroid_documents=centroid_documents,
+        )
+        self._insert_centroid_similarity_matrix(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
