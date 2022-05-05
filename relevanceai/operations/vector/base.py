@@ -357,6 +357,7 @@ class Base2Vec(DocUtils):
         result_texts,
         highlight_threshold=0.5,
         max_highlights=None,
+        return_cos_similarity_docs: bool = True,
         ignore_warnings: bool = True,
     ):
         import numpy as np
@@ -380,6 +381,10 @@ class Base2Vec(DocUtils):
                 doc["explain_chunk"], key=lambda x: x["_search_score"], reverse=True
             )
             cos_similarity.append(doc.copy())
+
+        if return_cos_similarity_docs:
+            return cos_similarity
+
         for r in cos_similarity:
             scaler = MinMaxScaler()
             normed_scores = scaler.fit_transform(

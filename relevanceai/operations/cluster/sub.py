@@ -4,7 +4,7 @@ from tqdm.auto import tqdm
 from relevanceai.operations.cluster.partial import PartialClusterOps
 from relevanceai.operations.cluster.cluster import ClusterOps
 from relevanceai._api import APIClient
-from relevanceai.operations.cluster.utils import _ClusterOps
+from relevanceai.operations.cluster.utils import ClusterUtils
 
 
 class _SubClusterOps(ClusterOps):
@@ -227,7 +227,7 @@ class _SubClusterOps(ClusterOps):
         return centroid_documents, documents
 
 
-class SubClusterOps(_SubClusterOps, _ClusterOps):  # type: ignore
+class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
     def __init__(
         self,
         credentials,

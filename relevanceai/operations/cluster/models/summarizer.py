@@ -2,6 +2,8 @@ from relevanceai.utils.logger import LoguruLogger
 from doc_utils import DocUtils
 from typing import Dict, List
 
+from relevanceai.constants.errors import MissingPackageError
+
 
 class TransformersLMSummarizer(LoguruLogger, DocUtils):
     """Seq2seq models using Summarizer class"""
@@ -10,19 +12,13 @@ class TransformersLMSummarizer(LoguruLogger, DocUtils):
         try:
             from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
         except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall transformers\n \
-                pip install -U transformers"
-            )
+            raise MissingPackageError("transformers")
         try:
             import torch
 
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         except ModuleNotFoundError as e:
-            raise ModuleNotFoundError(
-                f"{e}\nInstall torch\n \
-                pip install -U torch"
-            )
+            raise MissingPackageError("torch")
 
         if not any([f in model for f in ["t5", "bart"]]):
             raise ValueError(

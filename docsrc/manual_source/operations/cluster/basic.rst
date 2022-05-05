@@ -76,8 +76,12 @@ You can do that in 2 ways.
 .. code-block::
 
     # State the vector fields and alias in the ClusterOps object
-    cluster_ops = client.ClusterOps(alias="kmeans-16", dataset_id="sample_dataset_id",
+    ds = client.Dataset("sample_dataset_id")
+    cluster_ops = ds.ClusterOps(
+        alias="kmeans-16", 
         vector_fields=['sample_vector_'])
+    )
+
     cluster_ops.list_closest()
 
     # State the vector fields and alias in the operational call
@@ -99,3 +103,11 @@ API Reference
 .. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.list_closest
 
 .. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.list_furthest
+
+.. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.centroids
+
+.. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.insert_centroids
+
+.. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.create_centroids
+
+.. automethod:: relevanceai.operations.cluster.cluster.ClusterOps.merge

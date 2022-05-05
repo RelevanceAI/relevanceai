@@ -1,5 +1,6 @@
 from relevanceai.operations.text.sentiment.sentiments import SentimentOps
 from relevanceai.workflow.base import Workflow
+from typing import Optional
 
 
 class SentimentWorkflow(Workflow, SentimentOps):
@@ -29,7 +30,8 @@ class SentimentWorkflow(Workflow, SentimentOps):
         refresh: bool = False,
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: int = 5,
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
     ):
         def analyze_sentiment(text):
             return self.analyze_sentiment(
@@ -37,6 +39,7 @@ class SentimentWorkflow(Workflow, SentimentOps):
                 highlight=highlight,
                 positive_sentiment_name=positive_sentiment_name,
                 max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
             )
 
         workflow = Workflow(

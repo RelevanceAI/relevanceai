@@ -4,6 +4,7 @@
 # Running a function across each subcluster
 import numpy as np
 import csv
+from typing import Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.operations.base import BaseOps
@@ -75,12 +76,14 @@ class SentimentOps(BaseOps):
         text,
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: int = 5,
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
     ):
         labels = self.classifier([text])
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
+        sentiment = self.label_mapping.get(sentiment, sentiment)
         if sentiment == "neutral":
             overall_sentiment = 0
         else:
@@ -97,6 +100,7 @@ class SentimentOps(BaseOps):
             text,
             sentiment_ind=ind_max,
             max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
         )
         return {
             "sentiment": sentiment,
@@ -118,7 +122,11 @@ class SentimentOps(BaseOps):
             return self._explainer
 
     def get_shap_values(
-        self, text: str, sentiment_ind: int = 2, max_number_of_shap_documents: int = 5
+        self,
+        text: str,
+        sentiment_ind: int = 2,
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
     ):
         """Get SHAP values"""
         shap_values = self.explainer([text])
@@ -134,9 +142,13 @@ class SentimentOps(BaseOps):
                 [x[sentiment_ind] for x in values[0][0].tolist()], feature_names[0]
             )
         ]
-        return sorted(shap_docs, key=lambda x: x["score"], reverse=True)[
-            :max_number_of_shap_documents
-        ]
+        if max_number_of_shap_documents is not None:
+            sorted_scores = sorted(shap_docs, key=lambda x: x["score"], reverse=True)
+        else:
+            sorted_scores = sorted(shap_docs, key=lambda x: x["score"], reverse=True)[
+                :max_number_of_shap_documents
+            ]
+        return [d for d in sorted_scores if abs(d["score"]) > min_abs_score]
 
     # def analyze_sentiment(self, text, highlight:bool= True):
     #     try:

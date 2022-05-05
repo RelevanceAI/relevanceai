@@ -18,6 +18,7 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
+import re
 import getpass
 import pandas as pd
 import analytics
@@ -31,9 +32,6 @@ from doc_utils.doc_utils import DocUtils
 
 from relevanceai.client.helpers import *
 
-from relevanceai.operations.cluster import ClusterOps
-from relevanceai.operations.cluster.sub import SubClusterOps
-from relevanceai.operations.viz import ClusterVizOps
 from relevanceai.constants.errors import APIError
 from relevanceai.constants.messages import Messages
 from relevanceai.dataset import Dataset
@@ -116,10 +114,6 @@ class Client(APIClient, ConfigMixin):
         # TODO: either use cache or keyring package
         token = getpass.getpass(f"Activation token:")
         return token
-
-    @property
-    def auth_header(self):
-        return {"Authorization": self.project + ":" + self.api_key}
 
     def make_search_suggestion(self):
         return self.services.search.make_suggestion()
@@ -243,6 +237,16 @@ class Client(APIClient, ConfigMixin):
         audio_fields = [] if audio_fields is None else audio_fields
         highlight_fields = {} if highlight_fields is None else highlight_fields
         text_fields = [] if text_fields is None else text_fields
+
+        regex_check = re.search("^[a-z\d._-]+$", dataset_id)
+
+        if regex_check is not None:
+            self.create_dataset(dataset_id)
+        else:
+            raise ValueError(
+                "dataset_id must contain only a combination of lowercase and/or '_' and/or '-' and/or '.'"
+            )
+
         return Dataset(
             credentials=self.credentials,
             dataset_id=dataset_id,
@@ -261,6 +265,8 @@ class Client(APIClient, ConfigMixin):
         model=None,
         **kwargs,
     ):
+        from relevanceai.operations.cluster import ClusterOps
+
         return ClusterOps(
             credentials=self.credentials,
             model=model,
@@ -275,6 +281,8 @@ class Client(APIClient, ConfigMixin):
         dataset_id: str,
         **kwargs,
     ):
+        from relevanceai.operations.viz import ClusterVizOps
+
         return ClusterVizOps(
             credentials=self.credentials,
             vector_fields=vector_fields,
@@ -296,6 +304,8 @@ class Client(APIClient, ConfigMixin):
         """
         Sub Cluster Ops.
         """
+        from relevanceai.operations.cluster.sub import SubClusterOps
+
         return SubClusterOps(
             credentials=self.credentials,
             alias=alias,

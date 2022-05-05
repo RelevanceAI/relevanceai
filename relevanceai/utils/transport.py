@@ -39,7 +39,13 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
     @property
     def auth_header(self):
-        return {"Authorization": self.project + ":" + self.api_key}
+        if not hasattr(self, "_auth_header"):
+            return {"Authorization": self.project + ":" + self.api_key}
+        return self._auth_header
+
+    @auth_header.setter
+    def auth_header(self, value):
+        self._auth_header = value
 
     @property
     def _search_dashboard_url(self):

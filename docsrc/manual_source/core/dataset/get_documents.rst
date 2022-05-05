@@ -11,7 +11,8 @@ For example:
     from relevanceai import Client 
     client = Client()
     ds = client.Dataset("sample")
-    ds.get()
+    ds.sample() # to get a sample of documents
+    ds.get("sample_id") # to get documents
 
 Getting All Documents 
 -----------------------
@@ -32,10 +33,8 @@ You can also get documents with filters using
 
     from relevanceai import Client
     client = Client()
-    df = client.Dataset("ecommerce-example-encoded")
-    filtered = df.filter(items=["product_title", "query", "product_price"])
-    filtered = df.filter(index="query", like="routers")
-    filtered = df.filter(index="product_title", regex=".*Hard.*Drive.*")
+    ds = client.Dataset("ecommerce-example-encoded")
+    documents = ds.get_documents(filters=ds['product_title'].exists())
 
 Getting Documents by IDs
 -----------------------
