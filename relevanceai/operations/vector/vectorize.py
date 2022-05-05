@@ -33,7 +33,12 @@ class VectorizeHelpers(APIClient):
 
             from vectorhub.encoders.text.sentence_transformers import LIST_OF_URLS
 
-            sentence_transformers_model_names = list(LIST_OF_URLS)
+            sentence_transformers_model_names = list(LIST_OF_URLS) + [
+                "all-MiniLM-L6-v2"
+            ]
+            sentence_transformers_model_names = {
+                name.lower(): name for name in sentence_transformers_model_names
+            }
 
             if isinstance(model, str):
                 if model == "use":
@@ -104,7 +109,11 @@ class VectorizeHelpers(APIClient):
                         SentenceTransformer2Vec,
                     )
 
-                    model = SentenceTransformer2Vec(model)
+                    model = SentenceTransformer2Vec(
+                        sentence_transformers_model_names[model]
+                    )
+                    if model.model_name == "all-MiniLM-L6-v2":
+                        model.vector_length = 384
 
                 else:
                     raise ValueError("ModelNotSupported")
@@ -158,7 +167,7 @@ class VectorizeHelpers(APIClient):
                 return self.encoders["text"]
 
             else:
-                self.encoders["text"] = ["distilroberta-base-paraphrase-v1"]
+                self.encoders["text"] = ["all-MiniLM-L6-v2"]
                 return self.encoders["text"]
 
         elif dtype == "_image_":
