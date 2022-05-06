@@ -339,11 +339,11 @@ class ClusterReport(DocUtils):
                 "summary": ClusterReport.summary_statistics(self.X),
                 "davies_bouldin_score": round(
                     davies_bouldin_score(self.X, self.cluster_labels),
-                    3,
+                    DECIMAL_PLACES,
                 ),
                 "calinski_harabasz_score": round(
                     calinski_harabasz_score(self.X, self.cluster_labels),
-                    3,
+                    DECIMAL_PLACES,
                 ),
                 "silhouette_score": ClusterReport.summary_statistics(
                     self.X_silhouette_scores
@@ -571,7 +571,7 @@ class ClusterReport(DocUtils):
             centroids = self.get_centers()
             overall_report["centroids"] = centroids
             overall_report["centroids_distance_matrix"] = np.around(
-                pairwise_distances(centroids, metric="euclidean"), 3
+                pairwise_distances(centroids, metric="euclidean"), DECIMAL_PLACES
             )
             overall_report["grand_centroids"] = []
             overall_report["average_distance_between_centroids"] = np.around(
