@@ -135,6 +135,9 @@ if is_sklearn_available():
 from relevanceai.constants.warning import Warning
 
 
+DECIMAL_PLACES = 3
+
+
 class ClusterReport(DocUtils):
     """
     Receive an automated cluster reprot
@@ -223,35 +226,43 @@ class ClusterReport(DocUtils):
         """
         if axis == 2:
             return {
-                "sum": np.around(array.sum(), 3),
-                "mean": np.around(array.mean(), 3),
-                "std": np.around(array.std(), 3),
-                "variance": np.around(array.var(), 3),
-                "min": np.around(array.min(), 3),
-                "max": np.around(array.max(), 3),
-                "12_5%": np.around(np.percentile(array, 12.5), 3),
-                "25%": np.around(np.percentile(array, 25), 3),
-                "37_5%": np.around(np.percentile(array, 37.5), 3),
-                "50%": np.around(np.percentile(array, 50), 3),
-                "62_5%": np.around(np.percentile(array, 62.5), 3),
-                "75%": np.around(np.percentile(array, 75), 3),
-                "87_5%": np.around(np.percentile(array, 87.5), 3),
+                "sum": np.around(array.sum(), DECIMAL_PLACES),
+                "mean": np.around(array.mean(), DECIMAL_PLACES),
+                "std": np.around(array.std(), DECIMAL_PLACES),
+                "variance": np.around(array.var(), DECIMAL_PLACES),
+                "min": np.around(array.min(), DECIMAL_PLACES),
+                "max": np.around(array.max(), DECIMAL_PLACES),
+                "12_5%": np.around(np.percentile(array, 12.5), DECIMAL_PLACES),
+                "25%": np.around(np.percentile(array, 25), DECIMAL_PLACES),
+                "37_5%": np.around(np.percentile(array, 37.5), DECIMAL_PLACES),
+                "50%": np.around(np.percentile(array, 50), DECIMAL_PLACES),
+                "62_5%": np.around(np.percentile(array, 62.5), DECIMAL_PLACES),
+                "75%": np.around(np.percentile(array, 75), DECIMAL_PLACES),
+                "87_5%": np.around(np.percentile(array, 87.5), DECIMAL_PLACES),
             }
         else:
             return {
-                "sum": np.around(array.sum(axis=axis), 3),
-                "mean": np.around(array.mean(axis=axis), 3),
-                "std": np.around(array.std(axis=axis), 3),
-                "variance": np.around(array.var(axis=axis), 3),
-                "min": np.around(array.min(axis=axis), 3),
-                "max": np.around(array.max(axis=axis), 3),
-                "12_5%": np.around(np.percentile(array, 12.5, axis=axis), 3),
-                "25%": np.around(np.percentile(array, 25, axis=axis), 3),
-                "37_5%": np.around(np.percentile(array, 37.5, axis=axis), 3),
-                "50%": np.around(np.percentile(array, 50, axis=axis), 3),
-                "62_5%": np.around(np.percentile(array, 62.5, axis=axis), 3),
-                "75%": np.around(np.percentile(array, 75, axis=axis), 3),
-                "87_5%": np.around(np.percentile(array, 87.5, axis=axis), 3),
+                "sum": np.around(array.sum(axis=axis), DECIMAL_PLACES),
+                "mean": np.around(array.mean(axis=axis), DECIMAL_PLACES),
+                "std": np.around(array.std(axis=axis), DECIMAL_PLACES),
+                "variance": np.around(array.var(axis=axis), DECIMAL_PLACES),
+                "min": np.around(array.min(axis=axis), DECIMAL_PLACES),
+                "max": np.around(array.max(axis=axis), DECIMAL_PLACES),
+                "12_5%": np.around(
+                    np.percentile(array, 12.5, axis=axis), DECIMAL_PLACES
+                ),
+                "25%": np.around(np.percentile(array, 25, axis=axis), DECIMAL_PLACES),
+                "37_5%": np.around(
+                    np.percentile(array, 37.5, axis=axis), DECIMAL_PLACES
+                ),
+                "50%": np.around(np.percentile(array, 50, axis=axis), DECIMAL_PLACES),
+                "62_5%": np.around(
+                    np.percentile(array, 62.5, axis=axis), DECIMAL_PLACES
+                ),
+                "75%": np.around(np.percentile(array, 75, axis=axis), DECIMAL_PLACES),
+                "87_5%": np.around(
+                    np.percentile(array, 87.5, axis=axis), DECIMAL_PLACES
+                ),
             }
 
     def get_distance_from_centroid(self, cluster_data, center_vector):
@@ -290,13 +301,15 @@ class ClusterReport(DocUtils):
     @functools.lru_cache(maxsize=128)
     def get_centers(self, output_format="array"):
         if hasattr(self.model, "cluster_centers_"):
-            return np.around(self.model.cluster_centers_, 3)
+            return np.around(self.model.cluster_centers_, DECIMAL_PLACES)
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
         elif self._centroids is not None:
             if output_format == "array":
                 if isinstance(self._centroids, dict):
-                    return np.around(np.array(list(self._centroids.values())), 3)
+                    return np.around(
+                        np.array(list(self._centroids.values())), DECIMAL_PLACES
+                    )
                 else:
                     return self._centroids
             else:
@@ -383,7 +396,9 @@ class ClusterReport(DocUtils):
 
             if self.has_centers():
 
-                grand_centroid = np.around(self.X[cluster_bool].mean(axis=0), 3)
+                grand_centroid = np.around(
+                    self.X[cluster_bool].mean(axis=0), DECIMAL_PLACES
+                )
 
                 centroid_vector = self._get_centroid_vector(
                     i, cluster_label, grand_centroid
@@ -543,7 +558,9 @@ class ClusterReport(DocUtils):
         return centroid_vector
 
     def dunn_index(self, min_distance_from_centroid, max_centroid_distance):
-        return np.around(min_distance_from_centroid / max_centroid_distance, 3)
+        return np.around(
+            min_distance_from_centroid / max_centroid_distance, DECIMAL_PLACES
+        )
 
     def has_centers(self):
         return self.get_centers() is not None
