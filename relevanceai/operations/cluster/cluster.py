@@ -534,6 +534,9 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             centroids = self.get_field_across_documents(
                 vector_field, centroid_documents, missing_treatment="raise_error"
             )
+            centroids = [
+                [round(value, 3) for value in centroid] for centroid in centroids
+            ]
 
             X = self.get_field_across_documents(
                 vector_field, documents, missing_treatment=self.outlier_value

@@ -223,35 +223,35 @@ class ClusterReport(DocUtils):
         """
         if axis == 2:
             return {
-                "sum": array.sum(),
-                "mean": array.mean(),
-                "std": array.std(),
-                "variance": array.var(),
-                "min": array.min(),
-                "max": array.max(),
-                "12_5%": np.percentile(array, 12.5),
-                "25%": np.percentile(array, 25),
-                "37_5%": np.percentile(array, 37.5),
-                "50%": np.percentile(array, 50),
-                "62_5%": np.percentile(array, 62.5),
-                "75%": np.percentile(array, 75),
-                "87_5%": np.percentile(array, 87.5),
+                "sum": np.around(array.sum(), 3),
+                "mean": np.around(array.mean(), 3),
+                "std": np.around(array.std(), 3),
+                "variance": np.around(array.var(), 3),
+                "min": np.around(array.min(), 3),
+                "max": np.around(array.max(), 3),
+                "12_5%": np.around(np.percentile(array, 12.5), 3),
+                "25%": np.around(np.percentile(array, 25), 3),
+                "37_5%": np.around(np.percentile(array, 37.5), 3),
+                "50%": np.around(np.percentile(array, 50), 3),
+                "62_5%": np.around(np.percentile(array, 62.5), 3),
+                "75%": np.around(np.percentile(array, 75), 3),
+                "87_5%": np.around(np.percentile(array, 87.5), 3),
             }
         else:
             return {
-                "sum": array.sum(axis=axis),
-                "mean": array.mean(axis=axis),
-                "std": array.std(axis=axis),
-                "variance": array.var(axis=axis),
-                "min": array.min(axis=axis),
-                "max": array.max(axis=axis),
-                "12_5%": np.percentile(array, 12.5, axis=axis),
-                "25%": np.percentile(array, 25, axis=axis),
-                "37_5%": np.percentile(array, 37.5, axis=axis),
-                "50%": np.percentile(array, 50, axis=axis),
-                "62_5%": np.percentile(array, 62.5, axis=axis),
-                "75%": np.percentile(array, 75, axis=axis),
-                "87_5%": np.percentile(array, 87.5, axis=axis),
+                "sum": np.around(array.sum(axis=axis), 3),
+                "mean": np.around(array.mean(axis=axis), 3),
+                "std": np.around(array.std(axis=axis), 3),
+                "variance": np.around(array.var(axis=axis), 3),
+                "min": np.around(array.min(axis=axis), 3),
+                "max": np.around(array.max(axis=axis), 3),
+                "12_5%": np.around(np.percentile(array, 12.5, axis=axis), 3),
+                "25%": np.around(np.percentile(array, 25, axis=axis), 3),
+                "37_5%": np.around(np.percentile(array, 37.5, axis=axis), 3),
+                "50%": np.around(np.percentile(array, 50, axis=axis), 3),
+                "62_5%": np.around(np.percentile(array, 62.5, axis=axis), 3),
+                "75%": np.around(np.percentile(array, 75, axis=axis), 3),
+                "87_5%": np.around(np.percentile(array, 87.5, axis=axis), 3),
             }
 
     def get_distance_from_centroid(self, cluster_data, center_vector):
@@ -290,13 +290,13 @@ class ClusterReport(DocUtils):
     @functools.lru_cache(maxsize=128)
     def get_centers(self, output_format="array"):
         if hasattr(self.model, "cluster_centers_"):
-            return self.model.cluster_centers_
+            return np.around(self.model.cluster_centers_, 3)
         elif hasattr(self.model, "get_centers"):
             return self.model.get_centers()
         elif self._centroids is not None:
             if output_format == "array":
                 if isinstance(self._centroids, dict):
-                    return np.array(list(self._centroids.values()))
+                    return np.around(np.array(list(self._centroids.values())), 3)
                 else:
                     return self._centroids
             else:
@@ -324,11 +324,13 @@ class ClusterReport(DocUtils):
             "grade": grade,
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
-                "davies_bouldin_score": davies_bouldin_score(
-                    self.X, self.cluster_labels
+                "davies_bouldin_score": round(
+                    davies_bouldin_score(self.X, self.cluster_labels),
+                    3,
                 ),
-                "calinski_harabasz_score": calinski_harabasz_score(
-                    self.X, self.cluster_labels
+                "calinski_harabasz_score": round(
+                    calinski_harabasz_score(self.X, self.cluster_labels),
+                    3,
                 ),
                 "silhouette_score": ClusterReport.summary_statistics(
                     self.X_silhouette_scores
@@ -381,7 +383,7 @@ class ClusterReport(DocUtils):
 
             if self.has_centers():
 
-                grand_centroid = self.X[cluster_bool].mean(axis=0)
+                grand_centroid = np.around(self.X[cluster_bool].mean(axis=0), 3)
 
                 centroid_vector = self._get_centroid_vector(
                     i, cluster_label, grand_centroid
@@ -541,7 +543,7 @@ class ClusterReport(DocUtils):
         return centroid_vector
 
     def dunn_index(self, min_distance_from_centroid, max_centroid_distance):
-        return min_distance_from_centroid / max_centroid_distance
+        return np.around(min_distance_from_centroid / max_centroid_distance, 3)
 
     def has_centers(self):
         return self.get_centers() is not None
@@ -551,13 +553,15 @@ class ClusterReport(DocUtils):
         if self.has_centers():
             centroids = self.get_centers()
             overall_report["centroids"] = centroids
-            overall_report["centroids_distance_matrix"] = pairwise_distances(
-                centroids, metric="euclidean"
+            overall_report["centroids_distance_matrix"] = np.around(
+                pairwise_distances(centroids, metric="euclidean"), 3
             )
             overall_report["grand_centroids"] = []
-            overall_report["average_distance_between_centroids"] = (
-                overall_report["centroids_distance_matrix"].sum(axis=1) - 1
-            ) / self.num_clusters
+            overall_report["average_distance_between_centroids"] = np.around(
+                (overall_report["centroids_distance_matrix"].sum(axis=1) - 1)
+                / self.num_clusters,
+                3,
+            )
 
     @property
     def davies_bouldin_score(self):
