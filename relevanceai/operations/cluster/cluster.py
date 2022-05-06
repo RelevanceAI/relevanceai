@@ -397,8 +397,8 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             "alias" : self.alias,
             "params" : {},
             "similarity_matrix" : {
-                "euclidean" : euclidean_distance_matrix(vectors, vectors),
-                "cosine" : cosine_similarity_matrix(vectors, vectors)
+                "euclidean" : euclidean_distance_matrix(vectors, vectors, decimal=3),
+                "cosine" : cosine_similarity_matrix(vectors, vectors, decimal=3)
             }
         }
 
