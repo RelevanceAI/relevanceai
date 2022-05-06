@@ -2,6 +2,7 @@ from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
+from doc_utils import DocUtils
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import beta, track, deprecated
@@ -14,7 +15,6 @@ from relevanceai.constants import (
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
 from relevanceai.operations.cluster.utils import ClusterUtils
-from doc_utils import DocUtils
 
 from relevanceai.utils.distances import (
     euclidean_distance_matrix,

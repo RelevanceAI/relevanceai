@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.operations.dr.dim_reduction import DimReduction
+from relevanceai.operations.dr.base import DimReduction
 from relevanceai._api import APIClient
 from relevanceai.operations.cluster.constants import (
     CENTROID_DISTANCES,

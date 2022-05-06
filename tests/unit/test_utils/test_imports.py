@@ -21,7 +21,7 @@ def test_datasets():
 
 def test_core():
     from relevanceai.operations.cluster.cluster import ClusterOps
-    from relevanceai.operations.dr.dim_reduction import DimReduction
-    from relevanceai.operations.dr.dim_reduction_ops import ReduceDimensionsOps
+    from relevanceai.operations.dr.base import DimReduction
+    from relevanceai.operations.dr.dim_reduction import ReduceDimensionsOps
 
     assert True
