@@ -34,7 +34,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         raise NotImplementedError
 
     def transform_documents(self, vector_field: str, documents: List[Dict]):
-        vectors = self.get_field_across_documents(vector_field, documents)
+        # vectors = self.get_field_across_documents(vector_field, documents)
         return self.transform(documents)
 
     def fit_documents(self, vector_field: str, documents: List[Dict]):
@@ -54,24 +54,30 @@ class DimReductionBase(LoguruLogger, DocUtils):
 
     def fit_transform_documents(
         self,
-        vector_field: str,
+        vector_fields: List[str],
         documents: List[Dict],
         alias: str,
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
-        documents = list(self.filter_docs_for_fields([vector_field], documents))
         vectors = np.array(
-            self.get_field_across_documents(
-                vector_field, documents, missing_treatment="skip"
+            self.get_fields_across_documents(
+                vector_fields, documents, missing_treatment="skip"
             )
         )
+        vectors = vectors.reshape(-1, vectors.shape[1]*vectors.shape[2]) #hacky fix
         dr_vectors = self.fit_transform(vectors, dims=dims)
-        dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
-        self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
+        del vectors #free more memory, mainly for memory edgecases
+
+        vector_field_name = "-".join([f.replace('_vector_', '') for f in vector_fields])
+        dr_vector_field_name = self.get_dr_vector_field_name(vector_field_name, alias)
         if exclude_original_vectors:
-            dr_docs = self.subset_documents(["_id", dr_vector_field_name], documents)
-        return dr_docs
+            dr_docs = [{"_id":d["_id"]} for d in documents]
+            self.set_field_across_documents(dr_vector_field_name, dr_vectors, dr_docs)
+            return dr_docs
+        else:
+            self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
+        return documents
 
 
 class PCA(DimReductionBase):
@@ -154,6 +160,7 @@ class Ivis(DimReductionBase):
         return vectors_dr
 
 
+#this is mainly for plots
 class DimReduction(_Base, DimReductionBase):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)

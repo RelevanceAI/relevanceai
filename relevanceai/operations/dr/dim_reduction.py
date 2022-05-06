@@ -55,6 +55,9 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         dataset_id: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        show_progress_bar: bool = True,
+        verbose: bool = True,
     ):
         """
         Reduce Dimensions
@@ -62,27 +65,21 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         Example
         ---------
 
+
+        Parameters
+        -------------
+
         dataset_id: Optional[str]
             The dataset to run dimensionality reduction on
         vector_fields: Optional[List[str]]
             List of vector fields
         alias: Optional[str]
             Alias to store dimensionality reduction model
-
-        Parameters
-        -------------
-
-        fields: list
-            The list of fields to run dimensionality reduction on. Currently
-            only supports 1 field.
-        documents: list
-            The list of documents to run dimensionality reduction on
-        inplace: bool
-            If True, replaces the original documents, otherwise it returns
-            a new set of documents with only the dr vectors in it and the _id
-
+        show_progress_bar: bool
+            If True, the progress bar can be shown
 
         """
+        filters = [] if filters is None else filters
         if dataset_id is None:
             dataset_id = self.dataset_id
         if vector_fields is None:
@@ -90,24 +87,49 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         if alias is None:
             alias = self.alias
 
+        print("Retrieving all documents...")
+        from relevanceai.utils.filter_helper import create_filter
+
+        for vector_field in vector_fields:
+            filters += create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(
-            dataset_id, select_fields=vector_fields, include_vector=True
+            dataset_id=dataset_id,
+            select_fields=vector_fields,
+            show_progress_bar=show_progress_bar,
+            include_vector=True,
+            filters=filters,
         )
 
+        print("Predicting on all documents...")
         dr_documents = self.model.fit_transform_documents(
-            vector_field=vector_fields[0],  # type: ignore
+            vector_fields=vector_fields,  # type: ignore
             documents=documents,
             alias=alias,  # type: ignore
             dims=self.n_components,
         )
 
-        return self._update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
+        print("Updating dataset with reduced vectors...")
+        self._update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
+
+        if verbose:
+            self._print_app_link()
+
+    def _print_app_link(self):
+        print("All complete")
+        # link = CLUSTER_APP_LINK.format(self.dataset_id)
+        # print(Messages.BUILD_HERE + link)
 
     def run(
         self,
         dataset_id: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        show_progress_bar: bool = True,
+        verbose: bool = True,
     ):
         """Operate the dashboard"""
-        return self.fit(dataset_id=dataset_id, vector_fields=vector_fields, alias=alias)
+        self.fit(
+            dataset_id=dataset_id, vector_fields=vector_fields, alias=alias,
+            filters=filters, show_progress_bar=show_progress_bar, verbose=verbose
+        )
