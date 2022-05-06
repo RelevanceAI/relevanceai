@@ -55,9 +55,6 @@ class Client(APIClient, ConfigMixin):
 
         token: str
             You can paste the token here if things need to be refreshed
-
-        force_refresh: bool
-            If True, it forces you to refresh your client
         """
 
         if token is None:

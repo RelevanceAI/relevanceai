@@ -222,6 +222,8 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                         params=parameters if method.upper() == "GET" else {},
                     ).prepare()
 
+                print(request_url, req.headers, req.body)
+
                 with requests.Session() as s:
                     response = s.send(req)
 
