@@ -47,8 +47,28 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
         self.alias = alias
+        if len(vector_fields) > 0:
+            self.vector_name = "-".join([f.replace('_vector_', '') for f in vector_fields])
+        else:
+            self.vector_name = vector_fields[0]
 
         super().__init__(credentials)
+
+    def _insert_dr_metadata(
+        self,
+        dataset_id: str,
+        alias: str,
+        vector_fields: List[str],
+    ):
+        metadata = self.datasets.metadata(dataset_id=dataset_id)
+        if "_dr_" not in metadata:
+            metadata["_dr_"] = {}
+        metadata["_dr_"][self.vector_name] = {
+            "alias" : alias,
+            "vector_fields" : vector_fields,
+            "n_components" : self.n_components
+        }
+        self.datasets.post_metadata(dataset_id, metadata)
 
     def fit(
         self,
@@ -106,10 +126,18 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             documents=documents,
             alias=alias,  # type: ignore
             dims=self.n_components,
+            vector_name=self.vector_name
         )
 
         print("Updating dataset with reduced vectors...")
         self._update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
+
+        print("Updating dr metadata...")
+        self._insert_dr_metadata(
+            dataset_id=dataset_id, 
+            vector_fields=vector_fields,
+            alias=alias
+        )
 
         if verbose:
             self._print_app_link()
