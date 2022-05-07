@@ -70,7 +70,6 @@ class DimReductionBase(LoguruLogger, DocUtils):
         dr_vectors = self.fit_transform(vectors, dims=dims)
         del vectors #free more memory, mainly for memory edgecases
 
-        vector_name = "-".join([f.replace('_vector_', '') for f in vector_fields])
         dr_vector_field_name = self.get_dr_vector_field_name(vector_name, alias)
         if exclude_original_vectors:
             dr_docs = [{"_id":d["_id"]} for d in documents]
