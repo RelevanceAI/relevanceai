@@ -294,7 +294,7 @@ class TestDatasetWrite:
 
     def test_dtype_mapping(self, test_dataset: Dataset):
         test_dataset.set_dtypes({})
-        dtypes = test_dataset.get_dtypes()
+        dtypes = test_dataset.get_dtypes()["results"]
         assert all(
             dtype in dtypes
             for dtype in [
