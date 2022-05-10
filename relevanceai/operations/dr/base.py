@@ -57,7 +57,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         vector_fields: List[str],
         documents: List[Dict],
         alias: str,
-        vector_name: str, #new vector name
+        vector_name: str,  # new vector name
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
@@ -66,14 +66,14 @@ class DimReductionBase(LoguruLogger, DocUtils):
                 vector_fields, documents, missing_treatment="skip"
             )
         )
-        vectors = vectors.reshape(-1, vectors.shape[1]*vectors.shape[2]) #hacky fix
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])  # hacky fix
         dr_vectors = self.fit_transform(vectors, dims=dims)
-        del vectors #free more memory, mainly for memory edgecases
+        del vectors  # free more memory, mainly for memory edgecases
 
-        vector_name = "-".join([f.replace('_vector_', '') for f in vector_fields])
+        vector_name = "-".join([f.replace("_vector_", "") for f in vector_fields])
         dr_vector_field_name = self.get_dr_vector_field_name(vector_name, alias)
         if exclude_original_vectors:
-            dr_docs = [{"_id":d["_id"]} for d in documents]
+            dr_docs = [{"_id": d["_id"]} for d in documents]
             self.set_field_across_documents(dr_vector_field_name, dr_vectors, dr_docs)
             return dr_docs
         else:
@@ -161,7 +161,7 @@ class Ivis(DimReductionBase):
         return vectors_dr
 
 
-#this is mainly for plots
+# this is mainly for plots
 class DimReduction(_Base, DimReductionBase):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)

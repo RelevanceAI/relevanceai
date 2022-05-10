@@ -71,7 +71,7 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
-            filters=filters
+            filters=filters,
         )
         return ops
 
@@ -124,7 +124,7 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
-            filters=filters
+            filters=filters,
         )
 
     @track
