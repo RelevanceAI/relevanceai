@@ -58,7 +58,7 @@ class ExampleDatasets:
     @staticmethod
     def _get_dummy_dataset(
         db_name,
-        number_of_documents,
+        number_of_documents: Optional[int] = None,
         select_fields: Optional[List[str]] = None,
         include_vector: bool = True,
     ):
@@ -73,12 +73,19 @@ class ExampleDatasets:
             firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
             token = ":".join([project, api_key, region, firebase_uid])
             client = Client(token=token)
-            documents = client._get_documents(
-                db_name,
-                number_of_documents=number_of_documents,
-                select_fields=select_fields,
-                include_vector=include_vector,
-            )
+            if number_of_documents is None:
+                documents = client._get_all_documents(
+                    db_name,
+                    select_fields=select_fields,
+                    include_vector=include_vector,
+                )
+            else:
+                documents = client._get_documents(
+                    db_name,
+                    number_of_documents=number_of_documents,
+                    select_fields=select_fields,
+                    include_vector=include_vector,
+                )
             client.config.reset()
             return documents
 
