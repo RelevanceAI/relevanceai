@@ -457,13 +457,13 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             n_clusters = len(set(labels)) - 1
             print(f"Found {n_clusters} clusters using {self.model_name}")
 
-        labelled_documents = [{"_id" : d["_id"]} for d in documents]
+        labelled_documents = [{"_id": d["_id"]} for d in documents]
 
         self.set_field_across_documents(
             field=self.cluster_field, values=labels, docs=labelled_documents
         )
-            
-        if inplace: #add the cluster labels into the original documents
+
+        if inplace:  # add the cluster labels into the original documents
             self.set_field_across_documents(
                 field=self.cluster_field, values=labels, docs=documents
             )
@@ -532,7 +532,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         # fit model, predict and label all documents
         print("Predicting on all documents...")
         centroid_documents, labelled_documents = self._fit_predict(
-            documents=documents, vector_field=vector_field, inplace=include_cluster_report
+            documents=documents, vector_field=vector_field, inplace=True
         )
 
         print("Updating cluster labels...")
@@ -554,7 +554,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             centroid_documents=centroid_documents,
         )
         if include_cluster_report:
-            #this needs to be more optimized for performance, we dont need to store 2 vector sets in memory.
+            # this needs to be more optimized for performance, we dont need to store 2 vector sets in memory.
             print("Generating evaluation report for your clusters…")
             from relevanceai.reports.cluster.report import ClusterReport
 
@@ -571,7 +571,9 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             )
 
             if len(cluster_labels) != len(X):
-                raise ValueError("")
+                raise ValueError(
+                    "Number of cluster labels do not match number of rows of data."
+                )
 
             self.report = ClusterReport(
                 X=X,
