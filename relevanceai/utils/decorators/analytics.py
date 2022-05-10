@@ -31,8 +31,6 @@ def track(func: Callable):
         if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
             return func(*args, **kwargs)
 
-        os.environ[TRANSIT_ENV_VAR] = "TRUE"
-
         try:
             if is_tracking_enabled():
 
@@ -130,7 +128,7 @@ def track_event_usage(event_name: str):
         def wrapper(*args, **kwargs):
             if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
                 return func(*args, **kwargs)
-            os.environ[TRANSIT_ENV_VAR] = "TRUE"
+
             try:
                 if is_tracking_enabled():
 
@@ -161,6 +159,9 @@ def track_event_usage(event_name: str):
 
 def identify(func: Callable):
     def wrapper(*args, **kwargs):
+        if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
+            return func(*args, **kwargs)
+
         try:
             if is_tracking_enabled():
                 user_id = args[0].firebase_uid

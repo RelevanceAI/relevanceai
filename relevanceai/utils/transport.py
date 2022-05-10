@@ -1,9 +1,12 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+import os
 import asyncio
 import codecs
 import time
+import logging
 import traceback
+
 
 from json.decoder import JSONDecodeError
 from typing import Optional
@@ -32,6 +35,28 @@ class Transport(JSONEncoderUtils, ConfigMixin):
     api_key: str
     config: Config
     logger: AbstractLogger
+    request_logger: logging.Logger
+
+    def __init__(self, request_log_filename="request.log", **kwargs):
+
+        if os.environ["DEBUG_REQUESTS"] == "1":
+            logging.basicConfig(
+                filename=request_log_filename,
+                filemode="w",
+                level=logging.DEBUG,
+            )
+            self.request_logger = logging.getLogger()
+            # logHandler = logging.FileHandler(request_log_filename)
+            # formatter = jsonlogger.JsonFormatter()
+            # logHandler.setFormatter(formatter)
+            # self.request_logger.addHandler(logHandler)
+            self.hooks = {"response": self.log}
+
+        else:
+            self.hooks = None
+
+    def log(self, response, *args, **kwargs):
+        self.request_logger.debug(response.json())
 
     @property
     def _dashboard_request_url(self):
@@ -211,6 +236,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                         url=request_url,
                         headers=self.auth_header,
                         json=parameters if method.upper() == "POST" else {},
+                        hooks=self.hooks,
                     ).prepare()
                 elif method.upper() == "GET":
                     # Get requests do not have JSONs - which will error out
@@ -220,6 +246,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                         url=request_url,
                         headers=self.auth_header,
                         params=parameters if method.upper() == "GET" else {},
+                        hooks=self.hooks,
                     ).prepare()
 
                 with requests.Session() as s:
@@ -330,6 +357,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                     headers=self.auth_header,
                     json=parameters if method.upper() == "POST" else {},
                     params=parameters if method.upper() == "GET" else {},
+                    hooks=self.hooks,
                 ) as response:
                     if response.status == 200:
                         self._log_response_success(base_url, endpoint)
