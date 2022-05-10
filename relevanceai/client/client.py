@@ -46,7 +46,7 @@ class Client(APIClient, ConfigMixin):
         self,
         token: Optional[str] = None,
         authenticate: bool = True,
-        enable_request_logging:bool = False
+        enable_request_logging: bool = False,
     ):
         """
         Initialize the client
