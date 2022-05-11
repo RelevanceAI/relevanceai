@@ -48,7 +48,7 @@ Why Relevance AI
 Authorization
 ---------------
 
-Authorization is incredibly useful. It can be thought of in the following hierarchy:
+Relevance AI's authorization can be thought of under the following hierarchy:
 
 .. code-block::
 
