@@ -66,6 +66,7 @@ class _SubClusterOps(ClusterOps):
         filters: list = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
+        min_parent_cluster_size: Optional[int] = None,
     ) -> None:
         """
         Run clustering on a dataset
@@ -109,7 +110,7 @@ class _SubClusterOps(ClusterOps):
         )
 
         # If no documents then return
-        if len(documents) == 0:
+        if len(documents) == 0 or len(documents) < min_parent_cluster_size:
             return
 
         # fit model, predict and label all documents
@@ -277,6 +278,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         parent_field: str = None,
         filters: Optional[List] = None,
         verbose: bool = False,
+        min_parent_cluster_size: Optional[int] = None,
     ):
         """
 
@@ -348,7 +350,10 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         # Here we run subfitting on these documents
 
         clustered_docs = self.subcluster_predict_documents(
-            vector_fields=vector_fields, filters=filters, verbose=False
+            vector_fields=vector_fields,
+            filters=filters,
+            verbose=False,
+            min_parent_cluster_size=min_parent_cluster_size,
         )
 
         if verbose:
@@ -528,6 +533,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         self,
         vector_fields: Optional[List] = None,
         filters: Optional[List] = None,
+        min_parent_cluster_size: Optional[int] = None,
         cluster_ids: Optional[List] = None,
         verbose: bool = True,
     ):
@@ -607,6 +613,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
                 vector_fields=vector_fields,
                 filters=cluster_filters,
                 verbose=False,
+                min_parent_cluster_size=min_parent_cluster_size,
             )
             self._list_of_cluster_ops.append(ops)
 
