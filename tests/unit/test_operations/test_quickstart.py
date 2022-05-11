@@ -21,7 +21,7 @@ def test_quickstart(test_client: Client):
         vectorSearchQuery=[
             {"vector": [0.2, 0.2, 0.2], "field": "example_vector_"},
         ],
-        page_size=3,
+        pageSize=3,
     )
     assert len(results["results"]) > 0, "Not inserting properly"
     test_client.datasets.delete(QUICKSTART_DATASET)
