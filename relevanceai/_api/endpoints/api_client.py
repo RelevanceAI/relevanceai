@@ -25,7 +25,6 @@ class APIEndpointsClient(_Base, DocUtils):
         **kwargs,
     ):
         self.datasets = DatasetsClient(credentials)
-        self.services = ServicesClient(credentials)
         self.example_datasets = ExampleDatasets()
         self.admin = AdminClient(credentials)
         self.reports = ReportsClient(credentials)
