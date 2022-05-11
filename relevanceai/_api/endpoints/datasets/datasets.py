@@ -654,6 +654,8 @@ class DatasetsClient(_Base):
         # "https://api-dev.ap-southeast-2.relevance.ai/latest/datasets/{DATASET_ID}/aggregate"
         filters = [] if filters is None else filters
         if aggregation_query is None:
+            if metrics is None:
+                metrics = []
             aggregation_query = {"metrics": metrics}
 
             if groupby:
