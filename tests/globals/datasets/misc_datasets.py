@@ -9,7 +9,7 @@ from typing import Dict, List, NamedTuple
 
 from relevanceai import Client
 
-from tests.globals.constants import generate_dataset_id
+from tests.globals.constants import generate_dataset_id, DELETE_AFTER_TESTING
 
 
 @pytest.fixture(scope="function")
@@ -20,7 +20,8 @@ def obj_dataset_id(test_client: Client, dataclass_documents: List[NamedTuple]):
 
     yield test_dataset_id
 
-    test_client.datasets.delete(test_dataset_id)
+    if DELETE_AFTER_TESTING:
+        test_client.datasets.delete(test_dataset_id)
 
 
 @pytest.fixture(scope="function")

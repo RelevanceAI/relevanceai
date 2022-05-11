@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from relevanceai import Client
 
-from tests.globals.constants import generate_dataset_id
+from tests.globals.constants import generate_dataset_id, DELETE_AFTER_TESTING
 
 
 @pytest.fixture(scope="function")
@@ -15,4 +15,6 @@ def large_dataset_id(test_client: Client, sample_documents: List[Dict]):
 
     yield test_dataset_id
 
-    test_client.datasets.delete(test_dataset_id)
+
+    if DELETE_AFTER_TESTING:
+        test_client.datasets.delete(test_dataset_id)
