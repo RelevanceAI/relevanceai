@@ -55,4 +55,4 @@ SAMPLE_DATASET_DATASET_PREFIX = "_sample_test_dataset_"
 LABEL_DATSET_ID = SAMPLE_DATASET_DATASET_PREFIX + generate_random_string().lower()
 
 NOT_IMPLEMENTED = "Test Not Implemented Yet"
-DELETE_AFTER_TESTING = True
+DELETE_AFTER_TESTING = False
