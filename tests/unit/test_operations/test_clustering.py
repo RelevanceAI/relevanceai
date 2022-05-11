@@ -92,7 +92,7 @@ class TestClusterOps:
             vector_fields=["sample_1_vector_"],
         )
 
-        ops.merge(cluster_labels=[0, 1], alias="new_clustering")
+        ops.merge(cluster_labels=["cluster-0", "cluster-1"], alias="new_clustering")
 
         centroids = test_client.datasets.cluster.centroids.list(
             dataset_id=test_dataset.dataset_id,
