@@ -71,6 +71,9 @@ class Operations(Write, IO):
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
         )
+        print(
+            f"You can re-instantiate clustering using `cluster_ops = client.ClusterOps(alias={alias}, vector_fields={vector_fields})`"
+        )
         return ops
 
     @track
