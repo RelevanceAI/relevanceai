@@ -21,20 +21,23 @@ class CentroidsClient(_Base):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: Optional[List] = None,
+        facets: Optional[List] = None,
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
+        include_facets: bool = False,
+        cluster_properties_filter: Optional[Dict] = {},
+        verbose: bool = False,
     ):
         """
-        List of documents closest from the centre.
-
+        List of documents closest from the center.
         Parameters
         ----------
         dataset_id: string
             Unique name of dataset
-        vector_field: string
+        vector_field: list
             The vector field where a clustering task was run.
-        cluster_ids: lsit
+        cluster_ids: list
             Any of the cluster ids
         alias: string
             Alias is used to name a cluster
@@ -64,6 +67,8 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
         """
         cluster_ids = [] if cluster_ids is None else cluster_ids
         centroid_vector_fields = (
@@ -71,15 +76,16 @@ class CentroidsClient(_Base):
         )
         select_fields = [] if select_fields is None else select_fields
         filters = [] if filters is None else filters
+        facets = [] if facets is None else facets
 
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         parameters = {
-            "dataset_id": dataset_id,
             "vector_fields": vector_fields,
-            "alias": alias,
-            "cluster_ids": cluster_ids,
             "centroid_vector_fields": centroid_vector_fields,
+            "alias": alias,
+            "dataset_id": dataset_id,
+            "cluster_ids": cluster_ids,
             "select_fields": select_fields,
             "approx": approx,
             "sum_fields": sum_fields,
@@ -87,9 +93,12 @@ class CentroidsClient(_Base):
             "page": page,
             "similarity_metric": similarity_metric,
             "filters": filters,
+            "facets": facets,
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
+            "include_facets": include_facets,
+            "cluster_properties_filter": cluster_properties_filter,
         }
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
@@ -98,13 +107,16 @@ class CentroidsClient(_Base):
             parameters=parameters,
             endpoint=endpoint,
             dashboard_type="cluster_centroids_closest",
+            verbose=verbose,
         )
         return self.make_http_request(endpoint, method=method, parameters=parameters)
+
+    documents_closest_to_center = list_closest_to_center
 
     def list_furthest_from_center(
         self,
         dataset_id: str,
-        vector_fields: List[str],
+        vector_fields: List,
         alias: str,
         centroid_vector_fields: Optional[List] = None,
         cluster_ids: Optional[List] = None,
@@ -115,19 +127,15 @@ class CentroidsClient(_Base):
         page: int = 1,
         similarity_metric: str = "cosine",
         filters: Optional[List] = None,
+        facets: Optional[List] = None,
         min_score: int = 0,
         include_vector: bool = False,
         include_count: bool = True,
+        include_facets: bool = False,
+        cluster_properties_filter: Optional[Dict] = {},
     ):
-        centroid_vector_fields = (
-            [] if centroid_vector_fields is None else centroid_vector_fields
-        )
-        cluster_ids = [] if cluster_ids is None else cluster_ids
-        select_fields = [] if select_fields is None else select_fields
-        filters = [] if filters is None else filters
         """
-        List of documents furthest from the centre.
-
+        List of documents furthest from the center.
         Parameters
         ----------
         dataset_id: string
@@ -162,8 +170,17 @@ class CentroidsClient(_Base):
             Include the total count of results in the search results
         include_facets: bool
             Include facets in the search results
-
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
         """
+        centroid_vector_fields = (
+            [] if centroid_vector_fields is None else centroid_vector_fields
+        )
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+        select_fields = [] if select_fields is None else select_fields
+        filters = [] if filters is None else filters
+        facets = [] if facets is None else facets
+
         if not centroid_vector_fields:
             centroid_vector_fields = vector_fields
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_furthest_from_center"
@@ -181,9 +198,12 @@ class CentroidsClient(_Base):
             "page": page,
             "similarity_metric": similarity_metric,
             "filters": filters,
+            "facets": facets,
             "min_score": min_score,
             "include_vector": include_vector,
             "include_count": include_count,
+            "include_facets": include_facets,
+            "cluster_properties_filter": cluster_properties_filter,
         }
         self._log_to_dashboard(
             method=method,
@@ -196,13 +216,15 @@ class CentroidsClient(_Base):
         )
         return response
 
+    documents_furthest_from_center = list_furthest_from_center
+
     def update(
         self,
         dataset_id: str,
         vector_fields: List[str],
-        centroid_vector_fields: List[str],
         alias: str,
         cluster_centers: List[Dict[str, List[float]]],
+        centroid_vector_fields: List[str] = None,
     ):
         """
         API reference link: https://api.us-east-1.relevance.ai/latest/core/documentation#operation/UpdateClusterCentroids
@@ -224,7 +246,8 @@ class CentroidsClient(_Base):
         cluster_centers: List[Dict[str: List[float]]]
             A List containing dictionaries of cluster id's to be updated, with their keys being the new centroids
         """
-
+        if centroid_vector_fields is None:
+            centroid_vector_fields = []
         return self.make_http_request(
             endpoint=f"datasets/{dataset_id}/cluster/centroids/update",
             method="POST",

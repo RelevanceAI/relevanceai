@@ -610,9 +610,9 @@ class DatasetsClient(_Base):
     def aggregate(
         self,
         dataset_id: str,
-        groupby: List[str] = None,
-        metrics: List[str] = None,
-        select_fields: List[str] = None,
+        groupby: List = None,
+        metrics: List = None,
+        select_fields: List = None,
         sort: List[str] = None,
         asc: bool = False,
         filters: List = None,
@@ -673,6 +673,7 @@ class DatasetsClient(_Base):
                 "page_size": page_size,
                 "page": page,
                 "asc": asc,
+                "select_fields": select_fields,
             },
         )
 
