@@ -431,8 +431,8 @@ class Series(APIClient):
             agg_type = "category"
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
-        aggregation = self.services.aggregate.aggregate(
-            self.dataset_id,
+        aggregation = self.datasets.aggregate(
+            dataset_id=self.dataset_id,
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,

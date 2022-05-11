@@ -388,7 +388,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         vector_fields: List[str],
         centroid_documents: List[Dict[str, Any]],
     ) -> None:
-        self.services.cluster.centroids.insert(
+        self.datasets.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=vector_fields,
@@ -631,7 +631,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
 
         """
         if not hasattr(self, "_centroids"):
-            self._centroids = self.services.centroids.list(
+            self._centroids = self.datasets.cluster.centroids.list(
                 dataset_id=self.dataset_id,
                 vector_fields=self.vector_fields,
                 alias=self.alias,
@@ -711,7 +711,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             )
 
         """
-        results = self.services.cluster.centroids.insert(
+        results = self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=self.vector_fields,
@@ -912,7 +912,7 @@ class ClusterOps(ClusterWriteOps):
                 raise ValueError("Please specify alias= as it was not detected")
 
         try:
-            centroid_documents = self.services.cluster.centroids.list(
+            centroid_documents = self.datasets.cluster.centroids.list(
                 dataset_id=self.dataset_id,
                 vector_fields=[self.vector_field],
                 alias=alias,
@@ -968,7 +968,7 @@ class ClusterOps(ClusterWriteOps):
 
         try:
             # If there are no centroids - move on
-            self.services.cluster.centroids.update(
+            self.datasets.cluster.centroids.update(
                 dataset_id=self.dataset_id,
                 vector_fields=[self.vector_field],
                 alias=alias,
@@ -982,7 +982,7 @@ class ClusterOps(ClusterWriteOps):
                     centroid_id = cluster
                 else:
                     centroid_id = f"cluster-{cluster}"
-                self.services.cluster.centroids.delete(
+                self.datasets.cluster.centroids.delete(
                     dataset_id=self.dataset_id,
                     centroid_id=centroid_id,
                     alias=self.alias,
@@ -1060,7 +1060,7 @@ class ClusterOps(ClusterWriteOps):
         vector_field = self.vector_field if vector_field is None else vector_field
         alias = self.alias if alias is None else alias
 
-        return self.services.cluster.centroids.list_closest_to_center(
+        return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=dataset_id,
             vector_fields=[vector_field],
             alias=alias,
@@ -1143,7 +1143,7 @@ class ClusterOps(ClusterWriteOps):
         vector_field = self.vector_field if vector_field is None else vector_field
         alias = self.alias if alias is None else alias
 
-        return self.services.cluster.centroids.list_furthest_from_center(
+        return self.datasets.cluster.centroids.list_furthest_from_center(
             dataset_id=dataset_id,
             vector_fields=[vector_field],
             alias=alias,

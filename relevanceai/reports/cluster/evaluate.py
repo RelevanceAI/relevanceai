@@ -201,7 +201,7 @@ class ClusterEvaluate(APIClient, DocUtils):
 
         """
 
-        centroid_response = self.services.cluster.centroids.list(
+        centroid_response = self.datasets.cluster.centroids.list(
             dataset_id, [vector_field], alias, include_vector=True
         )
 

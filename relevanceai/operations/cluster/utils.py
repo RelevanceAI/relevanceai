@@ -205,7 +205,7 @@ class ClusterUtils(APIClient, DocUtils):
             centers = self.get_centroid_documents()
 
             # Change centroids insertion
-            results = self.services.cluster.centroids.insert(
+            results = self.datasets.cluster.centroids.insert(
                 dataset_id=self.dataset_id,
                 cluster_centers=centers,
                 vector_fields=self.vector_fields,

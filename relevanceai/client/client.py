@@ -117,9 +117,6 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         token = getpass.getpass(f"Activation token:")
         return token
 
-    def make_search_suggestion(self):
-        return self.services.search.make_suggestion()
-
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.list_datasets()
