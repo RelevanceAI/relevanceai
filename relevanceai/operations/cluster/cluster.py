@@ -920,29 +920,6 @@ class ClusterOps(ClusterWriteOps):
             include_vector=True,
         )["results"]
 
-        # Calculating the centorids
-        try:
-            relevant_centroids = [
-                self.get_field(self.vector_fields[0], d) for d in centroid_documents
-            ]
-
-            if len(relevant_centroids) == 0:
-                raise ValueError("No relevant centroids found.")
-            new_centroid = np.array(relevant_centroids).mean(0).tolist()
-
-            if isinstance(cluster_labels[0], int):
-                new_centroid_doc = {
-                    "_id": f"cluster-{cluster_labels[0]}",
-                    self.vector_field: new_centroid,
-                }
-            elif isinstance(cluster_labels[0], str):
-                new_centroid_doc = {
-                    "_id": cluster_labels[0],
-                    self.vector_field: new_centroid,
-                }
-        except:
-            pass
-
         update: dict = {}
 
         if isinstance(cluster_labels[0], str):
@@ -973,6 +950,26 @@ class ClusterOps(ClusterWriteOps):
             print(f"🚨 Couldn't merge. : {results['message']}")
 
         try:
+            # Calculating the centorids
+            relevant_centroids = [
+                self.get_field(self.vector_fields[0], d) for d in centroid_documents
+            ]
+
+            if len(relevant_centroids) == 0:
+                raise ValueError("No relevant centroids found.")
+            new_centroid = np.array(relevant_centroids).mean(0).tolist()
+
+            if isinstance(cluster_labels[0], int):
+                new_centroid_doc = {
+                    "_id": f"cluster-{cluster_labels[0]}",
+                    self.vector_field: new_centroid,
+                }
+            elif isinstance(cluster_labels[0], str):
+                new_centroid_doc = {
+                    "_id": cluster_labels[0],
+                    self.vector_field: new_centroid,
+                }
+
             # If there are no centroids - move on
             self.datasets.cluster.centroids.update(
                 dataset_id=self.dataset_id,
