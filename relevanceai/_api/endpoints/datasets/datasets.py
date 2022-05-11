@@ -759,3 +759,25 @@ class DatasetsClient(_Base):
             method="POST",
             parameters=parameters,
         )
+
+    def recommend(self, documents_to_recommend: list):
+        """
+        Recommend documents similar to specific documents. Specify which vector field must be used for recommendation using the documentsToRecommend property.
+
+        Parameters
+        ------------
+
+        documentsToRecommend: list
+            This takes a list of objects. Each object must specify the id of the document to generate recommendations for, and the vector field that will be compared. Weight can be changed to increase or decrease how much a document contributes to the recommendation. A negative weight will make a document less likely to be recommended.
+
+            `field` - The vector field used for recommendation.
+            `id` - The id of the document used for recommendation.
+            `weight` - Influences how much a document affects recommendation results. A negative weight causes documents like this to show up less.
+
+        """
+        parameters = {"documentsToRecommend": documents_to_recommend}
+        return self.make_http_request(
+            endpoint="/datasets/{dataset_id}/recommend",
+            method="POST",
+            parameters=parameters,
+        )

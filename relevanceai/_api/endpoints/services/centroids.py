@@ -9,46 +9,6 @@ class CentroidsClient(_Base):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
 
-    def get(
-        self,
-        dataset_id: str,
-        cluster_ids: List,
-        vector_fields: List,
-        alias: str = "default",
-        page_size: int = 5,
-        cursor: str = None,
-    ):
-        """
-        Retrieve the cluster centroids by IDs
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        cluster_ids : list
-            List of cluster IDs
-        vector_field: string
-            The vector field where a clustering task was run.
-        alias: string
-            Alias is used to name a cluster
-        page_size: int
-            Size of each page of results
-        cursor: string
-            Cursor to paginate the document retrieval
-        """
-        return self.make_http_request(
-            "/services/cluster/centroids/get",
-            method="GET",
-            parameters={
-                "dataset_id": dataset_id,
-                "cluster_ids": cluster_ids,
-                "vector_fields": vector_fields,
-                "alias": alias,
-                "page_size": page_size,
-                "cursor": cursor,
-            },
-        )
-
     def insert(
         self,
         dataset_id: str,
@@ -135,52 +95,6 @@ class CentroidsClient(_Base):
                 "vector_field": "",
             },
         )
-
-    def metadata(
-        self,
-        dataset_id: str,
-        vector_fields: List,
-        alias: str = "default",
-        metadata: Optional[Dict[str, Any]] = None,
-    ):
-        """
-        If metadata is none, retrieves metadata about a dataset. notably description, data source, etc
-        Otherwise, you can store the metadata about your cluster here.
-
-        Parameters
-        ----------
-        dataset_id: string
-            Unique name of dataset
-        vector_field: string
-            The vector field where a clustering task was run.
-        alias: string
-            Alias is used to name a cluster
-        metadata: Optional[dict]
-           If None, it will retrieve the metadata, otherwise
-           it will overwrite the metadata of the cluster
-
-        """
-        if metadata is None:
-            return self.make_http_request(
-                "/services/cluster/centroids/metadata",
-                method="POST",
-                parameters={
-                    "dataset_id": dataset_id,
-                    "vector_fields": vector_fields,
-                    "alias": alias,
-                },
-            )
-        else:
-            return self.make_http_request(
-                "/services/cluster/centroids/metadata",
-                method="POST",
-                parameters={
-                    "dataset_id": dataset_id,
-                    "vector_fields": vector_fields,
-                    "alias": alias,
-                    "metadata": metadata,
-                },
-            )
 
     def list_closest_to_center(
         self,

@@ -850,7 +850,7 @@ class ClusterOps(ClusterWriteOps):
         filters = [] if filters is None else filters
         sort = [] if sort is None else sort
 
-        return self.services.cluster.aggregate(
+        return self.datasets.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields if not vector_fields else vector_fields,
             groupby=groupby,
