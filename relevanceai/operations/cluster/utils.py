@@ -544,6 +544,9 @@ class ClusterUtils(APIClient, DocUtils):
         # and then add them to a list
         all_cluster_ids: Set = set()
 
+        if field is None:
+            field = self._get_cluster_field_name()
+
         while len(all_cluster_ids) < num_clusters:
             facet_results = self.datasets.facets(
                 dataset_id=dataset_id,

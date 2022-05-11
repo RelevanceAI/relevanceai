@@ -208,7 +208,7 @@ class DatasetsClient(_Base):
             Whether to sort results by ascending or descending order
 
         """
-        fields = [] if fields is None else fields
+        fields = [] if fields in (None, [None]) else fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/facets",

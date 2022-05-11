@@ -24,6 +24,7 @@ class Operations(Write, IO):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        cluster_config: Optional[dict] = None,
         include_cluster_report: bool = True,
         **kwargs,
     ):
@@ -55,6 +56,12 @@ class Operations(Write, IO):
             A list of possible vector fields
         alias: str
             The alias to be used to store your model
+        cluster_config: dict
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
 
         """
         from relevanceai.operations.cluster import ClusterOps
@@ -64,6 +71,7 @@ class Operations(Write, IO):
             model=model,
             alias=alias,
             vector_fields=vector_fields,
+            cluster_config=cluster_config,
             **kwargs,
         )
         ops(
@@ -71,8 +79,10 @@ class Operations(Write, IO):
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
         )
+        if alias is None:
+            alias = ops.alias
         print(
-            f"You can re-instantiate clustering using `cluster_ops = client.ClusterOps(alias={alias}, vector_fields={vector_fields})`"
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{alias}', vector_fields={vector_fields}, dataset_id='{self.dataset_id}')`"
         )
         return ops
 

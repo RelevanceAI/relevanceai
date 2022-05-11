@@ -249,7 +249,7 @@ class CentroidsClient(_Base):
         if centroid_vector_fields is None:
             centroid_vector_fields = []
         return self.make_http_request(
-            endpoint=f"datasets/{dataset_id}/cluster/centroids/update",
+            endpoint=f"/datasets/{dataset_id}/cluster/centroids/update",
             method="POST",
             parameters={
                 "vector_fields": vector_fields,
