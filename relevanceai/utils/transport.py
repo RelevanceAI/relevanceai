@@ -358,7 +358,9 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                     json=parameters if method.upper() == "POST" else {},
                     params=parameters if method.upper() == "GET" else {},
                 ) as response:
-                    self.log(response)
+
+                    if os.environ["DEBUG_REQUESTS"] == "1":
+                        self.log(response)
 
                     if response.status == 200:
                         self._log_response_success(base_url, endpoint)
