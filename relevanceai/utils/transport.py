@@ -39,7 +39,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
     def __init__(self, request_log_filename="request.log", **kwargs):
 
-        if os.environ["DEBUG_REQUESTS"] == "1":
+        if os.environ["DEBUG_REQUESTS"] == "TRUE":
             logging.basicConfig(
                 filename=request_log_filename,
                 filemode="w",
@@ -365,7 +365,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                     params=parameters if method.upper() == "GET" else {},
                 ) as response:
 
-                    if os.environ["DEBUG_REQUESTS"] == "1":
+                    if os.environ["DEBUG_REQUESTS"] == "TRUE":
                         self.log(response)
 
                     if response.status == 200:

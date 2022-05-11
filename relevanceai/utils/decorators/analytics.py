@@ -29,7 +29,11 @@ def track(func: Callable):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
+            # This env variable is used to track whether to send to MixPanel or not. If True, it does not and immediately
+            # goes to function. Otherwise, it logs to MixPanel.
             return func(*args, **kwargs)
+
+        os.environ[TRANSIT_ENV_VAR] = "TRUE"
 
         try:
             if is_tracking_enabled():
@@ -128,6 +132,8 @@ def track_event_usage(event_name: str):
         def wrapper(*args, **kwargs):
             if os.getenv(TRANSIT_ENV_VAR) == "TRUE":
                 return func(*args, **kwargs)
+
+            os.environ[TRANSIT_ENV_VAR] = "TRUE"
 
             try:
                 if is_tracking_enabled():

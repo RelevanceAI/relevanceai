@@ -34,7 +34,7 @@ jobs:
         env:
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT }}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
-          DEBUG_REQUESTS: "0"
+          DEBUG_REQUESTS: "FALSE"
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install --upgrade pip
