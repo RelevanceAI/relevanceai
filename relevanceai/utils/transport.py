@@ -4,7 +4,7 @@ import os
 import asyncio
 import codecs
 import time
-import logging
+import uuid
 import traceback
 
 
@@ -19,7 +19,7 @@ import requests
 from requests import Request
 
 from relevanceai.constants.config import Config
-from relevanceai.utils.logger import AbstractLogger
+from relevanceai.utils.logger import AbstractLogger, FileLogger
 from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
@@ -35,28 +35,37 @@ class Transport(JSONEncoderUtils, ConfigMixin):
     api_key: str
     config: Config
     logger: AbstractLogger
-    request_logger: logging.Logger
+    request_logger: FileLogger
 
     def __init__(self, request_log_filename="request.log", **kwargs):
 
         if os.environ["DEBUG_REQUESTS"] == "TRUE":
-            logging.basicConfig(
-                filename=request_log_filename,
-                filemode="w",
-                level=logging.DEBUG,
-            )
-            self.request_logger = logging.getLogger()
-            # logHandler = logging.FileHandler(request_log_filename)
-            # formatter = jsonlogger.JsonFormatter()
-            # logHandler.setFormatter(formatter)
-            # self.request_logger.addHandler(logHandler)
+            from relevanceai.utils import FileLogger
+
+            self.request_logger = FileLogger(fn=request_log_filename)
             self.hooks = {"response": self.log}
 
         else:
             self.hooks = None
 
     def log(self, response, *args, **kwargs):
-        self.request_logger.debug(response.json())
+        with self.request_logger:
+            log = {}
+            log["url"] = response.url
+            log["path_url"] = response.request.path_url
+            log["method"] = response.request.method
+            log["status_code"] = response.status_code
+            log["headers"] = response.headers
+            log["content"] = response.json()
+            log["time"] = time.time()
+            log["elapsed"] = response.elapsed.microseconds
+            print(
+                str(response.status_code)
+                + ":\t"
+                + response.request.path_url
+                + "\t\t\t\t\t"
+            )
+            print(str(log))
 
     @property
     def _dashboard_request_url(self):
