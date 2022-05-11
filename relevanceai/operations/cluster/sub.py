@@ -110,7 +110,13 @@ class _SubClusterOps(ClusterOps):
         )
 
         # If no documents then return
-        if len(documents) == 0 or len(documents) < min_parent_cluster_size:
+        if len(documents) == 0:
+            return
+
+        if (
+            min_parent_cluster_size is not None
+            and len(documents) < min_parent_cluster_size
+        ):
             return
 
         # fit model, predict and label all documents
