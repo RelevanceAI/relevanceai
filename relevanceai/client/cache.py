@@ -10,9 +10,6 @@ def _is_cache_function(func):
     return hasattr(func, "cache_info")
 
 
-function_store = []
-
-
 def rdir_cache_functions(base_function, function_store: set = None):
     """Recursively gets all the cached functions"""
     if function_store is None:
