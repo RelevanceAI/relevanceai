@@ -2,9 +2,6 @@
 """
 
 
-from regex import D
-
-
 def _is_cache_function(func):
     """Determines if a function is cached or not"""
     return hasattr(func, "cache_info")
