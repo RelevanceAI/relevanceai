@@ -357,8 +357,9 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                     headers=self.auth_header,
                     json=parameters if method.upper() == "POST" else {},
                     params=parameters if method.upper() == "GET" else {},
-                    hooks=self.hooks,
                 ) as response:
+                    self.log(response)
+
                     if response.status == 200:
                         self._log_response_success(base_url, endpoint)
                         self._log_response_time(
