@@ -1,6 +1,7 @@
 from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
+import pandas as pd
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations import BaseOps
@@ -911,33 +912,35 @@ class ClusterOps(ClusterWriteOps):
             else:
                 raise ValueError("Please specify alias= as it was not detected")
 
-        try:
-            centroid_documents = self.datasets.cluster.centroids.list(
-                dataset_id=self.dataset_id,
-                vector_fields=[self.vector_field],
-                alias=alias,
-                include_vector=True,
-            )["results"]
+        centroid_documents = self.datasets.cluster.centroids.documents(
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+            cluster_ids=cluster_labels,
+            include_vector=True,
+        )["results"]
 
+        # Calculating the centorids
+        try:
             relevant_centroids = [
-                centroid[self.vector_field]
-                for centroid in centroid_documents
-                if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
+                self.get_field(self.vector_fields[0], d) for d in centroid_documents
             ]
+
+            if len(relevant_centroids) == 0:
+                raise ValueError("No relevant centroids found.")
             new_centroid = np.array(relevant_centroids).mean(0).tolist()
+
             if isinstance(cluster_labels[0], int):
                 new_centroid_doc = {
                     "_id": f"cluster-{cluster_labels[0]}",
                     self.vector_field: new_centroid,
                 }
             elif isinstance(cluster_labels[0], str):
-                if isinstance(cluster_labels[0], int):
-                    new_centroid_doc = {
-                        "_id": cluster_labels,
-                        self.vector_field: new_centroid,
-                    }
-        except Exception as e:
-            print(e)
+                new_centroid_doc = {
+                    "_id": cluster_labels[0],
+                    self.vector_field: new_centroid,
+                }
+        except:
             pass
 
         update: dict = {}
@@ -964,7 +967,10 @@ class ClusterOps(ClusterWriteOps):
                 }
             ],
         )
-        print(results)
+        if results["status"] == "success":
+            print("✅ Merged successfully.")
+        else:
+            print(f"🚨 Couldn't merge. : {results['message']}")
 
         try:
             # If there are no centroids - move on
@@ -988,7 +994,13 @@ class ClusterOps(ClusterWriteOps):
                     alias=self.alias,
                     vector_fields=[self.vector_field],
                 )
-        except:
+
+            print("✅ Updated centroids.")
+
+        except Exception as e:
+            import traceback
+
+            traceback.print_exc()
             pass
 
     @track
