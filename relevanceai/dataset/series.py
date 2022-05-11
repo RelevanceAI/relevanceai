@@ -436,7 +436,7 @@ class Series(APIClient):
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,
-        )
+        )["results"]
 
         total = self.get_number_of_documents(dataset_id=self.dataset_id)
         aggregation = pd.DataFrame(aggregation)
