@@ -39,9 +39,10 @@ from relevanceai.dataset import Dataset
 from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
 from relevanceai.utils.config_mixin import ConfigMixin
+from relevanceai.client.cache import CacheMixin
 
 
-class Client(APIClient, ConfigMixin):
+class Client(APIClient, ConfigMixin, CacheMixin):
     def __init__(
         self,
         token: Optional[str] = None,

@@ -11,3 +11,4 @@ All the core functionalities related to Relevance AI.
     Dataset <dataset/index>
     Dummy Datasets <available_datasets>
     Filters <filters/index>
+    Cache <cache>
