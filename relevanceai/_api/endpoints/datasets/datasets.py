@@ -650,7 +650,6 @@ class DatasetsClient(_Base):
                 ]
             }
 
-
         """
         # "https://api-dev.ap-southeast-2.relevance.ai/latest/datasets/{DATASET_ID}/aggregate"
         filters = [] if filters is None else filters
@@ -711,7 +710,12 @@ class DatasetsClient(_Base):
             Configuration for traditional search query.
             Increases or decreases the impact of traditional search when calculating a documents _relevance. new_traditional_relevance = traditional_relevance*queryConfig.weight
         vectorSearchQuery: dict
-            Vector search queries.
+            Vector search queries
+        instantAnswerQuery: dict
+            Provides an instant answer
+        fieldsToSearch: list
+            The list of fields to search
+
 
         """
         # fast search

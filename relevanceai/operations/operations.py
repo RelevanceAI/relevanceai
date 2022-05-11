@@ -888,7 +888,7 @@ class Operations(Write, IO):
     #         ]
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
-    def advanced_search(
+    def search(
         self,
         query: str = None,
         vector_search_query: Optional[dict] = None,
@@ -904,7 +904,11 @@ class Operations(Write, IO):
         query: str
             The query to use
         vector_search_query: dict
-
+            The vector search query
+        fields_to_search: list
+            The list of fields to search
+        select_fields: list
+            The fields to select
 
         """
         return self.datasets.fast_search(

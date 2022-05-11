@@ -1,6 +1,6 @@
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class CentroidsClient(_Base):
@@ -195,3 +195,206 @@ class CentroidsClient(_Base):
             endpoint, method=method, parameters=parameters
         )
         return response
+
+    def update(
+        self,
+        dataset_id: str,
+        vector_fields: List[str],
+        centroid_vector_fields: List[str],
+        alias: str,
+        cluster_centers: List[Dict[str, List[float]]],
+    ):
+        """
+        API reference link: https://api.us-east-1.relevance.ai/latest/core/documentation#operation/UpdateClusterCentroids
+
+        Update the centroids contained within your dataset
+
+        Parameters
+        ----------
+
+        dataset_id: str
+            The name of the dataset
+
+        vector_fields: List[str]
+            A list of the vectors fields in your dataset that have cluster centroids you wish to update
+
+        alias: str
+            The alias that was used to cluster
+
+        cluster_centers: List[Dict[str: List[float]]]
+            A List containing dictionaries of cluster id's to be updated, with their keys being the new centroids
+        """
+
+        return self.make_http_request(
+            endpoint=f"datasets/{dataset_id}/cluster/centroids/update",
+            method="POST",
+            parameters={
+                "vector_fields": vector_fields,
+                "centroid_vector_fields": centroid_vector_fields,
+                "alias": alias,
+                "cluster_centers": cluster_centers,
+            },
+        )
+
+    def delete_centroid_by_id(
+        self, centroid_id: str, dataset_id: str, vector_field: str, alias: str
+    ):
+        """
+        OLD API reference link: https://api.us-east-1.relevance.ai/latest/documentation#operation/delete_centroids_api_services_cluster_centroids__centroid_id__delete_post
+
+        Delete a centroid by ID
+
+        Parameters
+        ----------
+
+        centroid_id: str
+            The id of the centroid
+
+        dataset_id: str
+            The name of the dataset
+
+        vector_field: str
+            The vector_field that contains the cluster id
+
+        alias: str
+            The alias that was used to cluster
+        """
+
+        return self.make_http_request(
+            endpoint=f"services/cluster/centroids/{centroid_id}/delete",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+            },
+        )
+
+    def insert(
+        self,
+        dataset_id: str,
+        cluster_centers: List,
+        vector_fields: List,
+        alias: str = "default",
+    ):
+        """
+        Insert your own cluster centroids for it to be used in approximate search settings and cluster aggregations.
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        cluster_centers : list
+            Cluster centers with the key being the index number
+        vector_field: string
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+        """
+        return self.make_http_request(
+            f"/datasets/{dataset_id}/cluster/centroids/insert",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "cluster_centers": cluster_centers,
+                "vector_fields": vector_fields,
+                "alias": alias,
+            },
+        )
+
+    def documents(
+        self,
+        dataset_id: str,
+        vector_fields: List,
+        cluster_ids: Optional[List] = None,
+        alias: str = "default",
+        page_size: int = 5,
+        cursor: str = None,
+        page: int = 1,
+        include_vector: bool = False,
+        similarity_metric: str = "cosine",
+    ):
+        """
+        Retrieve the cluster centroids by IDs
+
+        Parameters
+        -------------
+
+        dataset_id : string
+            Unique name of dataset
+        cluster_ids : list
+            List of cluster IDs
+        vector_fields: list
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+        page_size: int
+            Size of each page of results
+        cursor: string
+            Cursor to paginate the document retrieval
+        page: int
+            Page of the results
+        include_vector: bool
+            Include vectors in the search results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        """
+        cluster_ids = [] if cluster_ids is None else cluster_ids
+
+        return self.make_http_request(
+            f"/datasets/{dataset_id}/cluster/centroids/documents",
+            method="POST",
+            parameters={
+                # "dataset_id": dataset_id,
+                "cluster_ids": cluster_ids,
+                "vector_fields": vector_fields,
+                "alias": alias,
+                "page_size": page_size,
+                "cursor": cursor,
+                "page": page,
+                "include_vector": include_vector,
+                "similarity_metric": similarity_metric,
+                "vector_field": "",
+            },
+        )
+
+    list = documents
+
+    def delete(
+        self,
+        dataset_id: str,
+        centroid_id: str,
+        alias: str,
+        vector_fields: List[str],
+        centroid_vector_fields: Optional[List[str]] = None,
+        centroid_dataset_id: Optional[str] = None,
+    ):
+        """
+        Delete centroids by dataset ID, vector field and alias
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        vector_field: string
+            The vector field where a clustering task was run.
+        alias: string
+            Alias is used to name a cluster
+
+        """
+        parameters = {
+            "dataset_id": dataset_id,
+            "vector_fields": vector_fields,
+            "alias": alias,
+        }
+
+        if centroid_vector_fields is not None:
+            parameters.update({"centroid_vector_fields": centroid_vector_fields})
+
+        if centroid_dataset_id is not None:
+            parameters.update({"centroid_dataset_id": centroid_dataset_id})
+
+        return self.make_http_request(
+            f"/datasets/{dataset_id}/cluster/centroids/{centroid_id}/delete",
+            method="POST",
+            parameters=parameters,
+        )
