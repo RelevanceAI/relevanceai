@@ -64,6 +64,9 @@ class Client(APIClient, ConfigMixin, CacheMixin):
 
         if token is None:
             token = auth()
+            print(
+                "If you require non-interactive token authentication, you can set token=..."
+            )
 
         self.token = token
         self.credentials = process_token(token)
