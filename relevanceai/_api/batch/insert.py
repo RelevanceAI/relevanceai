@@ -121,7 +121,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if verbose:
             print(
-                f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+                f"while inserting, you can visit monitor the dataset at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
             )
 
         return self._write_documents(
@@ -177,8 +177,7 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset_id")
-        >>> csv_filename = "temp.csv"
-        >>> df.insert_csv(csv_filename)
+        >>> df.insert_csv("temp.csv")
 
         """
         csv_args = {} if csv_args is None else csv_args

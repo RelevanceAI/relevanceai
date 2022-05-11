@@ -249,6 +249,12 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                         hooks=self.hooks,
                     ).prepare()
 
+                # if self.enable_request_logging:
+                #     print("URL: ", request_url)
+                #     if self.enable_request_logging == "full":
+                #         print("HEADERS: ", req.headers)
+                #         print("BODY: ", req.body)
+
                 with requests.Session() as s:
                     response = s.send(req)
 

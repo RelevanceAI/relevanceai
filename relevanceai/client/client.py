@@ -46,6 +46,7 @@ class Client(APIClient, ConfigMixin):
         self,
         token: Optional[str] = None,
         authenticate: bool = True,
+        enable_request_logging: bool = False,
     ):
         """
         Initialize the client
@@ -56,8 +57,8 @@ class Client(APIClient, ConfigMixin):
         token: str
             You can paste the token here if things need to be refreshed
 
-        force_refresh: bool
-            If True, it forces you to refresh your client
+        enable_request_logging: bool, str
+            Whether to print out the requests made, if "full" the body will be printed as well.
         """
 
         if token is None:

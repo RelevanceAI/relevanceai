@@ -123,6 +123,8 @@ class Operations(Write, IO):
             alias=alias,
         )
 
+    dimensionality_reduction = reduce_dims
+
     @track
     def vectorize(
         self,
@@ -232,7 +234,7 @@ class Operations(Write, IO):
     @track
     def vector_search(self, **kwargs):
         """
-        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
+        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of Relevance vector search:
 
         1. Multivector search that allows you to search with multiple vectors and give each vector a different weight.
         e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do.

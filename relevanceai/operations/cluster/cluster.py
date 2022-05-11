@@ -22,7 +22,7 @@ from relevanceai.utils.distances import (
 )
 
 
-class ClusterOps(ClusterUtils, BaseOps, DocUtils):
+class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -30,18 +30,17 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         # State the vector fields and alias in the ClusterOps object
         cluster_ops = client.ClusterOps(
-           alias="kmeans-16",
+           alias="kmeans-25",
             dataset_id="sample_dataset_id",
-            vector_fields=['sample_vector_']
+            vector_fields=["sample_vector_"]
         )
-
         cluster_ops.list_closest()
 
         # State the vector fields and alias in the operational call
-        cluster_ops = client.ClusterOps(alias="kmeans-16")
+        cluster_ops = client.ClusterOps(alias="kmeans-25")
         cluster_ops.list_closest(
             dataset="sample_dataset_id",
-            vector_fields=["documentation_vector_]
+            vector_fields=["sample_vector_"]
         )
 
     """
@@ -363,6 +362,26 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         vector_fields.append(most_recent_updated_vector)
         return vector_fields
 
+    def _retrieve_dataset_id(self, dataset) -> str:
+        """Helper method to get multiple dataset values.
+        Dataset can be either a Dataset or a string object."""
+        from relevanceai.dataset import Dataset
+
+        if isinstance(dataset, Dataset):
+            dataset_id: str = dataset.dataset_id
+        elif isinstance(dataset, str):
+            dataset_id = dataset
+        elif dataset is None:
+            if hasattr(self, "dataset_id"):
+                # let's not surprise users
+                print(
+                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
+                )
+                dataset_id = str(self.dataset_id)
+            else:
+                raise ValueError("Please supply dataset.")
+        return dataset_id
+
     def _insert_centroids(
         self,
         dataset_id: str,
@@ -401,7 +420,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         self.datasets.post_metadata(dataset_id, metadata)
 
     def _fit_predict(
-        self, documents: List[Dict[str, Any]], vector_field: str
+        self, documents: List[Dict[str, Any]], vector_field: str, inplace=True
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         vectors = np.array(
             [self.get_field(vector_field, document) for document in documents]
@@ -438,15 +457,22 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             n_clusters = len(set(labels)) - 1
             print(f"Found {n_clusters} clusters using {self.model_name}")
 
+        labelled_documents = [{"_id": d["_id"]} for d in documents]
+
         self.set_field_across_documents(
-            field=self.cluster_field, values=labels, docs=documents
+            field=self.cluster_field, values=labels, docs=labelled_documents
         )
+
+        if inplace:  # add the cluster labels into the original documents
+            self.set_field_across_documents(
+                field=self.cluster_field, values=labels, docs=documents
+            )
 
         centroid_documents = self._get_centroid_documents(
             vectors, labels, vector_field=vector_field
         )
 
-        return centroid_documents, documents
+        return centroid_documents, labelled_documents
 
     def _print_app_link(self):
         link = CLUSTER_APP_LINK.format(self.dataset_id)
@@ -506,7 +532,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         # fit model, predict and label all documents
         print("Predicting on all documents...")
         centroid_documents, labelled_documents = self._fit_predict(
-            documents=documents, vector_field=vector_field
+            documents=documents, vector_field=vector_field, inplace=True
         )
 
         print("Updating cluster labels...")
@@ -528,6 +554,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             centroid_documents=centroid_documents,
         )
         if include_cluster_report:
+            # this needs to be more optimized for performance, we dont need to store 2 vector sets in memory.
             print("Generating evaluation report for your clusters…")
             from relevanceai.reports.cluster.report import ClusterReport
 
@@ -547,7 +574,9 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             )
 
             if len(cluster_labels) != len(X):
-                raise ValueError("Damn son. How you like them apples.")
+                raise ValueError(
+                    "Number of cluster labels do not match number of rows of data."
+                )
 
             self.report = ClusterReport(
                 X=X,
@@ -586,477 +615,112 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             report_name="kmeans", report=report.internal_report
         )
 
-    @track
-    def closest(
-        self,
-        dataset_id: Optional[str] = None,
-        vector_field: Optional[str] = None,
-        alias: Optional[str] = None,
-        cluster_ids: Optional[List] = None,
-        centroid_vector_fields: Optional[List] = None,
-        select_fields: Optional[List] = None,
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 3,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: Optional[List] = None,
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = {},
-        verbose: bool = True,
-    ):
+    @property
+    def centroids(self):
         """
-        List of documents closest from the center.
+        Access the centroids of your dataset easily
 
-        Parameters
-        ----------
-        dataset_id: string
-            Unique name of dataset
-        vector_field: list
-            The vector field where a clustering task was run.
-        cluster_ids: list
-            Any of the cluster ids
-        alias: string
-            Alias is used to name a cluster
-        centroid_vector_fields: list
-            Vector fields stored
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-        cluster_properties_filter: dict
-            Filter if clusters with certain characteristics should be hidden in results
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.centroids
 
         """
-        dataset_id = self.dataset_id if dataset_id is None else dataset_id
-        vector_field = self.vector_field if vector_field is None else vector_field
-        alias = self.alias if alias is None else alias
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.services.centroids.list(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )
+        return self._centroids
 
-        return self.services.cluster.centroids.list_closest_to_center(
-            dataset_id=dataset_id,
-            vector_fields=[vector_field],
-            alias=alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            select_fields=select_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter,
-            verbose=verbose,
+    def create_centroids(self):
+        """
+        Calculate centroids from your vectors
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                alias="kmeans-25",
+                vector_fields=['sample_vector_']
+            )
+            centroids = cluster_ops.create_centroids()
+
+        """
+        # Get an array of the different vectors
+        if len(self.vector_fields) > 1:
+            raise NotImplementedError(
+                "Do not currently support multiple vector fields for centroid creation."
+            )
+        centroid_vectors = {}
+
+        def calculate_centroid(vectors):
+            X = np.array(vectors)
+            return X.mean(axis=0)
+
+        centroid_vectors = self._operate_across_clusters(
+            field=self.vector_fields[0], func=calculate_centroid
         )
 
-    @staticmethod
-    def get_cluster_summary(
-        summarizer,
-        docs: Dict,
-        summarize_fields: List[str],
-        max_length: int = 100,
-        first_sentence_only: bool = True,
-    ):
-        def _clean_sentence(s):
-            s = (
-                s.replace(". .", ".")
-                .replace(" .", ".")
-                .replace("\n", "")
-                .replace("..", ".")
-                .strip()
-            )
-            if s[-1] != ".":
-                s += "."
-            return s
+        # Does this insert properly?
+        if isinstance(centroid_vectors, dict):
+            centroid_vectors = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in centroid_vectors.items()
+            ]
+        self._insert_centroids(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_fields[0]],
+            centroid_documents=centroid_vectors,
+        )
+        return centroid_vectors
 
-        cluster_summary = {}
-        for cluster, results in docs["results"].items():
-            for f in summarize_fields:
-                summary_fields = [
-                    _clean_sentence(d[f])
-                    for d in results["results"]
-                    if d.get(f) and d[f] not in [" ", "."]
+    def insert_centroids(self, centroid_documents):
+        """
+        Insert your own centroids
+
+        Example
+        ----------
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.insert_centroids(
+                [
+                    {
+                        "_id": "cluster-1",
+                        "sample_vector_": [1, 1, 1]
+                    }
                 ]
-                summary_output = summarizer(
-                    " ".join(summary_fields), max_length=max_length
-                )[0]["summary_text"]
-                summary = summary_output.replace(" .", ".").strip()
-            if first_sentence_only:
-                cluster_summary[cluster] = summary.split(".")[0]
-            else:
-                cluster_summary[cluster] = summary
-        return cluster_summary
-
-    @beta
-    @track
-    def summarize_closest(
-        self,
-        summarize_fields: List[str],
-        dataset_id: Optional[str] = None,
-        vector_field: Optional[str] = None,
-        alias: Optional[str] = None,
-        cluster_ids: Optional[List] = None,
-        centroid_vector_fields: Optional[List] = None,
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 3,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: Optional[List] = None,
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = {},
-        model_name: str = "philschmid/bart-large-cnn-samsum",
-        tokenizer: Optional[str] = None,
-        max_length: int = 100,
-        deployable_id: Optional[str] = None,
-        first_sentence_only: bool = True,
-        **kwargs,
-    ):
-        """
-        List of documents closest from the center.
-
-        Parameters
-        ----------
-        summarize_fields: list
-            Fields to perform summarization, empty array/list means all fields
-        dataset_id: string
-            Unique name of dataset
-        vector_field: list
-            The vector field where a clustering task was run.
-        cluster_ids: list
-            Any of the cluster ids
-        alias: string
-            Alias is used to name a cluster
-        centroid_vector_fields: list
-            Vector fields stored
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-        cluster_properties_filter: dict
-            Filter if clusters with certain characteristics should be hidden in results
-        model_name: str
-            Huggingface Model to use for summarization.
-            Pick from
-            https://huggingface.co/models?pipeline_tag=summarization&sort=downloadshttps://huggingface.co/models?pipeline_tag=summarization
-        tokenizer: str
-            Tokenizer to use for summarization, allows you to bring your own tokenizer,
-            else will instantiate pre-trained from selected model
-
-        """
-        dataset_id = self.dataset_id if dataset_id is None else dataset_id
-        vector_field = self.vector_field if vector_field is None else vector_field
-        alias = self.alias if alias is None else alias
-
-        if not tokenizer:
-            tokenizer = model_name
-
-        if not hasattr(self, "summarizer"):
-            self.summarizer = TransformersLMSummarizer(model_name, tokenizer, **kwargs)
-
-        center_docs = self.list_closest(
-            select_fields=summarize_fields,
-            dataset_id=dataset_id,
-            vector_field=vector_field,
-            alias=alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter,
-        )
-
-        cluster_summary = self.get_cluster_summary(
-            self.summarizer,
-            docs=center_docs,
-            summarize_fields=summarize_fields,
-            max_length=max_length,
-            first_sentence_only=first_sentence_only,
-        )
-
-        if deployable_id is not None:
-            if dataset_id is None:
-                if not hasattr(self, "dataset_id"):
-                    raise ValueError("You need a dataset ID to update.")
-                else:
-                    dataset_id = self.dataset_id
-            configuration = self.deployables.get(deployable_id=deployable_id)
-            configuration["cluster-labels"] = cluster_summary
-            self.deployables.update(
-                deployable_id=deployable_id,
-                dataset_id=dataset_id,
-                configuration=configuration,
             )
-        return {"results": cluster_summary}
 
-    @track
-    def furthest(
-        self,
-        dataset_id: Optional[str] = None,
-        vector_field: Optional[str] = None,
-        alias: Optional[str] = None,
-        cluster_ids: Optional[List] = None,
-        centroid_vector_fields: Optional[List] = None,
-        select_fields: Optional[List] = None,
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 3,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: Optional[List] = None,
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = {},
-    ):
         """
-        List documents furthest from the center.
-
-        Parameters
-        ----------
-        dataset_id: string
-            Unique name of dataset
-        vector_fields: list
-            The vector field where a clustering task was run.
-        cluster_ids: list
-            Any of the cluster ids
-        alias: string
-            Alias is used to name a cluster
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-        """
-        dataset_id = self.dataset_id if dataset_id is None else dataset_id
-        vector_field = self.vector_field if vector_field is None else vector_field
-        alias = self.alias if alias is None else alias
-
-        return self.services.cluster.centroids.list_furthest_from_center(
-            dataset_id=dataset_id,
-            vector_fields=[vector_field],
-            alias=alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            select_fields=select_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter,
+        results = self.services.cluster.centroids.insert(
+            dataset_id=self.dataset_id,
+            cluster_centers=centroid_documents,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
         )
+        return results
 
-    @beta
-    @track
-    def summarize_furthest(
-        self,
-        summarize_fields: List[str],
-        dataset_id: Optional[str] = None,
-        vector_field: Optional[str] = None,
-        alias: Optional[str] = None,
-        cluster_ids: Optional[List] = None,
-        centroid_vector_fields: Optional[List] = None,
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 3,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: Optional[List] = None,
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = {},
-        model_name: str = "sshleifer/distilbart-cnn-6-6",
-        tokenizer: Optional[str] = None,
-        **kwargs,
-    ):
-        """
-        List of documents furthest from the center.
 
-        Parameters
-        ----------
-        summarize_fields: list
-            Fields to perform summarization, empty array/list means all fields
-        dataset_id: string
-            Unique name of dataset
-        vector_field: list
-            The vector field where a clustering task was run.
-        cluster_ids: list
-            Any of the cluster ids
-        alias: string
-            Alias is used to name a cluster
-        centroid_vector_fields: list
-            Vector fields stored
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-        cluster_properties_filter: dict
-            Filter if clusters with certain characteristics should be hidden in results
-        model_name: str
-            Huggingface Model to use for summarization.
-            Pick from
-            https://huggingface.co/models?pipeline_tag=summarization&sort=downloadshttps://huggingface.co/models?pipeline_tag=summarization
-        tokenizer: str
-            Tokenizer to use for summarization, allows you to bring your own tokenizer,
-            else will instantiate pre-trained from selected model
-
-        """
-        dataset_id = self.dataset_id if dataset_id is None else dataset_id
-        vector_field = self.vector_field if vector_field is None else vector_field
-        alias = self.alias if alias is None else alias
-
-        if not tokenizer:
-            tokenizer = model_name
-        summarizer = TransformersLMSummarizer(model_name, tokenizer)
-
-        center_docs = self.list_furthest(
-            select_fields=summarize_fields,
-            dataset_id=dataset_id,
-            vector_field=vector_field,
-            alias=alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter,
-        )
-
-        cluster_summary = self.get_cluster_summary(
-            summarizer, docs=center_docs, summarize_fields=summarize_fields
-        )
-
-        return {"results": cluster_summary}
-
-    # Convenience functions
-    list_closest = closest
-    list_furthest = furthest
-
-    def _retrieve_dataset_id(self, dataset) -> str:
-        """Helper method to get multiple dataset values.
-        Dataset can be either a Dataset or a string object."""
-        from relevanceai.dataset import Dataset
-
-        if isinstance(dataset, Dataset):
-            dataset_id: str = dataset.dataset_id
-        elif isinstance(dataset, str):
-            dataset_id = dataset
-        elif dataset is None:
-            if hasattr(self, "dataset_id"):
-                # let's not surprise users
-                print(
-                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
-                )
-                dataset_id = str(self.dataset_id)
-            else:
-                raise ValueError("Please supply dataset.")
-        return dataset_id
-
+class ClusterOps(ClusterWriteOps):
     @track
     def aggregate(
         self,
@@ -1327,106 +991,454 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         except:
             pass
 
-    def create_centroids(self):
+    @track
+    def closest(
+        self,
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+        verbose: bool = True,
+    ):
         """
-        Calculate centroids
+        List of documents closest from the center.
 
-        Example
-        --------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                alias="kmeans-40",
-                vector_fields=['text_roberta-large_vector_']
-            )
-            centroids = cluster_ops.create_centroids()
-
-        """
-        # Get an array of the different vectors
-        if len(self.vector_fields) > 1:
-            raise NotImplementedError(
-                "Do not currently support multiple vector fields for centroid creation."
-            )
-        centroid_vectors = {}
-
-        def calculate_centroid(vectors):
-            X = np.array(vectors)
-            return X.mean(axis=0)
-
-        centroid_vectors = self._operate_across_clusters(
-            field=self.vector_fields[0], func=calculate_centroid
-        )
-
-        # Does this insert properly?
-        if isinstance(centroid_vectors, dict):
-            centroid_vectors = [
-                {"_id": k, self.vector_fields[0]: v}
-                for k, v in centroid_vectors.items()
-            ]
-        self._insert_centroids(
-            dataset_id=self.dataset_id,
-            vector_fields=[self.vector_fields[0]],
-            centroid_documents=centroid_vectors,
-        )
-        return centroid_vectors
-
-    @property
-    def centroids(self):
-        """
-        Access the centroids of your dataset easily
-
-        .. code-block::
-
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                vector_fields=["sample_vector_"],
-                alias="simple"
-            )
-            cluster_ops.centroids
-
-        """
-        if not hasattr(self, "_centroids"):
-            self._centroids = self.services.centroids.list(
-                dataset_id=self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                page_size=9999,
-                include_vector=True,
-            )
-        return self._centroids
-
-    def insert_centroids(self, centroid_documents):
-        """
-        Insert your centroids
-
-        Example
+        Parameters
         ----------
-
-        .. code-block::
-
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                vector_fields=["sample_vector_"],
-                alias="simple"
-            )
-            cluster_ops.insert_centroids(
-                [
-                    {
-                        "_id": "cluster-1",
-                        "sample_vector_": [1, 1, 1]
-                    }
-                ]
-            )
+        dataset_id: string
+            Unique name of dataset
+        vector_field: list
+            The vector field where a clustering task was run.
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        centroid_vector_fields: list
+            Vector fields stored
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
 
         """
-        results = self.services.cluster.centroids.insert(
-            dataset_id=self.dataset_id,
-            cluster_centers=centroid_documents,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        return self.services.cluster.centroids.list_closest_to_center(
+            dataset_id=dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+            verbose=verbose,
         )
-        return results
+
+    @track
+    def furthest(
+        self,
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+    ):
+        """
+        List documents furthest from the center.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_fields: list
+            The vector field where a clustering task was run.
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        """
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        return self.services.cluster.centroids.list_furthest_from_center(
+            dataset_id=dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+        )
+
+    # Convenience functions
+    list_closest = closest
+    list_furthest = furthest
+
+    # Summary functions
+    @staticmethod
+    def get_cluster_summary(
+        summarizer,
+        docs: Dict,
+        summarize_fields: List[str],
+        max_length: int = 100,
+        first_sentence_only: bool = True,
+    ):
+        def _clean_sentence(s):
+            s = (
+                s.replace(". .", ".")
+                .replace(" .", ".")
+                .replace("\n", "")
+                .replace("..", ".")
+                .strip()
+            )
+            if s[-1] != ".":
+                s += "."
+            return s
+
+        cluster_summary = {}
+        for cluster, results in docs["results"].items():
+            for f in summarize_fields:
+                summary_fields = [
+                    _clean_sentence(d[f])
+                    for d in results["results"]
+                    if d.get(f) and d[f] not in [" ", "."]
+                ]
+                summary_output = summarizer(
+                    " ".join(summary_fields), max_length=max_length
+                )[0]["summary_text"]
+                summary = summary_output.replace(" .", ".").strip()
+            if first_sentence_only:
+                cluster_summary[cluster] = summary.split(".")[0]
+            else:
+                cluster_summary[cluster] = summary
+        return cluster_summary
+
+    @beta
+    @track
+    def summarize_closest(
+        self,
+        summarize_fields: List[str],
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+        model_name: str = "philschmid/bart-large-cnn-samsum",
+        tokenizer: Optional[str] = None,
+        max_length: int = 100,
+        deployable_id: Optional[str] = None,
+        first_sentence_only: bool = True,
+        **kwargs,
+    ):
+        """
+        List of documents closest from the center.
+
+        Parameters
+        ----------
+        summarize_fields: list
+            Fields to perform summarization, empty array/list means all fields
+        dataset_id: string
+            Unique name of dataset
+        vector_field: list
+            The vector field where a clustering task was run.
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        centroid_vector_fields: list
+            Vector fields stored
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
+        model_name: str
+            Huggingface Model to use for summarization.
+            Pick from
+            https://huggingface.co/models?pipeline_tag=summarization&sort=downloadshttps://huggingface.co/models?pipeline_tag=summarization
+        tokenizer: str
+            Tokenizer to use for summarization, allows you to bring your own tokenizer,
+            else will instantiate pre-trained from selected model
+
+        """
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        if not tokenizer:
+            tokenizer = model_name
+
+        if not hasattr(self, "summarizer"):
+            self.summarizer = TransformersLMSummarizer(model_name, tokenizer, **kwargs)
+
+        center_docs = self.list_closest(
+            select_fields=summarize_fields,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            alias=alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+        )
+
+        cluster_summary = self.get_cluster_summary(
+            self.summarizer,
+            docs=center_docs,
+            summarize_fields=summarize_fields,
+            max_length=max_length,
+            first_sentence_only=first_sentence_only,
+        )
+
+        if deployable_id is not None:
+            if dataset_id is None:
+                if not hasattr(self, "dataset_id"):
+                    raise ValueError("You need a dataset ID to update.")
+                else:
+                    dataset_id = self.dataset_id
+            configuration = self.deployables.get(deployable_id=deployable_id)
+            configuration["cluster-labels"] = cluster_summary
+            self.deployables.update(
+                deployable_id=deployable_id,
+                dataset_id=dataset_id,
+                configuration=configuration,
+            )
+        return {"results": cluster_summary}
+
+    @beta
+    @track
+    def summarize_furthest(
+        self,
+        summarize_fields: List[str],
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+        model_name: str = "sshleifer/distilbart-cnn-6-6",
+        tokenizer: Optional[str] = None,
+        **kwargs,
+    ):
+        """
+        List of documents furthest from the center.
+
+        Parameters
+        ----------
+        summarize_fields: list
+            Fields to perform summarization, empty array/list means all fields
+        dataset_id: string
+            Unique name of dataset
+        vector_field: list
+            The vector field where a clustering task was run.
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        centroid_vector_fields: list
+            Vector fields stored
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
+        model_name: str
+            Huggingface Model to use for summarization.
+            Pick from
+            https://huggingface.co/models?pipeline_tag=summarization&sort=downloadshttps://huggingface.co/models?pipeline_tag=summarization
+        tokenizer: str
+            Tokenizer to use for summarization, allows you to bring your own tokenizer,
+            else will instantiate pre-trained from selected model
+
+        """
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        if not tokenizer:
+            tokenizer = model_name
+        summarizer = TransformersLMSummarizer(model_name, tokenizer)
+
+        center_docs = self.list_furthest(
+            select_fields=summarize_fields,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            alias=alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+        )
+
+        cluster_summary = self.get_cluster_summary(
+            summarizer, docs=center_docs, summarize_fields=summarize_fields
+        )
+
+        return {"results": cluster_summary}
