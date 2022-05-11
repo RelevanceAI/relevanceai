@@ -45,6 +45,14 @@ Why Relevance AI
 - **Highly flexible and integrated**. Each part of the platform you can bring your own models. (e.g. Replacing the default clustering algorithm with any sklearn clustering model or one you build yourself)
 - **Powerful**, we don't just facilitate each part of the process in building a use case with vectors. We enhace it further with algorithms and interactions to get more value of them. (e.g. fast aggregaation of data within clusters, vector similarity search with multiple vectors)
 
+Authorization
+---------------
+
+Authorization is incredibly useful. It can be thought of in the following hierarchy:
+
+.. code-block::
+
+    Regions -> Users > Projects -> Datasets
 
 Data Privacy:
 --------------------
