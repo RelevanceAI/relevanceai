@@ -31,11 +31,11 @@ def test_client(test_token):
     return client
 
 
-@pytest.fixture(scope="session", autouse=True)
-def remove_test_datasets(test_client: Client):
-    for dataset in test_client.list_datasets()["datasets"]:
-        if SAMPLE_DATASET_DATASET_PREFIX in dataset:
-            test_client.delete_dataset(dataset)
+# @pytest.fixture(scope="session", autouse=True)
+# def remove_test_datasets(test_client: Client):
+#     for dataset in test_client.list_datasets()["datasets"]:
+#         if SAMPLE_DATASET_DATASET_PREFIX in dataset:
+#             test_client.delete_dataset(dataset)
 
 
 @pytest.fixture(scope="module")
