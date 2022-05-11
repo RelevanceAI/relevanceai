@@ -45,6 +45,7 @@ jobs:
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_PROJECT: ${{ secrets.DEV_PROJECT }}
           TEST_API_KEY: ${{ secrets.DEV_KEY }}
+          TEST_TOKEN: ${{ secrets.DEV_TOKEN }}
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |
