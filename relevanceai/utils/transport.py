@@ -4,6 +4,7 @@ import os
 import asyncio
 import codecs
 import time
+import json
 import traceback
 
 from pprint import pprint
@@ -79,6 +80,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
             log["method"] = response.request.method
             log["headers"] = response.headers
             log["time"] = time.time()
+            try:
+                log["body"] = json.loads(response.request.body)
+            except:
+                log["body"] = {}
             log["elapsed"] = response.elapsed.microseconds
             pprint(log)
 

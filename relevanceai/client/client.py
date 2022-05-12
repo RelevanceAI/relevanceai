@@ -20,6 +20,7 @@ If you need to change your token, simply run:
 """
 import os
 import re
+import uuid
 import getpass
 import pandas as pd
 import analytics
