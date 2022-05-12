@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from abc import abstractmethod
-import pandas as pd
 import numpy as np
-import json
-
-from doc_utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 from relevanceai.client.helpers import Credentials
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.base import _Base
 from relevanceai.utils.logger import LoguruLogger
+
 from relevanceai.operations.cluster.constants import (
     DIM_REDUCTION,
     DIM_REDUCTION_DEFAULT_ARGS,

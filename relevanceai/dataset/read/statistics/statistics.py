@@ -11,7 +11,7 @@ from relevanceai.dataset.series import Series
 from relevanceai.utils.decorators.version import added
 from relevanceai.utils.decorators.analytics import track
 from relevanceai._api import APIClient
-from relevanceai._api.endpoints.services.cluster import ClusterClient
+from relevanceai._api.endpoints.datasets.cluster import ClusterClient
 
 
 class Statistics(APIClient):

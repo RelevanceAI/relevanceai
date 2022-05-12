@@ -242,7 +242,7 @@ class ClusterVizOps(ClusterOps, ClusterUtils):
         """
         closest_clusters = self.closest(include_vector=True, verbose=False)
         import seaborn as sns
-        from doc_utils import DocUtils
+        from relevanceai.utils import DocUtils
         from relevanceai.utils.distances.cosine_similarity import cosine_similarity
         from sklearn.metrics import pairwise_distances
 

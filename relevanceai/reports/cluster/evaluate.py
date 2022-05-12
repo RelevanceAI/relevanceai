@@ -9,14 +9,17 @@ import pandas as pd
 import numpy as np
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.operations.dr.dim_reduction import DimReduction
 from relevanceai._api import APIClient
+
+from relevanceai.operations.dr.dim_reduction import DimReduction
 from relevanceai.operations.cluster.constants import (
     CENTROID_DISTANCES,
     METRIC_DESCRIPTION,
 )
+
 from relevanceai.utils.decorators.analytics import track
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
+
 from typing import Optional, Dict, Callable
 from tqdm.auto import tqdm
 
@@ -201,8 +204,8 @@ class ClusterEvaluate(APIClient, DocUtils):
 
         """
 
-        centroid_response = self.services.cluster.centroids.list(
-            dataset_id, [vector_field], alias, include_vector=True
+        centroid_response = self.datasets.cluster.centroids.list(
+            dataset_id, vector_fields=[vector_field], alias=alias, include_vector=True
         )
 
         centroids = {i["_id"]: i[vector_field] for i in centroid_response["documents"]}
