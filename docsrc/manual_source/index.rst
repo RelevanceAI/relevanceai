@@ -27,7 +27,7 @@ Relevance AI Concepts
 About Relevance AI
 --------------------
 
-Relevance AI is an end-to-end platform for unstructured data using vector embeddings. 
+Relevance AI is an end-to-end platform for unstructured data using vector embeddings.
 
 It makes it easy for data teams to connect to data, analyze it with vectors and share it in as an interactive app or production api.
 
@@ -63,6 +63,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    Operations <operations/index>
    sequential_workflow
    changelog
+   Debugging <debugging/index>
 
 Indices and tables
 ==================
