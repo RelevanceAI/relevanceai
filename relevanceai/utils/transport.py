@@ -4,10 +4,9 @@ import os
 import asyncio
 import codecs
 import time
-import uuid
 import traceback
 
-
+from pprint import pprint
 from json.decoder import JSONDecodeError
 from typing import Optional
 
@@ -26,6 +25,7 @@ from relevanceai.utils.json_encoder import JSONEncoderUtils
 from relevanceai.utils.config_mixin import ConfigMixin
 
 DO_NOT_REPEAT_STATUS_CODES = {400, 401, 413, 404, 422}
+_HAS_PRINTED = False
 
 
 class Transport(JSONEncoderUtils, ConfigMixin):
@@ -37,35 +37,59 @@ class Transport(JSONEncoderUtils, ConfigMixin):
     logger: AbstractLogger
     request_logger: FileLogger
 
-    def __init__(self, request_log_filename="request.log", **kwargs):
+    def __init__(self, request_log_filename="request.jsonl", **kwargs):
 
         if os.getenv("DEBUG_REQUESTS") == "TRUE":
+            try:
+                from appdirs import user_cache_dir
+            except:
+                raise ModuleNotFoundError("please instal appdirs `pip install appdirs`")
+
+            from relevanceai import __version__
+
+            dir = user_cache_dir("relevanceai", version=__version__)
+            os.makedirs(dir, exist_ok=True)
+
+            self.request_logging_fpath = os.path.join(
+                dir, request_log_filename
+            ).replace("\\", "/")
+
             from relevanceai.utils import FileLogger
 
-            self.request_logger = FileLogger(fn=request_log_filename)
+            self.request_logger = FileLogger(fn=self.request_logging_fpath)
             self.hooks = {"response": self.log}
 
         else:
             self.hooks = None
 
     def log(self, response, *args, **kwargs):
+        """It takes the response from the request and logs the url, path_url, method, status_code, headers,
+        content, time, and elapsed time
+
+        Parameters
+        ----------
+        response
+            The response object
+
+        """
         with self.request_logger:
             log = {}
             log["url"] = response.url
             log["path_url"] = response.request.path_url
             log["method"] = response.request.method
-            log["status_code"] = response.status_code
             log["headers"] = response.headers
-            log["content"] = response.json()
             log["time"] = time.time()
             log["elapsed"] = response.elapsed.microseconds
-            print(
-                str(response.status_code)
-                + ":\t"
-                + response.request.path_url
-                + "\t\t\t\t\t"
-            )
-            print(str(log))
+            pprint(log)
+
+            try:
+                content = response.content.decode()
+            except:
+                content = response.content
+            pprint(content)
+
+            print()
+            print()
 
     @property
     def _dashboard_request_url(self):

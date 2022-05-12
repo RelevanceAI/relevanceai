@@ -18,6 +18,7 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
+import os
 import re
 import getpass
 import pandas as pd
@@ -47,7 +48,6 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         self,
         token: Optional[str] = None,
         authenticate: bool = True,
-        enable_request_logging: bool = False,
     ):
         """
         Initialize the client
@@ -71,6 +71,9 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         self.token = token
         self.credentials = process_token(token)
         super().__init__(self.credentials)
+
+        if os.getenv("DEBUG_REQUESTS") == "TRUE":
+            print(f"logging requests to: {self.request_logging_fpath}")
 
         # Eventually the following should be accessed directly from
         # self.credentials, but keep for now.
