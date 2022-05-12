@@ -123,6 +123,8 @@ class Operations(Write, IO):
             alias=alias,
         )
 
+    dimensionality_reduction = reduce_dims
+
     @track
     def vectorize(
         self,
@@ -232,7 +234,7 @@ class Operations(Write, IO):
     @track
     def vector_search(self, **kwargs):
         """
-        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
+        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of Relevance vector search:
 
         1. Multivector search that allows you to search with multiple vectors and give each vector a different weight.
         e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do.
@@ -634,10 +636,19 @@ class Operations(Write, IO):
         vector_fields,
         parent_field,
         filters: Optional[list] = None,
+        min_parent_cluster_size: Optional[int] = None,
         **kwargs,
     ):
         """
         Subcluster
+
+        Parameters
+        -------------
+
+        min_parent_cluster_size: Optional[int]
+            The minium number of cluster data points for it to cluster on.
+            If Less than, then it doesn't work.
+
         """
         from relevanceai.operations.cluster import SubClusterOps
 
@@ -652,7 +663,10 @@ class Operations(Write, IO):
             **kwargs,
         )
         return ops.fit_predict(
-            dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
+            dataset=self.dataset_id,
+            vector_fields=vector_fields,
+            filters=filters,
+            min_parent_cluster_size=min_parent_cluster_size,
         )
 
     @track
@@ -714,12 +728,13 @@ class Operations(Write, IO):
             )
 
         def analyze_sentiment_document(doc):
-            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field)))
+            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field, "")))
+            if doc is None:
+                return {}
             return doc
 
         return self.bulk_apply(
             analyze_sentiment_document,
-            output_field=output_field,
             select_fields=[field],
             **apply_args,
         )

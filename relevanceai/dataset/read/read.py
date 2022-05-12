@@ -209,7 +209,7 @@ class Read(Statistics):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
         )
         head_documents = self.get_documents(
-            number_of_documents=n,
+            number_of_documents=n, include_after_id=False
         )
         if raw_json:
             return head_documents

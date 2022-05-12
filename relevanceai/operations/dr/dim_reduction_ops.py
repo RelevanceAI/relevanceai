@@ -1,6 +1,6 @@
 from typing import Union, Any, Optional, List
 
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations.dr.dim_reduction import PCA

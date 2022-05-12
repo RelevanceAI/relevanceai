@@ -1,11 +1,12 @@
 """Cosine similarity operations
 """
-from operator import is_
 from typing import List, Dict, Any
+
+import numpy as np
+
 from relevanceai.utils.integration_checks import is_scipy_available
 from relevanceai.utils.decorators.analytics import track
-import numpy as np
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 
 @track
