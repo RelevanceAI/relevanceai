@@ -16,12 +16,12 @@ def test_quickstart(test_client: Client):
 
     test_client._insert_documents(dataset_id=QUICKSTART_DATASET, documents=documents)
     time.sleep(2)
-    results = test_client.services.search.vector(
+    results = test_client.datasets.fast_search(
         dataset_id=QUICKSTART_DATASET,
-        multivector_query=[
-            {"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]},
+        vectorSearchQuery=[
+            {"vector": [0.2, 0.2, 0.2], "field": "example_vector_"},
         ],
-        page_size=3,
+        pageSize=3,
     )
     assert len(results["results"]) > 0, "Not inserting properly"
     test_client.datasets.delete(QUICKSTART_DATASET)

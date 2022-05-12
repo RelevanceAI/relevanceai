@@ -181,7 +181,7 @@ class _SubClusterOps(ClusterOps):
         vector_field: str,
         centroid_documents: List[Dict[str, Any]],
     ) -> None:
-        self.services.cluster.centroids.insert(
+        self.datasets.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=[vector_field],
