@@ -733,7 +733,6 @@ class Operations(Write, IO):
 
         return self.bulk_apply(
             analyze_sentiment_document,
-            output_field=output_field,
             select_fields=[field],
             **apply_args,
         )
