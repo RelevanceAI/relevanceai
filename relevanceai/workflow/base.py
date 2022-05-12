@@ -1,10 +1,11 @@
 """Base Workflow
 """
 import traceback
-from typing import Callable, Optional, Union
-from doc_utils import DocUtils
-from uuid import uuid4
 
+from uuid import uuid4
+from typing import Callable, Optional, Union
+
+from relevanceai.utils import DocUtils
 from relevanceai.dataset import Dataset
 
 
