@@ -408,13 +408,38 @@ class DocumentList(DocUtils, MutableSequence):
         self.documents[index] = document
 
     def __delitem__(self, index):
+        """This function deletes the document at the given index
+
+        Parameters
+        ----------
+        index
+            The index of the item to be removed.
+
+        """
         del self.documents[index]
 
     def insert(self, index, document):
+        """It takes a document and inserts it into the list of documents at the specified index
+
+        Parameters
+        ----------
+        index
+            The index of the element before which to insert the new element.
+        document
+            The document to insert.
+
+        """
         if isinstance(document, dict):
             document = Document(document)
         assert isinstance(document, Document)
         self.documents.insert(index, document)
 
     def json(self):
+        """It returns a list of json objects.
+
+        Returns
+        -------
+            A list of dictionaries.
+
+        """
         return [document.json() for document in self.documents]
