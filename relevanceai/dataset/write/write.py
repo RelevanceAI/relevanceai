@@ -642,7 +642,7 @@ class Write(Read):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------

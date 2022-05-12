@@ -267,13 +267,9 @@ class Centroids(APIClient):
         alias: str
             The alias that was used to cluster
         """
-
-        return self.make_http_request(
-            endpoint=f"services/cluster/centroids/{centroid_id}/delete",
-            method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "vector_field": vector_field,
-                "alias": alias,
-            },
+        return self.datasets.cluster.centroids.delete_centroid_by_id(
+            centroid_id=centroid_id,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            alias=alias,
         )

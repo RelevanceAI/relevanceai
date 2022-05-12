@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.utils.decorators.version import deprecated_error
 from relevanceai._api import APIClient
 
 
@@ -18,6 +19,7 @@ class SearchOps(APIClient):
         super().__init__(credentials)
 
     @track
+    @deprecated_error("Please use the new `dataset.search` method.")
     def vector_search(
         self,
         multivector_query: List,
@@ -180,6 +182,7 @@ class SearchOps(APIClient):
         )
 
     @track
+    @deprecated_error("Please use the new `dataset.search` method.")
     def hybrid_search(
         self,
         multivector_query: List,
@@ -303,6 +306,7 @@ class SearchOps(APIClient):
         )
 
     @track
+    @deprecated_error("Please use the new `dataset.search` method.")
     def chunk_search(
         self,
         multivector_query,
@@ -401,7 +405,7 @@ class SearchOps(APIClient):
         facets = [] if facets is None else facets
         filters = [] if filters is None else filters
 
-        return self.services.search.chunk(
+        return self.datasets.search.chunk(
             dataset_id=self.dataset_id,
             multivector_query=multivector_query,
             chunk_field=chunk_field,
@@ -425,6 +429,7 @@ class SearchOps(APIClient):
         )
 
     @track
+    @deprecated_error("Please use the new `dataset.search` method.")
     def multistep_chunk_search(
         self,
         multivector_query,
@@ -453,7 +458,7 @@ class SearchOps(APIClient):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
-        For more information about chunk search check out services.search.chunk. \n
+        For more information about chunk search check out datasets.search.chunk. \n
 
         For more information about vector search check out services.search.vector
 

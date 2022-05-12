@@ -2,14 +2,18 @@
 """
 from typing import Optional
 
+from numpy import deprecate
+
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
+from relevanceai.utils.decorators.version import deprecated_error
 
 
 class TaggerClient(_Base):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
 
+    @deprecated_error("Please switch to dataset.label")
     def tag(
         self,
         data: str,
@@ -88,6 +92,7 @@ class TaggerClient(_Base):
             },
         )
 
+    @deprecated_error("Please switch to dataset.label")
     def diversity(
         self,
         data: str,

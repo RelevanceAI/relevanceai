@@ -4,12 +4,14 @@ from typing import Optional
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
+from relevanceai.utils.decorators import deprecated_error
 
 
 class RecommendClient(_Base):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
 
+    @deprecated_error("Please use dataset.recommend")
     def vector(
         self,
         dataset_id: str,
@@ -144,6 +146,7 @@ class RecommendClient(_Base):
             },
         )
 
+    @deprecated_error("Please use dataset.recommend")
     def diversity(
         self,
         dataset_id: str,
