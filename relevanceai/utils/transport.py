@@ -80,18 +80,18 @@ class Transport(JSONEncoderUtils, ConfigMixin):
             log["method"] = response.request.method
             log["headers"] = response.headers
             log["time"] = time.time()
+            log["elapsed"] = response.elapsed.microseconds
             try:
                 log["body"] = json.loads(response.request.body)
             except:
                 log["body"] = {}
-            log["elapsed"] = response.elapsed.microseconds
-            pprint(log)
+            pprint(log, sort_dicts=False)
 
             try:
                 content = response.content.decode()
             except:
                 content = response.content
-            pprint(content)
+            pprint(content, sort_dicts=False)
 
             print()
             print()
