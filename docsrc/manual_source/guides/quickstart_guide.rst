@@ -33,21 +33,6 @@ Start by installing the library and logging in to your account.
 
     !pip install RelevanceAI -qqq
 
-
-.. parsed-literal::
-
-    [K     |████████████████████████████████| 249 kB 15.8 MB/s
-    [K     |████████████████████████████████| 255 kB 63.6 MB/s
-    [K     |████████████████████████████████| 1.1 MB 56.6 MB/s
-    [K     |████████████████████████████████| 58 kB 5.8 MB/s
-    [K     |████████████████████████████████| 144 kB 70.9 MB/s
-    [K     |████████████████████████████████| 271 kB 70.4 MB/s
-    [K     |████████████████████████████████| 94 kB 2.9 MB/s
-    [31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-    tensorflow 2.8.0 requires tf-estimator-nightly==2.8.0.dev2021122109, which is not installed.
-    arviz 0.11.4 requires typing-extensions<4,>=3.7.4.3, but you have typing-extensions 4.0.1 which is incompatible.[0m
-    [?25h
-
 .. code:: ipython3
 
     from relevanceai import Client
@@ -60,20 +45,11 @@ Start by installing the library and logging in to your account.
 
 .. parsed-literal::
 
-    /usr/local/lib/python3.7/dist-packages/relevanceai/__init__.py:49: UserWarning: We noticed you don't have the latest version!
-    We recommend updating to the latest version (1.4.3) to get all bug fixes and newest features!
-    You can do this by running pip install -U relevanceai.
-    Changelog: https://relevanceai.readthedocs.io/en/2.0.0/changelog.html.
-      warnings.warn(MESSAGE)
-
-
-.. parsed-literal::
-
     Activation token (you can find it here: https://cloud.relevance.ai/sdk/api )
-    Activation token:··········
-    Connecting to us-east-1...
+
+    Connecting to ap-southeast-2...
     You can view all your datasets at https://cloud.relevance.ai/datasets/
-    Welcome to RelevanceAI. Logged in as 59066979f4876d91beea.
+    Welcome to RelevanceAI. Logged in as fc103ba5498da02f86a3.
 
 
 📩 Upload Some Data
@@ -90,71 +66,23 @@ Start by installing the library and logging in to your account.
 
 .. code:: ipython3
 
-    import gdown  # Since the example data is located in google drive, we use gdown to retrieve
+    from relevanceai.utils.datasets import ExampleDatasets
 
-    # In a real workload, this step can be substituted for loading your own .csv
-    # dataset link: https://data.world/datafiniti/grammar-and-online-product-reviews
+    documents = ExampleDatasets._get_dummy_dataset("retail_reviews_small")
 
-    dataset_small = "1SZ1EqBZQG132yaAaV0doxuGDZo7PdT2B"  # 5K files
-    output = "data_small.zip"
-    gdown.download(id=dataset_small, output=output, quiet=False)
-
-    dataset_large = "1eQwJy4nbIontA7qEe344lgBl3Una5Vlg"  # 71K files
-    output = "data_large.zip"
-    gdown.download(id=dataset_large, output=output, quiet=False)
-
-
-.. parsed-literal::
-
-    Downloading...
-    From: https://drive.google.com/uc?id=1SZ1EqBZQG132yaAaV0doxuGDZo7PdT2B
-    To: /content/data_small.zip
-    100%|██████████| 869k/869k [00:00<00:00, 121MB/s]
-    Downloading...
-    From: https://drive.google.com/uc?id=1eQwJy4nbIontA7qEe344lgBl3Una5Vlg
-    To: /content/data_large.zip
-    100%|██████████| 3.87M/3.87M [00:00<00:00, 150MB/s]
-
+    dataset.insert_documents(documents)
 
 
 
 .. parsed-literal::
 
-    'data_large.zip'
-
-
-
-.. code:: ipython3
-
-    !unzip data_small.zip # Our data is a .csv wrapped in .zip, so we must extract
-
-
-.. parsed-literal::
-
-    Archive:  data_small.zip
-    replace data_small.csv? [y]es, [n]o, [A]ll, [N]one, [r]ename: y
-      inflating: data_small.csv
-    Archive:  data_large.zip
-      inflating: data_large.csv
-
-
-.. code:: ipython3
-
-    dataset.insert_csv("data_small.csv")  # RelevanceAI uses one line of code to insert .csv
+      0%|          | 0/5 [00:00<?, ?it/s]
 
 
 .. parsed-literal::
 
     while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/retail_reviews/dashboard/monitor/
     ✅ All documents inserted/edited successfully.
-
-
-
-
-.. parsed-literal::
-
-    {'failed_documents': [], 'failed_documents_detailed': [], 'inserted': 5000}
-
 
 
 👨‍🔬 Vectorizing
@@ -191,25 +119,6 @@ First we install the suite of vectorizers from vectorhub
     # The text fields here are the ones we wish to construct vector representations for
     text_fields = ["reviews.text"]
     vector_fields = dataset.vectorize(text_fields=text_fields)["added_vectors"]
-
-
-.. parsed-literal::
-
-    /usr/local/lib/python3.7/dist-packages/relevanceai/package_utils/version_decorators.py:20: UserWarning: This function currently in beta and may change in the future.
-      warnings.warn("This function currently in beta and may change in the future.")
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/50 [00:00<?, ?it/s]
-
-
-.. parsed-literal::
-
-    ✅ All documents inserted/edited successfully.
-    The following vector was added: reviews.text_use_vector_
-
 
 😎 Custom Vectorizer
 ~~~~~~~~~~~~~~~~~~~
@@ -255,34 +164,6 @@ here <https://relevanceai.readthedocs.io/en/latest/relevanceai.cluster_report.ht
     alias = "my_clustering"
 
     dataset.cluster(model=model, alias=alias, vector_fields=vector_fields)
-
-
-.. parsed-literal::
-
-    Retrieving all documents
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/5 [00:00<?, ?it/s]
-
-
-.. parsed-literal::
-
-    Fitting and predicting on all documents
-    Updating the database...
-    Inserting centroid documents...
-    Build your clustering app here: https://cloud.relevance.ai/dataset/retail_reviews/deploy/recent/cluster
-
-
-
-
-.. parsed-literal::
-
-    <relevanceai.workflows.cluster_ops.clusterops.ClusterOps at 0x7f5054aa3150>
-
-
 
 🔗 The above step will produce a link to your first cluster app!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

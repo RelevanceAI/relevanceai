@@ -79,7 +79,7 @@ We apply the Kmeams clustering algorithm to the vector field,
 
     model = KMeans(n_clusters=KMEAN_NUMBER_OF_CLUSTERS)
     clusterer = client.ClusterOps(alias=ALIAS, model=model)
-    clusterer.operate(
+    clusterer.run(
         dataset_id="quickstart_kmeans_clustering",
         vector_fields=["product_title_clip_vector_"],
     )
