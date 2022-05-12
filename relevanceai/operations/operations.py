@@ -382,7 +382,9 @@ class Operations(Write, IO):
             )
 
         def analyze_sentiment_document(doc):
-            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field)))
+            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field, "")))
+            if doc is None:
+                return {}
             return doc
 
         return self.bulk_apply(
