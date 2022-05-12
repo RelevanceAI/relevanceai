@@ -656,9 +656,9 @@ class DatasetsClient(_Base):
         filters = [] if filters is None else filters
 
         if aggregation_query is None:
-            aggregation_query = {"metrics": metrics}
             if metrics is None:
                 metrics = []
+            aggregation_query = {"metrics": metrics}
             if groupby:
                 aggregation_query["groupby"] = groupby
 
