@@ -85,13 +85,14 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 log["body"] = json.loads(response.request.body)
             except:
                 log["body"] = {}
-            pprint(log, sort_dicts=False)
 
             try:
-                content = response.content.decode()
+                content = json.loads(response.content)
             except:
                 content = response.content
-            pprint(content, sort_dicts=False)
+
+            response = {"send": log, "recv": content}
+            pprint(response, sort_dicts=False)
 
             print()
             print()
