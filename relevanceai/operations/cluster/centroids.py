@@ -203,3 +203,77 @@ class Centroids(APIClient):
             include_vector=include_vector,
             include_count=include_count,
         )
+
+    def update(
+        self,
+        dataset_id: str,
+        vector_fields: List[str],
+        centroid_vector_fields: List[str],
+        alias: str,
+        cluster_centers: List[Dict[str, List[float]]],
+    ):
+        """
+        API reference link: https://api.us-east-1.relevance.ai/latest/core/documentation#operation/UpdateClusterCentroids
+
+        Update the centroids contained within your dataset
+
+        Parameters
+        ----------
+
+        dataset_id: str
+            The name of the dataset
+
+        vector_fields: List[str]
+            A list of the vectors fields in your dataset that have cluster centroids you wish to update
+
+        alias: str
+            The alias that was used to cluster
+
+        cluster_centers: List[Dict[str: List[float]]]
+            A List containing dictionaries of cluster id's to be updated, with their keys being the new centroids
+        """
+
+        return self.make_http_request(
+            endpoint=f"datasets/{dataset_id}/cluster/centroids/update",
+            method="POST",
+            parameters={
+                "vector_fields": vector_fields,
+                "centroid_vector_fields": centroid_vector_fields,
+                "alias": alias,
+                "cluster_centers": cluster_centers,
+            },
+        )
+
+    def delete_centroid_by_id(
+        self, centroid_id: str, dataset_id: str, vector_field: str, alias: str
+    ):
+        """
+        OLD API reference link: https://api.us-east-1.relevance.ai/latest/documentation#operation/delete_centroids_api_services_cluster_centroids__centroid_id__delete_post
+
+        Delete a centroid by ID
+
+        Parameters
+        ----------
+
+        centroid_id: str
+            The id of the centroid
+
+        dataset_id: str
+            The name of the dataset
+
+        vector_field: str
+            The vector_field that contains the cluster id
+
+        alias: str
+            The alias that was used to cluster
+        """
+
+        return self.make_http_request(
+            endpoint=f"services/cluster/centroids/{centroid_id}/delete",
+            method="POST",
+            parameters={
+                "dataset_id": dataset_id,
+                "vector_field": vector_field,
+                "alias": alias,
+            },
+        )

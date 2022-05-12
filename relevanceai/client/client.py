@@ -64,9 +64,6 @@ class Client(APIClient, ConfigMixin, CacheMixin):
 
         if token is None:
             token = auth()
-            print(
-                "If you require non-interactive token authentication, you can set token=..."
-            )
 
         self.token = token
         self.credentials = process_token(token)
@@ -119,6 +116,9 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         # TODO: either use cache or keyring package
         token = getpass.getpass(f"Activation token:")
         return token
+
+    def make_search_suggestion(self):
+        return self.services.search.make_suggestion()
 
     def check_auth(self):
         print(f"Connecting to {self.region}...")

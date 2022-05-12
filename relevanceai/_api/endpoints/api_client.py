@@ -5,6 +5,7 @@ from relevanceai.utils.base import _Base
 
 from relevanceai._api.endpoints.admin.admin import AdminClient
 from relevanceai._api.endpoints.datasets.datasets import DatasetsClient
+from relevanceai._api.endpoints.services.services import ServicesClient
 from relevanceai._api.endpoints.reports.reports import ReportsClient
 from relevanceai._api.endpoints.deployables.deployables import DeployableClient
 
@@ -25,6 +26,7 @@ class APIEndpointsClient(_Base, DocUtils):
         **kwargs,
     ):
         self.datasets = DatasetsClient(credentials)
+        self.services = ServicesClient(credentials)
         self.example_datasets = ExampleDatasets()
         self.admin = AdminClient(credentials)
         self.reports = ReportsClient(credentials)
