@@ -18,7 +18,7 @@ from relevanceai.operations.cluster.constants import (
 )
 
 # All relevant DR models
-from relevanceai.operations.dr.models import *
+from relevanceai.operations.dr.models import Ivis, PCA, UMAP, TSNE
 
 
 class DimReductionBase(LoguruLogger, DocUtils):
