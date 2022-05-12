@@ -198,8 +198,8 @@ class DocumentsClient(_Base):
             Unique name of dataset
         select_fields: list
             Fields to include in the search results, empty array/list means all fields.
-        cursor: string
-            Cursor to paginate the document retrieval
+        after_id: string
+            IDs to paginate the document retrieval
         page_size: int
             Size of each page of results
         include_vector: bool

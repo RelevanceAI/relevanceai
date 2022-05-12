@@ -292,11 +292,12 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> project = ""
         >>> api_key = ""
         >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
-        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
+        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'],
+            after_id=True)
         >>> while len(documents['documents']) > 0:
         >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
         >>>     client.update_documents(collection, documents['documents'])
-        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=documents['cursor'])
+        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], search_after=documents['after_id'])
 
         Parameters
         ----------
