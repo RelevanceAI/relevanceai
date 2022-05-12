@@ -35,8 +35,8 @@ class CentroidsClient(_Base):
         ----------
         dataset_id: string
             Unique name of dataset
-        vector_field: list
-            The vector field where a clustering task was run.
+        vector_fields: list
+            The vector fields where a clustering task runs
         cluster_ids: list
             Any of the cluster ids
         alias: string
