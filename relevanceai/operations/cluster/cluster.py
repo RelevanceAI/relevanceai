@@ -1,6 +1,7 @@
 from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
+import pandas as pd
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations import BaseOps
@@ -388,7 +389,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         vector_fields: List[str],
         centroid_documents: List[Dict[str, Any]],
     ) -> None:
-        self.services.cluster.centroids.insert(
+        self.datasets.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=vector_fields,
@@ -631,7 +632,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
 
         """
         if not hasattr(self, "_centroids"):
-            self._centroids = self.services.centroids.list(
+            self._centroids = self.datasets.cluster.centroids.documents(
                 dataset_id=self.dataset_id,
                 vector_fields=self.vector_fields,
                 alias=self.alias,
@@ -711,7 +712,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             )
 
         """
-        results = self.services.cluster.centroids.insert(
+        results = self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=self.vector_fields,
@@ -850,7 +851,7 @@ class ClusterOps(ClusterWriteOps):
         filters = [] if filters is None else filters
         sort = [] if sort is None else sort
 
-        return self.services.cluster.aggregate(
+        return self.datasets.cluster.aggregate(
             dataset_id=self._retrieve_dataset_id(dataset),
             vector_fields=self.vector_fields if not vector_fields else vector_fields,
             groupby=groupby,
@@ -877,32 +878,24 @@ class ClusterOps(ClusterWriteOps):
         ----------
         cluster_labels : Tuple[int]
             a tuple of integers representing the cluster ids you would like to merge
-
         alias: str
             the alias of the clustering you like to merge labels within
-
         show_progress_bar: bool
             whether or not to show the progress bar
-
         Example
         -------
-
         .. code-block::
-
             dataset.cluster(
                 model="kmeans",
                 n_clusters=3,
                 vector_fields=["sample_1_vector_"],
             )
-
             ops = ClusterOps.from_dataset(
                 dataset=dataset,
                 alias="kmeans-3",
                 vector_fields=["sample_1_vector_"],
             )
-
             ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
-
         """
 
         if alias is None:
@@ -911,34 +904,13 @@ class ClusterOps(ClusterWriteOps):
             else:
                 raise ValueError("Please specify alias= as it was not detected")
 
-        try:
-            centroid_documents = self.services.cluster.centroids.list(
-                dataset_id=self.dataset_id,
-                vector_fields=[self.vector_field],
-                alias=alias,
-                include_vector=True,
-            )["results"]
-
-            relevant_centroids = [
-                centroid[self.vector_field]
-                for centroid in centroid_documents
-                if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
-            ]
-            new_centroid = np.array(relevant_centroids).mean(0).tolist()
-            if isinstance(cluster_labels[0], int):
-                new_centroid_doc = {
-                    "_id": f"cluster-{cluster_labels[0]}",
-                    self.vector_field: new_centroid,
-                }
-            elif isinstance(cluster_labels[0], str):
-                if isinstance(cluster_labels[0], int):
-                    new_centroid_doc = {
-                        "_id": cluster_labels,
-                        self.vector_field: new_centroid,
-                    }
-        except Exception as e:
-            print(e)
-            pass
+        centroid_documents = self.datasets.cluster.centroids.documents(
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+            cluster_ids=cluster_labels,
+            include_vector=True,
+        )["results"]
 
         update: dict = {}
 
@@ -964,11 +936,34 @@ class ClusterOps(ClusterWriteOps):
                 }
             ],
         )
-        print(results)
+        if results["status"] == "success":
+            print("✅ Merged successfully.")
+        else:
+            print(f"🚨 Couldn't merge. : {results['message']}")
 
         try:
+            # Calculating the centorids
+            relevant_centroids = [
+                self.get_field(self.vector_fields[0], d) for d in centroid_documents
+            ]
+
+            if len(relevant_centroids) == 0:
+                raise ValueError("No relevant centroids found.")
+            new_centroid = np.array(relevant_centroids).mean(0).tolist()
+
+            if isinstance(cluster_labels[0], int):
+                new_centroid_doc = {
+                    "_id": f"cluster-{cluster_labels[0]}",
+                    self.vector_field: new_centroid,
+                }
+            elif isinstance(cluster_labels[0], str):
+                new_centroid_doc = {
+                    "_id": cluster_labels[0],
+                    self.vector_field: new_centroid,
+                }
+
             # If there are no centroids - move on
-            self.services.cluster.centroids.update(
+            self.datasets.cluster.centroids.update(
                 dataset_id=self.dataset_id,
                 vector_fields=[self.vector_field],
                 alias=alias,
@@ -982,13 +977,19 @@ class ClusterOps(ClusterWriteOps):
                     centroid_id = cluster
                 else:
                     centroid_id = f"cluster-{cluster}"
-                self.services.cluster.centroids.delete(
+                self.datasets.cluster.centroids.delete(
                     dataset_id=self.dataset_id,
                     centroid_id=centroid_id,
                     alias=self.alias,
                     vector_fields=[self.vector_field],
                 )
-        except:
+
+            print("✅ Updated centroids.")
+
+        except Exception as e:
+            import traceback
+
+            traceback.print_exc()
             pass
 
     @track
@@ -1060,7 +1061,7 @@ class ClusterOps(ClusterWriteOps):
         vector_field = self.vector_field if vector_field is None else vector_field
         alias = self.alias if alias is None else alias
 
-        return self.services.cluster.centroids.list_closest_to_center(
+        return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=dataset_id,
             vector_fields=[vector_field],
             alias=alias,
@@ -1143,7 +1144,7 @@ class ClusterOps(ClusterWriteOps):
         vector_field = self.vector_field if vector_field is None else vector_field
         alias = self.alias if alias is None else alias
 
-        return self.services.cluster.centroids.list_furthest_from_center(
+        return self.datasets.cluster.centroids.list_furthest_from_center(
             dataset_id=dataset_id,
             vector_fields=[vector_field],
             alias=alias,

@@ -64,6 +64,9 @@ class Client(APIClient, ConfigMixin, CacheMixin):
 
         if token is None:
             token = auth()
+            print(
+                "If you require non-interactive token authentication, you can set token=..."
+            )
 
         self.token = token
         self.credentials = process_token(token)
@@ -117,9 +120,6 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         token = getpass.getpass(f"Activation token:")
         return token
 
-    def make_search_suggestion(self):
-        return self.services.search.make_suggestion()
-
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.list_datasets()
@@ -160,7 +160,7 @@ class Client(APIClient, ConfigMixin, CacheMixin):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------

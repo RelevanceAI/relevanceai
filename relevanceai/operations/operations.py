@@ -55,7 +55,12 @@ class Operations(Write, IO):
             A list of possible vector fields
         alias: str
             The alias to be used to store your model
-
+        cluster_config: dict
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
         """
         from relevanceai.operations.cluster import ClusterOps
 
@@ -70,6 +75,11 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
+        )
+        if alias is None:
+            alias = ops.alias
+        print(
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{alias}', vector_fields={vector_fields}, dataset_id='{self.dataset_id}')`"
         )
         return ops
 
@@ -516,7 +526,7 @@ class Operations(Write, IO):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
-        For more information about chunk search check out services.search.chunk. \n
+        For more information about chunk search check out datasets.search.chunk. \n
 
         For more information about vector search check out services.search.vector
 
@@ -889,6 +899,7 @@ class Operations(Write, IO):
     #         ]
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+
     def advanced_search(
         self,
         query: str = None,
@@ -905,7 +916,11 @@ class Operations(Write, IO):
         query: str
             The query to use
         vector_search_query: dict
-
+            The vector search query
+        fields_to_search: list
+            The list of fields to search
+        select_fields: list
+            The fields to select
 
         """
         return self.datasets.fast_search(
@@ -916,6 +931,8 @@ class Operations(Write, IO):
             includeFields=select_fields,
             **kwargs,
         )
+
+    search = advanced_search
 
     @track
     def list_deployables(self):

@@ -4,7 +4,6 @@ from typing import Optional
 
 from relevanceai.utils.base import _Base
 
-from relevanceai._api.endpoints.services.encoders import EncodersClient
 from relevanceai._api.endpoints.services.cluster import ClusterClient
 from relevanceai._api.endpoints.services.search import SearchClient
 from relevanceai._api.endpoints.services.aggregate import AggregateClient
@@ -12,12 +11,11 @@ from relevanceai._api.endpoints.services.recommend import RecommendClient
 from relevanceai._api.endpoints.services.tagger import TaggerClient
 from relevanceai._api.endpoints.services.prediction import PredictionClient
 from relevanceai._api.endpoints.services.wordclouds import WordcloudsClient
-from relevanceai._api.endpoints.services.centroids import CentroidsClient
+from relevanceai._api.endpoints.datasets.cluster.centroids import CentroidsClient
 
 
 class ServicesClient(_Base):
     def __init__(self, credentials):
-        self.encoders = EncodersClient(credentials)
         self.cluster = ClusterClient(credentials)
         self.search = SearchClient(credentials)
         self.aggregate = AggregateClient(credentials)
