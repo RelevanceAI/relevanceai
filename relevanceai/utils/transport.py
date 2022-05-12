@@ -39,7 +39,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
     def __init__(self, request_log_filename="request.log", **kwargs):
 
-        if os.environ["DEBUG_REQUESTS"] == "TRUE":
+        if os.getenv("DEBUG_REQUESTS") == "TRUE":
             from relevanceai.utils import FileLogger
 
             self.request_logger = FileLogger(fn=request_log_filename)
@@ -374,7 +374,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                     params=parameters if method.upper() == "GET" else {},
                 ) as response:
 
-                    if os.environ["DEBUG_REQUESTS"] == "TRUE":
+                    if os.getenv("DEBUG_REQUESTS") == "TRUE":
                         self.log(response)
 
                     if response.status == 200:
