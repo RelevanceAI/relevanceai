@@ -7,7 +7,6 @@ import numpy as np
 
 from typing import Union, Callable, Optional, List, Dict, Any, Set
 
-from doc_utils import DocUtils
 from relevanceai._api import APIClient
 
 from relevanceai.operations.cluster.base import (
@@ -18,6 +17,7 @@ from relevanceai.operations.cluster.base import (
     SklearnCentroidBase,
 )
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,

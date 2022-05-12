@@ -14,8 +14,8 @@ from relevanceai.constants import (
 from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
 
 from relevanceai.operations.cluster.utils import ClusterUtils
-from doc_utils import DocUtils
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.distances import (
     euclidean_distance_matrix,
     cosine_similarity_matrix,

@@ -6,7 +6,7 @@
 # from sklearn import preprocessing
 # from tqdm.auto import tqdm
 # from typing import List, Optional, Union
-# from doc_utils import DocUtils
+# from relevanceai.utils import DocUtils
 # from relevanceai.package_utils.logger import LoguruLogger
 # from relevanceai.api.client import BatchAPIClient
 # from relevanceai.unstructured_data.text.base_text_processing import BaseTextProcessing
