@@ -636,10 +636,19 @@ class Operations(Write, IO):
         vector_fields,
         parent_field,
         filters: Optional[list] = None,
+        min_parent_cluster_size: Optional[int] = None,
         **kwargs,
     ):
         """
         Subcluster
+
+        Parameters
+        -------------
+
+        min_parent_cluster_size: Optional[int]
+            The minium number of cluster data points for it to cluster on.
+            If Less than, then it doesn't work.
+
         """
         from relevanceai.operations.cluster import SubClusterOps
 
@@ -654,7 +663,10 @@ class Operations(Write, IO):
             **kwargs,
         )
         return ops.fit_predict(
-            dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
+            dataset=self.dataset_id,
+            vector_fields=vector_fields,
+            filters=filters,
+            min_parent_cluster_size=min_parent_cluster_size,
         )
 
     @track
