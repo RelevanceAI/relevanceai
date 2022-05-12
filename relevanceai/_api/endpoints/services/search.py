@@ -743,7 +743,7 @@ class SearchClient(_Base):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
-        For more information about chunk search check out services.search.chunk. \n
+        For more information about chunk search check out datasets.search.chunk. \n
 
         For more information about vector search check out services.search.vector
 

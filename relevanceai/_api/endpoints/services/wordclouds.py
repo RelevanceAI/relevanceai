@@ -4,12 +4,14 @@ from typing import Optional
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
+from relevanceai.utils.decorators.version import deprecated_error
 
 
 class WordcloudsClient(_Base):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
 
+    @deprecated_error("Please switch to ds.aggregate with the `wordcloud` fix.")
     def wordclouds(
         self,
         dataset_id: str,

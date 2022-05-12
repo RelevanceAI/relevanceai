@@ -1,13 +1,12 @@
 from typing import Union, Any, Optional, List
 
-from doc_utils import DocUtils
-import numpy as np
+from relevanceai.utils import DocUtils
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.operations.dr.base import PCA
-from relevanceai.operations.dr.base import TSNE
-from relevanceai.operations.dr.base import Ivis
-from relevanceai.operations.dr.base import UMAP
+from relevanceai.operations.dr.dim_reduction import PCA
+from relevanceai.operations.dr.dim_reduction import TSNE
+from relevanceai.operations.dr.dim_reduction import Ivis
+from relevanceai.operations.dr.dim_reduction import UMAP
 from relevanceai.operations import BaseOps
 from relevanceai._api import APIClient
 

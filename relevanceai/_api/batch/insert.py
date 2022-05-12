@@ -121,7 +121,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if verbose:
             print(
-                f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+                f"while inserting, you can visit monitor the dataset at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
             )
 
         return self._write_documents(
@@ -177,8 +177,7 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> from relevanceai import Client
         >>> client = Client()
         >>> df = client.Dataset("sample_dataset_id")
-        >>> csv_filename = "temp.csv"
-        >>> df.insert_csv(csv_filename)
+        >>> df.insert_csv("temp.csv")
 
         """
         csv_args = {} if csv_args is None else csv_args
@@ -293,11 +292,12 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> project = ""
         >>> api_key = ""
         >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
-        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'])
+        >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'],
+            after_id=True)
         >>> while len(documents['documents']) > 0:
         >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
         >>>     client.update_documents(collection, documents['documents'])
-        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], cursor=documents['cursor'])
+        >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], search_after=documents['after_id'])
 
         Parameters
         ----------

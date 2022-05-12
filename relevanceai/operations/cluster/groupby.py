@@ -135,7 +135,7 @@ class ClusterAgg(APIClient):
         self.metrics = {} if metrics is None else metrics
         self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
         self.metrics_call = self._create_metrics()
-        return self.services.cluster.aggregate(
+        return self.datasets.cluster.aggregate(
             dataset_id=self.dataset_id,
             alias=self.alias,
             vector_fields=self.vector_fields,
