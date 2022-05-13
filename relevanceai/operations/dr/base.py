@@ -17,9 +17,6 @@ from relevanceai.operations.cluster.constants import (
     DIM_REDUCTION_DEFAULT_ARGS,
 )
 
-# All relevant DR models
-from relevanceai.operations.dr.models import Ivis, PCA, UMAP, TSNE
-
 
 class DimReductionBase(LoguruLogger, DocUtils):
     def __call__(self, *args, **kwargs):
@@ -114,6 +111,9 @@ class DimReduction(_Base, DimReductionBase):
         Dimensionality reduction
         """
         if isinstance(dr, str):
+            # All relevant DR models
+            from relevanceai.operations.dr.models import Ivis, PCA, UMAP, TSNE
+
             if dr_args is None:
                 dr_args = DIM_REDUCTION_DEFAULT_ARGS[dr]
             if dr == "pca":
