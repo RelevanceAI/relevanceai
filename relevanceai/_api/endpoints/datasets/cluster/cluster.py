@@ -1,7 +1,7 @@
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 from relevanceai._api.endpoints.datasets.cluster.centroids import CentroidsClient
-from typing import Optional
+from typing import Optional, List
 
 
 class ClusterClient(_Base):
@@ -74,6 +74,30 @@ class ClusterClient(_Base):
             endpoint=endpoint,
             dashboard_type="cluster_aggregation",
         )
+        return self.make_http_request(
+            endpoint=endpoint, method=method, parameters=parameters
+        )
+
+    def merge(
+        self,
+        dataset_id: str,
+        vector_fields: List[str],
+        centroid_vector_fields: List[str],
+        alias: str,
+        cluster_ids: list,
+    ):
+        """
+        Merge clusters together
+        """
+        endpoint = f"/datasets/{dataset_id}/cluster/merge"
+        method = "POST"
+        parameters = {
+            "dataset_id": dataset_id,
+            "vector_fields": vector_fields,
+            "centroid_vector_fields": centroid_vector_fields,
+            "alias": alias,
+            "cluster_ids": cluster_ids,
+        }
         return self.make_http_request(
             endpoint=endpoint, method=method, parameters=parameters
         )
