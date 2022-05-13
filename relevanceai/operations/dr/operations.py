@@ -42,14 +42,18 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.vector_fields = vector_fields
         self.alias = alias
         if vector_fields:
-            if len(vector_fields) > 0:
-                self.vector_name = "-".join(
-                    [f.replace("_vector_", "") for f in vector_fields]
-                )
-            else:
-                self.vector_name = vector_fields[0]
+            self._create_vector_name(vector_fields)
 
         super().__init__(credentials)
+
+    def _create_vector_name(self, vector_fields):
+        if len(vector_fields) > 0:
+            self.vector_name = "-".join(
+                [f.replace("_vector_", "") for f in vector_fields]
+            )
+        else:
+            self.vector_name = vector_fields[0]
+        return self.vector_name
 
     def _insert_dr_metadata(
         self,
@@ -57,6 +61,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         alias: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
     ):
+        if not hasattr(self, "vector_name"):
+            self._create_vector_name(vector_fields)
 
         if dataset_id is None:
             dataset_id = self.dataset_id
@@ -113,6 +119,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             vector_fields = self.vector_fields
         if alias is None:
             alias = self.alias
+        if not hasattr(self, "vector_name"):
+            self._create_vector_name(vector_fields)
 
         print("Retrieving all documents...")
         from relevanceai.utils.filter_helper import create_filter
