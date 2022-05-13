@@ -64,7 +64,9 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             alias = self.alias
         if vector_fields is None:
             vector_fields = self.vector_fields
-        metadata = self.datasets.metadata(dataset_id=dataset_id)
+        if dataset_id is not None:
+            metadata = self.datasets.metadata(dataset_id=dataset_id)
+
         if "_dr_" not in metadata:
             metadata["_dr_"] = {}
         metadata["_dr_"][self.vector_name] = {
@@ -72,7 +74,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             "vector_fields": vector_fields,
             "n_components": self.n_components,
         }
-        self.datasets.post_metadata(dataset_id, metadata)
+        if dataset_id is not None:
+            self.datasets.post_metadata(dataset_id, metadata)
 
     def fit(
         self,
