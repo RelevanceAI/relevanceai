@@ -109,15 +109,16 @@ import pandas as pd
 import numpy as np
 import functools
 
-from relevanceai.constants.warning import Warning
+from typing import Union, List, Dict, Any, Optional
+
+from relevanceai.utils import DocUtils
+from relevanceai.utils.decorators.analytics import track_event_usage
 from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
 )
+
 from relevanceai.reports.cluster.grading import get_silhouette_grade
-from typing import Union, List, Dict, Any, Optional
-from doc_utils import DocUtils
-from relevanceai.utils.decorators.analytics import track_event_usage
 
 if is_sklearn_available():
     from sklearn.metrics import (
@@ -132,6 +133,7 @@ if is_sklearn_available():
     from sklearn.tree import _tree, DecisionTreeClassifier
     from sklearn.neighbors import NearestNeighbors
 
+from relevanceai.constants.warning import Warning
 from relevanceai.constants.warning import Warning
 
 

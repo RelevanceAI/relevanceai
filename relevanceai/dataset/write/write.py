@@ -6,13 +6,13 @@ import warnings
 import requests
 import pandas as pd
 
-from doc_utils import DocUtils
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id
@@ -642,7 +642,7 @@ class Write(Read):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------
