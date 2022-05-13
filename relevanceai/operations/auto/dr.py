@@ -18,19 +18,19 @@ class DimensionalityReduction(Write):
         # Make sure that the letter case does not matter
         algorithm = algorithm.upper()
         if algorithm == "PCA":
-            from relevanceai.operations.dr.dim_reduction import PCA
+            from relevanceai.operations.dr.models import PCA
 
             model = PCA()
         elif algorithm == "TSNE":
-            from relevanceai.operations.dr.dim_reduction import TSNE
+            from relevanceai.operations.dr.models import TSNE
 
             model = TSNE()
         elif algorithm == "UMAP":
-            from relevanceai.operations.dr.dim_reduction import UMAP
+            from relevanceai.operations.dr.models import UMAP
 
             model = UMAP()
         elif algorithm == "IVIS":
-            from relevanceai.operations.dr.dim_reduction import Ivis
+            from relevanceai.operations.dr.models import Ivis
 
             model = Ivis()
         else:

@@ -3,6 +3,7 @@ from typing import Any, Set, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
+from doc_utils import DocUtils
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import beta, track, deprecated
@@ -396,27 +397,28 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             alias=self.alias,
         )
 
-    def _insert_centroid_similarity_matrix(
-        self,
-        dataset_id: str,
-        vector_fields: List[str],
-        centroid_documents: List[Dict[str, Any]],
+    def _insert_cluster_metadata(
+        self, dataset_id: str, vector_fields: List[str], centroid_documents: List[Dict]
     ):
         metadata = self.datasets.metadata(dataset_id=dataset_id)
+        # store in metadata
+        if "_cluster_" not in metadata:
+            metadata["_cluster_"] = {}
 
+        # calculate dist matrix
         vectors = [
             centroid_document[vector_fields[0]]
             for centroid_document in centroid_documents
         ]
-        # euclidean dist matrix
-        d1 = euclidean_distance_matrix(vectors, vectors)
-
-        # cosine similarity matrix
-        d2 = cosine_similarity_matrix(vectors, vectors)
-
-        # store in metadata
-        metadata["euclidean_distance_matrix"] = d1
-        metadata["cosine_similarity_matrix"] = d2
+        metadata["_cluster_"][self.cluster_field] = {
+            "vector_fields": vector_fields,
+            "alias": self.alias,
+            "params": {},  # TBC
+            "similarity_matrix": {
+                "euclidean": euclidean_distance_matrix(vectors, vectors, decimal=3),
+                "cosine": cosine_similarity_matrix(vectors, vectors, decimal=3),
+            },
+        }
 
         self.datasets.post_metadata(dataset_id, metadata)
 
@@ -549,11 +551,13 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
-        self._insert_centroid_similarity_matrix(
+        print("Inserting Metadata...")
+        self._insert_cluster_metadata(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
+
         if include_cluster_report:
             # this needs to be more optimized for performance, we dont need to store 2 vector sets in memory.
             print("Generating evaluation report for your clusters…")

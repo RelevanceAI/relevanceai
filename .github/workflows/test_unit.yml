@@ -19,7 +19,7 @@ jobs:
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
           - os: ubuntu-latest
-            path: ~/.cache/pip
+            # path: ~/.cache/pip
           # - os: macos-latest
           #   path: ~/Library/Caches/pip
           # - os: windows-latest
