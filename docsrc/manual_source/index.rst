@@ -54,7 +54,7 @@ Relevance AI's authorization can be thought of under the following hierarchy:
 
     Regions -> Users > Projects -> Datasets
 
-Data Privacy:
+Data Privacy
 --------------------
 
 You own any data you upload to Relevance AI.
