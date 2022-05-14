@@ -82,7 +82,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
             if "_dr_" not in metadata:
                 metadata["_dr_"] = {}
-            metadata["_dr_"][self.vector_name] = {
+            metadata["_dr_"][alias] = {
                 "alias": alias,
                 "vector_fields": vector_fields,
                 "n_components": self.n_components,
