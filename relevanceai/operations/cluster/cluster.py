@@ -523,7 +523,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         print("Retrieving all documents...")
         from relevanceai.utils.filter_helper import create_filter
 
-        filters = create_filter(vector_field, filter_type="exists")
+        filters += create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(
             dataset_id=dataset_id,
             select_fields=vector_fields,
