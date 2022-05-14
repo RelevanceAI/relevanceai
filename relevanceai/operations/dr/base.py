@@ -56,12 +56,10 @@ class DimReductionBase(LoguruLogger, DocUtils):
         vector_fields: List[str],
         documents: List[Dict],
         alias: str,
-        vector_name: str, #new vector name
+        vector_name: str,  # new vector name
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
-<<<<<<< HEAD
-=======
         """
         This function takes a list of documents, a field name, and a dimensionality reduction
         algorithm, and returns a list of documents with a new field containing the dimensionality
@@ -85,20 +83,21 @@ class DimReductionBase(LoguruLogger, DocUtils):
             A list of documents with the original vector field and the new vector field.
 
         """
-        documents = list(self.filter_docs_for_fields([vector_field], documents))
->>>>>>> 236cfe8896199a5e069de34631b85a2011f64920
+
+        documents = list(self.filter_docs_for_fields(vector_fields, documents))
         vectors = np.array(
             self.get_fields_across_documents(
                 vector_fields, documents, missing_treatment="skip"
             )
         )
-        vectors = vectors.reshape(-1, vectors.shape[1]*vectors.shape[2]) #hacky fix
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])  # hacky fix
         dr_vectors = self.fit_transform(vectors, dims=dims)
-        del vectors #free more memory, mainly for memory edgecases
+        del vectors  # free more memory, mainly for memory edgecases
 
+        vector_name = "-".join([f.replace("_vector_", "") for f in vector_fields])
         dr_vector_field_name = self.get_dr_vector_field_name(vector_name, alias)
         if exclude_original_vectors:
-            dr_docs = [{"_id":d["_id"]} for d in documents]
+            dr_docs = [{"_id": d["_id"]} for d in documents]
             self.set_field_across_documents(dr_vector_field_name, dr_vectors, dr_docs)
             return dr_docs
         else:
@@ -106,7 +105,6 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return documents
 
 
-<<<<<<< HEAD
 class PCA(DimReductionBase):
     def fit(self, vectors: np.ndarray, dims: int = 3, *args, **kw):
         from sklearn.decomposition import PCA as SKLEARN_PCA
@@ -188,8 +186,6 @@ class Ivis(DimReductionBase):
 
 
 #this is mainly for plots
-=======
->>>>>>> 236cfe8896199a5e069de34631b85a2011f64920
 class DimReduction(_Base, DimReductionBase):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)

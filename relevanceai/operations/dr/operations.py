@@ -41,28 +41,47 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
         self.alias = alias
-        if len(vector_fields) > 0:
-            self.vector_name = "-".join([f.replace('_vector_', '') for f in vector_fields])
-        else:
-            self.vector_name = vector_fields[0]
+        if vector_fields:
+            self._create_vector_name(vector_fields)
 
         super().__init__(credentials)
 
+    def _create_vector_name(self, vector_fields):
+        if len(vector_fields) > 0:
+            self.vector_name = "-".join(
+                [f.replace("_vector_", "") for f in vector_fields]
+            )
+        else:
+            self.vector_name = vector_fields[0]
+        return self.vector_name
+
     def _insert_dr_metadata(
         self,
-        dataset_id: str,
-        alias: str,
-        vector_fields: List[str],
+        dataset_id: Optional[str] = None,
+        alias: Optional[str] = None,
+        vector_fields: Optional[List[str]] = None,
     ):
-        metadata = self.datasets.metadata(dataset_id=dataset_id)
+        if not hasattr(self, "vector_name"):
+            self._create_vector_name(vector_fields)
+
+        if dataset_id is None:
+            dataset_id = self.dataset_id
+        if alias is None:
+            alias = self.alias
+        if vector_fields is None:
+            vector_fields = self.vector_fields
+        if dataset_id is not None:
+            metadata = self.datasets.metadata(dataset_id=dataset_id)
+
         if "_dr_" not in metadata:
             metadata["_dr_"] = {}
         metadata["_dr_"][self.vector_name] = {
-            "alias" : alias,
-            "vector_fields" : vector_fields,
-            "n_components" : self.n_components
+            "alias": alias,
+            "vector_fields": vector_fields,
+            "n_components": self.n_components,
         }
-        self.datasets.post_metadata(dataset_id, metadata)
+        if dataset_id is not None:
+            self.datasets.post_metadata(dataset_id, metadata)
 
     def fit(
         self,
@@ -100,9 +119,14 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             vector_fields = self.vector_fields
         if alias is None:
             alias = self.alias
+        if not hasattr(self, "vector_name"):
+            self._create_vector_name(vector_fields)
 
         print("Retrieving all documents...")
         from relevanceai.utils.filter_helper import create_filter
+
+        if vector_fields is None:
+            raise ValueError("Vector fields cannot be None. Please set vector_fields=")
 
         for vector_field in vector_fields:
             filters += create_filter(vector_field, filter_type="exists")
@@ -120,7 +144,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             documents=documents,
             alias=alias,  # type: ignore
             dims=self.n_components,
-            vector_name=self.vector_name
+            vector_name=self.vector_name,
         )
 
         print("Updating dataset with reduced vectors...")
@@ -128,9 +152,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
         print("Updating dr metadata...")
         self._insert_dr_metadata(
-            dataset_id=dataset_id, 
-            vector_fields=vector_fields,
-            alias=alias
+            dataset_id=dataset_id, vector_fields=vector_fields, alias=alias
         )
 
         if verbose:
@@ -152,6 +174,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
     ):
         """Operate the dashboard"""
         self.fit(
-            dataset_id=dataset_id, vector_fields=vector_fields, alias=alias,
-            filters=filters, show_progress_bar=show_progress_bar, verbose=verbose
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
+            filters=filters,
+            show_progress_bar=show_progress_bar,
+            verbose=verbose,
         )

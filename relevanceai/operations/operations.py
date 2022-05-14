@@ -76,7 +76,7 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
-            filters=filters
+            filters=filters,
         )
         if alias is None:
             alias = ops.alias
@@ -134,7 +134,7 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
-            filters=filters
+            filters=filters,
         )
 
     dimensionality_reduction = reduce_dims
