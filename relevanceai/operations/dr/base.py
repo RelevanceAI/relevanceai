@@ -32,14 +32,22 @@ class DimReductionBase(LoguruLogger, DocUtils):
     def transform(self, *args, **kw):
         raise NotImplementedError
 
-    def transform_documents(self, vector_field: str, documents: List[Dict]):
-        # vectors = self.get_field_across_documents(vector_field, documents)
-        return self.transform(documents)
-
-    def fit_documents(self, vector_field: str, documents: List[Dict]):
-        vectors = self.get_field_across_documents(
-            vector_field, documents, missing_treatment="skip"
+    def transform_documents(self, vector_fields: List[str], documents: List[Dict]):
+        vectors = np.array(
+            self.get_fields_across_documents(
+                vector_fields, documents, missing_treatment="skip"
+            )
         )
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])
+        return self.transform(vectors)
+
+    def fit_documents(self, vector_fields: List[str], documents: List[Dict]):
+        vectors = np.array(
+            self.get_fields_across_documents(
+                vector_fields, documents, missing_treatment="skip"
+            )
+        )
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])
         return self.fit(vectors)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
@@ -94,7 +102,6 @@ class DimReductionBase(LoguruLogger, DocUtils):
         dr_vectors = self.fit_transform(vectors, dims=dims)
         del vectors  # free more memory, mainly for memory edgecases
 
-        vector_name = "-".join([f.replace("_vector_", "") for f in vector_fields])
         dr_vector_field_name = self.get_dr_vector_field_name(vector_name, alias)
         if exclude_original_vectors:
             dr_docs = [{"_id": d["_id"]} for d in documents]

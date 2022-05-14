@@ -50,17 +50,25 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         if len(vector_fields) > 0:
             self.vector_name = "-".join(
                 [f.replace("_vector_", "") for f in vector_fields]
-            )
+            ) + "_vector_"
         else:
             self.vector_name = vector_fields[0]
         return self.vector_name
 
-    def _insert_dr_metadata(
+    def _insert_metadata(
         self,
         dataset_id: Optional[str] = None,
         alias: Optional[str] = None,
         vector_fields: Optional[List[str]] = None,
     ):
+        """
+        {
+            "alias" : alias,
+            "vector_fields" : vector_fields,
+            "n_components" : n_components,
+            "params" : other_parameters_used
+        }
+        """
         if not hasattr(self, "vector_name"):
             self._create_vector_name(vector_fields)
 
@@ -70,17 +78,18 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             alias = self.alias
         if vector_fields is None:
             vector_fields = self.vector_fields
+
         if dataset_id is not None:
             metadata = self.datasets.metadata(dataset_id=dataset_id)
 
-        if "_dr_" not in metadata:
-            metadata["_dr_"] = {}
-        metadata["_dr_"][self.vector_name] = {
-            "alias": alias,
-            "vector_fields": vector_fields,
-            "n_components": self.n_components,
-        }
-        if dataset_id is not None:
+            if "_dr_" not in metadata:
+                metadata["_dr_"] = {}
+            metadata["_dr_"][self.vector_name] = {
+                "alias": alias,
+                "vector_fields": vector_fields,
+                "n_components": self.n_components,
+            }
+            
             self.datasets.post_metadata(dataset_id, metadata)
 
     def fit(
@@ -151,7 +160,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self._update_documents(dataset_id=dataset_id, documents=dr_documents)  # type: ignore
 
         print("Updating dr metadata...")
-        self._insert_dr_metadata(
+        self._insert_metadata(
             dataset_id=dataset_id, vector_fields=vector_fields, alias=alias
         )
 
@@ -172,7 +181,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         show_progress_bar: bool = True,
         verbose: bool = True,
     ):
-        """Operate the dashboard"""
+        """Run dimensionality reduction"""
         self.fit(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
