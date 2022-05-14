@@ -63,6 +63,8 @@ class BaseOps:
             return dataset.dataset_id
 
     def _check_vector_fields(self, vector_fields:List[str]):
+        if vector_fields is None:
+            raise ValueError("Vector fields cannot be None. Please set vector_fields=")
         if len(vector_fields) == 0:
             raise ValueError("You have inputed a vector fields of length 0") #we can add a optional behaviour to use all vectors here.
         if isinstance(vector_fields,str):
