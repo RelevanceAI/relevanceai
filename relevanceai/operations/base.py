@@ -61,3 +61,17 @@ class BaseOps:
             return dataset
         elif isinstance(dataset, Dataset):
             return dataset.dataset_id
+
+    def _check_vector_fields(self, vector_fields:List[str]):
+        if len(vector_fields) == 0:
+            raise ValueError("You have inputed a vector fields of length 0") #we can add a optional behaviour to use all vectors here.
+        if isinstance(vector_fields,str):
+            return [vector_fields]
+        else:
+            new_vector_fields = []
+            for f in vector_fields:
+                if not f.endswith('_vector_'): #this could support chunkvector in the future.
+                    new_vector_fields.append(f + "_vector_") #this will modify input, but assumes this is a mistake that the user is making
+                else:
+                    new_vector_fields.append(f)
+            return new_vector_fields
