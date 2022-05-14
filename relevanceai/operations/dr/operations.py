@@ -41,7 +41,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
         if alias is None:
-            self.alias = self._create_vector_name(vector_fields)
+            if vector_fields is not None:
+                self.alias = self._create_vector_name(vector_fields)
+            else:
+                self.alias = self._create_vector_name([])
         else:
             self.alias = alias if alias.endswith("_vector_") else alias + "_dr_vector_"
 
@@ -53,8 +56,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
                 "-".join([f.replace("_vector_", "") for f in vector_fields])
                 + "_dr_vector_"
             )
-        else:
+        elif len(vector_fields) == 1:
             vector_name = vector_fields[0] + "_dr_vector_"
+        else:
+            vector_name = "_dr_vector_"
         return vector_name
 
     def _insert_metadata(
@@ -127,6 +132,11 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             vector_fields = self.vector_fields
         if alias is None:
             alias = self.alias
+
+        if not vector_fields:
+            raise ValueError(
+                "You need to specify vector_fields with a list length greater than 0"
+            )
         # check if alias == any vector fields
         for vector_field in vector_fields:
             if alias == vector_field:
