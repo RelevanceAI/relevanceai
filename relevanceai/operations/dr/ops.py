@@ -40,27 +40,9 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.n_components = n_components
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
-        if alias is None:
-            if vector_fields is not None:
-                self.alias = self._create_vector_name(vector_fields)
-            else:
-                self.alias = self._create_vector_name([])
-        else:
-            self.alias = alias if alias.endswith("_vector_") else alias + "_dr_vector_"
+        self.alias = alias
 
         super().__init__(credentials)
-
-    def _create_vector_name(self, vector_fields):
-        if len(vector_fields) > 0:
-            vector_name = (
-                "-".join([f.replace("_vector_", "") for f in vector_fields])
-                + "_dr_vector_"
-            )
-        elif len(vector_fields) == 1:
-            vector_name = vector_fields[0] + "_dr_vector_"
-        else:
-            vector_name = "_dr_vector_"
-        return vector_name
 
     def _insert_metadata(
         self,
@@ -128,10 +110,14 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         filters = [] if filters is None else filters
         if dataset_id is None:
             dataset_id = self.dataset_id
+
         if vector_fields is None:
             vector_fields = self._check_vector_fields(self.vector_fields)
+        vector_fields = self._check_vector_fields(vector_fields)
+
         if alias is None:
-            alias = self.alias
+            alias = self._create_alias(self.alias, vector_fields)
+        alias = self._create_alias(alias, vector_fields)
 
         # check if alias == any vector fields
         for vector_field in vector_fields:

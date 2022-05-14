@@ -77,3 +77,22 @@ class BaseOps:
                 else:
                     new_vector_fields.append(f)
             return new_vector_fields
+
+    def _create_alias(self, alias, vector_fields, tag="default"):
+        vector_suffix = f"_{tag}_vector_" if tag else "_vector_"
+        if alias is None:
+            if vector_fields is not None:
+                if len(vector_fields) > 0:
+                    new_alias = (
+                        "-".join([f.replace("_vector_", "") for f in vector_fields])
+                        + vector_suffix
+                    )
+                elif len(vector_fields) == 1:
+                    new_alias = vector_fields[0] + vector_suffix
+                else:
+                    new_alias = vector_suffix
+            else:
+                new_alias = vector_suffix
+            return new_alias
+        else:
+            return alias if alias.endswith("_vector_") else alias + vector_suffix
