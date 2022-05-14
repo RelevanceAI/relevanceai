@@ -129,14 +129,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         if dataset_id is None:
             dataset_id = self.dataset_id
         if vector_fields is None:
-            vector_fields = self.vector_fields
+            vector_fields = self._check_vector_fields(self.vector_fields)
         if alias is None:
             alias = self.alias
 
-        if not vector_fields:
-            raise ValueError(
-                "You need to specify vector_fields with a list length greater than 0"
-            )
         # check if alias == any vector fields
         for vector_field in vector_fields:
             if alias == vector_field:
@@ -144,9 +140,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
                     "Your alias is same as one of the vector_field. Relevance does not support overriding an existing vector field with a lower dimension vector."
                 )
 
-        print("Retrieving all documents...")
-        if vector_fields is None:
-            raise ValueError("Vector fields cannot be None. Please set vector_fields=")
+        print("Retrieving all documents...")            
 
         from relevanceai.utils.filter_helper import create_filter
 
