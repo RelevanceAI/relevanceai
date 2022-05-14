@@ -1,6 +1,7 @@
 from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
+import pandas as pd
 
 from doc_utils import DocUtils
 from relevanceai.client.helpers import Credentials
@@ -16,13 +17,14 @@ from relevanceai.operations.cluster.models.summarizer import TransformersLMSumma
 
 from relevanceai.operations.cluster.utils import ClusterUtils
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.distances import (
     euclidean_distance_matrix,
     cosine_similarity_matrix,
 )
 
 
-class ClusterOps(ClusterUtils, BaseOps, DocUtils):
+class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
     """
     You can load ClusterOps instances in 2 ways.
 
@@ -30,18 +32,17 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
 
         # State the vector fields and alias in the ClusterOps object
         cluster_ops = client.ClusterOps(
-           alias="kmeans-16",
+           alias="kmeans-25",
             dataset_id="sample_dataset_id",
-            vector_fields=['sample_vector_']
+            vector_fields=["sample_vector_"]
         )
-
         cluster_ops.list_closest()
 
         # State the vector fields and alias in the operational call
-        cluster_ops = client.ClusterOps(alias="kmeans-16")
+        cluster_ops = client.ClusterOps(alias="kmeans-25")
         cluster_ops.list_closest(
             dataset="sample_dataset_id",
-            vector_fields=["documentation_vector_]
+            vector_fields=["sample_vector_"]
         )
 
     """
@@ -363,45 +364,66 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         vector_fields.append(most_recent_updated_vector)
         return vector_fields
 
+    def _retrieve_dataset_id(self, dataset) -> str:
+        """Helper method to get multiple dataset values.
+        Dataset can be either a Dataset or a string object."""
+        from relevanceai.dataset import Dataset
+
+        if isinstance(dataset, Dataset):
+            dataset_id: str = dataset.dataset_id
+        elif isinstance(dataset, str):
+            dataset_id = dataset
+        elif dataset is None:
+            if hasattr(self, "dataset_id"):
+                # let's not surprise users
+                print(
+                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
+                )
+                dataset_id = str(self.dataset_id)
+            else:
+                raise ValueError("Please supply dataset.")
+        return dataset_id
+
     def _insert_centroids(
         self,
         dataset_id: str,
         vector_fields: List[str],
         centroid_documents: List[Dict[str, Any]],
     ) -> None:
-        self.services.cluster.centroids.insert(
+        self.datasets.cluster.centroids.insert(
             dataset_id=dataset_id,
             cluster_centers=centroid_documents,
             vector_fields=vector_fields,
             alias=self.alias,
         )
 
-    def _insert_centroid_similarity_matrix(
-        self,
-        dataset_id: str,
-        vector_fields: List[str],
-        centroid_documents: List[Dict[str, Any]],
+    def _insert_cluster_metadata(
+        self, dataset_id: str, vector_fields: List[str], centroid_documents: List[Dict]
     ):
         metadata = self.datasets.metadata(dataset_id=dataset_id)
+        # store in metadata
+        if "_cluster_" not in metadata:
+            metadata["_cluster_"] = {}
 
+        # calculate dist matrix
         vectors = [
             centroid_document[vector_fields[0]]
             for centroid_document in centroid_documents
         ]
-        # euclidean dist matrix
-        d1 = euclidean_distance_matrix(vectors, vectors)
-
-        # cosine similarity matrix
-        d2 = cosine_similarity_matrix(vectors, vectors)
-
-        # store in metadata
-        metadata["euclidean_distance_matrix"] = d1
-        metadata["cosine_similarity_matrix"] = d2
+        metadata["_cluster_"][self.cluster_field] = {
+            "vector_fields": vector_fields,
+            "alias": self.alias,
+            "params": {},  # TBC
+            "similarity_matrix": {
+                "euclidean": euclidean_distance_matrix(vectors, vectors, decimal=3),
+                "cosine": cosine_similarity_matrix(vectors, vectors, decimal=3),
+            },
+        }
 
         self.datasets.post_metadata(dataset_id, metadata)
 
     def _fit_predict(
-        self, documents: List[Dict[str, Any]], vector_field: str
+        self, documents: List[Dict[str, Any]], vector_field: str, inplace=True
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         vectors = np.array(
             [self.get_field(vector_field, document) for document in documents]
@@ -438,15 +460,22 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             n_clusters = len(set(labels)) - 1
             print(f"Found {n_clusters} clusters using {self.model_name}")
 
+        labelled_documents = [{"_id": d["_id"]} for d in documents]
+
         self.set_field_across_documents(
-            field=self.cluster_field, values=labels, docs=documents
+            field=self.cluster_field, values=labels, docs=labelled_documents
         )
+
+        if inplace:  # add the cluster labels into the original documents
+            self.set_field_across_documents(
+                field=self.cluster_field, values=labels, docs=documents
+            )
 
         centroid_documents = self._get_centroid_documents(
             vectors, labels, vector_field=vector_field
         )
 
-        return centroid_documents, documents
+        return centroid_documents, labelled_documents
 
     def _print_app_link(self):
         link = CLUSTER_APP_LINK.format(self.dataset_id)
@@ -506,7 +535,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         # fit model, predict and label all documents
         print("Predicting on all documents...")
         centroid_documents, labelled_documents = self._fit_predict(
-            documents=documents, vector_field=vector_field
+            documents=documents, vector_field=vector_field, inplace=True
         )
 
         print("Updating cluster labels...")
@@ -522,12 +551,15 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
-        self._insert_centroid_similarity_matrix(
+        print("Inserting Metadata...")
+        self._insert_cluster_metadata(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
         )
+
         if include_cluster_report:
+            # this needs to be more optimized for performance, we dont need to store 2 vector sets in memory.
             print("Generating evaluation report for your clusters…")
             from relevanceai.reports.cluster.report import ClusterReport
 
@@ -547,7 +579,9 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             )
 
             if len(cluster_labels) != len(X):
-                raise ValueError("Damn son. How you like them apples.")
+                raise ValueError(
+                    "Number of cluster labels do not match number of rows of data."
+                )
 
             self.report = ClusterReport(
                 X=X,
@@ -585,6 +619,382 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         response = self.store_cluster_report(
             report_name="kmeans", report=report.internal_report
         )
+
+    @property
+    def centroids(self):
+        """
+        Access the centroids of your dataset easily
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.centroids
+
+        """
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.datasets.cluster.centroids.documents(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )
+        return self._centroids
+
+    def create_centroids(self):
+        """
+        Calculate centroids from your vectors
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                alias="kmeans-25",
+                vector_fields=['sample_vector_']
+            )
+            centroids = cluster_ops.create_centroids()
+
+        """
+        # Get an array of the different vectors
+        if len(self.vector_fields) > 1:
+            raise NotImplementedError(
+                "Do not currently support multiple vector fields for centroid creation."
+            )
+        centroid_vectors = {}
+
+        def calculate_centroid(vectors):
+            X = np.array(vectors)
+            return X.mean(axis=0)
+
+        centroid_vectors = self._operate_across_clusters(
+            field=self.vector_fields[0], func=calculate_centroid
+        )
+
+        # Does this insert properly?
+        if isinstance(centroid_vectors, dict):
+            centroid_vectors = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in centroid_vectors.items()
+            ]
+        self._insert_centroids(
+            dataset_id=self.dataset_id,
+            vector_fields=[self.vector_fields[0]],
+            centroid_documents=centroid_vectors,
+        )
+        return centroid_vectors
+
+    def insert_centroids(self, centroid_documents):
+        """
+        Insert your own centroids
+
+        Example
+        ----------
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.insert_centroids(
+                [
+                    {
+                        "_id": "cluster-1",
+                        "sample_vector_": [1, 1, 1]
+                    }
+                ]
+            )
+
+        """
+        results = self.datasets.cluster.centroids.insert(
+            dataset_id=self.dataset_id,
+            cluster_centers=centroid_documents,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+        return results
+
+
+class ClusterOps(ClusterWriteOps):
+    @track
+    def aggregate(
+        self,
+        vector_fields: List[str] = None,
+        metrics: Optional[list] = None,
+        sort: Optional[list] = None,
+        groupby: Optional[list] = None,
+        filters: Optional[list] = None,
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+        dataset=None,
+    ):
+        """
+        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
+        It can only can be used after a vector field has been clustered. \n
+        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": <alias>, "field": <field in the collection>, "agg": "category"},
+                    {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
+                ],
+                "metrics" : [
+                    {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
+                    {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
+                ]
+            }
+
+        For example, one can use the following aggregations to group score based on region and player name.
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": "region", "field": "player_region", "agg": "category"},
+                    {"name": "player_name", "field": "name", "agg": "category"}
+                ],
+                "metrics" : [
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                    {"name": "max_score", "field": "final_score", "agg": "max"},
+                    {'name':'total_score','field':"final_score", 'agg':'sum'},
+                    {'name':'average_deaths','field':"final_deaths", 'agg':'avg'},
+                    {'name':'highest_deaths','field':"final_deaths", 'agg':'max'},
+                ]
+            }
+        "groupby" is the fields you want to split the data into. These are the available groupby types:
+            - category : groupby a field that is a category
+            - numeric: groupby a field that is a numeric
+        "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
+            - "avg", "max", "min", "sum", "cardinality"
+        The response returned has the following in descending order. \n
+        If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
+            .. code-block::
+                {
+                    'groupby':[
+                        {'name':'Manufacturer','field':'manufacturer','agg':'category',
+                        'group_size': 10, 'select_fields': ["name"]},
+                    ],
+                    'metrics':[
+                        {'name':'Price Average','field':'price','agg':'avg'},
+                    ],
+                }
+                # ouptut example:
+                {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
+        For array-aggregations, you can add "agg": "array" into the aggregation query.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        metrics: list
+            Fields and metrics you want to calculate
+        groupby: list
+            Fields you want to split the data into
+        filters: list
+            Query for filtering the search results
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+        alias: string
+            Alias used to name a vector field. Belongs in field_{alias} vector
+        metrics: list
+            Fields and metrics you want to calculate
+        groupby: list
+            Fields you want to split the data into
+        filters: list
+            Query for filtering the search results
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+
+        Example
+        ---------
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset_id")
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.run(df, vector_fields=["sample_vector_"])
+            clusterer.aggregate(
+                "sample_dataset_id",
+                groupby=[{
+                    "field": "title",
+                    "agg": "wordcloud",
+                }],
+                vector_fields=['sample_vector_']
+            )
+        """
+        metrics = [] if metrics is None else metrics
+        groupby = [] if groupby is None else groupby
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+
+        return self.datasets.cluster.aggregate(
+            dataset_id=self._retrieve_dataset_id(dataset),
+            vector_fields=self.vector_fields if not vector_fields else vector_fields,
+            groupby=groupby,
+            metrics=metrics,
+            sort=sort,
+            filters=filters,
+            alias=self.alias,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+        )
+
+    @track
+    def merge(
+        self,
+        cluster_labels: List,
+        alias: Optional[str] = None,
+        show_progress_bar: bool = True,
+        **update_kwargs,
+    ):
+        """
+        Parameters
+        ----------
+        cluster_labels : Tuple[int]
+            a tuple of integers representing the cluster ids you would like to merge
+        alias: str
+            the alias of the clustering you like to merge labels within
+        show_progress_bar: bool
+            whether or not to show the progress bar
+        Example
+        -------
+        .. code-block::
+            dataset.cluster(
+                model="kmeans",
+                n_clusters=3,
+                vector_fields=["sample_1_vector_"],
+            )
+            ops = ClusterOps.from_dataset(
+                dataset=dataset,
+                alias="kmeans-3",
+                vector_fields=["sample_1_vector_"],
+            )
+            ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
+        """
+
+        if alias is None:
+            if hasattr(self, "alias"):
+                alias = self.alias
+            else:
+                raise ValueError("Please specify alias= as it was not detected")
+
+        centroid_documents = self.datasets.cluster.centroids.documents(
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+            cluster_ids=cluster_labels,
+            include_vector=True,
+        )["results"]
+
+        update: dict = {}
+
+        if isinstance(cluster_labels[0], str):
+            self.clusters = [cluster for cluster in sorted(cluster_labels)]
+            self.min_cluster = cluster_labels[0]
+        else:
+            self.clusters = [f"cluster-{cluster}" for cluster in sorted(cluster_labels)]
+            self.min_cluster = f"cluster-{min(cluster_labels)}"
+
+        print(f"Merging clusters to {cluster_labels[0]}")
+        update = {f"_cluster_.{self.vector_field}.{self.alias}": cluster_labels[0]}
+
+        results = self.datasets.documents.update_where(
+            dataset_id=self.dataset_id,
+            update=update,
+            filters=[
+                {
+                    "field": self._get_cluster_field_name(alias=alias),
+                    "filter_type": "categories",
+                    "condition": "==",
+                    "condition_value": cluster_labels[1:],
+                }
+            ],
+        )
+        if results["status"] == "success":
+            print("✅ Merged successfully.")
+        else:
+            print(f"🚨 Couldn't merge. : {results['message']}")
+
+        try:
+            # Calculating the centorids
+            relevant_centroids = [
+                self.get_field(self.vector_fields[0], d) for d in centroid_documents
+            ]
+
+            if len(relevant_centroids) == 0:
+                raise ValueError("No relevant centroids found.")
+            new_centroid = np.array(relevant_centroids).mean(0).tolist()
+
+            if isinstance(cluster_labels[0], int):
+                new_centroid_doc = {
+                    "_id": f"cluster-{cluster_labels[0]}",
+                    self.vector_field: new_centroid,
+                }
+            elif isinstance(cluster_labels[0], str):
+                new_centroid_doc = {
+                    "_id": cluster_labels[0],
+                    self.vector_field: new_centroid,
+                }
+
+            # If there are no centroids - move on
+            self.datasets.cluster.centroids.update(
+                dataset_id=self.dataset_id,
+                vector_fields=[self.vector_field],
+                alias=alias,
+                cluster_centers=[new_centroid_doc],
+            )
+
+            cluster: int
+
+            for cluster in cluster_labels[1:]:
+                if isinstance(cluster, str):
+                    centroid_id = cluster
+                else:
+                    centroid_id = f"cluster-{cluster}"
+                self.datasets.cluster.centroids.delete(
+                    dataset_id=self.dataset_id,
+                    centroid_id=centroid_id,
+                    alias=self.alias,
+                    vector_fields=[self.vector_field],
+                )
+
+            print("✅ Updated centroids.")
+
+        except Exception as e:
+            import traceback
+
+            traceback.print_exc()
+            pass
 
     @track
     def closest(
@@ -655,7 +1065,7 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         vector_field = self.vector_field if vector_field is None else vector_field
         alias = self.alias if alias is None else alias
 
-        return self.services.cluster.centroids.list_closest_to_center(
+        return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=dataset_id,
             vector_fields=[vector_field],
             alias=alias,
@@ -675,6 +1085,93 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             verbose=verbose,
         )
 
+    @track
+    def furthest(
+        self,
+        dataset_id: Optional[str] = None,
+        vector_field: Optional[str] = None,
+        alias: Optional[str] = None,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+    ):
+        """
+        List documents furthest from the center.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_fields: list
+            The vector field where a clustering task was run.
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        """
+        dataset_id = self.dataset_id if dataset_id is None else dataset_id
+        vector_field = self.vector_field if vector_field is None else vector_field
+        alias = self.alias if alias is None else alias
+
+        return self.datasets.cluster.centroids.list_furthest_from_center(
+            dataset_id=dataset_id,
+            vector_fields=[vector_field],
+            alias=alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+        )
+
+    # Convenience functions
+    list_closest = closest
+    list_furthest = furthest
+
+    # Summary functions
     @staticmethod
     def get_cluster_summary(
         summarizer,
@@ -843,88 +1340,6 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
             )
         return {"results": cluster_summary}
 
-    @track
-    def furthest(
-        self,
-        dataset_id: Optional[str] = None,
-        vector_field: Optional[str] = None,
-        alias: Optional[str] = None,
-        cluster_ids: Optional[List] = None,
-        centroid_vector_fields: Optional[List] = None,
-        select_fields: Optional[List] = None,
-        approx: int = 0,
-        sum_fields: bool = True,
-        page_size: int = 3,
-        page: int = 1,
-        similarity_metric: str = "cosine",
-        filters: Optional[List] = None,
-        # facets: List = [],
-        min_score: int = 0,
-        include_vector: bool = False,
-        include_count: bool = True,
-        cluster_properties_filter: Optional[Dict] = {},
-    ):
-        """
-        List documents furthest from the center.
-
-        Parameters
-        ----------
-        dataset_id: string
-            Unique name of dataset
-        vector_fields: list
-            The vector field where a clustering task was run.
-        cluster_ids: list
-            Any of the cluster ids
-        alias: string
-            Alias is used to name a cluster
-        select_fields: list
-            Fields to include in the search results, empty array/list means all fields
-        approx: int
-            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
-        sum_fields: bool
-            Whether to sum the multiple vectors similarity search score as 1 or seperate
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
-        filters: list
-            Query for filtering the search results
-        facets: list
-            Fields to include in the facets, if [] then all
-        min_score: int
-            Minimum score for similarity metric
-        include_vectors: bool
-            Include vectors in the search results
-        include_count: bool
-            Include the total count of results in the search results
-        include_facets: bool
-            Include facets in the search results
-        """
-        dataset_id = self.dataset_id if dataset_id is None else dataset_id
-        vector_field = self.vector_field if vector_field is None else vector_field
-        alias = self.alias if alias is None else alias
-
-        return self.services.cluster.centroids.list_furthest_from_center(
-            dataset_id=dataset_id,
-            vector_fields=[vector_field],
-            alias=alias,
-            cluster_ids=cluster_ids,
-            centroid_vector_fields=centroid_vector_fields,
-            select_fields=select_fields,
-            approx=approx,
-            sum_fields=sum_fields,
-            page_size=page_size,
-            page=page,
-            similarity_metric=similarity_metric,
-            filters=filters,
-            min_score=min_score,
-            include_vector=include_vector,
-            include_count=include_count,
-            cluster_properties_filter=cluster_properties_filter,
-        )
-
     @beta
     @track
     def summarize_furthest(
@@ -1032,401 +1447,3 @@ class ClusterOps(ClusterUtils, BaseOps, DocUtils):
         )
 
         return {"results": cluster_summary}
-
-    # Convenience functions
-    list_closest = closest
-    list_furthest = furthest
-
-    def _retrieve_dataset_id(self, dataset) -> str:
-        """Helper method to get multiple dataset values.
-        Dataset can be either a Dataset or a string object."""
-        from relevanceai.dataset import Dataset
-
-        if isinstance(dataset, Dataset):
-            dataset_id: str = dataset.dataset_id
-        elif isinstance(dataset, str):
-            dataset_id = dataset
-        elif dataset is None:
-            if hasattr(self, "dataset_id"):
-                # let's not surprise users
-                print(
-                    f"No dataset supplied - using last stored one '{self.dataset_id}'."
-                )
-                dataset_id = str(self.dataset_id)
-            else:
-                raise ValueError("Please supply dataset.")
-        return dataset_id
-
-    @track
-    def aggregate(
-        self,
-        vector_fields: List[str] = None,
-        metrics: Optional[list] = None,
-        sort: Optional[list] = None,
-        groupby: Optional[list] = None,
-        filters: Optional[list] = None,
-        page_size: int = 20,
-        page: int = 1,
-        asc: bool = False,
-        flatten: bool = True,
-        dataset=None,
-    ):
-        """
-        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
-        It can only can be used after a vector field has been clustered. \n
-        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
-
-        .. code-block::
-
-            {
-                "groupby" : [
-                    {"name": <alias>, "field": <field in the collection>, "agg": "category"},
-                    {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
-                ],
-                "metrics" : [
-                    {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
-                    {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
-                ]
-            }
-
-        For example, one can use the following aggregations to group score based on region and player name.
-
-        .. code-block::
-
-            {
-                "groupby" : [
-                    {"name": "region", "field": "player_region", "agg": "category"},
-                    {"name": "player_name", "field": "name", "agg": "category"}
-                ],
-                "metrics" : [
-                    {"name": "average_score", "field": "final_score", "agg": "avg"},
-                    {"name": "max_score", "field": "final_score", "agg": "max"},
-                    {'name':'total_score','field':"final_score", 'agg':'sum'},
-                    {'name':'average_deaths','field':"final_deaths", 'agg':'avg'},
-                    {'name':'highest_deaths','field':"final_deaths", 'agg':'max'},
-                ]
-            }
-        "groupby" is the fields you want to split the data into. These are the available groupby types:
-            - category : groupby a field that is a category
-            - numeric: groupby a field that is a numeric
-        "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
-            - "avg", "max", "min", "sum", "cardinality"
-        The response returned has the following in descending order. \n
-        If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
-            .. code-block::
-                {
-                    'groupby':[
-                        {'name':'Manufacturer','field':'manufacturer','agg':'category',
-                        'group_size': 10, 'select_fields': ["name"]},
-                    ],
-                    'metrics':[
-                        {'name':'Price Average','field':'price','agg':'avg'},
-                    ],
-                }
-                # ouptut example:
-                {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
-        For array-aggregations, you can add "agg": "array" into the aggregation query.
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        metrics: list
-            Fields and metrics you want to calculate
-        groupby: list
-            Fields you want to split the data into
-        filters: list
-            Query for filtering the search results
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        asc: bool
-            Whether to sort results by ascending or descending order
-        flatten: bool
-            Whether to flatten
-        alias: string
-            Alias used to name a vector field. Belongs in field_{alias} vector
-        metrics: list
-            Fields and metrics you want to calculate
-        groupby: list
-            Fields you want to split the data into
-        filters: list
-            Query for filtering the search results
-        page_size: int
-            Size of each page of results
-        page: int
-            Page of the results
-        asc: bool
-            Whether to sort results by ascending or descending order
-        flatten: bool
-            Whether to flatten
-
-        Example
-        ---------
-        .. code-block::
-            from relevanceai import Client
-            client = Client()
-            df = client.Dataset("sample_dataset_id")
-            from sklearn.cluster import KMeans
-            model = KMeans(n_clusters=2)
-            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
-            cluster_ops.run(df, vector_fields=["sample_vector_"])
-            clusterer.aggregate(
-                "sample_dataset_id",
-                groupby=[{
-                    "field": "title",
-                    "agg": "wordcloud",
-                }],
-                vector_fields=['sample_vector_']
-            )
-        """
-        metrics = [] if metrics is None else metrics
-        groupby = [] if groupby is None else groupby
-        filters = [] if filters is None else filters
-        sort = [] if sort is None else sort
-
-        return self.services.cluster.aggregate(
-            dataset_id=self._retrieve_dataset_id(dataset),
-            vector_fields=self.vector_fields if not vector_fields else vector_fields,
-            groupby=groupby,
-            metrics=metrics,
-            sort=sort,
-            filters=filters,
-            alias=self.alias,
-            page_size=page_size,
-            page=page,
-            asc=asc,
-            flatten=flatten,
-        )
-
-    @track
-    def merge(
-        self,
-        cluster_labels: List,
-        alias: Optional[str] = None,
-        show_progress_bar: bool = True,
-        **update_kwargs,
-    ):
-        """
-        Parameters
-        ----------
-        cluster_labels : Tuple[int]
-            a tuple of integers representing the cluster ids you would like to merge
-
-        alias: str
-            the alias of the clustering you like to merge labels within
-
-        show_progress_bar: bool
-            whether or not to show the progress bar
-
-        Example
-        -------
-
-        .. code-block::
-
-            dataset.cluster(
-                model="kmeans",
-                n_clusters=3,
-                vector_fields=["sample_1_vector_"],
-            )
-
-            ops = ClusterOps.from_dataset(
-                dataset=dataset,
-                alias="kmeans-3",
-                vector_fields=["sample_1_vector_"],
-            )
-
-            ops.merge(cluster_labels=(0, 1), alias="kmeans-3")
-
-        """
-
-        if alias is None:
-            if hasattr(self, "alias"):
-                alias = self.alias
-            else:
-                raise ValueError("Please specify alias= as it was not detected")
-
-        try:
-            centroid_documents = self.services.cluster.centroids.list(
-                dataset_id=self.dataset_id,
-                vector_fields=[self.vector_field],
-                alias=alias,
-                include_vector=True,
-            )["results"]
-
-            relevant_centroids = [
-                centroid[self.vector_field]
-                for centroid in centroid_documents
-                if any(f"-{cluster}" in centroid["_id"] for cluster in cluster_labels)
-            ]
-            new_centroid = np.array(relevant_centroids).mean(0).tolist()
-            if isinstance(cluster_labels[0], int):
-                new_centroid_doc = {
-                    "_id": f"cluster-{cluster_labels[0]}",
-                    self.vector_field: new_centroid,
-                }
-            elif isinstance(cluster_labels[0], str):
-                if isinstance(cluster_labels[0], int):
-                    new_centroid_doc = {
-                        "_id": cluster_labels,
-                        self.vector_field: new_centroid,
-                    }
-        except Exception as e:
-            print(e)
-            pass
-
-        update: dict = {}
-
-        if isinstance(cluster_labels[0], str):
-            self.clusters = [cluster for cluster in sorted(cluster_labels)]
-            self.min_cluster = cluster_labels[0]
-        else:
-            self.clusters = [f"cluster-{cluster}" for cluster in sorted(cluster_labels)]
-            self.min_cluster = f"cluster-{min(cluster_labels)}"
-
-        print(f"Merging clusters to {cluster_labels[0]}")
-        update = {f"_cluster_.{self.vector_field}.{self.alias}": cluster_labels[0]}
-
-        results = self.datasets.documents.update_where(
-            dataset_id=self.dataset_id,
-            update=update,
-            filters=[
-                {
-                    "field": self._get_cluster_field_name(alias=alias),
-                    "filter_type": "categories",
-                    "condition": "==",
-                    "condition_value": cluster_labels[1:],
-                }
-            ],
-        )
-        print(results)
-
-        try:
-            # If there are no centroids - move on
-            self.services.cluster.centroids.update(
-                dataset_id=self.dataset_id,
-                vector_fields=[self.vector_field],
-                alias=alias,
-                cluster_centers=[new_centroid_doc],
-            )
-
-            cluster: int
-
-            for cluster in cluster_labels[1:]:
-                if isinstance(cluster, str):
-                    centroid_id = cluster
-                else:
-                    centroid_id = f"cluster-{cluster}"
-                self.services.cluster.centroids.delete(
-                    dataset_id=self.dataset_id,
-                    centroid_id=centroid_id,
-                    alias=self.alias,
-                    vector_fields=[self.vector_field],
-                )
-        except:
-            pass
-
-    def create_centroids(self):
-        """
-        Calculate centroids
-
-        Example
-        --------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                alias="kmeans-40",
-                vector_fields=['text_roberta-large_vector_']
-            )
-            centroids = cluster_ops.create_centroids()
-
-        """
-        # Get an array of the different vectors
-        if len(self.vector_fields) > 1:
-            raise NotImplementedError(
-                "Do not currently support multiple vector fields for centroid creation."
-            )
-        centroid_vectors = {}
-
-        def calculate_centroid(vectors):
-            X = np.array(vectors)
-            return X.mean(axis=0)
-
-        centroid_vectors = self._operate_across_clusters(
-            field=self.vector_fields[0], func=calculate_centroid
-        )
-
-        # Does this insert properly?
-        if isinstance(centroid_vectors, dict):
-            centroid_vectors = [
-                {"_id": k, self.vector_fields[0]: v}
-                for k, v in centroid_vectors.items()
-            ]
-        self._insert_centroids(
-            dataset_id=self.dataset_id,
-            vector_fields=[self.vector_fields[0]],
-            centroid_documents=centroid_vectors,
-        )
-        return centroid_vectors
-
-    @property
-    def centroids(self):
-        """
-        Access the centroids of your dataset easily
-
-        .. code-block::
-
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                vector_fields=["sample_vector_"],
-                alias="simple"
-            )
-            cluster_ops.centroids
-
-        """
-        if not hasattr(self, "_centroids"):
-            self._centroids = self.services.centroids.list(
-                dataset_id=self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                page_size=9999,
-                include_vector=True,
-            )
-        return self._centroids
-
-    def insert_centroids(self, centroid_documents):
-        """
-        Insert your centroids
-
-        Example
-        ----------
-
-        .. code-block::
-
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                vector_fields=["sample_vector_"],
-                alias="simple"
-            )
-            cluster_ops.insert_centroids(
-                [
-                    {
-                        "_id": "cluster-1",
-                        "sample_vector_": [1, 1, 1]
-                    }
-                ]
-            )
-
-        """
-        results = self.services.cluster.centroids.insert(
-            dataset_id=self.dataset_id,
-            cluster_centers=centroid_documents,
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-        )
-        return results

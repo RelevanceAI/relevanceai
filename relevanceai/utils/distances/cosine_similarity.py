@@ -1,15 +1,16 @@
 """Cosine similarity operations
 """
-from operator import is_
 from typing import List, Dict, Any
+
+import numpy as np
+
 from relevanceai.utils.integration_checks import is_scipy_available
 from relevanceai.utils.decorators.analytics import track
-import numpy as np
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 
 @track
-def cosine_similarity_matrix(a, b):
+def cosine_similarity_matrix(a, b, decimal=None):
     A = np.array(a)
     B = np.array(b)
     similarity = np.dot(A, B.T)
@@ -20,6 +21,8 @@ def cosine_similarity_matrix(a, b):
     cosine = similarity * inv_mag
     cosine = cosine.T * inv_mag
     cosine[cosine > 0.9999] = 1
+    if decimal:
+        dist = np.around(cosine, decimal)
     return cosine.tolist()
 
 

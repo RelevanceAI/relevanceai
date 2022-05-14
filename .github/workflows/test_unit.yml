@@ -19,7 +19,7 @@ jobs:
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
           - os: ubuntu-latest
-            path: ~/.cache/pip
+            # path: ~/.cache/pip
           # - os: macos-latest
           #   path: ~/Library/Caches/pip
           # - os: windows-latest
@@ -45,6 +45,7 @@ jobs:
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT }}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
+          DEBUG_REQUESTS: "FALSE"
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
         run: |

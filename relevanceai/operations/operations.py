@@ -56,7 +56,12 @@ class Operations(Write, IO):
             A list of possible vector fields
         alias: str
             The alias to be used to store your model
-
+        cluster_config: dict
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
         """
         from relevanceai.operations.cluster import ClusterOps
 
@@ -72,6 +77,11 @@ class Operations(Write, IO):
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
             filters=filters
+        )
+        if alias is None:
+            alias = ops.alias
+        print(
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{alias}', vector_fields={vector_fields}, dataset_id='{self.dataset_id}')`"
         )
         return ops
 
@@ -126,6 +136,8 @@ class Operations(Write, IO):
             alias=alias,
             filters=filters
         )
+
+    dimensionality_reduction = reduce_dims
 
     @track
     def vectorize(
@@ -236,7 +248,7 @@ class Operations(Write, IO):
     @track
     def vector_search(self, **kwargs):
         """
-        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
+        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of Relevance vector search:
 
         1. Multivector search that allows you to search with multiple vectors and give each vector a different weight.
         e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do.
@@ -518,7 +530,7 @@ class Operations(Write, IO):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
-        For more information about chunk search check out services.search.chunk. \n
+        For more information about chunk search check out datasets.search.chunk. \n
 
         For more information about vector search check out services.search.vector
 
@@ -638,10 +650,19 @@ class Operations(Write, IO):
         vector_fields,
         parent_field,
         filters: Optional[list] = None,
+        min_parent_cluster_size: Optional[int] = None,
         **kwargs,
     ):
         """
         Subcluster
+
+        Parameters
+        -------------
+
+        min_parent_cluster_size: Optional[int]
+            The minium number of cluster data points for it to cluster on.
+            If Less than, then it doesn't work.
+
         """
         from relevanceai.operations.cluster import SubClusterOps
 
@@ -656,7 +677,10 @@ class Operations(Write, IO):
             **kwargs,
         )
         return ops.fit_predict(
-            dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
+            dataset=self.dataset_id,
+            vector_fields=vector_fields,
+            filters=filters,
+            min_parent_cluster_size=min_parent_cluster_size,
         )
 
     @track
@@ -718,12 +742,13 @@ class Operations(Write, IO):
             )
 
         def analyze_sentiment_document(doc):
-            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field)))
+            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field, "")))
+            if doc is None:
+                return {}
             return doc
 
         return self.bulk_apply(
             analyze_sentiment_document,
-            output_field=output_field,
             select_fields=[field],
             **apply_args,
         )
@@ -878,6 +903,7 @@ class Operations(Write, IO):
     #         ]
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+
     def advanced_search(
         self,
         query: str = None,
@@ -894,7 +920,11 @@ class Operations(Write, IO):
         query: str
             The query to use
         vector_search_query: dict
-
+            The vector search query
+        fields_to_search: list
+            The list of fields to search
+        select_fields: list
+            The fields to select
 
         """
         return self.datasets.fast_search(
@@ -905,6 +935,8 @@ class Operations(Write, IO):
             includeFields=select_fields,
             **kwargs,
         )
+
+    search = advanced_search
 
     @track
     def list_deployables(self):
@@ -968,7 +1000,7 @@ class Operations(Write, IO):
                 batch_size=16,
                 triple_loss_type:str='BatchHardSoftMarginTripletLoss'
             )
-            ops.operate(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
+            ops.run(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
 
         Parameters
         ------------

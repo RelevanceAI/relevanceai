@@ -10,7 +10,6 @@ from doc_utils import DocUtils
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 from relevanceai.client.helpers import Credentials
-
 from relevanceai.utils.base import _Base
 from relevanceai.utils.logger import LoguruLogger
 from relevanceai.operations.cluster.constants import (
@@ -61,6 +60,33 @@ class DimReductionBase(LoguruLogger, DocUtils):
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
+<<<<<<< HEAD
+=======
+        """
+        This function takes a list of documents, a field name, and a dimensionality reduction
+        algorithm, and returns a list of documents with a new field containing the dimensionality
+        reduced vectors
+
+        Parameters
+        ----------
+        vector_field : str
+            The name of the field in the documents that contains the vectors to be reduced.
+        documents : List[Dict]
+            The documents to transform.
+        alias : str
+            The name of the new field that will be created in the documents.
+        exclude_original_vectors : bool, optional
+            If True, the original vector field will be excluded from the returned documents.
+        dims : int, optional
+            The number of dimensions to reduce the vectors to.
+
+        Returns
+        -------
+            A list of documents with the original vector field and the new vector field.
+
+        """
+        documents = list(self.filter_docs_for_fields([vector_field], documents))
+>>>>>>> 236cfe8896199a5e069de34631b85a2011f64920
         vectors = np.array(
             self.get_fields_across_documents(
                 vector_fields, documents, missing_treatment="skip"
@@ -80,6 +106,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return documents
 
 
+<<<<<<< HEAD
 class PCA(DimReductionBase):
     def fit(self, vectors: np.ndarray, dims: int = 3, *args, **kw):
         from sklearn.decomposition import PCA as SKLEARN_PCA
@@ -161,6 +188,8 @@ class Ivis(DimReductionBase):
 
 
 #this is mainly for plots
+=======
+>>>>>>> 236cfe8896199a5e069de34631b85a2011f64920
 class DimReduction(_Base, DimReductionBase):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
@@ -176,6 +205,9 @@ class DimReduction(_Base, DimReductionBase):
         Dimensionality reduction
         """
         if isinstance(dr, str):
+            # All relevant DR models
+            from relevanceai.operations.dr.models import Ivis, PCA, UMAP, TSNE
+
             if dr_args is None:
                 dr_args = DIM_REDUCTION_DEFAULT_ARGS[dr]
             if dr == "pca":

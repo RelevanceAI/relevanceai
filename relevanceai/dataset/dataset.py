@@ -136,3 +136,25 @@ class Dataset(Operations):
 
         """
         return PROJECTOR_APP_LINK.format(self.dataset_id)
+
+    def set_dtypes(self, mapping: dict):
+        unstruc_types = ["_numeric_", "_category_", "_text_", "_image_"]
+        for unstruc_type in unstruc_types:
+            if unstruc_type not in mapping:
+                mapping[unstruc_type] = []
+
+        self.datasets.post_metadata(
+            self.dataset_id,
+            metadata=mapping,
+        )
+
+    def get_dtypes(self):
+        metadata = self.datasets.metadata(
+            self.dataset_id,
+        )["results"]
+        metadata = {
+            key: value
+            for key, value in metadata.items()
+            if key.startswith("_") and key.endswith("_")
+        }
+        return metadata
