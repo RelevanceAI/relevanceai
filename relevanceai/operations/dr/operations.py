@@ -40,20 +40,21 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.n_components = n_components
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
-        self.alias = alias
-        if vector_fields:
-            self._create_vector_name(vector_fields)
+        if alias is None:
+            self.alias = self._create_vector_name(vector_fields)
+        else:
+            self.alias = alias if alias.endswith("_vector_") else alias + "_dr_vector_"
 
         super().__init__(credentials)
 
     def _create_vector_name(self, vector_fields):
         if len(vector_fields) > 0:
-            self.vector_name = "-".join(
+            vector_name = "-".join(
                 [f.replace("_vector_", "") for f in vector_fields]
-            ) + "_vector_"
+            ) + "_dr_vector_"
         else:
-            self.vector_name = vector_fields[0]
-        return self.vector_name
+            vector_name = vector_fields[0] + "_dr_vector_"
+        return vector_name
 
     def _insert_metadata(
         self,
@@ -69,9 +70,6 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             "params" : other_parameters_used
         }
         """
-        if not hasattr(self, "vector_name"):
-            self._create_vector_name(vector_fields)
-
         if dataset_id is None:
             dataset_id = self.dataset_id
         if alias is None:
@@ -128,15 +126,17 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             vector_fields = self.vector_fields
         if alias is None:
             alias = self.alias
-        if not hasattr(self, "vector_name"):
-            self._create_vector_name(vector_fields)
+        #check if alias == any vector fields
+        for vector_field in vector_fields:
+            if alias == vector_field:
+                raise ValueError('Your alias is same as one of the vector_field. Relevance does not support overriding an existing vector field with a lower dimension vector.')
+
 
         print("Retrieving all documents...")
-        from relevanceai.utils.filter_helper import create_filter
-
         if vector_fields is None:
             raise ValueError("Vector fields cannot be None. Please set vector_fields=")
 
+        from relevanceai.utils.filter_helper import create_filter
         for vector_field in vector_fields:
             filters += create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(
@@ -153,7 +153,6 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             documents=documents,
             alias=alias,  # type: ignore
             dims=self.n_components,
-            vector_name=self.vector_name,
         )
 
         print("Updating dataset with reduced vectors...")

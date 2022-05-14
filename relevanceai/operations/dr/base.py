@@ -64,7 +64,6 @@ class DimReductionBase(LoguruLogger, DocUtils):
         vector_fields: List[str],
         documents: List[Dict],
         alias: str,
-        vector_name: str,  # new vector name
         exclude_original_vectors: bool = True,
         dims: int = 3,
     ):
@@ -102,13 +101,12 @@ class DimReductionBase(LoguruLogger, DocUtils):
         dr_vectors = self.fit_transform(vectors, dims=dims)
         del vectors  # free more memory, mainly for memory edgecases
 
-        dr_vector_field_name = self.get_dr_vector_field_name(vector_name, alias)
         if exclude_original_vectors:
             dr_docs = [{"_id": d["_id"]} for d in documents]
-            self.set_field_across_documents(dr_vector_field_name, dr_vectors, dr_docs)
+            self.set_field_across_documents(alias, dr_vectors, dr_docs)
             return dr_docs
         else:
-            self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
+            self.set_field_across_documents(alias, dr_vectors, documents)
         return documents
 
 
