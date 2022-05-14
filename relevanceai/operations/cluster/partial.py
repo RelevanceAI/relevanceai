@@ -8,9 +8,7 @@ from relevanceai.operations.cluster.utils import ClusterUtils
 class PartialClusterOps(ClusterUtils):
     @track
     def partial_fit_documents(
-        self,
-        vector_fields: List[Any],
-        documents: List[Dict],
+        self, vector_fields: List[Any], documents: List[Dict],
     ):
         """
         Train clustering algorithm on documents and then store the labels

@@ -112,11 +112,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
-                dataset_id,
-                documents,
-                return_documents=True,
-                *args,
-                **kwargs,
+                dataset_id, documents, return_documents=True, *args, **kwargs,
             )
 
         if verbose:
@@ -331,11 +327,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         def bulk_update_func(documents):
             return self.datasets.documents.bulk_update(
-                dataset_id,
-                documents,
-                return_documents=True,
-                *args,
-                **kwargs,
+                dataset_id, documents, return_documents=True, *args, **kwargs,
             )
 
         return self._write_documents(
@@ -903,9 +895,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
     @beta
     def rename_fields(
-        self,
-        dataset_id: str,
-        field_mappings: dict,
+        self, dataset_id: str, field_mappings: dict,
     ):
         """
         Loops through every document in your collection and renames specified fields by deleting the old one and

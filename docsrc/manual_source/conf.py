@@ -89,10 +89,7 @@ html_theme_options = {
     "collapse_navigation": False,
     "external_links": [{"name": "Dashboard", "url": "https://cloud.relevance.ai"}],
     "display_version": True,
-    "switcher": {
-        "json_url": "switcher.json",
-        "version_match": "v2.0.0",
-    },
+    "switcher": {"json_url": "switcher.json", "version_match": "v2.0.0",},
 }
 
 apidoc_module_first = True

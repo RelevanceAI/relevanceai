@@ -11,10 +11,7 @@ from relevanceai._api.endpoints.deployables.deployables import DeployableClient
 
 class Dashboard(ABC, _Base):
     def __init__(
-        self,
-        credentials: Credentials,
-        deployable_id: str,
-        application: str,
+        self, credentials: Credentials, deployable_id: str, application: str,
     ):
         self.credentials = credentials
 
@@ -86,8 +83,7 @@ class Dashboard(ABC, _Base):
         # TODO: Should we if the deployable already exists? I think I would
         # need to check the cluster/field/alias combo
         response = deployables.create(
-            dataset_id,
-            configuration=application_configuration,
+            dataset_id, configuration=application_configuration,
         )
         deployable_id = response["deployable_id"]
 

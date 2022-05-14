@@ -20,9 +20,7 @@ class APIEndpointsClient(_Base, DocUtils):
     """API Client"""
 
     def __init__(
-        self,
-        credentials: Credentials,
-        **kwargs,
+        self, credentials: Credentials, **kwargs,
     ):
         self.datasets = DatasetsClient(credentials)
         self.services = ServicesClient(credentials)
@@ -31,8 +29,7 @@ class APIEndpointsClient(_Base, DocUtils):
         self.reports = ReportsClient(credentials)
         self.deployables = DeployableClient(credentials)
         super().__init__(
-            credentials=credentials,
-            **kwargs,
+            credentials=credentials, **kwargs,
         )
 
     def _convert_id_to_string(self, documents, create_id: bool = False):

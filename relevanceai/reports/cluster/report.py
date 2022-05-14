@@ -126,9 +126,7 @@ if is_sklearn_available():
         calinski_harabasz_score,
         silhouette_samples,
     )
-    from sklearn.metrics.pairwise import (
-        pairwise_distances,
-    )
+    from sklearn.metrics.pairwise import pairwise_distances
     from sklearn.cluster import MiniBatchKMeans, KMeans
     from sklearn.tree import _tree, DecisionTreeClassifier
     from sklearn.neighbors import NearestNeighbors
@@ -340,8 +338,7 @@ class ClusterReport(DocUtils):
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
                 "davies_bouldin_score": round(
-                    davies_bouldin_score(self.X, self.cluster_labels),
-                    DECIMAL_PLACES,
+                    davies_bouldin_score(self.X, self.cluster_labels), DECIMAL_PLACES,
                 ),
                 "calinski_harabasz_score": round(
                     calinski_harabasz_score(self.X, self.cluster_labels),

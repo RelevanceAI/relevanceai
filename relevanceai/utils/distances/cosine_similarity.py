@@ -73,8 +73,7 @@ def get_cosine_similarity_scores(
 
 
 def largest_indices(
-    ary,
-    n,
+    ary, n,
 ):
     """
     Returns the n largest indices from a numpy array.

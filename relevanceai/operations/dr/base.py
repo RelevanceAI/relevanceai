@@ -51,13 +51,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.fit(vectors)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
-        return ".".join(
-            [
-                "_dr_",
-                alias,
-                vector_field,
-            ]
-        )
+        return ".".join(["_dr_", alias, vector_field,])
 
     def fit_transform_documents(
         self,
@@ -190,7 +184,7 @@ class Ivis(DimReductionBase):
         return vectors_dr
 
 
-#this is mainly for plots
+# this is mainly for plots
 class DimReduction(_Base, DimReductionBase):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)

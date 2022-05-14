@@ -144,14 +144,11 @@ class Dataset(Operations):
                 mapping[unstruc_type] = []
 
         self.datasets.post_metadata(
-            self.dataset_id,
-            metadata=mapping,
+            self.dataset_id, metadata=mapping,
         )
 
     def get_dtypes(self):
-        metadata = self.datasets.metadata(
-            self.dataset_id,
-        )["results"]
+        metadata = self.datasets.metadata(self.dataset_id,)["results"]
         metadata = {
             key: value
             for key, value in metadata.items()

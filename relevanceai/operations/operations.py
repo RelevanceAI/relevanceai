@@ -141,10 +141,7 @@ class Operations(Write, IO):
 
     @track
     def vectorize(
-        self,
-        fields: List[str] = None,
-        filters: Optional[List] = None,
-        **kwargs,
+        self, fields: List[str] = None, filters: Optional[List] = None, **kwargs,
     ):
         """
         Vectorize the model
@@ -193,10 +190,7 @@ class Operations(Write, IO):
             filters = []
         from relevanceai.operations.vector import VectorizeOps
 
-        ops = VectorizeOps(
-            credentials=self.credentials,
-            **kwargs,
-        )
+        ops = VectorizeOps(credentials=self.credentials, **kwargs,)
 
         return ops(
             dataset_id=self.dataset_id,
@@ -353,10 +347,7 @@ class Operations(Write, IO):
 
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id,)
 
         return ops.vector_search(**kwargs)
 
@@ -435,10 +426,7 @@ class Operations(Write, IO):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id,)
 
         return ops.hybrid_search(**kwargs)
 
@@ -518,10 +506,7 @@ class Operations(Write, IO):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id,)
 
         return ops.chunk_search(**kwargs)
 
@@ -599,10 +584,7 @@ class Operations(Write, IO):
         """
         from relevanceai.operations.vector import SearchOps
 
-        ops = SearchOps(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
-        )
+        ops = SearchOps(credentials=self.credentials, dataset_id=self.dataset_id,)
         return ops.multistep_chunk_search(**kwargs)
 
     def launch_cluster_app(self, configuration: dict = None):
@@ -748,9 +730,7 @@ class Operations(Write, IO):
             return doc
 
         return self.bulk_apply(
-            analyze_sentiment_document,
-            select_fields=[field],
-            **apply_args,
+            analyze_sentiment_document, select_fields=[field], **apply_args,
         )
 
         # return .fit_dataset(

@@ -35,8 +35,7 @@ class TestVectorizeOps:
     def test_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_ecom")
         dataset.insert_documents(
-            documents=get_online_ecommerce_dataset(),
-            create_id=True,
+            documents=get_online_ecommerce_dataset(), create_id=True,
         )
 
         dataset.vectorize(create_feature_vector=True)
@@ -46,8 +45,7 @@ class TestVectorizeOps:
     def test_numeric_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_iris")
         dataset.insert_documents(
-            documents=get_iris_dataset(),
-            create_id=True,
+            documents=get_iris_dataset(), create_id=True,
         )
 
         dataset.vectorize(create_feature_vector=True)
@@ -61,8 +59,7 @@ class TestVectorizeOps:
     def test_custom_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_penguins")
         dataset.insert_documents(
-            documents=get_palmer_penguins_dataset(),
-            create_id=True,
+            documents=get_palmer_penguins_dataset(), create_id=True,
         )
 
         from relevanceai.operations.vector import Base2Vec
@@ -85,12 +82,7 @@ class TestVectorizeOps:
                 return vector
 
         dataset.vectorize(
-            encoders=dict(
-                text=[
-                    CustomTextEncoder(),
-                ],
-            ),
-            create_feature_vector=True,
+            encoders=dict(text=[CustomTextEncoder(),],), create_feature_vector=True,
         )
 
         vectors = [

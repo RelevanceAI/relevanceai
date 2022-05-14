@@ -802,8 +802,7 @@ class LabelOps(BaseOps, Write):
                 include_after_id=True,
             )
             string = self.generate_text_list_from_documents(
-                documents=documents["documents"],
-                text_fields=text_fields,
+                documents=documents["documents"], text_fields=text_fields,
             )
 
             if algorithm == "nltk":
@@ -815,9 +814,7 @@ class LabelOps(BaseOps, Write):
                     preprocess_hooks=preprocess_hooks,
                 )
             elif algorithm == "rake":
-                ngram_counter = self._get_rake_keyphrases(
-                    string,
-                )
+                ngram_counter = self._get_rake_keyphrases(string,)
             counter.update(ngram_counter)
         return counter.most_common(most_common)
 

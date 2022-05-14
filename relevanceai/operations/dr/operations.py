@@ -49,9 +49,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
     def _create_vector_name(self, vector_fields):
         if len(vector_fields) > 0:
-            vector_name = "-".join(
-                [f.replace("_vector_", "") for f in vector_fields]
-            ) + "_dr_vector_"
+            vector_name = (
+                "-".join([f.replace("_vector_", "") for f in vector_fields])
+                + "_dr_vector_"
+            )
         else:
             vector_name = vector_fields[0] + "_dr_vector_"
         return vector_name
@@ -87,7 +88,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
                 "vector_fields": vector_fields,
                 "n_components": self.n_components,
             }
-            
+
             self.datasets.post_metadata(dataset_id, metadata)
 
     def fit(
@@ -126,17 +127,19 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             vector_fields = self.vector_fields
         if alias is None:
             alias = self.alias
-        #check if alias == any vector fields
+        # check if alias == any vector fields
         for vector_field in vector_fields:
             if alias == vector_field:
-                raise ValueError('Your alias is same as one of the vector_field. Relevance does not support overriding an existing vector field with a lower dimension vector.')
-
+                raise ValueError(
+                    "Your alias is same as one of the vector_field. Relevance does not support overriding an existing vector field with a lower dimension vector."
+                )
 
         print("Retrieving all documents...")
         if vector_fields is None:
             raise ValueError("Vector fields cannot be None. Please set vector_fields=")
 
         from relevanceai.utils.filter_helper import create_filter
+
         for vector_field in vector_fields:
             filters += create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(

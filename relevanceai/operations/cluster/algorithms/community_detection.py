@@ -5,11 +5,7 @@ from relevanceai.constants import MissingPackageError
 
 class CommunityDetection:
     def __init__(
-        self,
-        threshold=0.75,
-        min_community_size=10,
-        init_max_size=1000,
-        gpu=False,
+        self, threshold=0.75, min_community_size=10, init_max_size=1000, gpu=False,
     ):
 
         self.gpu = gpu
@@ -124,8 +120,5 @@ class CommunityDetection:
         except ModuleNotFoundError:
             raise MissingPackageError("sentence-transformers")
         return community_detection(
-            embeddings,
-            self.threshold,
-            self.min_community_size,
-            self.init_max_size,
+            embeddings, self.threshold, self.min_community_size, self.init_max_size,
         )

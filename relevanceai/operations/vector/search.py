@@ -10,9 +10,7 @@ from relevanceai._api import APIClient
 
 class SearchOps(APIClient):
     def __init__(
-        self,
-        credentials: Credentials,
-        dataset_id: str,
+        self, credentials: Credentials, dataset_id: str,
     ):
         self.dataset_id = dataset_id
 

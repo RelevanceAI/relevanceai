@@ -598,9 +598,7 @@ class Write(Read):
                 "_cluster_" + ".".join(vector_fields).lower() + "." + alias
             )
             self.set_field_across_documents(
-                set_cluster_field,
-                self._label_clusters(list(labels)),
-                documents,
+                set_cluster_field, self._label_clusters(list(labels)), documents,
             )
             return documents
 

@@ -194,8 +194,7 @@ class ClusterUtils(APIClient, DocUtils):
             f"Saving credentials to {self._cred_fn}. Remember to delete this file if you do not want credentials saved."
         )
         json.dump(
-            kwargs,
-            open(self._cred_fn, "w"),
+            kwargs, open(self._cred_fn, "w"),
         )
         return kwargs
 
@@ -303,9 +302,7 @@ class ClusterUtils(APIClient, DocUtils):
 
     @staticmethod
     def _calculate_silhouette_grade(vectors, cluster_labels):
-        from relevanceai.reports.cluster.grading import (
-            get_silhouette_grade,
-        )
+        from relevanceai.reports.cluster.grading import get_silhouette_grade
         from sklearn.metrics import silhouette_samples
 
         score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()
@@ -549,11 +546,7 @@ class ClusterUtils(APIClient, DocUtils):
 
         while len(all_cluster_ids) < num_clusters:
             facet_results = self.datasets.facets(
-                dataset_id=dataset_id,
-                fields=[field],
-                page_size=100,
-                page=1,
-                asc=True,
+                dataset_id=dataset_id, fields=[field], page_size=100, page=1, asc=True,
             )
             if "results" in facet_results:
                 facet_results = facet_results["results"]

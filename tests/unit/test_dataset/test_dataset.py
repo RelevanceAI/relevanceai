@@ -297,10 +297,5 @@ class TestDatasetWrite:
         dtypes = test_dataset.get_dtypes()
         assert all(
             dtype in dtypes
-            for dtype in [
-                "_numeric_",
-                "_category_",
-                "_text_",
-                "_image_",
-            ]
+            for dtype in ["_numeric_", "_category_", "_text_", "_image_",]
         )

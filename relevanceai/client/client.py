@@ -46,9 +46,7 @@ from relevanceai.client.cache import CacheMixin
 
 class Client(APIClient, ConfigMixin, CacheMixin):
     def __init__(
-        self,
-        token: Optional[str] = None,
-        authenticate: bool = True,
+        self, token: Optional[str] = None, authenticate: bool = True,
     ):
         """
         Initialize the client
@@ -267,25 +265,15 @@ class Client(APIClient, ConfigMixin, CacheMixin):
 
     @track
     def ClusterOps(
-        self,
-        model=None,
-        **kwargs,
+        self, model=None, **kwargs,
     ):
         from relevanceai.operations.cluster import ClusterOps
 
-        return ClusterOps(
-            credentials=self.credentials,
-            model=model,
-            **kwargs,
-        )
+        return ClusterOps(credentials=self.credentials, model=model, **kwargs,)
 
     @track
     def ClusterVizOps(
-        self,
-        vector_fields: List[str],
-        alias: str,
-        dataset_id: str,
-        **kwargs,
+        self, vector_fields: List[str], alias: str, dataset_id: str, **kwargs,
     ):
         from relevanceai.operations.viz import ClusterVizOps
 
@@ -327,10 +315,7 @@ class Client(APIClient, ConfigMixin, CacheMixin):
 
     @track
     def send_dataset(
-        self,
-        dataset_id: str,
-        receiver_project: str,
-        receiver_api_key: str,
+        self, dataset_id: str, receiver_project: str, receiver_api_key: str,
     ):
         """
         Send an individual a dataset. For this, you must know their API key.
@@ -368,10 +353,7 @@ class Client(APIClient, ConfigMixin, CacheMixin):
 
     @track
     def receive_dataset(
-        self,
-        dataset_id: str,
-        sender_project: str,
-        sender_api_key: str,
+        self, dataset_id: str, sender_project: str, sender_api_key: str,
     ):
         """
         Recieve an individual a dataset.
