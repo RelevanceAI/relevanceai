@@ -18,6 +18,9 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
+import os
+import re
+import uuid
 import getpass
 import pandas as pd
 import analytics
@@ -38,9 +41,10 @@ from relevanceai.dataset import Dataset
 from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
 from relevanceai.utils.config_mixin import ConfigMixin
+from relevanceai.client.cache import CacheMixin
 
 
-class Client(APIClient, ConfigMixin):
+class Client(APIClient, ConfigMixin, CacheMixin):
     def __init__(
         self,
         token: Optional[str] = None,
@@ -55,16 +59,22 @@ class Client(APIClient, ConfigMixin):
         token: str
             You can paste the token here if things need to be refreshed
 
-        force_refresh: bool
-            If True, it forces you to refresh your client
+        enable_request_logging: bool, str
+            Whether to print out the requests made, if "full" the body will be printed as well.
         """
 
         if token is None:
             token = auth()
+            print(
+                "If you require non-interactive token authentication, you can set token=..."
+            )
 
         self.token = token
         self.credentials = process_token(token)
         super().__init__(self.credentials)
+
+        if os.getenv("DEBUG_REQUESTS") == "TRUE":
+            print(f"logging requests to: {self.request_logging_fpath}")
 
         # Eventually the following should be accessed directly from
         # self.credentials, but keep for now.
@@ -114,13 +124,6 @@ class Client(APIClient, ConfigMixin):
         token = getpass.getpass(f"Activation token:")
         return token
 
-    @property
-    def auth_header(self):
-        return {"Authorization": self.project + ":" + self.api_key}
-
-    def make_search_suggestion(self):
-        return self.services.search.make_suggestion()
-
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.list_datasets()
@@ -161,7 +164,7 @@ class Client(APIClient, ConfigMixin):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------
@@ -240,6 +243,16 @@ class Client(APIClient, ConfigMixin):
         audio_fields = [] if audio_fields is None else audio_fields
         highlight_fields = {} if highlight_fields is None else highlight_fields
         text_fields = [] if text_fields is None else text_fields
+
+        regex_check = re.search("^[a-z\d._-]+$", dataset_id)
+
+        if regex_check is not None:
+            self.create_dataset(dataset_id)
+        else:
+            raise ValueError(
+                "dataset_id must contain only a combination of lowercase and/or '_' and/or '-' and/or '.'"
+            )
+
         return Dataset(
             credentials=self.credentials,
             dataset_id=dataset_id,

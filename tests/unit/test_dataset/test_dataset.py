@@ -291,3 +291,16 @@ class TestDatasetWrite:
     @pytest.mark.skip(reason=NOT_IMPLEMENTED)
     def test_insert_csv(self):
         assert False
+
+    def test_dtype_mapping(self, test_dataset: Dataset):
+        test_dataset.set_dtypes({})
+        dtypes = test_dataset.get_dtypes()
+        assert all(
+            dtype in dtypes
+            for dtype in [
+                "_numeric_",
+                "_category_",
+                "_text_",
+                "_image_",
+            ]
+        )

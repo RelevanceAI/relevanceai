@@ -1,12 +1,8 @@
 from typing import Union, Any, Optional, List
 
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.operations.dr.dim_reduction import PCA
-from relevanceai.operations.dr.dim_reduction import TSNE
-from relevanceai.operations.dr.dim_reduction import Ivis
-from relevanceai.operations.dr.dim_reduction import UMAP
 from relevanceai.operations import BaseOps
 from relevanceai._api import APIClient
 
@@ -16,26 +12,24 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self,
         credentials: Credentials,
         n_components: int,
-        model: Union[PCA, TSNE, Ivis, PCA, str, Any],
+        model: Any,
         dr_field: str = "_dr_",
         verbose: bool = True,
         dataset_id: Optional[str] = None,
         vector_fields: Optional[List] = None,
         alias: Optional[str] = None,
     ):
+        from relevanceai.operations.dr.models import PCA, TSNE, UMAP, Ivis
+
         if isinstance(model, str):
             algorithm = model.upper()
             if algorithm == "PCA":
-
                 model = PCA()
             elif algorithm == "TSNE":
-
                 model = TSNE()
             elif algorithm == "UMAP":
-
                 model = UMAP()
             elif algorithm == "IVIS":
-
                 model = Ivis()
             else:
                 raise ValueError()

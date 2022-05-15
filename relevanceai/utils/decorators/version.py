@@ -42,3 +42,14 @@ def deprecated(version: str, message: str = ""):
         return wrapper
 
     return _version
+
+
+def deprecated_error(message: str = ""):
+    def raise_warning(f):
+        @wraps(f)
+        def wrapper(*args, **kwds):
+            raise DeprecationWarning(f"Deprecated. {message}")
+
+        return wrapper
+
+    return raise_warning

@@ -9,13 +9,16 @@ Welcome to Relevance AI's documentation!
 Relevance AI Concepts
 ---------------------------
 
+📄 **Documents** refer to JSONs/Python dictionaries that contain metadata and vectors.
+
+🎺 **Datasets** refer to documents that are stored online in Relevance AI.
+
 🧑‍🔬 **Workflows** allow users to add new features/perform useful operations (e.g. - vectorizing and clustering text data). They are made up of many operators.
+
+⚡ **Vectorizers** refer to machine learning models that can turn data into vectors (e.g. Word2vec turns words into vectors).
 
 🚡 **Operators** are the building blocks used to provide users the ability to add something new.
 
-📄 **Documents** refer to JSONs/Python dictionaries that contain metadata and vectors.
-
-⚡ **Vectorizers** refer to machine learning models that can turn data into vectors (e.g. Word2vec turns words into vectors).
 
 .. image:: terminology.png
   :width: 800
@@ -24,7 +27,7 @@ Relevance AI Concepts
 About Relevance AI
 --------------------
 
-Relevance AI is an end-to-end platform for unstructured data using vector embeddings. 
+Relevance AI is an end-to-end platform for unstructured data using vector embeddings.
 
 It makes it easy for data teams to connect to data, analyze it with vectors and share it in as an interactive app or production api.
 
@@ -42,8 +45,16 @@ Why Relevance AI
 - **Highly flexible and integrated**. Each part of the platform you can bring your own models. (e.g. Replacing the default clustering algorithm with any sklearn clustering model or one you build yourself)
 - **Powerful**, we don't just facilitate each part of the process in building a use case with vectors. We enhace it further with algorithms and interactions to get more value of them. (e.g. fast aggregaation of data within clusters, vector similarity search with multiple vectors)
 
+Authorization
+---------------
 
-Data Privacy:
+Relevance AI's authorization can be thought of under the following hierarchy:
+
+.. code-block::
+
+    Regions -> Users > Projects -> Datasets
+
+Data Privacy
 --------------------
 
 You own any data you upload to Relevance AI.
@@ -60,6 +71,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    Operations <operations/index>
    sequential_workflow
    changelog
+   Debugging <debugging/index>
 
 Indices and tables
 ==================

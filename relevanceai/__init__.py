@@ -8,7 +8,7 @@ from relevanceai.operations.cluster.base import (
     CentroidClusterBase,
 )
 from relevanceai.operations.cluster import ClusterOps
-from relevanceai.operations.dr.dim_reduction_ops import (
+from relevanceai.operations.dr.operations import (
     ReduceDimensionsOps,
 )
 from relevanceai.operations.vector import Base2Vec
@@ -26,7 +26,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-__version__ = "2.1.8"
+__version__ = "2.2.0"
 
 try:
     pypi_data = requests.get("https://pypi.org/pypi/relevanceai/json").json()

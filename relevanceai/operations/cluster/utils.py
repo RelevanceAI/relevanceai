@@ -7,7 +7,6 @@ import numpy as np
 
 from typing import Union, Callable, Optional, List, Dict, Any, Set
 
-from doc_utils import DocUtils
 from relevanceai._api import APIClient
 
 from relevanceai.operations.cluster.base import (
@@ -18,6 +17,7 @@ from relevanceai.operations.cluster.base import (
     SklearnCentroidBase,
 )
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,
@@ -205,7 +205,7 @@ class ClusterUtils(APIClient, DocUtils):
             centers = self.get_centroid_documents()
 
             # Change centroids insertion
-            results = self.services.cluster.centroids.insert(
+            results = self.datasets.cluster.centroids.insert(
                 dataset_id=self.dataset_id,
                 cluster_centers=centers,
                 vector_fields=self.vector_fields,
@@ -543,6 +543,9 @@ class ClusterUtils(APIClient, DocUtils):
         # it just loops - therefore we need to store it in a simple hash
         # and then add them to a list
         all_cluster_ids: Set = set()
+
+        if field is None:
+            field = self._get_cluster_field_name()
 
         while len(all_cluster_ids) < num_clusters:
             facet_results = self.datasets.facets(
