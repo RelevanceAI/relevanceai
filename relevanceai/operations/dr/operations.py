@@ -48,9 +48,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
     def _create_vector_name(self, vector_fields):
         if len(vector_fields) > 0:
-            self.vector_name = "-".join(
-                [f.replace("_vector_", "") for f in vector_fields]
-            ) + "_vector_"
+            self.vector_name = (
+                "-".join([f.replace("_vector_", "") for f in vector_fields])
+                + "_vector_"
+            )
         else:
             self.vector_name = vector_fields[0]
         return self.vector_name
@@ -89,7 +90,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
                 "vector_fields": vector_fields,
                 "n_components": self.n_components,
             }
-            
+
             self.datasets.post_metadata(dataset_id, metadata)
 
     def fit(
