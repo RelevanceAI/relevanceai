@@ -80,7 +80,10 @@ class DocumentsClient(_Base):
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/documents/get",
-            parameters={"id": id, "include_vector": include_vector,},
+            parameters={
+                "id": id,
+                "include_vector": include_vector,
+            },
         )
 
     def bulk_get(
@@ -457,7 +460,10 @@ class DocumentsClient(_Base):
             }
 
     async def bulk_update_async(
-        self, dataset_id: str, updates: list, insert_date: bool = True,
+        self,
+        dataset_id: str,
+        updates: list,
+        insert_date: bool = True,
     ):
         """
         Asynchronous version of bulk_update. See bulk_update for details.

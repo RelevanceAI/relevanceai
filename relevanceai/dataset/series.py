@@ -677,5 +677,6 @@ class Series(APIClient):
         metadata = self.datasets.metadata(self.dataset_id)["results"]
         metadata[self.field] = dtype
         self.datasets.post_metadata(
-            self.dataset_id, metadata=metadata,
+            self.dataset_id,
+            metadata=metadata,
         )

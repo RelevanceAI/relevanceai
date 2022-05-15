@@ -226,7 +226,9 @@ class ClusterBase(DocUtils, ABC):
 
         if inplace:
             self.set_field_across_documents(
-                set_cluster_field, cluster_labels, documents,
+                set_cluster_field,
+                cluster_labels,
+                documents,
             )
             if return_only_clusters:
                 return [

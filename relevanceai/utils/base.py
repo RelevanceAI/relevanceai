@@ -12,7 +12,9 @@ class _Base(Transport, LoguruLogger, CredentialsMixin):
     """_Base class for all relevanceai client utilities"""
 
     def __init__(
-        self, credentials: Credentials, **kwargs,
+        self,
+        credentials: Credentials,
+        **kwargs,
     ):
         self.project = credentials.project
         self.api_key = credentials.api_key

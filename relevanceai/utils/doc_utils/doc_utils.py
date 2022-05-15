@@ -79,7 +79,10 @@ class Document(DocUtils):
         """
         try:
             for key1, key2, value1, value2 in zip(
-                self.keys(), other.keys(), self.values(), other.values(),
+                self.keys(),
+                other.keys(),
+                self.values(),
+                other.values(),
             ):
                 if value1 != value2:
                     return False

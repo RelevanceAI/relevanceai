@@ -126,7 +126,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
                     "Your alias is same as one of the vector_field. Relevance does not support overriding an existing vector field with a lower dimension vector."
                 )
 
-        print("Retrieving all documents...")            
+        print("Retrieving all documents...")
 
         from relevanceai.utils.filter_helper import create_filter
 

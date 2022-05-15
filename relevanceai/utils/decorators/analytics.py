@@ -146,7 +146,8 @@ def track_event_usage(event_name: str):
                             # TODO: Loop through the properties and remove anything
                             # greater than 5kb
                             response = analytics.track(
-                                user_id=user_id, event=event_name,
+                                user_id=user_id,
+                                event=event_name,
                             )
 
                     asyncio.ensure_future(send_analytics())

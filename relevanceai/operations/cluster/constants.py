@@ -30,7 +30,11 @@ GROUPBY_MAPPING = {"text": "category", "numeric": "numeric"}
 
 CLUSTER = Literal["kmeans", "kmedoids", "hdbscan"]  # "kmodes", "kprototypes", None]
 CLUSTER_DEFAULT_ARGS: Dict[str, Dict[str, Any]] = {
-    "kmeans": {"k": 10, "init": "k-means++", "verbose": 0,},
+    "kmeans": {
+        "k": 10,
+        "init": "k-means++",
+        "verbose": 0,
+    },
     "kmedoids": {
         "metric": "euclidean",
         "init": "k-medoids++",

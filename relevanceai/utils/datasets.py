@@ -75,7 +75,9 @@ class ExampleDatasets:
             client = Client(token=token)
             if number_of_documents is None:
                 documents = client._get_all_documents(
-                    db_name, select_fields=select_fields, include_vector=include_vector,
+                    db_name,
+                    select_fields=select_fields,
+                    include_vector=include_vector,
                 )
             else:
                 documents = client._get_documents(
@@ -440,7 +442,9 @@ def get_flipkart_dataset(
     if number_of_documents is None:
         number_of_documents = 19920
     return ExampleDatasets._get_dummy_dataset(
-        "dummy-flipkart", number_of_documents, select_fields,
+        "dummy-flipkart",
+        number_of_documents,
+        select_fields,
     )
 
 

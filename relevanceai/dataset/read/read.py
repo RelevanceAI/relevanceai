@@ -50,13 +50,18 @@ class Read(Statistics):
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
 
-        self.centroids = Centroids(credentials=credentials, dataset_id=self.dataset_id,)
+        self.centroids = Centroids(
+            credentials=credentials,
+            dataset_id=self.dataset_id,
+        )
         self.image_fields = [] if image_fields is None else image_fields
         self.audio_fields = [] if audio_fields is None else audio_fields
         self.text_fields = [] if text_fields is None else text_fields
         self.highlight_fields = {} if highlight_fields is None else highlight_fields
         super().__init__(
-            credentials=credentials, dataset_id=dataset_id, **kwargs,
+            credentials=credentials,
+            dataset_id=dataset_id,
+            **kwargs,
         )
 
     @property  # type: ignore
@@ -145,7 +150,10 @@ class Read(Statistics):
         health: dict = self.datasets.monitor.health(self.dataset_id)
         schema: dict = self._get_schema()
         info_json = [
-            {"Column": column, "Dtype": schema[column],}
+            {
+                "Column": column,
+                "Dtype": schema[column],
+            }
             if column not in health
             else {
                 "Column": column,
@@ -726,7 +734,8 @@ class Read(Statistics):
         raise NotImplementedError()
 
     def isnull(
-        self, show_progress_bar=False,
+        self,
+        show_progress_bar=False,
     ):
         schema = self.schema
         filters = [
@@ -745,7 +754,8 @@ class Read(Statistics):
         null_count = {field: 0 for field in schema}
 
         null_docs = self.get_all_documents(
-            filters=filters, show_progress_bar=show_progress_bar,
+            filters=filters,
+            show_progress_bar=show_progress_bar,
         )
 
         for doc in null_docs:

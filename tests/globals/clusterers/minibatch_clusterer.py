@@ -13,7 +13,9 @@ ORIGINAL_ALIAS = "minibatchkmeans-3"
 def minibatch_clusterer(test_dataset: Dataset):
     alias = "minibatchkmeans-3"
     clusterer = test_dataset.cluster(
-        model=MiniBatchKMeans(n_clusters=3), alias=alias, vector_fields=VECTOR_FIELDS,
+        model=MiniBatchKMeans(n_clusters=3),
+        alias=alias,
+        vector_fields=VECTOR_FIELDS,
     )
     yield clusterer
     clusterer.delete_centroids(test_dataset.dataset_id, VECTOR_FIELDS)
@@ -23,7 +25,9 @@ def minibatch_clusterer(test_dataset: Dataset):
 def minibatch_subclusterer(test_dataset: Dataset):
     alias = "minibatchkmeans-4"
     clusterer = test_dataset.cluster(
-        model=MiniBatchKMeans(n_clusters=4), alias=alias, vector_fields=VECTOR_FIELDS,
+        model=MiniBatchKMeans(n_clusters=4),
+        alias=alias,
+        vector_fields=VECTOR_FIELDS,
     )
     clusterer = test_dataset.cluster(
         model=MiniBatchKMeans(n_clusters=4),
@@ -39,7 +43,9 @@ def minibatch_subclusterer(test_dataset: Dataset):
 def kmeans_subclusterer(test_dataset: Dataset):
     alias = "kmeans-4"
     clusterer = test_dataset.cluster(
-        model=KMeans(n_clusters=4), alias=alias, vector_fields=VECTOR_FIELDS,
+        model=KMeans(n_clusters=4),
+        alias=alias,
+        vector_fields=VECTOR_FIELDS,
     )
     clusterer = test_dataset.cluster(
         model=KMeans(n_clusters=4),

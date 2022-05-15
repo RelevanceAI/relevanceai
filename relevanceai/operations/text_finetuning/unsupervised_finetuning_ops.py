@@ -213,7 +213,11 @@ class GPLOps(APIClient, BaseOps):
     @classmethod
     def from_client(self, client, *args, **kwargs):
         credentials = client.credentials
-        return self(credentials=credentials, *args, **kwargs,)
+        return self(
+            credentials=credentials,
+            *args,
+            **kwargs,
+        )
 
     @classmethod
     def from_dataset(

@@ -9,7 +9,8 @@ from tests.globals.constants import generate_dataset_id
 
 @pytest.fixture(scope="function")
 def pandas_dataset(
-    test_client: Client, pandas_documents: List[Dict],
+    test_client: Client,
+    pandas_documents: List[Dict],
 ):
     test_dataset_id = generate_dataset_id()
 

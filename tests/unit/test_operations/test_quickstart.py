@@ -18,7 +18,9 @@ def test_quickstart(test_client: Client):
     time.sleep(2)
     results = test_client.datasets.fast_search(
         dataset_id=QUICKSTART_DATASET,
-        vectorSearchQuery=[{"vector": [0.2, 0.2, 0.2], "field": "example_vector_"},],
+        vectorSearchQuery=[
+            {"vector": [0.2, 0.2, 0.2], "field": "example_vector_"},
+        ],
         pageSize=3,
     )
 

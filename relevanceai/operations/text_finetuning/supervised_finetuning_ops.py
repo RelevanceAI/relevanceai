@@ -241,12 +241,23 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
     @classmethod
     def from_client(self, client, *args, **kwargs):
         credentials = client.credentials
-        return self(credentials=credentials, *args, **kwargs,)
+        return self(
+            credentials=credentials,
+            *args,
+            **kwargs,
+        )
 
     @classmethod
     def from_dataset(
-        self, dataset: Any, base_model: str = "distilbert-base-uncased", **kwargs,
+        self,
+        dataset: Any,
+        base_model: str = "distilbert-base-uncased",
+        **kwargs,
     ):
-        cls = self(credentials=dataset.credentials, base_model=base_model, **kwargs,)
+        cls = self(
+            credentials=dataset.credentials,
+            base_model=base_model,
+            **kwargs,
+        )
         cls.dataset_id = dataset.dataset_id
         return cls

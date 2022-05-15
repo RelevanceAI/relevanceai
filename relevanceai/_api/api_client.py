@@ -50,5 +50,6 @@ class APIClient(BatchInsertClient, BatchInsertAsyncClient):
         value_list.append(value_to_append)
         self.set_field(field, metadata, value_list)
         self.datasets.post_metadata(
-            dataset_id=self.dataset_id, metadata=metadata,
+            dataset_id=self.dataset_id,
+            metadata=metadata,
         )

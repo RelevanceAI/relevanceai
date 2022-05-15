@@ -338,7 +338,8 @@ class ClusterReport(DocUtils):
             "overall": {
                 "summary": ClusterReport.summary_statistics(self.X),
                 "davies_bouldin_score": round(
-                    davies_bouldin_score(self.X, self.cluster_labels), DECIMAL_PLACES,
+                    davies_bouldin_score(self.X, self.cluster_labels),
+                    DECIMAL_PLACES,
                 ),
                 "calinski_harabasz_score": round(
                     calinski_harabasz_score(self.X, self.cluster_labels),

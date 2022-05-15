@@ -557,7 +557,13 @@ class ClusterEvaluate(APIClient, DocUtils):
         ]
         coord_info = "X: %{x}   Y: %{y}   Z: %{z}"
         hovertemplate = (
-            "<br>".join([coord_info,] + custom_data_hover) + "<extra></extra>"
+            "<br>".join(
+                [
+                    coord_info,
+                ]
+                + custom_data_hover
+            )
+            + "<extra></extra>"
         )
         scatter_args = {
             "x": df["x"],
@@ -575,7 +581,10 @@ class ClusterEvaluate(APIClient, DocUtils):
 
     @track
     def plot_distributions(
-        self, numeric_field: str, top_indices: int = 10, dataset_id: str = None,
+        self,
+        numeric_field: str,
+        top_indices: int = 10,
+        dataset_id: str = None,
     ):
         """
         Plot the sentence length distributions across each cluster
@@ -681,7 +690,9 @@ class ClusterEvaluate(APIClient, DocUtils):
             if i == top_indices:
                 return
             sample_comm_df = df[df[cluster_field] == community]
-            g = sns.displot(sample_comm_df[numeric_field],)
+            g = sns.displot(
+                sample_comm_df[numeric_field],
+            )
             g.set(xlim=(facet_result["min"], facet_result["max"]))
             plt.title(community + str(f" - measurement: {measurement}"))
 
