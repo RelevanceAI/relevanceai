@@ -43,7 +43,7 @@ class DimensionalityReduction(Write):
 
         print(f"Run {algorithm}...")
         # Returns a list of documents with dr vector
-        return model.fit_transform_documents(
+        return model.fit_transform_update(
             vector_field=vector_fields[0],
             documents=documents,
             alias=alias,
