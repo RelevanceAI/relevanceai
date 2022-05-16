@@ -4,6 +4,7 @@ from abc import abstractmethod
 import pandas as pd
 import numpy as np
 import json
+import gc
 
 from doc_utils import DocUtils
 
@@ -100,6 +101,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])  # hacky fix
         dr_vectors = self.fit_transform(vectors, dims=dims)
         del vectors  # free more memory, mainly for memory edgecases
+        gc.collect()
 
         if exclude_original_vectors:
             dr_docs = [{"_id": d["_id"]} for d in documents]
